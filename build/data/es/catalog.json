@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-28T17:24:42.294Z",
+  "generated": "2026-10-28T18:23:31.577Z",
   "pages": 386,
-  "occurrences": 27880,
-  "unique": 14493,
-  "words": 272807,
-  "untranslated": 2,
-  "untranslatedWords": 26,
-  "merged": "2026-10-28T17:24:56.323Z"
+  "occurrences": 27889,
+  "unique": 14501,
+  "words": 272871,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-10-28T18:24:05.420Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -149,7 +149,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 174,
+   "n": 175,
    "w": 1
   },
   "a2E1cbkh_s": {
@@ -116939,8 +116939,7 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 4,
-   "leaf": true
+   "w": 4
   },
   "6w9RHkvpE9": {
    "en": "<a href=\"/\">Home</a> / Hyperliquid whales",
@@ -117050,9 +117049,9 @@
    "n": 1,
    "w": 2
   },
-  "m6accIyH9q": {
-   "en": "Aggregate unrealized P&amp;L",
-   "es": "P&amp;L no realizado agregado",
+  "JuXEiw2Yw0": {
+   "en": "Unrealized P&amp;L",
+   "es": "P&amp;L no realizado",
    "kind": [
     "html"
    ],
@@ -117060,7 +117059,7 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 2
+   "w": 1
   },
   "aZpqKG7rbu": {
    "en": "Closest to liquidation",
@@ -117171,9 +117170,69 @@
    "n": 1,
    "w": 6
   },
-  "1zjp8JlkTk": {
-   "en": "<span></span><span>Whale</span><span>Market</span><span style=\"text-align:center\">Lev</span><span class=\"r\" data-sort=\"val\">Size</span><span class=\"x1 r\" data-sort=\"ent\">Entry</span><span class=\"x1 r\">Mark</span><span class=\"r\" data-sort=\"liq\">Liq price</span><span class=\"r\" data-sort=\"pnl\">Unrealized</span><span class=\"x2 r\" data-sort=\"acc\">Account</span>",
-   "es": "<span></span><span>Ballena</span><span>Mercado</span><span style=\"text-align:center\">Apal.</span><span class=\"r\" data-sort=\"val\">Tamaño</span><span class=\"x1 r\" data-sort=\"ent\">Entrada</span><span class=\"x1 r\">Marca</span><span class=\"r\" data-sort=\"liq\">Precio de liq.</span><span class=\"r\" data-sort=\"pnl\">No realizado</span><span class=\"x2 r\" data-sort=\"acc\">Cuenta</span>",
+  "8fzKrM3c2K": {
+   "en": "Biggest",
+   "es": "Mayores",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "N7YQXGsfJ8": {
+   "en": "Winning",
+   "es": "En ganancia",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "mArwQuB6Ny": {
+   "en": "Nearest liq",
+   "es": "Más cerca de liq.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "aLlb_l7WLg": {
+   "en": "Moved most",
+   "es": "Más movimiento",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "ca4MJCMxOh": {
+   "en": "<span class=\"wl-swipe\">Swipe the board &rarr; for leverage, entry and the account behind it</span>",
+   "es": "<span class=\"wl-swipe\">Desliza el tablero &rarr; para ver apalancamiento, entrada y la cuenta detrás</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "ntGjGxkItB": {
+   "en": "<span class=\"h-rk\"></span><span class=\"h-who\">Whale</span><span class=\"h-mk\">Market</span><span class=\"h-lev\" style=\"text-align:center\">Lev</span><span class=\"h-val r\" data-sort=\"val\">Size</span><span class=\"h-ent x1 r\" data-sort=\"ent\">Entry</span><span class=\"h-mark x1 r\">Mark</span><span class=\"h-liq r\" data-sort=\"liq\">Liq price</span><span class=\"h-pnl r\" data-sort=\"pnl\">Unrealized</span><span class=\"h-acc x2 r\" data-sort=\"acc\">Account</span>",
+   "es": "<span class=\"h-rk\"></span><span class=\"h-who\">Ballena</span><span class=\"h-mk\">Mercado</span><span class=\"h-lev\" style=\"text-align:center\">Apal.</span><span class=\"h-val r\" data-sort=\"val\">Tamaño</span><span class=\"h-ent x1 r\" data-sort=\"ent\">Entrada</span><span class=\"h-mark x1 r\">Marca</span><span class=\"h-liq r\" data-sort=\"liq\">Precio de liq.</span><span class=\"h-pnl r\" data-sort=\"pnl\">No realizado</span><span class=\"h-acc x2 r\" data-sort=\"acc\">Cuenta</span>",
    "kind": [
     "html"
    ],
@@ -117182,6 +117241,18 @@
    ],
    "n": 1,
    "w": 10
+  },
+  "Y_HqxnNNBC": {
+   "en": "Using the board <span>what opens what, and why some liquidations look impossible</span>",
+   "es": "Cómo usar el tablero <span>qué abre qué, y por qué algunas liquidaciones parecen imposibles</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 12
   },
   "-Vv69wa61L": {
    "en": "Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it. The <b>market</b> filters the board to that coin, the <b>liquidation price</b> opens that market&rsquo;s liquidation map, and any <b>column heading</b> sorts.",
@@ -117195,9 +117266,9 @@
    "n": 1,
    "w": 45
   },
-  "JI08DauT6l": {
-   "en": "Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class=\"wl-xm\">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. <span id=\"wlXcnt\"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.",
-   "es": "Algunas parecen imposibles: un long cuyo precio de liquidación está <i>por encima</i> de su entrada. Eso es <b>margen cruzado</b>, marcado con <span class=\"wl-xm\">X</span>: el exchange fija la liquidación con el patrimonio de <b>toda la cuenta</b>, no con esa posición, así que alguien que está corto en otros cinco mercados puede ver cómo un long en ganancia se liquida mientras el precio sube. <span id=\"wlXcnt\"></span> La entrada, la marca, el precio de liquidación y el retorno se leen de Hyperliquid, no se derivan.",
+  "ffJgqUoC0J": {
+   "en": "Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class=\"wl-xm\">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. A row marked <span class=\"wl-xm iso\">M</span> is isolated margin whose margin has been changed since it was opened - added to, or profit withdrawn. <span id=\"wlXcnt\"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.",
+   "es": "Algunas parecen imposibles: un long cuyo precio de liquidación está <i>por encima</i> de su entrada. Eso es <b>margen cruzado</b>, marcado con <span class=\"wl-xm\">X</span>: el exchange fija la liquidación con el patrimonio de <b>toda la cuenta</b>, no con esa posición, así que alguien que está corto en otros cinco mercados puede ver cómo un long en ganancia se liquida mientras el precio sube. Una fila marcada con <span class=\"wl-xm iso\">M</span> es margen aislado cuyo margen se ha cambiado desde que se abrió: se ha ampliado, o se han retirado ganancias. <span id=\"wlXcnt\"></span> La entrada, la marca, el precio de liquidación y el retorno se leen de Hyperliquid, no se derivan.",
    "kind": [
     "html"
    ],
@@ -117205,7 +117276,7 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 64
+   "w": 83
   },
   "_s6LXNgBnr": {
    "en": "<span class=\"wl-fsum\" id=\"wlFsumTr\">All markets &middot; Opened &amp; closed &middot; local time</span>",
@@ -117302,6 +117373,18 @@
    ],
    "n": 1,
    "w": 10
+  },
+  "0qFCtl9qTZ": {
+   "en": "How to read this board <span>what the numbers mean, and what they do not</span>",
+   "es": "Cómo leer este tablero <span>qué significan los números, y qué no</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 14
   },
   "5yIlF2nvOC": {
    "en": "How to read the whale board",
@@ -117484,6 +117567,18 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "B6su0Uyhnz": {
+   "en": "Sort the board",
+   "es": "Ordenar el tablero",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 3
   },
   "rcTpakeL4C": {
    "en": "Sort",
@@ -154899,8 +154994,7 @@
     "/squads/"
    ],
    "n": 1,
-   "w": 22,
-   "leaf": true
+   "w": 22
   },
   "Tp7p3YkLQW": {
    "en": "Squads looking for people",

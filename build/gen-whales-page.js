@@ -327,26 +327,109 @@ const CSS = HEADER_CSS + `
      breakpoint below declares exactly as many tracks as it shows. */
   @media(max-width:1180px){.wl-thd,.wl-pr{grid-template-columns:22px minmax(96px,1fr) 100px 42px 78px 78px 78px 98px 104px}.wl-thd .x2,.wl-pr .x2{display:none}}
   @media(max-width:980px){.wl-thd,.wl-pr{grid-template-columns:20px minmax(84px,1fr) 94px 40px 76px 92px 94px}.wl-thd .x1,.wl-pr .x1{display:none}}
+  /* ── THE PHONE BOARD SHOWS EVERYTHING (2026-10-28, owner: "lista nepregledna i zasecena da se ne vidi sve na
+     njoj"). The first cut folded the row into two lines and dropped four columns - leverage, entry, mark and the
+     account - with no way to reach them, which is exactly "cut off". A phone cannot show ten columns at once, so
+     the board SCROLLS SIDEWAYS with the market stuck to the left edge: the same pattern the screener has used
+     since October, nothing hidden, and a row stays one line at 38px.
+     THE COIN LEADS, NOT THE WALLET. A reader scanning this board is asking which market and which way, not which
+     hexadecimal address - the address was the boldest thing on every row and is the one thing they cannot read.
+     The columns are REORDERED by grid-column rather than by rebuilding the markup, so one renderer serves both. */
+  /* A SIDEWAYS SCROLLER IS STILL "CUT OFF" (the owner's second report: "lista nepregledna i zasecena da se ne
+     vidi sve na njoj"). Ten columns do not fit 358px and never will, so on a phone a row stops being a table row
+     and becomes TWO LINES that hold everything: the glance on top (rank, market, side, size, unrealized) and the
+     detail under it (leverage, entry, liquidation with its distance, the wallet, the account behind it). Nothing
+     is hidden, nothing is clipped, and there is no gesture to discover. It is ONE renderer still - the markup is
+     untouched and the order property decides what goes where, a zero-height ::after forcing the break between
+     them. NO BACKTICKS IN HERE - this comment is inside the CSS template literal and one ends it silently. */
   @media(max-width:620px){
-    .wl-thd{display:none}
-    .wl-pr{grid-template-columns:minmax(0,1fr) 72px 98px;grid-template-areas:"who val pnl" "mk liq pnl";row-gap:2px;min-height:50px;padding:7px 10px;align-items:center}
-    .wl-rk,.wl-lev,.wl-ent,.wl-mark,.wl-acc{display:none}
-    .wl-who{grid-area:who}.wl-mk{grid-area:mk}.wl-val{grid-area:val}.wl-liq{grid-area:liq;text-align:left}.wl-pnl{grid-area:pnl;align-self:center}
-    /* 76px cannot hold "$3,788 62.4% away" on one line, and the DISTANCE is the half a phone reader is after -
-       the price itself stays one tap away in the drawer and in the cell's own title */
-    .wl-liq{font-size:10.5px;white-space:nowrap}
-    .wl-liq a{display:none}
-    .wl-liq small{display:inline;margin-left:0}
-    /* the address and its 30-day record cannot share 142px without wrapping, and a wrapped line here costs
-       more than the record is worth on a phone - it is in the wallet drawer one tap away */
-    .wl-who{flex-wrap:nowrap}
+    .wl-tbl{display:block;overflow:visible;padding-bottom:0}
+    .wl-swipe{display:none}
+    /* the header named nine columns that no longer exist side by side */
+    .wl-thd{display:none!important}
+    .wl-pr{display:flex;flex-wrap:wrap;align-items:baseline;width:auto;min-width:0;gap:0 7px;padding:5px 11px;min-height:0;border-radius:0;border:0;border-bottom:1px solid var(--line);background:none}
+    .wl-pr:first-child{border-top:1px solid var(--line)}
+    .wl-pr::after{content:'';flex:0 0 100%;height:0;order:5}
+    .wl-rk{order:1;flex:0 0 17px;text-align:left}
+    .wl-mk{order:2;flex:1 1 auto;min-width:0;align-items:center}
+    .wl-val{order:3;flex:0 0 auto;text-align:right}
+    .wl-pnl{order:4;flex:0 0 auto;text-align:right;white-space:nowrap}
+    .wl-lev{order:6;text-align:left!important;flex:0 0 auto;margin-left:24px}
+    .wl-ent{order:7;flex:0 0 auto}
+    .wl-liq{order:8;flex:0 0 auto;white-space:nowrap}
+    .wl-who{order:9;flex:0 1 auto;min-width:0;margin-left:auto}
+    .wl-acc{order:10;flex:0 0 auto}
+    /* the account behind the position is the fifth thing on the second line and the one that cost a THIRD line
+       (measured: 41px against 0 left) - tapping the row opens the wallet, where it stands in full */
+    .wl-mark,.wl-30,.wl-acc{display:none!important}
+    .wl-pr .x1,.wl-pr .x2{display:block}
+    /* with no header above them, the second line labels itself - two letters each, read the same in both languages */
+    .wl-ent::before{content:'ent ';color:var(--ink-faint)}
+    .wl-liq::before{content:'liq ';color:var(--ink-faint)}
+    /* a sub-line under a cell would make a two-line row a five-line one: every one of them runs inline */
+    .wl-pr small{display:inline!important;margin:0 0 0 3px;font-size:9px}
+    /* and two of them are what pushed the wallet onto a THIRD line - the move since entry and the position
+       count are both in the drawer one tap away, the distance to liquidation is the one that decides a read */
+    .wl-ent small,.wl-acc small{display:none!important}
+    .wl-lev,.wl-ent,.wl-liq,.wl-who,.wl-acc{font-size:9px;line-height:1.45}
+    .wl-val,.wl-pnl{font-size:12px}
+    .wl-mkn{font-size:12.5px}
     .wl-adr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:100%}
-    .wl-30{display:none}
-    .wl-pnl{white-space:nowrap}
-    .wl-pnl small{display:inline;margin-left:4px;white-space:nowrap}
+    .wl-who{flex-wrap:nowrap}
   }
+  .wl-swipe{display:none;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);padding:4px 2px 0}
+  /* the sort chips: always on screen, because the column headings slide away with the board */
+  .wl-sortc{display:none;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 8px;padding-bottom:2px}
+  .wl-sortc::-webkit-scrollbar{display:none}
+  .wl-sortc button{flex:0 0 auto;background:var(--panel);border:1px solid var(--line-bright);border-radius:999px;padding:7px 13px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--ink-dim);cursor:pointer;white-space:nowrap}
+  .wl-sortc button.on{background:var(--wh);border-color:var(--wh);color:#061018}
+  @media(max-width:860px){.wl-sortc{display:flex}}
+  /* the explainer, folded (owner: "previse nekog teksta") - every word is still in the HTML for a crawler */
+  .wl-read{margin:18px 0 4px;border:1px solid var(--line-bright);border-radius:14px;background:var(--panel);overflow:hidden}
+  .wl-read>summary{list-style:none;cursor:pointer;padding:14px 16px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:10px}
+  .wl-read>summary::-webkit-details-marker{display:none}
+  .wl-read>summary::after{content:'+';margin-left:auto;font-size:16px;color:var(--ink-faint)}
+  .wl-read[open]>summary::after{content:'−'}
+  .wl-read>summary span{font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-faint);font-size:11.5px}
+  .wl-read>summary:hover{color:var(--wh)}
+  .wl-read>h2{margin:4px 16px 6px;font-size:17px}
+  .wl-read>p{margin:0 16px 14px}
   .wl-more{box-sizing:border-box}
-  @media(max-width:560px){.wl-tiles{grid-template-columns:1fr 1fr}.wl-tile:first-child{grid-column:1/-1}}
+  /* FOUR EQUAL TILES, AND NOTHING TRUNCATED (2026-10-28). The old phone grid spanned the first tile across both
+     columns and left the other three ragged, and every label and two of the values were cut mid-word -
+     "AGGREGATE UNREALIZE…", "BTC long $26…". A figure a reader cannot finish reading is not a figure. */
+  @media(max-width:620px){
+    .wl-hero{padding:14px 14px 12px;border-radius:16px;margin:12px 0 10px}
+    .wl-tiles{grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+    /* every tile is the same box whether its label takes one line or two - a 2x2 grid stretches within a ROW,
+       so without a floor the first row is two lines tall and the second three, which reads as broken alignment */
+    .wl-tile{padding:9px 10px;min-width:0;min-height:68px}
+    .wl-tile .k{font-size:8.5px;letter-spacing:.04em;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;min-height:11px}
+    .wl-tile .v{font-size:13.5px;margin-top:3px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;word-break:break-word}
+    .wl-tile .v small{display:block;font-size:9px;line-height:1.3;margin-top:2px}
+    .wl-htop{gap:8px}
+    .wl-pct{font-size:10px}
+    /* the chrome above the data: the crumb one line up already says HYPERLIQUID WHALES, the title does not need
+       two lines of display type, and the provenance line is a scrolling strip rather than three grey rows */
+    .wl-eyebrow{display:none}
+    h1{font-size:25px;line-height:1.14;margin:4px 0 0}
+    .wl-pulse{display:flex;gap:12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding-top:8px;margin-top:10px}
+    .wl-pulse::-webkit-scrollbar{display:none}
+    .wl-pulse>*{flex:0 0 auto}
+    /* a market row said five things in 52px; the same five fit in 38 */
+    .wl-nowc{padding:11px 12px}
+    .wl-nm{padding:6px 0!important;gap:7px!important}
+    .wl-nm,.wl-nt{font-size:11px}
+    .wl-nowc .wl-h2{font-size:10.5px}
+    /* a card header that wraps onto four lines to explain a title that already explains itself */
+    .wl-nowc .wl-h2 .sub{display:none}
+    .wl-now{gap:8px}
+  }
+  /* the short fold under the board carries the same look as the explainer, one line until it is wanted */
+  .wl-read.sm{margin:12px 0 2px;border-radius:12px}
+  .wl-read.sm>summary{padding:11px 14px;font-size:11px}
+  .wl-read.sm>summary span{font-size:11px}
+  .wl-read.sm .wl-note{margin:0 14px 12px}
   /* position changes (the collector's alerts: opened / closed / flipped / increased / reduced - forwarded since day one, never drawn) */
   .wl-alh{margin:18px 0 8px}
   .wl-al .t1 .k{font-weight:800}.wl-al.l .t1 .k{color:var(--grn)}.wl-al.s .t1 .k{color:var(--red)}
@@ -361,7 +444,25 @@ const CSS = HEADER_CSS + `
     .wl-hero{padding:14px 14px;margin-top:10px}
     .wl-pulse{gap:3px 10px;font-size:9.5px}
   }
+  /* LAST WORD ON THE PHONE. These two kept being overridden by the blocks above - the title by the base
+     article-h1 size and the provenance strip by a later gap rule - so they are stated here, after everything.
+     A BACKTICK ANYWHERE IN HERE, A COMMENT INCLUDED, ENDS THE CSS TEMPLATE AND SILENTLY DROPS EVERY RULE AFTER
+     IT - which is what assertCss below now refuses to let happen. */
+  @media(max-width:620px){
+    article h1{font-size:25px;line-height:1.15;margin:4px 0 2px;letter-spacing:-.02em}
+    .wl-pulse{padding-top:0;margin-top:9px;gap:0 12px;font-size:9.5px;line-height:1.5}
+  }
 `;
+
+/* WRITE-TIME GUARD (2026-10-28, twice in one session). The page CSS and the page JS are TEMPLATE
+   LITERALS, so a backtick anywhere inside one - a comment included - ends it, and the rules after it vanish
+   from the written page while the generator still reports success. Two rules that had been edited three times
+   were simply never emitted. The CSS is checked for the markers it must contain before anything is written. */
+function assertCss(css) {
+  const must = ["@media(max-width:620px)", ".wl-sortc", ".wl-read", "article h1{font-size:25px"];
+  const missing = must.filter(m => css.indexOf(m) < 0);
+  if (missing.length) { console.error("REFUSING TO WRITE - the stylesheet lost: " + missing.join(" | ") + "  (a stray backtick inside the CSS template ends it)"); process.exit(1); }
+}
 
 const ld = `<script type="application/ld+json">${JSON.stringify({
   '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
@@ -432,7 +533,7 @@ ${ld}
       <div class="wl-tiles">
         <div class="wl-tile"><div class="k">Biggest bet right now</div><div class="v" id="wlBig">-</div></div>
         <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">-</div></div>
-        <div class="wl-tile"><div class="k">Aggregate unrealized P&amp;L</div><div class="v" id="wlUpnl">-</div></div>
+        <div class="wl-tile"><div class="k">Unrealized P&amp;L</div><div class="v" id="wlUpnl">-</div></div>
         <div class="wl-tile"><div class="k">Closest to liquidation</div><div class="v" id="wlNear">-</div></div>
       </div>
       <div class="wl-pulse" id="wlPulse"></div>
@@ -457,15 +558,27 @@ ${ld}
     <!-- POSITIONS -->
     <section class="wl-view" id="vPos">
       <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters</button><span class="wl-fsum" id="wlFsumPos">All markets &middot; Long &amp; short &middot; by size</span></div>
+      <!-- SORTING WITHOUT A COLUMN HEADING (2026-10-28): on a phone the headings scroll sideways with the board,
+           so the same four orders are chips that are always on screen. They drive the same F.sort the headings do. -->
+      <div class="wl-sortc" id="wlSortC" role="tablist" aria-label="Sort the board">
+        <button type="button" data-s="val" class="on">Biggest</button>
+        <button type="button" data-s="pnl">Winning</button>
+        <button type="button" data-s="liq">Nearest liq</button>
+        <button type="button" data-s="lev">Leverage</button>
+        <button type="button" data-s="ent">Moved most</button>
+      </div>
+      <span class="wl-swipe">Swipe the board &rarr; for leverage, entry and the account behind it</span>
       <div class="wl-tbl">
-        <div class="wl-thd"><span></span><span>Whale</span><span>Market</span><span style="text-align:center">Lev</span><span class="r" data-sort="val">Size</span><span class="x1 r" data-sort="ent">Entry</span><span class="x1 r">Mark</span><span class="r" data-sort="liq">Liq price</span><span class="r" data-sort="pnl">Unrealized</span><span class="x2 r" data-sort="acc">Account</span></div>
+        <div class="wl-thd"><span class="h-rk"></span><span class="h-who">Whale</span><span class="h-mk">Market</span><span class="h-lev" style="text-align:center">Lev</span><span class="h-val r" data-sort="val">Size</span><span class="h-ent x1 r" data-sort="ent">Entry</span><span class="h-mark x1 r">Mark</span><span class="h-liq r" data-sort="liq">Liq price</span><span class="h-pnl r" data-sort="pnl">Unrealized</span><span class="h-acc x2 r" data-sort="acc">Account</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
+      <details class="wl-read sm"><summary>Using the board <span>what opens what, and why some liquidations look impossible</span></summary>
       <p class="wl-note">Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it. The <b>market</b> filters the board to that coin, the <b>liquidation price</b> opens that market&rsquo;s liquidation map, and any <b>column heading</b> sorts.</p>
       <!-- THE QUESTION THE PAGE KEPT PROVOKING (owner 2026-10-28: "pise da je pozicija long otvorena na npr $30
            a likvidacija je na $69 sto nema nikakvog smisla"). It does make sense, and the reason is one word -
            so the page says it where the reader meets it rather than leaving two numbers that look impossible. -->
       <p class="wl-note" id="wlXnote" hidden>Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class="wl-xm">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. A row marked <span class="wl-xm iso">M</span> is isolated margin whose margin has been changed since it was opened - added to, or profit withdrawn. <span id="wlXcnt"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.</p>
+      </details>
     </section>
 
     <!-- TRADES -->
@@ -503,11 +616,16 @@ ${ld}
       <a href="/long-short/">Long/short ratio</a>
     </div>
 
+    <!-- THE PROSE IS FOLDED (2026-10-28, owner: "i dalje previse nekog teksta"). Measured on a phone it was
+         837px of explanation under a 1,771px board. A <details> keeps every word in the static HTML, so a
+         crawler and an assistant read it exactly as before, and a reader opens it only if they want it. -->
+    <details class="wl-read"><summary>How to read this board <span>what the numbers mean, and what they do not</span></summary>
     <h2>How to read the whale board</h2>
     <p><strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data - no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style="color:var(--grn)">net long</span> or <span style="color:var(--red)">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile - if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.</p>
     <h2>Whales are context, not a signal</h2>
     <p>A big position is a bet, not a guarantee - whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
+    </details>
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only - not financial advice.</p>
   </article>
 
@@ -603,7 +721,8 @@ ${ld}
         ? '<div class="wl-empty">No trade matches that filter.<br><b>Clear it</b> to see all '+all.length+' recorded executions.</div>'
         : '<div class="wl-empty">No trade over <b>$'+Math.round((d.fillMin||250000)/1000)+'k</b> recorded yet.<br>The feed fills as the whales trade \u2014 nothing smaller is shown, on purpose.</div>';
       return; }
-    box.innerHTML=tr.slice(0,28).map(function(t){
+    var trCap=TR_ALL?999:(NARROW?14:28);
+    box.innerHTML=tr.slice(0,trCap).map(function(t){
       var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       var side=t.long?'long':'short';
       var m=esc(mkt(t.sym));
@@ -616,14 +735,16 @@ ${ld}
         +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
         +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
         +'<span class="amt">'+usd(t.usd)+'<small>'+(t.sz>=1?(+t.sz).toLocaleString('en-US',{maximumFractionDigits:2}):(+t.sz).toFixed(4))+' '+m+'</small></span></div>';
-    }).join('');
+    }).join('')+((tr.length>trCap)?'<button type="button" class="wl-more" id="wlTrMore">'+(((document.documentElement.lang||'').slice(0,2)==='es')?('Ver las '+tr.length+' operaciones'):('Show all '+tr.length+' trades'))+'</button>':'');
+    var tmb=document.getElementById('wlTrMore');
+    if(tmb)tmb.onclick=function(){TR_ALL=true;paintTrades(window.__wlLast||d);};
     paintAlerts(d);
   }
   /* position changes between two sweeps - the collector has published these since the first day, the page never drew them */
   function paintAlerts(d){
     var box=document.getElementById('wlAlerts'), nn=document.getElementById('wlAlN'); if(!box)return;
     var es=((document.documentElement.lang||'').slice(0,2)==='es');
-    var al=(d.alerts||[]).filter(function(a){ if(TF.sym&&a.sym!==TF.sym)return false; return true; }).slice(0,14);
+    var al=(d.alerts||[]).filter(function(a){ if(TF.sym&&a.sym!==TF.sym)return false; return true; }).slice(0,NARROW?8:14);
     if(nn)nn.textContent='';
     if(!al.length){ box.innerHTML='<div class="wl-empty">'+(es?'Sin cambios de posición registrados todavía.':'No position change recorded yet - the first sweep after a whale moves fills this list.')+'</div>'; return; }
     var K=es?{opened:'abrió',closed:'cerró',flipped:'giró',increased:'aumentó',reduced:'redujo'}:{opened:'opened',closed:'closed',flipped:'flipped',increased:'increased',reduced:'reduced'};
@@ -649,6 +770,9 @@ ${ld}
 
   /* ── POSITIONS ─────────────────────────────────────────────────────────────────────────────── */
   var POS_CAP=30, POS_ALL=false, WAL={};   // a screenful of rows, and the account totals behind them
+  /* MEASURED on a 390px phone: the Trades view ran 5.4 screens and By market 8.9, both with no end in sight.
+     Every view opens at a screenful and says how many more there are, exactly as the board already did. */
+  var NARROW=innerWidth<620, TR_ALL=false, CO_ALL=false, BE_ALL=false;
   function paintPos(d){
     var box=document.getElementById('wlPos'); if(!box)return;
     var all=d.positions||[], perf=d.perf||{};
@@ -717,7 +841,7 @@ ${ld}
         '<span class="wl-ent x1">'+(ent?px(ent):'-')+(mv!=null?'<small>'+(mv>=0?'+':'')+mv.toFixed(1)+'%</small>':'')+'</span>'+
         '<span class="wl-mark x1">'+px(p.mark)+'</span>'+
         '<span class="wl-liq '+(near?'near':'')+'" title="'+(ES?'liquidacion ':'liquidation ')+px(p.liq)+'">'+(p.liq?'<a href="/'+esc(coin.toLowerCase())+'-liquidation-map/" title="'+(ES?'mapa de liquidaciones de ':'liquidation map for ')+esc(coin)+'">'+px(p.liq)+'</a>':'-')+
-          (dd!=null?'<small'+(odd?' title="'+(ES?'Margen cruzado: lo fija toda la cuenta':'Cross margin: set by the whole account')+'"':'')+'>'+dd.toFixed(1)+(ES?'% de distancia':'% away')+(odd?' '+xm:'')+'</small>':'')+'</span>'+
+          (dd!=null?'<small'+(odd?' title="'+(ES?'Margen cruzado: lo fija toda la cuenta':'Cross margin: set by the whole account')+'"':'')+'>'+dd.toFixed(1)+(NARROW?'%':(ES?'% de distancia':'% away'))+(odd?' '+xm:'')+'</small>':'')+'</span>'+
         '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(roe!=null?'<small>'+fmtPct(roe)+' ROE</small>':'')+'</span>'+
         '<span class="wl-acc x2">'+(acc&&acc.eq?usd(acc.eq)+'<small>'+(acc.n||1)+(ES?((acc.n||1)===1?' posicion':' posiciones'):((acc.n||1)===1?' position':' positions'))+'</small>':'<small>-</small>')+'</span>'+
       '</div>';
@@ -737,7 +861,8 @@ ${ld}
     var cs=d.coins||[];
     cs=cs.slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);});
     if(!cs.length){ box.innerHTML='<div class="wl-empty">The market breakdown is built on the four-minute position sweep.<br>It appears with the next one.</div>'; return; }
-    box.innerHTML=cs.map(function(c){
+    var coCap=CO_ALL?999:(NARROW?12:999);
+    box.innerHTML=cs.slice(0,coCap).map(function(c){
       var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100;
       var fd=c.fundDay;
       return '<div class="wl-cr" data-sym="'+esc(c.sym)+'" role="button" tabindex="0">'+
@@ -749,7 +874,9 @@ ${ld}
         '<span class="wl-num '+(fd==null?'dim':(fd>=0?'up':'dn'))+'">'+(fd==null?'-':spnl(fd))+'<small>'+fund8(c.fund)+'/h</small></span>'+
         '<span class="wl-num dim">'+(c.oiShare==null?'-':c.oiShare+'%')+'<small>'+(c.oi?usd(c.oi):'')+'</small></span>'+
       '</div>';
-    }).join('');
+    }).join('')+((cs.length>coCap)?'<button type="button" class="wl-more" id="wlCoMore">'+(((document.documentElement.lang||'').slice(0,2)==='es')?('Ver los '+cs.length+' mercados'):('Show all '+cs.length+' markets'))+'</button>':'');
+    var cmb=document.getElementById('wlCoMore');
+    if(cmb)cmb.onclick=function(){CO_ALL=true;paintCoins(window.__wlLast||d);};
   }
 
   /* ── BEST THIS MONTH ───────────────────────────────────────────────────────────────────────── */
@@ -758,7 +885,8 @@ ${ld}
     var bs=d.best||[];
     if(!bs.length){ box.innerHTML='<div class="wl-empty">The month board is read from the Hyperliquid leaderboard, refreshed hourly.<br>It appears with the next refresh.</div>'; return; }
     var perf=d.perf||{};
-    box.innerHTML=bs.map(function(b,i){
+    var bCap=BE_ALL?999:(NARROW?12:999);
+    box.innerHTML=bs.slice(0,bCap).map(function(b,i){
       var pr=perf[b.user]||perf[String(b.user).toLowerCase()]; var wk=(pr&&pr.w&&pr.w.vlm>0)?pr.w.pnl:null; /* 7 days, known only for the wallets we track by size */
       return '<div class="wl-br" data-w="'+esc(b.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
@@ -768,7 +896,9 @@ ${ld}
         '<span class="wl-num '+(b.roi>=0?'up':'dn')+'">'+fmtPct(b.roi*100)+'</span>'+
         '<span class="wl-num dim">'+usd(b.vlm)+'</span>'+
       '</div>';
-    }).join('');
+    }).join('')+((bs.length>bCap)?'<button type="button" class="wl-more" id="wlBeMore">'+(((document.documentElement.lang||'').slice(0,2)==='es')?('Ver las '+bs.length+' carteras'):('Show all '+bs.length+' wallets'))+'</button>':'');
+    var bmb=document.getElementById('wlBeMore');
+    if(bmb)bmb.onclick=function(){BE_ALL=true;paintBest(window.__wlLast||d);};
   }
 
   /* ── the whale drawer: one wallet, everything we can say about it ───────────────────────────── */
@@ -893,6 +1023,8 @@ ${ld}
        coin rather than the wallet drawer, so it has to be taken before the row handler below. */
     var mk=t.closest&&t.closest('.wl-mk[data-coin]');
     if(mk){ e.preventDefault(); var c=mk.getAttribute('data-coin'); if(c){ F.sym=F.sym===c?'':c; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); } return; }
+    var sc=t.closest&&t.closest('#wlSortC button[data-s]');
+    if(sc){ F.sort=sc.getAttribute('data-s'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
     var hs=t.closest&&t.closest('.wl-thd span[data-sort]');
     if(hs){ var k=hs.getAttribute('data-sort'); F.sort=(F.sort===k&&k!=='val')?'val':k; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
     var row=t.closest&&t.closest('[data-w]');
@@ -1007,6 +1139,7 @@ ${ld}
   function syncChips(){
     [].forEach.call(document.querySelectorAll('#wlSym button'),function(b){b.classList.toggle('on',(b.getAttribute('data-sym')||'')===F.sym);});
     [].forEach.call(document.querySelectorAll('#wlTrSym button'),function(b){b.classList.toggle('on',(b.getAttribute('data-sym')||'')===TF.sym);});
+    [].forEach.call(document.querySelectorAll('#wlSortC button'),function(b){b.classList.toggle('on',(b.getAttribute('data-s')||'')===(F.sort||'val'));});
   }
   document.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.wl-tabs button[data-view]');
@@ -1050,7 +1183,9 @@ ${ld}
       var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
       /* the position closest to its liquidation price (2026-10-05): the one figure a reader of this page is really after */
       var nearP=null,nearD=null;(d.positions||[]).forEach(function(p){ if(!(p.mark>0&&p.liq>0))return; var dd=Math.abs(p.mark-p.liq)/p.mark*100; if(nearD==null||dd<nearD){nearD=dd;nearP=p;} });
-      var nEl=document.getElementById('wlNear'); if(nEl){ if(nearP){ nEl.innerHTML=esc(mkt(nearP.sym))+' '+(nearP.long?'long':'short')+' '+usd(nearP.val)+'<small>'+nearD.toFixed(1)+'% '+(((document.documentElement.lang||'').slice(0,2)==='es')?'hasta la liquidación':'from liquidation')+' · '+(nearP.lev?nearP.lev+'× · ':'')+esc(shorta(nearP.user))+'</small>'; nEl.className='v '+(nearD<5?'dn':''); nEl.setAttribute('data-w',nearP.user); nEl.style.cursor='pointer'; } else { nEl.textContent='-'; } }
+      var nEl=document.getElementById('wlNear'); if(nEl){ if(nearP){ var _es=((document.documentElement.lang||'').slice(0,2)==='es'); /* a tile is four lines of room: on a phone the sub-line is the distance alone, or it is cut off mid-word */
+        var _sub=(innerWidth<620)?(nearD.toFixed(1)+'% '+(_es?'hasta la liq.':'from liq.')):(nearD.toFixed(1)+'% '+(_es?'hasta la liquidación':'from liquidation')+' · '+(nearP.lev?nearP.lev+'× · ':'')+esc(shorta(nearP.user)));
+        nEl.innerHTML=esc(mkt(nearP.sym))+' '+(nearP.long?'long':'short')+' '+usd(nearP.val)+'<small>'+_sub+'</small>'; nEl.className='v '+(nearD<5?'dn':''); nEl.setAttribute('data-w',nearP.user); nEl.style.cursor='pointer'; } else { nEl.textContent='-'; } }
       /* the hero numbers count up to their value on the first paint (WAAPI-free: a 500 ms rAF tween, the owner's machine has animation effects off) */
       if(!window.__wlPainted){ window.__wlPainted=1; [['wlLongV',lo,usd],['wlShortV',sh,usd]].forEach(function(t){ var el=document.getElementById(t[0]); if(!el)return; var t0=performance.now(); (function step(now){ var k=Math.min(1,(now-t0)/600); var e=1-Math.pow(1-k,3); el.textContent=t[2](t[1]*e); if(k<1)requestAnimationFrame(step); })(t0); }); }
     }
@@ -1081,6 +1216,7 @@ ${ld}
 `;
 
 fs.mkdirSync(OUT, { recursive: true });
+assertCss(CSS);
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 console.log('wrote dist/hyperliquid-whales/index.html');
 
