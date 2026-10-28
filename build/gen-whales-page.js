@@ -434,6 +434,9 @@ const CSS = HEADER_CSS + `
     border-radius:9px;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;
     text-transform:uppercase;cursor:pointer}
   .wd-showall:hover{color:var(--ink);border-color:var(--lime)}
+  /* the exchange took it: the one event on this page that is not a decision, marked wherever it appears */
+  .lqf{font-style:normal;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:800;letter-spacing:.06em;
+    background:var(--red);color:#120406;border-radius:4px;padding:1px 4px;margin-right:5px;vertical-align:middle}
   /* ── THE BOARD IS DENSE, AND THE WIDTH CARRIES INFORMATION (2026-10-28, owner: "mnogo treba da se skrola bez
      nekog razloga ... da prostor bude maksimalno iskoriscen"). MEASURED before: a row was 89px and 120 of them
      were a 10,477px wall - 86% of the whole page - while on a 1440px screen roughly 600px of every row was
@@ -1273,7 +1276,7 @@ ${ld}
       var exN=Math.max(1,Math.round(((t.tsEnd||t.ts)-t.ts)/1000));
       return '<div class="wd-row'+(ci>=WD_CAP()?' wd-more':'')+'" data-wr="c'+ci+'">'+
         '<button type="button" class="wd-rh"><span class="sd '+(t.long?'':'s')+'">'+(t.long?'LONG':'SHORT')+'</span>'+
-          '<span class="mk">'+esc(mkt(t.sym))+'</span>'+
+          '<span class="mk">'+esc(mkt(t.sym))+(t.liq?'<i class="lqf">LIQ</i>':'')+'</span>'+
           '<span class="me">'+usd(t.usd)+(t.lev?' &middot; '+t.lev+'x':'')+(held?' &middot; '+T('held ','dur. ')+dur(held):'')+' &middot; '+ago(t.tsEnd||t.ts)+'</span>'+
           '<span class="fg '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?usd(t.usd):spnl(pn))+'</span>'+
           '<span class="cv">&rsaquo;</span></button>'+
@@ -1292,6 +1295,7 @@ ${ld}
             (pn==null?T('Hyperliquid reports realised P&amp;L on the fills themselves; a group we recorded before that field was kept carries none. ','Hyperliquid informa el P&amp;L realizado en las propias ejecuciones; un grupo que registramos antes de guardar ese campo no lo lleva. '):'')+
             (t.levAt?T('The leverage is the last reading taken while the position was still open (','El apalancamiento es la última lectura tomada mientras la posición seguía abierta (')+ago(t.levAt)+T('), because a closed position no longer reports one. ','), porque una posición cerrada ya no lo publica. '):'')+
             (op?'':T('We record executions over ','Registramos ejecuciones de más de ')+usd(250000)+T(', so a position opened in smaller pieces - or before this wallet was tracked - has no open on our side. ',', así que una posición abierta en trozos más pequeños - o antes de seguir esta cartera - no tiene apertura de nuestro lado. '))+
+            (t.liq?T('The exchange closed this position, the wallet did not - Hyperliquid marks '+t.liq+' of these fills as a liquidation. ','La posicion la cerro el exchange, no la cartera - Hyperliquid marca '+t.liq+' de estas ejecuciones como liquidacion. '):'')+
             T('Times are ','Horas en ')+zoneAbbr()+'.</p>'+
         '</div></div>';
     }).join('');
@@ -1527,6 +1531,9 @@ ${ld}
     var fl=(d.fills||[]).slice(0,FEED_N);
     if(fl.length){ tb.innerHTML=fl.map(function(t){
       var act=t.act==='open'?(ES3?'abrio':'opened'):(t.act==='close'?(ES3?'cerro':'closed'):(ES3?'giro a':'flipped to'));
+      /* THE EXCHANGE TOOK IT, THEY DID NOT CLOSE IT. The fill says so and the feed printed it as an ordinary
+         close - the most interesting row on the page read as the dullest. */
+      if(t.liq) act=ES3?'fue liquidado en':'was liquidated out of';
       /* WHAT THEY DID SITS UNDER THE NAME, not in a column of its own: on a phone that column had to be
          hidden and the row then said only that somebody moved money, never whether it was in or out. */
       return '<div class="wl-fr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+(ES3?'Abrir esta cartera':'Open this wallet')+'">'+
@@ -1536,7 +1543,7 @@ ${ld}
           '<span class="wh-ad did">'+act+' <b>'+esc(mkt(t.sym))+' '+(t.long?'long':'short')+'</b>'+(t.lev?' '+t.lev+'x':'')+
             '<em class="ad">&middot; '+esc(shorta(t.user))+'</em></span>'+
         '</span></span>'+
-        '<span class="amt">'+usd(t.usd)+'</span></div>'; }).join('');
+        '<span class="amt">'+(t.liq?'<i class="lqf">LIQ</i>':'')+usd(t.usd)+'</span></div>'; }).join('');
       var ls=document.getElementById('wlLiveS');
       if(ls)ls.innerHTML=(ES3?'ejecuciones sobre ':'executions over ')+usd(d.fillMin||250000)+' &middot; <b>'+fl.length+'</b> '+(ES3?'mas recientes':'newest first');
     }

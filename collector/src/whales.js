@@ -36,11 +36,14 @@ const ALERT_DELTA = 0.25;   // size change that counts as an alert
 const MAX_ALERTS = 60;
 
 // trade feed
-const FILL_TRACK_N = 60;    // fills are polled for the largest accounts only - see the weight note below
-const FILL_SLICE = 15;      // wallets per tick …
-const FILL_TICK_MS = 30e3;  // … every 30 s = 30 wallets/min. userFillsByTime weighs 20 against the
-                            // info API's 1200/min per IP, so this sits at ~600/min with the position
-                            // poll's ~77/min beside it. A full sweep of the 60 takes two minutes.
+const FILL_TRACK_N = 120;   // the board's own wallets first, then the largest accounts (see fillUniverse)
+const FILL_SLICE = 18;      // wallets per tick …
+const FILL_TICK_MS = 30e3;  // … every 30 s = 36 wallets/min. userFillsByTime weighs 20 against the info
+                            // API's 1200/min per IP, so this is 720/min; the position poll (400 calls per
+                            // 4-minute cycle at weight 2) is 200/min beside it, 920 of 1200 with the 429
+                            // back-off below as the guard. A full sweep of the 120 takes 3m 20s - a trade
+                            // can surface later than it did at 60 wallets, and it is stamped with the
+                            // EXCHANGE's own time either way, so what is lost is latency and not truth.
 const GROUP_MS = 120e3;     // fills of one wallet+coin+direction closer together than this are ONE trade
 const MIN_TRADE_USD = 250e3; // measured floor: ~14 trades/hour per twelve wallets (see the note above)
 const MAX_FILLS = 120;      // published ring
@@ -346,6 +349,7 @@ function publishGroup(g) {
     ts: g.first, tsEnd: g.last, n: g.n,     // both ends: a big trade executes over minutes
     lev: levByKey.get(g.user + '|' + g.sym) || null,
     pnl: g.pnl ? Math.round(g.pnl) : 0,     // realised, only meaningful on a close
+    liq: g.liq ? g.liq : undefined,         // how many of these fills the exchange took, not the owner
   });
 }
 
@@ -402,7 +406,12 @@ async function drainPending() {
 function foldFills(user, rows) {
   const fills = rows
     .filter(f => f && !String(f.coin || '').startsWith('@') && DIRS[f.dir])
-    .map(f => ({ sym: String(f.coin), dir: f.dir, t: +f.time || 0, px: +f.px || 0, sz: Math.abs(+f.sz) || 0, pnl: +f.closedPnl || 0 }))
+    .map(f => ({ sym: String(f.coin), dir: f.dir, t: +f.time || 0, px: +f.px || 0, sz: Math.abs(+f.sz) || 0, pnl: +f.closedPnl || 0,
+      /* THE EXCHANGE SAYS WHEN IT WAS NOT THEIR CHOICE, and we were dropping it. A fill carries a
+         `liquidation` object when the position was taken by the exchange rather than closed by its owner -
+         the single most interesting thing that can happen to a whale, printed until now as an ordinary
+         close. It costs nothing: it is in the response we already read. */
+      liq: (f.liquidation && String(f.liquidation.liquidatedUser || '').toLowerCase() === String(user).toLowerCase()) ? 1 : 0 }))
     .filter(f => f.t > 0 && f.px > 0 && f.sz > 0)
     .sort((a, b) => a.t - b.t);
   let newest = fillSeen.get(user) || 0;
@@ -411,10 +420,10 @@ function foldFills(user, rows) {
     if (f.t > newest) newest = f.t;
     const k = user + '|' + f.sym + '|' + f.dir;
     const g = openGroup.get(k);
-    if (g && f.t - g.last <= GROUP_MS) { g.usd += f.px * f.sz; g.sz += f.sz; g.last = f.t; g.n++; g.pnl += f.pnl; }
+    if (g && f.t - g.last <= GROUP_MS) { g.usd += f.px * f.sz; g.sz += f.sz; g.last = f.t; g.n++; g.pnl += f.pnl; g.liq += f.liq; }
     else {
       if (g) { publishGroup(g); openGroup.delete(k); }
-      openGroup.set(k, { user, sym: f.sym, dir: f.dir, usd: f.px * f.sz, sz: f.sz, first: f.t, last: f.t, n: 1, pnl: f.pnl });
+      openGroup.set(k, { user, sym: f.sym, dir: f.dir, usd: f.px * f.sz, sz: f.sz, first: f.t, last: f.t, n: 1, pnl: f.pnl, liq: f.liq });
     }
   }
   if (newest) fillSeen.set(user, newest);
@@ -426,8 +435,19 @@ function flushGroups(now) {
   for (const [k, g] of openGroup) if (now - g.last > GROUP_MS) { publishGroup(g); openGroup.delete(k); }
 }
 
+/* THE FEED MUST WATCH THE WALLETS A READER CAN OPEN (2026-10-28, measured). The fill set was the largest
+   accounts by ACCOUNT VALUE while the board is ranked by POSITION SIZE, and those are not the same people:
+   of the 82 wallets on the board, at most 18 were inside the fill set, so about four in five profiles a
+   reader opened had an empty Live feed and an empty Closed tab - whatever the whale had actually done. The
+   board's own wallets come first now and the largest accounts fill the rest of the quota. */
+function fillUniverse() {
+  const out = [], seen = new Set();
+  for (const p of (state.positions || [])) { const u = p.user; if (u && !seen.has(u)) { seen.add(u); out.push(u); if (out.length >= FILL_TRACK_N) return out; } }
+  for (const u of state.tracked) { if (!seen.has(u)) { seen.add(u); out.push(u); if (out.length >= FILL_TRACK_N) break; } }
+  return out;
+}
 async function pollFills() {
-  const universe = state.tracked.slice(0, FILL_TRACK_N);
+  const universe = fillUniverse();
   if (!universe.length) return;
   const now = Date.now();
   try {
