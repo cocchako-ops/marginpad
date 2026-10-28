@@ -55,6 +55,19 @@ const fillSeen = new Map();   // user -> ms of the newest fill we have already r
 const openGroup = new Map();  // "user|coin|dir" -> the group still collecting fills
 const acctByUser = new Map();  // user -> account totals (equity, whole book, free margin), kept across cycles
 let levByKey = new Map();     // "user|coin" -> leverage, filled by the position poll
+/* TWO MEMORIES THE POLL WAS THROWING AWAY, AND BOTH ANSWER A QUESTION A READER ASKS FIRST (2026-10-28,
+   owner: "za closed positions ne pise koji je leverage ... kad je otvoren trejd, kad zatvoren, koliko dugo
+   je drzao"). A fill carries no leverage and a CLOSED position is gone from clearinghouseState by the time
+   the group publishes, so the only honest source is what the position itself said while it was open - this
+   keeps the last reading per (user, coin) for LEV_MEM_MS after the position disappears, stamped with WHEN
+   it was read, so the page can say "as last seen" rather than implying it is the fill's own number.
+   `sinceByKey` is the other half: when a position key appears for a wallet we were ALREADY watching, we
+   witnessed it being opened and the timestamp is exact; the first time we ever poll a wallet the position
+   may be far older, so that case is published as "first seen", never as an open time. Neither survives a
+   restart - both are in memory on purpose, and an unknown is published as unknown. */
+const LEV_MEM_MS = 12 * 3600 * 1000;
+const levSeen = new Map();    // "user|coin" -> { lev, ts } - the last leverage read WHILE the position was open
+const sinceByKey = new Map(); // "user|coin" -> { ts, exact } - when that position first stood in front of us
 let fillCursor = 0;           // where the rotation stands
 let fill429 = 0;
 let pos429 = 0;       // rate-limited position calls in the last cycle
@@ -217,6 +230,18 @@ async function pollOnce() {
     // alerts = diff vs each WALLET's own previous observation, and only for wallets polled this cycle -
     // otherwise every rotation would print a wave of "closed" for wallets nobody looked at
     const nowByKey = new Map(seen.map(p => [p.user + '|' + p.sym, p]));
+    /* WHEN DID THIS POSITION FIRST STAND HERE. A key we have never seen on a wallet we HAD seen is one we
+       watched open (exact); a key on a wallet we are polling for the first time may predate us (first seen).
+       A key that is gone keeps nothing - the position is closed and its age died with it. */
+    {
+      const hadUser = new Set(); for (const [, v] of prevByKey || []) hadUser.add(v.user);
+      for (const [k, p] of nowByKey) {
+        if (!sinceByKey.has(k)) sinceByKey.set(k, { ts: nowTs, exact: hadUser.has(p.user) && !!prevByKey });
+        if (p.lev > 0) levSeen.set(k, { lev: p.lev, ts: nowTs });
+      }
+      for (const k of [...sinceByKey.keys()]) if (!nowByKey.has(k) && polledNow.has(k.slice(0, k.indexOf('|')))) sinceByKey.delete(k);
+      if (levSeen.size > 20000) for (const [k, v] of levSeen) if (nowTs - v.ts > LEV_MEM_MS) levSeen.delete(k);
+    }
     if (prevByKey) {
       const ts = nowTs, fresh = [];
       for (const [k, p] of nowByKey) {
@@ -271,7 +296,13 @@ async function pollOnce() {
     else if (!hit429 && rotN < ROTATE_N) rotN = Math.min(ROTATE_N, rotN + 50);
     if (hit429) log.warn('[whales] positions rate limited', { n: hit429, of: universe.length, rotN });
 
-    state.positions = found.slice(0, TOP_POSITIONS);
+    /* HOW LONG THIS POSITION HAS STOOD THERE rides on the published row: `since` is when it first stood in
+       front of us and `sinceX` says whether we watched it open. A row with neither is published with
+       neither - a reader must never be told a hold time we did not measure. */
+    state.positions = found.slice(0, TOP_POSITIONS).map(p => {
+      const s = sinceByKey.get(p.user + '|' + p.sym);
+      return s ? { ...p, since: s.ts, sinceX: s.exact ? 1 : 0 } : p;
+    });
     // the account totals for the wallets that are actually on the board, and nothing else - a map of 1,000
     // wallets would be most of the payload for rows nobody can see
     const onBoard = new Set(state.positions.map(p => p.user));
@@ -338,12 +369,25 @@ async function drainPending() {
       // lists those as "xyz:GOLD", "xyz:SP500") is not in it, so those rows keep an unknown leverage
       // and no position size. That is the honest answer, not a zero.
       for (const r of rows) if (r.user === u) { if (!r.lev) r.lev = lev.get(r.sym) || null; r.posUsd = Math.round(held.get(r.sym) || 0) || undefined; }
+      // and remember what we just read, so the NEXT close on this coin has a number even when the position
+      // itself is gone by then
+      for (const [c, v] of lev) levSeen.set(u + '|' + c, { lev: v, ts: Date.now() });
     } catch (e) { /* no leverage is reported as unknown, never guessed */ }
     await new Promise(res => setTimeout(res, 40));
   }
   // A group is published when it goes QUIET, so publication order is not the order things happened: a
   // fifteen-minute execution surfaces after short trades that started later. The feed is sorted by when
   // the trade STARTED, which is the clock the row prints - the two must agree or the list reads as broken.
+  /* A TRADE THAT CLOSED THE WHOLE POSITION LEAVES NOTHING TO READ - and that is exactly the row a reader
+     asks about ("za closed positions ne pise koji je leverage"). The last reading taken WHILE the position
+     was open is the honest answer, carried with the moment it was taken (`levAt`) so the page can say so.
+     A reading older than LEV_MEM_MS is dropped rather than printed. */
+  for (const r of rows) {
+    if (!r.lev) {
+      const m = levSeen.get(r.user + '|' + r.sym);
+      if (m && Date.now() - m.ts < LEV_MEM_MS) { r.lev = m.lev; r.levAt = m.ts; }
+    }
+  }
   for (const r of rows) state.fills.push(r);
   state.fills.sort((a, b) => b.ts - a.ts);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
