@@ -22605,6 +22605,66 @@ async function handleReward(url, request, env) {
 // tab from the Bybit Affiliate Portal ("9 Results" list). Used to gate withdrawals: we only pay to Bybit accounts
 // created through OUR affiliate link. An EMPTY list disables the gate (fail-open so a lost KV key can't block payouts).
 async function bybitUidSet(env) { try { return new Set(((await env.STATS.get('bybit:uids')) || '').split(/\s+/).filter(Boolean)); } catch (e) { return new Set(); } }
+/* IS THIS PAYOUT SAFE TO SEND - ONE READING OF IT, FOR THE DESK THAT SENDS THE MONEY (2026-10-28, owner: "zelim
+   odlican uvid u to da li je neko abuser ili nije i bas da imam sazeto o njemu bas na stranici za povlacenje").
+   PURE, so wd-risk-e2e drives the function that ships.
+
+   THE EVIDENCE IS GRADED, and that grading is the whole design - the same rule the multi-account sweep has had
+   since 2026-10-18. A device cookie is one browser, an exact payout target paid to a second account is not a
+   heuristic at all, and an X handle is one person: those are EVIDENCE. An exact IP is a family or a carrier NAT
+   and a country list is a VPN or a phone roaming: those are INFORMATION and can never decide anything alone.
+
+   MEASURED over the 99 accounts that have ever asked for a payout, which is what settled the table - a rule that
+   fires on everybody is worth nothing:
+     same device 11 · X handle shared 3 · duplicate email 0 · datacentre 6 · no trade ever 6 · 3+ countries 20
+     · same exact IP 27 · changed payout target 18
+   and three proposals were DROPPED for firing on everybody or on nobody:
+     "/rewards is their #1 page" 60 of 99 (everyone who withdraws reads the rewards page - it is a fact about the
+     whole population, which is why the reduced-rewards rule uses it, and it separates nothing here);
+     "asked within 24 h of signing up" 0 of 99 (the $5 floor takes weeks to reach);
+     "claims are machine-regular" - there is NO automation signature in the claim log at all: over the heaviest
+     claimers the share of inter-claim gaps within 5 s of their own median is 1-2% and the median gap is 376-1036 s
+     against a 300 s cooldown. Nobody is scripting the faucet. Do not re-propose it without new evidence.
+   BANNED IS A STATE, NOT A FLAG: 25 of those 99 are already banned (the owner's own sweep), so counting it as
+   risk would bury every live case under settled ones. It rides on `state` and the desk says it in its own words. */
+function wdRiskOf(ev) {
+  ev = ev || {};
+  const p = ev.profile || {}, a = ev.account || {}, t = ev.target || {}, h = ev.history || {};
+  const flags = [], add = (sev, k, text, detail) => flags.push({ sev, k, text, detail: detail || null });
+  const names = l => (l || []).slice(0, 4).map(x => '@' + (x.username || x.who || String(x.uid || x.acct || '?').slice(0, 8))).join(', ') + ((l || []).length > 4 ? ' +' + ((l || []).length - 4) : '');
+  // ---- EVIDENCE
+  if ((ev.sharedPaid || []).length) add('strong', 'target_paid_elsewhere', (ev.sharedPaid.length === 1 ? names(ev.sharedPaid) + ' has' : names(ev.sharedPaid) + ' have') + ' already been PAID to this exact ' + (t.label || 'target'), ev.sharedPaid);
+  if ((p.sameDid || []).length) add('strong', 'same_device', (p.sameDid.length === 1 ? 'Another account' : p.sameDid.length + ' other accounts') + ' on this exact browser: ' + names(p.sameDid), p.sameDid);
+  if ((p.sameEmail || []).length) add('strong', 'same_email', 'Same email inbox as ' + names(p.sameEmail) + ' (dots and +tags ignored)', p.sameEmail);
+  if ((ev.promoShared || []).length) add('strong', 'promo_handle', 'Posts promo from an X account another member also files under: ' + ev.promoShared.map(x => '@' + x.h).join(', '), ev.promoShared);
+  if (t.regRejected && t.regKnown) add('strong', 'reg_rejected', 'We REJECTED this account\'s claim for ' + (t.label || 'this target') + ' ' + t.value, null);
+  if ((t.ownedBy || []).length) add('strong', 'reg_other_member', (t.label || 'This target') + ' is registered by ' + names(t.ownedBy) + ', not by them', t.ownedBy);
+  if (t.uidCheck === 'missing') add('strong', 'uid_not_listed', 'The Bybit UID is not on the affiliate allowlist - this account was not opened through our link', null);
+  // ---- INFORMATION
+  if ((ev.sharedOther || []).length) add('look', 'target_asked_elsewhere', names(ev.sharedOther) + ' also asked for a payout to this ' + (t.label || 'target') + ' (refused or still waiting)', ev.sharedOther);
+  if (p.vpn) add('look', 'datacentre', 'Last seen on a hosting network, not a home or carrier one' + (p.org ? ' (' + p.org + ')' : ''), null);
+  if (p.known && p.trades === 0) add('look', 'no_trades', 'Has never opened a single trade', null);
+  if ((p.ccN || 0) >= 3) add('look', 'cc_hop', (p.ccN) + ' countries in their own actions' + ((p.ccList || []).length ? ': ' + p.ccList.join(', ') : '') + ' - a VPN being switched, or a phone roaming', null);
+  if ((p.sameIp || []).length) add('look', 'same_ip', names(p.sameIp) + ' share this exact IP - a household or a carrier NAT, never a verdict on its own', p.sameIp);
+  if (t.unregistered && t.regKnown) add('look', 'reg_missing', 'They never registered this ' + (t.label || 'target') + ' with us' + (t.regOther ? ' - their claim names ' + t.regOther + ' instead' : ''), null);
+  if (t.inList === false) add('look', 'not_in_affiliate_list', 'No account matching ' + t.value + ' is in the ' + (t.venueName || 'partner') + ' affiliate list we hold (the list is pasted by hand, so it can also simply be stale)', null);
+  if (t.partnerIdle) add('look', 'partner_idle', 'Their ' + (t.venueName || 'partner') + ' account has never wagered or deposited - it earns us nothing', null);
+  if ((h.targetsN || 0) > 1) add('look', 'target_changed', 'Has been paid to ' + h.targetsN + ' different targets', null);
+  if (t.maskCollision) add('look', 'mask_collision', 'The masked name ' + t.mask + ' fits more than one of our registrations, so the partner figures cannot be attributed to one person', null);
+  const strongN = flags.filter(x => x.sev === 'strong').length, lookN = flags.length - strongN;
+  /* A READ THAT FAILED IS NOT A CLEAN ACCOUNT AND IT IS NOT A FLAG EITHER. Found on this route's first live run:
+     both stores were still serving the previous deploy, every profile came back empty, and `exsign` being absent
+     made "they never registered this target with us" fire on 60 of 60 rows - a confident accusation built out of
+     nothing. Every flag that reads a store now asks whether that store answered, and the desk is TOLD when one
+     did not instead of being shown zeros. */
+  const state = { banned: !!a.banned || p.status === 'banned', suspended: p.status === 'suspended', devBanned: !!p.devBanned, protected: !!ev.protected, unread: [!p.known && 'profile', !t.regKnown && 'money'].filter(Boolean) };
+  // A LOOK ALONE IS COMMON (27 of 99 share an IP with somebody): two of them is where it starts to mean something.
+  let level = strongN ? 'hold' : lookN >= 2 ? 'look' : 'clean';
+  if (state.protected) level = 'clean';                       // the owner's own accounts are never flagged
+  const summary = state.protected ? 'Protected account' : strongN ? flags[0].text : lookN >= 2 ? flags.filter(x => x.sev === 'look').slice(0, 2).map(x => x.text).join(' · ')
+    : state.unread.length ? 'Nothing against this account - but the ' + state.unread.join(' and ') + ' could not be read, so this is incomplete' : 'Nothing against this account';
+  return { level, strongN, lookN, flags, state, summary };
+}
 /* EVERY SUPPORT ROW MUST SAY WHO IT IS FROM (2026-10-18, owner: "ne moze da mi pise da mi je mejl stigao sa
    UID-a, to je bas katastrofa"). The `email` column is only a CONTACT STRING - on a ticket filed through the
    site's form it is whatever was typed into the box - while `address` carries the ACCOUNT whenever we knew it.
@@ -23930,6 +23990,118 @@ export default {
         out.wds = (out.wds || []).map(w => { const isUid = /^[0-9]{5,15}$/.test(String(w.wallet || '')); return { ...w, uidCheck: (!isUid || set9.size === 0) ? 'na' : (set9.has(String(w.wallet)) ? 'ok' : 'missing') }; });
       } catch (e) {}
       return new Response(JSON.stringify(out), { headers: jh2 });
+    }
+    /* THE ABUSE PICTURE, ON THE PAGE THAT SENDS THE MONEY (2026-10-28). Its own request, fetched in parallel with
+       the queue, so a 30 s desk never waits on it: /api/admin/security answers the same questions for every member
+       at a MEASURED 740 ms and 1.28 MB, which is the right shape for the Security panel and the wrong one here.
+       Only the accounts in the queue are profiled (pending always, plus whatever ?ids= names, plus the newest rows
+       with ?all=1), and the verdict comes from wdRiskOf - one definition, graded, pure.
+         THE PARTNER TARGET IS CHECKED PER VENUE (owner, same day: "moon username se ne proverava sa moon affiliate
+       listom ... mogu da abjuzaju tako sto prave kod nas i na moonu vise naloga"). A Bybit UID has had an allowlist
+       gate since 2026-09-13 and Moon had NOTHING, so the two questions a Moon payout can be asked are asked:
+       did this account register that exact name for its sign-up bonus, and does a mask fitting it exist in the
+       affiliate snapshot the owner pastes. Moon publishes masked names, so the second answer is MASK-level and can
+       collide - it informs, it never refuses, exactly as the Bybit list "may simply be stale" note already says. */
+    if (url.pathname === '/api/admin/wdrisk' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const J3 = (o, s) => new Response(JSON.stringify(o), { status: s || 200, headers: jh3 });
+      let wds = [];
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/wdlist')); wds = ((await r.json()) || {}).wds || []; } catch (e) { return J3({ error: 'store_unavailable' }, 503); }
+      const showE2 = url.searchParams.get('e2e') === '1';
+      if (!showE2) wds = wds.filter(w => !/^u:e2e/i.test(String(w.acct || '')));
+      const ids = String(url.searchParams.get('ids') || '').split(',').map(s => s.trim()).filter(Boolean);
+      const want = url.searchParams.get('all') === '1' ? wds.slice(0, 60)
+        : ids.length ? wds.filter(w => ids.indexOf(String(w.id)) >= 0)
+          : wds.filter(w => w.status === 'pending').concat(wds.filter(w => w.status !== 'pending').slice(0, 12));
+      const accts = [...new Set(want.map(w => String(w.acct || '')).filter(a => /^u:[0-9a-z]{8,40}$/i.test(a)))];
+      const uids = accts.map(a => a.slice(2));
+      const VEN = [['moon:', 'moon'], ['mexc:', 'mexc'], ['bingx:', 'bingx'], ['bitget:', 'bitget'], ['fomo:', 'fomo']];
+      const venueOf = w => { const v = String(w || ''); for (const [pre, k] of VEN) if (v.toLowerCase().indexOf(pre) === 0) return { k, value: v.slice(pre.length) }; return { k: 'bybit', value: v }; };
+      const needMoon = want.some(w => venueOf(w.wallet).k === 'moon');
+      // A SWALLOWED REASON COSTS A ROUND (the ai_error rule): a store that did not answer says so, with its status.
+      const diag = {};
+      const askStore = async (which, stub, path, payload) => {
+        try {
+          const r = await stub.fetch(new Request('https://do/' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }));
+          const txt = await r.text(); diag[which] = r.status;
+          if (!r.ok) { diag[which] = r.status + ' ' + txt.slice(0, 80); return {}; }
+          return (JSON.parse(txt) || {}).profiles || {};
+        } catch (e) { diag[which] = 'threw: ' + (e && e.message || '?'); return {}; }
+      };
+      const [up, lp, uidSet, members, prot, snap] = await Promise.all([
+        askStore('profile', env.USERS.get(env.USERS.idFromName('main')), 'wdprofile', { uids }),
+        askStore('money', env.REWARDS.get(env.REWARDS.idFromName('ledger')), 'wdprofile', { accts }),
+        bybitUidSet(env),
+        needMoon ? moonMembers(env).catch(() => []) : [],
+        env.STATS.get('sec:protect').then(s => String(s || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean)).catch(() => []),
+        needMoon ? env.STATS.get('moon:active').then(c => c ? moonSnap(env, c, 'end') : null).catch(() => null) : null,
+      ]);
+      for (const p of ['chako', 'whyme', 'gladijator']) if (prot.indexOf(p) < 0) prot.push(p);
+      /* AN ACCOUNT ON THE DESK IS NAMED, NEVER A HASH. The twins on a shared payout target are usually NOT in the
+         queue selection, so their names come from the site-wide resolver rather than from the profiles above -
+         "@ae42beec has already been paid to this UID" tells the owner nothing he can act on. */
+      let prof2 = {};
+      try { prof2 = await resolveProfiles(env, [...new Set([].concat(...want.map(w => (w.shared || []).map(s => s.acct))).filter(Boolean))]); } catch (e) {}
+      const nameOf = u => { const k = String(u || '').replace(/^u:/, ''); const q = up[k] || prof2[k]; return (q && q.username) || ''; };
+      const snapRows = (snap && snap.rows) || [];
+      const risks = {};
+      for (const w of want) {
+        const acct = String(w.acct || ''), p = up[acct.slice(2)] || {}, L = lp[acct] || {};
+        const ven = venueOf(w.wallet), label = (SIGN_VENUES[ven.k] || {}).label || 'target';
+        const vi = vpnInfo(p.org || '', p.asn || 0);
+        const paidRows = (L.wds || []).filter(x => x.status === 'paid');
+        const t = { venue: ven.k, venueName: label, value: ven.value, label: ven.k === 'moon' ? 'Moon username' : label + ' UID' };
+        // the sign-up registration for THIS venue, on THIS account: the uid they claimed the bonus with
+        const regs = (L.exsign || []).filter(x => x.venue === ven.k);
+        const same = regs.filter(x => String(x.uid || '').toLowerCase() === ven.value.toLowerCase());
+        if (same.some(x => x.status === 'approved')) t.regOk = true;
+        else if (same.some(x => x.status === 'rejected')) t.regRejected = true;
+        else if (same.some(x => x.status === 'pending')) t.regPending = true;
+        else if (regs.length) { t.unregistered = true; t.regOther = regs.filter(x => x.status === 'approved').map(x => x.uid).join(', ') || ''; }
+        else t.unregistered = true;
+        t.regKnown = !!(L && L.exOk);                              // the exsign read itself succeeded: absent really means "never registered"
+        if (ven.k === 'bybit') t.uidCheck = /^[0-9]{5,15}$/.test(ven.value) && uidSet.size ? (uidSet.has(ven.value) ? 'ok' : 'missing') : 'na';
+        if (ven.k === 'moon') {
+          const nm = ven.value.toLowerCase();
+          t.ownedBy = members.filter(m => m.status === 'approved' && String(m.moon || '').toLowerCase() === nm && String(m.acct || '') !== acct).map(m => ({ uid: String(m.acct || '').slice(2), username: m.name || '', moon: m.moon }));
+          t.mask = moonMaskOf(ven.value);
+          const fitRows = snapRows.filter(r => moonMaskFits(ven.value, r.mask || ''));
+          if (snapRows.length) {
+            t.inList = fitRows.length > 0;
+            if (fitRows.length) { const best = fitRows.slice().sort((x, y) => (+y.wager || 0) - (+x.wager || 0))[0]; t.wagered = +best.wager || 0; t.deposits = +best.dep || 0; t.regDate = best.reg || ''; t.partnerIdle = !(+best.wager > 0) && !(+best.dep > 0); }
+          }
+          const ourFits = members.filter(m => m.status === 'approved' && moonMaskOf(m.moon) === t.mask);
+          t.maskCollision = ourFits.length > 1;
+        }
+        const ev = {
+          profile: { known: !!up[acct.slice(2)], status: p.status, trades: p.trades, ccN: p.ccN, ccList: p.ccList, org: p.org, vpn: vi.vpn, devBanned: p.devBanned,
+            sameDid: (p.sameDid || []).map(x => ({ uid: x.uid, username: x.username })), sameIp: (p.sameIp || []).map(x => ({ uid: x.uid, username: x.username })), sameEmail: (p.sameEmail || []).map(x => ({ uid: x.uid, username: x.username })) },
+          account: { banned: !!(L.account && L.account.banned) },
+          target: t,
+          history: { targetsN: [...new Set(paidRows.map(x => x.target))].length },
+          sharedPaid: (w.shared || []).filter(s => s.paidN > 0).map(s => ({ uid: String(s.acct || '').slice(2), username: nameOf(s.acct), paidN: s.paidN, paidUsd: s.paidUsd })),
+          sharedOther: (w.shared || []).filter(s => !s.paidN).map(s => ({ uid: String(s.acct || '').slice(2), username: nameOf(s.acct), pendN: s.pendN, otherN: s.otherN })),
+          promoShared: (L.promoHandles || []).filter(x => (x.others || []).length).map(x => ({ h: x.h, n: x.n, others: x.others.map(a => nameOf(a) || a) })),
+          protected: prot.indexOf(String(p.username || '').toLowerCase()) >= 0,
+        };
+        const risk = wdRiskOf(ev);
+        const acc = L.account || {};
+        const byType = {}; Object.keys(L.byType || {}).forEach(k => { byType[k] = { usd: Math.round((L.byType[k].c || 0)) / 100, n: L.byType[k].n }; });
+        risks[w.id] = Object.assign(risk, {
+          acct, uid: acct.slice(2), target: t,
+          facts: {
+            created: p.created || acc.created || 0, lastSeen: p.lastSeen || 0, status: p.status || '', cc: p.cc || '', dev: p.dev || '', org: p.org || '', vpn: vi.vpn,
+            trades: p.trades || 0, opens: p.opens || 0, xp: p.xpLife || 0, dwellH: Math.round((p.dwellTotal || 0) / 360) / 10, dwellRewardsH: Math.round((p.dwellRewards || 0) / 360) / 10,
+            rwRank: p.rwRank || 0, rr: rrFactorOf({ rwRank: p.rwRank, dwellTotal: p.dwellTotal, rrtag: p.rrtag }), rrtag: p.rrtag || '',
+            claims: acc.claims || 0, earnedUsd: Math.round(acc.earnedC || 0) / 100, balanceUsd: Math.round(acc.balanceC || 0) / 100,
+            paidN: paidRows.length, paidUsd: Math.round(paidRows.reduce((s, x) => s + x.usd, 0) * 100) / 100,
+            rejectedN: (L.wds || []).filter(x => x.status === 'rejected').length, targets: [...new Set(paidRows.map(x => x.target))],
+            byType, ccN: p.ccN || 0, ccList: p.ccList || [], sessN: p.sessN || 0, promoBlocked: L.promoBlocked || 0,
+            regs: (L.exsign || []).map(x => ({ venue: x.venue, uid: x.uid, status: x.status })),
+          },
+        });
+      }
+      return J3({ risks, n: Object.keys(risks).length, diag, rule: { strong: 'evidence: one browser, one inbox, one X account, one payout target already paid, a partner name registered by somebody else, a UID not on the affiliate list', look: 'information: a shared IP, a country list, no trades, a hosting network, an unregistered partner name - two of them is where it starts to mean something' } });
     }
     if (url.pathname === '/api/admin/drill' && (await adminCookieOk(request, env))) { // Overview KPI tile drill-downs: who/where behind Visitors / Returning / Affiliate clicks / Signups / Most-active
       const k = url.searchParams.get('k') || ''; const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -29547,6 +29719,39 @@ export class RewardLedger {
       const oldest = (this.rows('SELECT MIN(ts) t FROM acctlog WHERE acct=?', a)[0] || {}).t || 0;
       return this.j({ acct: a, account: acc, rows, wds, shop, oldest, since: 1788739200000 }); // since = 2026-09-06, when the durable log started; older money is only in the reconstructed /earnings view
     }
+    /* WHAT THE MONEY IS MADE OF, FOR THE PAYOUT DESK (2026-10-28). The owner decides a payout from this store's
+       own books, so they are answered in ONE call for every account in the queue instead of one /acctlog per row:
+       the composition of what they earned (acctlog by type), their whole payout history with its targets, the X
+       promo handles they have filed under (and whether another account filed under the same one), and which
+       partner UID / Moon name they ever registered for a sign-up bonus.
+       A HANDLE OR A TARGET IS COMPARED OVER THE WHOLE TABLE, never over a newest-first page: the UID that was
+       paid out to a different account months ago is exactly the row a cap drops first (the 2026-10-26 lesson). */
+    if (path === '/wdprofile') {
+      const accts = (Array.isArray(body.accts) ? body.accts : []).map(x => String(x || '').toLowerCase()).filter(x => /^u:[0-9a-z]{8,40}$/.test(x)).slice(0, 60);
+      if (!accts.length) return this.j({ profiles: {} });
+      const Q = accts.map(() => '?').join(',');
+      const out = {}; accts.forEach(a => { out[a] = { acct: a, byType: {}, wds: [], promoHandles: [], promoBlocked: 0, exsign: [], account: null }; });
+      try { this.rows('SELECT address,balance,earned,claims,created,last_claim,banned,payout_addr,did,ip FROM accounts WHERE address IN (' + Q + ')', ...accts).forEach(r => { if (out[r.address]) out[r.address].account = { balanceC: r.balance || 0, earnedC: r.earned || 0, claims: r.claims || 0, created: r.created || 0, lastClaim: r.last_claim || 0, banned: !!r.banned, payoutAddr: r.payout_addr || '', did: r.did || '', ip: r.ip || '' }; }); } catch (e) {}
+      try { this.rows('SELECT acct, type, SUM(amount) c, COUNT(*) n FROM acctlog WHERE acct IN (' + Q + ') AND amount>0 GROUP BY acct, type', ...accts).forEach(r => { if (out[r.acct]) out[r.acct].byType[r.type] = { c: Math.round(+r.c), n: +r.n }; }); } catch (e) {}
+      try { this.rows('SELECT id,acct,address,amount,status,ts,paid_ts FROM withdrawals WHERE acct IN (' + Q + ') ORDER BY ts ASC', ...accts).forEach(r => { if (out[r.acct]) out[r.acct].wds.push({ id: r.id, target: r.address, usd: (r.amount || 0) / 100, status: r.status, ts: r.ts, paidTs: r.paid_ts || 0 }); }); } catch (e) {}
+      // the X handles this account has filed under, and who ELSE has filed under them (one X account = one member)
+      try {
+        const mine = this.rows("SELECT acct, xh, COUNT(*) n, SUM(CASE WHEN status='blocked' THEN 1 ELSE 0 END) bl FROM promos WHERE acct IN (" + Q + ") AND platform='x' GROUP BY acct, xh", ...accts);
+        const hs = [...new Set(mine.map(r => r.xh).filter(Boolean))];
+        const byH = {};
+        if (hs.length) this.rows("SELECT xh, acct, status, COUNT(*) n FROM promos WHERE platform='x' AND xh IN (" + hs.map(() => '?').join(',') + ") AND status!='rejected' GROUP BY xh, acct, status", ...hs).forEach(r => { (byH[r.xh] = byH[r.xh] || []).push(r); });
+        mine.forEach(r => { const o = out[r.acct]; if (!o) return; o.promoBlocked += +r.bl || 0; if (!r.xh) return;
+          const others = [...new Set((byH[r.xh] || []).filter(x => x.acct !== r.acct).map(x => x.acct))];
+          o.promoHandles.push({ h: r.xh, n: +r.n || 0, others }); });
+      } catch (e) {}
+      // THE COLUMN IS `acct`. The first cut said `address` (which is what /exsign/list ALIASES it to), the query
+      // threw into its own catch, and every row came back with no registration at all - which made the desk say
+      // "they never registered this target with us" about all sixty. Read the schema, never the alias.
+      let exOk = false;
+      try { this.rows('SELECT acct,exchange,uid,status,ts FROM exsign WHERE acct IN (' + Q + ')', ...accts).forEach(r => { if (out[r.acct]) out[r.acct].exsign.push({ venue: r.exchange || 'moon', uid: String(r.uid || ''), status: r.status, ts: r.ts }); }); exOk = true; } catch (e) {}
+      Object.keys(out).forEach(a => { out[a].exOk = exOk; });
+      return this.j({ profiles: out });
+    }
     if (path === '/shopdebit') { // MP Shop: debit balance for a cosmetic (integer cents). FINAL sink - logged as 'shop', never returns to withdrawable except via explicit /shoprefund on a failed grant.
       const sacct = String(body.acct || ''), scents = Math.max(1, Math.round(+body.cents || 0)), sitem = String(body.item || '').slice(0, 24);
       if (!sacct || sacct.indexOf('u:') !== 0) return this.j({ error: 'bad' }, 400);
@@ -32933,6 +33138,49 @@ export class UserStore {
       const bdev = {}; try { this.rows('SELECT did FROM bandev').forEach(r => { bdev[r.did] = 1; }); } catch (e) {}
       const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,did,status,COALESCE(xp_life,xp,0) xpl,COALESCE(rrtag,'') rrtag FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}, g = geo[u.id] || {}, tp = top[u.id] || {}; const rw = +d.rw || 0; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active', xpLife: +u.xpl || 0, rrtag: u.rrtag || '', dwellTotal: +d.tot || 0, dwellRewards: rw, paths: +d.np || 0, rwRank: rw > 0 ? 1 + (ahead[u.id] || 0) : 0, topPath: tp.path || '', topSecs: +tp.s || 0, ccN: +g.n || 0, ccList: String(g.list || '').split(',').filter(Boolean).slice(0, 8), sessN: sess[u.id] || 0, devBanned: !!(u.did && bdev[u.did]), trades: +t.n || 0, opens: +t.opens || 0 }; });
       return this.j({ users, bannedDevices: Object.keys(bdev).length });
+    }
+    /* THE SAME PROFILE, FOR A HANDFUL OF ACCOUNTS (2026-10-28, owner: "zelim odlican uvid u to da li je neko
+       abuser ili nije i bas da imam sazeto o njemu bas na stranici za povlacenje"). /security answers for every
+       member - MEASURED 740 ms and 1.28 MB - which is the right shape for the Security panel and far too heavy
+       for a desk that repaints every 30 s. This route answers the SAME questions for the accounts in the payout
+       queue, with the cluster membership counted by targeted queries instead of a whole-site sweep.
+       The email key cannot be computed in SQL (gmail dots), so id+email for every member is read and matched in
+       JS here - one cheap column pair, never returned. */
+    if (path === '/wdprofile') {
+      const uids = (Array.isArray(b.uids) ? b.uids : []).map(x => String(x || '')).filter(x => /^[0-9a-z]{8,40}$/i.test(x)).slice(0, 60);
+      if (!uids.length) return this.j({ profiles: {} });
+      const Q = uids.map(() => '?').join(',');
+      const me = this.rows('SELECT id,email,username,created,last_seen,cc,dev,org,asn,ip,did,status,COALESCE(xp_life,xp,0) xpl,COALESCE(rrtag,\'\') rrtag FROM users WHERE id IN (' + Q + ')', ...uids);
+      const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw FROM udwell WHERE user_id IN (" + Q + ') GROUP BY user_id', ...uids).forEach(r => { dw[r.uid] = r; }); } catch (e) {}
+      const ahead = {}; try { this.rows("SELECT a.user_id uid, COUNT(*) n FROM udwell a JOIN (SELECT user_id, SUM(secs) rw FROM udwell WHERE path LIKE '/rewards%' GROUP BY user_id) r ON r.user_id=a.user_id WHERE a.user_id IN (" + Q + ") AND a.path NOT LIKE '/rewards%' AND a.secs > r.rw GROUP BY a.user_id", ...uids).forEach(r => { ahead[r.uid] = +r.n || 0; }); } catch (e) {}
+      const geo = {}; try { this.rows("SELECT user_id uid, COUNT(DISTINCT cc) n, GROUP_CONCAT(DISTINCT cc) list FROM uevents WHERE user_id IN (" + Q + ") AND cc IS NOT NULL AND cc!='' GROUP BY user_id", ...uids).forEach(r => { geo[r.uid] = r; }); } catch (e) {}
+      const tr = {}; try { this.rows('SELECT user_id uid, MAX(COALESCE(n,0), COALESCE(life_closes,0)+COALESCE(opens,0)) n, COALESCE(opens,0) opens FROM utrades WHERE user_id IN (' + Q + ')', ...uids).forEach(r => { tr[r.uid] = r; }); } catch (e) {}
+      const bdev = {}; try { this.rows('SELECT did FROM bandev').forEach(r => { bdev[r.did] = 1; }); } catch (e) {}
+      // WHO ELSE IS ON THIS DEVICE / THIS EXACT IP. A device cookie is one browser and is EVIDENCE; an exact IP is
+      // a family or a carrier NAT and is information - the two are returned apart so the verdict can grade them.
+      const dids = [...new Set(me.map(u => u.did).filter(Boolean))], ips = [...new Set(me.map(u => u.ip).filter(Boolean))];
+      const sameDid = {}, sameIp = {};
+      if (dids.length) try { this.rows('SELECT id,username,created,status,did FROM users WHERE did IN (' + dids.map(() => '?').join(',') + ')', ...dids).forEach(r => { (sameDid[r.did] = sameDid[r.did] || []).push({ uid: r.id, username: r.username || '', created: r.created || 0, status: r.status || '' }); }); } catch (e) {}
+      if (ips.length) try { this.rows('SELECT id,username,created,status,ip FROM users WHERE ip IN (' + ips.map(() => '?').join(',') + ')', ...ips).forEach(r => { (sameIp[r.ip] = sameIp[r.ip] || []).push({ uid: r.id, username: r.username || '', created: r.created || 0, status: r.status || '' }); }); } catch (e) {}
+      const sess = {}; try { this.rows('SELECT user_id uid, COUNT(*) n FROM sessions WHERE user_id IN (' + Q + ') GROUP BY user_id', ...uids).forEach(r => { sess[r.uid] = +r.n || 0; }); } catch (e) {}
+      // every member's id+email, matched in JS: the normalised key (gmail dots / +tags) has no SQL expression
+      const want = {}; me.forEach(u => { want[normEmail(u.email)] = 1; });
+      const emailHit = {};
+      try { this.rows('SELECT id,email,username,created,status FROM users').forEach(r => { const k = normEmail(r.email); if (want[k]) (emailHit[k] = emailHit[k] || []).push({ uid: r.id, username: r.username || '', email: r.email || '', created: r.created || 0, status: r.status || '' }); }); } catch (e) {}
+      const profiles = {};
+      for (const u of me) {
+        const d = dw[u.id] || {}, rw = +d.rw || 0, g = geo[u.id] || {}, t = tr[u.id] || {};
+        const others = l => (l || []).filter(x => x.uid !== u.id);
+        profiles[u.id] = {
+          uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0,
+          cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active',
+          xpLife: +u.xpl || 0, rrtag: u.rrtag || '', dwellTotal: +d.tot || 0, dwellRewards: rw, rwRank: rw > 0 ? 1 + (ahead[u.id] || 0) : 0,
+          ccN: +g.n || 0, ccList: String(g.list || '').split(',').filter(Boolean).slice(0, 8), trades: +t.n || 0, opens: +t.opens || 0,
+          sessN: sess[u.id] || 0, devBanned: !!(u.did && bdev[u.did]),
+          sameDid: others(sameDid[u.did]), sameIp: others(sameIp[u.ip]), sameEmail: others(emailHit[normEmail(u.email)]),
+        };
+      }
+      return this.j({ profiles });
     }
     // THE MULTI-ACCOUNT SWEEP (2026-10-18, owner: "svim korisnicima koji pored main naloga imaju neki drugi - main
     // gledaj po levelu - treba ga banovati"). Clusters on the two keys that are EVIDENCE: the device cookie (one

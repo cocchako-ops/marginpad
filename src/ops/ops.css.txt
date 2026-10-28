@@ -34,6 +34,35 @@ a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}butto
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chip{background:#0a0d12;border:1px solid var(--line2);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer}.chip.on{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
 .badge{display:inline-block;font:700 10px var(--mono);letter-spacing:.06em;border-radius:6px;padding:2px 6px;border:1px solid var(--line2);color:var(--dim)}.badge.ok{color:#7fe7bd;border-color:rgba(46,189,133,.4)}.badge.red{color:#ff9d95;border-color:rgba(255,90,77,.45)}.badge.amber{color:#ffcf8a;border-color:rgba(255,179,71,.45)}.badge.lime{color:var(--lime);border-color:rgba(194,246,74,.4)}
 /* Withdrawals: another account already used this exact payout target - red when one of them was PAID, amber while it is only pending or refused */
+/* THE ABUSE PICTURE ON THE PAYOUT DESK (2026-10-28). A sub-row under the withdrawal, so the queue above it stays
+   readable: the verdict, the evidence, then the facts. Every line is display:block - on a 390px phone a flex row
+   of facts wraps into ragged columns and each fact reads as two broken half-sentences (the 2026-09-10 lesson). */
+.wdr td{padding:0 10px 12px!important;border-top:none!important;white-space:normal!important}/* the table cell is nowrap - without this every line is cut off at the card's edge instead of wrapping */
+.wdk{border:1px solid var(--line2);border-left-width:3px;border-radius:10px;background:#0b0e13;padding:10px 12px}
+.wdk.hold{border-left-color:var(--red);background:rgba(255,90,77,.045)}.wdk.look{border-left-color:var(--amber);background:rgba(255,179,71,.04)}.wdk.clean{border-left-color:var(--green)}
+.wdk-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+.wdk-v{font:800 10.5px var(--mono);letter-spacing:.12em;border-radius:6px;padding:3px 8px}
+.wdk-v.hold{background:rgba(255,90,77,.16);color:#ff9d95}.wdk-v.look{background:rgba(255,179,71,.16);color:#ffcf8a}.wdk-v.clean{background:rgba(46,189,133,.14);color:#7fe7bd}
+.wdk-sum{font-size:12.5px;color:var(--dim);min-width:0}
+.wdk-f{display:block;font-size:12.5px;line-height:1.6;padding:2px 0 2px 14px;position:relative;color:var(--dim)}
+.wdk-f::before{content:'';position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--amber)}
+.wdk-f.strong{color:#ffc9c3}.wdk-f.strong::before{background:var(--red)}
+.wdk-f a{color:inherit;text-decoration:underline}
+.wdk-facts{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);line-height:1.75}
+.wdk-facts b{color:var(--ink);font-family:var(--mono);font-weight:700}
+.wdk-facts .k{color:var(--dim)}
+.wdk-facts div{min-width:0}
+.wdk-st{font:700 10px var(--mono);letter-spacing:.1em;border-radius:5px;padding:2px 6px;background:#151a22;color:var(--dim)}
+.wdk-st.red{background:rgba(255,90,77,.16);color:#ff9d95}.wdk-st.lime{background:rgba(194,246,74,.14);color:var(--lime)}
+.wdv{display:inline-block;font:800 9.5px var(--mono);letter-spacing:.1em;border-radius:5px;padding:2px 6px;cursor:pointer;border:1px solid transparent}
+.wdv.hold{background:rgba(255,90,77,.16);color:#ff9d95;border-color:rgba(255,90,77,.4)}
+.wdv.look{background:rgba(255,179,71,.14);color:#ffcf8a;border-color:rgba(255,179,71,.35)}
+.wdv.clean{background:rgba(46,189,133,.12);color:#7fe7bd;border-color:rgba(46,189,133,.3)}
+.wdv.wait{background:#151a22;color:var(--faint)}
+/* ON A PHONE THE QUEUE SCROLLS SIDEWAYS AND THE DOSSIER MUST NOT GO WITH IT. The sub-row spans all eight columns,
+   so inside .tblwrap its cell is as wide as the table; stuck to the left edge of the scroller it is read without
+   scrolling, which is the whole point of putting it here. */
+@media(max-width:760px){.wdr td{position:sticky;left:0;padding:0 0 12px!important}.wdk{max-width:calc(100vw - 58px)}}
 .wd-same{margin-top:6px;padding:6px 8px;border-radius:7px;font:12px/1.45 var(--font,inherit);white-space:normal;max-width:360px;color:#ffcf8a;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.3)}.wd-same.paid{color:#ff9d95;background:rgba(255,90,77,.08);border-color:rgba(255,90,77,.4)}.wd-same a{color:inherit}.wd-same .badge{margin-right:4px}
 .in{background:#0a0d12;border:1px solid var(--line2);border-radius:9px;padding:8px 11px;color:var(--ink);font-size:13px;min-width:0}.in:focus{outline:none;border-color:var(--lime)}select.in{cursor:pointer}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.bar .in{flex:1;min-width:160px}

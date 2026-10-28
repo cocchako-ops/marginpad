@@ -512,6 +512,55 @@
     var paid = sh.some(function (s) { return s.paidN > 0; });
     return '<div class="wd-same' + (paid ? ' paid' : '') + '" title="' + esc(sh.length + ' other account' + (sh.length === 1 ? '' : 's') + ' used this exact payout target') + '"><span class="badge ' + (paid ? 'red' : 'amber') + '">SAME ' + (vv.k === 'moon' ? 'ACCOUNT' : 'UID') + '</span> ' + lines.join('<br>') + '</div>';
   }
+  /* THE ABUSE PICTURE, IN THE ROW THAT SENDS THE MONEY (2026-10-28, owner: "zelim odlican uvid u to da li je neko
+     abuser ili nije i bas da imam sazeto o njemu bas na stranici za povlacenje").
+     The verdict and its reasons come from the server (wdRiskOf - one definition, graded, measured). This draws
+     them: the evidence first, then the information, then what the account actually is. Nothing here decides
+     anything - a number computed in the client is a second copy of a money rule, which this codebase has a
+     dozen entries about. */
+  var WD_SRC = { claim: 'faucet', mission: 'missions', exsign_paid: 'sign-up bonuses', promo_paid: 'X posts', welcome: 'welcome', gift: 'gifts from you', lbprize: 'board prizes', xengage: 'X engagement', referral: 'referrals', premium: 'premium', pass: 'season pass' };
+  var WD_NOTINC = { withdraw: 1, wdreject: 1, shop: 1, shopdebit: 1, shoprefund: 1 }; // a payout and its refund are not earnings - counting them would overstate what the account ever made
+  function wdVerdictBadge(r, id) {
+    if (!r) return '<span class="wdv wait" title="reading the stores">CHECKING</span>';
+    var t = r.level === 'hold' ? 'HOLD' : r.level === 'look' ? 'LOOK' : 'CLEAN';
+    return '<span class="wdv ' + r.level + '" data-wdx="' + esc(id) + '" title="' + esc(r.summary || '') + '">' + t + '</span>';
+  }
+  function wdFactLines(r) {
+    var f = (r && r.facts) || {}, out = [];
+    var age = f.created ? ago(f.created) + ' old' : 'age unknown';
+    var who = [age, f.cc ? '<span class="k">' + esc(f.cc) + '</span>' : '', f.dev ? esc(f.dev) : '', f.org ? esc(f.org) + (f.vpn ? ' <span class="wdk-st red">HOSTING</span>' : '') : '', f.status && f.status !== 'active' ? '<span class="wdk-st red">' + esc(f.status.toUpperCase()) + '</span>' : '', f.lastSeen ? 'last seen ' + ago(f.lastSeen) + ' ago' : ''].filter(Boolean);
+    out.push('<div>' + who.join(' &middot; ') + '</div>');
+    var use = ['<b>' + N(f.trades || 0) + '</b> trades', '<b>' + N(f.xp || 0) + '</b> XP', '<b>' + (f.dwellH || 0) + 'h</b> on the site',
+      (f.dwellRewardsH || 0) + 'h of it on /rewards' + (f.rwRank === 1 ? ' <span class="wdk-st">ITS #1 PAGE</span>' : f.rwRank ? ' (#' + f.rwRank + ' page)' : ''),
+      f.rr && f.rr.pct !== 100 ? '<span class="wdk-st red">REWARDS AT ' + f.rr.pct + '%</span>' : ''].filter(Boolean);
+    out.push('<div>' + use.join(' &middot; ') + '</div>');
+    var mon = ['<b>' + N(f.claims || 0) + '</b> faucet claims', '<b>' + USD(f.earnedUsd || 0) + '</b> earned', USD(f.balanceUsd || 0) + ' left',
+      f.paidN ? '<b>' + f.paidN + '</b> payouts before worth ' + USD(f.paidUsd || 0) : '<span class="wdk-st lime">FIRST PAYOUT</span>',
+      f.rejectedN ? f.rejectedN + ' refused' : '', f.promoBlocked ? '<span class="wdk-st red">' + f.promoBlocked + ' BLOCKED PROMO</span>' : ''].filter(Boolean);
+    out.push('<div>' + mon.join(' &middot; ') + '</div>');
+    var src = Object.keys(f.byType || {}).filter(function (k) { return !WD_NOTINC[k] && f.byType[k].usd > 0; }).sort(function (a, b) { return f.byType[b].usd - f.byType[a].usd; });
+    if (src.length) out.push('<div><span class="k">earned from:</span> ' + src.map(function (k) { return esc(WD_SRC[k] || k) + ' <b>' + USD(f.byType[k].usd) + '</b>'; }).join(' &middot; ') + '</div>');
+    var t = r.target || {};
+    var reg = (f.regs || []).map(function (x) { return esc(x.venue) + ' ' + esc(x.uid) + ' (' + esc(x.status) + ')'; });
+    var part = [];
+    if (t.wagered != null) part.push('their ' + esc(t.venueName || 'partner') + ' account has wagered <b>' + USD(t.wagered) + '</b>' + (t.deposits != null ? ' over ' + t.deposits + ' deposits' : '') + (t.regDate ? ', registered ' + esc(t.regDate) : ''));
+    if (reg.length) part.push('<span class="k">registered with us:</span> ' + reg.join(' &middot; '));
+    else part.push('<span class="k">registered with us:</span> nothing');
+    out.push('<div>' + part.join(' &middot; ') + '</div>');
+    if ((r.state && r.state.unread || []).length) out.push('<div><span class="wdk-st red">INCOMPLETE</span> the ' + r.state.unread.join(' and ') + ' store did not answer, so some checks did not run</div>');
+    return out.join('');
+  }
+  function wdRiskCard(r, id) {
+    if (!r) return '<div class="wdk clean"><div class="wdk-sum">reading the stores&hellip;</div></div>';
+    var st = r.state || {};
+    var head = '<div class="wdk-h"><span class="wdk-v ' + r.level + '">' + (r.level === 'hold' ? 'HOLD - LOOK BEFORE YOU PAY' : r.level === 'look' ? 'WORTH A LOOK' : 'NOTHING AGAINST THEM') + '</span>'
+      + (st.banned ? '<span class="wdk-st red">ACCOUNT BANNED</span>' : '') + (st.suspended ? '<span class="wdk-st red">SUSPENDED</span>' : '')
+      + (st.devBanned ? '<span class="wdk-st red">DEVICE BANNED</span>' : '') + (st.protected ? '<span class="wdk-st lime">PROTECTED</span>' : '')
+      + '<span class="wdk-sum">' + (r.strongN ? r.strongN + ' piece' + (r.strongN === 1 ? '' : 's') + ' of evidence' : r.lookN ? r.lookN + ' thing' + (r.lookN === 1 ? '' : 's') + ' to note' : 'clean') + '</span></div>';
+    // ESCAPED: a flag names a Moon username, which is a string the MEMBER typed into a box on /rewards
+    var fl = (r.flags || []).map(function (x) { return '<span class="wdk-f ' + (x.sev === 'strong' ? 'strong' : '') + '">' + esc(x.text) + '</span>'; }).join('');
+    return '<div class="wdk ' + r.level + '">' + head + fl + '<div class="wdk-facts">' + wdFactLines(r) + '</div></div>';
+  }
   function wdMark(v, px) {
     var s = px || 16;
     var inner = v.logo
@@ -521,12 +570,30 @@
   }
   VIEWS['money/withdrawals'] = { render: function (el) {
     var st = { f: 'pending', q: '' }; recall('money/withdrawals', st, ['f']);
+    /* The dossier is its OWN request: /api/admin/security answers the same questions for every member at a
+       measured 740 ms / 1.28 MB, and this desk repaints every 30 s. It is kept in a closure so a repaint never
+       loses it, and it is refreshed on its own slower clock - the stores it reads are the ones every member
+       request goes through. */
+    var RISK = {}, riskAt = 0, riskBusy = false, open = {};
+    function loadRisk(force) {
+      if (riskBusy || (!force && Date.now() - riskAt < 120000)) return;
+      riskBusy = true;
+      J('/api/admin/wdrisk?all=1').then(function (d) {
+        riskBusy = false; riskAt = Date.now(); RISK = (d && d.risks) || {};
+        if (d && d.diag) { var bad = Object.keys(d.diag).filter(function (k) { return d.diag[k] !== 200; }); if (bad.length) toast('the ' + bad.join(' and ') + ' store did not answer - the dossiers are incomplete'); }
+        paint();
+      }).catch(function () { riskBusy = false; riskAt = Date.now() - 100000; });
+    }
     function paint() {
       J('/api/admin/withdrawals').then(function (d) {
         var ae = document.activeElement; if (ae && el.contains(ae) && /^(wdUids|wdUidAdd|wdq)$/.test(ae.id)) return; // the 30s repaint must never wipe what the owner is typing
         var all = (d && d.wds) || []; var pend = all.filter(function (w) { return w.status === 'pending'; });
         var paid7 = all.filter(function (w) { return w.status === 'paid' && Date.now() - (+w.paidTs || 0) < 7 * 86400000; });
-        var rows = all.filter(function (w) { return (st.f === 'all' || w.status === st.f) && (!st.q || ((w.who || '') + ' ' + (w.email || '') + ' ' + (w.wallet || '') + ' ' + (w.shared || []).map(function (s) { return s.who || ''; }).join(' ')).toLowerCase().indexOf(st.q) >= 0); }).slice(0, 200);
+        var rows = all.filter(function (w) {
+          var r = RISK[w.id];
+          if (st.f === 'flagged') { if (!r || r.level === 'clean') return false; } else if (st.f !== 'all' && w.status !== st.f) return false;
+          return !st.q || ((w.who || '') + ' ' + (w.email || '') + ' ' + (w.wallet || '') + ' ' + (w.shared || []).map(function (s) { return s.who || ''; }).join(' ')).toLowerCase().indexOf(st.q) >= 0;
+        }).slice(0, 200);
         var over48 = pend.filter(function (w) { return Date.now() - (+w.ts || 0) > 48 * 3600000; }).length;
         // payout speed from the rows themselves: request → paid, last 30 days; and each account's payout history for the row
         var paid30 = all.filter(function (w) { return w.status === 'paid' && +w.paidTs > 0 && +w.ts > 0 && Date.now() - (+w.paidTs) < 30 * 86400000; }), rej30 = all.filter(function (w) { return w.status === 'rejected' && Date.now() - (+w.ts || 0) < 30 * 86400000; });
@@ -536,13 +603,13 @@
         var oldestPend = pend.length ? Math.min.apply(null, pend.map(function (w) { return +w.ts || 0; })) : 0;
         el.innerHTML = '<div class="grid g4">' + tile(N(pend.length), 'pending payouts', pend.length ? 'amber' : 'dim', USD(pend.reduce(function (s, w) { return s + (+w.usd || 0); }, 0)) + (oldestPend ? ' · oldest ' + ago(oldestPend) : '')) + tile(USD(paid7.reduce(function (s, w) { return s + (+w.usd || 0); }, 0)), 'paid last 7 days', 'dim', paid7.length + ' payouts') + tile(N(over48), 'pending over 48h', over48 ? 'amber' : 'dim') + tile(N(d.uidListCount || 0), 'UIDs on the allowlist', 'dim') + '</div>'
           + '<div class="grid g4" style="margin-top:12px">' + tile(spd != null ? fdur(spd) : '-', 'median request to paid', 'dim', paid30.length + ' payouts, 30 days') + tile(paid30.length ? Math.round(in24 / paid30.length * 100) + '%' : '-', 'paid within 24 hours', paid30.length && in24 / paid30.length < 0.5 ? 'amber' : 'dim', 'the promise on /rewards') + tile(USD(paid30.reduce(function (s, w) { return s + (+w.usd || 0); }, 0), 0), 'paid 30 days', 'dim', N(paid30.length) + ' payouts · ' + N(rej30.length) + ' rejected') + tile(USD(pbd.reduce(function (s, x) { return s + x.v; }, 0), 0), 'paid 14 days', 'dim', 'per day', spark(pbd, 'v').replace('class="spark"', 'class="spark" style="height:22px;margin-top:6px"')) + '</div>'
-          + card('Queue', '<div class="bar"><div class="chips" style="margin:0">' + ['pending', 'paid', 'rejected', 'all'].map(function (f) { return '<span class="chip ' + (st.f === f ? 'on' : '') + '" data-f="' + f + '">' + f + '</span>'; }).join('') + '</div><input class="in" id="wdq" placeholder="search user, email, wallet" value="' + esc(st.q) + '">' + (pend.length ? '<button class="btn sm" id="wdCopyAll" title="one line per pending payout: exchange, wallet, amount, user - paste it into your payment sheet">Copy payment list</button>' : '') + '</div>'
+          + card('Queue', '<div class="bar"><div class="chips" style="margin:0">' + ['pending', 'paid', 'rejected', 'all', 'flagged'].map(function (f) { return '<span class="chip ' + (st.f === f ? 'on' : '') + '" data-f="' + f + '"' + (f === 'flagged' ? ' title="every row the dossier marks HOLD or LOOK"' : '') + '>' + f + '</span>'; }).join('') + '</div><input class="in" id="wdq" placeholder="search user, email, wallet" value="' + esc(st.q) + '">' + (pend.length ? '<button class="btn sm" id="wdCopyAll" title="one line per pending payout: exchange, wallet, amount, user - paste it into your payment sheet">Copy payment list</button>' : '') + '</div>'
           + '<div class="tblwrap"><table class="tbl"><thead><tr><th>when</th><th>who</th><th>pay to</th><th class="r">amount</th><th>status</th><th>UID</th><th>history</th><th></th></tr></thead><tbody>'
           + (rows.length ? rows.map(function (w) { /* THE PAYOUT VENUE RIDES ON THE ADDRESS, so the column says which one rather than assuming Bybit: a bare
                number is a Bybit UID, moon:<name> and mexc:<uid> name themselves. The UID badge is a BYBIT allowlist
                verdict and means nothing for the other two, so it is not shown for them - a red NOT ON LIST beside a
                perfectly good Moon payout is how an owner stops trusting a column. */
-              var _vv = wdVenue(w.wallet), _ven = _vv.label;
+              var _vv = wdVenue(w.wallet), _ven = _vv.label, _rk = RISK[w.id];
               /* the UID badge is a BYBIT allowlist verdict and means nothing for the others - a red NOT ON LIST
                  beside a perfectly good Moon or Bitget payout is how an owner stops trusting a column */
               var uid = _vv.k !== 'bybit' ? '<span class="badge">' + esc(_ven) + '</span>' : w.uidCheck === 'ok' ? '<span class="badge ok">UID OK</span>' : w.uidCheck === 'missing' ? '<span class="badge red">NOT ON LIST</span>' : '<span class="badge">' + esc(w.uidCheck || '-') + '</span>';
@@ -550,7 +617,10 @@
             var act = w.status === 'pending' ? '<button class="btn sm lime" data-pay="' + esc(w.id) + '">Pay</button> <button class="btn sm red" data-rej="' + esc(w.id) + '">Reject + notify</button>' : (w.txid ? '<a href="https://bscscan.com/tx/' + esc(w.txid) + '" target="_blank" rel="noopener">TXID</a>' : '');
             var ageH = (Date.now() - (+w.ts || 0)) / 3600000; var ageCls = w.status === 'pending' ? (ageH > 168 ? 'dn' : ageH > 48 ? 'amber' : '') : '';
             var hb = ((byAcct[w.acct || w.email || w.who] || {}).before || {})[w.id] || { paidN: 0, paidUsd: 0, rejN: 0 }; var hist = (hb.paidN ? '<span class="up">' + (hb.paidN + 1) + (hb.paidN + 1 === 2 ? 'nd' : hb.paidN + 1 === 3 ? 'rd' : 'th') + ' payout</span> · ' + USD(hb.paidUsd, 0) + ' paid before' : '<span class="badge lime" title="no payout before this one">FIRST</span>') + (hb.rejN ? ' · <span class="dn">' + hb.rejN + ' rejected</span>' : '');
-            return '<tr><td class="mono ' + ageCls + '" title="' + esc(dtFull(w.ts)) + (w.status === 'pending' ? ' · waiting ' + ago(w.ts) : w.status === 'paid' && w.paidTs ? ' · paid after ' + fdur(+w.paidTs - +w.ts) : '') + '">' + dt(w.ts) + (w.status === 'pending' ? '<br><span style="font-size:11px">' + ago(w.ts) + ' waiting</span>' : w.status === 'paid' && +w.paidTs > +w.ts ? '<br><span class="meta" style="font-size:11px">paid in ' + fdur(+w.paidTs - +w.ts) + '</span>' : '') + '</td><td><a href="' + userHref(w.who || '', '') + '" target="_blank">@' + esc(w.who || '?') + '</a><br><span class="meta" style="color:var(--faint);font-size:11px">' + esc(w.email || '') + '</span></td><td class="mono" style="border-left:3px solid ' + _vv.col + '"><div style="display:flex;align-items:center;gap:7px">' + wdMark(_vv, 16) + '<span><b style="font-family:var(--font,inherit);font-size:11px;letter-spacing:.04em;color:' + _vv.col + '">' + esc(_ven.toUpperCase()) + '</b><br>' + esc(w.wallet) + '</span><button class="btn sm" data-copy="' + esc(w.wallet) + '" style="margin-left:auto">copy</button></div>' + wdShared(w, _vv) + '</td><td class="r mono">' + USD(w.usd) + '</td><td>' + stb + '</td><td>' + uid + '</td><td class="meta">' + hist + '<br>' + N(w.claims) + ' claims · bal ' + USD(w.balUsd) + (w.banned ? ' · <span class="badge red">BANNED</span>' : '') + '</td><td>' + act + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="empty">nothing here</td></tr>')
+            return '<tr><td class="mono ' + ageCls + '" title="' + esc(dtFull(w.ts)) + (w.status === 'pending' ? ' · waiting ' + ago(w.ts) : w.status === 'paid' && w.paidTs ? ' · paid after ' + fdur(+w.paidTs - +w.ts) : '') + '">' + dt(w.ts) + (w.status === 'pending' ? '<br><span style="font-size:11px">' + ago(w.ts) + ' waiting</span>' : w.status === 'paid' && +w.paidTs > +w.ts ? '<br><span class="meta" style="font-size:11px">paid in ' + fdur(+w.paidTs - +w.ts) + '</span>' : '') + '</td><td><a href="' + userHref(w.who || '', '') + '" target="_blank">@' + esc(w.who || '?') + '</a><br><span class="meta" style="color:var(--faint);font-size:11px">' + esc(w.email || '') + '</span></td><td class="mono" style="border-left:3px solid ' + _vv.col + '"><div style="display:flex;align-items:center;gap:7px">' + wdMark(_vv, 16) + '<span><b style="font-family:var(--font,inherit);font-size:11px;letter-spacing:.04em;color:' + _vv.col + '">' + esc(_ven.toUpperCase()) + '</b><br>' + esc(w.wallet) + '</span><button class="btn sm" data-copy="' + esc(w.wallet) + '" style="margin-left:auto">copy</button></div>' + wdShared(w, _vv) + '</td><td class="r mono">' + USD(w.usd) + '</td><td>' + stb + '<br>' + wdVerdictBadge(_rk, w.id) + '</td><td>' + uid + '</td><td class="meta">' + hist + '<br>' + N(w.claims) + ' claims · bal ' + USD(w.balUsd) + (w.banned ? ' · <span class="badge red">BANNED</span>' : '') + '</td><td>' + act + '</td></tr>'
+            /* A PENDING ROW CARRIES ITS DOSSIER OPEN - that is the moment the money leaves, and there are only ever
+               a handful. Everything already decided is one tap away instead, or the queue stops being readable. */
+            + ((w.status === 'pending' || open[w.id]) ? '<tr class="wdr"><td colspan="8">' + wdRiskCard(_rk, w.id) + '</td></tr>' : ''); }).join('') : '<tr><td colspan="8" class="empty">nothing here</td></tr>')
           + '</tbody></table></div>', 'Pay = mark paid after you sent USDT on BSC · Reject + notify emails the user', '<a href="#money/faucet">faucet &amp; flags</a>')
           + card('Bybit UID allowlist', '<div class="line">' + N(d.uidListCount || 0) + ' UIDs on the list. A withdrawal to a UID that is not here is auto-rejected with the contact-support message; an empty list turns the gate off.</div><div class="bar" style="margin-top:8px"><input class="in" id="wdUidAdd" inputmode="numeric" placeholder="add UIDs: 123456789 987654321 (space, comma or newline)"><button class="btn lime sm" id="wdUidAddBtn">Add to list</button></div><details class="fold"><summary><b>Edit the whole list</b><span id="wdUidSub">loading…</span></summary><div class="fold-b"><textarea class="in" id="wdUids" rows="8" style="width:100%;font-family:var(--mono);font-size:12px" placeholder="one UID per line"></textarea><div class="bar" style="margin-top:6px"><button class="btn sm" id="wdUidSave">Save list</button><span class="stat" id="wdUidSt"></span></div></div></details>', 'Bybit Affiliate Portal > referred users > UID · checked on every withdrawal request');
         // the allowlist itself: loaded apart from the queue (KV), added to or replaced in full
@@ -559,6 +629,7 @@
         var addB = $('wdUidAddBtn'); if (addB) addB.onclick = function () { var v = ($('wdUidAdd').value || '').split(/[^0-9]+/).filter(function (x) { return /^[0-9]{5,15}$/.test(x); }); if (!v.length) { toast('type a numeric Bybit UID (5-15 digits)'); return; } addB.disabled = true; saveUids(($('wdUids').value || '') + '\n' + v.join('\n'), 'added ' + v.length); };
         var svB = $('wdUidSave'); if (svB) svB.onclick = function () { if (!confirmed('Replace the whole allowlist with the textarea contents?')) return; svB.disabled = true; saveUids($('wdUids').value || '', 'saved'); };
         el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); remember('money/withdrawals', st, ['f']); paint(); }; });
+        el.querySelectorAll('[data-wdx]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-wdx'); if (open[k]) delete open[k]; else open[k] = 1; paint(); }; });
         var q = $('wdq'); if (q) q.oninput = function () { st.q = q.value.trim().toLowerCase(); paint(); q.focus(); };
         // [data-copy] is handled globally now
         var ca = $('wdCopyAll'); if (ca) ca.onclick = function () { var txt = pend.map(function (w) { return wdVenue(w.wallet).label + '\t' + w.wallet + '\t' + (+w.usd || 0).toFixed(2) + '\t@' + (w.who || '') + '\t' + (w.uidCheck || '') + ((w.shared || []).length ? '\tSAME TARGET AS @' + w.shared.map(function (s) { return s.who || '?'; }).join(' @') : ''); }).join('\n'); try { navigator.clipboard.writeText(txt); toast('copied ' + pend.length + ' lines: wallet, amount, user, UID check' + (pend.some(function (w) { return (w.shared || []).length; }) ? ', same-target warnings' : '')); } catch (e) { prompt('copy:', txt); } };
@@ -567,7 +638,7 @@
         stamp();
       }).catch(function () { el.innerHTML = failHtml('could not load withdrawals'); });
     }
-    paint(); every(30000, paint);
+    paint(); loadRisk(true); every(30000, paint); every(120000, function () { loadRisk(false); });
   } };
 
   // ---------- PEOPLE / USERS ----------
