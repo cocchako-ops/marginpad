@@ -78,11 +78,11 @@
      list that feeds this window is gated on window.mpIsBybit - so an RNG symbol can only reach it from the server's
      own catalogue, which is also the single source of its base price, decimals, leverage cap and fee. */
   var RNGS = [];
-  try { fetch('/api/rng', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+  try { fetch('/api/mpad', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
     RNGS = ((d && d.coins) || []).map(function (c) { return String(c.symbol || '').toUpperCase(); }).filter(Boolean);
     RNGS.forEach(function (s) { try { window.mpRngSyms[s] = 1; } catch (e) {} });   // keep mpAssetClass in step with the server
   }).catch(function () {}); } catch (e) {}
-  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['rng', T('mkRng', 'RNG')]];
+  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['house', T('mkRng', 'RNG')]];
   var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;
   try { var _t0 = localStorage.getItem('mp_pt_tab'); if (_t0 && TABS.some(function (t) { return t[0] === _t0; })) mkTab = _t0; } catch (e) { }
 

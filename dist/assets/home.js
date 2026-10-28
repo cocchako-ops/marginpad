@@ -333,8 +333,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       /* RNG IS ITS OWN CLASS AND IS TESTED FIRST (2026-10-28). A MarginPad-native market whose price is a pure
          function of time: it must never read as 'crypto', or this page would open a Bybit socket for a symbol no
          exchange lists and the venue fee picker would price a market with no venue. Mirror of assetClassOf. */
-      window.mpRngSyms={RNG:1};
-      window.mpAssetClass=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');if(window.mpRngSyms[sym])return 'rng';if(STK[sym])return 'stock';if(COM[sym])return 'metal';if(IDX[sym])return 'index';if(FX[sym])return 'forex';return 'crypto';};
+      window.mpRngSyms={MPAD:1};
+      window.mpAssetClass=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');if(window.mpRngSyms[sym])return 'house';if(STK[sym])return 'stock';if(COM[sym])return 'metal';if(IDX[sym])return 'index';if(FX[sym])return 'forex';return 'crypto';};
       // Yahoo-sourced (real stock/forex/index data) → keep OFF the Bybit WS (its tokenized/absent perp would feed a mismatched price into the forming candle). Metals stay on Bybit (real XAUUSDT perp, smooth WS).
       window.mpIsYahoo=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return !!((STK[sym]&&!BEQ[sym])||IDX[sym]||FX[sym]);};
       // Per-coin max leverage - only the deepest-liquidity coins get 1000×; illiquid tokens, metals, indices & forex are capped (roughly what real exchanges allow). Default = 50×.
@@ -376,7 +376,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         var pull=function(){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(!me||!window.fetch)return;fetch('/api/trade/fees',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.venue!==undefined){var k=d.venue||'';if(k!==window.mpFeeVenue)apply(k,false);}}).catch(function(){});};
         window.addEventListener('mp-auth-change',pull);var n0=0,iv0=setInterval(function(){if(++n0>80){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);pull();},100);
       })();
-      window.mpMaxLev=(function(){/* MIRROR of MAXLEV/maxLevFor in src/worker.js - the SERVER clamps every open, so any value here the server does not honour is a lie: the ticket showed a liq price for leverage the fill never used. */var M={RNG:100,/* the RNG market carries its own cap - mirror of RNG_COINS[].lev */BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
+      window.mpMaxLev=(function(){/* MIRROR of MAXLEV/maxLevFor in src/worker.js - the SERVER clamps every open, so any value here the server does not honour is a lie: the ticket showed a liq price for leverage the fill never used. */var M={MPAD:100,/* the RNG market carries its own cap - mirror of RNG_COINS[].lev */BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
       Object.keys(STK).forEach(add);                          // then real equities (Apple, Tesla, …)
@@ -5094,11 +5094,11 @@ window.mpSrvOpen=function(payload,ok,fail){
      list that feeds this window is gated on window.mpIsBybit - so an RNG symbol can only reach it from the server's
      own catalogue, which is also the single source of its base price, decimals, leverage cap and fee. */
   var RNGS = [];
-  try { fetch('/api/rng', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+  try { fetch('/api/mpad', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
     RNGS = ((d && d.coins) || []).map(function (c) { return String(c.symbol || '').toUpperCase(); }).filter(Boolean);
     RNGS.forEach(function (s) { try { window.mpRngSyms[s] = 1; } catch (e) {} });   // keep mpAssetClass in step with the server
   }).catch(function () {}); } catch (e) {}
-  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['rng', T('mkRng', 'RNG')]];
+  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['house', T('mkRng', 'RNG')]];
   var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;
   try { var _t0 = localStorage.getItem('mp_pt_tab'); if (_t0 && TABS.some(function (t) { return t[0] === _t0; })) mkTab = _t0; } catch (e) { }
 

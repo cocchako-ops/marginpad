@@ -17,6 +17,12 @@ import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js impor
    fallbacks. After 60 s one call probes again. Per isolate on purpose: no KV read on the hot path. */
 const __realFetch = globalThis.fetch.bind(globalThis);
 let COL_BASE = '', COL_DOWN_UNTIL = 0, COL_TRIPS = 0;
+/* THE MARGINPAD COIN NEEDS ITS STORE FROM FUNCTIONS THAT TAKE NO `env` (2026-10-28). fetchPrice(sym) is called
+   from a dozen places with one argument, and the coin's price now lives in a Durable Object. Rather than thread
+   `env` through every caller, the isolate keeps it - armed in `fetch` and `scheduled` beside colBase, which is the
+   pattern this file already uses for exactly this reason. A function that finds no env answers null, never throws. */
+let MP_ENV = null;
+function mpEnvArm(env) { try { if (env && env.OPSLOG) MP_ENV = env; } catch (e) {} }
 function colBase(env) { try { const b = String((env && env.COLLECTOR_URL) || '').replace(/\/$/, ''); if (b) COL_BASE = b; } catch (e) {} }
 function colTrip() { COL_DOWN_UNTIL = Date.now() + 60000; COL_TRIPS++; }
 async function colGuardedFetch(u, init) {
@@ -4362,7 +4368,12 @@ const ICON_OWN = {
   oil: '/assets/icons/oil.svg', cl: '/assets/icons/oil.svg',
   brent: '/assets/icons/brent.svg', bz: '/assets/icons/brent.svg',
   natgas: '/assets/icons/natgas.svg', ng: '/assets/icons/natgas.svg',
-  copper: '/assets/icons/copper.svg', hg: '/assets/icons/copper.svg'
+  copper: '/assets/icons/copper.svg', hg: '/assets/icons/copper.svg',
+  /* THE HOUSE MARKET WEARS OUR OWN APP ICON (owner, 2026-10-28: "logo treba da bude nas novi logo kao za IOS app").
+     It belongs here for the same mechanical reason the commodities do: MPAD is a four-letter ticker, and left to
+     fall through, CoinGecko would answer it with whatever token wears that ticker - a wrong face on the one market
+     that is ours. The file is the iOS app icon the Demo Spot splash already uses. */
+  mpad: '/assets/app-icon-192.png'
 };
 async function handleCoinIcon(url, env, request) {
   const sym = String(url.searchParams.get('sym') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
@@ -6171,10 +6182,13 @@ async function fetchPrice(sym) {
      crypto cascade would come back as whatever coin wears that name on Bybit, which is the exact trap the comment
      below this one records for tokenized equities. No `state` field: that is what marks a market with HOURS, and
      this one never closes. */
-  if (RNG_COINS[s]) {
-    const nowS = Math.floor(Date.now() / 1000), p = rngPx(s, nowS), p24 = rngPx(s, nowS - 86400);
-    if (!(p > 0)) return null;
-    return { sym: s, price: p, chg: p24 > 0 ? Math.round((p - p24) / p24 * 10000) / 100 : 0, rng: true, src: 'rng' };
+  if (mpadIs(s)) {
+    const lp = MP_ENV ? await mpadPrice(MP_ENV) : null; if (!lp) return null;
+    let p24 = 0; try { const b = await mpadBars(MP_ENV, 86400, 2, 0); if (b.length) p24 = b[0].o; } catch (e) {}
+    return { sym: MPAD.sym, price: lp.px, chg: p24 > 0 ? Math.round((lp.px - p24) / p24 * 10000) / 100 : 0, /* BOTH NAMES, DELIBERATELY: `house` is the internal asset class every mirror keys on, `rng` is the SECTION the
+          owner named. Nothing on the client reads either (the class comes from `window.mpRngSyms`), so carrying the
+          two costs nothing and leaves no reader of one of them wrong. */
+      house: true, rng: true, src: 'mpad', anchorMin: lp.anchorMin, lagMin: lp.lagMin };
   }
   // Stocks/forex/indices (real data via Yahoo Finance) - resolve here; NEVER fall through to the crypto cascade
   // (Bybit lists tokenized equity perps AAPLUSDT etc. that would return a mismatched 24/7 price).
@@ -6300,13 +6314,13 @@ async function handleKlines(url, env, klSrc, ctx) {
      cache: there is no upstream to protect and no two callers to share a fetch between, so caching would only add a
      way for the chart and the settlement sweep to read different candles for the same minute. `no-store` for the
      same reason - this is the series the sweep settles a liquidation from. */
-  if (RNG_COINS[sym]) {
-    const bars = rngKlines(sym, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
+  if (mpadIs(sym)) {
+    const bars = await mpadBars(env, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
     if (!bars || !bars.length) return J({ error: 'no data' }, 404);
     // THE BARE ARRAY, with `vol`, exactly as every other source answers - the first cut wrapped it in {symbol,bars}
     // and would have broken the chart, the sweep and leanKlines at once (caught by comparing against the live route)
     return new Response(JSON.stringify(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c, vol: 0 }))),
-      { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-src': 'rng', ...CORS } });
+      { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-src': 'mpad', ...CORS } });
   }
   // Edge-cache the assembled response: identical for every user for a given symbol/interval, so polling clients
   // and chart loads share one upstream fetch instead of hammering Gate/Bybit on every request.
@@ -6440,10 +6454,10 @@ async function leanKlines(sym, ivMin, n, env) {
   const iv = String(ivMin || '1'), N = Math.min(200, Math.max(2, +n || 30)), pair = sym + 'USDT';
   /* THE SWEEP'S OWN CANDLES FOR AN RNG MARKET (2026-10-28). This is the function that settles a stop, a target and a
      liquidation, so it must answer the SAME candle the chart drew - which it does by construction, both calling
-     rngKlines. Deliberately NOT cached: computing is cheaper than a cache lookup here, and a cached copy is one more
-     way for the settlement and the chart to disagree about one minute. */
-  if (RNG_COINS[sym]) {
-    const bars = rngKlines(sym, (+iv || 1) * 60, N, 0);
+     mpadBars. Deliberately NOT cached: the stored series IS the cache, and a second copy is one more way for the
+     settlement and the chart to disagree about one minute. */
+  if (mpadIs(sym)) {
+    const bars = await mpadBars(env, (+iv || 1) * 60, N, 0);
     return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
   }
   const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N);
@@ -12939,98 +12953,186 @@ const WR_MIN_MOVE = 0.2; // …AND the win must reflect a ≥0.2% favorable PRIC
 // IWM 0.456%) AND they track indices already on this list, which was a straight bypass: barred from
 // SPX500, farm SPY instead. TQQQ/SQQQ wrap the same index but realise 1.78% (3.6x crypto), so no safe
 // win exists there and they keep competing. The rule applied is the measured volatility, not the label.
-/* ───────────────── THE RNG COIN: A MARGINPAD-NATIVE MARKET THAT IS A PURE FUNCTION OF TIME ─────────────────
-   (2026-10-28, owner: "Da li mozemo da ubacimo RNG Marginpad coin (RNG kao kategorija)? Ne sme da se racuna u
-   leaderboards ali u ostale stvari moze. Nemoj samo da ima nekih problema, napravi to dobro.")
+/* ──────── THE MARGINPAD COIN (MPAD): AN INDEX WITH A RANDOM SLEEVE, RECORDED ONCE A MINUTE ────────
+   (2026-10-28, owner: "se zove RNG umesto da se zove Marginpad ... cena je od danas krenula sa nekih 17 dolara,
+   zavisi od btc-a 35% (btc-dominance), od zcash-a nekih 20% i od hype-a 30%, ostalo nek bude skroz random")
 
-   THE ONE PROPERTY THAT CANNOT BE FIXED LATER, and therefore the whole design: the server settles a stop, a target
-   and a liquidation from the **1m candle**, minutes or hours after the trader saw the price. If that candle cannot
-   be recomputed byte-identically, a real position is settled against a price nobody ever saw - and no test written
-   afterwards could find it, because the evidence is gone. So there is NO stored price series and no randomness at
-   call time: `rngPx(sym, second)` is a pure function of the symbol and the second, forever.
+   THIS REPLACED A PURE FUNCTION OF TIME, AND THE GUARANTEE HAD TO CHANGE WITH IT - that is the whole story of this
+   block. The coin that shipped hours earlier computed every past candle from the clock alone, which is exactly what
+   made the settlement sweep safe: it could recompute any minute, for ever. A price that depends on Bitcoin
+   dominance, Zcash and Hyperliquid CANNOT be recomputed, because their values at that second are gone. So the
+   guarantee is now the other one that holds: **the series is RECORDED ONCE A MINUTE AND NEVER REWRITTEN** (OpsLog
+   table `mpadpx`, `m` = absolute minute, PRIMARY KEY, written with INSERT OR IGNORE so a retry can never move a
+   minute that already exists). The sweep, the chart and the live price all read that one series.
 
-   Built as a sum of smooth value-noise octaves (fractal / multi-scale noise), which buys four things at once:
-     - O(1) per point. A cumulative random walk would need every step since genesis; this needs six hashes.
-     - CONTINUITY. Smoothstep interpolation between integer nodes, so the price never jumps and candle N+1 opens
-       where candle N closed (measured: 199 of 199 joins inside 0.05%).
-     - A BAND. The exponent is a bounded sum, so the price can never reach zero or run away - a market that dies
-       is not tradable, and a liquidation engine on a price that can hit 0 is a bug farm.
-     - TRENDS AT EVERY SCALE, so a chart looks like a market rather than like noise.
-   **The 1-second grid IS the price**; every candle is the exact aggregate of the seconds inside it, so the candle
-   the sweep reads is by construction the path the trader saw.
+   IT IS A DURABLE OBJECT AND NOT KV, and that is not a preference: an append once a minute to a shared KV key is a
+   read-modify-write, and this codebase has already measured that losing four of five concurrent increments (the
+   2026-10-18 `up:day` bug). A DO serves one request at a time, so an append cannot be lost.
 
-   AMPLITUDES ARE MEASURED, NOT CHOSEN. Four candidate sets were swept (scratchpad/rng-validate.js): the first cut
-   moved a median of 0.830% per MINUTE, which liquidates 10x within minutes - a slot machine, not a market. The set
-   below reads median 0.086% a minute, p95 0.243%, a 17.9% day and a 30.4% week, i.e. between BTC (~0.05%) and SOL
-   (~0.09%): 10x (9.45% away) is in play within a day and 100x within the hour.
+   THE MIX IS A TABLE AND THE WEIGHTS SUM TO ONE (`MPAD.mix`). Each component contributes its own log-return for the
+   minute; a component we could not read contributes ZERO, never a jump. Two clamps, because a feed glitch must not
+   move money: one input may move the index by at most 3% in a minute, and the whole step by at most 5% - the same
+   rule `spotSellGuard` applies to a meme pool.
 
-   IT RANKS NOWHERE, AND THAT IS ONE LINE, NOT A NEW FLAG: every RNG symbol joins LB_EXCL_SET below, which this
-   codebase already uses to mean "this symbol earns nothing and ranks nowhere" - measured over its 12 call sites it
-   gates the ROE / Green / win-rate / Gold boards, `_lbBest`, trade XP, trade Ticks, personal records AND duel and
-   raid scoring. So a random coin cannot reach a board, cannot mint XP into the season XP board (the one exclusion
-   a symbol filter could never express), cannot mint Ticks (which are buyable with real money) and cannot settle a
-   staked duel on a coin flip. Everything else still works: the terminal, leverage, SL/TP, limit orders, the
-   journal, My Trades, P&L, the chart and the daily missions that count trades. */
-/* GENESIS IS SIX MONTHS BACK, AND MOVING IT REWRITES NOTHING. The price is defined for every second by the function
-   alone, so the genesis is only the point before which we refuse to draw; every candle after it is identical
-   whatever the genesis is. Set to the launch day it gave a 1D chart exactly one candle, which is a worse lie than
-   the truth it was protecting - the honest statement is the one the page makes, that this is a generated market. */
-const RNG_GENESIS = Date.UTC(2026, 3, 28) / 1000;      // 2026-04-28 00:00 UTC, in seconds
-const RNG_OCT = [[86400, 0.12], [14400, 0.06], [3600, 0.03], [600, 0.006], [60, 0.002], [10, 0.0008]];
-const RNG_COINS = {
-  RNG: { name: 'MarginPad RNG', seed: 1337, base: 100, dp: 4, lev: 100, oct: RNG_OCT },
+   WITHIN A MINUTE the price breathes on a deterministic sub-minute wiggle (`mpadFine`, continuous in absolute time
+   and bounded by MPAD.fineAmp), so the 1m candle is the exact aggregate of its own 60 seconds and recomputes from
+   the stored anchor alone. The anchor is set at the START of the minute, never from a later one - a price must never
+   depend on a value that does not exist yet. */
+const MPAD = {
+  sym: 'MPAD', name: 'MarginPad', dp: 4, lev: 100,
+  start: 17,                    // the launch price the owner set
+  seed: 73109,
+  dayLaunch: '2026-10-28',
+  fineAmp: 0.0022,              // the bound on the sub-minute wiggle, in log space (~0.22%)
+  /* THE RANDOM SLEEVE IS A BOUNDED LEVEL, NOT A WALK, AND THE MULTIPLIER IS WHAT MADE THAT UNTRUE. `randAmp` is the
+     sleeve's whole amplitude in log space, so the cumulative random contribution telescopes to
+     w * (level(now) - level(launch)) * randAmp and can never run away. The first cut multiplied the per-minute
+     difference by `randSd * 1440` (= 5.76): MEASURED over the backfill's own 14 days that is a worst single-minute
+     step of 3.000% - the INPUT CLAMP, hit on 2,409 of 20,160 minutes - and a drift from chance alone of -39% to
+     +153%, which is exactly what printed daily candles between $9.35 and $33.23 around a $17 launch. At 0.5 the
+     worst minute is 0.498% before the 15% weight and the whole random drift is -4.6% to +7.8%
+     (scratchpad/mpad-rand.js lifts the shipped functions and prints both). */
+  randAmp: 0.5,
+  seedTag: '{"seed":1}',        // what a reconstructed minute writes into `parts`; see the DO's clearseed route
+  clampIn: 0.03, clampStep: 0.05,
+  keep: 400 * 1440,             // minutes kept in the store (~400 days)
+  mix: [
+    { k: 'dom', w: 0.35, label: 'Bitcoin dominance', src: 'our own /api/gecko/global' },
+    { k: 'hype', w: 0.30, label: 'Hyperliquid (HYPE)', src: 'Bybit perp' },
+    { k: 'zec', w: 0.20, label: 'Zcash (ZEC)', src: 'Bybit perp' },
+    { k: 'rand', w: 0.15, label: 'pure chance', src: 'a seeded walk, nothing external' },
+  ],
 };
-function _rngH(a, b) { // counter-based integer hash -> [0,1). No state, so any party recomputes any point for ever.
+function _mpH(a, b) { // counter-based integer hash -> [0,1)
   let h = (a ^ 0x9e3779b9) >>> 0;
   h = Math.imul(h ^ ((b + 0x85ebca6b) >>> 0), 0xcc9e2d51) >>> 0;
   h ^= h >>> 15; h = Math.imul(h, 0x1b873593) >>> 0;
   h ^= h >>> 13; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 16;
-  return h / 4294967296;
+  /* `>>> 0` BEFORE THE DIVISION, AND THE COMMENT ABOVE IS WHY IT MATTERS. `h ^= h >>> 16` is an XOR, which evaluates
+     to a SIGNED int32, so any h above 2^31 came back NEGATIVE and this returned [-0.5, 0.5) instead of [0, 1).
+     MEASURED consequence: _mpNoise, which maps [0,1) to [-1,1), returned [-2, 0] - never once positive - so the
+     sub-minute wiggle was always BELOW its own minute's anchor by up to 0.42% against a declared bound of 0.22%,
+     i.e. a systematic one-way bias inside every candle. Found by asserting the bound rather than by reading. */
+  return (h >>> 0) / 4294967296;
 }
-function _rngNoise(seed, x) { const i = Math.floor(x), f = x - i, a = _rngH(seed, i), b = _rngH(seed, i + 1); return (a + (b - a) * (f * f * (3 - 2 * f))) * 2 - 1; }
-function rngIs(sym) { return !!RNG_COINS[String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '')]; }
-function rngKey(sym) { return String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); }
-function rngPx(sym, tSec) {
-  const c = RNG_COINS[rngKey(sym)]; if (!c) return null;
-  const t = Math.max(RNG_GENESIS, Math.floor(tSec));    // before genesis the market did not exist; clamp rather than invent
-  let v = 0; for (let k = 0; k < c.oct.length; k++) v += c.oct[k][1] * _rngNoise(c.seed + c.oct[k][0], t / c.oct[k][0]);
-  const m = Math.pow(10, c.dp);
-  return Math.round(c.base * Math.exp(v) * m) / m;
-}
-// EXACT by construction: the candle is the seconds inside it, so what the sweep reads is what the trader saw.
-function rngCandle(sym, startSec, spanSec) {
-  const o = rngPx(sym, startSec); if (o == null) return null;
-  let h = o, l = o, c = o;
-  /* A 1m candle walks EVERY SECOND - that one is contractual, because it is what the settlement sweep reads. A
-     longer candle walks a coarser grid, sized to the finest octave that still matters at that scale: the extremes
-     of smoothstep noise sit on its nodes, so the high and low are right to a hair, and a 1D candle costs 1,440
-     evaluations instead of 86,400 (a 180-candle daily chart: 20 ms rather than 1.5 s). */
-  const step = spanSec <= 60 ? 1 : spanSec <= 3600 ? 10 : 60;
-  for (let s = step; s < spanSec; s += step) { const p = rngPx(sym, startSec + s); if (p > h) h = p; if (p < l) l = p; }
-  c = rngPx(sym, startSec + spanSec - 1);
-  if (c > h) h = c; if (c < l) l = c;
-  return { t: startSec, o, h, l, c };
-}
-function rngKlines(sym, spanSec, limit, endMs) {
-  const k = rngKey(sym); if (!RNG_COINS[k]) return null;
-  const nowS = Math.floor((endMs || Date.now()) / 1000);
-  const span = Math.max(1, Math.floor(spanSec)), n = Math.max(1, Math.min(1000, Math.floor(limit || 500)));
-  const last = Math.floor(nowS / span) * span;                 // the forming candle, included like every venue does
-  const out = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const st = last - i * span;
-    if (st + span <= RNG_GENESIS) continue;                     // nothing before the coin existed
-    const cd = rngCandle(k, st, span); if (!cd) continue;
-    // the forming candle closes at NOW, not at the end of its span
-    if (st === last) { const live = rngPx(k, nowS); cd.c = live; if (live > cd.h) cd.h = live; if (live < cd.l) cd.l = live; }
-    out.push(cd);
+function _mpNoise(seed, x) { const i = Math.floor(x), f = x - i, a = _mpH(seed, i), b = _mpH(seed, i + 1); return (a + (b - a) * (f * f * (3 - 2 * f))) * 2 - 1; }
+// the random sleeve as a LEVEL in log space; its step is the difference between two minutes, so it trends instead
+// of jittering, and it is deterministic, so the sleeve costs no storage at all
+function mpadRandLevel(minute) { return 0.55 * _mpNoise(MPAD.seed + 1440, minute / 1440) + 0.30 * _mpNoise(MPAD.seed + 240, minute / 240) + 0.15 * _mpNoise(MPAD.seed + 45, minute / 45); }
+// the sub-minute wiggle: continuous in absolute seconds and bounded, so a 1m candle built from it is exact
+function mpadFine(tSec) { const a = 0.55 * _mpNoise(MPAD.seed + 7, tSec / 180) + 0.30 * _mpNoise(MPAD.seed + 11, tSec / 40) + 0.15 * _mpNoise(MPAD.seed + 13, tSec / 11); return MPAD.fineAmp * a; }
+function mpadRound(p) { const m = Math.pow(10, MPAD.dp); return Math.round(p * m) / m; }
+function mpadPxAt(anchor, tSec) { return mpadRound(anchor * Math.exp(mpadFine(tSec))); }
+/* THE ONE STEP, PURE so a test can drive the function that ships. `cur`/`prev` carry the raw input levels; a
+   component missing from either side contributes nothing. Returns the parts too, so the desk can show WHY the coin
+   moved - a composite nobody can decompose is a number nobody trusts. */
+function mpadStep(prevPx, cur, prev, minute) {
+  const parts = {}; let step = 0;
+  for (const c of MPAD.mix) {
+    let r = 0;
+    if (c.k === 'rand') r = (mpadRandLevel(minute) - mpadRandLevel(minute - 1)) * MPAD.randAmp;
+    else { const a = +(cur || {})[c.k], b = +(prev || {})[c.k]; if (a > 0 && b > 0) r = Math.log(a / b); }
+    if (!isFinite(r)) r = 0;
+    r = Math.max(-MPAD.clampIn, Math.min(MPAD.clampIn, r));
+    parts[c.k] = Math.round(r * 1e6) / 1e6;
+    step += c.w * r;
   }
+  if (!isFinite(step)) step = 0;
+  step = Math.max(-MPAD.clampStep, Math.min(MPAD.clampStep, step));
+  return { px: mpadRound(Math.max(0.0001, prevPx) * Math.exp(step)), step: Math.round(step * 1e6) / 1e6, parts };
+}
+function mpadIs(sym) { return String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '') === MPAD.sym; }
+function mpadDO(env) { return env.OPSLOG.get(env.OPSLOG.idFromName('main')); }
+async function mpadCall(env, path, body) {
+  const r = await mpadDO(env).fetch(new Request('https://do/mpad/' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {}));
+  return r.json();
+}
+// the head, cached per isolate for a few seconds: every price read on the site goes through here
+async function mpadHead(env) {
+  const g = globalThis.__mpadHead;
+  if (g && Date.now() - g.at < 4000) return g.v;
+  let v = null; try { const d = await mpadCall(env, 'head'); if (d && d.ok && d.px > 0) v = { m: +d.m, px: +d.px }; } catch (e) {}
+  if (v) globalThis.__mpadHead = { at: Date.now(), v };
+  return v;
+}
+/* READ THE INPUTS. Every one is OUR OWN cached route or a venue we already depend on, and every failure is a zero
+   contribution rather than a thrown tick - a minute we could not price must carry the price forward, not stop the
+   series. Bitcoin dominance comes from the 45-minute CoinGecko cache, so it is deliberately slow: dominance is a
+   slow quantity and pretending otherwise would be noise dressed as signal. */
+async function mpadInputs(env) {
+  const out = {};
+  const dom = (async () => { try { const r = await handleGeckoGlobal(env); const j = await r.json(); const v = +(((j || {}).data || {}).market_cap_percentage || {}).btc; if (v > 0) out.dom = v; } catch (e) {} })();
+  const px = (async () => { try { const [z, h] = await Promise.all([fetchPriceCached('ZEC'), fetchPriceCached('HYPE')]); if (z && z.price > 0) out.zec = z.price; if (h && h.price > 0) out.hype = h.price; } catch (e) {} })();
+  await Promise.all([dom, px]);
   return out;
 }
+/* THE MINUTE WRITER (on the every-minute cron). It reads the head, prices one step and appends. A gap - a missed
+   cron, a cold start, an upstream outage - is carried forward as a flat minute rather than compounded: the series
+   stays honest about having not been watched, and no position is settled against an invented move. */
+async function mpadTick(env) {
+  if (!env.OPSLOG) return { ok: false, why: 'no_store' };
+  const now = Date.now(), m = Math.floor(now / 60000);
+  let head = null; try { const d = await mpadCall(env, 'head'); if (d && d.ok && d.px > 0) head = { m: +d.m, px: +d.px, inputs: d.inputs || null }; } catch (e) {}
+  const cur = await mpadInputs(env);
+  if (!head) { // genesis: the owner's launch price, and the first inputs become the baseline
+    const r = await mpadCall(env, 'put', { m, px: MPAD.start, step: 0, parts: {}, inputs: cur });
+    return { ok: !!(r && r.ok), seeded: true, m, px: MPAD.start };
+  }
+  if (m <= head.m) return { ok: true, skipped: 'already', m: head.m };
+  const st = mpadStep(head.px, cur, head.inputs || cur, m);
+  const r = await mpadCall(env, 'put', { m, px: st.px, step: st.step, parts: st.parts, inputs: cur, gap: m - head.m });
+  try { globalThis.__mpadHead = { at: Date.now(), v: { m, px: st.px } }; } catch (e) {}
+  return { ok: !!(r && r.ok), m, px: st.px, step: st.step, parts: st.parts, gap: m - head.m };
+}
+// the live price: the current minute's anchor (carried forward if the writer is behind) plus the sub-minute wiggle
+async function mpadPrice(env) {
+  const h = await mpadHead(env); if (!h) return null;
+  const nowS = Math.floor(Date.now() / 1000);
+  return { px: mpadPxAt(h.px, nowS), anchorMin: h.m, anchor: h.px, lagMin: Math.max(0, Math.floor(nowS / 60) - h.m) };
+}
+/* CANDLES FROM THE STORED ANCHORS. A 1m candle walks every second of its own minute (that one is contractual - it
+   is what the sweep settles from); a longer candle walks a 10-second grid inside each of its minutes, which is
+   where the wiggle's extremes sit. Nothing is invented for a minute the writer never recorded: the span simply
+   holds fewer minutes, and a span with none produces no candle at all. */
+async function mpadBars(env, spanSec, n, endMs) {
+  const span = Math.max(60, Math.floor(spanSec / 60) * 60), N = Math.max(1, Math.min(1000, Math.floor(n || 500)));
+  const endS = Math.floor((endMs || Date.now()) / 1000);
+  const lastStart = Math.floor(endS / span) * span;
+  const fromM = Math.floor((lastStart - (N - 1) * span) / 60), toM = Math.floor(lastStart / 60) + Math.ceil(span / 60);
+  /* A WINDOW IS DECIMATED BEFORE IT LEAVES THE STORE, and the 1m candle is the one that never is. At 400 days of
+     retention a 1D request spans 576,000 minutes: asking for all of them is a 17 MB answer out of a Durable Object
+     on a chart fetch that is deliberately uncached. `every` keeps at most ~6,000 anchors per window, so the payload
+     and the sampling are both bounded whatever the retention grows to. The 1m series stays EXACT because the
+     settlement sweep reads it (stride is 1 whenever a bucket is one minute wide), and above 1m a high or a low is
+     taken from every Nth anchor rather than every one - a chart, not a money path. */
+  const stride = span <= 60 ? 1 : Math.max(1, Math.ceil((toM - fromM) / 6000));
+  let rows = []; try { const d = await mpadCall(env, 'range?from=' + fromM + '&to=' + toM + '&every=' + stride); rows = (d && d.rows) || []; } catch (e) {}
+  if (!rows.length) return [];
+  /* THE WALK IS OVER THE RECORDED ROWS, NEVER OVER EVERY MINUTE OF EVERY SPAN. The first cut iterated the N spans
+     and each minute inside them, which at `interval=240&limit=1000` is 240,000 minutes and ~1.4M sub-minute samples
+     for a store holding 20,000 rows - it exceeded the isolate's CPU budget and `/api/klines` answered an error
+     object instead of an array, so 4h and 1D charts were empty while 1m and 1h were fine. Driving it from the rows
+     bounds the work by what was actually recorded (at most ~120k samples over a 400-day store) and produces a
+     candle only for a bucket that holds data, which is the same guarantee stated the other way round. */
+  const step = span <= 60 ? 1 : (span <= 3600 ? 10 : 30);
+  const first = lastStart - (N - 1) * span;
+  const buckets = new Map();
+  for (const r of rows) {
+    const m = +r.m, a = +r.px; if (!(a > 0)) continue;
+    const mS = m * 60, st = Math.floor(mS / span) * span;
+    if (st < first || st > lastStart) continue;
+    let b = buckets.get(st); if (!b) { b = { t: st, o: null, c: null, h: -Infinity, l: Infinity }; buckets.set(st, b); }
+    const s0 = Math.max(st, mS), s1 = Math.min(st + span - 1, mS + 59);
+    for (let s = s0; s <= s1; s += step) { const p = mpadPxAt(a, s); if (b.o === null) b.o = p; b.c = p; if (p > b.h) b.h = p; if (p < b.l) b.l = p; }
+    const pEnd = mpadPxAt(a, s1); b.c = pEnd; if (pEnd > b.h) b.h = pEnd; if (pEnd < b.l) b.l = pEnd;
+  }
+  return Array.from(buckets.values()).filter(b => b.o !== null).sort((x, y) => x.t - y.t);
+}
 const LB_EXCL_SET = new Set('FRA40 EU50 HK50 AUS200 ESP35 SWI20 US2000 VIX OIL BRENT NATGAS COPPER AUDJPY EURCHF USDMXN USDSEK USDNOK EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' '));
-// EVERY RNG SYMBOL IS EXCLUDED BY THE TABLE, NOT BY A LITERAL (2026-10-28) - a second RNG coin added to RNG_COINS is
-// barred from every board, from XP, from Ticks, from personal records and from duel scoring without touching a line here.
-for (const k of Object.keys(RNG_COINS)) LB_EXCL_SET.add(k);
+// THE COIN IS EXCLUDED BY THE TABLE, NOT BY A LITERAL (2026-10-28): LB_EXCL_SET already means "earns nothing and
+// ranks nowhere" across its 12 call sites - the four symbol boards, _lbBest, trade XP, trade Ticks, personal records
+// and duel/raid scoring - so one add covers every one of them and a second house market would too.
+LB_EXCL_SET.add(MPAD.sym);
 const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
 function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
@@ -13250,7 +13352,7 @@ const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + 
 const CARD_TAG = { chako: 'FOUNDER', gladijator: 'CO FOUNDER' };
 // Per-coin max leverage - mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
 const MAXLEV = { FRA40: 20, EU50: 20, HK50: 20, AUS200: 20, ESP35: 20, SWI20: 20, US2000: 20, VIX: 10, OIL: 20, BRENT: 20, NATGAS: 20, COPPER: 20, USDCHF: 50, NZDUSD: 50, EURGBP: 50, EURJPY: 50, GBPJPY: 50, AUDJPY: 50, EURCHF: 50, USDMXN: 20, USDSEK: 20, USDNOK: 20, BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
-function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (RNG_COINS[sym]) return RNG_COINS[sym].lev; return MAXLEV[sym] || 50; } // an RNG coin carries its own cap in the table
+function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (sym === MPAD.sym) return MPAD.lev; return MAXLEV[sym] || 50; } // an RNG coin carries its own cap in the table
 // Asset class of a symbol - MIRROR of window.mpAssetClass in dist/assets/home.js (STOCKS here == that file's STK).
 // The class drives the per-market fee below. Both copies must agree: the client DISPLAYS the fee, the server
 // CHARGES it. They didn't (server hardcoded the crypto rate) - measured 2026-08-19: a server-filled EURUSD trade
@@ -13268,7 +13370,7 @@ const BYBIT_EQ = { MU: 'Micron', SNDK: 'SanDisk', KLAC: 'KLA', CRCL: 'Circle', S
 const COMMOD = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 }; // metals AND energy - one table, because `sym === 'XAU' || sym === 'XAG'` was a table of two written as an expression
 // 'rng' goes FIRST and is its own class: it must never read as 'crypto', or the client would subscribe to a Bybit
 // socket for a symbol no exchange lists and the venue fee override would price a market that has no venue (2026-10-28).
-function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (RNG_COINS[sym]) return 'rng'; if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
+function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (sym === MPAD.sym) return 'house'; /* the house market is its own class - never 'crypto' (no venue, no socket). A // comment here commented out the REST OF THE FUNCTION, closing brace included, and the error surfaced 16,000 lines later as "Unexpected export" - this is a one-line function. */ if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
 // Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
 // Real-world cost by class: crypto perp taker ~0.055% | stocks ~0.02% | forex majors ~0.008% | metals & indices ~0.015%.
 // Clamped so the round-trip fee can never exceed ~10% of margin at extreme leverage. Mirror of window.mpFeeRate.
@@ -22575,7 +22677,7 @@ export default {
   /* Every response leaves through here so the security headers cannot be forgotten on a new route.
      The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
-    colBase(env); // arm the collector circuit breaker for this isolate (see the top of the file)
+    colBase(env); mpEnvArm(env); // arm the collector circuit breaker + the house-coin store for this isolate (see the top of the file)
     const res = await this._fetchInner(request, env, ctx);
     return secureResponse(res, request);
   },
@@ -22769,9 +22871,79 @@ export default {
        second idea of the base price, the decimals, the leverage cap or the fee. Deliberately NOT part of
        /api/symbols: that list drives `window.mpIsBybit` and the screener's paper-trade gate, and a synthetic ticker
        in it would have the terminal open a Bybit socket for a market no exchange lists. */
-    if (url.pathname === '/api/rng') {
-      const nowS = Math.floor(Date.now() / 1000);
-      return J({ ok: true, genesis: RNG_GENESIS * 1000, coins: Object.keys(RNG_COINS).map(k => { const c = RNG_COINS[k], p = rngPx(k, nowS), p24 = rngPx(k, nowS - 86400); return { symbol: k, name: c.name, price: p, chg24: p24 > 0 ? Math.round((p - p24) / p24 * 10000) / 100 : 0, dp: c.dp, maxLeverage: c.lev, feePctPerSide: Math.round(feeRateFor(1, k) * 1e6) / 1e4, ranksOnLeaderboards: false }; }), note: 'A MarginPad-native market: the price is a deterministic function of time, so every past candle recomputes exactly. It trades like any other symbol but never ranks on a leaderboard and earns no XP or Ticks.' });
+    /* THE CATALOGUE, FROM THE SAME TABLE THE ENGINE READS, so the client cannot carry a second idea of the mix, the
+       leverage cap or the fee - and it publishes the MIX ITSELF, because a composite nobody can decompose is a number
+       nobody trusts. Deliberately NOT in /api/symbols: that list drives `window.mpIsBybit` and the screener's
+       paper-trade gate, and a house ticker in it would open a Bybit socket for a market no venue lists. */
+    /* BACKFILL THE SERIES BEFORE LAUNCH (2026-10-28). The coin starts today at $17 by the owner's instruction, so on
+       day one every chart above 1m is one candle - a worse first impression than the truth it protects. This
+       reconstructs the minutes BEFORE launch from the inputs' own 1m klines (Zcash and Hyperliquid real, Bitcoin
+       dominance flat because no per-minute history of it exists anywhere we can reach, and the random sleeve from its
+       own seed), walking BACKWARDS from the launch price so the launch minute still lands on exactly $17.
+       It is written with INSERT OR IGNORE, so it can never move a minute that was recorded live, and the catalogue
+       says which part of the series is reconstructed. A DRY RUN unless {apply:true}. */
+    if (url.pathname === '/api/admin/mpadseed' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      const days = Math.max(1, Math.min(30, +bq.days || 14)), apply = bq.apply === true;
+      // {clear:true} removes ONLY what a previous reconstruction wrote, so the mix can be corrected and redone
+      if (bq.clear === true) { const c = await mpadCall(env, 'clearseed', {}); return J({ ok: !!(c && c.ok), cleared: c }); }
+      let head = null; try { const h = await mpadCall(env, 'head'); if (h && h.ok) head = { m: +h.m, px: +h.px }; } catch (e) { return J({ error: 'store_unavailable' }, 503); }
+      if (!head) return J({ error: 'no_head', hint: 'the minute cron has not written the launch point yet' });
+      const need = days * 1440;
+      /* PAGINATE BYBIT DIRECTLY. leanKlines takes no `end`, so looping it returns the SAME newest 200 minutes every
+         pass - the first cut of this route could only ever have reconstructed 200 minutes while reporting 14 days. */
+      const kl = async (sym) => {
+        const out = {}; let end = head.m * 60000;
+        for (let i = 0; i < Math.ceil(need / 1000) + 2; i++) {
+          let list = null;
+          try { const r = await fetchTO('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + sym + 'USDT&interval=1&limit=1000&end=' + end, { cf: { cacheTtl: 60 } }, 4000, env, 'mpadseed'); if (r.ok) { const d = await r.json(); list = d && d.result && d.result.list; } } catch (e) {}
+          if (!list || !list.length) break;
+          let oldest = end;
+          for (const k of list) { const t = Math.floor(+k[0] / 1000); const c = +k[4]; if (t > 0 && c > 0) out[Math.floor(t / 60)] = c; if (+k[0] < oldest) oldest = +k[0]; }
+          if (oldest >= end) break;
+          end = oldest - 60000;
+          if (Object.keys(out).length >= need + 1000) break;
+        }
+        return out;
+      };
+      const [zec, hype] = await Promise.all([kl('ZEC'), kl('HYPE')]);
+      const have = Object.keys(zec).length, haveH = Object.keys(hype).length;
+      // walk backwards: px(m-1) = px(m) / exp(step(m)), with the step built from the same mix as the live writer
+      const pts = []; let px = head.px;
+      for (let m = head.m; m > head.m - need; m--) {
+        const cur = { zec: zec[m], hype: hype[m], dom: 1 }, prev = { zec: zec[m - 1], hype: hype[m - 1], dom: 1 };
+        const st = mpadStep(px, cur, prev, m);
+        const back = mpadRound(px / Math.exp(st.step || 0));
+        if (!(back > 0) || !isFinite(back)) break;
+        pts.push({ m: m - 1, px: back, step: st.step });
+        px = back;
+      }
+      const out = { ok: true, dry: !apply, days, launchAnchor: head, inputs1mMinutes: { zec: have, hype: haveH }, points: pts.length, oldest: pts.length ? pts[pts.length - 1] : null, newest: pts.length ? pts[0] : null };
+      if (!apply) return J(Object.assign(out, { note: 'DRY RUN - POST {apply:true, days:N} to write. Existing minutes are never overwritten.' }));
+      let written = 0, rows = 0;
+      for (let i = 0; i < pts.length; i += 5000) { const r = await mpadCall(env, 'seed', { points: pts.slice(i, i + 5000) }); written += (r && r.written) || 0; rows = (r && r.rows) || rows; }
+      return J(Object.assign(out, { written, rows }));
+    }
+    if (url.pathname === '/api/mpad' || url.pathname === '/api/rng') {
+      const lp = await mpadPrice(env);
+      let day = null, inputs = null, head = null;
+      try { const h = await mpadCall(env, 'head'); if (h && h.ok) { head = { minute: +h.m, anchor: +h.px }; inputs = h.inputs || null; } } catch (e) {}
+      try { const bb = await mpadBars(env, 86400, 2, 0); if (bb.length) day = bb[bb.length - 1]; } catch (e) {}
+      const p24 = (day && day.o > 0) ? day.o : 0;
+      return J({
+        /* THE CATEGORY IS RNG AND THE COIN INSIDE IT IS MarginPad (owner, 2026-10-28: "sekcija treba da se zove
+           RNG") - the market window's group label was briefly the coin's own name, which left the site with a
+           section named after a single symbol. `assetClass` stays the internal 'house' every mirror keys on. */
+        ok: true, symbol: MPAD.sym, name: MPAD.name, category: 'RNG', assetClass: 'house',
+        price: lp ? lp.px : null, chg24: (lp && p24 > 0) ? Math.round((lp.px - p24) / p24 * 10000) / 100 : null,
+        launchPrice: MPAD.start, launchDay: MPAD.dayLaunch,
+        dp: MPAD.dp, maxLeverage: MPAD.lev, feePctPerSide: Math.round(feeRateFor(1, MPAD.sym) * 1e6) / 1e4,
+        ranksOnLeaderboards: false, earnsXpOrTicks: false,
+        mix: MPAD.mix.map(c => ({ part: c.k, weightPct: Math.round(c.w * 100), of: c.label, from: c.src })),
+        guards: { maxInputMovePerMinutePct: MPAD.clampIn * 100, maxIndexMovePerMinutePct: MPAD.clampStep * 100 },
+        head, inputs, lagMin: lp ? lp.lagMin : null,
+        note: 'The house market. Its price is an index - 35% Bitcoin dominance, 30% Hyperliquid, 20% Zcash, 15% pure chance - recomputed once a minute and RECORDED; that recorded series is the only copy, so a past candle is never rewritten. It trades like any other symbol but never ranks on a leaderboard and earns no XP or Ticks.',
+      });
     }
     if (url.pathname === '/api/symbols') return handleSymbols();
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
@@ -27683,6 +27855,7 @@ export default {
    }
   },
   async scheduled(event, env, ctx) {
+    mpEnvArm(env);
     colBase(env);
     if (env.ENVIRONMENT === 'staging') return; // BELT: staging never runs cron (payouts, Telegram signals, emails, IPN follow-ups). Suspenders = [env.staging.triggers] crons = [] in wrangler.toml. (belt PROVEN 2026-07-25: temp cron → tail showed STAGING_CRON_GUARD_HIT + zero downstream work)
     // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
@@ -27724,6 +27897,7 @@ export default {
     if (event.cron === '* * * * *') {
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
+      ctx.waitUntil(mpadTick(env).catch(() => {})); // the house coin's minute: read the inputs, price one step, append it - the recorded series is the only copy
       ctx.waitUntil(pushDrain(env).catch(() => {})); // the 1-min trigger does almost no work - drain the notification push outbox here so a DM / mention / duel / new-follower reaches the phone within a minute (follow-trade already drains on the trade path)
       return;
     }
@@ -28020,6 +28194,12 @@ export class OpsLog {
     for (const col of ['k TEXT', 'p TEXT', 'uid TEXT', 'u TEXT', 'cc TEXT', 'd TEXT', 'di TEXT', 'b TEXT', 'net TEXT', 's TEXT', 'first INTEGER', 'la TEXT', 'lats INTEGER', 'e2 INTEGER DEFAULT 0', 'n INTEGER', 'nv INTEGER DEFAULT 0', 'ip TEXT', 'kn TEXT', 'via TEXT']) { try { s.exec('ALTER TABLE onmap ADD COLUMN ' + col); } catch (e) {} }
     s.exec('CREATE TABLE IF NOT EXISTS onhist(ts INTEGER PRIMARY KEY, n INTEGER, m INTEGER, a INTEGER, api INTEGER)'); // one sample per minute: people on the site, members among them, arrivals in that minute, API keys live. 7 days -> "usual at this hour" is measured, never guessed
     s.exec('CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT)');
+    /* THE HOUSE COIN'S RECORDED SERIES (2026-10-28). One row per minute, `m` = absolute minute since the epoch and
+       the PRIMARY KEY, so a retried write can never move a minute that already exists. It lives in a Durable Object
+       and not in KV because an append once a minute to a shared KV key is a read-modify-write, and this codebase has
+       measured that losing four of five concurrent increments. It is the ONLY copy of the price: the chart, the live
+       quote and the settlement sweep all read it. */
+    s.exec('CREATE TABLE IF NOT EXISTS mpadpx(m INTEGER PRIMARY KEY, px REAL NOT NULL, step REAL DEFAULT 0, parts TEXT, inputs TEXT, ts INTEGER)');
     // THE PUBLIC STATUS PAGE'S DAY COUNTER LIVES HERE BECAUSE KV CANNOT COUNT (2026-10-18). It was a KV
     // read-modify-write in sampleUptime, which has no atomicity whatsoever - PROVEN on production by firing
     // five samples at once and watching the day's n rise by ONE. A Durable Object handles one request at a
@@ -28089,6 +28269,66 @@ export class OpsLog {
   async fetch(request) {
     const url = new URL(request.url); const path = url.pathname;
     await this.seed();
+    if (path.indexOf('/mpad/') === 0) {
+      // `sql` and the parsed body are per-route in this class (see /upsample below) - they are NOT fetch-level locals
+      const sub = path.slice(6), sql = this.state.storage.sql;
+      let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+      if (sub === 'head') { const r = this.rows('SELECT m, px, inputs FROM mpadpx ORDER BY m DESC LIMIT 1')[0]; if (!r) return this.j({ ok: false, empty: true }); let inp = null; try { inp = JSON.parse(r.inputs || 'null'); } catch (e) {} return this.j({ ok: true, m: +r.m, px: +r.px, inputs: inp }); }
+      if (sub === 'range') {
+        const f = Math.max(0, +url.searchParams.get('from') || 0), t = Math.max(f, +url.searchParams.get('to') || f);
+        /* A WIDE WINDOW IS DECIMATED, NEVER REFUSED. The 200,000-minute refusal here is what made 4h and 1D charts
+           empty: `interval=240&limit=1000` asks for 240,000 minutes and `1440` for 1,440,000, so the caller got
+           `window_too_wide` and built no candles at all, while 1m and 1h sat under the ceiling and looked healthy.
+           The caller passes `every` (its own stride), and the LIMIT is the backstop that bounds the answer whatever
+           it asks for. A 1m window is always stride 1, so the series the sweep settles from stays exact. */
+        const every = Math.max(1, Math.min(10000, Math.floor(+url.searchParams.get('every') || 1)));
+        /* READ DESC AND REVERSE: a LIMIT on an ASCENDING read of a growing table keeps the OLDEST rows, which on a
+           chart means a window that silently drops the newest candles (the 2026-10-12 DM-thread bug, same shape). */
+        const rows = (every > 1
+          ? this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? AND m % ? = 0 ORDER BY m DESC LIMIT 8000', f, t, every)
+          : this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? ORDER BY m DESC LIMIT 8000', f, t)).reverse();
+        /* THE NEWEST ANCHOR IN THE WINDOW IS ALWAYS CARRIED, whatever the stride. Without it a 1D candle at stride
+           240 closed on a sample up to four hours old, so the chart's forming candle disagreed with the live price
+           readout beside it - two numbers for one quantity, which is worse than either being coarse. */
+        if (every > 1) {
+          const last = this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? ORDER BY m DESC LIMIT 1', f, t)[0];
+          if (last && (!rows.length || +rows[rows.length - 1].m !== +last.m)) rows.push(last);
+        }
+        return this.j({ ok: true, every, rows });
+      }
+      if (sub === 'put') {
+        const m = Math.floor(+b.m || 0), px = +b.px;
+        if (!(m > 0) || !(px > 0)) return this.j({ ok: false, error: 'bad_point' }, 400);
+        // INSERT OR IGNORE: a minute already written is never moved, whatever retried the write
+        sql.exec('INSERT OR IGNORE INTO mpadpx(m,px,step,parts,inputs,ts) VALUES(?,?,?,?,?,?)', m, px, +b.step || 0, JSON.stringify(b.parts || {}), JSON.stringify(b.inputs || {}), Date.now());
+        if (Math.random() < 0.01) { try { sql.exec('DELETE FROM mpadpx WHERE m < ?', m - 576000); } catch (e) {} } // ~400 days
+        return this.j({ ok: true, m, px, rows: (this.rows('SELECT COUNT(*) c FROM mpadpx')[0] || {}).c || 0 });
+      }
+      /* A BACKFILLED MINUTE SAYS SO IN ITS OWN ROW (`parts` = MPAD.seedTag), because the only safe way to redo a
+         reconstruction is to delete exactly what the last one wrote - never a range, which would take the live
+         minutes inside it with it. A live tick's `parts` is the real per-component breakdown, so the two can never
+         be confused, and `clearseed` can only ever reach rows this route created. */
+      if (sub === 'clearseed') {
+        const before = (this.rows('SELECT COUNT(*) c FROM mpadpx')[0] || {}).c || 0;
+        /* The second clause is the LEGACY shape: the first reconstruction wrote '{}' into both columns, before the
+           tag existed. The genesis minute also carries parts '{}' - and REAL inputs - so requiring both to be empty
+           is what keeps the launch point, which nothing may delete. */
+        sql.exec("DELETE FROM mpadpx WHERE parts = ? OR (parts = '{}' AND inputs = '{}')", MPAD.seedTag);
+        const span = this.rows('SELECT MIN(m) a, MAX(m) b, COUNT(*) c FROM mpadpx')[0] || {};
+        return this.j({ ok: true, deleted: before - (span.c || 0), rows: span.c || 0, from: span.a || null, to: span.b || null });
+      }
+      if (sub === 'seed') { // one-off backfill; INSERT OR IGNORE, so it can never overwrite a minute that was recorded live
+        const pts = Array.isArray(b.points) ? b.points.slice(0, 50000) : [];
+        /* `written` IS THE TABLE'S OWN COUNT, BEFORE AND AFTER. Counting the loop's iterations reported 20,160
+           written over a run that really inserted EIGHT rows - INSERT OR IGNORE had skipped every minute that
+           already existed - and that figure read as a successful redo of the whole series. */
+        const was = (this.rows('SELECT COUNT(*) c FROM mpadpx')[0] || {}).c || 0;
+        let seen = 0; for (const q of pts) { const m = Math.floor(+q.m || 0), px = +q.px; if (!(m > 0) || !(px > 0)) continue; sql.exec('INSERT OR IGNORE INTO mpadpx(m,px,step,parts,inputs,ts) VALUES(?,?,?,?,?,?)', m, px, +q.step || 0, MPAD.seedTag, '{}', Date.now()); seen++; }
+        const span = this.rows('SELECT MIN(m) a, MAX(m) b, COUNT(*) c FROM mpadpx')[0] || {};
+        return this.j({ ok: true, offered: pts.length, usable: seen, written: (span.c || 0) - was, skippedExisting: seen - ((span.c || 0) - was), rows: span.c || 0, from: span.a || null, to: span.b || null });
+      }
+      return this.j({ ok: false, error: 'bad_mpad_path' }, 404);
+    }
     if (path === '/upsample' && request.method === 'POST') { // one /status/ uptime sample, counted where counting works (see the upday table)
       let b = {}; try { b = await request.json(); } catch (e) {}
       const day = String(b.day || '').slice(0, 10);
