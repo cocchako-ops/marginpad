@@ -110,3 +110,6 @@ build/bt-shots/
 kb-sheet.png
 build/data/pt/chunks/
 build/data/de/chunks/
+
+# Catalyst Engine F0 kline cache (131 MB, regenerable)
+build/data/catalyst/cache/
