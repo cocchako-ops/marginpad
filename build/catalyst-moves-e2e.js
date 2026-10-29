@@ -179,14 +179,16 @@ async function prodLeg() {
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
   ok('the summary knows the two new causes', typeof s.stocks === 'number' && typeof s.flow === 'number', JSON.stringify(s));
-  ok('every catalyst named sits inside the window', mv.filter(m => m.catalyst).every(m => m.catalyst.leadMin <= 90 && m.catalyst.leadMin >= -30), JSON.stringify(mv.filter(m => m.catalyst).map(m => m.catalyst.leadMin).slice(0, 20)));
+  ok('every catalyst named sits inside its window (90/30 min, a major story 6 h / 1 h)', mv.filter(m => m.catalyst).every(m => m.catalyst.leadMin <= (m.catalyst.major ? 360 : 90) && m.catalyst.leadMin >= (m.catalyst.major ? -60 : -30)), JSON.stringify(mv.filter(m => m.catalyst).map(m => m.catalyst.leadMin).slice(0, 20)));
   ok('unknown is said out loud for some moves (an engine that explains everything is lying)', s.unknown > 0, s.unknown);
-  // THE PLACEBO
-  const p = await getJ(BASE + '/api/catalysts/moves?symbol=BTC&nc=1&shift=-604800000');
+  // THE PLACEBO - on SOL: since realism (2026-10-29) BTC has no media-news cause at all (media headlines measure ~1x on BTC), so the
+  // news share to compare is an alt's, where listings, hacks and the occasional story still name a move
+  const sr = await getJ(BASE + '/api/catalysts/moves?symbol=SOL&nc=1'); const ss = (sr.j && sr.j.summary) || {};
+  const p = await getJ(BASE + '/api/catalysts/moves?symbol=SOL&nc=1&shift=-604800000');
   const ps = (p.j && p.j.summary) || {};
-  const real = s.n ? (s.n - s.unknown) / s.n : 0, plac = ps.n ? (ps.n - ps.unknown) / ps.n : 0;
-  const realNews = s.n ? (s.news + s.both) / s.n : 0, placNews = ps.n ? (ps.news + ps.both) / ps.n : 0;
-  ok('the placebo (every catalyst shifted a week) answers', p.status === 200 && ps.n === s.n, JSON.stringify(ps));
+  const real = ss.n ? (ss.n - ss.unknown) / ss.n : 0, plac = ps.n ? (ps.n - ps.unknown) / ps.n : 0;
+  const realNews = ss.n ? (ss.news + ss.both) / ss.n : 0, placNews = ps.n ? (ps.news + ps.both) / ps.n : 0;
+  ok('the placebo (every catalyst shifted a week) answers', p.status === 200 && ps.n === ss.n, JSON.stringify(ps));
   ok('and its news-explained share is well under the real one (the matching is not chance)', placNews <= realNews * 0.6, 'real ' + Math.round(realNews * 100) + '% placebo ' + Math.round(placNews * 100) + '%');
   console.log('  info news-explained real ' + Math.round(realNews * 100) + '% / placebo ' + Math.round(placNews * 100) + '% ; all causes real ' + Math.round(real * 100) + '% / placebo ' + Math.round(plac * 100) + '%');
   // a coin with no liquidation feed
