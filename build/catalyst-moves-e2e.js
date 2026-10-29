@@ -200,7 +200,8 @@ async function prodLeg() {
   const ps = (p.j && p.j.summary) || {};
   const real = ss.n ? (ss.n - ss.unknown) / ss.n : 0, plac = ps.n ? (ps.n - ps.unknown) / ps.n : 0;
   const realNews = ss.n ? (ss.news + ss.both) / ss.n : 0, placNews = ps.n ? (ps.news + ps.both) / ps.n : 0;
-  ok('the placebo (every catalyst shifted a week) answers', p.status === 200 && ps.n === ss.n, JSON.stringify(ps));
+  // episodes merge legs by STORY, so the move count differs between the real and the shifted catalysts - the share is the comparison
+  ok('the placebo (every catalyst shifted a week) answers', p.status === 200 && ps.n > 0 && Math.abs(ps.n - ss.n) <= Math.max(8, ss.n * 0.15), JSON.stringify(ps));
   ok('and its news-explained share is well under the real one (the matching is not chance)', placNews <= realNews * 0.6, 'real ' + Math.round(realNews * 100) + '% placebo ' + Math.round(placNews * 100) + '%');
   console.log('  info news-explained real ' + Math.round(realNews * 100) + '% / placebo ' + Math.round(placNews * 100) + '% ; all causes real ' + Math.round(real * 100) + '% / placebo ' + Math.round(plac * 100) + '%');
   // a coin with no liquidation feed
