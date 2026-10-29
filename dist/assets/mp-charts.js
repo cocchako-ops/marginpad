@@ -204,7 +204,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(w._cxIv)return;w._cxIv=setInterval(function(){if(w.dead||!w.inds||!w.inds.catalyst){clearInterval(w._cxIv);w._cxIv=0;return;}
       var lv=cxLiveCheck(w);if(lv)cxLiveAsk(w,lv);else if(w._cxLive&&w._cxLive.on){w._cxLive=null;try{(w._reapply||function(){applyInds(w);})();}catch(e){}}},20000);}
   function cxCauseText(a){if(!a)return '';var c=a.catalyst;
-    if(a.cause==='unknown')return __esT_mpcharts("noKnownCauseCx",'No known cause - no dated news inside 90 minutes and no liquidation cascade.');
+    if(a.cause==='unknown')return a.note||__esT_mpcharts("noKnownCauseCx",'No known cause - no dated news inside 90 minutes and no liquidation cascade.');
+    if((a.cause==='stocks'||a.cause==='flow'||a.cause==='btc'||a.cause==='whale')&&!a.catalyst){var fx=(a.factors||[]).filter(function(f){return f.k===a.cause;})[0];if(fx)return fx.text;}
     var s='';if(c)s+=c.title+' ('+c.source.replace(/^rss:|^tg:/,'')+(c.after?__esT_mpcharts("minAfterTheMove",', ')+Math.abs(c.leadMin)+' min after the move started':', '+c.leadMin+' '+__esT_mpcharts("minBeforeWord",'min before'))+', '+__esT_mpcharts("scoreWord",'score')+' '+c.score+')';
     if(a.cascade&&a.liq)s+=(s?' + ':'')+__esT_mpcharts("cascadeOfLiq",'a cascade: ')+money(a.liq.usd)+' '+__esT_mpcharts("liquidatedXTypical",'liquidated, ')+a.liq.x+'x '+__esT_mpcharts("typicalWord",'typical');
     return s;}
@@ -214,8 +215,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var up=m.dir>0,col=up?'#2ebd85':'#ff6258',hh=function(n){return (n<10?'0':'')+n;},d0=new Date(m.t0),d1=new Date(m.t1);
     var mins=Math.max(1,Math.round((m.t1-m.t0)/60000));
     var c=m.catalyst,esc=function(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');};
-    var causeLine=m.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):m.cause==='cascade'?(m.label||__esT_mpcharts("liquidationCascade",'Liquidation cascade')):m.cause==='news+cascade'?__esT_mpcharts("newsPlusCascade",'News + a liquidation cascade'):m.cause==='btc'?__esT_mpcharts("followedBitcoin",'Followed Bitcoin'):m.cause==='whale'?__esT_mpcharts("whaleFlow",'Whale flow'):__esT_mpcharts("newsWord",'News');
-    var catHtml='';if(c){catHtml='<div class="cxc-cat"><b>'+esc(c.title)+'</b><span>'+esc(c.source.replace(/^rss:|^tg:/,''))+' · '+esc(c.kind)+' · '+(c.after?Math.abs(c.leadMin)+' '+__esT_mpcharts("minAfterStart",'min after the move started'):c.leadMin+' '+__esT_mpcharts("minBeforeTheMove",'min before the move'))+' · '+__esT_mpcharts("scoreWord",'score')+' '+c.score+'</span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+__esT_mpcharts("openSource",'open the source')+'</a>':'')+'</div>';}
+    var causeLine=m.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):m.cause==='cascade'?(m.label||__esT_mpcharts("liquidationCascade",'Liquidation cascade')):m.cause==='news+cascade'?__esT_mpcharts("newsPlusCascade",'News + a liquidation cascade'):m.cause==='btc'?__esT_mpcharts("followedBitcoin",'Followed Bitcoin'):m.cause==='whale'?__esT_mpcharts("whaleFlow",'Whale flow'):m.cause==='stocks'?__esT_mpcharts("stocksMoved",'US stocks moved'):m.cause==='flow'?__esT_mpcharts("orderFlow",'Order flow'):__esT_mpcharts("newsWord",'News');
+    var catHtml='';if(c){catHtml='<div class="cxc-cat"><b>'+esc(c.title)+'</b><span>'+esc(c.source.replace(/^rss:|^tg:/,''))+' · '+esc(c.kind)+' · '+(c.after?Math.abs(c.leadMin)+' '+__esT_mpcharts("minAfterStart",'min after the move started'):c.leadMin+' '+__esT_mpcharts("minBeforeTheMove",'min before the move'))+' · '+__esT_mpcharts("scoreWord",'score')+' '+c.score+'</span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+__esT_mpcharts("openSource",'open the source')+'</a>':'')+(c.realism&&c.realism.text?'<em class="cxc-real">'+esc(c.realism.text)+'</em>':'')+'</div>';}
     var facHtml='';if(m.factors&&m.factors.length){facHtml='<div class="cxc-oth cxc-fac"><i>'+__esT_mpcharts("atThatMoment",'At that moment')+'</i>'+m.factors.slice(0,3).map(function(f){return '<div><b>'+esc(f.label)+'</b> '+esc(f.text)+'</div>';}).join('')+'</div>';}
     var othHtml='';if(m.others&&m.others.length){othHtml='<div class="cxc-oth"><i>'+__esT_mpcharts("alsoInTheWindow",'Also in the window')+'</i>'+m.others.slice(0,3).map(function(o){return '<div>'+esc(o.title).slice(0,90)+' <small>'+(o.after?'+':'-')+Math.abs(o.leadMin)+'m</small></div>';}).join('')+'</div>';}
     var liqHtml='';if(m.liq&&m.liq.usd>0)liqHtml='<dt>'+__esT_mpcharts("liquidatedDuring",'Liquidated during')+'</dt><dd>'+money(m.liq.usd)+(m.liq.x!=null?' <small>'+m.liq.x+'x</small>':'')+'</dd>';
@@ -224,6 +225,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<div class="lqc-h" style="color:'+col+'">'+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+mins+' min</small></div>'
       +'<div class="lqc-s cxc-cause" style="color:'+(m.cause==='unknown'?'#aab5c4':col)+'">'+causeLine+(m.confidence>0?' <small>'+Math.round(m.confidence*100)+'%</small>':'')+'</div>'
       +catHtml
+      +(m.note?'<p class="cxc-note">'+esc(m.note)+'</p>':'')
       +'<dl class="lqc-d"><dt>'+__esT_mpcharts("whenWord",'When')+'</dt><dd>'+hh(d0.getHours())+':'+hh(d0.getMinutes())+'–'+hh(d1.getHours())+':'+hh(d1.getMinutes())+' · '+d0.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
       +'<dt>'+__esT_mpcharts("priceWord",'Price')+'</dt><dd>'+cwFmt(m.p0)+' → '+cwFmt(m.p1)+'</dd>'
       +'<dt>'+__esT_mpcharts("sizeVsUsual",'Vs usual bar')+'</dt><dd>'+m.z+'x</dd>'+liqHtml+'</dl>'

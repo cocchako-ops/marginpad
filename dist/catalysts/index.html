@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Crypto Catalysts Live: What Is Moving the Market Right Now</title>
-<meta name="description" content="Every dated event that can move a coin, as it lands: exchange listings and delistings (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, FOMC and CPI, hacks, ETF headlines, the fast news desks and whale alerts - scored, deduplicated, with the coins each one names and how many desks confirm it. Plus which coins are talked about most, and what moved each one." />
+<meta name="description" content="Every dated event that can move a coin, as it lands: exchange listings and delistings (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, FOMC and CPI, hacks, ETF headlines, the fast news desks and whale alerts - scored, deduplicated, with the coins each one names, how many desks confirm it and how much events like it have really moved price. Plus which coins are talked about most, and what moved each one." />
 <link rel="canonical" href="https://marginpad.io/catalysts/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/catalysts/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/catalysts/" />
@@ -27,123 +27,202 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"MarginPad crypto catalysts","description":"Dated events that can move a cryptocurrency - exchange listings and delistings, SEC filings, FOMC and CPI prints, hacks, ETF headlines, official channels and fast news desks - collected every 20-90 seconds from the sources' own feeds, classified by rules, scored 0-100 and tied to the coins they name.","url":"https://marginpad.io/catalysts/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io"},"license":"https://marginpad.io/terms/","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts?min=20"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts/top?h=24"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts/moves?symbol=BTC"}],"isAccessibleForFree":true}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a catalyst here?","acceptedAnswer":{"@type":"Answer","text":"A dated event that can move a coin: an exchange listing or delisting, a filing, a scheduled macro print such as CPI or an FOMC decision, a hack, an ETF headline, a regulation headline, an official announcement or a fast news desk's item. Each one carries the source's own timestamp, the coins it names, a score from 0 to 100 and the number of independent desks that reported the same story."}},{"@type":"Question","name":"How is the score made?","acceptedAnswer":{"@type":"Answer","text":"From the credibility of the source (an exchange's own announcement or a filing is primary, an official channel next, the media desks after), the kind of event (macro, hacks, listings and delistings weigh most), and how many independent sources confirm it within six hours. Promotions and trading-pair housekeeping score zero. The score measures how much attention an item deserves, never a direction."}},{"@type":"Question","name":"What does 'what moved it' mean?","acceptedAnswer":{"@type":"Answer","text":"Every abnormal jump or drop of the last 30 days, judged against the coin's own volatility, is matched to the catalysts that were published inside 90 minutes before it, to our own liquidation feed, to the whale tracker and to Bitcoin's moves at the same minute. A move with nothing dated behind it is marked unknown rather than given a guess. Shifting every item by a week collapses the explained share, which is how we know the matching is not chance."}}]}</script>
+<script defer src="/assets/mp-nav.js?v=8bebdf96"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"MarginPad crypto catalysts","description":"Dated events that can move a cryptocurrency - exchange listings and delistings, SEC filings, FOMC and CPI prints, hacks, ETF headlines, official channels and fast news desks - collected every 15-60 seconds from the sources' own feeds, classified by rules and a language model, scored 0-100, tied to the coins they name and to how much events of that kind have really moved price.","url":"https://marginpad.io/catalysts/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io"},"license":"https://marginpad.io/terms/","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts?min=20"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts/top?h=24"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts/moves?symbol=BTC"}],"isAccessibleForFree":true}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a catalyst here?","acceptedAnswer":{"@type":"Answer","text":"A dated event that can move a coin: an exchange listing or delisting, a filing, a scheduled macro print such as CPI or an FOMC decision, a hack, an ETF headline, a regulation headline, an official announcement or a fast news desk's item. Each one carries the source's own timestamp, the coins it names, a score from 0 to 100, the number of independent desks that reported the same story, and how much events of its kind have really moved price in the past."}},{"@type":"Question","name":"How is the score made?","acceptedAnswer":{"@type":"Answer","text":"From the credibility of the source (an exchange's own announcement or a filing is primary, an official channel next, the media desks after), the kind of event, how many independent sources confirm it within six hours, how much events of that kind have measurably moved price before, and a language-model reading of the headline for importance. Promotions and trading-pair housekeeping score zero. The score measures how much attention an item deserves, never a direction."}},{"@type":"Question","name":"What does 'what moved it' mean?","acceptedAnswer":{"@type":"Answer","text":"Every abnormal jump or drop of the last 30 days, judged against the coin's own volatility, is matched to the catalysts published inside 90 minutes before it, to our own liquidation feed, to the whale tracker, to Bitcoin's moves at the same minute, to US stocks, to the market orders over a million dollars on our own tape, and to the clock (funding, the New York open). A move with nothing dated behind it is marked unknown and still gets a sentence saying what was checked. Shifting every item by a week collapses the explained share, which is how we know the matching is not chance."}}]}</script>
 <style>
-:root{--bg:#0a0b0d;--card:#111419;--line:#1d232c;--txt:#e9edf3;--mut:#8b95a3;--dim:#5c6673;--lime:#c2f64a;--green:#2ebd85;--red:#ff5a4d;--blue:#5ec6ff;--amber:#ffb020;--violet:#b18cff;}
+:root{--bg:#0a0b0d;--card:#10131a;--card2:#0d1015;--line:#1c222c;--line2:#2a3240;--txt:#e9edf3;--mut:#8b95a3;--dim:#5c6673;--lime:#c2f64a;--green:#2ebd85;--red:#ff5a4d;--blue:#5ec6ff;--amber:#ffb020;--violet:#b18cff;--pink:#ff6aa8}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:var(--lime);text-decoration:none}
-.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px}
-h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.05;margin:26px 0 8px;letter-spacing:-.01em}
-h1 em{color:var(--lime);font-style:normal}
-.lead{color:var(--mut);max-width:760px;margin:0 0 14px}
-.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:0 0 22px;font-size:12px;color:var(--dim)}
-.prov b{display:block;color:var(--txt);font-family:"Space Mono",monospace;font-size:16px;font-weight:700}
-.prov span:empty::before{content:"\00a0"}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
-@media(max-width:960px){.grid{grid-template-columns:minmax(0,1fr)}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-.card h2{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 0 10px;font-weight:700}
-.card h2 small{letter-spacing:0;text-transform:none;font-weight:400;color:var(--dim);font-family:"Familjen Grotesk",sans-serif;font-size:12px;margin-left:8px}
-.top{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
-.top button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;background:#0d1015;font-size:13px}
-.top button:hover{border-color:#3a4452}
-.top button.on{border-color:var(--lime);box-shadow:inset 0 0 0 1px var(--lime)}
-.top button b{font-family:"Space Mono",monospace;font-weight:700}
-.top button .n{color:var(--mut);font-size:12px}
-.top button .n i{font-style:normal;color:var(--txt)}
-.top button .ch{font-family:"Space Mono",monospace;font-size:11.5px}
-.top button .k{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
-.filt{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
-.filt button{all:unset;cursor:pointer;padding:5px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--mut)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px 70px}
+.mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin:22px 0 14px}
+.mast h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(30px,4.4vw,46px);line-height:1;margin:0 0 8px;letter-spacing:-.02em;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mast h1 em{color:var(--lime);font-style:normal}
+.live{display:inline-flex;align-items:center;gap:7px;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.14em;color:var(--lime);padding:5px 10px;border:1px solid rgba(194,246,74,.3);border-radius:999px;background:rgba(194,246,74,.06);position:relative;top:-4px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.lead{color:var(--mut);max-width:720px;margin:0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(96px,auto));gap:10px}
+.st{padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);min-width:110px}
+.st small{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.st b{display:block;font-family:"Space Mono",monospace;font-size:20px;font-weight:700;line-height:1.2;min-height:24px}
+.st span{display:block;font-size:11px;color:var(--mut);min-height:16px}
+.st span:empty::before,.st b:empty::before{content:"\00a0"}
+.now{margin:0 0 18px}
+.now h2{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 8px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.now h2 small{font-family:"Familjen Grotesk",sans-serif;letter-spacing:0;text-transform:none;font-weight:400;color:var(--dim);font-size:12px}
+.nowg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-height:96px}
+.nowc{position:relative;padding:12px 14px 12px 16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#12161e,#0d1015);overflow:hidden}
+.nowc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac,var(--lime))}
+.nowc .k{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);margin-bottom:6px;flex-wrap:wrap}
+.nowc .h{font-size:14px;line-height:1.35;color:var(--txt);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nowc .h a{color:inherit}
+.nowc .s{font-size:12px;color:var(--mut);margin-top:5px;line-height:1.35}
+.nowc .f{display:flex;gap:8px;align-items:center;margin-top:7px;font-size:11px;color:var(--mut);flex-wrap:wrap}
+.nowq{grid-column:1/-1;padding:14px;border:1px dashed var(--line);border-radius:14px;color:var(--dim);font-size:13px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:18px;align-items:start}
+.side{position:sticky;top:70px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card h2{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 10px;font-weight:700;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.card h2 small{letter-spacing:0;text-transform:none;font-weight:400;color:var(--dim);font-family:"Familjen Grotesk",sans-serif;font-size:12px}
+.fbar{position:sticky;top:60px;z-index:5;background:linear-gradient(180deg,var(--card) 84%,rgba(16,19,26,0));margin:-4px -16px 6px;padding:6px 16px 10px}
+.filt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filt button{all:unset;cursor:pointer;padding:6px 11px;border-radius:999px;border:1px solid var(--line2);font-size:12px;color:var(--mut);display:inline-flex;gap:6px;align-items:center;-webkit-tap-highlight-color:transparent}
+.filt button b{font-family:"Space Mono",monospace;font-weight:400;font-size:10.5px;color:var(--dim)}
 .filt button.on{color:#0a0b0d;background:var(--lime);border-color:var(--lime);font-weight:700}
+.filt button.on b{color:#2d3a0a}
 .filt .sp{flex:1}
-.filt label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
-.feed{display:flex;flex-direction:column;gap:6px;min-height:200px}
+.filt label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);cursor:pointer}
+.filt input[type=search]{all:unset;width:92px;padding:6px 10px;border:1px solid var(--line2);border-radius:999px;font-size:12px;color:var(--txt);font-family:"Space Mono",monospace;text-transform:uppercase}
+.filt input[type=search]::placeholder{text-transform:none;font-family:"Familjen Grotesk",sans-serif;color:var(--dim)}
+.feed{display:flex;flex-direction:column;gap:7px;min-height:240px}
 .feed:empty::before{content:"Reading the feed\2026";color:var(--dim);font-size:13px}
-.it{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#0d1015}
-.it.hi{border-color:rgba(194,246,74,.35)}
-.it .t{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);line-height:1.3}
-.it .t b{display:block;color:var(--txt);font-size:12px}
-.it .h{font-size:14px;line-height:1.35}
+.it{position:relative;display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px;padding:10px 12px 10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card2);overflow:hidden}
+.it::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ac,#2a3240)}
+.it.hi{border-color:rgba(194,246,74,.28);background:linear-gradient(90deg,rgba(194,246,74,.05),var(--card2) 40%)}
+.it .t{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);line-height:1.35;padding-top:2px}
+.it .t b{display:block;color:var(--txt);font-size:13px}
+.it .t i{display:block;font-style:normal;font-size:10px;color:var(--dim)}
+.it .h{font-size:14.5px;line-height:1.35}
 .it .h a{color:var(--txt)}
 .it .h a:hover{color:var(--lime)}
-.it .m{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:5px;font-size:11px;color:var(--mut)}
-.kd{display:inline-block;padding:1px 7px;border-radius:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;background:#1a2029;color:var(--mut)}
+.it .s{margin:3px 0 0;font-size:12.5px;color:var(--mut);line-height:1.4}
+.it .s b{color:var(--txt);font-weight:600}
+.it .m{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px;font-size:11px;color:var(--mut)}
+.kd{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;background:#1a2029;color:var(--mut)}
 .kd.listing,.kd.adoption{background:rgba(46,189,133,.16);color:var(--green)}
 .kd.delisting,.kd.hack{background:rgba(255,90,77,.16);color:var(--red)}
 .kd.macro{background:rgba(255,176,32,.18);color:var(--amber)}
 .kd.etf,.kd.filing,.kd.regulation{background:rgba(94,198,255,.16);color:var(--blue)}
 .kd.whale,.kd.protocol,.kd.unlock{background:rgba(177,140,255,.16);color:var(--violet)}
-.kd.politics{background:rgba(255,255,255,.08);color:var(--txt)}
-.sc{font-family:"Space Mono",monospace;font-size:11px;color:var(--txt)}
-.sc i{display:inline-block;width:46px;height:5px;border-radius:3px;background:#1d232c;vertical-align:middle;margin-right:5px;overflow:hidden}
+.kd.politics{background:rgba(255,106,168,.14);color:var(--pink)}
+.sc{display:inline-flex;align-items:center;gap:5px;font-family:"Space Mono",monospace;font-size:11px;color:var(--txt)}
+.sc i{display:inline-block;width:44px;height:5px;border-radius:3px;background:#1d232c;overflow:hidden}
 .sc i b{display:block;height:100%;background:var(--lime)}
-.sy{font-family:"Space Mono",monospace;font-size:11px;color:var(--lime);cursor:pointer}
+.imp{display:inline-flex;align-items:center;gap:4px;font-family:"Space Mono",monospace;font-size:10.5px;padding:1px 6px;border-radius:5px;border:1px solid var(--line2);color:var(--txt);cursor:help}
+.imp.hot{border-color:rgba(255,176,32,.5);color:var(--amber)}
+.imp.cold{color:var(--dim)}
+.sy{font-family:"Space Mono",monospace;font-size:11px;color:var(--lime);cursor:pointer;padding:1px 5px;border:1px solid rgba(194,246,74,.25);border-radius:5px}
+.sy:hover{background:rgba(194,246,74,.1)}
 .cf{color:var(--green);font-weight:700}
-.more{all:unset;cursor:pointer;display:block;text-align:center;padding:9px;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:13px;margin-top:6px}
+.lt{color:var(--dim)}
+.more{all:unset;cursor:pointer;display:block;text-align:center;padding:10px;border:1px dashed var(--line2);border-radius:12px;color:var(--mut);font-size:13px;margin-top:8px}
+.more:hover{color:var(--txt);border-color:#3a4452}
+.spot .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:-2px 0 8px}
+.spot .hd b{font-family:"Space Mono",monospace;font-size:22px;font-weight:700}
+.spot .hd span{font-family:"Space Mono",monospace;font-size:13px}
+.spot .hd small{font-size:11px;color:var(--dim)}
+.expl{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin:0 0 10px}
+.expl i{flex:1;height:6px;border-radius:3px;background:#1d232c;overflow:hidden;display:flex}
+.expl i b{display:block;height:100%}
+.expl i .n{background:var(--blue)}.expl i .c{background:var(--red)}.expl i .b{background:var(--amber)}.expl i .w{background:var(--violet)}
 .mv{display:flex;flex-direction:column;gap:6px;min-height:120px}
 .mv:empty::before{content:"\00a0"}
-.mvr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;padding:8px 10px;border-radius:10px;background:#0d1015;border:1px solid var(--line);font-size:12.5px}
-.mvr .p{font-family:"Space Mono",monospace;font-weight:700;font-size:14px}
-.mvr .p small{display:block;font-weight:400;font-size:10.5px;color:var(--dim)}
-.mvr .c{color:var(--txt)}
-.mvr .c b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
-.mvr .c span{color:var(--mut);font-size:11.5px}
-.up{display:flex;flex-direction:column;gap:5px;font-size:13px}
-.up div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
+.mvr{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;padding:8px 10px;border-radius:11px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;cursor:default}
+.mvr .p{font-family:"Space Mono",monospace;font-weight:700;font-size:15px;line-height:1.1}
+.mvr .p small{display:block;font-weight:400;font-size:10px;color:var(--dim);margin-top:3px}
+.mvr .c b{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.mvr .c span{color:var(--mut);font-size:11.5px;display:block;margin-top:2px;line-height:1.35}
+.mvr .c em{font-style:normal;color:var(--dim);font-size:10.5px}
+.rank{display:flex;flex-direction:column;gap:4px;min-height:120px}
+.rk{display:grid;grid-template-columns:52px minmax(0,1fr) 54px;gap:8px;align-items:center;padding:5px 8px;border-radius:9px;cursor:pointer;border:1px solid transparent}
+.rk:hover{background:var(--card2)}
+.rk.on{border-color:rgba(194,246,74,.4);background:rgba(194,246,74,.05)}
+.rk b{font-family:"Space Mono",monospace;font-size:12.5px;font-weight:700}
+.rk .bar{height:7px;border-radius:4px;background:#1d232c;overflow:hidden;position:relative}
+.rk .bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.35));border-radius:4px}
+.rk .bar u{position:absolute;right:6px;top:-6px;font-size:10px;color:var(--mut);text-decoration:none;font-family:"Space Mono",monospace}
+.rk .ch{font-family:"Space Mono",monospace;font-size:11.5px;text-align:right}
+.rk .ch small{display:block;font-size:9.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;font-family:"Familjen Grotesk",sans-serif}
+.up{display:flex;flex-direction:column;gap:5px;font-size:13px;min-height:40px}
+.up div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line);align-items:center}
 .up div:first-child{border-top:0}
-.up b{font-family:"Space Mono",monospace;font-weight:700;color:var(--amber);white-space:nowrap}
-.note{font-size:12.5px;color:var(--mut);line-height:1.55;margin:16px 0 0}
+.up b{font-family:"Space Mono",monospace;font-weight:700;color:var(--amber);white-space:nowrap;font-size:12px}
+.up b small{display:block;font-weight:400;color:var(--dim);font-size:10px;text-align:right}
+.src{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11.5px}
+.src div{padding:8px 10px;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
+.src small{display:block;color:var(--dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.src b{font-family:"Space Mono",monospace;font-size:14px;display:block;min-height:18px}
+.src b:empty::before{content:"\00a0"}
+.note{font-size:12.5px;color:var(--mut);line-height:1.55;margin:0}
 .note a{color:var(--lime)}
-.sum{font-size:12px;color:var(--mut);margin:0 0 10px}
-.sum b{color:var(--txt);font-family:"Space Mono",monospace}
-.tabs{display:flex;gap:6px;margin:0 0 10px}
-.tabs button{all:unset;cursor:pointer;padding:5px 10px;border-radius:8px;border:1px solid var(--line);font-size:12px;color:var(--mut)}
-.tabs button.on{color:var(--txt);border-color:#3a4452;background:#161b23}
 .cta{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:9px;background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.3);font-size:12.5px}
-@media(max-width:560px){.it{grid-template-columns:48px minmax(0,1fr)}.prov{grid-template-columns:1fr 1fr}}
+@media(max-width:1020px){.grid{grid-template-columns:minmax(0,1fr)}.side{position:static}.mast{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.st{min-width:0}}
+@media(max-width:720px){.nowg{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.it{grid-template-columns:54px minmax(0,1fr);gap:9px;padding:9px 10px 9px 12px}.fbar{top:59px}.rk{grid-template-columns:46px minmax(0,1fr) 50px}}
 </style>
 <style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Crypto catalysts, <em>live</em></h1>
-  <p class="lead">Every dated event that can move a coin, as it lands: exchange listings and delistings from Bybit, OKX, Binance, Upbit and Hyperliquid, SEC filings, FOMC and CPI, hacks, ETF and regulation headlines, the official channels and the fast news desks. Each item keeps its source's own timestamp, the coins it names, a score from 0 to 100 and how many independent desks confirm it. Below: which coins are talked about most, and what actually moved each one.</p>
-  <div class="prov"><div>items in 24 h<b id="pN"></b><span id="pN2"></span></div><div>sources polled<b id="pS">41</b><span>every 20-90 s</span></div><div>coins named today<b id="pC"></b><span id="pC2"></span></div><div>updated<b id="pU"></b><span>from the sources' own clocks</span></div></div>
+  <header class="mpnav-hdr">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+            <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><div class="hsoc"><button type="button" class="hlink hsocb" aria-label="Follow MarginPad" title="Follow MarginPad" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-4.2M8.4 13.3l7.2 4.2"/></svg></button><div class="hsoc-m" role="menu" hidden><a class="hsoc-i tg" role="menuitem" href="https://t.me/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span><span class="hsoc-t"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class="hsoc-i ig" role="menuitem" href="https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="hsoc-t"><b>Instagram</b><i>@marginpad</i></span></a><a class="hsoc-i x" role="menuitem" href="https://x.com/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span class="hsoc-t"><b>X</b><i>@marginpad</i></span></a></div></div>
+      <button type="button" class="hlink hjr" id="jrOpen" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</button>
+            <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+      <select class="lang" id="langSel" aria-label="Language"><option value="/">EN</option><option value="/es/">ES</option><option value="/pt/">PT</option><option value="/fr/">FR</option><option value="/de/">DE</option><option value="/ru/">RU</option><option value="/tr/">TR</option><option value="/zh/">ZH</option><option value="/ja/">JA</option><option value="/ko/">KO</option><option value="/ar/">AR</option><option value="/id/">ID</option><option value="/nl/">NL</option></select>
+    </nav>
+  </header>
+
+  <div class="mast">
+    <div>
+      <h1>Catalysts <em>live</em> <span class="live"><i id="pulse"></i>LIVE</span></h1>
+      <p class="lead">Every dated event that can move a coin, as it lands: exchange listings and delistings, SEC filings, FOMC and CPI, hacks, ETF and regulation headlines, official channels, fast news desks and eight X accounts. Each item keeps its source's own clock, the coins it names, a score, how many desks confirm it, and how much events of its kind have really moved price.</p>
+    </div>
+    <div class="stats">
+      <div class="st"><small>last hour</small><b id="sH"></b><span id="sH2"></span></div>
+      <div class="st"><small>24 hours</small><b id="sD"></b><span id="sD2"></span></div>
+      <div class="st"><small>coins named</small><b id="sC"></b><span id="sC2"></span></div>
+      <div class="st"><small>sources</small><b id="sS"></b><span id="sS2"></span></div>
+    </div>
+  </div>
+
+  <section class="now">
+    <h2>Right now <small id="nowSub">the highest-scored items of the last 60 minutes</small></h2>
+    <div class="nowg" id="now"></div>
+  </section>
 
   <div class="grid">
     <div>
       <section class="card">
-        <h2>Most talked about <small>24 hours, by distinct items naming the coin</small></h2>
-        <div class="top" id="top"></div>
-      </section>
-      <section class="card" style="margin-top:14px">
         <h2>The feed <small id="feedSub">newest first</small></h2>
-        <div class="filt" id="filt">
-          <button data-k="" class="on">All</button><button data-k="listing">Listings</button><button data-k="delisting">Delistings</button><button data-k="macro">Macro</button><button data-k="hack">Hacks</button><button data-k="etf">ETF</button><button data-k="regulation">Regulation</button><button data-k="whale">Whales</button><button data-k="politics">Politics</button>
+        <div class="fbar"><div class="filt" id="filt">
+          <button data-k="" class="on">All <b id="nAll"></b></button><button data-k="listing">Listings <b></b></button><button data-k="delisting">Delistings <b></b></button><button data-k="macro">Macro <b></b></button><button data-k="hack">Hacks <b></b></button><button data-k="etf">ETF <b></b></button><button data-k="regulation">Regulation <b></b></button><button data-k="whale">Whales <b></b></button><button data-k="politics">Politics <b></b></button><button data-k="filing">Filings <b></b></button>
           <span class="sp"></span>
-          <label><input type="checkbox" id="hiOnly" /> score 40+</label>
-        </div>
+          <input type="search" id="q" placeholder="coin" maxlength="12" autocomplete="off" />
+          <label><input type="checkbox" id="hiOnly" /> important only</label>
+        </div></div>
         <div class="feed" id="feed"></div>
         <button class="more" id="more" hidden>Show more</button>
       </section>
     </div>
-    <aside>
-      <section class="card">
-        <h2>What moved <span id="mvSym">BTC</span> <small>last 30 days, 15-minute candles</small></h2>
-        <p class="sum" id="mvSum"></p>
+    <aside class="side">
+      <section class="card spot">
+        <h2>What moved it <small>last 30 days, 15-minute candles</small></h2>
+        <div class="hd"><b id="mvSym">BTC</b><span id="mvPx"></span><small id="mvMent"></small></div>
+        <div class="expl"><i id="explBar"></i><span id="explTxt"></span></div>
         <div class="mv" id="mv"></div>
         <a class="cta" id="mvLink" href="/charts">Open it on the chart as the What moved it indicator &rarr;</a>
       </section>
-      <section class="card" style="margin-top:14px">
-        <h2>Scheduled <small>next 48 hours, our calendar</small></h2>
+      <section class="card">
+        <h2>Most talked about <small>24 h, distinct items naming the coin</small></h2>
+        <div class="rank" id="top"></div>
+      </section>
+      <section class="card">
+        <h2>Scheduled <small>next 48 hours</small></h2>
         <div class="up" id="up"></div>
       </section>
-      <section class="card" style="margin-top:14px">
+      <section class="card">
+        <h2>Sources <small>how fresh the feed is</small></h2>
+        <div class="src"><div><small>online</small><b id="hOn"></b></div><div><small>exchange lag</small><b id="hLag0"></b></div><div><small>media lag</small><b id="hLag1"></b></div></div>
+      </section>
+      <section class="card">
         <h2>How this is made</h2>
-        <p class="note" style="margin-top:0">The engine polls each source on its own clock and keeps two times per item: when the source published it and when we saw it. Classification is by rules (listing, delisting, macro, hack, ETF, regulation, whale, filing, politics, adoption, protocol, unlock); promotions and trading-pair housekeeping score zero. Confirmation counts distinct desks reporting one story within six hours. Nothing here is a buy or sell call. The same events drive the <a href="/ai-indicators/#catalyst">What moved it</a> indicator on every chart and the Ask AI brief. Free JSON: <a href="/api/catalysts?min=20">/api/catalysts</a>, <a href="/api/catalysts/top?h=24">/api/catalysts/top</a>, <a href="/api/catalysts/moves?symbol=BTC">/api/catalysts/moves</a>.</p>
+        <p class="note">Each source is polled on its own clock and every item keeps two times: when the source published it and when we saw it. Classification is by rules first, then a language model reads each headline for importance, the coins it is really about and the direction it implies; promotions and trading-pair housekeeping score zero. Confirmation counts distinct desks reporting one story within six hours. Realism: for every kind of event we measured how much price moved in the 15 minutes after it, against the same market's ordinary minutes and a week-earlier placebo - that multiple is shown on each item and caps how much credit an item can take for a move. Nothing here is a buy or sell call. The same events drive the <a href="/ai-indicators/#catalyst">What moved it</a> indicator on every chart and the Ask AI brief. Free JSON: <a href="/api/catalysts?min=20">/api/catalysts</a>, <a href="/api/catalysts/top?h=24">/api/catalysts/top</a>, <a href="/api/catalysts/moves?symbol=BTC">/api/catalysts/moves</a>.</p>
       </section>
     </aside>
   </div>
@@ -151,50 +230,72 @@ h1 em{color:var(--lime);font-style:normal}
 <script>
 (function(){
   var $=function(id){return document.getElementById(id);};
-  var S={items:[],top:[],px:{},kind:'',sym:'',hi:false,show:40,mvSym:'BTC',mvCache:{}};
+  var S={items:[],top:[],px:{},kind:'',sym:'',hi:false,show:40,mvSym:'BTC',mvCache:{},seen:{},first:true};
   var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
   var ago=function(ts){var d=Math.max(0,Date.now()-ts),m=Math.round(d/60000);if(m<1)return 'now';if(m<60)return m+'m';var h=Math.round(m/60);if(h<48)return h+'h';return Math.round(h/24)+'d';};
   var hhmm=function(ts){var d=new Date(ts),p=function(n){return (n<10?'0':'')+n;};return p(d.getHours())+':'+p(d.getMinutes());};
-  var srcName=function(s){return String(s||'').replace(/^rss:|^tg:|^x:/,'').replace(/-ann$/,'').replace(/^hl-meta$/,'hyperliquid');};
+  var srcName=function(s){s=String(s||'');if(/^x:/.test(s))return '@'+s.slice(2);return s.replace(/^rss:|^tg:/,'').replace(/-ann$/,'').replace(/^hl-meta$/,'hyperliquid');};
+  var KC={listing:'#2ebd85',adoption:'#2ebd85',delisting:'#ff5a4d',hack:'#ff5a4d',macro:'#ffb020',etf:'#5ec6ff',filing:'#5ec6ff',regulation:'#5ec6ff',whale:'#b18cff',protocol:'#b18cff',unlock:'#b18cff',politics:'#ff6aa8'};
   function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
-  function renderTop(){var el=$('top');if(!S.top.length){el.innerHTML='<span style="color:var(--dim);font-size:13px">No coin was named in the last 24 hours.</span>';return;}
-    el.innerHTML=S.top.slice(0,24).map(function(t){var p=S.px[t.sym],ch=p&&isFinite(p.chg)?p.chg:null;var k=Object.keys(t.kinds||{}).sort(function(a,b){return t.kinds[b]-t.kinds[a];})[0]||'';
-      return '<button data-sym="'+esc(t.sym)+'" class="'+(S.sym===t.sym?'on':'')+'"><b>'+esc(t.sym)+'</b><span class="n"><i>'+t.n+'</i> item'+(t.n===1?'':'s')+'</span>'+(ch!=null?'<span class="ch" style="color:'+(ch>=0?'var(--green)':'var(--red)')+'">'+(ch>=0?'+':'')+ch.toFixed(1)+'%</span>':'')+(k?'<span class="k">'+esc(k)+'</span>':'')+'</button>';}).join('');}
-  function visible(){return S.items.filter(function(it){if(S.kind&&it.kind!==S.kind)return false;if(S.hi&&it.score<40)return false;if(S.sym&&(','+it.syms+',').indexOf(','+S.sym+',')<0)return false;return true;});}
+  function impChip(it){var im=it.impact;if(!im||!(im.n>=12))return '<span class="imp cold" title="Not enough measured events of this kind yet">unmeasured</span>';
+    var hot=im.x15>=2,cls=hot?'imp hot':'imp';return '<span class="'+cls+'" title="Events of this kind moved price '+im.x15+'x the usual 15-minute bar ('+im.n+' measured'+(im.hit15!=null?', direction right '+Math.round(im.hit15*100)+'%':'')+(im.p15?', placebo '+im.p15+'x':'')+')">'+im.x15+'x</span>';}
+  function syms(it,n){return String(it.syms||'').split(',').filter(Boolean).slice(0,n||6).map(function(s){return '<span class="sy" data-sym="'+esc(s)+'">'+esc(s)+'</span>';}).join('');}
+  function renderNow(){var hr=Date.now()-3600000,el=$('now');
+    var v=S.items.filter(function(x){return x.ts_src>=hr&&x.score>=35;}).sort(function(a,b){return b.score-a.score;}).slice(0,3);
+    if(!v.length){el.innerHTML='<div class="nowq">A quiet hour: nothing scored above 35 landed in the last 60 minutes. The feed below keeps the whole day.</div>';return;}
+    el.innerHTML=v.map(function(it){return '<div class="nowc" style="--ac:'+(KC[it.kind]||'#8b95a3')+'"><div class="k"><span class="kd '+esc(it.kind)+'">'+esc(it.kind)+'</span>'+impChip(it)+'<span class="lt">'+ago(it.ts_src)+' \u00b7 '+esc(srcName(it.source))+'</span></div><div class="h">'+(it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener nofollow">'+esc(it.title)+'</a>':esc(it.title))+'</div>'+(it.lbl&&it.lbl.sum?'<div class="s">'+esc(it.lbl.sum)+'</div>':'')+'<div class="f"><span class="sc"><i><b style="width:'+Math.max(2,Math.min(100,it.score))+'%"></b></i>'+it.score+'</span>'+(it.conf>1?'<span class="cf">x'+it.conf+'</span>':'')+syms(it,4)+'</div></div>';}).join('');}
+  function visible(){var q=S.sym;return S.items.filter(function(it){if(S.kind&&it.kind!==S.kind)return false;if(S.hi&&it.score<40)return false;if(q&&(','+it.syms+',').indexOf(','+q+',')<0)return false;return true;});}
+  function renderCounts(){var c={};S.items.forEach(function(it){c[it.kind]=(c[it.kind]||0)+1;});Array.prototype.forEach.call($('filt').querySelectorAll('button[data-k]'),function(b){var k=b.getAttribute('data-k');b.querySelector('b').textContent=k?(c[k]||0):S.items.length;});}
   function renderFeed(){var v=visible(),el=$('feed');$('feedSub').textContent=(S.sym?'about '+S.sym+' \u00b7 ':'')+v.length+' item'+(v.length===1?'':'s')+' \u00b7 newest first';
-    if(!v.length){el.innerHTML='<span style="color:var(--dim);font-size:13px">Nothing matches. '+(S.sym?'No catalyst named '+esc(S.sym)+' in the window.':'')+'</span>';$('more').hidden=true;return;}
-    el.innerHTML=v.slice(0,S.show).map(function(it){var syms=String(it.syms||'').split(',').filter(Boolean).slice(0,6);
-      return '<div class="it'+(it.score>=55?' hi':'')+'"><div class="t"><b>'+ago(it.ts_src)+'</b>'+hhmm(it.ts_src)+'</div><div><div class="h">'+(it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener nofollow">'+esc(it.title)+'</a>':esc(it.title))+'</div><div class="m"><span class="kd '+esc(it.kind)+'">'+esc(it.kind)+'</span><span class="sc"><i><b style="width:'+Math.max(2,Math.min(100,it.score))+'%"></b></i>'+it.score+'</span><span>'+esc(srcName(it.source))+'</span>'+(it.conf>1?'<span class="cf">x'+it.conf+' desks</span>':'')+syms.map(function(s){return '<span class="sy" data-sym="'+esc(s)+'">'+esc(s)+'</span>';}).join('')+'</div></div></div>';}).join('');
-    $('more').hidden=v.length<=S.show;}
+    if(!v.length){el.innerHTML='<span style="color:var(--dim);font-size:13px">Nothing matches'+(S.sym?' - no catalyst named '+esc(S.sym)+' in the window':'')+'.</span>';$('more').hidden=true;return;}
+    el.innerHTML=v.slice(0,S.show).map(function(it){var fresh=!S.first&&!S.seen[it.id];var lag=it.ts_seen&&it.ts_src?Math.round((it.ts_seen-it.ts_src)/1000):null;
+      return '<div class="it'+(it.score>=55?' hi':'')+'" data-id="'+esc(it.id)+'" style="--ac:'+(KC[it.kind]||'#2a3240')+'"'+(fresh?' data-fresh="1"':'')+'><div class="t"><b>'+ago(it.ts_src)+'</b>'+hhmm(it.ts_src)+(lag!=null&&lag>=0&&lag<86400?'<i>seen +'+(lag<120?lag+'s':Math.round(lag/60)+'m')+'</i>':'')+'</div><div><div class="h">'+(it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener nofollow">'+esc(it.title)+'</a>':esc(it.title))+'</div>'+(it.lbl&&it.lbl.sum?'<div class="s">'+esc(it.lbl.sum)+(it.lbl.why?' <b>'+esc(it.lbl.why)+'</b>':'')+'</div>':'')+'<div class="m"><span class="kd '+esc(it.kind)+'">'+esc(it.kind)+'</span>'+impChip(it)+'<span class="sc"><i><b style="width:'+Math.max(2,Math.min(100,it.score))+'%"></b></i>'+it.score+'</span><span>'+esc(srcName(it.source))+'</span>'+(it.conf>1?'<span class="cf">x'+it.conf+' desks</span>':'')+syms(it,6)+'</div></div></div>';}).join('');
+    $('more').hidden=v.length<=S.show;
+    try{Array.prototype.forEach.call(el.querySelectorAll('[data-fresh]'),function(n){n.animate([{opacity:0,transform:'translateY(-6px)',boxShadow:'0 0 0 0 rgba(194,246,74,.5)'},{opacity:1,transform:'none',boxShadow:'0 0 0 6px rgba(194,246,74,0)'}],{duration:700,easing:'ease-out'});});}catch(e){}
+    S.items.forEach(function(it){S.seen[it.id]=1;});S.first=false;}
+  function renderTop(){var el=$('top');if(!S.top.length){el.innerHTML='<span style="color:var(--dim);font-size:13px">No coin was named in the last 24 hours.</span>';return;}
+    var mx=S.top[0].n||1;el.innerHTML=S.top.slice(0,14).map(function(t){var p=S.px[t.sym],ch=p&&isFinite(p.chg)?p.chg:null;var k=Object.keys(t.kinds||{}).sort(function(a,b){return t.kinds[b]-t.kinds[a];})[0]||'';
+      return '<div class="rk'+(S.mvSym===t.sym?' on':'')+'" data-sym="'+esc(t.sym)+'"><b>'+esc(t.sym)+'</b><div class="bar"><i style="width:'+Math.max(4,Math.round(100*t.n/mx))+'%"></i><u>'+t.n+'</u></div><div class="ch" style="color:'+(ch==null?'var(--dim)':ch>=0?'var(--green)':'var(--red)')+'">'+(ch!=null?(ch>=0?'+':'')+ch.toFixed(1)+'%':'\u2014')+'<small>'+esc(k)+'</small></div></div>';}).join('');}
   function renderUp(up){var el=$('up');if(!up||!up.length){el.innerHTML='<div><span style="color:var(--dim)">Nothing scheduled with impact in the next 48 hours.</span></div>';return;}
-    el.innerHTML=up.slice(0,8).map(function(e){var d=new Date(e.ts);return '<div><span>'+esc(e.title)+'</span><b>'+d.toLocaleDateString(undefined,{weekday:'short'})+' '+hhmm(e.ts)+'</b></div>';}).join('');}
-  function renderMoves(sym,j){$('mvSym').textContent=sym;$('mvLink').href='/charts?sym='+encodeURIComponent(sym);var el=$('mv');
-    if(!j||!j.moves){el.innerHTML='<span style="color:var(--dim);font-size:13px">No candles for '+esc(sym)+' here.</span>';$('mvSum').textContent='';return;}
-    var s=j.summary||{};$('mvSum').innerHTML='<b>'+(s.n||0)+'</b> moves \u00b7 <b>'+((s.news||0)+(s.both||0))+'</b> news \u00b7 <b>'+((s.cascade||0)+(s.both||0))+'</b> cascade'+(s.whale?' \u00b7 <b>'+s.whale+'</b> whale':'')+(s.btc?' \u00b7 <b>'+s.btc+'</b> BTC':'')+' \u00b7 <b>'+(s.unknown||0)+'</b> unknown'+(s.explainedPct!=null?' \u00b7 '+s.explainedPct+'% explained':'');
-    el.innerHTML=j.moves.slice(0,10).map(function(m){var up=m.dir>0,col=up?'var(--green)':'var(--red)';var d=new Date(m.t0);var c=m.catalyst;
-      return '<div class="mvr"><div class="p" style="color:'+col+'">'+(up?'+':'')+m.pct+'%<small>'+d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+hhmm(m.t0)+'</small></div><div class="c"><b style="color:'+(m.cause==='unknown'?'var(--mut)':col)+'">'+esc(m.label)+(m.confidence>0?' <span>'+Math.round(m.confidence*100)+'%</span>':'')+'</b>'+(c?'<span>'+esc(c.title).slice(0,110)+' \u00b7 '+esc(srcName(c.source))+' \u00b7 '+(c.after?Math.abs(c.leadMin)+'m after':c.leadMin+'m before')+'</span>':(m.cause==='unknown'?'<span>no dated news inside 90 min, no cascade</span>':(m.factors&&m.factors[0]?'<span>'+esc(m.factors[0].text)+'</span>':'')))+'</div></div>';}).join('');}
-  function loadMoves(sym){S.mvSym=sym;if(S.mvCache[sym]){renderMoves(sym,S.mvCache[sym]);return;}$('mvSym').textContent=sym;$('mv').innerHTML='<span style="color:var(--dim);font-size:13px">Reading 30 days of '+esc(sym)+'\u2026</span>';
+    el.innerHTML=up.slice(0,8).map(function(e){var d=new Date(e.ts),m=Math.round((e.ts-Date.now())/60000),cd=m<60?'in '+Math.max(1,m)+' min':m<2880?'in '+Math.round(m/60)+' h':'in '+Math.round(m/1440)+' d';return '<div><span>'+esc(e.title)+'</span><b>'+cd+'<small>'+d.toLocaleDateString(undefined,{weekday:'short'})+' '+hhmm(e.ts)+'</small></b></div>';}).join('');}
+  function renderHealth(h){if(!h)return;$('sS').textContent=h.online!=null?h.online:'';$('sS2').textContent=h.total?'of '+h.total+' polled':'';$('hOn').textContent=h.online!=null?h.online+'/'+h.total:'';
+    var f=function(ms){return ms==null?'\u2014':ms<60000?Math.round(ms/1000)+' s':Math.round(ms/60000)+' min';};$('hLag0').textContent=f(h.lagPrimary);$('hLag1').textContent=f(h.lagMedia);}
+  function renderMoves(sym,j){$('mvSym').textContent=sym;$('mvLink').href='/charts?sym='+encodeURIComponent(sym);var el=$('mv');var p=S.px[sym];$('mvPx').textContent='';$('mvPx').style.color='';if(p&&isFinite(p.chg)){$('mvPx').textContent=(p.chg>=0?'+':'')+p.chg.toFixed(2)+'% 24h';$('mvPx').style.color=p.chg>=0?'var(--green)':'var(--red)';}
+    var t=S.top.filter(function(x){return x.sym===sym;})[0];$('mvMent').textContent=t?t.n+' mention'+(t.n===1?'':'s')+' today':'';
+    if(!j||!j.moves){el.innerHTML='<span style="color:var(--dim);font-size:13px">No candles for '+esc(sym)+' here.</span>';$('explTxt').textContent='';$('explBar').innerHTML='';return;}
+    var s=j.summary||{},n=s.n||1,seg=function(cls,v){return v?'<b class="'+cls+'" style="width:'+Math.round(100*v/n)+'%" title="'+v+'"></b>':'';};
+    $('explBar').innerHTML=seg('n',(s.news||0)+(s.both||0))+seg('c',s.cascade||0)+seg('b',(s.btc||0)+(s.stocks||0))+seg('w',(s.whale||0)+(s.flow||0));
+    $('explTxt').textContent=(s.explainedPct!=null?s.explainedPct+'% explained':'')+' \u00b7 '+(s.n||0)+' moves';
+    el.innerHTML=j.moves.slice(0,8).map(function(m){var up=m.dir>0,col=up?'var(--green)':'var(--red)';var d=new Date(m.t0);var c=m.catalyst;
+      var ev=c?esc(c.title).slice(0,100)+' <em>'+esc(srcName(c.source))+' \u00b7 '+(c.after?Math.abs(c.leadMin)+'m after':c.leadMin+'m before')+(c.realism&&c.realism.x15!=null?' \u00b7 this kind '+c.realism.x15+'x usual':'')+'</em>':esc(m.note||'');
+      return '<div class="mvr"><div class="p" style="color:'+col+'">'+(up?'+':'')+m.pct+'%<small>'+d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+hhmm(m.t0)+'</small></div><div class="c"><b style="color:'+(m.cause==='unknown'?'var(--mut)':col)+'">'+esc(m.label)+(m.confidence>0?' <em>'+Math.round(m.confidence*100)+'%</em>':'')+'</b><span>'+ev+'</span></div></div>';}).join('');}
+  function loadMoves(sym){S.mvSym=sym;renderTop();if(S.mvCache[sym]){renderMoves(sym,S.mvCache[sym]);return;}$('mvSym').textContent=sym;$('mv').innerHTML='<span style="color:var(--dim);font-size:13px">Reading 30 days of '+esc(sym)+'\u2026</span>';
     J('/api/catalysts/moves?symbol='+encodeURIComponent(sym)+'&tf=15&days=30').then(function(j){S.mvCache[sym]=j;if(S.mvSym===sym)renderMoves(sym,j);});}
-  function pick(sym){S.sym=(S.sym===sym)?'':sym;S.show=40;renderTop();renderFeed();if(S.sym)loadMoves(S.sym);}
+  function pick(sym){sym=String(sym||'').toUpperCase();if(!sym)return;S.sym=sym;$('q').value=sym;S.show=40;renderFeed();loadMoves(sym);}
+  function clearSym(){S.sym='';$('q').value='';S.show=40;renderFeed();}
   function load(){
-    return Promise.all([J('/api/catalysts?limit=300&min=1'),J('/api/catalysts/top?h=24&min=20'),J('/api/prices')]).then(function(r){
-      var a=r[0],t=r[1],p=r[2];
+    return Promise.all([J('/api/catalysts?limit=300&min=1'),J('/api/catalysts/top?h=24&min=20'),J('/api/prices'),J('/api/catalysts/health')]).then(function(r){
+      var a=r[0],t=r[1],p=r[2],h=r[3];
       if(a&&a.items){S.items=a.items.filter(function(x){return x.kind!=='promo'&&x.kind!=='pair';});renderUp(a.upcoming);
-        var day=Date.now()-86400000,n24=S.items.filter(function(x){return x.ts_src>=day;}).length;$('pN').textContent=n24.toLocaleString('en-US');$('pN2').textContent=(a.items.length>=300?'newest 300 shown':'score 1+');$('pU').textContent=hhmm(Date.now());}
-      if(t&&t.items){S.top=t.items;$('pC').textContent=t.n||t.items.length;$('pC2').textContent=t.items[0]?t.items[0].sym+' leads with '+t.items[0].n:'';}
+        var now=Date.now(),day=now-86400000,hr=now-3600000;var n24=S.items.filter(function(x){return x.ts_src>=day;}).length,n1=S.items.filter(function(x){return x.ts_src>=hr;}).length,big=S.items.filter(function(x){return x.ts_src>=hr&&x.score>=40;}).length;
+        $('sH').textContent=n1;$('sH2').textContent=big+' scored 40+';$('sD').textContent=n24.toLocaleString('en-US');$('sD2').textContent=a.items.length>=300?'newest 300 held':'items';}
+      if(t&&t.items){S.top=t.items;$('sC').textContent=t.n||t.items.length;$('sC2').textContent=t.items[0]?t.items[0].sym+' leads with '+t.items[0].n:'';}
       if(p){var m=(p&&p.prices)||p;if(m&&typeof m==='object'){Object.keys(m).forEach(function(k){var v=m[k];if(v&&typeof v==='object'&&isFinite(+v.chg))S.px[k.toUpperCase()]={chg:+v.chg};});}}
-      renderTop();renderFeed();
+      if(h)renderHealth(h);
+      renderCounts();renderNow();renderTop();renderFeed();
+      try{$('pulse').animate([{transform:'scale(1)',opacity:1},{transform:'scale(1.9)',opacity:.2},{transform:'scale(1)',opacity:1}],{duration:900});}catch(e){}
     });}
-  $('top').addEventListener('click',function(e){var b=e.target.closest('button[data-sym]');if(b)pick(b.getAttribute('data-sym'));});
-  $('feed').addEventListener('click',function(e){var s=e.target.closest('.sy');if(s){e.preventDefault();pick(s.getAttribute('data-sym'));}});
+  $('top').addEventListener('click',function(e){var b=e.target.closest('.rk[data-sym]');if(b)pick(b.getAttribute('data-sym'));});
+  document.addEventListener('click',function(e){var s=e.target.closest('.sy');if(s){e.preventDefault();pick(s.getAttribute('data-sym'));}});
   $('filt').addEventListener('click',function(e){var b=e.target.closest('button[data-k]');if(!b)return;S.kind=b.getAttribute('data-k');S.show=40;Array.prototype.forEach.call($('filt').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});renderFeed();});
   $('hiOnly').addEventListener('change',function(){S.hi=$('hiOnly').checked;S.show=40;renderFeed();});
   $('more').addEventListener('click',function(){S.show+=40;renderFeed();});
-  var q=new URLSearchParams(location.search).get('sym');if(q&&/^[A-Za-z0-9]{2,12}$/.test(q)){S.sym=q.toUpperCase();S.mvSym=S.sym;}
+  var qt=0;$('q').addEventListener('input',function(){clearTimeout(qt);qt=setTimeout(function(){var v=$('q').value.trim().toUpperCase();if(!v){clearSym();return;}if(/^[A-Z0-9]{2,12}$/.test(v)){S.sym=v;S.show=40;renderFeed();if(S.top.some(function(t){return t.sym===v;})||v.length>=3)loadMoves(v);}},260);});
+  var q=new URLSearchParams(location.search).get('sym');if(q&&/^[A-Za-z0-9]{2,12}$/.test(q)){S.sym=q.toUpperCase();S.mvSym=S.sym;$('q').value=S.sym;}
   load().then(function(){loadMoves(S.mvSym);});
-  setInterval(load,60000);
+  setInterval(load,30000);
+  setInterval(function(){Array.prototype.forEach.call(document.querySelectorAll('#feed .it'),function(n){var it=S.items.filter(function(x){return x.id===n.getAttribute('data-id');})[0];if(it){var b=n.querySelector('.t b');if(b)b.textContent=ago(it.ts_src);}});},15000);
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=8bebdf96"></script>
 </body>
 </html>

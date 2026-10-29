@@ -15,6 +15,7 @@
 const fs = require('fs'), path = require('path');
 const ARGS = process.argv.slice(2), has = k => ARGS.includes(k);
 const PURE = has('--pure'), BROWSER = has('--browser'), LOCAL = has('--local'), FALSIFY = has('--falsify');
+const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'unknown'];
 const BASE = 'https://marginpad.io', DIST = path.join(__dirname, '..', 'dist'), A = path.join(DIST, 'assets');
 let pass = 0, fail = 0;
 const ok = (name, cond, note) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (note !== undefined ? '  -> ' + String(note).slice(0, 220) : '')); } };
@@ -31,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -56,7 +57,7 @@ function pureLeg() {
 
   console.log('[pure] the shipped attribution');
   const T0 = Date.UTC(2026, 9, 20, 12, 0), mv = { t0: T0, t1: T0 + 15 * 60000, pct: 2.1, dir: 1 };
-  const cat = (over) => Object.assign({ ts_src: T0 - 10 * 60000, source: 'bybit-ann', kind: 'delisting', expect: -1, syms: 'BTC', score: 65, conf: 1, title: 'Delisting of BTCUSDT', url: '' }, over);
+  const cat = (over) => Object.assign({ ts_src: T0 - 10 * 60000, source: 'bybit-ann', tier: 'primary', kind: 'delisting', expect: -1, syms: 'BTC', score: 65, conf: 1, title: 'Delisting of BTCUSDT', url: '' }, over);
   let a = X.cxAttribute(mv, [cat({ kind: 'listing', expect: 1 })], null, { sym: 'BTC' });
   ok('a scored BTC listing ten minutes before a BTC rise is the cause', a.cause === 'news' && a.catalyst && a.catalyst.leadMin === 10 && a.catalyst.after === false, JSON.stringify(a));
   ok('with a label a flag can carry', a.label === 'Bybit listing', a.label);
@@ -108,6 +109,24 @@ function pureLeg() {
   const liqS = []; for (let i = 0; i < 2000; i++) liqS.push({ t: T0 - 2000 * 300000 + i * 300000, long: 10000, short: 10000 }); liqS.push({ t: T0, long: 20000, short: 400000 }); liqS.push({ t: T0 + 300000, long: 10000, short: 300000 });
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: 2.2, dir: 1 }, [], liqS, { sym: 'BTC', liqFloor: 250000 });
   ok('a rise on short liquidations is labelled a short squeeze', a.cause === 'cascade' && a.label === 'Short squeeze', a.label);
+  // REALISM and the three causes added 2026-10-29 (stocks, order flow, a sentence on every move)
+  a = X.cxAttribute(mv, [cat({ kind: 'listing', expect: 1 })], null, { sym: 'BTC' });
+  ok('a named catalyst carries its measured realism (x15, n, a sentence)', a.catalyst && a.catalyst.realism && typeof a.catalyst.realism.text === 'string' && a.catalyst.realism.n > 0, JSON.stringify(a.catalyst && a.catalyst.realism));
+  ok('a kind that measurably moves nothing keeps less than half its weight (a mediaB news item cannot claim a move on timing alone)', X.cxRealW(X.cxImpactOf('news', 'mediaB', false)) <= 0.62 && X.cxRealW(X.cxImpactOf('delisting', 'primary', false)) === 1, X.cxRealW(X.cxImpactOf('news', 'mediaB', false)) + ' ' + X.cxRealW(X.cxImpactOf('delisting', 'primary', false)));
+  a = X.cxAttribute(mv, [cat({ source: 'rss:cryptopotato', tier: 'mediaB', kind: 'news', expect: 1, score: 48, title: 'Bitcoin price could rally, analyst says' })], null, { sym: 'BTC' });
+  ok('a media desk price commentary is NOT the cause of a 2% move', a.cause === 'unknown', a.cause + ' ' + JSON.stringify(a.catalyst));
+  ok('and the unknown move still leaves with a sentence saying what was checked', typeof a.note === 'string' && /No dated catalyst/.test(a.note), a.note);
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'ETH', btcMoves: [], spx: [{ t0: T0 - 5 * 60000, t1: T0 + 15 * 60000, pct: -0.9, dir: -1 }] });
+  ok('an ETH drop while the S&P 500 dropped is marked as US stocks', a.cause === 'stocks' && a.factors.some(f => f.k === 'stocks') && /S&P 500/.test(a.note), a.cause + ' ' + a.note);
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'ETH', btcMoves: [], spx: [{ t0: T0 - 5 * 60000, t1: T0 + 15 * 60000, pct: 0.9, dir: 1 }] });
+  ok('but not when stocks went the other way', a.cause === 'unknown', a.cause);
+  const tape = []; for (let i = 0; i < 6; i++) tape.push({ ts: T0 + i * 60000, usd: 1500000, side: 'sell' }); tape.push({ ts: T0 + 2 * 60000, usd: 900000, side: 'buy' });
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'BTC', tape });
+  ok('nine million of one-sided market sells on the tape as a drop runs is order flow', a.cause === 'flow' && a.factors.some(f => f.k === 'flow' && f.flow.n === 6), a.cause + ' ' + JSON.stringify(a.factors.filter(f => f.k === 'flow')));
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'BTC', tape: tape.map(t => ({ ...t, side: 'buy' })) });
+  ok('market BUYS under a drop are not its flow', a.cause === 'unknown', a.cause);
+  const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained', why: 'forced selling', ts: Date.now() } } });
+  ok('a label lifts a rules-only news row: blended score, the real kind, the coins unioned, the direction', en[0].score > 40 && en[0].kind === 'hack' && en[0].kind0 === 'news' && /ETH/.test(en[0].syms) && en[0].expect === -1 && en[0].lbl.sum, JSON.stringify(en[0]));
 }
 
 // ---------- production ----------
@@ -121,10 +140,13 @@ async function prodLeg() {
   ok('the collector answered with a month of catalysts', j.collector === 'ok' && j.catalysts > 500, j.collector + ' ' + j.catalysts);
   ok('liquidations were measured for BTC', j.liqMeasured === true);
   const mv = j.moves || [];
-  ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => ['news', 'cascade', 'news+cascade', 'unknown'].includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
+  ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => CAUSES.includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
   const s = j.summary || {};
-  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + s.unknown === s.n, JSON.stringify(s));
-  ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0)));
+  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + s.unknown === s.n, JSON.stringify(s));
+  ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0) || (m.factors || []).some(f => f.k === m.cause)));
+  ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
+  ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
+  ok('the summary knows the two new causes', typeof s.stocks === 'number' && typeof s.flow === 'number', JSON.stringify(s));
   ok('every catalyst named sits inside the window', mv.filter(m => m.catalyst).every(m => m.catalyst.leadMin <= 90 && m.catalyst.leadMin >= -30), JSON.stringify(mv.filter(m => m.catalyst).map(m => m.catalyst.leadMin).slice(0, 20)));
   ok('unknown is said out loud for some moves (an engine that explains everything is lying)', s.unknown > 0, s.unknown);
   // THE PLACEBO
@@ -143,7 +165,7 @@ async function prodLeg() {
   const at = Date.now() - 10 * 60000;
   const l = await getJ(BASE + '/api/catalysts/moves?symbol=BTC&at=' + at + '&pct=-1.5&n=2&nc=1');
   const lj = l.j || {};
-  ok('the live path answers for a move starting ten minutes ago', l.status === 200 && lj.live === true && lj.at === at && ['news', 'cascade', 'news+cascade', 'unknown'].includes(lj.cause), JSON.stringify(lj).slice(0, 200));
+  ok('the live path answers for a move starting ten minutes ago', l.status === 200 && lj.live === true && lj.at === at && CAUSES.includes(lj.cause), JSON.stringify(lj).slice(0, 200));
   ok('with the catalysts it saw counted', lj.catalystsSeen >= 0 && lj.collector === 'ok', lj.catalystsSeen + ' ' + lj.collector);
   const cached = await fetch(BASE + '/api/catalysts/moves?symbol=BTC');
   // the worker says max-age 300 (60 with the collector down); a zone Cache Rule rewrites the browser TTL on /api/* edge HITs to
@@ -152,8 +174,21 @@ async function prodLeg() {
 }
 
 // ---------- browser ----------
+// the indicator is Premium (2026-10-29): the browser legs walk a throwaway member with a one-day grant, removed at the end
+const ADMIN = (() => { try { return fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean).find(x => /^mpadm_/.test(x)) || ''; } catch (e) { return ''; } })();
+const E2E_UID = 'e2e-cxprem';
+async function adminJ(u, body) { const r = await fetch(BASE + u, { method: body ? 'POST' : 'GET', headers: { 'x-admin-key': ADMIN, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); const t = await r.text(); try { return { status: r.status, j: JSON.parse(t) }; } catch (e) { return { status: r.status, j: null, raw: t }; } }
+async function premiumSession() {
+  if (!ADMIN) return null;
+  await adminJ('/api/admin/e2euser', { uid: E2E_UID, op: 'mk' });
+  await adminJ('/api/admin/premium?add=e2e_' + E2E_UID + '&days=1');
+  const s = await adminJ('/api/admin/e2euser', { uid: E2E_UID, op: 'sess' });
+  return (s.j && (s.j.token || s.j.sess || s.j.mp_sess)) || null;
+}
 async function browserLeg() {
   const { withBrowser, newPage, UA_MOBILE, UA_DESKTOP } = require('./e2e-browser.js');
+  const SESS = LOCAL ? null : await premiumSession();
+  ok('a Premium member session for the browser legs', LOCAL || !!SESS, SESS ? 'ok' : 'no session (ADMIN_KEY.local.txt?)');
   const SERVE = /^\/assets\/(home\.css|home\.js|mp-charts\.js|mp-mcharts\.js)$/;
   async function prep(browser, mobile, w, h, seed) {
     const page = await newPage(browser, { mobile, ua: mobile ? UA_MOBILE : UA_DESKTOP });
@@ -178,6 +213,7 @@ async function browserLeg() {
     // `mp_charts` is the ARRAY savePersist() writes (one object per window), not the layout snapshot's {wins,notes}
     const seed = { mp_charts: JSON.stringify([{ sym: 'BTC', tf: '15', inds: { catalyst: true }, cmp: '', x: 0, y: 0, w: 1150, h: 640, id: 'cx1', emaList: [], smaList: [], liqMin: 0 }]), mp_cws_rail: 'mini', mp_ck_ok: '1' };
     const page = await prep(browser, false, 1366, 768, seed);
+    if (SESS) await page.setCookie({ name: 'mp_sess', value: SESS, domain: 'marginpad.io', path: '/' }, { name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/' });
     await page.goto(BASE + '/charts', { waitUntil: 'domcontentloaded', timeout: 60000 });
     let got = false;
     try { await page.waitForFunction(() => { const w = window.__mpWinsDbg && window.__mpWinsDbg[0]; return !!(w && w._cx && w._cx.moves); }, { timeout: 40000 }); got = true; } catch (e) {}
@@ -195,7 +231,7 @@ async function browserLeg() {
         const card = await page.evaluate(() => { const c = document.querySelector('.cwin-cxc'); if (!c) return null; const r = c.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + 20); return { text: c.textContent.slice(0, 200), inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight, reach: !!(hit && c.contains(hit)), cause: (c.querySelector('.cxc-cause') || {}).textContent }; });
         ok('a real click on a flag opens its card', !!card, hit.label);
         ok('the card is inside the viewport and under the pointer', card && card.inside && card.reach, JSON.stringify(card));
-        ok('and names the cause the flag carried', card && (hit.cause === 'unknown' ? /No known cause/i.test(card.cause || '') : /News|cascade/i.test(card.cause || '')), card && card.cause);
+        ok('and names the cause the flag carried', card && (hit.cause === 'unknown' ? /No known cause/i.test(card.cause || '') : /News|cascade|Bitcoin|Whale|stocks|flow/i.test(card.cause || '')), card && card.cause);
         await page.keyboard.press('Escape'); await page.evaluate(() => { const c = document.querySelector('.cwin-cxc'); if (c) c.remove(); });
       } else ok('a flag to click', false, 'no hit rects');
       // the live path, injected: a -1.5% move starting ten minutes ago
@@ -212,6 +248,7 @@ async function browserLeg() {
     console.log('[browser] phone /charts');
     const seedM = { mp_mfc_state: JSON.stringify({ split: false, active: 0, panes: [{ sym: 'BTC', tf: '15', inds: { catalyst: true } }] }), mp_ck_ok: '1' };
     const pm = await prep(browser, true, 390, 844, seedM);
+    if (SESS) await pm.setCookie({ name: 'mp_sess', value: SESS, domain: 'marginpad.io', path: '/' }, { name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/' });
     await pm.goto(BASE + '/charts', { waitUntil: 'domcontentloaded', timeout: 60000 });
     let gotM = false;
     try { await pm.waitForFunction(() => { const ps = window.__mpMfcDbg && window.__mpMfcDbg(); const p = ps && ps[0]; return !!(p && p.w && p.w._cx && p.w._cx.moves); }, { timeout: 40000 }); gotM = true; } catch (e) {}
@@ -226,6 +263,7 @@ async function browserLeg() {
     ok('no page errors on the phone', pm._errors.length === 0, pm._errors.join(' | ').slice(0, 200));
     await pm.close();
   }, { timeout: 230000 });
+  if (SESS) { try { await adminJ('/api/admin/e2euser', { uid: E2E_UID, op: 'rm' }); } catch (e) {} }
 }
 
 (async () => {

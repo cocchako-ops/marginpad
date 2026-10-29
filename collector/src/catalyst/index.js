@@ -80,7 +80,8 @@ export function startCatalyst(storage) {
   store = storage && typeof storage.insertCatalyst === 'function' ? storage : null;
   // symbol universe first, then the sources on their own clocks (staggered so no source bursts at :00)
   const syms = async () => { try { const l = await S.bybitSymbols(); setSymbols(l); status.symbols = symbolsKnown(); } catch (e) { status.symErr = String(e.message || e).slice(0, 60); } };
-  const layer0 = async () => { await run('bybit-ann', S.bybitAnn, 'primary'); await run('okx-ann', S.okxAnn, 'primary'); await run('hl-meta', S.hlMeta, 'primary'); };
+  const layer0 = async () => { await run('bybit-ann', S.bybitAnn, 'primary'); await run('okx-ann', S.okxAnn, 'primary'); };
+  const hl = async () => { await run('hl-meta', S.hlMeta, 'primary'); };   // Hyperliquid 429s the 20 s clock: its own minute
   const layer0b = async () => { await run('binance-ann', SX.binanceAnn, 'primary'); };
   const upbit = async () => { await run('upbit-ann', SX.upbitAnn, 'primary'); };   // Cloudflare 1015s Upbit inside a minute: every two minutes, alone
   // X: one account per tick, round-robin, so the per-IP budget (30 / 15 min) is never exhausted by a burst
@@ -94,16 +95,17 @@ export function startCatalyst(storage) {
     try { const ev = await S.calendar(); const now = Date.now(); upcoming = ev.filter(e => e.ts > now && e.ts < now + 48 * 3600000).map(e => ({ ts: e.ts, title: e.title, type: e.meta && e.meta.type, impact: e.meta && e.meta.impact })); ingest(ev.filter(e => e.ts <= now && now - e.ts < 15 * 60000), 'calendar', 'primary'); status.sources.calendar = { ...(status.sources.calendar || {}), upcoming: upcoming.length, last: now }; }
     catch (e) { status.sources.calendar = { ...(status.sources.calendar || {}), lastErr: String(e.message || e).slice(0, 80) }; }
   };
-  (async () => { await syms(); await layer0(); await layer0b(); await gov(); await cal(); await media(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
+  (async () => { await syms(); await layer0(); await hl(); await layer0b(); await gov(); await cal(); await media(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
   every(3600e3, syms);
-  every(20e3, layer0);
+  every(15e3, layer0);
+  every(60e3, hl);
   every(60e3, layer0b);
   every(120e3, upbit);
   every(SX.X_INTERVAL_MS, xTick);
   every(60e3, gov);
   every(600e3, govSlow);
-  every(45e3, media);
-  every(90e3, tgs);
+  every(30e3, media);
+  every(45e3, tgs);
   every(300e3, red);
   every(300e3, cal);
   every(60e3, () => { cal(); });            // the minute a scheduled event lands it becomes a catalyst (15-min window)
