@@ -226,10 +226,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var el=document.createElement('div');el.className='cwin-liqc cwin-cxc';
     el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
       +'<div class="lqc-h" style="color:'+col+'">'+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+(mins>=120?Math.round(mins/6)/10+' h':mins+' min')+(m.legs>1?' · '+m.legs+' '+__esT_mpcharts("legsWord",'legs'):'')+'</small></div>'
-      +'<div class="lqc-s cxc-cause" style="color:'+(m.cause==='unknown'?'#aab5c4':col)+'">'+causeLine+(m.confidence>0?' <small>'+Math.round(m.confidence*100)+'%</small>':'')+'</div>'
+      +'<div class="lqc-s cxc-cause" style="color:'+(m.cause==='unknown'?'#aab5c4':col)+'">'+causeLine+(m.confidence>0?' <small>'+__esT_mpcharts("confidenceWord",'confidence')+' '+Math.round(m.confidence*100)+'%</small>':'')+'</div>'
       +catHtml
       +shHtml
-      +(m.note?'<p class="cxc-note">'+esc(m.note.replace(/\. Shares: [^.]*$/,''))+'</p>':'')
+      +(function(){var nt=String(m.note||'');if(c&&c.realism&&c.realism.text)nt=nt.split(c.realism.text).join('');nt=nt.replace(/\s*Shares: [^.]*%\.?/,'').replace(/^[\s\-.]+/,'');if(nt)nt=nt.charAt(0).toUpperCase()+nt.slice(1);return nt?'<p class="cxc-note">'+esc(nt)+'</p>':'';})()
       +'<dl class="lqc-d"><dt>'+__esT_mpcharts("whenWord",'When')+'</dt><dd>'+hh(d0.getHours())+':'+hh(d0.getMinutes())+'–'+hh(d1.getHours())+':'+hh(d1.getMinutes())+' · '+d0.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
       +'<dt>'+__esT_mpcharts("priceWord",'Price')+'</dt><dd>'+cwFmt(m.p0)+' → '+cwFmt(m.p1)+'</dd>'
       +'<dt>'+__esT_mpcharts("sizeVsUsual",'Vs usual bar')+'</dt><dd>'+m.z+'x</dd>'+liqHtml+'</dl>'
@@ -803,7 +803,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _cx=w._cx;
       if(_cx&&_cx.moves){
         var _cm=cxBuildMarks(bars,_cx);w._cxMarks=_cm.length?_cm:null;var _s=_cx.summary||{};
-        var _lab2=__esT_mpcharts("whatMovedItLeg",'WHAT MOVED IT 30d')+' · '+(_s.n||0)+' '+__esT_mpcharts("movesWord",'moves')+' · '+((_s.news||0)+(_s.both||0))+' '+__esT_mpcharts("newsLc",'news')+' · '+((_s.cascade||0)+(_s.both||0))+' '+__esT_mpcharts("cascadeLc",'cascade')+(_s.whale?' · '+_s.whale+' '+__esT_mpcharts("whaleLc",'whale'):'')+(_s.btc?' · '+_s.btc+' BTC':'')+' · '+(_s.unknown||0)+' '+__esT_mpcharts("unknownLc",'unknown')+(_s.explainedPct!=null?' ('+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained')+')':'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
+        var _tc=[[__esT_mpcharts("newsLc",'news'),(_s.news||0)+(_s.both||0)],[__esT_mpcharts("cascadeLc",'cascade'),(_s.cascade||0)+(_s.both||0)+(_s.liqs||0)],['BTC',_s.btc||0],[__esT_mpcharts("whaleLc",'whale'),(_s.whale||0)+(_s.flow||0)],[__esT_mpcharts("structureLc",'structure'),_s.tech||0],[__esT_mpcharts("stocksLc",'stocks'),_s.stocks||0],['OI',(_s.oi||0)+(_s.book||0)]].filter(function(x){return x[1]>0;}).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
+        var _lab2=__esT_mpcharts("whatMovedItLeg",'WHAT MOVED IT 30d')+' · '+(_s.n||0)+' '+__esT_mpcharts("movesWord",'moves')+(_s.explainedPct!=null?' · '+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained'):'')+(_s.multi?' · '+_s.multi+' '+__esT_mpcharts("withTwoCauses",'with 2+ causes'):'')+(_tc.length?' · '+_tc.map(function(x){return x[1]+' '+x[0];}).join(' · '):'')+(_s.unknown?' · '+_s.unknown+' '+__esT_mpcharts("unknownLc",'unknown'):'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab2,title:__esT_mpcharts("whatMovedItTitle",'Every abnormal move of the last 30 days on 15-minute candles, each with its most likely cause. A flag on the candle the move started on; tap it for the evidence. Scale: ')+_cx.scale+'% '+__esT_mpcharts("medianBarMove",'median 15m move, a move is at least ')+(+_cx.mult||4)+'x '+__esT_mpcharts("thatOrFloor",'that or ')+(+_cx.floorPct||0.6)+'%.'});
         var _lv=cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);
         var _L=w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a,_col=_L.pct>=0?'#2ebd85':'#ff6258';

@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -190,6 +190,23 @@ function pureLeg() {
   ok('a weak-match story that still won the cause (confidence .43 against a .55 factor) is lifted to the top of the bar', sh2[0].k === 'news' && sh2[0].share > sh2[1].share, JSON.stringify(sh2));
   const sh3 = X.cxShares(null, false, null, [{ k: 'liqs', label: 'Forced closes', w: 0.55, text: 'x' }, { k: 'btc', label: 'BTC move', w: 0.4, text: 'y' }], 0);
   ok('with no story the heaviest factor leads and the shares still add to one', sh3[0].k === 'liqs' && Math.abs(sh3.reduce((s, x) => s + x.share, 0) - 1) <= 0.02, JSON.stringify(sh3));
+  // THE USER WALK OF 2026-10-29: tickers are not shared entities, a low reading caps the score, a blip does not end an episode
+  const e1 = X.cxEnt({ title: 'Binance to list PREDICT on BNB Chain', syms: 'BNB,BTC,ETH,SOL,XRP', lbl: { sum: 'BTC, ETH, SOL and XRP named as majors' } }), e2 = X.cxEnt({ title: 'BNB outperforms major alts', syms: 'BNB,BTC,ETH,SOL', lbl: { sum: 'BNB beat BTC, ETH and SOL this week' } });
+  ok('two items naming the same majors share no entity (tickers are not entities)', X.cxEntShared(e1, e2) === 0, JSON.stringify([e1, e2]));
+  const lowImp = X.cxEnrich([cat({ id: 'lf', kind: 'filing', score: 40, syms: '' })], { m: { lf: { imp: 15, kind: 'filing', syms: [], expect: 0, sum: 'Routine SEC filing, no crypto impact', why: 'noise', story: 'franklin-filing', ts: Date.now() } } })[0];
+  ok('a reading the model calls noise (imp 15) caps the score at imp, UNDER the inclusive floor of 20', lowImp.score < 20, 'score ' + lowImp.score);
+  const stE = [cat({ kind: 'listing', score: 70, ts_src: T0, syms: 'HYPE', title: 'NYSE parent ICE to partner with Hyperliquid on US perps', lbl: { imp: 85, kind: 'listing', sum: 'ICE and Hyperliquid plan regulated perps' }, source: 'rss:a' }), cat({ kind: 'listing', score: 60, ts_src: T0 + 60000, syms: 'HYPE', title: 'ICE and Hyperliquid team up for perpetuals', lbl: { imp: 80, kind: 'listing', sum: 'Intercontinental Exchange works with Hyperliquid' }, source: 'rss:b' })];
+  X.cxStories(stE);
+  ok('a story whose desks carry no slug is named by the entities they share', stE[0].story && stE[0].story.name === 'ICE Hyperliquid', JSON.stringify(stE[0].story));
+  const stN = [cat({ kind: 'listing', score: 70, ts_src: T0, lbl: { imp: 80, kind: 'listing', sum: 'ICE to list Hyperliquid perps', story: 'ice-hyperliquid-perps' }, source: 'rss:a' }), cat({ kind: 'listing', score: 60, ts_src: T0 + 60000, lbl: { imp: 75, kind: 'listing', sum: 'ICE partners with Hyperliquid on perps', story: 'ice-hyperliquid-perps' }, source: 'rss:b' }), cat({ kind: 'whale', score: 50, ts_src: T0 + 120000, lbl: { imp: 40, kind: 'whale', sum: 'Whale pulls Aave funds, Hyperliquid named', story: 'aave-whale' }, source: 'rss:c' })];
+  X.cxStories(stN);
+  ok('a story is named by the slug its desks agree on, title-cased with acronyms kept', stN[0].story && stN[0].story.name === 'ICE Hyperliquid Perps', JSON.stringify(stN[0].story));
+  ok('a whale item that only shares the coin name with a listing story does not join it', !stN[2].story || stN[2].story.k !== stN[0].story.k, JSON.stringify(stN[2].story));
+  ok('a fallback slug names nothing', X.cxStoryName('s43') === null && X.cxStoryName('sec-etf-approval') === 'SEC ETF Approval');
+  ok('money in a sentence reads as money', X.cxMoney(28610000) === '$28.6M' && X.cxMoney(684000) === '$684k' && X.cxMoney(2.4e9) === '$2.4B', X.cxMoney(28610000));
+  const bl = X.cxEpisodes([{ t0: T0, t1: T0 + 45 * 60000, pct: 9.6, dir: 1, p0: 100, p1: 109.6, cause: 'news', catalyst: { story: { k: 'ice' } }, note: 'a' }, { t0: T0 + 45 * 60000, t1: T0 + 60 * 60000, pct: -0.9, dir: -1, p0: 109.6, p1: 108.6, cause: 'news', catalyst: { ts: 1, source: 'rss:x' }, note: 'b' }, { t0: T0 + 60 * 60000, t1: T0 + 5 * 3600000, pct: 12.1, dir: 1, p0: 108.6, p1: 121.7, cause: 'news', catalyst: { story: { k: 'ice' } }, note: 'c' }]);
+  const big = bl.find(m => m.legs === 2);
+  ok('a -0.9% blip between two legs of one story does not split the episode', !!big && Math.abs(big.pct - 21.7) < 0.2 && bl.length === 2 && bl.some(m => m.blip), JSON.stringify(bl.map(m => [m.pct, m.legs, !!m.blip])));
 }
 
 // ---------- production ----------

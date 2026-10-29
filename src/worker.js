@@ -1250,7 +1250,7 @@ function cxEnrich(items, labels) {
       o.lbl = { imp: l.imp, sum: l.sum, why: l.why || '', kind: l.kind || '', expect: l.expect || 0, syms: l.syms || [], story: l.story || '' };
       // THE MODEL'S IMPORTANCE OUTRANKS THE SOURCE TIER ONCE IT IS HIGH (2026-10-29, owner: the ICE x Hyperliquid story scored 50
       // because the rules gave a Telegram desk 35 and the blend kept most of it): a 70+ reading is 65% of the score, not 40%
-      if (c.kind !== 'promo' && c.kind !== 'pair') { const imp = +l.imp || 0; o.score = Math.max(0, Math.min(100, Math.round(imp >= 60 ? 0.35 * o.score + 0.65 * imp : 0.6 * o.score + 0.4 * imp))); }
+      if (c.kind !== 'promo' && c.kind !== 'pair') { const imp = +l.imp || 0; o.score = Math.max(0, Math.min(100, Math.round(l.imp != null && imp < CX_IMP_NOISE ? Math.min(o.score, imp) : imp >= 60 ? 0.35 * o.score + 0.65 * imp : 0.6 * o.score + 0.4 * imp))); }
       if (l.kind && (c.kind === 'news' || c.kind === 'adoption') && CX_LBL_KINDS[l.kind]) { o.kind0 = c.kind; o.kind = l.kind; }
       if (Array.isArray(l.syms) && l.syms.length) { const u = syms.slice(); for (const s of l.syms) if (u.indexOf(s) < 0 && /^[A-Z0-9]{2,12}$/.test(s)) u.push(s); o.syms = u.join(','); }
       if (!(+c.expect) && l.expect) o.expect = l.expect;
@@ -1279,9 +1279,15 @@ function cxJac(a, b) { let i = 0, u = 0; for (const k in a) { u++; if (b[k]) i++
 const CX_ENT_GENERIC = { BITCOIN: 1, BTC: 1, ETHEREUM: 1, ETH: 1, ETF: 1, ETFS: 1, SEC: 1, US: 1, USA: 1, USD: 1, USDT: 1, USDC: 1, CRYPTO: 1, BINANCE: 1, COINBASE: 1, BYBIT: 1, OKX: 1, JUST: 1, IN: 1, BREAKING: 1, LATEST: 1, NEW: 1, BIG: 1, THE: 1, A: 1, AN: 1, FED: 1, FEDERAL: 1, RESERVE: 1, TRUMP: 1, CEO: 1, CFTC: 1, DOJ: 1, NYSE: 0.75, NASDAQ: 0.75, SOLANA: 1, SOL: 1, XRP: 1, RIPPLE: 1, DOGE: 1, MARKET: 1, MARKETS: 1, PRICE: 1, TODAY: 1, WEEK: 1, UPDATE: 1, NEWS: 1, REPORT: 1, REPORTS: 1, SAYS: 1, SAY: 1, WHY: 1, HOW: 1, WHAT: 1, WHO: 1, IT: 1, ITS: 1, FOR: 1, TO: 1, OF: 1, ON: 1, AND: 1, AT: 1, BY: 1, IS: 1, AS: 1, FROM: 1, WITH: 1, AFTER: 1, OVER: 1, INTO: 1, MILLION: 1, BILLION: 1, TRILLION: 1 };
 function cxEnt(c) {
   const o = {}; const src = String(c.title || '') + ' ' + String((c.lbl && c.lbl.sum) || '');
-  for (const m of src.matchAll(/\$[A-Za-z0-9]{2,12}|\b[A-Z][A-Za-z0-9.'-]{1,}\b/g)) { const w = m[0].replace(/^\$/, '').replace(/[.'-]+$/, '').toUpperCase(); if (w.length < 2) continue; const g = CX_ENT_GENERIC[w]; if (g === 1) continue; o[w] = g === 0.75 ? 0.75 : 1; }
+  const tick = {}; for (const s of String(c.syms || '').split(',')) if (s) tick[s.toUpperCase()] = 1;
+  for (const m of src.matchAll(/\$[A-Za-z0-9]{2,12}|\b[A-Z][A-Za-z0-9.'-]{1,}\b/g)) { const w = m[0].replace(/^\$/, '').replace(/[.'-]+$/, '').toUpperCase(); if (w.length < 2 || tick[w]) continue; const g = CX_ENT_GENERIC[w]; if (g === 1) continue; o[w] = g === 0.75 ? 0.75 : 1; }
   return o;
 }
+// a model reading under this is 'not a catalyst' in the model's own words: it caps the score, joins no story, earns no desk bonus
+const CX_IMP_NOISE = 25;
+// 'ice-hyperliquid-perps' -> 'ICE Hyperliquid Perps' (a short word is an acronym); a fallback slug (s43) names nothing
+function cxStoryName(slug) { const s = String(slug || ''); if (!s || /^s\d+$/.test(s)) return null; const w = s.split(/[-_]+/).filter(Boolean).map(x => x.length <= 3 ? x.toUpperCase() : x.charAt(0).toUpperCase() + x.slice(1)); const t = w.join(' '); return t.length > 30 ? t.slice(0, 29).replace(/\s+\S*$/, '') : t; }
+function cxMoney(v) { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(v >= 1e8 ? 0 : 1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'k' : '$' + Math.round(v); }
 function cxEntShared(a, b) { let s = 0; for (const k in a) if (b[k]) s += Math.min(a[k], b[k]); return s; }
 function cxStories(items) {
   const n = items.length, par = new Array(n).fill(0).map((_, i) => i);
@@ -1290,11 +1296,12 @@ function cxStories(items) {
   const tok = items.map(c => c.lbl ? cxTok((c.lbl.sum || '') + ' ' + (c.title || '')) : null);
   const ent = items.map(c => c.lbl ? cxEnt(c) : null);
   for (let i = 0; i < n; i++) {
-    const a = items[i]; if (!a.lbl || a.kind === 'promo' || a.kind === 'pair') continue;
+    const a = items[i]; if (!a.lbl || a.kind === 'promo' || a.kind === 'pair' || (a.lbl.imp != null && +a.lbl.imp < CX_IMP_NOISE)) continue;
     for (let j = i + 1; j < n; j++) {
-      const b = items[j]; if (!b.lbl || b.kind === 'promo' || b.kind === 'pair') continue;
+      const b = items[j]; if (!b.lbl || b.kind === 'promo' || b.kind === 'pair' || (b.lbl.imp != null && +b.lbl.imp < CX_IMP_NOISE)) continue;
       if (Math.abs((+a.ts_src || 0) - (+b.ts_src || 0)) > 12 * 3600000) continue;
-      if ((a.lbl.story && a.lbl.story === b.lbl.story) || cxJac(tok[i], tok[j]) >= 0.34 || cxEntShared(ent[i], ent[j]) >= 2) uni(i, j);
+      const kindOk = !a.lbl.kind || !b.lbl.kind || a.lbl.kind === b.lbl.kind;
+      if ((a.lbl.story && a.lbl.story === b.lbl.story) || cxJac(tok[i], tok[j]) >= 0.34 || (kindOk && cxEntShared(ent[i], ent[j]) >= 2)) uni(i, j);
     }
   }
   const groups = {};
@@ -1304,7 +1311,11 @@ function cxStories(items) {
     const srcs = {}, syms = {}; let first = Infinity, peak = 0, top = 0;
     for (const i of g) { const c = items[i]; srcs[String(c.source || '').replace(/^(rss|tg|x):/, '').toLowerCase()] = 1; for (const s of String(c.syms || '').split(',')) if (s) syms[s] = 1; first = Math.min(first, +c.ts_src || Infinity); peak = Math.max(peak, +(c.lbl && c.lbl.imp) || 0); top = Math.max(top, +c.score || 0); }
     const nd = Object.keys(srcs).length, su = Object.keys(syms);
-    const story = { k: String(items[g[0]].lbl.story || ('s' + g[0])).slice(0, 48), n: nd, first, peak, syms: su.join(',') };
+    const slugs = {}; for (const i of g) { const sl = items[i].lbl.story; if (sl) { slugs[sl] = slugs[sl] || { n: 0, top: 0 }; slugs[sl].n++; slugs[sl].top = Math.max(slugs[sl].top, +items[i].score || 0); } }
+    const slug = Object.keys(slugs).sort((x, y) => (slugs[y].n - slugs[x].n) || (slugs[y].top - slugs[x].top))[0] || ('s' + g[0]);
+    let name = cxStoryName(slug);
+    if (!name && nd >= 2) { const cnt = {}; for (const i of g) for (const k in (ent[i] || {})) cnt[k] = (cnt[k] || 0) + 1; const top = Object.keys(cnt).filter(k => cnt[k] >= 2 && CX_ENT_GENERIC[k] !== 0.75).sort((x, y) => cnt[y] - cnt[x]).slice(0, 2); if (top.length) name = top.map(x => x.length <= 3 ? x : x.charAt(0) + x.slice(1).toLowerCase()).join(' '); }
+    const story = { k: String(slug).slice(0, 48), n: nd, first, peak, syms: su.join(','), name };
     const bonus = Math.min(24, 8 * (nd - 1));
     for (const i of g) {
       const c = items[i];
@@ -1377,7 +1388,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v4_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v5_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -1545,16 +1556,21 @@ function cxDetectMoves(bars, opt) {
 function cxEpKey(m) { if (!m || !m.catalyst) return null; return m.catalyst.story ? 's:' + m.catalyst.story.k : 'c:' + (+m.catalyst.ts) + '|' + m.catalyst.source; }
 function cxEpisodes(moves) {
   const asc = (moves || []).slice().sort((a, b) => a.t0 - b.t0), out = [];
+  const fold = (prev, m) => {
+    prev.legs = (prev.legs || 1) + 1; prev.legList = (prev.legList || [{ t0: prev.t0, pct: prev.pct }]).concat([{ t0: m.t0, pct: m.pct }]);
+    prev.t1 = Math.max(prev.t1, m.t1); if (m.p1 != null) prev.p1 = m.p1; if (prev.p0 > 0 && prev.p1 > 0) prev.pct = +((prev.p1 / prev.p0 - 1) * 100).toFixed(2);
+    if (m.hi != null) prev.hi = Math.max(+prev.hi || 0, +m.hi); if (m.lo != null) prev.lo = Math.min(prev.lo != null ? +prev.lo : Infinity, +m.lo);
+    prev.n = (+prev.n || 0) + (+m.n || 0); prev.z = Math.max(+prev.z || 0, +m.z || 0); prev.confidence = Math.max(+prev.confidence || 0, +m.confidence || 0);
+    prev.note = String(prev.note || '').replace(/\s*\(\d+ legs over [^)]*\)$/, '') + ' (' + prev.legs + ' legs over ' + Math.round((prev.t1 - prev.t0) / 360000) / 10 + ' h)';
+  };
+  const same = (p, m, k) => p && k && cxEpKey(p) === k && p.dir === m.dir && m.t0 - p.t1 <= 6 * 3600000 && String(p.cause).indexOf('news') === 0 && String(m.cause).indexOf('news') === 0;
   for (const m of asc) {
     const prev = out[out.length - 1], k = cxEpKey(m);
-    if (prev && k && cxEpKey(prev) === k && prev.dir === m.dir && m.t0 - prev.t1 <= 6 * 3600000 && String(prev.cause).indexOf('news') === 0 && String(m.cause).indexOf('news') === 0) {
-      prev.legs = (prev.legs || 1) + 1; prev.legList = (prev.legList || [{ t0: prev.t0, pct: prev.pct }]).concat([{ t0: m.t0, pct: m.pct }]);
-      prev.t1 = Math.max(prev.t1, m.t1); if (m.p1 != null) prev.p1 = m.p1; if (prev.p0 > 0 && prev.p1 > 0) prev.pct = +((prev.p1 / prev.p0 - 1) * 100).toFixed(2);
-      if (m.hi != null) prev.hi = Math.max(+prev.hi || 0, +m.hi); if (m.lo != null) prev.lo = Math.min(prev.lo != null ? +prev.lo : Infinity, +m.lo);
-      prev.n = (+prev.n || 0) + (+m.n || 0); prev.z = Math.max(+prev.z || 0, +m.z || 0); prev.confidence = Math.max(+prev.confidence || 0, +m.confidence || 0);
-      prev.note = String(prev.note || '').replace(/\s*\(\d+ legs over [^)]*\)$/, '') + ' (' + prev.legs + ' legs over ' + Math.round((prev.t1 - prev.t0) / 360000) / 10 + ' h)';
-      continue;
-    }
+    if (same(prev, m, k)) { fold(prev, m); continue; }
+    // a counter-move smaller than a third of the leg before it, sitting between two legs of one story, is a blip inside the
+    // episode, not its end (HYPE 2026-10-29: a -0.9% dip split the ICE story into two 'Listing' flags); the blip keeps its own row
+    const pp = out[out.length - 2];
+    if (prev && pp && prev.dir !== m.dir && !/cascade/.test(String(prev.cause)) && cxEpKey(prev) !== k && Math.abs(+prev.pct) <= Math.abs(+pp.pct) / 3 && same(pp, m, k)) { fold(pp, m); prev.blip = true; continue; }
     out.push({ ...m, legs: 1 });
   }
   return out.sort((a, b) => b.t0 - a.t0);
@@ -1638,8 +1654,9 @@ function cxAttribute(mv, cats, liq, opt) {
   if (tech) ctx.push(tech);
   // forced closes UNDER the cascade bar (3x the typical bucket and half the floor) are still a mechanism the feed measured: a
   // weaker cause than a cascade, said as 'forced closes were in it', never as a cascade
-  if (!cascade && liqOut && liqOut.x != null && liqOut.x >= 3 && liqOut.usd >= o.liqFloor / 2) ctx.unshift({ k: 'liqs', label: 'Forced closes', w: Math.min(0.55, 0.3 + liqOut.x / 20), text: 'The feed liquidated ' + liqOut.x + 'x its typical 5-minute amount (' + Math.round(liqOut.usd / 1000) + 'k USD) as the move ran - not a cascade, but forced closes were in it', liq: { usd: liqOut.usd, x: liqOut.x } });
+  if (!cascade && liqOut && liqOut.x != null && liqOut.x >= 3 && liqOut.usd >= o.liqFloor / 2) ctx.unshift({ k: 'liqs', label: 'Forced closes', w: Math.min(0.55, 0.3 + liqOut.x / 20), text: 'The feed liquidated ' + liqOut.x + 'x its typical 5-minute amount (' + cxMoney(liqOut.usd) + ') as the move ran - not a cascade, but forced closes were in it', liq: { usd: liqOut.usd, x: liqOut.x } });
   let cause2 = cause, label = best ? cxLabel(best) : cascade ? cascLabel : 'No known cause', confidence2 = confidence;
+  if (best && best.story && best.story.name && best.story.n >= 2 && (best.major || best.story.peak >= 70)) label = best.story.name;
   if (cause === 'unknown') {
     const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs' || x.k === 'oi' || x.k === 'book' || (x.k === 'tech' && x.w >= 0.4)).sort((a, b) => b.w - a.w)[0];
     if (strong) { cause2 = strong.k; label = strong.label; confidence2 = strong.w; }
@@ -1735,7 +1752,7 @@ function cxBookFactor(mv, book, now) {
 function cxShares(best, cascade, liqOut, ctx, conf) {
   const c = [];
   if (best) c.push({ k: 'news', label: null, w: Math.max(+best.w || 0.3, +conf || 0), text: null });
-  if (cascade && liqOut) c.push({ k: 'cascade', label: null, w: Math.min(0.8, 0.5 + (+liqOut.x || 6) / 60), text: 'The feed liquidated ' + Math.round(liqOut.usd / 1000) + 'k USD (' + liqOut.x + 'x the typical bucket) while the move ran' });
+  if (cascade && liqOut) c.push({ k: 'cascade', label: null, w: Math.min(0.8, 0.5 + (+liqOut.x || 6) / 60), text: 'The feed liquidated ' + cxMoney(liqOut.usd) + ' (' + liqOut.x + 'x the typical bucket) while the move ran' });
   for (const f of ctx || []) { if (f.k === 'session' || f.k === 'fuel') continue; if (!(f.w >= 0.25)) continue; if (f.k === 'tech' && f.w < 0.4) continue; c.push({ k: f.k, label: f.label, w: +f.w, text: f.text }); }
   if (conf > 0 && c.length > 1) { const nw = c[0], mx = Math.max.apply(null, c.slice(1).map(x => x.w)); if (nw.k === 'news' && nw.w < mx) nw.w = mx + 0.01; }
   const sum = c.reduce((a, x) => a + x.w, 0);
@@ -1785,7 +1802,7 @@ function cxNote(mv, a, ctx, sym) {
     const te = ctx.filter(c => c.k === 'tech')[0]; if (te) parts.push(te.text);
     if (!te && !ctx.some(c => c.k === 'stocks') && !ctx.some(c => c.k === 'flow') && !ctx.some(c => c.k === 'liqs')) parts.push('read it as positioning being worked through the book rather than a headline');
   } else if (a.catalyst && a.catalyst.realism) parts.push(a.catalyst.realism.text + (a.catalyst.realism.capped ? ' - this move is bigger than that kind usually produces, so the headline is only part of it' : ''));
-  else if (a.cause === 'cascade') parts.push('The feed liquidated ' + (a.liq ? '$' + Math.round(a.liq.usd / 1000) + 'k' : 'many times its usual amount') + ' while the move ran - forced closes drove it');
+  else if (a.cause === 'cascade') parts.push('The feed liquidated ' + (a.liq ? cxMoney(a.liq.usd) : 'many times its usual amount') + ' while the move ran - forced closes drove it');
   else { const fx = ctx.filter(c => c.k === a.cause)[0]; if (fx) parts.push(fx.text); }
   if (a.cause !== 'unknown' && a.cause !== 'tech') { const te = ctx.filter(c => c.k === 'tech')[0]; if (te && te.text) parts.push(te.text.charAt(0).toUpperCase() + te.text.slice(1)); }
   for (const k of ['oi', 'book', 'fuel']) { if (a.cause === k) continue; const fx = ctx.filter(c => c.k === k)[0]; if (fx && fx.text) parts.push(fx.text.charAt(0).toUpperCase() + fx.text.slice(1)); }
@@ -1819,7 +1836,7 @@ async function handleCatalystMoves(url, env) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v4_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v5_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       colFetch('/api/v1/catalysts?since=' + (at - 43200000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 15),
@@ -1843,7 +1860,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v6_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v8_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1902,7 +1919,7 @@ async function handleCatalystTop(url, env) {
 async function handleCatalysts(url, env) {
   const q = { sym: String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12), min: Math.max(0, Math.min(100, +url.searchParams.get('min') || 0)), kind: String(url.searchParams.get('kind') || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.max(1, Math.min(300, +url.searchParams.get('limit') || 100)), since: Math.max(0, +url.searchParams.get('since') || 0) };
   const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
-  const ck = new Request('https://marginpad.io/__catalysts_v3_' + q.sym + '_' + q.min + '_' + q.kind + '_' + q.limit + '_' + q.since);
+  const ck = new Request('https://marginpad.io/__catalysts_v5_' + q.sym + '_' + q.min + '_' + q.kind + '_' + q.limit + '_' + q.since);
   const nc = url.searchParams.get('nc') === '1';
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
@@ -1911,7 +1928,7 @@ async function handleCatalysts(url, env) {
     const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 2500);
     try {
       const r = await __realFetch(base + '/api/v1/catalysts?sym=' + q.sym + '&min=' + q.min + '&kind=' + q.kind + '&limit=' + q.limit + '&since=' + q.since, { signal: ctl.signal });
-      if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.items)) body = { ...j, items: cxEnrich(j.items, await cxLabelsGet(env)), impactAt: CX_IMPACT_AT, collector: 'ok' }; }
+      if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.items)) body = { ...j, items: cxEnrich(j.items, await cxLabelsGet(env)).filter(c => !q.min || +c.score >= q.min), impactAt: CX_IMPACT_AT, collector: 'ok' }; body.n = body.items.length; }
     } catch (e) {} finally { clearTimeout(tmr); }
   }
   const res = J(body, body.collector === 'ok' ? 30 : 15);
