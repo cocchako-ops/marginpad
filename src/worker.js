@@ -1183,6 +1183,202 @@ const CALIB_CASCADE_BINS = 0.5;
 // and scored on the collector, read off its 48-hour memory ring. Keyless. ONE collector read behind a 30 s edge key
 // per query shape; `?nc=1` bypasses it. Same discipline as handleLiqEvents: the raw fetch with its own 2.5 s
 // ceiling, an already-open breaker honoured, a failure cached briefly so every surface does not retry at once,
+/* ======================= WHAT MOVED IT (2026-10-29, owner: "indikator na chartu koji ce da pretpostavlja zbog cega
+   su bili skokovi/padovi ... bar mesec dana unazad ... mora da bude accurate u trenutku kad se nesto desava") =======================
+   Three pure functions and one route. The chart never guesses on its own: it asks this route for the month's moves
+   with their causes, and when it sees a move forming it asks the same route (`?at=`) with the same rules.
+   A MOVE is measured against the coin's OWN recent volatility (a rolling median of the absolute bar return), never
+   a fixed percent - 0.6% is nothing on a meme coin and a day's news on BTC. A CAUSE is one of exactly four words:
+   news (a catalyst with a matching symbol inside the window, scored and time-weighted), cascade (our own feed
+   liquidated several times the typical amount while the move ran), news+cascade, or unknown - and unknown is said
+   out loud, because a reader who is told a cause for every move stops believing any of them. */
+const CX_BEFORE_MS = 90 * 60000, CX_AFTER_MS = 30 * 60000, CX_MIN_SCORE = 20, CX_MAX_MOVES = 120;
+// a filing names an issuer, never the market: BlackRock's mutual-fund prospectus was explaining a SOL move until it left this set
+const CX_MARKET_WIDE = { macro: 1, regulation: 1, etf: 1, politics: 1, hack: 1, whale: 1, adoption: 1, news: 1 };
+const CX_SKIP_KIND = { promo: 1, pair: 1 };
+function cxMedian(a) { const s = a.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; }
+// bars ascending, {time (s), open, high, low, close}. Returns moves newest first, each with the scale it was judged against.
+function cxDetectMoves(bars, opt) {
+  const o = Object.assign({ look: 96, minLook: 24, mult: 4, floorPct: 0.006, runMult: 2.5, winMult: 5, max: CX_MAX_MOVES }, opt || {});
+  const n = bars ? bars.length : 0; if (n < o.minLook + 2) return { moves: [], scale: null };
+  const r = new Array(n).fill(0), absr = [];
+  for (let i = 1; i < n; i++) { const p = +bars[i - 1].close, c = +bars[i].close; r[i] = (p > 0 && c > 0) ? c / p - 1 : 0; }
+  // rolling median of |r| over the PREVIOUS `look` bars (never the bar itself: a move must not raise its own bar)
+  const scale = new Array(n).fill(null); const win = [];
+  for (let i = 1; i < n; i++) {
+    if (win.length >= o.minLook) { const s = win.slice().sort((x, y) => x - y); scale[i] = s[Math.floor(s.length / 2)]; }
+    win.push(Math.abs(r[i])); if (win.length > o.look) win.shift();
+  }
+  const tms = b => +b.time * 1000;
+  const cand = [], covered = new Uint8Array(n);
+  // (1) runs of same-signed bars each at least runMult x scale, and single big bars
+  let i = 1;
+  while (i < n) {
+    const sc = scale[i]; if (!(sc > 0)) { i++; continue; }
+    const sg = Math.sign(r[i]);
+    if (sg !== 0 && Math.abs(r[i]) >= o.runMult * sc) {
+      let j = i; while (j + 1 < n && Math.sign(r[j + 1]) === sg && scale[j + 1] > 0 && Math.abs(r[j + 1]) >= o.runMult * scale[j + 1]) j++;
+      const p0 = +bars[i - 1].close, p1 = +bars[j].close, pct = p0 > 0 ? p1 / p0 - 1 : 0;
+      if (Math.abs(pct) >= Math.max(o.mult * sc, o.floorPct)) { cand.push({ i0: i, i1: j, pct, sc, run: 1 }); for (let q = i; q <= j; q++) covered[q] = 1; }
+      i = j + 1; continue;
+    }
+    i++;
+  }
+  // (2) windows of 4 and 8 bars that drift further than winMult x scale x sqrt(k) WITHOUT a run inside them - a window
+  // that holds a spike is the spike's, and merging it in would move the spike's start two hours early (caught by the
+  // suite's one-big-bar check, which came back as a fifteen-bar move)
+  for (const k of [4, 8]) {
+    for (let a = 1; a + k - 1 < n; a++) {
+      const sc = scale[a]; if (!(sc > 0)) continue;
+      let hasRun = false; for (let q = a; q <= a + k - 1; q++) if (covered[q]) { hasRun = true; break; } if (hasRun) continue;
+      const p0 = +bars[a - 1].close, p1 = +bars[a + k - 1].close; if (!(p0 > 0 && p1 > 0)) continue;
+      const pct = p1 / p0 - 1;
+      if (Math.abs(pct) >= Math.max(o.winMult * sc * Math.sqrt(k), o.floorPct * 1.5)) cand.push({ i0: a, i1: a + k - 1, pct, sc, win: k });
+    }
+  }
+  // merge overlapping or adjacent candidates of one direction AND one kind (a drift never swallows a spike)
+  cand.sort((x, y) => x.i0 - y.i0 || x.i1 - y.i1);
+  const merged = [];
+  for (const c of cand) {
+    const last = merged[merged.length - 1];
+    if (last && !!last.run === !!c.run && Math.sign(last.pct) === Math.sign(c.pct) && c.i0 <= last.i1 + 1) {
+      last.i0 = Math.min(last.i0, c.i0); last.i1 = Math.max(last.i1, c.i1);
+      const p0 = +bars[last.i0 - 1].close, p1 = +bars[last.i1].close; last.pct = p0 > 0 ? p1 / p0 - 1 : last.pct; last.sc = Math.min(last.sc, c.sc);
+    } else merged.push({ i0: c.i0, i1: c.i1, pct: c.pct, sc: c.sc, run: c.run });
+  }
+  const moves = merged.map(m => {
+    let hi = 0, lo = Infinity; for (let q = m.i0; q <= m.i1; q++) { hi = Math.max(hi, +bars[q].high || 0); lo = Math.min(lo, +bars[q].low || Infinity); }
+    return { t0: tms(bars[m.i0]), t1: tms(bars[m.i1]) + (m.i1 + 1 < n ? tms(bars[m.i1 + 1]) - tms(bars[m.i1]) : 0), pct: +(m.pct * 100).toFixed(2), dir: m.pct > 0 ? 1 : -1, n: m.i1 - m.i0 + 1, z: +(Math.abs(m.pct) / m.sc).toFixed(1), scale: +(m.sc * 100).toFixed(3), p0: +bars[m.i0 - 1].close, p1: +bars[m.i1].close, hi, lo: isFinite(lo) ? lo : null };
+  });
+  moves.sort((a, b) => b.t0 - a.t0);
+  const allSc = cxMedian(scale.filter(x => x > 0));
+  return { moves: moves.slice(0, o.max), scale: allSc != null ? +(allSc * 100).toFixed(3) : null, floorPct: o.floorPct * 100, mult: o.mult };
+}
+// one move against the catalysts and the liquidation buckets around it; `sym` is the chart's coin
+function cxAttribute(mv, cats, liq, opt) {
+  const o = Object.assign({ sym: 'BTC', liqFloor: 250000 }, opt || {});
+  const sym = String(o.sym || '').toUpperCase(), major = sym === 'BTC' || sym === 'ETH';
+  // THE CHANCE A SOURCE WOULD HAVE SAID SOMETHING ANYWAY. Whale Alert posts thirty transfers a day and a media desk
+  // thirty headlines, so a two-hour window around ANY move holds one of each - attributing by time alone would name
+  // a cause for every move and be wrong most of the time. Each (source, kind) pair is weighted by how rarely it
+  // speaks: the count of its rows inside the 24 hours around the move, turned into the probability that one lands in
+  // the window by chance. A delisting (one a day, if that) keeps its weight; a transfer alert loses nine tenths of it.
+  const rate = {}, dayLo = mv.t0 - 43200000, dayHi = mv.t0 + 43200000;
+  for (const c of cats || []) { const ts = +c.ts_src || +c.ts || 0; if (ts >= dayLo && ts <= dayHi) { const k = c.source + '|' + c.kind; rate[k] = (rate[k] || 0) + 1; } }
+  const scored = [];
+  for (const c of cats || []) {
+    const ts = +c.ts_src || +c.ts || 0; if (!(ts > 0)) continue;
+    const score = +c.score || 0; if (score < CX_MIN_SCORE) continue;
+    if (CX_SKIP_KIND[c.kind]) continue;
+    let meta = c.meta; if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch (e) { meta = null; } }
+    if (meta && meta.dayres) continue;                                 // a row dated to the day cannot name a candle
+    const lead = mv.t0 - ts;                                           // + = the news came BEFORE the move started
+    if (lead > CX_BEFORE_MS || lead < -CX_AFTER_MS) continue;
+    const syms = String(c.syms || '').split(',').filter(Boolean);
+    let symW = 0;
+    if (syms.indexOf(sym) >= 0) symW = 1;
+    else if (!syms.length && CX_MARKET_WIDE[c.kind]) symW = 0.75;
+    else if (!major && (syms.indexOf('BTC') >= 0 || syms.indexOf('ETH') >= 0) && CX_MARKET_WIDE[c.kind]) symW = 0.6;
+    if (!symW) continue;
+    if (c.kind === 'macro') symW = 1;                                  // a scheduled macro print moves every coin at once
+    const isMacro = c.kind === 'macro';
+    const timeW = lead < 0 ? 0.55 : lead <= 15 * 60000 ? 1 : lead <= 45 * 60000 ? 0.85 : (isMacro ? 0.9 : 0.6);
+    const ex = +c.expect || 0, dirW = ex === 0 ? 1 : ex === mv.dir ? 1.15 : 0.5;
+    const confW = 1 + 0.1 * Math.min(3, Math.max(0, (+c.conf || 1) - 1));
+    const perDay = rate[c.source + '|' + c.kind] || 1;
+    const chance = Math.min(0.9, perDay * (CX_BEFORE_MS + CX_AFTER_MS) / 86400000);
+    const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);
+    const w = +((score / 100) * symW * timeW * dirW * confW * rateW).toFixed(3);
+    scored.push({ w, lead, c, after: lead < 0 });
+  }
+  scored.sort((a, b) => b.w - a.w);
+  const pack = s => ({ title: String(s.c.title || '').slice(0, 140), source: s.c.source, kind: s.c.kind, score: +s.c.score || 0, ts: +s.c.ts_src || +s.c.ts, leadMin: Math.round(s.lead / 60000), after: s.after, url: s.c.url || '', expect: +s.c.expect || 0, conf: +s.c.conf || 1, w: s.w, perDay: rate[s.c.source + '|' + s.c.kind] || 1 });
+  const best = scored.length && scored[0].w >= 0.35 ? pack(scored[0]) : null;
+  const others = scored.slice(best ? 1 : 0, best ? 4 : 3).filter(s => s.w >= 0.2).map(pack);
+  // cascade: what our own feed liquidated while the move ran, against the typical 5-minute bucket of the month
+  let liqOut = null;
+  if (liq && liq.length) {
+    const tot = liq.map(b => (+b.long || 0) + (+b.short || 0));
+    // the series omits EMPTY 5-minute buckets, so "typical" is the window's total over the buckets it SPANS, never a median of the busy ones
+    let tMin = Infinity, tMax = 0, sumTot = 0; for (let k = 0; k < liq.length; k++) { const t = +liq[k].t; if (t < tMin) tMin = t; if (t > tMax) tMax = t; sumTot += tot[k]; }
+    const spanB = tMax > tMin ? Math.round((tMax - tMin) / 300000) + 1 : liq.length;
+    const typ = spanB > 0 ? sumTot / spanB : 0;
+    let inUsd = 0, nb = 0, longU = 0;
+    for (let k = 0; k < liq.length; k++) { const t = +liq[k].t; if (t >= mv.t0 - 5 * 60000 && t <= mv.t1 + 5 * 60000) { inUsd += tot[k]; longU += (+liq[k].long || 0); nb++; } }
+    const x = nb && typ > 0 ? inUsd / (typ * nb) : null;
+    liqOut = { usd: Math.round(inUsd), x: x != null ? +x.toFixed(1) : null, buckets: nb, longShare: inUsd > 0 ? +(longU / inUsd).toFixed(2) : null, typical5m: Math.round(typ) };
+  }
+  const cascade = !!(liqOut && liqOut.x != null && liqOut.x >= 6 && liqOut.usd >= o.liqFloor);
+  const cause = best && cascade ? 'news+cascade' : best ? 'news' : cascade ? 'cascade' : 'unknown';
+  const confidence = best ? Math.min(0.95, best.w) : cascade ? 0.6 : 0;
+  const label = best ? cxLabel(best) : cascade ? 'Cascade' : 'No known cause';
+  return { cause, confidence: +confidence.toFixed(2), label, catalyst: best, others, liq: liqOut, cascade };
+}
+function cxLabel(c) {
+  const t = String(c.title || ''), k = c.kind;
+  if (k === 'macro') { if (/cpi/i.test(t)) return 'CPI'; if (/fomc|fed |rate decision/i.test(t)) return 'FOMC'; return 'Macro'; }
+  const src = /^bybit/.test(c.source) ? 'Bybit ' : /^okx/.test(c.source) ? 'OKX ' : /^hl-/.test(c.source) ? 'Hyperliquid ' : /binance/i.test(c.source) ? 'Binance ' : '';
+  const map = { listing: 'listing', delisting: 'delisting', hack: 'Hack', etf: 'ETF', regulation: 'Regulation', politics: 'Politics', whale: 'Whale', unlock: 'Unlock', protocol: 'Protocol', adoption: 'Adoption', filing: 'Filing', news: 'News' };
+  const w = map[k] || 'News';
+  return (src ? src + w : w.charAt(0).toUpperCase() + w.slice(1));
+}
+// GET /api/catalysts/moves?symbol=BTC&tf=15&days=30   |   &at=<ms>&pct=&n=   (one live move, same rules, no month)
+async function handleCatalystMoves(url, env) {
+  const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+  const tfIn = String(url.searchParams.get('tf') || '15'); const tf = ({ '5': '5', '15': '15', '60': '60' })[tfIn] || '15';
+  const days = Math.max(2, Math.min(35, +url.searchParams.get('days') || 30));
+  const at = +url.searchParams.get('at') || 0;
+  const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
+  const now = Date.now(), nc = url.searchParams.get('nc') === '1';
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  const colFetch = async (path, ms, ttl) => {
+    if (!base || now < COL_DOWN_UNTIL) return null;
+    const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), ms);
+    try { const r = await __realFetch(base + path, { signal: ctl.signal, cf: { cacheTtl: ttl, cacheEverything: true } }); return r.ok ? await r.json() : null; } catch (e) { return null; } finally { clearTimeout(tmr); }
+  };
+  if (at > 0) {
+    // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
+    const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
+    const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
+    const ck = new Request('https://marginpad.io/__cxat_v1_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+    const [cj, lj] = await Promise.all([
+      colFetch('/api/v1/catalysts?since=' + (at - 43200000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 15),
+      HM_COINS.indexOf(sym) >= 0 ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.max(1440, Math.ceil((now - at) / 60000) + 60), 2500, 20) : Promise.resolve(null),
+    ]);
+    const cats = (cj && cj.items) || [];
+    const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
+    const a = cxAttribute(mv, cats, liq, { sym, liqFloor: (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000 });
+    const res = J({ symbol: sym, at, pct, live: true, collector: cj ? 'ok' : 'down', catalystsSeen: cats.length, ...a, now }, 20);
+    if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
+    return res;
+  }
+  const ck = new Request('https://marginpad.io/__cxmv_v2_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const since = now - days * 86400000, tfm = +tf;
+  const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
+  const [kl, cj, lj] = await Promise.all([
+    aiKlinesAfter(env, sym, tf, since, pages).catch(() => ({ bars: [] })),
+    colFetch('/api/v1/catalysts?since=' + (since - CX_BEFORE_MS) + '&until=' + (now + 60000) + '&limit=5000&min=' + CX_MIN_SCORE, 4000, 120),
+    HM_COINS.indexOf(sym) >= 0 ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.min(43200, days * 1440), 4000, 300) : Promise.resolve(null),
+  ]);
+  const bars = (kl && kl.bars) || [];
+  const det = cxDetectMoves(bars);
+  // `shift` = a PLACEBO: every catalyst moved by that many ms before attribution. The proof that the matching is not
+  // chance is that a week's shift collapses the explained share; the suite asserts it against production.
+  const shift = Math.max(-30 * 86400000, Math.min(30 * 86400000, +url.searchParams.get('shift') || 0));
+  const cats = ((cj && cj.items) || []).map(c => shift ? { ...c, ts_src: (+c.ts_src || 0) + shift } : c);
+  const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
+  const liqFloor = (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000;
+  const moves = det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor }) }));
+  const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
+  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else sum.unknown++; }
+  sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
+  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor } };
+  const res = J(body, cj ? 300 : 60);
+  if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
+  return res;
+}
 // and an unreachable collector answers an EMPTY list with `collector:'down'` - never a 5xx into a page.
 async function handleCatalysts(url, env) {
   const q = { sym: String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12), min: Math.max(0, Math.min(100, +url.searchParams.get('min') || 0)), kind: String(url.searchParams.get('kind') || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.max(1, Math.min(300, +url.searchParams.get('limit') || 100)), since: Math.max(0, +url.searchParams.get('since') || 0) };
@@ -23760,6 +23956,7 @@ export default {
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);
+    if (url.pathname === '/api/catalysts/moves') return handleCatalystMoves(url, env);
     if (url.pathname === '/api/catalysts') return handleCatalysts(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}

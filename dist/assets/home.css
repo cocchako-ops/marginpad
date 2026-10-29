@@ -3740,6 +3740,19 @@ undefined
 .cwin-liqc .lqc-n{margin:8px 0 0;font-size:10.5px;line-height:1.45;color:#6e7885;}
 .cwin-liqc .lqc-h small{font-family:inherit;font-size:10px;font-weight:700;color:#8b95a3;letter-spacing:.04em;}
 .cwin-liqc-cl{min-width:208px;}
+/* WHAT MOVED IT card (2026-10-29): the same box as a liquidation card, with the catalyst and the runners-up */
+.cwin-cxc{min-width:232px;max-width:300px;}
+.cwin-cxc .cxc-cause{font-weight:700;}
+.cwin-cxc .cxc-cause small,.cwin-cxc .lqc-d dd small{font-family:"Space Mono",monospace;font-weight:400;color:#8b95a3;}
+.cwin-cxc .cxc-cat{margin:8px 0 0;padding:7px 8px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);border-radius:8px;font-size:11.5px;line-height:1.35;}
+.cwin-cxc .cxc-cat b{display:block;color:#e9edf3;font-weight:600;}
+.cwin-cxc .cxc-cat span{display:block;margin-top:3px;font-size:10.5px;color:#8b95a3;}
+.cwin-cxc .cxc-cat a{display:inline-block;margin-top:4px;font-size:10.5px;color:#c2f64a;text-decoration:none;}
+.cwin-cxc .cxc-cat a:hover{text-decoration:underline;}
+.cwin-cxc .cxc-oth{margin:8px 0 0;font-size:10.5px;color:#aab5c4;}
+.cwin-cxc .cxc-oth i{display:block;font-style:normal;color:#6e7885;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.cwin-cxc .cxc-oth div{padding:2px 0;border-top:1px solid rgba(255,255,255,.05);}
+.cwin-cxc .cxc-oth small{font-family:"Space Mono",monospace;color:#6e7885;}
 .cwin-liqc .lqc-list{margin:8px 0 2px;max-height:150px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:3px;}
 .cwin-liqc .lqc-row{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:3px 6px;background:rgba(255,255,255,.04);border-radius:6px;}
 .cwin-liqc .lqc-row b{font-family:"Space Mono",monospace;font-weight:700;min-width:58px;}
