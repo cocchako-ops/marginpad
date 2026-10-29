@@ -1644,7 +1644,7 @@ function cxAttribute(mv, cats, liq, opt) {
     const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs' || x.k === 'oi' || x.k === 'book' || (x.k === 'tech' && x.w >= 0.4)).sort((a, b) => b.w - a.w)[0];
     if (strong) { cause2 = strong.k; label = strong.label; confidence2 = strong.w; }
   }
-  const causes = cxShares(best, cascade, liqOut, ctx);
+  const causes = cxShares(best, cascade, liqOut, ctx, cause === 'news' || cause === 'news+cascade' ? confidence2 : 0);
   if (causes.length && causes[0].k === 'news') causes[0].label = label; else if (causes.length && causes[0].k === 'cascade') causes[0].label = cascLabel;
   for (const cc of causes) { if (!cc.label) cc.label = cc.k === 'cascade' ? cascLabel : cc.k === 'news' ? label : cc.k; }
   const labelFull = causes.length ? causes.filter((cc, i) => i === 0 || cc.share >= 0.2).slice(0, 3).map(cc => cc.label).join(' + ') : label;
@@ -1732,9 +1732,9 @@ function cxBookFactor(mv, book, now) {
 // tape, Bitcoin, stocks, the structure, open interest, the book - takes a share of the move in proportion to its weight.
 // `cause` stays the biggest one for everything that counts causes; `causes` carries them all; `labelFull` names up to
 // three. Session and fuel are context: they explain reach, they never take a share.
-function cxShares(best, cascade, liqOut, ctx) {
+function cxShares(best, cascade, liqOut, ctx, conf) {
   const c = [];
-  if (best) c.push({ k: 'news', label: null, w: +best.w || 0.3, text: null });
+  if (best) c.push({ k: 'news', label: null, w: Math.max(+best.w || 0.3, +conf || 0), text: null });
   if (cascade && liqOut) c.push({ k: 'cascade', label: null, w: Math.min(0.8, 0.5 + (+liqOut.x || 6) / 60), text: 'The feed liquidated ' + Math.round(liqOut.usd / 1000) + 'k USD (' + liqOut.x + 'x the typical bucket) while the move ran' });
   for (const f of ctx || []) { if (f.k === 'session' || f.k === 'fuel') continue; if (!(f.w >= 0.25)) continue; if (f.k === 'tech' && f.w < 0.4) continue; c.push({ k: f.k, label: f.label, w: +f.w, text: f.text }); }
   const sum = c.reduce((a, x) => a + x.w, 0);

@@ -1105,39 +1105,39 @@
  },
  {
   "rel": "coin/bnb/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/btc/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/doge/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/eth/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/sol/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/xrp/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coinglass-alternative/index.html",
@@ -1777,15 +1777,15 @@
  },
  {
   "rel": "liquidation-statistics/index.html",
-  "cover": 1,
-  "hit": 92,
-  "missing": 0
+  "cover": 0.9891304347826086,
+  "hit": 91,
+  "missing": 1
  },
  {
   "rel": "liquidations/by-exchange/index.html",
-  "cover": 1,
-  "hit": 84,
-  "missing": 0
+  "cover": 0.9880952380952381,
+  "hit": 83,
+  "missing": 1
  },
  {
   "rel": "liquidations/index.html",
@@ -1843,9 +1843,9 @@
  },
  {
   "rel": "mcp-server-for-crypto-trading/index.html",
-  "cover": 1,
-  "hit": 65,
-  "missing": 0
+  "cover": 0.9384615384615385,
+  "hit": 61,
+  "missing": 4
  },
  {
   "rel": "mexc-liquidation-calculator/index.html",
@@ -2245,9 +2245,9 @@
  },
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
-  "cover": 1,
-  "hit": 64,
-  "missing": 0
+  "cover": 0.96875,
+  "hit": 62,
+  "missing": 2
  },
  {
   "rel": "where-to-start/index.html",

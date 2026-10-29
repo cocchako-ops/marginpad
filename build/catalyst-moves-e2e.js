@@ -185,6 +185,7 @@ function pureLeg() {
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -2.4, dir: -1, p0: 100, p1: 97.6, hi: 100, lo: 97.5 }, [cat({ kind: 'delisting', expect: -1, ts_src: T0 - 10 * 60000 })], liqM, { sym: 'BTC', liqFloor: 250000, oi: oiS, whales: [{ ts: T0, act: 'close', long: 1, usd: 4000000 }] });
   ok('a delisting, forced closes, deleveraging and whale selling at once are FOUR causes with shares that add to one', a.causes && a.causes.length >= 4 && Math.abs(a.causes.reduce((s, c) => s + c.share, 0) - 1) <= 0.03 && a.causes[0].k === 'news' && /\+/.test(a.labelFull), JSON.stringify(a.causes) + ' ' + a.labelFull);
   ok('the note states the shares', /Shares: /.test(a.note), a.note);
+  ok('the story that WON the cause holds the biggest share (the bar never contradicts the label)', a.cause === 'news' && a.causes[0].k === 'news' && a.causes[0].share >= a.causes[1].share, JSON.stringify(a.causes.slice(0, 2)));
 }
 
 // ---------- production ----------
