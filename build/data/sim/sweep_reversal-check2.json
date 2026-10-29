@@ -1,0 +1,1016 @@
+{
+ "family": "sweep_reversal",
+ "generatedAt": "2026-10-29T00:58:31.450Z",
+ "strict": [
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {}
+   },
+   "tf": "15",
+   "book": {
+    "n": 3415,
+    "wr": 36.9,
+    "expR": -0.262,
+    "unclear": 8655
+   },
+   "strict": {
+    "n": 11343,
+    "wr": 37.9,
+    "expR": -0.242,
+    "unclear": 727
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "15",
+   "book": {
+    "n": 2742,
+    "wr": 35.8,
+    "expR": -0.283,
+    "unclear": 7441
+   },
+   "strict": {
+    "n": 9554,
+    "wr": 37.1,
+    "expR": -0.257,
+    "unclear": 629
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 24,
+    "f": {}
+   },
+   "tf": "15",
+   "book": {
+    "n": 3736,
+    "wr": 36.8,
+    "expR": -0.264,
+    "unclear": 9092
+   },
+   "strict": {
+    "n": 12049,
+    "wr": 38,
+    "expR": -0.24,
+    "unclear": 779
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 24,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "15",
+   "book": {
+    "n": 2968,
+    "wr": 36,
+    "expR": -0.28,
+    "unclear": 7710
+   },
+   "strict": {
+    "n": 10016,
+    "wr": 37.5,
+    "expR": -0.251,
+    "unclear": 662
+   }
+  },
+  {
+   "why": "top-wr",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "htf": 1
+    }
+   },
+   "tf": "15",
+   "book": {
+    "n": 1088,
+    "wr": 37.6,
+    "expR": -0.248,
+    "unclear": 3065
+   },
+   "strict": {
+    "n": 3877,
+    "wr": 37.9,
+    "expR": -0.242,
+    "unclear": 276
+   }
+  },
+  {
+   "why": "top-wr",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "vol": 1
+    }
+   },
+   "tf": "15",
+   "book": {
+    "n": 1233,
+    "wr": 36.1,
+    "expR": -0.278,
+    "unclear": 3654
+   },
+   "strict": {
+    "n": 4567,
+    "wr": 37.1,
+    "expR": -0.259,
+    "unclear": 320
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 1263,
+    "wr": 37.6,
+    "expR": 0.128,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1263,
+    "wr": 37.6,
+    "expR": 0.128,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 1590,
+    "wr": 27.9,
+    "expR": 0.114,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1590,
+    "wr": 27.9,
+    "expR": 0.114,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a1.5",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "sess": 1
+    }
+   },
+   "tf": "240",
+   "book": {
+    "n": 1100,
+    "wr": 27.9,
+    "expR": 0.116,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1100,
+    "wr": 27.9,
+    "expR": 0.116,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {}
+   },
+   "tf": "60",
+   "book": {
+    "n": 1864,
+    "wr": 27.4,
+    "expR": 0.097,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1864,
+    "wr": 27.4,
+    "expR": 0.097,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "own_fail",
+    "entry": "limit",
+    "stop": "a1.5",
+    "tgt": "r3",
+    "hz": 24,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 1571,
+    "wr": 27.3,
+    "expR": 0.092,
+    "unclear": 3
+   },
+   "strict": {
+    "n": 1574,
+    "wr": 27.4,
+    "expR": 0.095,
+    "unclear": 0
+   }
+  }
+ ],
+ "coinConsistency": [
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "n": 1263,
+   "wr": 37.6,
+   "expR": 0.128,
+   "coinsPos": 9,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 131,
+     "wr": 32.1,
+     "expR": -0.038,
+     "pf": 0.94
+    },
+    "AVAX": {
+     "n": 128,
+     "wr": 37.5,
+     "expR": 0.125,
+     "pf": 1.2
+    },
+    "BNB": {
+     "n": 144,
+     "wr": 34,
+     "expR": 0.021,
+     "pf": 1.03
+    },
+    "BTC": {
+     "n": 118,
+     "wr": 35.6,
+     "expR": 0.068,
+     "pf": 1.11
+    },
+    "DOGE": {
+     "n": 122,
+     "wr": 38.5,
+     "expR": 0.156,
+     "pf": 1.25
+    },
+    "ETH": {
+     "n": 116,
+     "wr": 35.3,
+     "expR": 0.06,
+     "pf": 1.09
+    },
+    "LINK": {
+     "n": 124,
+     "wr": 40.3,
+     "expR": 0.21,
+     "pf": 1.35
+    },
+    "LTC": {
+     "n": 132,
+     "wr": 40.2,
+     "expR": 0.205,
+     "pf": 1.34
+    },
+    "SOL": {
+     "n": 129,
+     "wr": 40.3,
+     "expR": 0.209,
+     "pf": 1.35
+    },
+    "XRP": {
+     "n": 119,
+     "wr": 42.9,
+     "expR": 0.286,
+     "pf": 1.5
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "n": 1590,
+   "wr": 27.9,
+   "expR": 0.114,
+   "coinsPos": 8,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 164,
+     "wr": 25,
+     "expR": 0,
+     "pf": 1
+    },
+    "AVAX": {
+     "n": 156,
+     "wr": 26.9,
+     "expR": 0.077,
+     "pf": 1.11
+    },
+    "BNB": {
+     "n": 167,
+     "wr": 25.7,
+     "expR": 0.03,
+     "pf": 1.04
+    },
+    "BTC": {
+     "n": 147,
+     "wr": 28.6,
+     "expR": 0.143,
+     "pf": 1.2
+    },
+    "DOGE": {
+     "n": 158,
+     "wr": 29.7,
+     "expR": 0.19,
+     "pf": 1.27
+    },
+    "ETH": {
+     "n": 145,
+     "wr": 24.8,
+     "expR": -0.007,
+     "pf": 0.99
+    },
+    "LINK": {
+     "n": 163,
+     "wr": 25.2,
+     "expR": 0.006,
+     "pf": 1.01
+    },
+    "LTC": {
+     "n": 174,
+     "wr": 30.5,
+     "expR": 0.218,
+     "pf": 1.31
+    },
+    "SOL": {
+     "n": 167,
+     "wr": 28.1,
+     "expR": 0.126,
+     "pf": 1.18
+    },
+    "XRP": {
+     "n": 149,
+     "wr": 34.2,
+     "expR": 0.369,
+     "pf": 1.56
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a1.5",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "sess": 1
+    }
+   },
+   "tf": "240",
+   "n": 1100,
+   "wr": 27.9,
+   "expR": 0.116,
+   "coinsPos": 8,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 106,
+     "wr": 28.3,
+     "expR": 0.132,
+     "pf": 1.18
+    },
+    "AVAX": {
+     "n": 111,
+     "wr": 22.5,
+     "expR": -0.099,
+     "pf": 0.87
+    },
+    "BNB": {
+     "n": 113,
+     "wr": 31.9,
+     "expR": 0.274,
+     "pf": 1.4
+    },
+    "BTC": {
+     "n": 123,
+     "wr": 22,
+     "expR": -0.122,
+     "pf": 0.84
+    },
+    "DOGE": {
+     "n": 123,
+     "wr": 27.6,
+     "expR": 0.106,
+     "pf": 1.15
+    },
+    "ETH": {
+     "n": 98,
+     "wr": 28.6,
+     "expR": 0.143,
+     "pf": 1.2
+    },
+    "LINK": {
+     "n": 110,
+     "wr": 30,
+     "expR": 0.2,
+     "pf": 1.29
+    },
+    "LTC": {
+     "n": 103,
+     "wr": 25.2,
+     "expR": 0.01,
+     "pf": 1.01
+    },
+    "SOL": {
+     "n": 100,
+     "wr": 29,
+     "expR": 0.16,
+     "pf": 1.23
+    },
+    "XRP": {
+     "n": 113,
+     "wr": 34.5,
+     "expR": 0.381,
+     "pf": 1.58
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {}
+   },
+   "tf": "60",
+   "n": 1864,
+   "wr": 27.4,
+   "expR": 0.097,
+   "coinsPos": 10,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 195,
+     "wr": 26.2,
+     "expR": 0.046,
+     "pf": 1.06
+    },
+    "AVAX": {
+     "n": 187,
+     "wr": 26.2,
+     "expR": 0.048,
+     "pf": 1.07
+    },
+    "BNB": {
+     "n": 194,
+     "wr": 29.4,
+     "expR": 0.175,
+     "pf": 1.25
+    },
+    "BTC": {
+     "n": 192,
+     "wr": 25.5,
+     "expR": 0.021,
+     "pf": 1.03
+    },
+    "DOGE": {
+     "n": 184,
+     "wr": 27.2,
+     "expR": 0.087,
+     "pf": 1.12
+    },
+    "ETH": {
+     "n": 178,
+     "wr": 26.4,
+     "expR": 0.056,
+     "pf": 1.08
+    },
+    "LINK": {
+     "n": 195,
+     "wr": 25.6,
+     "expR": 0.026,
+     "pf": 1.03
+    },
+    "LTC": {
+     "n": 174,
+     "wr": 33.9,
+     "expR": 0.356,
+     "pf": 1.54
+    },
+    "SOL": {
+     "n": 195,
+     "wr": 25.1,
+     "expR": 0.005,
+     "pf": 1.01
+    },
+    "XRP": {
+     "n": 170,
+     "wr": 29.4,
+     "expR": 0.176,
+     "pf": 1.25
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "own_fail",
+    "entry": "limit",
+    "stop": "a1.5",
+    "tgt": "r3",
+    "hz": 24,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 1574,
+   "wr": 27.4,
+   "expR": 0.098,
+   "coinsPos": 6,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 158,
+     "wr": 25.9,
+     "expR": 0.038,
+     "pf": 1.05
+    },
+    "AVAX": {
+     "n": 156,
+     "wr": 28.2,
+     "expR": 0.128,
+     "pf": 1.18
+    },
+    "BNB": {
+     "n": 167,
+     "wr": 28.7,
+     "expR": 0.15,
+     "pf": 1.21
+    },
+    "BTC": {
+     "n": 149,
+     "wr": 27.5,
+     "expR": 0.101,
+     "pf": 1.14
+    },
+    "DOGE": {
+     "n": 152,
+     "wr": 34.2,
+     "expR": 0.368,
+     "pf": 1.56
+    },
+    "ETH": {
+     "n": 149,
+     "wr": 35.6,
+     "expR": 0.423,
+     "pf": 1.66
+    },
+    "LINK": {
+     "n": 176,
+     "wr": 22.7,
+     "expR": -0.091,
+     "pf": 0.88
+    },
+    "LTC": {
+     "n": 161,
+     "wr": 24.8,
+     "expR": -0.006,
+     "pf": 0.99
+    },
+    "SOL": {
+     "n": 153,
+     "wr": 24.8,
+     "expR": -0.007,
+     "pf": 0.99
+    },
+    "XRP": {
+     "n": 153,
+     "wr": 22.9,
+     "expR": -0.085,
+     "pf": 0.89
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "market",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "n": 1473,
+   "wr": 36.5,
+   "expR": 0.096,
+   "coinsPos": 10,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 145,
+     "wr": 35.9,
+     "expR": 0.076,
+     "pf": 1.12
+    },
+    "AVAX": {
+     "n": 152,
+     "wr": 34.2,
+     "expR": 0.026,
+     "pf": 1.04
+    },
+    "BNB": {
+     "n": 163,
+     "wr": 35.6,
+     "expR": 0.067,
+     "pf": 1.1
+    },
+    "BTC": {
+     "n": 138,
+     "wr": 37.7,
+     "expR": 0.13,
+     "pf": 1.21
+    },
+    "DOGE": {
+     "n": 163,
+     "wr": 37.4,
+     "expR": 0.123,
+     "pf": 1.2
+    },
+    "ETH": {
+     "n": 132,
+     "wr": 34.1,
+     "expR": 0.023,
+     "pf": 1.03
+    },
+    "LINK": {
+     "n": 141,
+     "wr": 39,
+     "expR": 0.17,
+     "pf": 1.28
+    },
+    "LTC": {
+     "n": 147,
+     "wr": 37.4,
+     "expR": 0.122,
+     "pf": 1.2
+    },
+    "SOL": {
+     "n": 147,
+     "wr": 38.1,
+     "expR": 0.143,
+     "pf": 1.23
+    },
+    "XRP": {
+     "n": 145,
+     "wr": 35.9,
+     "expR": 0.076,
+     "pf": 1.12
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {}
+   },
+   "tf": "60",
+   "n": 1444,
+   "wr": 36.5,
+   "expR": 0.095,
+   "coinsPos": 10,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 149,
+     "wr": 33.6,
+     "expR": 0.007,
+     "pf": 1.01
+    },
+    "AVAX": {
+     "n": 143,
+     "wr": 36.4,
+     "expR": 0.091,
+     "pf": 1.14
+    },
+    "BNB": {
+     "n": 156,
+     "wr": 35.9,
+     "expR": 0.077,
+     "pf": 1.12
+    },
+    "BTC": {
+     "n": 151,
+     "wr": 33.8,
+     "expR": 0.013,
+     "pf": 1.02
+    },
+    "DOGE": {
+     "n": 139,
+     "wr": 38.1,
+     "expR": 0.144,
+     "pf": 1.23
+    },
+    "ETH": {
+     "n": 143,
+     "wr": 33.6,
+     "expR": 0.007,
+     "pf": 1.01
+    },
+    "LINK": {
+     "n": 143,
+     "wr": 38.5,
+     "expR": 0.154,
+     "pf": 1.25
+    },
+    "LTC": {
+     "n": 141,
+     "wr": 39.7,
+     "expR": 0.191,
+     "pf": 1.32
+    },
+    "SOL": {
+     "n": 146,
+     "wr": 39,
+     "expR": 0.171,
+     "pf": 1.28
+    },
+    "XRP": {
+     "n": 133,
+     "wr": 36.8,
+     "expR": 0.105,
+     "pf": 1.17
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "ship_sweep",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r1.5",
+    "hz": 48,
+    "f": {
+     "sess": 1
+    }
+   },
+   "tf": "60",
+   "n": 1627,
+   "wr": 43.7,
+   "expR": 0.093,
+   "coinsPos": 9,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 158,
+     "wr": 40.5,
+     "expR": 0.013,
+     "pf": 1.02
+    },
+    "AVAX": {
+     "n": 156,
+     "wr": 39.7,
+     "expR": -0.006,
+     "pf": 0.99
+    },
+    "BNB": {
+     "n": 179,
+     "wr": 42.5,
+     "expR": 0.061,
+     "pf": 1.11
+    },
+    "BTC": {
+     "n": 176,
+     "wr": 43.2,
+     "expR": 0.08,
+     "pf": 1.14
+    },
+    "DOGE": {
+     "n": 169,
+     "wr": 47.9,
+     "expR": 0.198,
+     "pf": 1.38
+    },
+    "ETH": {
+     "n": 159,
+     "wr": 42.8,
+     "expR": 0.069,
+     "pf": 1.12
+    },
+    "LINK": {
+     "n": 159,
+     "wr": 45.3,
+     "expR": 0.132,
+     "pf": 1.24
+    },
+    "LTC": {
+     "n": 161,
+     "wr": 49.1,
+     "expR": 0.227,
+     "pf": 1.45
+    },
+    "SOL": {
+     "n": 161,
+     "wr": 40.4,
+     "expR": 0.009,
+     "pf": 1.02
+    },
+    "XRP": {
+     "n": 149,
+     "wr": 45.6,
+     "expR": 0.141,
+     "pf": 1.26
+    }
+   }
+  }
+ ],
+ "filterEffect": [
+  {
+   "filter": "range",
+   "pairs": 2160,
+   "medDeltaWr": 0.2,
+   "medDeltaExpR": 0.005,
+   "medKeptShare": 0.551,
+   "expRBetterPct": 55.9
+  },
+  {
+   "filter": "rsi",
+   "pairs": 1197,
+   "medDeltaWr": -3.7,
+   "medDeltaExpR": -0.085,
+   "medKeptShare": 0.072,
+   "expRBetterPct": 12.9
+  },
+  {
+   "filter": "vol",
+   "pairs": 2160,
+   "medDeltaWr": 0.3,
+   "medDeltaExpR": 0.009,
+   "medKeptShare": 0.897,
+   "expRBetterPct": 68.7
+  },
+  {
+   "filter": "sess",
+   "pairs": 2160,
+   "medDeltaWr": -0.1,
+   "medDeltaExpR": -0.002,
+   "medKeptShare": 0.841,
+   "expRBetterPct": 43.1
+  },
+  {
+   "filter": "htf",
+   "pairs": 2160,
+   "medDeltaWr": 0,
+   "medDeltaExpR": 0,
+   "medKeptShare": 0.786,
+   "expRBetterPct": 26
+  },
+  {
+   "filter": "range+rsi",
+   "pairs": 422,
+   "medDeltaWr": -2.8,
+   "medDeltaExpR": -0.067,
+   "medKeptShare": 0.064,
+   "expRBetterPct": 28.2
+  },
+  {
+   "filter": "range+vol",
+   "pairs": 2160,
+   "medDeltaWr": 0.2,
+   "medDeltaExpR": 0.006,
+   "medKeptShare": 0.487,
+   "expRBetterPct": 57.4
+  },
+  {
+   "filter": "rsi+vol",
+   "pairs": 978,
+   "medDeltaWr": -3.3,
+   "medDeltaExpR": -0.069,
+   "medKeptShare": 0.064,
+   "expRBetterPct": 17.3
+  },
+  {
+   "filter": "range+htf",
+   "pairs": 2160,
+   "medDeltaWr": -0.1,
+   "medDeltaExpR": -0.003,
+   "medKeptShare": 0.456,
+   "expRBetterPct": 46.5
+  },
+  {
+   "filter": "range+rsi+vol",
+   "pairs": 315,
+   "medDeltaWr": -2.9,
+   "medDeltaExpR": -0.059,
+   "medKeptShare": 0.047,
+   "expRBetterPct": 22.5
+  },
+  {
+   "filter": "range+rsi+vol+sess+htf",
+   "pairs": 68,
+   "medDeltaWr": -5,
+   "medDeltaExpR": -0.136,
+   "medKeptShare": 0.034,
+   "expRBetterPct": 0
+  }
+ ]
+}

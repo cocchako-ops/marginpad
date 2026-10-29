@@ -316,6 +316,9 @@ async function handleV1(url, request, env, ctx) {
     'open-interest': () => handleCgOpenInterest(v1remap(url, '/api/cg/openinterest'), env),
     'long-short': () => handleCgLongShort(v1remap(url, '/api/cg/longshort'), env),
     'liquidations': () => handleCgLiquidations(v1remap(url, '/api/cg/liquidations'), env),
+    'catalysts': () => handleCatalysts(v1remap(url, '/api/catalysts'), env),
+    'catalysts/moves': () => handleCatalystMoves(v1remap(url, '/api/catalysts/moves'), env),
+    'catalysts/top': () => handleCatalystTop(v1remap(url, '/api/catalysts/top'), env),
     'venues': () => handleVenueStats(env, false, ctx),
     'calendar': () => handleCalendar(request, env),
     'fear-greed': () => handleFng(env),
@@ -1374,7 +1377,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v3_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v4_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -1629,7 +1632,7 @@ function cxAttribute(mv, cats, liq, opt) {
   const confidence = best ? Math.min(best.realism && best.realism.capped ? 0.5 : 0.95, best.w) : cascade ? 0.6 : 0;
   // a cascade has a side: long liquidations under a drop, a short squeeze under a rise
   const cascLabel = liqOut && liqOut.longShare != null ? (mv.dir < 0 && liqOut.longShare >= 0.6 ? 'Long liquidations' : mv.dir > 0 && liqOut.longShare <= 0.4 ? 'Short squeeze' : 'Cascade') : 'Cascade';
-  const ctx = cxContext(mv, o.btcMoves, o.whales, sym, { spx: o.spx, tape: o.tape });
+  const ctx = cxContext(mv, o.btcMoves, o.whales, sym, { spx: o.spx, tape: o.tape, oi: o.oi, fund: o.fund, book: o.book, now: o.now });
   // the chart's own structure: a broken level, a new extreme, a rejection, the volume - always said, a cause only when nothing dated is there
   let tech = null; try { tech = o.bars ? cxTech(o.bars, mv) : null; } catch (e) { tech = null; }
   if (tech) ctx.push(tech);
@@ -1638,10 +1641,14 @@ function cxAttribute(mv, cats, liq, opt) {
   if (!cascade && liqOut && liqOut.x != null && liqOut.x >= 3 && liqOut.usd >= o.liqFloor / 2) ctx.unshift({ k: 'liqs', label: 'Forced closes', w: Math.min(0.55, 0.3 + liqOut.x / 20), text: 'The feed liquidated ' + liqOut.x + 'x its typical 5-minute amount (' + Math.round(liqOut.usd / 1000) + 'k USD) as the move ran - not a cascade, but forced closes were in it', liq: { usd: liqOut.usd, x: liqOut.x } });
   let cause2 = cause, label = best ? cxLabel(best) : cascade ? cascLabel : 'No known cause', confidence2 = confidence;
   if (cause === 'unknown') {
-    const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs' || (x.k === 'tech' && x.w >= 0.4)).sort((a, b) => b.w - a.w)[0];
+    const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs' || x.k === 'oi' || x.k === 'book' || (x.k === 'tech' && x.w >= 0.4)).sort((a, b) => b.w - a.w)[0];
     if (strong) { cause2 = strong.k; label = strong.label; confidence2 = strong.w; }
   }
-  const out = { cause: cause2, confidence: +confidence2.toFixed(2), label, catalyst: best, others, liq: liqOut, cascade, factors: ctx, tech: tech ? { kind: tech.kind, label: tech.label, text: tech.text, level: tech.level, vol: tech.vol } : null };
+  const causes = cxShares(best, cascade, liqOut, ctx);
+  if (causes.length && causes[0].k === 'news') causes[0].label = label; else if (causes.length && causes[0].k === 'cascade') causes[0].label = cascLabel;
+  for (const cc of causes) { if (!cc.label) cc.label = cc.k === 'cascade' ? cascLabel : cc.k === 'news' ? label : cc.k; }
+  const labelFull = causes.length ? causes.filter((cc, i) => i === 0 || cc.share >= 0.2).slice(0, 3).map(cc => cc.label).join(' + ') : label;
+  const out = { cause: cause2, confidence: +confidence2.toFixed(2), label, labelFull, causes, catalyst: best, others, liq: liqOut, cascade, factors: ctx, tech: tech ? { kind: tech.kind, label: tech.label, text: tech.text, level: tech.level, vol: tech.vol } : null };
   out.note = cxNote(mv, out, ctx, sym);
   return out;
 }
@@ -1666,6 +1673,74 @@ function cxSession(t0) {
   return out;
 }
 // btcMoves = the month's BTC moves (same detector); whales = the tracker's trade groups for this coin
+// OPEN INTEREST SAYS WHAT THE MOVE WAS MADE OF (2026-10-29, owner: "order book i ostale stvari koje imamo ... vise stvari
+// odjednom uticu"). The collector snapshots every venue's OI every two minutes (14 days). Price down with OI falling is
+// deleveraging (longs closed or liquidated); price up with OI falling is short covering; price up with OI rising is new
+// positioning; price down with OI rising is new shorts. The change is judged against the series' own typical step over
+// the same span - 0.3% on a $20B book is a crowd, on a $20M book it is noise.
+function cxOiFactor(mv, oi) {
+  if (!oi || oi.length < 30) return null;
+  const t0 = mv.t0 - 10 * 60000, t1 = mv.t1;
+  let a = null, b = null;
+  for (const p of oi) { const t = +p.t || 0; if (t <= t0) a = p; if (t >= t1 && !b) b = p; }
+  if (!a || !b || !(+a.usd > 0) || !(+b.usd > 0) || (+b.t) - (+a.t) > 6 * 3600000) return null;
+  const steps = []; for (let i = 1; i < oi.length; i++) { const x = +oi[i - 1].usd, y = +oi[i].usd; if (x > 0 && y > 0) steps.push(Math.abs(y / x - 1)); }
+  const typ = cxMedian(steps); if (!(typ > 0)) return null;
+  const k = Math.max(1, Math.round(((+b.t) - (+a.t)) / 120000));
+  const d = (+b.usd) / (+a.usd) - 1, thr = Math.max(0.003, 3 * typ * Math.sqrt(k));
+  if (Math.abs(d) < thr) return null;
+  const pct = (d * 100).toFixed(1), up = mv.dir > 0, oiUp = d > 0;
+  let label, text, kind;
+  if (!up && !oiUp) { kind = 'delever'; label = 'Deleveraging'; text = 'Open interest fell ' + Math.abs(pct) + '% as price fell - longs were closed or liquidated, not sold by new shorts'; }
+  else if (up && !oiUp) { kind = 'cover'; label = 'Short covering'; text = 'Open interest fell ' + Math.abs(pct) + '% as price rose - shorts closing, not fresh buying'; }
+  else if (up && oiUp) { kind = 'newlong'; label = 'New positioning'; text = 'Open interest rose ' + pct + '% with the move - fresh longs were opened into it'; }
+  else { kind = 'newshort'; label = 'New shorts'; text = 'Open interest rose ' + pct + '% as price fell - fresh shorts pressed it'; }
+  return { k: 'oi', kind, label, w: Math.min(0.6, 0.4 + Math.abs(d) / thr * 0.05), text, oi: { pct: +pct, from: Math.round(+a.usd), to: Math.round(+b.usd), typicalStepPct: +(typ * 100).toFixed(3) } };
+}
+// FUEL: crowded funding at the start of a move is context the first event study measured (OI percentile >= 67 ->
+// |r15| 0.90% against 0.59%). Never a cause on its own - it says why a move went as far as it did.
+function cxFuelFactor(mv, fund) {
+  if (!fund || fund.length < 48) return null;
+  let at = null; for (const p of fund) { if ((+p.t || 0) <= mv.t0) at = p; }
+  if (!at || at.f == null) return null;
+  const fs = fund.map(p => +p.f).filter(x => isFinite(x)).sort((x, y) => x - y);
+  const os = fund.map(p => +p.oi).filter(x => x > 0).sort((x, y) => x - y);
+  const pctl = (arr, v) => { let i = 0; while (i < arr.length && arr[i] <= v) i++; return arr.length ? Math.round(100 * i / arr.length) : null; };
+  const fp = pctl(fs, +at.f), op = at.oi > 0 ? pctl(os, +at.oi) : null;
+  const days = Math.round(((+fund[fund.length - 1].t) - (+fund[0].t)) / 86400000);
+  if (fp == null) return null;
+  if (mv.dir < 0 && fp >= 85) return { k: 'fuel', label: 'Crowded longs', w: 0.3, text: 'Funding sat at the ' + fp + 'th percentile of its last ' + days + ' days' + (op != null && op >= 75 ? ' and open interest at the ' + op + 'th' : '') + ' - crowded longs were there to be flushed', fuel: { fundingPctl: fp, oiPctl: op, funding: +at.f } };
+  if (mv.dir > 0 && fp <= 15) return { k: 'fuel', label: 'Crowded shorts', w: 0.3, text: 'Funding sat at the ' + fp + 'th percentile of its last ' + days + ' days' + (op != null && op >= 75 ? ' with open interest at the ' + op + 'th' : '') + ' - crowded shorts were there to be squeezed', fuel: { fundingPctl: fp, oiPctl: op, funding: +at.f } };
+  return null;
+}
+// THE BOOK, for a move that is still fresh: the collector's ladder is state, not history, so this reads only when the
+// move started inside the last twenty minutes. Depth within 1% across every venue we read; a one-sided book on the side
+// of the move is the move's mechanism, a book leaning the other way says the move ran into resting size.
+function cxBookFactor(mv, book, now) {
+  if (!book || !book.venues || (now || Date.now()) - mv.t0 > 20 * 60000) return null;
+  let bid = 0, ask = 0, nv = 0;
+  for (const v of Object.values(book.venues)) { const d = v && v.depthUsd; if (!d) continue; const b1 = +d.bid_1 || 0, a1 = +d.ask_1 || 0; if (b1 > 0 && a1 > 0) { bid += b1; ask += a1; nv++; } }
+  if (!nv || bid + ask < 500000) return null;
+  const imb = bid / (bid + ask), pct = Math.round(imb * 100);
+  if (mv.dir < 0 && imb <= 0.42) return { k: 'book', label: 'One-sided book', w: 0.35, text: 'The book within 1% is ' + (100 - pct) + '% asks across ' + nv + ' venues - sellers hold the depth', book: { bidPct: pct, venues: nv, bidUsd: Math.round(bid), askUsd: Math.round(ask) } };
+  if (mv.dir > 0 && imb >= 0.58) return { k: 'book', label: 'One-sided book', w: 0.35, text: 'The book within 1% is ' + pct + '% bids across ' + nv + ' venues - buyers hold the depth', book: { bidPct: pct, venues: nv, bidUsd: Math.round(bid), askUsd: Math.round(ask) } };
+  if ((mv.dir < 0 && imb >= 0.6) || (mv.dir > 0 && imb <= 0.4)) return { k: 'book', label: 'Resting size against it', w: 0.25, text: 'The book within 1% leans ' + (imb >= 0.5 ? pct + '% bids' : (100 - pct) + '% asks') + ' against the move - it ran into resting size', book: { bidPct: pct, venues: nv, bidUsd: Math.round(bid), askUsd: Math.round(ask) } };
+  return null;
+}
+// A MOVE IS SELDOM ONE THING (2026-10-29, owner: "ne klasifikujemo pomeranje cene kao jednu stvar, vec vise stvari
+// odjednom"). Every contributor that cleared its own bar - the story, the cascade or the forced closes, the whales, the
+// tape, Bitcoin, stocks, the structure, open interest, the book - takes a share of the move in proportion to its weight.
+// `cause` stays the biggest one for everything that counts causes; `causes` carries them all; `labelFull` names up to
+// three. Session and fuel are context: they explain reach, they never take a share.
+function cxShares(best, cascade, liqOut, ctx) {
+  const c = [];
+  if (best) c.push({ k: 'news', label: null, w: +best.w || 0.3, text: null });
+  if (cascade && liqOut) c.push({ k: 'cascade', label: null, w: Math.min(0.8, 0.5 + (+liqOut.x || 6) / 60), text: 'The feed liquidated ' + Math.round(liqOut.usd / 1000) + 'k USD (' + liqOut.x + 'x the typical bucket) while the move ran' });
+  for (const f of ctx || []) { if (f.k === 'session' || f.k === 'fuel') continue; if (!(f.w >= 0.25)) continue; if (f.k === 'tech' && f.w < 0.4) continue; c.push({ k: f.k, label: f.label, w: +f.w, text: f.text }); }
+  const sum = c.reduce((a, x) => a + x.w, 0);
+  const out = c.map(x => ({ k: x.k, label: x.label, share: sum > 0 ? +(x.w / sum).toFixed(2) : 0, w: +x.w.toFixed(2), text: x.text })).sort((a, b) => b.share - a.share);
+  return out;
+}
 function cxContext(mv, btcMoves, whales, sym, extra) {
   const f = []; const x = extra || {};
   if (sym !== 'BTC' && btcMoves && btcMoves.length) {
@@ -1692,6 +1767,9 @@ function cxContext(mv, btcMoves, whales, sym, extra) {
     for (const t of x.tape) { const ts = +t.ts || 0; if (ts < mv.t0 - 10 * 60000 || ts > mv.t1) continue; const u = +t.usd || 0; if (!(u >= 250000)) continue; const sell = String(t.side).toLowerCase() === 'sell'; if (sell === (mv.dir < 0)) { same += u; n++; if (u > biggest) biggest = u; } else opp += u; }
     if (n >= 2 && same >= 3000000 && same >= 0.65 * (same + opp)) f.push({ k: 'flow', label: 'Order flow', w: Math.min(0.65, 0.4 + same / 25000000), text: Math.round(same / 1e6 * 10) / 10 + 'M USD of market ' + (mv.dir < 0 ? 'sells' : 'buys') + ' hit the book in ' + n + ' prints as the move ran (' + Math.round(100 * same / (same + opp)) + '% one-sided) - flow, not a headline', flow: { n, usd: Math.round(same), opp: Math.round(opp), biggest: Math.round(biggest) } });
   }
+  try { const of = cxOiFactor(mv, x.oi); if (of) f.push(of); } catch (e) {}
+  try { const ff = cxFuelFactor(mv, x.fund); if (ff) f.push(ff); } catch (e) {}
+  try { const bf = cxBookFactor(mv, x.book, x.now); if (bf) f.push(bf); } catch (e) {}
   for (const s of cxSession(mv.t0)) f.push(Object.assign({ w: 0.35 }, s));
   return f;
 }
@@ -1709,6 +1787,8 @@ function cxNote(mv, a, ctx, sym) {
   else if (a.cause === 'cascade') parts.push('The feed liquidated ' + (a.liq ? '$' + Math.round(a.liq.usd / 1000) + 'k' : 'many times its usual amount') + ' while the move ran - forced closes drove it');
   else { const fx = ctx.filter(c => c.k === a.cause)[0]; if (fx) parts.push(fx.text); }
   if (a.cause !== 'unknown' && a.cause !== 'tech') { const te = ctx.filter(c => c.k === 'tech')[0]; if (te && te.text) parts.push(te.text.charAt(0).toUpperCase() + te.text.slice(1)); }
+  for (const k of ['oi', 'book', 'fuel']) { if (a.cause === k) continue; const fx = ctx.filter(c => c.k === k)[0]; if (fx && fx.text) parts.push(fx.text.charAt(0).toUpperCase() + fx.text.slice(1)); }
+  if (a.causes && a.causes.length >= 2) parts.push('Shares: ' + a.causes.slice(0, 4).map(cc => cc.label + ' ' + Math.round(cc.share * 100) + '%').join(', '));
   if (a.catalyst && a.catalyst.story && a.catalyst.story.n >= 2) parts.push(a.catalyst.story.n + ' desks reported this story, the first at ' + new Date(a.catalyst.story.first).toISOString().slice(11, 16) + ' UTC');
   return parts.join('. ').replace(/\.\./g, '.');
 }
@@ -1738,7 +1818,7 @@ async function handleCatalystMoves(url, env) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v3_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v4_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       colFetch('/api/v1/catalysts?since=' + (at - 43200000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 15),
@@ -1746,20 +1826,23 @@ async function handleCatalystMoves(url, env) {
     ]);
     const cats = cxEnrich((cj && cj.items) || [], await cxLabelsGet(env));
     const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
-    const [btcMoves, whales, spx, tapeJ, klL] = await Promise.all([
+    const [btcMoves, whales, spx, tapeJ, klL, oiS, fundS, bookJ] = await Promise.all([
       sym === 'BTC' ? Promise.resolve(null) : cxBtcMoves(env, tf, 2, at - 2 * 86400000, { cats, colFetch }),
       colFetch('/api/v1/whalefills?sym=' + sym + '&since=' + (at - 3 * 3600000) + '&min=250000&limit=300', 2500, 20).then(j => (j && j.items) || null),
       cxSpxMoves(env, tf, 2, at - 2 * 86400000),
       colFetch('/api/v1/tape?symbol=' + sym + '&bigmin=250000', 2000, 10),
       aiKlinesAfter(env, sym, tf, at - 3 * 86400000, 1).catch(() => ({ bars: [] })),
+      colFetch('/api/v1/oiseries?symbol=' + sym + '&since=' + (at - 2 * 86400000), 2500, 60).then(j => (j && j.items) || null),
+      colFetch('/api/v1/fundseries?symbol=' + sym + '&since=' + (at - 14 * 86400000), 2500, 300).then(j => (j && j.items) || null),
+      colFetch('/api/v1/book?symbol=' + sym, 2000, 5),
     ]);
     const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
-    const a = cxAttribute(mv, cats, liq, { sym, liqFloor: (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000, btcMoves, whales, spx, tape, bars: (klL && klL.bars) || null });
+    const a = cxAttribute(mv, cats, liq, { sym, liqFloor: (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000, btcMoves, whales, spx, tape, bars: (klL && klL.bars) || null, oi: oiS, fund: fundS, book: bookJ, now });
     const res = J({ symbol: sym, at, pct, live: true, collector: cj ? 'ok' : 'down', catalystsSeen: cats.length, ...a, now }, 20);
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v5_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v6_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1777,20 +1860,23 @@ async function handleCatalystMoves(url, env) {
   const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
   const liqFloor = (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000;
   // BTC's own moves (an alt that moved WITH Bitcoin followed it) and the tracker's trades in this coin (14-day table)
-  const [btcMoves, whales, spx, tapeJ] = await Promise.all([
+  const [btcMoves, whales, spx, tapeJ, oiS, fundS] = await Promise.all([
     sym === 'BTC' ? Promise.resolve(null) : cxBtcMoves(env, tf, days, since, { cats, colFetch }),
     colFetch('/api/v1/whalefills?sym=' + sym + '&since=' + since + '&min=250000&limit=2000', 3000, 120).then(j => (j && j.items) || null),
     cxSpxMoves(env, tf, days, since),
     colFetch('/api/v1/tape?symbol=' + sym + '&bigmin=250000', 2000, 20),
+    colFetch('/api/v1/oiseries?symbol=' + sym + '&since=' + Math.max(since, now - 14 * 86400000), 4000, 300).then(j => (j && j.items) || null),
+    colFetch('/api/v1/fundseries?symbol=' + sym + '&since=' + (now - 14 * 86400000), 3000, 300).then(j => (j && j.items) || null),
   ]);
   // the tape ring reaches back hours, not the month: the flow factor applies to the newest moves and the live verdict
   const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
-  const moves = cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars }) })));
+  const moves = cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars, oi: oiS, fund: fundS, now }) })));
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
-  sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0;
-  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else sum.unknown++; }
+  sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0; sum.oi = 0; sum.book = 0; sum.multi = 0;
+  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else if (m.cause === 'oi') sum.oi++; else if (m.cause === 'book') sum.book++; else sum.unknown++; }
+  for (const m of moves) if (m.causes && m.causes.length >= 2) sum.multi++;
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
-  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
+  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, oiMeasured: !!(oiS && oiS.length), fundingMeasured: !!(fundS && fundS.length), shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
   const res = J(body, cj ? 300 : 60);
   if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
   return res;
@@ -8940,6 +9026,55 @@ async function premLiveRow(env, allow, w, now) {
   if (allow && allow.has(String(w.username || '').toLowerCase())) return true;
   if ((+w.prem || 0) > now) return true;
   try { return (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) { return false; }
+}
+// A MAJOR STORY NAMES A COIN YOU HOLD (2026-10-29): the minute cron reads what landed in the last three minutes, keeps the
+// stories that are major (importance 70+ with two desks, or 85+) or score 70+, and tells every Premium member with an open
+// position or resting order on a coin they name - Telegram and push, the same senders the position alerts use. One story
+// per member per twelve hours (`cxal:`), and `cxalert:last` is always stamped so a quiet minute reads as quiet, not dead.
+async function checkCatalystAlerts(env) {
+  try {
+    if (!env || !env.STATS || !env.USERS) return;
+    const stamp = (o) => { try { return env.STATS.put('cxalert:last', JSON.stringify(Object.assign({ ts: Date.now() }, o)), { expirationTtl: 3600 }); } catch (e) {} };
+    const now = Date.now(), base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (!base || now < COL_DOWN_UNTIL) { await stamp({ items: 0, major: 0, fired: 0, collector: 'down' }); return; }
+    let items = [];
+    const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 2500);
+    try { const r = await __realFetch(base + '/api/v1/catalysts?since=' + (now - 3 * 60000) + '&limit=80&min=25', { signal: ctl.signal }); if (r.ok) { const j = await r.json(); items = (j && j.items) || []; } } catch (e) {} finally { clearTimeout(tmr); }
+    if (!items.length) { await stamp({ items: 0, major: 0, fired: 0 }); return; }
+    const en = cxEnrich(items, await cxLabelsGet(env)).filter(c => (c.major || c.score >= 70) && String(c.syms || '').length && c.kind !== 'promo' && c.kind !== 'pair');
+    if (!en.length) { await stamp({ items: items.length, major: 0, fired: 0 }); return; }
+    let watch = []; try { const r = await usersDO(env, '/posalertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ items: items.length, major: en.length, fired: 0, err: 1 }); return; }
+    const allow = new Set(PREM_FOUNDERS);
+    try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
+    const fired = [];
+    for (const w of watch) {
+      const held = new Set(); (w.pos || []).forEach(p => held.add(String(p.sym || '').toUpperCase())); (w.ord || []).forEach(o => held.add(String(o.sym || '').toUpperCase()));
+      if (!held.size) continue;
+      const hits = en.filter(c => String(c.syms || '').split(',').some(s => held.has(s)));
+      if (!hits.length) continue;
+      if (!(await premLiveRow(env, allow, w, now))) continue;
+      for (const c of hits) {
+        const sk = c.story ? c.story.k : c.id, sym = String(c.syms || '').split(',').filter(s => held.has(s))[0];
+        const kk = 'cxal:' + w.uid + ':' + sk;
+        try { if (await env.STATS.get(kk)) continue; await env.STATS.put(kk, '1', { expirationTtl: 12 * 3600 }); } catch (e) { continue; }
+        const desks = c.story && c.story.n > 1 ? c.story.n + ' desks' : String(c.source || '').replace(/^(rss|tg|x):/, '');
+        const title = 'Catalyst on ' + sym + ': ' + c.kind + ' (score ' + c.score + ')';
+        const body = String(c.title || '').slice(0, 160) + (c.lbl && c.lbl.sum ? ' - ' + c.lbl.sum : '') + ' [' + desks + ']' + (c.impact && c.impact.n >= 12 ? ' - events like this moved price ' + c.impact.x15 + 'x the usual bar' : '') + '. You hold ' + sym + '.';
+        fired.push({ uid: w.uid, sym, title, body });
+        if (w.tg && env.TELEGRAM_TOKEN) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>' + title + '</b>\n' + body + '\n\n<a href="https://marginpad.io/catalysts/?sym=' + sym + '">What moved ' + sym + '</a>' }); } catch (e) {} }
+      }
+    }
+    if (fired.length && env.VAPID_JWK) {
+      try {
+        const uids = [...new Set(fired.map(f => f.uid))];
+        const r = await usersDO(env, '/push/byuid', { uids });
+        const subs = (r && r.subs) || [];
+        const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
+        for (const f of fired) { for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, { title: f.title, body: f.body, url: 'https://marginpad.io/catalysts/?sym=' + f.sym + '&ref=push' }); } catch (e) {} } }
+      } catch (e) {}
+    }
+    await stamp({ items: items.length, major: en.length, watched: watch.length, fired: fired.length });
+  } catch (e) {}
 }
 async function checkPositionAlerts(env) {
   try {
@@ -20103,6 +20238,10 @@ const MCP_TOOLS = [
     inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
   { name: 'get_open_interest', description: 'Open interest per symbol - how much leveraged money is committed.', path: (a) => '/api/v1/open-interest' + (a.symbol ? '?symbol=' + encodeURIComponent(a.symbol) : ''),
     inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
+  { name: 'get_catalysts', description: 'Dated events that can move a coin, as they land: exchange listings and delistings, filings, macro prints, hacks (scored by the money lost), ETF and regulation headlines, official channels and fast news desks - one story per event with the desks that reported it, a 0-100 score, the coins named, the direction implied and how much events of that kind have measurably moved price.', path: (a) => '/api/v1/catalysts?limit=' + Math.max(1, Math.min(300, +a.limit || 60)) + '&min=' + Math.max(0, Math.min(100, +a.min_score || 25)) + (a.symbol ? '&sym=' + encodeURIComponent(a.symbol) : '') + (a.kind ? '&kind=' + encodeURIComponent(a.kind) : ''),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string', description: 'Only items naming this coin' }, kind: { type: 'string', description: 'listing, delisting, macro, hack, etf, regulation, politics, whale, unlock, protocol, adoption, filing, news' }, min_score: { type: 'number', description: 'Minimum score 0-100 (default 25)' }, limit: { type: 'number' } } } },
+  { name: 'get_what_moved_it', description: 'Every abnormal jump or drop of the last 30 days for a coin with its causes and their shares: the story that moved it (with desks and measured realism), a liquidation cascade or forced closes, the whale tracker, the tape, Bitcoin and why Bitcoin moved, US stocks, open interest (deleveraging, short covering, new positioning), the chart structure (a broken level, a new 30-day extreme), with a sentence on every move - unknown said out loud. Pass at (ms) with pct for a live verdict on a move happening now.', path: (a) => '/api/v1/catalysts/moves?symbol=' + encodeURIComponent(a.symbol || 'BTC') + '&tf=' + (a.tf || 15) + '&days=' + Math.max(2, Math.min(35, +a.days || 30)) + (a.at ? '&at=' + (+a.at) + '&pct=' + (+a.pct || 0) + '&n=' + (+a.n || 1) : ''),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, tf: { type: 'number', description: 'Candle minutes: 5, 15 or 60' }, days: { type: 'number' }, at: { type: 'number', description: 'Live verdict: the move start in ms' }, pct: { type: 'number' }, n: { type: 'number' } } } },
   { name: 'get_liquidations', description: 'Recent real liquidation events aggregated from eight exchanges.', path: (a) => '/api/v1/liquidations' + (a.symbol ? '?symbol=' + encodeURIComponent(a.symbol) : ''),
     inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
   { name: 'get_fear_greed', description: 'Crypto Fear and Greed index, current value and classification.', path: () => '/api/v1/fear-greed',
@@ -20185,7 +20324,7 @@ const MCP_TOOLS = [
 ];
 // Human-readable titles for the directory listings (Claude connector directory, Glama, Smithery). Derived from the name, with
 // the few that a plain split would misread spelled out.
-const MCP_TITLES = { get_price: 'Live price', get_klines: 'OHLC candles', get_markets: 'Tradable markets', get_screener: 'Setup screener', get_funding: 'Funding rates', get_open_interest: 'Open interest', get_liquidations: 'Liquidations (24h)', get_fear_greed: 'Fear and Greed index', get_economic_calendar: 'Economic calendar', calc_liquidation: 'Liquidation price calculator', calc_position_size: 'Position size calculator', paper_balance: 'Paper account balance', paper_positions: 'Paper positions', paper_trades: 'Closed paper trades', paper_open: 'Open a paper position', paper_close: 'Close a paper position', paper_sltp: 'Set stop / take-profit', paper_modify_order: 'Modify a resting order', paper_fees: 'Fee venue', paper_sim: 'Simulation profile', paper_realism: 'Fill realism', paper_report: 'Trading report', paper_accounts: 'Paper books', paper_reset: 'Reset the paper book', paper_equity: 'Equity curve', paper_replay: 'Replay a past day', paper_limit_order: 'Place a limit or stop order', paper_orders: 'Resting orders', paper_cancel_order: 'Cancel a resting order' };
+const MCP_TITLES = { get_price: 'Live price', get_klines: 'OHLC candles', get_markets: 'Tradable markets', get_screener: 'Setup screener', get_funding: 'Funding rates', get_open_interest: 'Open interest', get_liquidations: 'Liquidations (24h)', get_catalysts: 'Catalysts (news, listings, macro, hacks)', get_what_moved_it: 'What moved it (30 days)', get_fear_greed: 'Fear and Greed index', get_economic_calendar: 'Economic calendar', calc_liquidation: 'Liquidation price calculator', calc_position_size: 'Position size calculator', paper_balance: 'Paper account balance', paper_positions: 'Paper positions', paper_trades: 'Closed paper trades', paper_open: 'Open a paper position', paper_close: 'Close a paper position', paper_sltp: 'Set stop / take-profit', paper_modify_order: 'Modify a resting order', paper_fees: 'Fee venue', paper_sim: 'Simulation profile', paper_realism: 'Fill realism', paper_report: 'Trading report', paper_accounts: 'Paper books', paper_reset: 'Reset the paper book', paper_equity: 'Equity curve', paper_replay: 'Replay a past day', paper_limit_order: 'Place a limit or stop order', paper_orders: 'Resting orders', paper_cancel_order: 'Cancel a resting order' };
 const mcpTitle = (name) => MCP_TITLES[name] || name.split('_').map((w, i) => i ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 const MCP_DESTRUCTIVE = { paper_close: 1, paper_cancel_order: 1, paper_reset: 1 };
 function mcpAnnotations(t) {
@@ -29619,7 +29758,8 @@ export default {
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
       ctx.waitUntil(mpadTick(env).catch(() => {}));
-      ctx.waitUntil(cxLabelTick(env).catch(() => {})); // the catalysts' reader: one Haiku call over the newest unlabelled items, self-gated to every two minutes // the house coin's minute: read the inputs, price one step, append it - the recorded series is the only copy
+      ctx.waitUntil(cxLabelTick(env).catch(() => {})); // the catalysts' reader: one Haiku call over the newest unlabelled items, self-gated to every two minutes
+      ctx.waitUntil(checkCatalystAlerts(env).catch(() => {})); // a major story naming a coin a Premium member holds, within the minute // the house coin's minute: read the inputs, price one step, append it - the recorded series is the only copy
       ctx.waitUntil(pushDrain(env).catch(() => {})); // the 1-min trigger does almost no work - drain the notification push outbox here so a DM / mention / duel / new-follower reaches the phone within a minute (follow-trade already drains on the trade path)
       return;
     }

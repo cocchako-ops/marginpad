@@ -1,0 +1,982 @@
+{
+ "family": "mean_reversion",
+ "generatedAt": "2026-10-29T00:58:29.092Z",
+ "strict": [
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {}
+   },
+   "tf": "60",
+   "book": {
+    "n": 1042,
+    "wr": 31.4,
+    "expR": -0.372,
+    "unclear": 3815
+   },
+   "strict": {
+    "n": 4538,
+    "wr": 33.3,
+    "expR": -0.334,
+    "unclear": 319
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 48,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 759,
+    "wr": 32.7,
+    "expR": -0.347,
+    "unclear": 2881
+   },
+   "strict": {
+    "n": 3392,
+    "wr": 33.2,
+    "expR": -0.336,
+    "unclear": 248
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 24,
+    "f": {}
+   },
+   "tf": "60",
+   "book": {
+    "n": 1028,
+    "wr": 31.5,
+    "expR": -0.37,
+    "unclear": 3666
+   },
+   "strict": {
+    "n": 4383,
+    "wr": 33.9,
+    "expR": -0.322,
+    "unclear": 311
+   }
+  },
+  {
+   "why": "top-score",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "wick",
+    "tgt": "r1",
+    "hz": 24,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 752,
+    "wr": 32.8,
+    "expR": -0.343,
+    "unclear": 2768
+   },
+   "strict": {
+    "n": 3279,
+    "wr": 33.8,
+    "expR": -0.324,
+    "unclear": 241
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "struct",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 304,
+    "wr": 48.7,
+    "expR": 0.226,
+    "unclear": 1
+   },
+   "strict": {
+    "n": 305,
+    "wr": 48.9,
+    "expR": 0.229,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "bb",
+    "entry": "market",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "240",
+   "book": {
+    "n": 334,
+    "wr": 30.5,
+    "expR": 0.222,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 334,
+    "wr": 30.5,
+    "expR": 0.222,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 286,
+    "wr": 40.2,
+    "expR": 0.206,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 286,
+    "wr": 40.2,
+    "expR": 0.206,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "edge60",
+    "entry": "market",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 1740,
+    "wr": 28.7,
+    "expR": 0.149,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1740,
+    "wr": 28.7,
+    "expR": 0.149,
+    "unclear": 0
+   }
+  },
+  {
+   "why": "best-sane",
+   "params": {
+    "trig": "edge60",
+    "entry": "market",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "book": {
+    "n": 1311,
+    "wr": 38.4,
+    "expR": 0.153,
+    "unclear": 0
+   },
+   "strict": {
+    "n": 1311,
+    "wr": 38.4,
+    "expR": 0.153,
+    "unclear": 0
+   }
+  }
+ ],
+ "coinConsistency": [
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "struct",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 305,
+   "wr": 48.9,
+   "expR": 0.229,
+   "coinsPos": 8,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 31,
+     "wr": 38.7,
+     "expR": -0.045,
+     "pf": 0.93
+    },
+    "AVAX": {
+     "n": 33,
+     "wr": 51.5,
+     "expR": 0.403,
+     "pf": 1.83
+    },
+    "BNB": {
+     "n": 17,
+     "wr": 64.7,
+     "expR": 0.6,
+     "pf": 2.7
+    },
+    "BTC": {
+     "n": 40,
+     "wr": 52.5,
+     "expR": 0.294,
+     "pf": 1.62
+    },
+    "DOGE": {
+     "n": 25,
+     "wr": 48,
+     "expR": 0.172,
+     "pf": 1.33
+    },
+    "ETH": {
+     "n": 30,
+     "wr": 56.7,
+     "expR": 0.428,
+     "pf": 1.99
+    },
+    "LINK": {
+     "n": 28,
+     "wr": 35.7,
+     "expR": -0.082,
+     "pf": 0.87
+    },
+    "LTC": {
+     "n": 35,
+     "wr": 60,
+     "expR": 0.49,
+     "pf": 2.22
+    },
+    "SOL": {
+     "n": 35,
+     "wr": 40,
+     "expR": 0.041,
+     "pf": 1.07
+    },
+    "XRP": {
+     "n": 31,
+     "wr": 45.2,
+     "expR": 0.084,
+     "pf": 1.15
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "bb",
+    "entry": "market",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "240",
+   "n": 334,
+   "wr": 30.5,
+   "expR": 0.222,
+   "coinsPos": 7,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 34,
+     "wr": 35.3,
+     "expR": 0.412,
+     "pf": 1.64
+    },
+    "AVAX": {
+     "n": 35,
+     "wr": 42.9,
+     "expR": 0.714,
+     "pf": 2.25
+    },
+    "BNB": {
+     "n": 22,
+     "wr": 22.7,
+     "expR": -0.091,
+     "pf": 0.88
+    },
+    "BTC": {
+     "n": 34,
+     "wr": 26.5,
+     "expR": 0.059,
+     "pf": 1.08
+    },
+    "DOGE": {
+     "n": 36,
+     "wr": 22.2,
+     "expR": -0.111,
+     "pf": 0.86
+    },
+    "ETH": {
+     "n": 35,
+     "wr": 31.4,
+     "expR": 0.257,
+     "pf": 1.38
+    },
+    "LINK": {
+     "n": 40,
+     "wr": 35,
+     "expR": 0.4,
+     "pf": 1.62
+    },
+    "LTC": {
+     "n": 34,
+     "wr": 32.4,
+     "expR": 0.294,
+     "pf": 1.43
+    },
+    "SOL": {
+     "n": 40,
+     "wr": 17.5,
+     "expR": -0.3,
+     "pf": 0.64
+    },
+    "XRP": {
+     "n": 24,
+     "wr": 41.7,
+     "expR": 0.667,
+     "pf": 2.14
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 286,
+   "wr": 40.2,
+   "expR": 0.206,
+   "coinsPos": 7,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 29,
+     "wr": 24.1,
+     "expR": -0.276,
+     "pf": 0.64
+    },
+    "AVAX": {
+     "n": 33,
+     "wr": 48.5,
+     "expR": 0.455,
+     "pf": 1.88
+    },
+    "BNB": {
+     "n": 15,
+     "wr": 60,
+     "expR": 0.8,
+     "pf": 3
+    },
+    "BTC": {
+     "n": 38,
+     "wr": 36.8,
+     "expR": 0.105,
+     "pf": 1.17
+    },
+    "DOGE": {
+     "n": 25,
+     "wr": 40,
+     "expR": 0.2,
+     "pf": 1.33
+    },
+    "ETH": {
+     "n": 27,
+     "wr": 48.1,
+     "expR": 0.444,
+     "pf": 1.86
+    },
+    "LINK": {
+     "n": 27,
+     "wr": 33.3,
+     "expR": 0,
+     "pf": 1
+    },
+    "LTC": {
+     "n": 31,
+     "wr": 51.6,
+     "expR": 0.548,
+     "pf": 2.13
+    },
+    "SOL": {
+     "n": 34,
+     "wr": 35.3,
+     "expR": 0.059,
+     "pf": 1.09
+    },
+    "XRP": {
+     "n": 27,
+     "wr": 33.3,
+     "expR": 0,
+     "pf": 1
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "market",
+    "stop": "a2",
+    "tgt": "r3",
+    "hz": 48,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 1740,
+   "wr": 28.7,
+   "expR": 0.149,
+   "coinsPos": 9,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 179,
+     "wr": 23.5,
+     "expR": -0.061,
+     "pf": 0.92
+    },
+    "AVAX": {
+     "n": 175,
+     "wr": 29.7,
+     "expR": 0.189,
+     "pf": 1.27
+    },
+    "BNB": {
+     "n": 177,
+     "wr": 27.1,
+     "expR": 0.085,
+     "pf": 1.12
+    },
+    "BTC": {
+     "n": 189,
+     "wr": 28.6,
+     "expR": 0.143,
+     "pf": 1.2
+    },
+    "DOGE": {
+     "n": 155,
+     "wr": 31.6,
+     "expR": 0.265,
+     "pf": 1.39
+    },
+    "ETH": {
+     "n": 153,
+     "wr": 32.7,
+     "expR": 0.307,
+     "pf": 1.46
+    },
+    "LINK": {
+     "n": 174,
+     "wr": 33.9,
+     "expR": 0.356,
+     "pf": 1.54
+    },
+    "LTC": {
+     "n": 181,
+     "wr": 27.1,
+     "expR": 0.083,
+     "pf": 1.11
+    },
+    "SOL": {
+     "n": 167,
+     "wr": 28.1,
+     "expR": 0.126,
+     "pf": 1.18
+    },
+    "XRP": {
+     "n": 190,
+     "wr": 26.3,
+     "expR": 0.053,
+     "pf": 1.07
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "market",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "htf": 1
+    }
+   },
+   "tf": "60",
+   "n": 1311,
+   "wr": 38.4,
+   "expR": 0.153,
+   "coinsPos": 9,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 134,
+     "wr": 33.6,
+     "expR": 0.007,
+     "pf": 1.01
+    },
+    "AVAX": {
+     "n": 130,
+     "wr": 38.5,
+     "expR": 0.154,
+     "pf": 1.25
+    },
+    "BNB": {
+     "n": 138,
+     "wr": 39.1,
+     "expR": 0.174,
+     "pf": 1.29
+    },
+    "BTC": {
+     "n": 129,
+     "wr": 45,
+     "expR": 0.349,
+     "pf": 1.63
+    },
+    "DOGE": {
+     "n": 129,
+     "wr": 43.4,
+     "expR": 0.302,
+     "pf": 1.53
+    },
+    "ETH": {
+     "n": 107,
+     "wr": 36.4,
+     "expR": 0.093,
+     "pf": 1.15
+    },
+    "LINK": {
+     "n": 131,
+     "wr": 42.7,
+     "expR": 0.282,
+     "pf": 1.49
+    },
+    "LTC": {
+     "n": 143,
+     "wr": 34.3,
+     "expR": 0.028,
+     "pf": 1.04
+    },
+    "SOL": {
+     "n": 132,
+     "wr": 33.3,
+     "expR": 0,
+     "pf": 1
+    },
+    "XRP": {
+     "n": 138,
+     "wr": 38.4,
+     "expR": 0.152,
+     "pf": 1.25
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "market",
+    "stop": "a3",
+    "tgt": "r2",
+    "hz": 48,
+    "f": {
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 1372,
+   "wr": 38.3,
+   "expR": 0.15,
+   "coinsPos": 9,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 139,
+     "wr": 30.9,
+     "expR": -0.072,
+     "pf": 0.9
+    },
+    "AVAX": {
+     "n": 136,
+     "wr": 39,
+     "expR": 0.169,
+     "pf": 1.28
+    },
+    "BNB": {
+     "n": 139,
+     "wr": 39.6,
+     "expR": 0.187,
+     "pf": 1.31
+    },
+    "BTC": {
+     "n": 147,
+     "wr": 41.5,
+     "expR": 0.245,
+     "pf": 1.42
+    },
+    "DOGE": {
+     "n": 130,
+     "wr": 39.2,
+     "expR": 0.177,
+     "pf": 1.29
+    },
+    "ETH": {
+     "n": 126,
+     "wr": 41.3,
+     "expR": 0.238,
+     "pf": 1.41
+    },
+    "LINK": {
+     "n": 134,
+     "wr": 41,
+     "expR": 0.231,
+     "pf": 1.39
+    },
+    "LTC": {
+     "n": 135,
+     "wr": 40,
+     "expR": 0.2,
+     "pf": 1.33
+    },
+    "SOL": {
+     "n": 135,
+     "wr": 36.3,
+     "expR": 0.089,
+     "pf": 1.14
+    },
+    "XRP": {
+     "n": 151,
+     "wr": 35.1,
+     "expR": 0.053,
+     "pf": 1.08
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "r1.5",
+    "hz": 48,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 302,
+   "wr": 47.4,
+   "expR": 0.184,
+   "coinsPos": 6,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 31,
+     "wr": 35.5,
+     "expR": -0.113,
+     "pf": 0.82
+    },
+    "AVAX": {
+     "n": 33,
+     "wr": 54.5,
+     "expR": 0.364,
+     "pf": 1.8
+    },
+    "BNB": {
+     "n": 17,
+     "wr": 64.7,
+     "expR": 0.618,
+     "pf": 2.75
+    },
+    "BTC": {
+     "n": 41,
+     "wr": 51.2,
+     "expR": 0.28,
+     "pf": 1.57
+    },
+    "DOGE": {
+     "n": 25,
+     "wr": 40,
+     "expR": 0,
+     "pf": 1
+    },
+    "ETH": {
+     "n": 29,
+     "wr": 55.2,
+     "expR": 0.379,
+     "pf": 1.85
+    },
+    "LINK": {
+     "n": 27,
+     "wr": 37,
+     "expR": -0.074,
+     "pf": 0.88
+    },
+    "LTC": {
+     "n": 34,
+     "wr": 55.9,
+     "expR": 0.397,
+     "pf": 1.9
+    },
+    "SOL": {
+     "n": 35,
+     "wr": 40,
+     "expR": 0,
+     "pf": 1
+    },
+    "XRP": {
+     "n": 30,
+     "wr": 43.3,
+     "expR": 0.083,
+     "pf": 1.15
+    }
+   }
+  },
+  {
+   "params": {
+    "trig": "edge60",
+    "entry": "limit",
+    "stop": "a3",
+    "tgt": "struct",
+    "hz": 24,
+    "f": {
+     "range": 1,
+     "rsi": 1,
+     "vol": 1
+    }
+   },
+   "tf": "60",
+   "n": 272,
+   "wr": 47.8,
+   "expR": 0.185,
+   "coinsPos": 8,
+   "coins": 10,
+   "byCoin": {
+    "ADA": {
+     "n": 28,
+     "wr": 39.3,
+     "expR": -0.04,
+     "pf": 0.93
+    },
+    "AVAX": {
+     "n": 27,
+     "wr": 51.9,
+     "expR": 0.395,
+     "pf": 1.82
+    },
+    "BNB": {
+     "n": 14,
+     "wr": 57.1,
+     "expR": 0.368,
+     "pf": 1.86
+    },
+    "BTC": {
+     "n": 35,
+     "wr": 51.4,
+     "expR": 0.252,
+     "pf": 1.52
+    },
+    "DOGE": {
+     "n": 23,
+     "wr": 52.2,
+     "expR": 0.274,
+     "pf": 1.57
+    },
+    "ETH": {
+     "n": 27,
+     "wr": 51.9,
+     "expR": 0.286,
+     "pf": 1.59
+    },
+    "LINK": {
+     "n": 24,
+     "wr": 33.3,
+     "expR": -0.172,
+     "pf": 0.74
+    },
+    "LTC": {
+     "n": 31,
+     "wr": 61.3,
+     "expR": 0.501,
+     "pf": 2.29
+    },
+    "SOL": {
+     "n": 33,
+     "wr": 39.4,
+     "expR": 0.02,
+     "pf": 1.03
+    },
+    "XRP": {
+     "n": 30,
+     "wr": 43.3,
+     "expR": 0.029,
+     "pf": 1.05
+    }
+   }
+  }
+ ],
+ "filterEffect": [
+  {
+   "filter": "range",
+   "pairs": 1620,
+   "medDeltaWr": 0.2,
+   "medDeltaExpR": 0.004,
+   "medKeptShare": 0.476,
+   "expRBetterPct": 55.7
+  },
+  {
+   "filter": "rsi",
+   "pairs": 1212,
+   "medDeltaWr": -2.4,
+   "medDeltaExpR": -0.058,
+   "medKeptShare": 0.274,
+   "expRBetterPct": 17.7
+  },
+  {
+   "filter": "vol",
+   "pairs": 1620,
+   "medDeltaWr": 0.6,
+   "medDeltaExpR": 0.016,
+   "medKeptShare": 0.822,
+   "expRBetterPct": 76.1
+  },
+  {
+   "filter": "sess",
+   "pairs": 1620,
+   "medDeltaWr": 0.1,
+   "medDeltaExpR": 0.003,
+   "medKeptShare": 0.77,
+   "expRBetterPct": 54
+  },
+  {
+   "filter": "htf",
+   "pairs": 1620,
+   "medDeltaWr": 0,
+   "medDeltaExpR": 0,
+   "medKeptShare": 0.763,
+   "expRBetterPct": 26.9
+  },
+  {
+   "filter": "range+rsi",
+   "pairs": 1055,
+   "medDeltaWr": -1.3,
+   "medDeltaExpR": -0.029,
+   "medKeptShare": 0.124,
+   "expRBetterPct": 36.4
+  },
+  {
+   "filter": "range+vol",
+   "pairs": 1620,
+   "medDeltaWr": 0.3,
+   "medDeltaExpR": 0.009,
+   "medKeptShare": 0.391,
+   "expRBetterPct": 60.1
+  },
+  {
+   "filter": "rsi+vol",
+   "pairs": 1120,
+   "medDeltaWr": -0.4,
+   "medDeltaExpR": -0.002,
+   "medKeptShare": 0.179,
+   "expRBetterPct": 46.9
+  },
+  {
+   "filter": "range+htf",
+   "pairs": 1620,
+   "medDeltaWr": -0.2,
+   "medDeltaExpR": -0.003,
+   "medKeptShare": 0.397,
+   "expRBetterPct": 45.1
+  },
+  {
+   "filter": "range+rsi+vol",
+   "pairs": 872,
+   "medDeltaWr": -0.3,
+   "medDeltaExpR": 0.004,
+   "medKeptShare": 0.08,
+   "expRBetterPct": 52.3
+  },
+  {
+   "filter": "range+rsi+vol+sess+htf",
+   "pairs": 430,
+   "medDeltaWr": -1.1,
+   "medDeltaExpR": -0.027,
+   "medKeptShare": 0.046,
+   "expRBetterPct": 30.2
+  }
+ ]
+}

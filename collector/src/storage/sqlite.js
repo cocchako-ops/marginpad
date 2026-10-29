@@ -365,6 +365,14 @@ export function createSqliteStorage(path, opts = {}) {
     return Object.values(by).sort((a, b) => b.n - a.n || b.max - a.max);
   }
   // whale trade groups of one coin in a window (the tracker's own 14-day table) - a flow cause for the chart
+  // OI every two minutes, every venue summed per bucket (14 days), and the hourly Bybit OI+funding pair - the catalyst
+  // engine's 'what was the move made of' and 'how crowded was it' readings (2026-10-29)
+  function oiSeries(sym, since, until) { ensure();
+    return db.prepare('SELECT CAST(ts/120000 AS INTEGER)*120000 AS t, SUM(oi_base*price) AS usd, SUM(oi_base) AS base, COUNT(*) AS n FROM oi WHERE symbol=? AND ts>=? AND ts<? GROUP BY CAST(ts/120000 AS INTEGER) ORDER BY t LIMIT 20160').all(String(sym || '').toUpperCase(), +since || 0, +until || Date.now() + 60000);
+  }
+  function fundSeries(sym, since, until) { ensure();
+    return db.prepare('SELECT ts AS t, oi_usd AS oi, funding AS f FROM oi_snap WHERE symbol=? AND ts>=? AND ts<? ORDER BY ts LIMIT 2000').all(String(sym || '').toUpperCase(), +since || 0, +until || Date.now() + 60000);
+  }
   function whaleFillsRange(sym, since, until, minUsd, limit) { ensure();
     return db.prepare('SELECT ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd FROM whale_fill WHERE sym=? AND ts>=? AND ts<? AND usd>=? ORDER BY ts DESC LIMIT ?').all(String(sym || '').toUpperCase(), +since || 0, +until || Date.now() + 1, +minUsd || 0, Math.min(2000, Math.max(1, +limit || 500)));
   }
@@ -373,7 +381,7 @@ export function createSqliteStorage(path, opts = {}) {
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
     insertWhaleFills, insertWhalePos, pruneWhale,
-    insertCatalyst, pruneCatalyst, catalystRange, catalystCount, catalystTop, whaleFillsRange,
+    insertCatalyst, pruneCatalyst, catalystRange, catalystCount, catalystTop, oiSeries, fundSeries, whaleFillsRange,
     saveState, loadState,
     close: () => db.close() };
 }

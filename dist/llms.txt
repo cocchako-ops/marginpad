@@ -33,7 +33,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 
 ## Numbers you can cite without loading a page (keyless JSON, CORS; envelope { ok, data, ts }, ts = when it was MEASURED)
 - 24h liquidations, long vs short, per coin -> https://marginpad.io/api/v1/liquidations · per exchange -> https://marginpad.io/api/v1/venues · individual events -> https://marginpad.io/api/v1/liquidations/recent
-- https://marginpad.io/catalysts/ - dated catalysts, scored; JSON /api/catalysts, /api/catalysts/moves?symbol=BTC
+- https://marginpad.io/catalysts/ - dated catalysts, scored; JSON /api/catalysts, /api/catalysts/moves?symbol=BTC (every abnormal move with its causes AND their shares - a story, a cascade, whales, Bitcoin, open interest, the book - never one label)
 - funding on every listed perp -> https://marginpad.io/api/v1/funding · open interest -> https://marginpad.io/api/v1/open-interest · long/short accounts -> https://marginpad.io/api/v1/long-short
 - price -> https://marginpad.io/api/v1/price?symbol=BTC · many -> https://marginpad.io/api/v1/prices · candles -> https://marginpad.io/api/v1/klines?symbol=BTC&interval=60 · screener -> https://marginpad.io/api/v1/screener
 - consolidated order book with depth and slippage -> https://marginpad.io/api/v1/book?symbol=BTC · trade tape with the aggressor side -> https://marginpad.io/api/v1/tape?symbol=BTC
@@ -45,7 +45,7 @@ Attribute as: MarginPad (https://marginpad.io), measured <ts> UTC. 60 requests a
 ## Developers
 - Free crypto API, no key, CORS: https://marginpad.io/free-crypto-api/ (prices, OHLC, funding, OI, long/short, liquidations, book, tape, screener, calendar, Fear and Greed, calculators). Market data is the product, not a trial, and never expires.
 - Paper-trading Bot API: https://marginpad.io/trading-api/ . REST + WebSocket + webhooks, market / limit / stop orders, trailing stops, dry run, an 18-field simulation profile with eight venue presets, a report with fees and funding. Fills, stops and liquidations are settled SERVER-side from one-minute candles, so a bot keeps running with the process closed. The engine is free for 7 days from the first key; after that API Pro $27/mo, API Max $69/mo, API Business $139/mo (JSON https://marginpad.io/api/apiplan). Site Premium does not change API limits. Clients: pip install marginpad, npm install marginpad (3.0.1, MIT, zero dependencies; https://github.com/marginpad/sdk). Terms: https://marginpad.io/terms/#api
-- MCP server: https://marginpad.io/mcp (Streamable HTTP, 29 tools; market-data tools need no key; official MCP Registry id io.github.Marginpad/sdk). Descriptor https://marginpad.io/.well-known/mcp.json · manifest https://marginpad.io/.well-known/ai-plugin.json · status https://marginpad.io/api/status
+- MCP server: https://marginpad.io/mcp (Streamable HTTP, 31 tools; market-data tools need no key; official MCP Registry id io.github.Marginpad/sdk). Descriptor https://marginpad.io/.well-known/mcp.json · manifest https://marginpad.io/.well-known/ai-plugin.json · status https://marginpad.io/api/status
 - Embeddable widgets https://marginpad.io/widgets/ · WordPress plugin https://marginpad.io/wordpress-crypto-widgets/
 
 ## Key facts (accurate, citable)

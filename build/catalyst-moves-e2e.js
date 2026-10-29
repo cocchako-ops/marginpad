@@ -15,7 +15,7 @@
 const fs = require('fs'), path = require('path');
 const ARGS = process.argv.slice(2), has = k => ARGS.includes(k);
 const PURE = has('--pure'), BROWSER = has('--browser'), LOCAL = has('--local'), FALSIFY = has('--falsify');
-const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'tech', 'unknown'];
+const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'tech', 'oi', 'book', 'unknown'];
 const BASE = 'https://marginpad.io', DIST = path.join(__dirname, '..', 'dist'), A = path.join(DIST, 'assets');
 let pass = 0, fail = 0;
 const ok = (name, cond, note) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (note !== undefined ? '  -> ' + String(note).slice(0, 220) : '')); } };
@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -171,6 +171,20 @@ function pureLeg() {
   ok('the dollar reader knows k, M and B', X.cxUsd('lost $1.2M') === 1200000 && X.cxUsd('$779,000 drained') === 779000 && X.cxUsd('a $2B hole') === 2e9 && X.cxUsd('no figure') === null);
   const pr = X.cxEnrich([cat({ id: 'p1', kind: 'news', tier: 'mediaB', score: 11, title: 'GOOG IS A STRONG BUY' })], { m: { p1: { imp: 3, kind: 'promo', syms: [], expect: 0, sum: 'A trade idea', why: 'no event', ts: Date.now() } } });
   ok('a trade idea the model calls promo scores zero', pr[0].kind === 'promo' && pr[0].score === 0, JSON.stringify([pr[0].kind, pr[0].score]));
+  // OPEN INTEREST, THE BOOK, AND SEVERAL CAUSES AT ONCE
+  const oiS = []; for (let i = 0; i < 300; i++) oiS.push({ t: T0 - (300 - i) * 120000, usd: 20e9 * (1 + ((i % 5) - 2) * 0.0003) }); oiS.push({ t: T0 + 20 * 60000, usd: 19.4e9 });
+  let of = X.cxOiFactor({ t0: T0, t1: T0 + 15 * 60000, dir: -1 }, oiS);
+  ok('OI falling 3% while price falls is deleveraging', of && of.kind === 'delever' && /longs were closed or liquidated/.test(of.text), JSON.stringify(of));
+  of = X.cxOiFactor({ t0: T0, t1: T0 + 15 * 60000, dir: 1 }, oiS);
+  ok('the same OI drop under a RISE is short covering', of && of.kind === 'cover', JSON.stringify(of));
+  ok('an OI change inside the typical step is no factor', X.cxOiFactor({ t0: T0, t1: T0 + 15 * 60000, dir: -1 }, oiS.slice(0, 300).concat([{ t: T0 + 20 * 60000, usd: 20.004e9 }])) === null);
+  const bookS = { venues: { binance: { depthUsd: { bid_1: 1e6, ask_1: 3e6 } }, bybit: { depthUsd: { bid_1: 1.2e6, ask_1: 2.5e6 } } } };
+  const bf = X.cxBookFactor({ t0: T0, t1: T0 + 15 * 60000, dir: -1 }, bookS, T0 + 10 * 60000);
+  ok('a book two-thirds asks under a fresh drop is a one-sided book', bf && bf.label === 'One-sided book' && bf.book.bidPct <= 42, JSON.stringify(bf));
+  ok('and it is not read for a move older than twenty minutes (the ladder is state, not history)', X.cxBookFactor({ t0: T0, t1: T0 + 15 * 60000, dir: -1 }, bookS, T0 + 3 * 3600000) === null);
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -2.4, dir: -1, p0: 100, p1: 97.6, hi: 100, lo: 97.5 }, [cat({ kind: 'delisting', expect: -1, ts_src: T0 - 10 * 60000 })], liqM, { sym: 'BTC', liqFloor: 250000, oi: oiS, whales: [{ ts: T0, act: 'close', long: 1, usd: 4000000 }] });
+  ok('a delisting, forced closes, deleveraging and whale selling at once are FOUR causes with shares that add to one', a.causes && a.causes.length >= 4 && Math.abs(a.causes.reduce((s, c) => s + c.share, 0) - 1) <= 0.03 && a.causes[0].k === 'news' && /\+/.test(a.labelFull), JSON.stringify(a.causes) + ' ' + a.labelFull);
+  ok('the note states the shares', /Shares: /.test(a.note), a.note);
 }
 
 // ---------- production ----------
@@ -186,7 +200,7 @@ async function prodLeg() {
   const mv = j.moves || [];
   ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => CAUSES.includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
   const s = j.summary || {};
-  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + (s.tech || 0) + s.unknown === s.n, JSON.stringify(s));
+  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + (s.tech || 0) + (s.oi || 0) + (s.book || 0) + s.unknown === s.n, JSON.stringify(s));
   ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0) || (m.factors || []).some(f => f.k === m.cause)));
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));

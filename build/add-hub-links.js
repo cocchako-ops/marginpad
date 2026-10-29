@@ -112,7 +112,7 @@ const API_LINKS = [
   ['/free-crypto-api/', 'Free keyless market-data API'],
   ['/api-docs/', 'Live API reference (try the calls)'],
   ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?'],
-  ['/mcp-server-for-crypto-trading/', 'MCP server for AI agents - 29 tools, no key for market data'],
+  ['/mcp-server-for-crypto-trading/', 'MCP server for AI agents - 31 tools, no key for market data'],
   ['/arena/', 'Bot leaderboard - what other bots are doing'],
 ].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
 const API_INTRO = 'Every number on this page is available as free JSON, and the same account can run a paper-trading bot against it - no deposit, no KYC, and an MCP server for AI agents.';
