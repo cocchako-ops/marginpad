@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE, cxOneStory };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -213,6 +213,13 @@ function pureLeg() {
   ok('a $140M hack can be the cause and is sure', bigHack.cause === 'news' && bigHack.sure === true, JSON.stringify([bigHack.cause, bigHack.sure, bigHack.confidence]));
   const techOnly = X.cxAttribute(tmv, [], null, { sym: 'HYPE', bars: tb });
   ok('a move explained by structure alone is said but not sure (no flag on the chart)', techOnly.cause === 'tech' && techOnly.sure === false, JSON.stringify([techOnly.cause, techOnly.sure]));
+  // A STORY POINTING THE OTHER WAY IS NEVER THE CAUSE; ONE STORY EXPLAINS ONE MOVE (owner, 2026-10-30: ETH +1% 'Binance hack')
+  const upAfterHack = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: 1.0, dir: 1, p0: 100, p1: 101, hi: 101.1, lo: 99.9 }, [cat({ kind: 'hack', tier: 'mediaA', score: 90, expect: -1, syms: 'ETH', major: true, title: 'Exchange hot wallet drained of $140M', ts_src: T0 - 40 * 60000, lbl: { imp: 90, kind: 'hack', sum: 'A $140M exchange hack' } })], null, { sym: 'ETH' });
+  ok('a bounce after a hack is not the hack (opposite expectation refuses the story outright)', upAfterHack.cause !== 'news' && !upAfterHack.catalyst, JSON.stringify([upAfterHack.cause, upAfterHack.label]));
+  const st1 = { k: 'exchange-hack' , n: 3, name: 'Exchange Hack' };
+  const oneS = X.cxOneStory([{ t0: T0, t1: T0 + 3600000, pct: -4.2, dir: -1, cause: 'news', label: 'Exchange Hack', sure: true, confidence: 0.9, catalyst: { story: st1, title: 'x' }, factors: [], note: 'a' }, { t0: T0 + 5 * 3600000, t1: T0 + 5.25 * 3600000, pct: -0.8, dir: -1, cause: 'news', label: 'Exchange Hack', sure: true, confidence: 0.8, catalyst: { story: st1, title: 'x' }, factors: [{ k: 'tech', label: 'Support break', w: 0.55, text: 'fell through 100' }], note: 'b' }]);
+  const smallS = oneS.find(m => m.pct === -0.8), bigS = oneS.find(m => m.pct === -4.2);
+  ok('one story explains ONE move: the larger keeps it, the smaller later dip falls back to what else was measured and is not sure', bigS.cause === 'news' && bigS.sure === true && smallS.cause === 'tech' && smallS.sure === false && !smallS.catalyst && smallS.storyDemoted && /already explains the larger -4.2%/.test(smallS.note), JSON.stringify([smallS.cause, smallS.sure, smallS.note]));
   ok('a -0.9% blip between two legs of one story does not split the episode', !!big && Math.abs(big.pct - 21.7) < 0.2 && bl.length === 2 && bl.some(m => m.blip), JSON.stringify(bl.map(m => [m.pct, m.legs, !!m.blip])));
 }
 

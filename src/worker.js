@@ -1390,7 +1390,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v6_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v7_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -1617,7 +1617,7 @@ function cxAttribute(mv, cats, liq, opt) {
     // after the move started = the market led the news (a leak, a cascade the desk reported late): 0.65 since the realism
     // factor took its own share, so a specific primary item arriving late keeps its claim and a vague one loses it
     const timeW = major ? (lead < 0 ? 0.8 : lead <= 30 * 60000 ? 1 : lead <= 2 * 3600000 ? 0.9 : 0.75) : (lead < 0 ? 0.65 : lead <= 15 * 60000 ? 1 : lead <= 45 * 60000 ? 0.85 : (isMacro ? 0.9 : 0.6));
-    const ex = +c.expect || 0, dirW = ex === 0 ? 1 : ex === mv.dir ? 1.15 : 0.5;
+    const ex = +c.expect || 0; if (ex && ex !== mv.dir) continue; const dirW = ex === 0 ? 1 : 1.15;
     const confW = 1 + 0.1 * Math.min(3, Math.max(0, (+c.conf || 1) - 1));
     const perDay = rate[c.source + '|' + c.kind] || 1;
     const chance = Math.min(0.9, perDay * (CX_BEFORE_MS + CX_AFTER_MS) / 86400000);
@@ -1797,6 +1797,27 @@ function cxContext(mv, btcMoves, whales, sym, extra) {
 }
 // every move leaves with a sentence, the unknown ones too (owner: "cak i ako je btc dominance ili sta vec, mora da ima
 // obrazlozenje") - what was checked and found absent, and what the clock and the market were doing at that minute
+function cxOneStory(moves) {
+  const by = {};
+  for (const m of moves) { const k = cxEpKey(m); if (!k || !m.catalyst || !m.catalyst.story) continue; (by[k] = by[k] || []).push(m); }
+  for (const k in by) {
+    const g = by[k]; if (g.length < 2) continue;
+    g.sort((a, b) => Math.abs(+b.pct) - Math.abs(+a.pct));
+    const keep = g[0], hh = n => (n < 10 ? '0' : '') + n, d = new Date(keep.t0), when = hh(d.getUTCHours()) + ':' + hh(d.getUTCMinutes()) + ' UTC';
+    for (const m of g.slice(1)) {
+      const story = (keep.catalyst.story && keep.catalyst.story.name) || keep.label;
+      m.others = [m.catalyst].concat(m.others || []).slice(0, 4); m.catalyst = null; m.storyDemoted = true;
+      const ctx = m.factors || [];
+      if (m.cascade && m.liq) { m.cause = 'cascade'; m.label = m.liq.longShare != null ? (m.dir < 0 && m.liq.longShare >= 0.6 ? 'Long liquidations' : m.dir > 0 && m.liq.longShare <= 0.4 ? 'Short squeeze' : 'Cascade') : 'Cascade'; m.confidence = 0.6; m.sure = true; }
+      else { const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs' || x.k === 'oi' || x.k === 'book' || (x.k === 'tech' && x.w >= 0.4)).sort((a, b) => b.w - a.w)[0];
+        if (strong) { m.cause = strong.k; m.label = strong.label; m.confidence = +(+strong.w).toFixed(2); m.sure = strong.k === 'btc' ? !!strong.sure : false; } else { m.cause = 'unknown'; m.label = 'No known cause'; m.confidence = 0; m.sure = false; } }
+      m.causes = cxShares(null, m.cascade, m.liq, ctx, 0); if (m.causes.length && m.causes[0].k === 'cascade') m.causes[0].label = m.label; for (const cc of m.causes) if (!cc.label) cc.label = cc.k;
+      m.labelFull = m.causes.length ? m.causes.filter((cc, i) => i === 0 || cc.share >= 0.2).slice(0, 3).map(cc => cc.label).join(' + ') : m.label;
+      m.note = 'The ' + story + ' story already explains the larger ' + (keep.pct > 0 ? '+' : '') + keep.pct + '% move at ' + when + '; this one is ' + (m.cause === 'unknown' ? 'not explained by anything dated' : 'read as ' + m.label.toLowerCase()) + '.';
+    }
+  }
+  return moves;
+}
 function cxNote(mv, a, ctx, sym) {
   const parts = [];
   if (a.cause === 'unknown') {
@@ -1840,7 +1861,7 @@ async function handleCatalystMoves(url, env) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v6_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v7_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       colFetch('/api/v1/catalysts?since=' + (at - 43200000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 15),
@@ -1864,7 +1885,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v9_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v10_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1892,7 +1913,7 @@ async function handleCatalystMoves(url, env) {
   ]);
   // the tape ring reaches back hours, not the month: the flow factor applies to the newest moves and the live verdict
   const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
-  const moves = cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars, oi: oiS, fund: fundS, now }) })));
+  const moves = cxOneStory(cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars, oi: oiS, fund: fundS, now }) }))));
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
   sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0; sum.oi = 0; sum.book = 0; sum.multi = 0;
   for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else if (m.cause === 'oi') sum.oi++; else if (m.cause === 'book') sum.book++; else sum.unknown++; }
@@ -9602,7 +9623,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8bebdf96" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=2c853e09" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -21511,7 +21532,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '353d3dd6';
+const ASSET_V = '308825ef';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
