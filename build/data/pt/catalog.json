@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "pt",
-  "generated": "2026-10-29T16:20:44.311Z",
+  "generated": "2026-10-29T17:20:04.176Z",
   "pages": 387,
-  "unique": 14566,
-  "words": 274455,
+  "unique": 14591,
+  "words": 274636,
   "untranslated": 1,
   "untranslatedWords": 20,
-  "merged": "2026-10-29T16:23:59.223Z"
+  "merged": "2026-10-29T17:22:39.928Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6091,10 +6091,10 @@
    "ctx": [
     "/academy/",
     "/app.html",
-    "/glossary/",
-    "/hyperliquid-whales/"
+    "/catalysts/",
+    "/glossary/"
    ],
-   "n": 83,
+   "n": 84,
    "w": 1,
    "pt": "Fechar"
   },
@@ -7974,8 +7974,8 @@
    "w": 18,
    "pt": "Por que o preço acabou de subir ou cair - e <em>quais</em> dos movimentos deste mês tiveram um motivo datado por trás?"
   },
-  "5PsAFUIrIM": {
-   "en": "Every abnormal move of the last 30 days gets a flag on the candle it started on, and the flag carries the most likely cause in one word. The causes come from MarginPad's Catalyst Engine, which reads exchange announcements (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, the macro calendar, the fast news desks and the official channels with each item's own timestamp - and from our own data: the liquidation feed, the whale tracker and Bitcoin itself. A move is judged against this coin's own 30-day volatility, never a fixed percent, so 0.6% can be a move on BTC and nothing on a meme coin.",
+  "fhhHqkDYLW": {
+   "en": "Every abnormal move of the last 30 days gets a flag on the candle it started on, and the flag carries the most likely cause in one word. The causes come from MarginPad's Catalyst Engine, which reads exchange announcements (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, the macro calendar, the fast news desks and the official channels with each item's own timestamp - and from our own data: the liquidation feed, the whale tracker, the tape's market orders over a million dollars, the S&P 500 and Bitcoin itself. A move is judged against this coin's own 30-day volatility, never a fixed percent, so 0.6% can be a move on BTC and nothing on a meme coin. Realism is measured, not assumed: for every kind of event we measured how far price moved in the 15 minutes after it against the same market's ordinary bar and a week-earlier placebo, and a kind that has measurably moved nothing (most media headlines) cannot claim a move by timing alone. A language model reads every item for importance, the coins it is really about and the direction it implies. Every flag leaves with a sentence, the unknown ones too: what was checked, what the clock and the market were doing at that minute.",
    "kind": [
     "html"
    ],
@@ -7983,8 +7983,8 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 99,
-   "pt": "Todo movimento anormal dos últimos 30 dias recebe uma bandeira na vela em que começou, e a bandeira traz a causa mais provável em uma palavra. As causas vêm do Catalyst Engine da MarginPad, que lê anúncios de exchanges (Bybit, OKX, Binance, Upbit, Hyperliquid), registros da SEC, o calendário macro, as redações de notícias rápidas e os canais oficiais, com o horário original de cada item - e dos nossos próprios dados: o feed de liquidações, o rastreador de baleias e o próprio Bitcoin. Um movimento é avaliado pela volatilidade de 30 dias da própria moeda, nunca por um percentual fixo, então 0.6% pode ser um movimento no BTC e nada numa meme coin."
+   "w": 197,
+   "pt": "Todo movimento anormal dos últimos 30 dias recebe uma flag no candle em que começou, e a flag traz a causa mais provável em uma palavra. As causas vêm do Catalyst Engine da MarginPad, que lê anúncios de corretoras (Bybit, OKX, Binance, Upbit, Hyperliquid), documentos da SEC, o calendário macro, as redações de notícias rápidas e os canais oficiais, cada item com seu próprio horário - e dos nossos próprios dados: o feed de liquidações, o rastreador de baleias, as ordens a mercado acima de um milhão de dólares na fita, o S&P 500 e o próprio Bitcoin. Um movimento é avaliado contra a volatilidade de 30 dias da própria moeda, nunca contra um percentual fixo, então 0.6% pode ser um movimento no BTC e nada numa meme coin. O realismo é medido, não presumido: para cada tipo de evento medimos quanto o preço andou nos 15 minutos seguintes, comparado ao candle comum do mesmo mercado e a um placebo de uma semana antes, e um tipo que comprovadamente não moveu nada (a maioria das manchetes da mídia) não pode reivindicar um movimento só pelo horário. Um modelo de linguagem lê cada item para avaliar a importância, as moedas de que ele realmente trata e a direção que sugere. Toda flag sai com uma frase, as desconhecidas também: o que foi verificado, o que o relógio e o mercado estavam fazendo naquele minuto."
   },
   "M9S9Jn1vtz": {
    "en": "<b>A flag per move</b> - above a rise, below a drop - with the size and the cause: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> or <b>Short squeeze</b> (our feed liquidated six times the typical amount while the move ran), <b>Whale</b> (a tracked wallet traded the coin in size at that moment), <b>BTC move</b> (the coin followed Bitcoin), or a grey <b>?</b> when nothing dated explains it.",
@@ -12120,10 +12120,10 @@
    "ctx": [
     "/app.html",
     "/blog/",
-    "/coins/",
-    "/glossary/"
+    "/catalysts/",
+    "/coins/"
    ],
-   "n": 6,
+   "n": 7,
    "w": 1,
    "pt": "Todos"
   },
@@ -78821,8 +78821,8 @@
    "w": 3,
    "pt": "Catalisadores <em>ao vivo</em> <span class=\"live\"><i id=\"pulse\"></i>LIVE</span>"
   },
-  "TyZhCoi26J": {
-   "en": "Every dated event that can move a coin, as it lands: exchange listings and delistings, SEC filings, FOMC and CPI, hacks, ETF and regulation headlines, official channels, fast news desks and eight X accounts. Each item keeps its source's own clock, the coins it names, a score, how many desks confirm it, and how much events of its kind have really moved price.",
+  "8SugYupWla": {
+   "en": "Every dated event that can move a coin, as it lands: exchange listings and delistings, SEC filings, FOMC and CPI, hacks, ETF and regulation headlines, official channels, fast news desks and eight X accounts. One story from many desks is one row; each keeps its source's own clock, the coins it names, a score, and how much events of its kind have really moved price.",
    "kind": [
     "html"
    ],
@@ -78830,8 +78830,8 @@
     "/catalysts/"
    ],
    "n": 1,
-   "w": 60,
-   "pt": "Todo evento datado que pode mover uma moeda, assim que sai: listagens e deslistagens em exchanges, registros da SEC, FOMC e CPI, hacks, manchetes de ETF e de regulação, canais oficiais, redações de notícias rápidas e oito contas do X. Cada item guarda o horário original da fonte, as moedas que cita, uma pontuação, quantas redações o confirmam e quanto eventos desse tipo realmente moveram o preço."
+   "w": 62,
+   "pt": "Todo evento datado que pode mexer com uma moeda, assim que acontece: listagens e deslistagens em corretoras, documentos da SEC, FOMC e CPI, hacks, manchetes de ETF e regulação, canais oficiais, redações de notícias rápidas e oito contas do X. Uma história de várias redações é uma única linha; cada uma mantém o horário da própria fonte, as moedas que cita, uma pontuação e o quanto eventos desse tipo realmente moveram o preço."
   },
   "cwHmbwMBbo": {
    "en": "<small>last hour</small><b id=\"sH\"></b><span id=\"sH2\"></span>",
@@ -78881,8 +78881,8 @@
    "w": 1,
    "pt": "<small>fontes</small><b id=\"sS\"></b><span id=\"sS2\"></span>"
   },
-  "Yf6DD_Wikm": {
-   "en": "Right now <small id=\"nowSub\">the highest-scored items of the last 60 minutes</small>",
+  "94gLl-w1wS": {
+   "en": "Right now <small id=\"nowSub\">the biggest stories of the last 60 minutes</small>",
    "kind": [
     "html"
    ],
@@ -78891,7 +78891,7 @@
    ],
    "n": 1,
    "w": 10,
-   "pt": "Agora <small id=\"nowSub\">os itens com maior pontuação dos últimos 60 minutos</small>"
+   "pt": "Agora <small id=\"nowSub\">as maiores histórias dos últimos 60 minutos</small>"
   },
   "1YI-azT-3_": {
    "en": "The feed <small id=\"feedSub\">newest first</small>",
@@ -78905,8 +78905,8 @@
    "w": 4,
    "pt": "O feed <small id=\"feedSub\">mais recentes primeiro</small>"
   },
-  "fW44V2Oxix": {
-   "en": "All <b id=\"nAll\"></b>",
+  "UlGSUNN5Ou": {
+   "en": "Filters <b id=\"fCount\"></b>",
    "kind": [
     "html"
    ],
@@ -78915,10 +78915,10 @@
    ],
    "n": 1,
    "w": 1,
-   "pt": "Todos <b id=\"nAll\"></b>"
+   "pt": "Filtros <b id=\"fCount\"></b>"
   },
-  "L99orFfGai": {
-   "en": "Listings <b></b>",
+  "Z7X-_TnPIi": {
+   "en": "Stories",
    "kind": [
     "html"
    ],
@@ -78927,94 +78927,10 @@
    ],
    "n": 1,
    "w": 1,
-   "pt": "Listagens <b></b>"
+   "pt": "Histórias"
   },
-  "S_CUOhvqjq": {
-   "en": "Delistings <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Deslistagens <b></b>"
-  },
-  "81NtIvfSps": {
-   "en": "Macro <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Macro <b></b>"
-  },
-  "2EStwo6PVx": {
-   "en": "Hacks <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Hacks <b></b>"
-  },
-  "uRwDN5dVZ7": {
-   "en": "Regulation <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Regulação <b></b>"
-  },
-  "uk_DgFK2OB": {
-   "en": "Whales <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Baleias <b></b>"
-  },
-  "1PsVPnPDXw": {
-   "en": "Politics <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Política <b></b>"
-  },
-  "AHmENFoHaH": {
-   "en": "Filings <b></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/catalysts/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Registros <b></b>"
-  },
-  "uYE9UH_JlD": {
-   "en": "<input type=\"checkbox\" id=\"hiOnly\" /> important only",
+  "9cGJkYlNXd": {
+   "en": "Every item",
    "kind": [
     "html"
    ],
@@ -79023,7 +78939,31 @@
    ],
    "n": 1,
    "w": 2,
-   "pt": "<input type=\"checkbox\" id=\"hiOnly\" /> só os importantes"
+   "pt": "Todos os itens"
+  },
+  "0EQoJHI8o6": {
+   "en": "Newest",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Mais recentes"
+  },
+  "SJ9IdyRKKZ": {
+   "en": "Score",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Pontuação"
   },
   "JZEdSOAjzR": {
    "en": "Show more",
@@ -79145,8 +79085,8 @@
    "w": 4,
    "pt": "Como isso é feito"
   },
-  "4n5NgIqStT": {
-   "en": "Each source is polled on its own clock and every item keeps two times: when the source published it and when we saw it. Classification is by rules first, then a language model reads each headline for importance, the coins it is really about and the direction it implies; promotions and trading-pair housekeeping score zero. Confirmation counts distinct desks reporting one story within six hours. Realism: for every kind of event we measured how much price moved in the 15 minutes after it, against the same market's ordinary minutes and a week-earlier placebo - that multiple is shown on each item and caps how much credit an item can take for a move. Nothing here is a buy or sell call. The same events drive the <a href=\"/ai-indicators/#catalyst\">What moved it</a> indicator on every chart and the Ask AI brief. Free JSON: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>.",
+  "D0jquYAkHQ": {
+   "en": "Each source is polled on its own clock and every item keeps two times: when the source published it and when we saw it. Classification is by rules first, then a language model reads each headline for importance, the coins it is really about and the direction it implies; the same event reported by several desks is one story, counted by its desks. A hack is scored by the money actually lost; promotions, trade ideas and trading-pair housekeeping score zero. Realism: for every kind of event we measured how much price moved in the 15 minutes after it, against the same market's ordinary minutes and a week-earlier placebo - that multiple is shown on each item and caps how much credit an item can take for a move. Nothing here is a buy or sell call. The same events drive the <a href=\"/ai-indicators/#catalyst\">What moved it</a> indicator on every chart and the Ask AI brief. Free JSON: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>.",
    "kind": [
     "html"
    ],
@@ -79154,8 +79094,384 @@
     "/catalysts/"
    ],
    "n": 1,
-   "w": 138,
-   "pt": "Cada fonte é consultada no seu próprio ritmo e todo item guarda dois horários: quando a fonte o publicou e quando nós o vimos. A classificação é feita primeiro por regras; depois um modelo de linguagem lê cada manchete para avaliar a importância, as moedas de que ela realmente trata e a direção que sugere; promoções e rotinas de pares de negociação recebem pontuação zero. A confirmação conta quantas redações distintas relatam a mesma história em seis horas. Realismo: para cada tipo de evento, medimos quanto o preço se moveu nos 15 minutos seguintes, comparado aos minutos comuns do mesmo mercado e a um placebo de uma semana antes - esse múltiplo aparece em cada item e limita o crédito que um item pode levar por um movimento. Nada aqui é recomendação de compra ou venda. Os mesmos eventos alimentam o indicador <a href=\"/ai-indicators/#catalyst\">What moved it</a> em todo gráfico e o resumo do Ask AI. JSON gratuito: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>."
+   "w": 152,
+   "pt": "Cada fonte é consultada no seu próprio ritmo e cada item guarda dois horários: quando a fonte publicou e quando nós vimos. A classificação é feita primeiro por regras; depois um modelo de linguagem lê cada manchete para avaliar a importância, as moedas de que ela realmente trata e a direção que sugere; o mesmo evento noticiado por várias redações é uma única história, contada pelas suas redações. Um hack é pontuado pelo dinheiro efetivamente perdido; promoções, ideias de trade e manutenção de pares de negociação recebem pontuação zero. Realismo: para cada tipo de evento medimos quanto o preço se moveu nos 15 minutos seguintes, comparado aos minutos comuns do mesmo mercado e a um placebo de uma semana antes - esse múltiplo aparece em cada item e limita o quanto um item pode levar de crédito por um movimento. Nada aqui é recomendação de compra ou venda. Os mesmos eventos alimentam o indicador <a href=\"/ai-indicators/#catalyst\">What moved it</a> em todos os gráficos e o briefing do Ask AI. JSON grátis: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>."
+  },
+  "luV4IRqilT": {
+   "en": "Filters",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/catalysts/",
+    "/hyperliquid-whales/"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "Filtros"
+  },
+  "Wlyph0fexG": {
+   "en": "What you pick here is remembered on this device.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 9,
+   "pt": "O que você escolher aqui fica salvo neste dispositivo."
+  },
+  "kdLHEC0Cer": {
+   "en": "<small>Asset class</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "<small>Classe de ativo</small>"
+  },
+  "AapbeXMMtM": {
+   "en": "Crypto <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Cripto <b></b>"
+  },
+  "ZcscCBiw2k": {
+   "en": "Stocks &amp; ETFs <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Ações &amp; ETFs <b></b>"
+  },
+  "_KHtt8n79c": {
+   "en": "Macro, forex &amp; politics <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "pt": "Macro, forex &amp; política <b></b>"
+  },
+  "WK_E32OFwT": {
+   "en": "Commodities <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Commodities <b></b>"
+  },
+  "NToYlZMmZq": {
+   "en": "<small>Kind of event</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "pt": "<small>Tipo de evento</small>"
+  },
+  "L99orFfGai": {
+   "en": "Listings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Listagens <b></b>"
+  },
+  "S_CUOhvqjq": {
+   "en": "Delistings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Deslistagens <b></b>"
+  },
+  "81NtIvfSps": {
+   "en": "Macro <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Macro <b></b>"
+  },
+  "2EStwo6PVx": {
+   "en": "Hacks <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Hacks <b></b>"
+  },
+  "uRwDN5dVZ7": {
+   "en": "Regulation <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Regulação <b></b>"
+  },
+  "1PsVPnPDXw": {
+   "en": "Politics <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Política <b></b>"
+  },
+  "AHmENFoHaH": {
+   "en": "Filings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Registros <b></b>"
+  },
+  "uk_DgFK2OB": {
+   "en": "Whales <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Baleias <b></b>"
+  },
+  "nJSBmhvDqq": {
+   "en": "Unlocks <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Desbloqueios <b></b>"
+  },
+  "FihIb5Px4E": {
+   "en": "Protocol <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Protocolo <b></b>"
+  },
+  "_Mmt8AbPoL": {
+   "en": "Adoption <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Adoção <b></b>"
+  },
+  "JozMyRAUQ8": {
+   "en": "Other news <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Outras notícias <b></b>"
+  },
+  "2knaSvzKIq": {
+   "en": "<small>Where it came from</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "pt": "<small>De onde veio</small>"
+  },
+  "SwkvF4x8Ch": {
+   "en": "Exchanges <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Corretoras <b></b>"
+  },
+  "P8ruNsNFTA": {
+   "en": "Filings &amp; calendar <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Documentos &amp; calendário <b></b>"
+  },
+  "S5ol_iVlBW": {
+   "en": "News desks <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Redações <b></b>"
+  },
+  "8B4WACGM2m": {
+   "en": "Telegram <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Telegram <b></b>"
+  },
+  "GQ64uTKwaz": {
+   "en": "Social <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Social <b></b>"
+  },
+  "DBY9PWamCS": {
+   "en": "<small>Minimum score</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "<small>Pontuação mínima</small>"
+  },
+  "wCrMgLKTvO": {
+   "en": "Confirmed by 2+ desks <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "pt": "Confirmado por 2+ redações <b></b>"
+  },
+  "fjdPpFyB-0": {
+   "en": "Kinds that measurably move price <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 5,
+   "pt": "Tipos que comprovadamente movem o preço <b></b>"
+  },
+  "RMV6vYiKZr": {
+   "en": "Reset",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/",
+    "/hyperliquid-whales/"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "Redefinir"
+  },
+  "6bRQ0UvCNj": {
+   "en": "Done",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/",
+    "/vault/"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "Pronto"
   },
   "NHj-acfc68": {
    "en": "coin",
@@ -79168,6 +79484,57 @@
    "n": 1,
    "w": 1,
    "pt": "moeda"
+  },
+  "87JM6SFHHQ": {
+   "en": "Filter by coin",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/catalysts/",
+    "/rekt/"
+   ],
+   "n": 2,
+   "w": 3,
+   "pt": "Filtrar por moeda"
+  },
+  "FxoGBvfHRY": {
+   "en": "Group",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "pt": "Grupo"
+  },
+  "rcTpakeL4C": {
+   "en": "Sort",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/catalysts/",
+    "/hyperliquid-whales/",
+    "/liquidations/"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Ordenar"
+  },
+  "5GbM7sKlpB": {
+   "en": "Minimum score",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Pontuação mínima"
   },
   "gQTCnKagiX": {
    "en": "Every dated event that can move a coin, as it lands: exchange listings and delistings (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, FOMC and CPI, hacks, ETF headlines, the fast news desks and whale alerts - scored, deduplicated, with the coins each one names, how many desks confirm it and how much events like it have really moved price. Plus which coins are talked about most, and what moved each one.",
@@ -79217,8 +79584,8 @@
    "w": 3,
    "pt": "Catalisadores cripto da MarginPad"
   },
-  "SGzoE1mWUd": {
-   "en": "Dated events that can move a cryptocurrency - exchange listings and delistings, SEC filings, FOMC and CPI prints, hacks, ETF headlines, official channels and fast news desks - collected every 15-60 seconds from the sources' own feeds, classified by rules and a language model, scored 0-100, tied to the coins they name and to how much events of that kind have really moved price.",
+  "pLDuBo7cgt": {
+   "en": "Dated events that can move a cryptocurrency - exchange listings and delistings, SEC filings, FOMC and CPI prints, hacks, ETF headlines, official channels and fast news desks - collected every 15-60 seconds from the sources' own feeds, classified by rules and a language model, scored 0-100, grouped into stories across desks, tied to the coins they name and to how much events of that kind have really moved price.",
    "kind": [
     "ld"
    ],
@@ -79226,8 +79593,8 @@
     "/catalysts/"
    ],
    "n": 1,
-   "w": 60,
-   "pt": "Eventos datados que podem mover uma criptomoeda - listagens e deslistagens em exchanges, registros da SEC, divulgações do FOMC e do CPI, hacks, manchetes de ETF, canais oficiais e redações de notícias rápidas - coletados a cada 15-60 segundos nos feeds das próprias fontes, classificados por regras e por um modelo de linguagem, com pontuação de 0 a 100, ligados às moedas que citam e a quanto eventos desse tipo realmente moveram o preço."
+   "w": 65,
+   "pt": "Eventos datados que podem mover uma criptomoeda - listagens e deslistagens em corretoras, documentos da SEC, divulgações de FOMC e CPI, hacks, manchetes de ETF, canais oficiais e redações de notícias rápidas - coletados a cada 15-60 segundos nos feeds das próprias fontes, classificados por regras e por um modelo de linguagem, pontuados de 0 a 100, agrupados em histórias entre redações, ligados às moedas que citam e ao quanto eventos desse tipo realmente moveram o preço."
   },
   "VQSazuGzgb": {
    "en": "What is a catalyst here?",
@@ -79265,8 +79632,8 @@
    "w": 5,
    "pt": "Como a pontuação é calculada?"
   },
-  "UrG7fudEz2": {
-   "en": "From the credibility of the source (an exchange's own announcement or a filing is primary, an official channel next, the media desks after), the kind of event, how many independent sources confirm it within six hours, how much events of that kind have measurably moved price before, and a language-model reading of the headline for importance. Promotions and trading-pair housekeeping score zero. The score measures how much attention an item deserves, never a direction.",
+  "zUi-a2eczg": {
+   "en": "From the credibility of the source (an exchange's own announcement or a filing is primary, an official channel next, the media desks after), the kind of event, how many independent desks confirm the same story, how much events of that kind have measurably moved price before, and a language-model reading of the headline for importance. A hack is scored by the money actually lost. Promotions, trade ideas and trading-pair housekeeping score zero. The score measures how much attention an item deserves, never a direction.",
    "kind": [
     "ld"
    ],
@@ -79274,8 +79641,8 @@
     "/catalysts/"
    ],
    "n": 1,
-   "w": 71,
-   "pt": "Da credibilidade da fonte (o anúncio da própria exchange ou um registro é primário, um canal oficial vem em seguida, depois as redações da mídia), do tipo de evento, de quantas fontes independentes o confirmam em seis horas, de quanto eventos desse tipo já moveram o preço de forma mensurável e da leitura da manchete por um modelo de linguagem para avaliar a importância. Promoções e rotinas de pares de negociação recebem pontuação zero. A pontuação mede quanta atenção um item merece, nunca uma direção."
+   "w": 80,
+   "pt": "Vem da credibilidade da fonte (o anúncio da própria corretora ou um documento oficial é primário, depois um canal oficial, depois as redações de mídia), do tipo de evento, de quantas redações independentes confirmam a mesma história, do quanto eventos desse tipo comprovadamente moveram o preço antes e da leitura da manchete por um modelo de linguagem para avaliar a importância. Um hack é pontuado pelo dinheiro efetivamente perdido. Promoções, ideias de trade e manutenção de pares de negociação recebem pontuação zero. A pontuação mede quanta atenção um item merece, nunca uma direção."
   },
   "TkwWS1vqhv": {
    "en": "What does 'what moved it' mean?",
@@ -79289,8 +79656,8 @@
    "w": 6,
    "pt": "O que significa 'what moved it'?"
   },
-  "OipyBm7ZHL": {
-   "en": "Every abnormal jump or drop of the last 30 days, judged against the coin's own volatility, is matched to the catalysts published inside 90 minutes before it, to our own liquidation feed, to the whale tracker, to Bitcoin's moves at the same minute, to US stocks, to the market orders over a million dollars on our own tape, and to the clock (funding, the New York open). A move with nothing dated behind it is marked unknown and still gets a sentence saying what was checked. Shifting every item by a week collapses the explained share, which is how we know the matching is not chance.",
+  "5JpJ5FarYJ": {
+   "en": "Every abnormal jump or drop of the last 30 days, judged against the coin's own volatility, is matched to the stories published before it (a major story reaches six hours back), to our own liquidation feed, to the whale tracker, to Bitcoin's moves and Bitcoin's own reasons, to US stocks, to the market orders over a million dollars on our own tape, to the chart's own structure (a broken support, a new 30-day high) and to the clock. Consecutive legs of one story are one move. A move with nothing dated behind it is marked unknown and still gets a sentence saying what was checked.",
    "kind": [
     "ld"
    ],
@@ -79298,8 +79665,8 @@
     "/catalysts/"
    ],
    "n": 1,
-   "w": 102,
-   "pt": "Toda alta ou queda anormal dos últimos 30 dias, avaliada pela volatilidade da própria moeda, é cruzada com os catalisadores publicados nos 90 minutos anteriores, com o nosso feed de liquidações, com o rastreador de baleias, com os movimentos do Bitcoin no mesmo minuto, com as ações dos EUA, com as ordens a mercado acima de um milhão de dólares na nossa própria fita e com o relógio (funding, abertura de Nova York). Um movimento sem nada datado por trás é marcado como desconhecido e ainda recebe uma frase dizendo o que foi verificado. Deslocar cada item em uma semana derruba a parcela explicada, e é assim que sabemos que o cruzamento não é acaso."
+   "w": 101,
+   "pt": "Toda alta ou queda anormal dos últimos 30 dias, avaliada contra a volatilidade da própria moeda, é cruzada com as histórias publicadas antes dela (uma história importante alcança seis horas para trás), com o nosso feed de liquidações, com o rastreador de baleias, com os movimentos do Bitcoin e os motivos do próprio Bitcoin, com as ações dos EUA, com as ordens a mercado acima de um milhão de dólares na nossa fita, com a estrutura do próprio gráfico (um suporte rompido, uma nova máxima de 30 dias) e com o relógio. Pernas consecutivas de uma mesma história são um único movimento. Um movimento sem nada datado por trás é marcado como desconhecido e ainda recebe uma frase dizendo o que foi verificado."
   },
   "gePrZYeO5H": {
    "en": "BNB Perpetual Futures - Price, Funding, Open Interest & Liquidations | MarginPad",
@@ -118001,18 +118368,6 @@
    "w": 3,
    "pt": "Melhores do mês"
   },
-  "luV4IRqilT": {
-   "en": "Filters",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Filtros"
-  },
   "W04r0FrBA1": {
    "en": "<span class=\"wl-fsum\" id=\"wlFsumPos\">All markets &middot; Long &amp; short &middot; by size</span>",
    "kind": [
@@ -118399,18 +118754,6 @@
    "w": 2,
    "pt": "Fuso horário"
   },
-  "RMV6vYiKZr": {
-   "en": "Reset",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Redefinir"
-  },
   "ccXI3RUNng": {
    "en": "Show results",
    "kind": [
@@ -118446,19 +118789,6 @@
    "n": 1,
    "w": 3,
    "pt": "Ordenar a tabela"
-  },
-  "rcTpakeL4C": {
-   "en": "Sort",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/",
-    "/liquidations/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Ordenar"
   },
   "b6TEpktD2A": {
    "en": "Whale profile",
@@ -147806,18 +148136,6 @@
    "w": 2,
    "pt": "Moeda… (BTC)"
   },
-  "87JM6SFHHQ": {
-   "en": "Filter by coin",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/rekt/"
-   ],
-   "n": 1,
-   "w": 3,
-   "pt": "Filtrar por moeda"
-  },
   "OymJ5NVedm": {
    "en": "Sound alert on liquidations ≥ $250K",
    "kind": [
@@ -171829,18 +172147,6 @@
    "n": 1,
    "w": 2,
    "pt": "Presente enviado"
-  },
-  "6bRQ0UvCNj": {
-   "en": "Done",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/vault/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Pronto"
   },
   "BeSqQulppm": {
    "en": "The ladder",
