@@ -4412,14 +4412,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   // selects, summaries, plus the site's div-based controls (profile card actions, chat sends & reactions & shared trades,
   // trade buttons, chips, tabs, room/notif/trader toggles). The listener ONLY fires the haptic and never touches the element
   // or its click, so it can never swallow a tap (the 2026-10-15 overlay bug is impossible with a passive observer).
-  var TAPSEL = '[data-haptic],button,a[href],[role=button],[role=tab],[role=menuitem],[role=switch],summary,select,'
+  // A NATIVE CONTROL GETS NO HAPTIC (2026-10-30, owner: the header globe 'does nothing'): on iOS the haptic is a click on a hidden
+  // label that FOCUSES the switch checkbox, and the focus change dismisses the select picker the tap had just opened - the same
+  // focus steal that closed the socials menu on 10-27. A select, an input or a textarea is left to the OS.
+  var TAPSEL = '[data-haptic],button,a[href],[role=button],[role=tab],[role=menuitem],[role=switch],summary,'
     + 'input[type=checkbox],input[type=radio],input[type=button],input[type=submit],label.mpa-sw,.mpa-sw,'
     + '[data-lbu],[data-room],[data-act],[data-rx],[data-rxm],[data-np],[data-tr],[data-fopen],[data-drawx],[data-es],[data-tf],'
     + '[data-af2],[data-spf],[data-wdf],[data-jmv],[data-jmf],[data-mode],[data-stratpick],[data-sym],[data-b],[data-welcx],'
     + '.chip,.subtab,.pill,.evf,.pay,.ct-trade,.ct-sig,.lbm-folb,.lbm-port,.mpbn a,.mpbn button,.mpnav-row,'
     + '.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,'
     + '.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.aim-it';
-  try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(TAPSEL)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
+  try { document.addEventListener('click', function (e) { try { var t = e.target; if (!t || !t.closest) return; if (t.closest('select,textarea,input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit])')) return; if (t.closest(TAPSEL)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
 })();
 
 /* ── SQUAD CREST (2026-09-29) ───────────────────────────────────────────────────────────────────
