@@ -2348,7 +2348,7 @@ async function askRender(kind, env, ctx, es) {
   // pt: a literal English key hits the table; a concatenated one ("Bitcoin funding is +0.0023%, so ...") is matched against the
   // table's {placeholder} templates, each placeholder capturing the runtime value, and falls back to English only when none fits.
   const _ptT = (en) => { if (ASK_PT[en]) return ASK_PT[en]; for (const k of Object.keys(ASK_PT)) { if (k.indexOf('{') < 0) continue; const names = []; const re = new RegExp('^' + k.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\w+)\}/g, (m, nm) => { names.push(nm); return '([\\s\\S]+?)'; }) + '$'); const m = en.match(re); if (m) { let out = ASK_PT[k]; names.forEach((nm, i) => { out = out.split('{' + nm + '}').join(m[i + 1]); }); return out; } } return en; };
-  const T = (en, sp) => (lang === 'pt' ? _ptT(String(en)) : es ? sp : en);
+  const T = (en, sp) => (lang === 'pt' ? (Array.isArray(en) ? en.map(x => (typeof x === 'string' ? _ptT(x) : x)) : typeof en === 'string' ? _ptT(en) : en) : es ? sp : en); // the table headers arrive as ARRAYS - String() on one of those broke every pt ask page for ten minutes
   const money = v => (lang === 'en' ? _aUsd(v) : _susd(v, lang));
   const stamp = t => (lang === 'pt' ? 'Medido ' : es ? 'Medido ' : 'Measured ') + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   if (kind === 'bot') {
