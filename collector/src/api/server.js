@@ -4,6 +4,7 @@ import express from 'express';
 import { config } from '../../config.js';
 import { log } from '../logger.js';
 import { getWhales, getWhaleOne } from '../whales.js';
+import { getCatalysts, catalystStatus } from '../catalyst/index.js';
 import { EXPORTS } from '../storage/sqlite.js';
 
 // ---- tiny in-memory rate limiter (per IP per minute) ----
@@ -555,6 +556,17 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     res.json(st);
   });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));
+
+  // CATALYST ENGINE (2026-10-29, phase 1): dated events from exchange announcements, filings, media and the
+  // official channels, classified by rules and scored. Read off the 48-hour memory ring, never the database.
+  //   ?sym=BTC&since=<ms>&min=<score>&kind=listing&limit=100   ·   /status = per-source health and lateness
+  app.get('/api/v1/catalysts', (req, res) => {
+    try {
+      res.set('Cache-Control', 'public, max-age=20');
+      res.json(getCatalysts({ sym: String(req.query.sym || '').slice(0, 12), since: +req.query.since || 0, min: +req.query.min || 0, kind: String(req.query.kind || '').slice(0, 16), limit: Math.min(500, Math.max(1, +req.query.limit || 100)) }));
+    } catch (e) { res.status(500).json({ error: 'server' }); }
+  });
+  app.get('/api/v1/catalysts/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(catalystStatus()); });
 
   const server = app.listen(config.api.port, () => log.info('api listening', { port: config.api.port }));
   return server;

@@ -37,6 +37,10 @@ const CHECKS = [
   // as "the biggest liquidation today". `rejected` staying at 0 is the normal state - anything in
   // `rejectLog` is either an adapter double-counting a position field or a genuine record print, and only
   // the row itself can tell them apart.
+  // CATALYST ENGINE (2026-10-29): the ring must exist and the status must name its sources - the 10-28 lesson
+  // (a route landed inside another handler's catch and 404ed behind a green deploy) applies to every new route.
+  ['catalysts', '/catalysts?limit=3', (j) => (j && Array.isArray(j.items) && Array.isArray(j.upcoming) && j.ring != null) ? '' : 'no items/upcoming/ring'],
+  ['catalysts status', '/catalysts/status', (j) => (j && j.sources && typeof j.sources === 'object' && Object.keys(j.sources).length >= 5) ? '' : 'fewer than 5 sources reported'],
   ['the event ceiling is declared', '/status', (j) => (j && +j.maxEventUsd > 0 && Array.isArray(j.rejectLog)) ? '' : 'no maxEventUsd / rejectLog on /status'],
   // And the single biggest liquidation in the last day must be plausible: every real one measured across
   // all nine venues over a fortnight topped out at $11.85M, so anything above the ceiling means the guard

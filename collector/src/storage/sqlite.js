@@ -18,6 +18,7 @@ export const EXPORTS = {
   funding_oi:   { cols: 'ts,symbol,oi_usd,funding', sql: 'SELECT ts,symbol,oi_usd,funding FROM oi_snap WHERE ts>=? AND ts<? ORDER BY ts,symbol', ret: 'hist', tsCol: 'ts' },
   whale_fills:  { cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', sql: 'SELECT ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd FROM whale_fill WHERE ts>=? AND ts<? ORDER BY ts,user,sym', ret: 'hist', tsCol: 'ts' },
   whale_pos:    { cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', sql: 'SELECT ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq FROM whale_pos WHERE ts>=? AND ts<? ORDER BY ts,val DESC', ret: 'hist', tsCol: 'ts' },
+  catalysts:    { cols: 'id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url', sql: 'SELECT id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url FROM catalyst WHERE ts_seen>=? AND ts_seen<? ORDER BY ts_seen', ret: 'hist', tsCol: 'ts_seen' },
 };
 
 export function createSqliteStorage(path, opts = {}) {
@@ -280,6 +281,12 @@ export function createSqliteStorage(path, opts = {}) {
     catch (e) { db.exec('ROLLBACK'); throw e; }
     return n;
   }
+  // ---- catalyst engine (migration 009): one row per dated event, two clocks (source / seen) ----
+  function insertCatalyst(r) { ensure();
+    return Number(db.prepare('INSERT OR IGNORE INTO catalyst(id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,cluster,title,url,snippet,meta) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+      .run(String(r.id), +r.ts_src, +r.ts_seen, String(r.source), String(r.tier), String(r.kind), +r.expect || 0, String(r.syms || ''), r.market || '', +r.score || 0, +r.conf || 1, r.cluster || '', String(r.title || '').slice(0, 300), r.url || '', r.snippet || '', r.meta || null).changes);
+  }
+  function pruneCatalyst(days) { ensure(); return Number(db.prepare('DELETE FROM catalyst WHERE ts_seen<?').run(Date.now() - days * 86400000).changes); }
   function pruneWhale(days) { ensure(); const cut = Date.now() - days * 86400000; return Number(db.prepare('DELETE FROM whale_fill WHERE ts<?').run(cut).changes) + Number(db.prepare('DELETE FROM whale_pos WHERE ts<?').run(cut).changes); }
   function oi24h() { ensure(); return cached('oi24h', 60000, () => oi24hRaw()); }
   function oi24hRaw() {
@@ -343,6 +350,7 @@ export function createSqliteStorage(path, opts = {}) {
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
     insertWhaleFills, insertWhalePos, pruneWhale,
+    insertCatalyst, pruneCatalyst,
     saveState, loadState,
     close: () => db.close() };
 }

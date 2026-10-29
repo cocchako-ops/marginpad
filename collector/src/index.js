@@ -25,6 +25,7 @@ import { TapeCollector } from './collectors/tape.js';   // trade tape - memory o
 import { BookMap } from './collectors/bookmap.js';
 import { startPhase2 } from './phase2.js';
 import { startWhales } from './whales.js';
+import { startCatalyst, catalystStatus } from './catalyst/index.js'; // Catalyst Engine phase 1 (2026-10-29): announcements, filings, media -> scored events
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const startedAt = Date.now();
@@ -238,6 +239,7 @@ function getStatus() {
     // guard exists for) or a genuine record print, and only the row itself can tell them apart.
     rejected, maxEventUsd: config.maxEventUsd, rejectLog: rejectLog.slice(0, 20),
     loopLag, slowCalls: slowStorageCalls(),
+    catalyst: (() => { try { const c = catalystStatus(); return { ring: c.ring, stored: c.stored, errors: c.errors, symbols: c.symbols, sources: Object.keys(c.sources).length, upcoming: c.upcoming }; } catch (e) { return null; } })(),
     exchanges, // db: filled by the /status handler from the reader thread (never a main-thread scan)
     // Everything needed to tell a healthy book from a quietly wrong one, without opening a shell: how many
     // updates were applied, how many sequence gaps were seen, how many resyncs followed, and the state of
@@ -272,6 +274,7 @@ async function main() {
     ringTimer.unref?.();
   } else log.info('book + tape disabled (MP_BOOK=0)');
 startWhales(storage); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/); writes what it publishes into whale_fill / whale_pos (008)
+if (process.env.MP_CATALYST !== '0') startCatalyst(storage); // Catalyst Engine phase 1 (009): announcements, filings, media, official channels -> /api/v1/catalysts
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
