@@ -33,7 +33,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 
 ## Numbers you can cite without loading a page (keyless JSON, CORS; envelope { ok, data, ts }, ts = when it was MEASURED)
 - 24h liquidations, long vs short, per coin -> https://marginpad.io/api/v1/liquidations · per exchange -> https://marginpad.io/api/v1/venues · individual events -> https://marginpad.io/api/v1/liquidations/recent
-- https://marginpad.io/catalysts/ - dated catalysts, scored; JSON /api/catalysts and /api/catalysts/moves?symbol=BTC (moves and their causes)
+- https://marginpad.io/catalysts/ - dated catalysts, scored; JSON /api/catalysts, /api/catalysts/moves?symbol=BTC
 - funding on every listed perp -> https://marginpad.io/api/v1/funding · open interest -> https://marginpad.io/api/v1/open-interest · long/short accounts -> https://marginpad.io/api/v1/long-short
 - price -> https://marginpad.io/api/v1/price?symbol=BTC · many -> https://marginpad.io/api/v1/prices · candles -> https://marginpad.io/api/v1/klines?symbol=BTC&interval=60 · screener -> https://marginpad.io/api/v1/screener
 - consolidated order book with depth and slippage -> https://marginpad.io/api/v1/book?symbol=BTC · trade tape with the aggressor side -> https://marginpad.io/api/v1/tape?symbol=BTC

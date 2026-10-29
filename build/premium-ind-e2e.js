@@ -80,7 +80,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
         const sh = document.getElementById('indSheet'), p = sh.querySelector('.ish-p'); const r = p.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, Math.min(innerHeight - 10, r.top + 60));
         return { open: !sh.hidden, blocks: sh.querySelectorAll('.ish-i').length, reach: !!(hit && p.contains(hit)), names: [...sh.querySelectorAll('.ish-i h4')].map(h => h.firstChild.textContent.trim()), inView: r.top >= 0 && r.left >= 0 && r.right <= innerWidth + 1, scroll: document.documentElement.style.overflow, guide: !!sh.querySelector('a[href="/ai-indicators/"]') };
       });
-      chk(vp.t + ' guest: the sheet opens with six blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 6 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Big Liquidations (24h)|Liquidation Magnet|Market Brain|Market Memory', s);
+      chk(vp.t + ' guest: the sheet opens with six blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 6 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Big Liquidations (24h)|Liquidation Magnet|Market Brain|Market Memory|What moved it (30d)', s);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'premium-indsheet-' + vp.t + '.png') });
       await page.evaluate(() => { document.querySelector('#indSheet .ish-x').click(); });
       await new Promise(r => setTimeout(r, 200));
