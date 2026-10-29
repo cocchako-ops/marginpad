@@ -60,7 +60,7 @@ export function marketOf(title) {
 export function classify(title, source) {
   const t = String(title || '');
   const src = String(source || '');
-  const exch = /^(bybit-ann|okx-ann|hl-meta|tg:binance|tg:bybit|tg:okx)/.test(src);
+  const exch = /^(bybit-ann|okx-ann|hl-meta|binance-ann|upbit-ann|tg:binance|tg:bybit|tg:okx|x:binance|x:Bybit_Official)/i.test(src);
   let kind = 'news';
   if (src === 'calendar') kind = 'macro';
   else if (src === 'sec') kind = 'filing';

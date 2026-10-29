@@ -357,12 +357,23 @@ export function createSqliteStorage(path, opts = {}) {
     return db.prepare('SELECT id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,cluster,title,url,snippet,meta FROM catalyst WHERE ' + w.join(' AND ') + ' ORDER BY ts_src DESC LIMIT ?').all(...a);
   }
   function catalystCount(since) { ensure(); return db.prepare('SELECT COUNT(*) n, MIN(ts_src) t0, MAX(ts_src) t1 FROM catalyst WHERE ts_src>=?').get(+since || 0); }
+  // the symbols a window of catalysts names, with how often and how strongly - the /catalysts/ page's "most talked about"
+  function catalystTop(since, min) { ensure();
+    const rows = db.prepare('SELECT syms,kind,score,source,ts_src FROM catalyst WHERE ts_src>=? AND score>=? AND syms<>\'\'').all(+since || 0, +min || 0);
+    const by = {};
+    for (const r of rows) for (const s of String(r.syms).split(',')) { if (!s) continue; const o = by[s] = by[s] || { sym: s, n: 0, max: 0, kinds: {}, sources: {}, last: 0 }; o.n++; if (r.score > o.max) o.max = r.score; o.kinds[r.kind] = (o.kinds[r.kind] || 0) + 1; const src = String(r.source).split(':')[0]; o.sources[src] = (o.sources[src] || 0) + 1; if (r.ts_src > o.last) o.last = r.ts_src; }
+    return Object.values(by).sort((a, b) => b.n - a.n || b.max - a.max);
+  }
+  // whale trade groups of one coin in a window (the tracker's own 14-day table) - a flow cause for the chart
+  function whaleFillsRange(sym, since, until, minUsd, limit) { ensure();
+    return db.prepare('SELECT ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd FROM whale_fill WHERE sym=? AND ts>=? AND ts<? AND usd>=? ORDER BY ts DESC LIMIT ?').all(String(sym || '').toUpperCase(), +since || 0, +until || Date.now() + 1, +minUsd || 0, Math.min(2000, Math.max(1, +limit || 500)));
+  }
 
   return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
     insertWhaleFills, insertWhalePos, pruneWhale,
-    insertCatalyst, pruneCatalyst, catalystRange, catalystCount,
+    insertCatalyst, pruneCatalyst, catalystRange, catalystCount, catalystTop, whaleFillsRange,
     saveState, loadState,
     close: () => db.close() };
 }

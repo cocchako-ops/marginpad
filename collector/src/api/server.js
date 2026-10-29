@@ -576,6 +576,24 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     } catch (e) { res.status(500).json({ error: 'server', why: String(e && e.message || e).slice(0, 80) }); }
   });
   app.get('/api/v1/catalysts/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(catalystStatus()); });
+  // the coins the catalysts name in a window, ranked by mentions (the /catalysts/ page)
+  app.get('/api/v1/catalysts/top', async (req, res) => {
+    try {
+      const h = Math.max(1, Math.min(720, +req.query.h || 24)), min = Math.max(0, +req.query.min || 0);
+      const rows = await storage.async.catalystTop(Date.now() - h * 3600000, min);
+      res.set('Cache-Control', 'public, max-age=60');
+      res.json({ ts: Date.now(), hours: h, min, n: rows.length, items: rows.slice(0, Math.min(300, Math.max(1, +req.query.limit || 100))) });
+    } catch (e) { res.status(500).json({ error: 'server', why: String(e && e.message || e).slice(0, 80) }); }
+  });
+  // the whale tracker's trade groups for one coin (14-day table) - a flow cause for the chart's "what moved it"
+  app.get('/api/v1/whalefills', async (req, res) => {
+    try {
+      const sym = String(req.query.sym || 'BTC').replace(/[^A-Za-z0-9]/g, '').slice(0, 12);
+      const rows = await storage.async.whaleFillsRange(sym, +req.query.since || Date.now() - 86400000, +req.query.until || 0, +req.query.min || 250000, +req.query.limit || 500);
+      res.set('Cache-Control', 'public, max-age=60');
+      res.json({ ts: Date.now(), sym: sym.toUpperCase(), n: rows.length, items: rows });
+    } catch (e) { res.status(500).json({ error: 'server', why: String(e && e.message || e).slice(0, 80) }); }
+  });
 
   const server = app.listen(config.api.port, () => log.info('api listening', { port: config.api.port }));
   return server;

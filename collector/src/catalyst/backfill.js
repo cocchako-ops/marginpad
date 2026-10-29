@@ -10,6 +10,7 @@
 'use strict';
 import { readFileSync, existsSync } from 'node:fs';
 import * as S from './sources.js';
+import * as SX from './sources-x.js';
 import { ingestRows, setSymbolsFrom } from './index.js';
 
 const FOMC_D = '2026-01-28 2026-03-18 2026-04-29 2026-06-17 2026-07-29 2026-09-16 2026-10-28 2026-12-09';
@@ -56,6 +57,17 @@ export async function backfill({ days = 35, tg = true, exch = true, macro = true
         await take('okx-ann', 'primary', r.rows);
         if (r.rows[r.rows.length - 1].ts < since || page >= r.pages) break;
         await sleep(350);
+      }
+    }
+  }
+  if (exch) {
+    for (const [cat] of SX.BINANCE_CATS) {
+      for (let page = 1; page <= 30; page++) {
+        let r; try { r = await SX.binanceAnnPage(cat, page, 50); } catch (e) { log('binance ' + cat + ' p' + page + ' ' + e.message); break; }
+        if (!r.rows.length) break;
+        await take('binance-ann', 'primary', r.rows);
+        if (r.rows[r.rows.length - 1].ts < since) break;
+        await sleep(400);
       }
     }
   }
