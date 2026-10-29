@@ -1178,6 +1178,31 @@ function liqevPick(all, max) {
 // control window at the same prices six hours earlier: the control is $0 out to +-7 bins on BTC, ETH, SOL and
 // XRP, so everything inside is the cascade itself; background only appears past it. See heatCalibCron.
 const CALIB_CASCADE_BINS = 0.5;
+// CATALYST ENGINE, phase 1 (2026-10-29): GET /api/catalysts?sym=BTC&min=40&kind=listing&limit=100 - dated events
+// (exchange announcements, SEC/CFTC/Federal Register, media RSS, official Telegram channels) classified by rules
+// and scored on the collector, read off its 48-hour memory ring. Keyless. ONE collector read behind a 30 s edge key
+// per query shape; `?nc=1` bypasses it. Same discipline as handleLiqEvents: the raw fetch with its own 2.5 s
+// ceiling, an already-open breaker honoured, a failure cached briefly so every surface does not retry at once,
+// and an unreachable collector answers an EMPTY list with `collector:'down'` - never a 5xx into a page.
+async function handleCatalysts(url, env) {
+  const q = { sym: String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12), min: Math.max(0, Math.min(100, +url.searchParams.get('min') || 0)), kind: String(url.searchParams.get('kind') || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.max(1, Math.min(300, +url.searchParams.get('limit') || 100)), since: Math.max(0, +url.searchParams.get('since') || 0) };
+  const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
+  const ck = new Request('https://marginpad.io/__catalysts_v1_' + q.sym + '_' + q.min + '_' + q.kind + '_' + q.limit + '_' + q.since);
+  const nc = url.searchParams.get('nc') === '1';
+  if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  let body = { ts: Date.now(), n: 0, items: [], upcoming: [], collector: 'down' };
+  if (base && Date.now() >= COL_DOWN_UNTIL) {
+    const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 2500);
+    try {
+      const r = await __realFetch(base + '/api/v1/catalysts?sym=' + q.sym + '&min=' + q.min + '&kind=' + q.kind + '&limit=' + q.limit + '&since=' + q.since, { signal: ctl.signal });
+      if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.items)) body = { ...j, collector: 'ok' }; }
+    } catch (e) {} finally { clearTimeout(tmr); }
+  }
+  const res = J(body, body.collector === 'ok' ? 30 : 15);
+  if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
+  return res;
+}
 async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - the big ones, last 24h (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const body0 = { symbol: sym, supported: HM_COINS, rows: [], n24: 0, total24: 0, since: 0, now: Date.now() };
@@ -8907,6 +8932,7 @@ const MARKET_DS = {
   funding_oi:   { src: 'collector', cols: 'ts,symbol,oi_usd,funding', from: '2026-10-27', minRows: 5000, tsCol: 0, what: 'hourly open interest in USD and funding rate (%) for every Bybit USDT perpetual' },
   whale_fills:  { src: 'collector', cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', from: '2026-10-29', minRows: 20, tsCol: 0, hourly: false, what: 'Hyperliquid whale trades over $250K, one row per grouped execution (both ends, average price, leverage when known, liquidation flag)' },
   whale_pos:    { src: 'collector', cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', from: '2026-10-29', minRows: 500, tsCol: 0, what: 'hourly snapshot of the published Hyperliquid whale board: positions over $1M with entry, liquidation, leverage, cross flag and account equity' },
+  catalysts:    { src: 'collector', cols: 'id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url', from: '2026-10-30', minRows: 50, tsCol: 2, hourly: false, what: 'Catalyst Engine events: every dated announcement, filing and headline the collector classified, with the source clock and our own clock (phase 1, rules only)' },
   mpad:         { src: 'opslog', cols: 'm,px,step,parts,inputs', from: '2026-10-15', minRows: 1000, tsCol: 0, tsUnit: 60000, what: 'the MarginPad (MPAD) index, one recorded point a minute with its per-component breakdown - the only copy of a series that cannot be recomputed' },
 };
 async function mktSha256(buf) { const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join(''); }
@@ -23734,6 +23760,7 @@ export default {
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);
+    if (url.pathname === '/api/catalysts') return handleCatalysts(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
       let colUp = null; try { const w = JSON.parse(await env.STATS.get('coll:upwatch') || 'null'); if (w) colUp = { restartsLastHour: (w.hits || []).filter((t) => Date.now() - t < 3600000).length, uptimeMin: Math.round((+w.up || 0) / 60), seenMinAgo: Math.round((Date.now() - (+w.t || 0)) / 60000) }; } catch (e) {}
