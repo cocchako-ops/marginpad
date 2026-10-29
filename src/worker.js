@@ -1737,6 +1737,7 @@ function cxShares(best, cascade, liqOut, ctx, conf) {
   if (best) c.push({ k: 'news', label: null, w: Math.max(+best.w || 0.3, +conf || 0), text: null });
   if (cascade && liqOut) c.push({ k: 'cascade', label: null, w: Math.min(0.8, 0.5 + (+liqOut.x || 6) / 60), text: 'The feed liquidated ' + Math.round(liqOut.usd / 1000) + 'k USD (' + liqOut.x + 'x the typical bucket) while the move ran' });
   for (const f of ctx || []) { if (f.k === 'session' || f.k === 'fuel') continue; if (!(f.w >= 0.25)) continue; if (f.k === 'tech' && f.w < 0.4) continue; c.push({ k: f.k, label: f.label, w: +f.w, text: f.text }); }
+  if (conf > 0 && c.length > 1) { const nw = c[0], mx = Math.max.apply(null, c.slice(1).map(x => x.w)); if (nw.k === 'news' && nw.w < mx) nw.w = mx + 0.01; }
   const sum = c.reduce((a, x) => a + x.w, 0);
   const out = c.map(x => ({ k: x.k, label: x.label, share: sum > 0 ? +(x.w / sum).toFixed(2) : 0, w: +x.w.toFixed(2), text: x.text })).sort((a, b) => b.share - a.share);
   return out;

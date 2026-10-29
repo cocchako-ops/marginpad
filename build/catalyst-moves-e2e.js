@@ -186,6 +186,10 @@ function pureLeg() {
   ok('a delisting, forced closes, deleveraging and whale selling at once are FOUR causes with shares that add to one', a.causes && a.causes.length >= 4 && Math.abs(a.causes.reduce((s, c) => s + c.share, 0) - 1) <= 0.03 && a.causes[0].k === 'news' && /\+/.test(a.labelFull), JSON.stringify(a.causes) + ' ' + a.labelFull);
   ok('the note states the shares', /Shares: /.test(a.note), a.note);
   ok('the story that WON the cause holds the biggest share (the bar never contradicts the label)', a.cause === 'news' && a.causes[0].k === 'news' && a.causes[0].share >= a.causes[1].share, JSON.stringify(a.causes.slice(0, 2)));
+  const sh2 = X.cxShares({ w: 0.3 }, false, null, [{ k: 'liqs', label: 'Forced closes', w: 0.55, text: 'x' }, { k: 'tech', label: 'Support break', w: 0.5, text: 'y' }], 0.43);
+  ok('a weak-match story that still won the cause (confidence .43 against a .55 factor) is lifted to the top of the bar', sh2[0].k === 'news' && sh2[0].share > sh2[1].share, JSON.stringify(sh2));
+  const sh3 = X.cxShares(null, false, null, [{ k: 'liqs', label: 'Forced closes', w: 0.55, text: 'x' }, { k: 'btc', label: 'BTC move', w: 0.4, text: 'y' }], 0);
+  ok('with no story the heaviest factor leads and the shares still add to one', sh3[0].k === 'liqs' && Math.abs(sh3.reduce((s, x) => s + x.share, 0) - 1) <= 0.02, JSON.stringify(sh3));
 }
 
 // ---------- production ----------
