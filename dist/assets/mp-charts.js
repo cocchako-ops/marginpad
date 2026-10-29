@@ -540,6 +540,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{if(window.mpToast)window.mpToast({msg:o.phone?__esT_mpcharts("replayDragTheSlider",'Replay: drag the slider to pick a start, play or step one candle at a time.'):__esT_mpcharts("replaySpacePlaysThe",'Replay: Space plays, the arrow keys step one candle. The live feed waits until you exit.'),kind:'info',mark:'i',ms:5000,key:'replay-hint'});}catch(e){}return true;}
   function replaySeek(w,i){var rp=w._rp;if(!rp)return;i=Math.max(40,Math.min(rp.all.length,Math.round(i)));rp.i=i;w.bars=rp.all.slice(0,i);w.lastBar=w.bars[w.bars.length-1];w._lgp=+w.lastBar.close||0;
     try{w.candle.setData(w.bars);}catch(e){}try{rp.apply();}catch(e){}
+    try{if(w._rpCall&&window.__mpAiReplayJudge)window.__mpAiReplayJudge(w);}catch(e){}/* an Ask AI plan given inside this replay is judged as the reader steps forward (2026-10-29) */
     try{var vr=w.chart.timeScale().getVisibleLogicalRange();if(!vr||vr.to<i-1||vr.to>i+8)w.chart.timeScale().scrollToPosition(6,false);}catch(e){}
     var lb=rp.ui.querySelector('.rp-lbl'),ps=rp.ui.querySelector('.rp-pos'),sl=rp.ui.querySelector('.rp-sl');var t=+w.lastBar.time;if(t>2e10)t/=1000;var d=new Date(t*1000);
     if(lb)lb.textContent='REPLAY  '+d.toISOString().slice(0,16).replace('T',' ')+' UTC';if(ps)ps.textContent=i+' / '+rp.all.length;if(sl&&+sl.value!==i)sl.value=i;
@@ -975,7 +976,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function aiT(k,esKey,en){try{var l=(document.documentElement.lang||'en').slice(0,2).toLowerCase();if(l!=='en'){if(l==='es'&&esKey&&__esD_mpcharts[esKey]!=null)return __esD_mpcharts[esKey];var v=window.mpT&&window.mpT(k);if(v)return v;}}catch(e){}return en;}
   function aiStratName(s){return aiT('aiStrat_'+s.id,'strat_'+s.id,s.name);}
   var aiRecordPub=null; /* the site-wide track record from GET /api/ai/chart - printed under a plan only past its own minimum. Shared with the phone sheet through window.__mpAiRec so both surfaces print the same line without a second request. */
-  function aiRecordHtml(){var r=window.__mpAiRec||aiRecordPub;if(!r||r.hit_pct==null||!(r.decided>=(r.min||20)))return '';return '<div class="aipc-rec" title="'+escAttr(String(r.rule||''))+'"><span>'+aiT('aiRecord','recordWord',__esT_mpcharts("trackRecordLast30",'Track record, last 30 days, all members'))+'</span>'+aiT('aiRecordLine','recordLine','{w} of {n} calls reached target 1 before the stop').replace('{w}',r.win).replace('{n}',r.decided)+' ('+r.hit_pct+'%)'+(r.unclear?' · '+r.unclear+' '+aiT('aiUnclear','unclearWord','unclear'):'')+'</div>';}
+  function aiRecordHtml(){var r=window.__mpAiRec||aiRecordPub,h='';
+    if(r&&r.hit_pct!=null&&(r.decided>=(r.min||20)))h+='<div class="aipc-rec" title="'+escAttr(String(r.rule||''))+'"><span>'+aiT('aiRecord','recordWord',__esT_mpcharts("trackRecordLast30",'Track record, last 30 days, all members'))+'</span>'+aiT('aiRecordLine','recordLine','{w} of {n} calls reached target 1 before the stop').replace('{w}',r.win).replace('{n}',r.decided)+' ('+r.hit_pct+'%)'+(r.unclear?' · '+r.unclear+' '+aiT('aiUnclear','unclearWord','unclear'):'')+'</div>';
+    /* THE READER'S OWN BOOK (2026-10-29): what became of the calls THIS account was given - wins, losses, still waiting,
+       never filled. A site-wide figure says nothing about them; this is the number they can check against their memory. */
+    var m=window.__mpAiMine;if(m&&m.tally&&m.n>0){var t=m.tally,parts=[];
+      if(t.win)parts.push(t.win+' '+aiT('aiWon','wonWord','won'));if(t.loss)parts.push(t.loss+' '+aiT('aiLost','lostWord','lost'));
+      if(t.open)parts.push(t.open+' '+aiT('aiRunning','runningWord','running'));if(t.wait)parts.push(t.wait+' '+aiT('aiWaitingTrig','waitingTrigWord','waiting for a trigger'));
+      if(t.nofill)parts.push(t.nofill+' '+aiT('aiNeverFilled','neverFilledWord','never filled'));
+      if(parts.length)h+='<div class="aipc-rec aipc-mine" title="'+escAttr(aiT('aiMineRule','mineRule',__esT_mpcharts("mineRuleTxt",'Your last calls on this account, settled on the candles after each one: the first target before the stop is a win, the stop first is a loss, an entry the market never reached inside the plan horizon is never filled.')))+'"><span>'+aiT('aiYourCalls','yourCallsWord',__esT_mpcharts("yourCallsTxt",'Your calls'))+'</span>'+parts.join(' · ')+'</div>';}
+    /* the strategy the reader is on carries its own replay backtest - a measured figure beside the plan, where the model's confidence used to be */
+    try{var sdef=aiStratOf(aiStrat);if(aiMode!=='analysis'&&sdef&&sdef.id!=='auto'&&sdef.bt&&sdef.bt.n>=15)h+='<div class="aipc-rec aipc-bt"><span>'+escHtml(aiStratName(sdef))+' · '+aiT('aiReplayBt','replayBtWord',__esT_mpcharts("replayBacktestTxt",'replay backtest'))+'</span>'+sdef.bt.w+' W · '+sdef.bt.l+' L'+(sdef.bt.u?' · '+sdef.bt.u+' '+aiT('aiUnclear','unclearWord','unclear'):'')+' ('+sdef.bt.n+' '+aiT('aiReplays','replaysWord','replays')+')</div>';}catch(e){}
+    return h;}
   function aiSetMode(m,st){if(m)aiMode=m==='analysis'?'analysis':'trade';if(st&&aiStratOf(st).id===st)aiStrat=st;try{localStorage.setItem('mp_ai_mode',aiMode);localStorage.setItem('mp_ai_strat',aiStrat);}catch(e){}aiPaintMode();if(aiW&&aiEl&&!aiEl.hidden&&!aiEl.classList.contains('gated')){aiSetChips(aiW);var em=aiEl.querySelector('.aimsg-empty');if(em)aiRenderBody(aiW);}}
   function aiPaintMode(){if(!aiEl)return;aiEl.classList.toggle('mode-analysis',aiMode==='analysis');[].forEach.call(aiEl.querySelectorAll('[data-mode]'),function(b){b.classList.toggle('on',b.getAttribute('data-mode')===aiMode);b.setAttribute('aria-pressed',b.getAttribute('data-mode')===aiMode?'true':'false');});
     var nm=aiEl.querySelector('.aim-strat-name');if(nm)nm.textContent=aiStratName(aiStratOf(aiStrat));var sb=aiEl.querySelector('.aim-strat');if(sb){sb.disabled=aiMode==='analysis';sb.title=aiMode==='analysis'?__esT_mpcharts("stratOffInAnalysis",'Strategies apply in Trade mode'):__esT_mpcharts("pickAStrategy",'Pick the strategy the setup must follow');}
@@ -1148,14 +1160,34 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* The UTC day boundary, so the model can mark it with the `vline` it already has. Crypto never closes, but the
      00:00 UTC open is the one line every desk still draws, and the brief had no notion of time-of-day at all. */
   function sessionOf(bars){
-    var n=bars.length;
+    var n=bars.length,out=null;
     for(var i=n-1;i>0&&i>n-400;i--){
       var a=new Date((+bars[i-1].time)*1000).getUTCDate(),b=new Date((+bars[i].time)*1000).getUTCDate();
-      if(a!==b)return {lastUtcDayOpenBarsAgo:n-1-i,note:__esT_mpcharts("drawItWithA",'draw it with a vline when the day boundary matters')};}
-    return null;}
+      if(a!==b){out={lastUtcDayOpenBarsAgo:n-1-i,note:__esT_mpcharts("drawItWithA",'draw it with a vline when the day boundary matters')};break;}}
+    /* WHICH SESSION IS OPEN, AND HOW LOUD THIS HOUR USUALLY IS (2026-10-29, item 10 of the /charts review). The brief
+       carried the day boundary and nothing about the clock: no session, no weekend, no notion that 03:00 UTC on a
+       Sunday and 14:30 UTC on a Wednesday are different markets. The hour's volatility is MEASURED off these candles -
+       the median candle range in this UTC hour against the median over all hours - so "quiet hour" is this coin's own
+       figure, not a rule of thumb. Intraday only: on a daily chart an hour means nothing. */
+    try{var last=bars[n-1],t=new Date((+last.time)*1000),h=t.getUTCHours(),d=t.getUTCDay(),sess=[];
+      if(h>=0&&h<9)sess.push('Asia');if(h>=7&&h<16)sess.push('London');if(h>=13&&h<22)sess.push('New York');if(!sess.length)sess.push('between sessions');
+      var wk=(d===0||d===6),span=n>1?(+bars[n-1].time-+bars[n-2].time):0,o2={utcHour:h,weekday:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d],weekend:wk,open:sess};
+      if(span>0&&span<=3600&&n>=120){var byH={},all=[];for(var j=Math.max(0,n-1000);j<n;j++){var bb=bars[j],r=(+bb.high-+bb.low)/(+bb.close||1);if(!(r>=0))continue;var hh=new Date((+bb.time)*1000).getUTCHours();(byH[hh]=byH[hh]||[]).push(r);all.push(r);}
+        var med=function(a){if(!a.length)return 0;a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length/2)];};
+        var mAll=med(all),mH=med(byH[h]||[]);if(mAll>0&&(byH[h]||[]).length>=5){var ratio=mH/mAll;o2.thisHourRangeVsTypical=+ratio.toFixed(2);o2.thisHourSays=ratio<0.7?'a quiet hour for this market - breakouts here are suspect and ranges hold':ratio>1.3?'a loud hour for this market - stops get run and moves extend':'an ordinary hour for this market';o2.hoursMeasured=(byH[h]||[]).length;}}
+      if(wk)o2.weekendNote='weekend: thinner books, moves on little volume, and the Monday open can erase a weekend move';
+      out=out||{};out.now=o2;}catch(e){}
+    return out;}
+  /* TOLERANCES SCALE WITH THE CANDLES, NOT WITH A FIXED PERCENT (2026-10-29, item 7). `levelsOf` clustered pivots
+     within 0.4% of price and the snap pulled a drawn price within 0.35%: on BTC daily (ATR ~2%) that merges nothing a
+     human would merge, on a 1-minute chart (ATR ~0.05%) it merges every pivot on screen into one "level". One
+     reading, off ATR(14) of the loaded bars, clamped so a dead market and a wild one both stay sane. */
+  function aiTolOf(bars){var a=null;try{a=_last(atr(bars,14));}catch(e){}var px=bars&&bars.length?+bars[bars.length-1].close:0;var f=(a>0&&px>0)?a/px:0.004;
+    var lvl=Math.max(0.0004,Math.min(0.012,f*0.30)),snap=Math.max(0.0004,Math.min(0.012,f*0.30)),react=Math.max(0.0003,Math.min(0.006,f*0.12));
+    return {lvl:lvl,snap:snap,react:react,atrPct:f};}
 
-  function reactionsAt(bars,price,kind,look){
-    var n=bars.length,tol=price*0.0015,look=look||8,hits=[],i,j;
+  function reactionsAt(bars,price,kind,look,tolF){
+    var n=bars.length,tol=price*(tolF||0.0015),look=look||8,hits=[],i,j;
     var WIN=300,GAP=8,MAXH=12,start=Math.max(2,n-WIN);
     for(i=start;i<n-2;i++){
       var b=bars[i],touched=(+b.low<=price+tol&&+b.high>=price-tol);
@@ -1327,13 +1359,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
     var _lockedIds=[],_onIds=[],_wi=w.inds||{};INDS.forEach(function(t){if(MP_INDS[t[0]]&&!indAllowed())_lockedIds.push(t[0]);if(_wi[t[0]])_onIds.push(t[0]);});
-    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','pitchfork','forecast','measure','text','hline','vline','volprofile'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:__esT_mpcharts("barsago0TheNewest",'barsAgo 0 = the newest candle; ')+n+__esT_mpcharts("candlesAreLoadedSo",' candles are loaded, so barsAgo runs 0-')+(n-1)+__esT_mpcharts("intoThePastNegative",' into the past; negative projects into the future (max -30)')};
+    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','box','level','pattern','triangle','avwap','impulse','position','fib','fibext','pitchfork','forecast','measure','text','hline','vline','volprofile'],actions:['indicator','timeframe','symbol','zoom','clear_ai','draw','alert'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:__esT_mpcharts("barsago0TheNewest",'barsAgo 0 = the newest candle; ')+n+__esT_mpcharts("candlesAreLoadedSo",' candles are loaded, so barsAgo runs 0-')+(n-1)+__esT_mpcharts("intoThePastNegative",' into the past; negative projects into the future (max -30)')};
     /* the structure a human would draw on: real pivots, the levels price kept respecting, and how many bars one screen holds */
     var piv=null,lvls=null,struct=null;
+    var _tol=aiTolOf(bars);
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
       piv=_P.map(function(p){return {barsAgo:p.barsAgo,price:_p6(p.price),kind:p.kind};});
-      lvls=levelsOf(_P,price,0.004).map(function(l){var o={price:_p6(l.price),kind:l.kind,touches:l.touches,lastTouchBarsAgo:l.lastTouchBarsAgo};
-        try{var rx=reactionsAt(bars,l.price,l.kind,8);if(rx){o.heldTimes=rx.held;o.brokeTimes=rx.brokeThrough;o.avgReactionPct=rx.avgReactionPct;o.lastHeld=rx.lastHeld;}}catch(e){}
+      lvls=levelsOf(_P,price,_tol.lvl).map(function(l){var o={price:_p6(l.price),kind:l.kind,touches:l.touches,lastTouchBarsAgo:l.lastTouchBarsAgo};
+        try{var rx=reactionsAt(bars,l.price,l.kind,8,_tol.react);if(rx){o.heldTimes=rx.held;o.brokeTimes=rx.brokeThrough;o.avgReactionPct=rx.avgReactionPct;o.lastHeld=rx.lastHeld;}}catch(e){}
         return o;});
       var _hs=_P.filter(function(p){return p.kind==='high';}).slice(0,3),_ls=_P.filter(function(p){return p.kind==='low';}).slice(0,3);
       if(_hs.length>=2&&_ls.length>=2){var _hh=_hs[0].price>_hs[1].price,_hl=_ls[0].price>_ls[1].price;
@@ -1462,6 +1495,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        is noise and gets hit by nothing". The floor is 1.5 x ATR(14), measured off the loaded candles and stamped on
        the plan like `_reach`; under it the levels still draw, greyed, and the card says how far inside the noise. */
     if(aiStopTight(plan)) return false;
+    /* 5. A TARGET THAT IS NOT A LEVEL ON THIS CHART IS NOT A TRADE (2026-10-29, item 9) - see aiTargetLoose */
+    if(aiTargetLoose(plan)) return false;
     return true;
   }
   var AI_MIN_STOP_ATR = 1.5;
@@ -1478,9 +1513,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return (rr != null && rr < AI_MIN_RR) ? rr : '';
   }
   function aiRR(plan){var e=+plan.entry,st=+plan.stop,t=(plan.targets||[]).map(Number).filter(function(x){return x>0;})[0];if(!(e>0&&st>0&&t>0))return null;var risk=Math.abs(e-st),rew=Math.abs(t-e);return risk>0?+(rew/risk).toFixed(2):null;}
+  /* THE CONFIDENCE NUMBER IS DECORATION UNTIL IT IS MEASURED (2026-10-29, item 4): the server's record says `conf_ok`
+     only once settled calls show the bands climbing (a 70 really beating a 50). Until then the percentage the model
+     invents is not printed on the card - the strategy's replay backtest under the card is the measured figure instead. */
+  function aiConfShown(plan){var r=window.__mpAiRec||aiRecordPub;if(!r||r.conf_ok!==true)return null;return (+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;}
   function aiPlanCard(plan,price){if(!plan)return '';var bias=String(plan.bias||'').toLowerCase(),isW=!aiTradable(plan),_rrLow=aiWhyNotTradable(plan);
     /* ANALYSIS ONLY (2026-10-15): no trade was asked for, so the card is the map - the lean, the levels it drew, what would change the lean */
-    if(bias==='analysis'){var lean=String(plan.lean||'neutral').toLowerCase(),cf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
+    if(bias==='analysis'){var lean=String(plan.lean||'neutral').toLowerCase(),cf=aiConfShown(plan);
       var hA='<div class="aiplan-card aiplan-an" data-bias="analysis"><div class="aipc-h"><span class="aipc-b an">'+__esT_mpcharts("analysisWord",'ANALYSIS')+'</span><span class="aipc-lean '+(lean==='bullish'?'up':lean==='bearish'?'dn':'')+'">'+__esT_mpcharts("leanWord",'lean')+' '+escHtml(lean)+'</span>'+(cf!=null?'<span class="aipc-c" title="How sure the coach is">'+cf+'%</span>':'')+'</div>';
       var lvA=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lvA.length)hA+='<div class="aipc-lv-rows">'+lvA.slice(0,8).map(function(l){var _d=(+l.price>0&&price>0)?((+l.price-price)/price*100):null;return '<button type="button" class="aipr l'+(l.kind==='liquidity'?' lq':'')+'" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,22))+'</span><b>'+cwFmt(+l.price)+'</b>'+(_d!=null?'<i>'+(_d>=0?'+':'')+_d.toFixed(2)+'%</i>':'')+'</button>';}).join('')+'</div>';
       if(plan.watch)hA+='<div class="aipc-inv"><span>'+__esT_mpcharts("watchWord",'Watch')+'</span>'+escHtml(String(plan.watch).slice(0,180))+'</div>';
@@ -1488,12 +1527,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* NO POSITION RIGHT NOW is a different answer from WAIT, and the owner asked for it by name. WAIT means a level
        is coming; out of reach means it is not, and calling that "waiting for" is the thing he kept meeting. */
     var _far=aiReachMiss(plan),_noPos=!!_far,_tight=(!_far&&_rrLow===''&&(bias==='long'||bias==='short'))?aiStopTight(plan):null;/* a WAIT keeps its own label; the stop floor explains a refused TRADE */
+    var _loose=(!_far&&_rrLow===''&&!_tight&&(bias==='long'||bias==='short'))?aiTargetLoose(plan):null;
     var pct=function(v){v=+v;if(!(v>0&&price>0))return '';var d=(v-price)/price*100;return '<i>'+(d>=0?'+':'')+d.toFixed(2)+'%</i>';};
     var row=function(k,v,cls){v=+v;if(!(v>0))return '';return '<button type="button" class="aipr '+(cls||'')+'" data-px="'+v+'"><span>'+k+'</span><b>'+cwFmt(v)+'</b>'+pct(v)+'</button>';};
-    var rr=aiRR(plan),conf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
+    var rr=aiRR(plan),conf=aiConfShown(plan);
     var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(_noPos?__esT_mpcharts("noPositionNow",'NO POSITION NOW'):(isW?'WAIT':bias.toUpperCase()))+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
     var _tgL=0,_tgR='';(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tgL&&Math.abs(t-_tgL)/_tgL<0.004)return;_tgL=t;_tgR+=row('Target '+(i+1),t,'t');});/* same 0.4% dedup as aiDrawPlan so a card row exists for every drawn target line and no more */
-    var _rows=row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+_tgR;if(_rows){if(!isW)h+='<div class="aipc-rows">'+_rows+'</div>';else h+='<div class="aipc-wait">'+(_noPos?__esT_mpcharts("outOfReachTheLevels",'out of reach right now - the levels, for watching'):(_rrLow?__esT_mpcharts("notWorthTakingAt",'not worth taking at R:R ')+_rrLow+__esT_mpcharts("theLevelsForWatching",' - the levels, for watching'):(_tight?__esT_mpcharts("stopInsideTheNoise",'stop inside the noise - the levels, for watching'):__esT_mpcharts("waitingForNotA",'waiting for - not a trade yet'))))+'</div><div class="aipc-rows w">'+_rows+'</div>';}
+    var _rows=row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+_tgR;if(_rows){if(!isW)h+='<div class="aipc-rows">'+_rows+'</div>';else h+='<div class="aipc-wait">'+(_noPos?__esT_mpcharts("outOfReachTheLevels",'out of reach right now - the levels, for watching'):(_rrLow?__esT_mpcharts("notWorthTakingAt",'not worth taking at R:R ')+_rrLow+__esT_mpcharts("theLevelsForWatching",' - the levels, for watching'):(_tight?__esT_mpcharts("stopInsideTheNoise",'stop inside the noise - the levels, for watching'):(_loose?aiT('aiTargetNotLevel','targetNotLevel',__esT_mpcharts("targetNotALevel",'target is not a level on this chart - the levels, for watching')):__esT_mpcharts("waitingForNotA",'waiting for - not a trade yet')))))+'</div><div class="aipc-rows w">'+_rows+'</div>';}
     var lv=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lv.length)h+='<div class="aipc-lv-rows">'+lv.slice(0,4).map(function(l){return '<button type="button" class="aipr l'+(l.kind==='liquidity'?' lq':'')+'" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,18))+'</span><b>'+cwFmt(+l.price)+'</b>'+pct(l.price)+'</button>';}).join('')+'</div>';
     /* The measurement, in the reader's words: how far the entry is, against how far this market actually goes. */
     if(_far)h+='<div class="aipc-inv aipc-rr"><span>'+__esT_mpcharts("outOfReach",'Out of reach')+'</span>'
@@ -1503,12 +1543,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(_rrLow!=='')h+=__esT_mpcharts("notWorthItThe",'<div class="aipc-inv aipc-rr"><span>Not worth it</span>The first target pays ')+_rrLow+__esT_mpcharts("xTheRiskUnder",'x the risk - under the 1.5x this assistant will call a trade, so the levels are marked to watch, not to take.</div>');
     /* the measurement, in the reader's words: how far the stop sits against how far one candle moves here */
     if(_tight)h+='<div class="aipc-inv aipc-rr"><span>'+__esT_mpcharts("stopTooTight",'Stop too tight')+'</span>'+__esT_mpcharts("thatStopIs",'That stop is ')+_tight.distPct+__esT_mpcharts("pctFromTheEntry",'% from the entry - ')+_tight.mult+__esT_mpcharts("atrWhenOneCandle",' ATR, when one candle here moves about ')+(+(_tight.atr/price*100).toFixed(2))+__esT_mpcharts("pctNoiseWouldHit",'%. Normal noise would hit it; it needs at least ')+_tight.needPct+__esT_mpcharts("pctSoLevelsWatch",'% to mean anything, so the levels are marked to watch, not to take.')+'</div>';
+    /* the measurement, in the reader's words: the nearest price the chart can prove, and how far the target sits from it */
+    if(_loose)h+='<div class="aipc-inv aipc-rr"><span>'+aiT('aiTargetLooseT','targetLooseT',__esT_mpcharts("targetIsAGuess",'Target is a guess'))+'</span>'+aiT('aiTargetLooseTxt','targetLooseTxt',__esT_mpcharts("targetLooseTxt",'The first target ({t}) sits {d}% from the nearest level this chart has actually reacted to ({n}) - nothing in the candles, the pools or the averages has traded there, so it is a number rather than a level. The levels are marked to watch, not to take.')).replace('{t}',cwFmt(_loose.target)).replace('{d}',_loose.distPct).replace('{n}',cwFmt(_loose.nearest))+'</div>';
     if(plan.invalidation)h+=__esT_mpcharts("wrongIf",'<div class="aipc-inv"><span>Wrong if</span>')+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
     if(plan.manage)h+=__esT_mpcharts("yourPosition",'<div class="aipc-inv"><span>Your position</span>')+escHtml(String(plan.manage).slice(0,160))+'</div>';
     var _hasLv=(+plan.entry>0||(plan.targets||[]).some(function(t){return +t>0;}));
     h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("onChart",'">On chart</button>')
       +(_hasLv?'<button type="button" class="aipc-alert" data-plan="'+escAttr(JSON.stringify(plan))+'" title="Get an alert when price reaches these levels">'+__esT_mpcharts("alertMe",'Alert me')+'</button>':'')
-      +(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("tradeIt",'">Trade it</button>'):'')+'</div>'+aiRecordHtml()+'</div>';return h;}
+      +(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("tradeIt",'">Trade it</button>'):'')
+      +((bias==='long'||bias==='short')&&!plan._second?'<button type="button" class="aipc-second" data-plan="'+escAttr(JSON.stringify(plan))+'" title="'+escAttr(aiT('aiSecondT','secondT',__esT_mpcharts("secondOpinionT",'An independent second read of the same chart - agreement is a better measure than a confidence number. Costs one read.')))+'">'+aiT('aiSecond','secondWord',__esT_mpcharts("secondOpinion",'Second opinion'))+'</button>':'')+'</div>'
+      +(plan._second?aiSecondHtml(plan._second):'')+aiRecordHtml()+'</div>';return h;}
+  /* the second read, under the card: agrees / disagrees, its own bias and levels, one sentence (2026-10-29, item 12) */
+  function aiSecondHtml(s){if(!s)return '';var ag=s.agree===true;return '<div class="aipc-rec aipc-2nd" data-agree="'+(ag?'1':'0')+'"><span>'+aiT('aiSecond','secondWord',__esT_mpcharts("secondOpinion",'Second opinion'))+' · '+(ag?aiT('aiAgrees','agreesWord',__esT_mpcharts("agreesWord",'agrees')):aiT('aiDisagrees','disagreesWord',__esT_mpcharts("disagreesWord",'disagrees')))+'</span><b>'+escHtml(String(s.bias||'').toUpperCase())+'</b>'+(s.entry?' · '+aiT('aiEntryWord','entryWord','entry')+' '+cwFmt(+s.entry):'')+(s.stop?' · '+aiT('aiStopWord','stopWord','stop')+' '+cwFmt(+s.stop):'')+(s.target?' · '+aiT('aiTargetWord','targetWord','target')+' '+cwFmt(+s.target):'')+(s.why?'<br>'+escHtml(s.why):'')+'</div>';}
   /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence - and to the closing fence not having streamed in yet. */
   /* Every fenced JSON block comes off the prose: the ```plan object (bias/entry/stop...), the ```actions object ({actions:[],chips:[]})
      or a bare array of actions. Prose = everything before the first parsed block; a fence still streaming in is hidden too. */
@@ -1566,7 +1612,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var snaps=(ctx&&ctx.snap)||[],bars=(ctx&&ctx.bars)||null;
     var snapLv=function(p,tol){p=+p;if(!(p>0)||!snaps.length)return p;var best=p,bd=Infinity;
       for(var i=0;i<snaps.length;i++){var d=Math.abs(snaps[i]-p);if(d<bd){bd=d;best=snaps[i];}}
-      return (px>0&&bd/px<=(tol||0.0035))?best:p;};
+      return (px>0&&bd/px<=(tol||(ctx&&ctx.tol)||0.0035))?best:p;};
     var snapBar=function(p,ba,side){p=+p;if(!(p>0)||!bars||ba==null||ba==='')return p;var i=last-Math.round(+ba);if(!(i>=0&&i<n))return p;
       var b=bars[i];if(!b)return p;var hi=+b.high,lo=+b.low;
       var d=(side==='highs')?hi:((side==='lows')?lo:(Math.abs(p-hi)<=Math.abs(p-lo)?hi:lo));
@@ -1673,6 +1719,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         pp2.push({l:L(q.barsAgo,0),p:snapBar(q.price,q.barsAgo),lab:String(q.label||'').slice(0,14)});});
       if(pp2.length<2)return null;
       out.push(Object.assign({},base,{t:'poly',pts:pp2}));
+      /* A HEAD AND SHOULDERS CARRIES ITS NECKLINE (2026-10-29, item 15): five points LS - trough - H - trough - RS, so the
+         line through the two troughs, extended right, is the level the pattern trades off. Dashed, named. */
+      try{if(pp2.length>=5&&/head|shoulder|h&s|hs\b|ihs|inverse/i.test(lbl+' '+(a.pattern||''))){var t1=pp2[1],t2=pp2[3];if(t1&&t2&&Math.abs(t2.l-t1.l)>=2)out.push(Object.assign({},base,{t:'ray',l1:t1.l,p1:t1.p,l2:t2.l,p2:t2.p,dash:true,anch:1,txt:'Neckline'}));}}catch(e){}
       if(lbl)label(pp2[pp2.length-1].p);}
     else if(sh==='measure'){ // the ranged box: price move, percent and candles between two anchors
       if(!okp(a.p1)||!okp(a.p2))return _rej(__esT_mpcharts("measureNeedsTwoReal",'measure needs two real prices'),a);
@@ -1697,6 +1746,33 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       out.push(Object.assign({},base,{t:'fork',l1:L(a.barsAgo1,Math.round(n*0.6)),p1:snapBar(a.p1,a.barsAgo1),l2:L(a.barsAgo2,Math.round(n*0.4)),p2:snapBar(a.p2,a.barsAgo2),l3:L(a.barsAgo3,Math.round(n*0.2)),p3:snapBar(a.p3,a.barsAgo3),txt:lbl}));}
     else if(sh==='text'){if(!okp(a.p)||!a.txt)return null;out.push(Object.assign({},base,{t:'text',l:L(a.barsAgo,2),p:+a.p,txt:String(a.txt).trim().slice(0,40)}));}
     else if(sh==='vline'){out.push(Object.assign({},base,{t:'vline',l:L(a.barsAgo,0)}));}
+    /* ---- the kit grew on 2026-10-29 (items 13-15, 19 of the /charts review) ---- */
+    else if(sh==='box'){ // a CLOSED rectangle over a time range - a consolidation, a range, a session - unlike `zone`, which runs to the right edge
+      var bf=snapLv(a.from!=null?a.from:a.p1),bt=snapLv(a.to!=null?a.to:a.p2);if(!okp(bf)||!okp(bt))return null;
+      var bl1=L(a.barsAgo1,Math.round(n*0.3)),bl2=L(a.barsAgo2,0);if(Math.abs(bl2-bl1)<2)return _rej(__esT_mpcharts("aBoxNeedsTwo",'a box needs its two time anchors at least 2 candles apart'),a);
+      out.push(Object.assign({},base,{t:'rect',l1:Math.min(bl1,bl2),p1:Math.min(bf,bt),l2:Math.max(bl1,bl2),p2:Math.max(bf,bt),w:1}));label((bf+bt)/2);}
+    else if(sh==='avwap'||sh==='vwap'){ // the anchored VWAP as the CURVE it is, from a pivot the brief named (or the swing high/low)
+      if(!bars||n<30)return null;var ai0=null;
+      if(a.barsAgo!=null&&a.barsAgo!=='')ai0=L(a.barsAgo,0);
+      else{var want=/high|top|resist/i.test(String(a.anchor||a.label||''))?'high':'low',pvs=(ctx&&ctx.piv)||[];for(var qi=0;qi<pvs.length;qi++){if(pvs[qi].kind===want&&pvs[qi].barsAgo>=6){ai0=last-pvs[qi].barsAgo;break;}}}
+      if(ai0==null||ai0<0||ai0>=n-3)return _rej(__esT_mpcharts("vwapNeedsAnAnchor",'avwap needs an anchor candle at least 3 candles back'),a);
+      var cumPV=0,cumV=0,vp=[],stride=Math.max(1,Math.ceil((n-ai0)/400));
+      for(var vi=ai0;vi<n;vi++){var vb=bars[vi],tp=(+vb.high+ +vb.low+ +vb.close)/3,vv=+vb.vol||1;cumPV+=tp*vv;cumV+=vv;if(((vi-ai0)%stride)===0||vi===n-1)vp.push({l:vi,p:cumPV/cumV});}
+      if(vp.length<2)return null;
+      out.push(Object.assign({},base,{t:'path',pts:vp,head:false,w:1.5}));label(vp[vp.length-1].p);}
+    else if(sh==='triangle'||sh==='wedge'){ // two converging rays through the two newest pivot highs and the two newest pivot lows, with the apex projected
+      var pv3=(ctx&&ctx.piv)||[],H3=pv3.filter(function(q){return q.kind==='high';}).slice(0,4),L3=pv3.filter(function(q){return q.kind==='low';}).slice(0,4);
+      var pick=function(arr,desc){for(var i=0;i<arr.length;i++)for(var j=i+1;j<arr.length;j++){var nw=arr[i],od=arr[j];if(Math.abs(od.barsAgo-nw.barsAgo)<4)continue;if(desc?(od.price>nw.price):(od.price<nw.price))return [od,nw];}return null;};
+      var up=pick(H3,true),dn=pick(L3,false);if(!up||!dn)return _rej(__esT_mpcharts("noConvergingPivots",'no converging pair of highs and lows in the pivots - there is no triangle to draw'),a);
+      var hl1=last-up[0].barsAgo,hl2=last-up[1].barsAgo,ll1=last-dn[0].barsAgo,ll2=last-dn[1].barsAgo;
+      out.push(Object.assign({},base,{t:'ray',l1:hl1,p1:up[0].price,l2:hl2,p2:up[1].price,anch:1,txt:lbl||'Triangle'}));
+      out.push(Object.assign({},base,{t:'ray',l1:ll1,p1:dn[0].price,l2:ll2,p2:dn[1].price,anch:1}));
+      try{var mA=(up[1].price-up[0].price)/((hl2-hl1)||1),mB=(dn[1].price-dn[0].price)/((ll2-ll1)||1);if(Math.abs(mA-mB)>1e-12){var ax=((dn[0].price-mB*ll1)-(up[0].price-mA*hl1))/(mA-mB),ay=up[0].price+mA*(ax-hl1);
+        if(ax>last-5&&ax<last+FUT*2)out.push(Object.assign({},base,{t:'text',l:Math.min(ax,last+FUT),p:ay,txt:'apex ~'+Math.max(0,Math.round(ax-last))+' candles',w:2,bg:1}));}}catch(e){}}
+    else if(sh==='impulse'||sh==='last_leg'){ // measure the latest leg - from the newest pivot to the one before it - without the model doing arithmetic
+      var pv4=(ctx&&ctx.piv)||[];if(pv4.length<2)return _rej(__esT_mpcharts("noLegToMeasure",'not enough pivots to measure a leg'),a);
+      var g1=pv4[1],g0=pv4[0];if(Math.abs(g1.barsAgo-g0.barsAgo)<2)return null;
+      out.push(Object.assign({},base,{t:'measure',l1:last-g1.barsAgo,p1:g1.price,l2:last-g0.barsAgo,p2:g0.price,w:1}));}
     else return null;
     return out;}
   /* HOW THIS MARKET MOVES, measured from its own pivots: how many candles a leg usually runs, and how far it swings. The projected
@@ -1760,7 +1836,28 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{if(w&&w.bars&&w.bars.length>=20){var _a=_last(atr(w.bars,14));if(_a>0)Object.defineProperty(plan,'_atr',{value:_a,enumerable:false,configurable:true,writable:true});}}catch(e0){}
     var r=aiReachOf(w);if(!r)return plan;
     try{Object.defineProperty(plan,'_reach',{value:r,enumerable:false,configurable:true,writable:true});}catch(e){try{plan._reach=r;}catch(e2){}}
+    /* the prices this chart can PROVE ride along too (non-enumerable), so the first target can be checked against them (2026-10-29, item 9) */
+    try{var sn=aiSnapsOf(w);if(sn&&sn.prices.length>=4){Object.defineProperty(plan,'_snap',{value:sn,enumerable:false,configurable:true,writable:true});}}catch(e3){}
     return plan;}
+  /* EVERY PRICE THIS CHART CAN PROVE, one list: the pivots, the levels they cluster into, the liquidation pools near price,
+     the six moving averages, the loaded extremes and the two frames above. Memoised per candle count. The prompt has asked
+     since 2026-09-17 that a target be one of these; `aiTargetLoose` is the chart finally checking. */
+  function aiSnapsOf(w){try{var bars=w&&w.bars;if(!bars||bars.length<40)return null;var n=bars.length,px=+bars[n-1].close;if(!(px>0))return null;
+      var key=(w.sym||'')+'|'+(w.tf||'')+'|'+n;if(w._snapC&&w._snapC.key===key)return w._snapC.v;
+      var tol=aiTolOf(bars),k=Math.max(2,Math.min(9,Math.round(n/40))),P=pivotsOf(bars,k,16),out=[];
+      P.forEach(function(q){out.push(q.price);});levelsOf(P,px,tol.lvl).forEach(function(q){out.push(q.price);});
+      try{poolsNow(bars).forEach(function(q){if(q&&q.price>0&&Math.abs(q.price-px)/px<=0.09)out.push(q.price);});}catch(e){}
+      try{var c=closes(bars);[9,21,50,200].forEach(function(p){var v=_last(ema(c,p));if(v>0)out.push(v);});[50,200].forEach(function(p){var v=_last(sma(c,p));if(v>0)out.push(v);});}catch(e){}
+      var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){if(+bars[i].low<lo)lo=+bars[i].low;if(+bars[i].high>hi)hi=+bars[i].high;}out.push(lo,hi);
+      try{[4,16].forEach(function(m){var h=htfOf(bars,w.tf,px,m);if(h&&h.levels)h.levels.forEach(function(l){if(+l.price>0)out.push(+l.price);});});}catch(e){}
+      var v={prices:out.filter(function(x){return x>0&&isFinite(x);}),tol:Math.max(tol.snap*1.6,0.0008),atrPct:tol.atrPct};w._snapC={key:key,v:v};return v;}catch(e){return null;}}
+  /* A TARGET AT A PRICE THE MARKET NEVER REACTED TO IS A GUESS DRESSED UP AS A LEVEL (2026-10-29, item 9). The prompt has
+     said so since the drawing kit shipped and nothing checked it. The first target must sit within the chart's own snap
+     tolerance (ATR-scaled, floor 0.08%) of a price in `_snap`; otherwise the plan is shown as levels to watch, not a trade,
+     and the card says how far the nearest real level is. Returns null when it cannot judge (no snap table stamped). */
+  function aiTargetLoose(plan){if(!plan)return null;var sn=plan._snap,t=(plan.targets||[]).map(Number).filter(function(x){return x>0;})[0];if(!sn||!(t>0)||!sn.prices||sn.prices.length<4)return null;
+    var best=null,bd=Infinity;sn.prices.forEach(function(p){var d=Math.abs(p-t)/t;if(d<bd){bd=d;best=p;}});
+    if(bd<=sn.tol)return null;return {target:t,nearest:best,distPct:+(bd*100).toFixed(2),tolPct:+(sn.tol*100).toFixed(2)};}
   /* The entry is out of reach when it sits further from price than this market gets, on that side, in the horizon.
      Returns the numbers so the card can SAY it rather than just refuse. */
   function aiReachMiss(plan){
@@ -1863,12 +1960,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(off)s+=__esT_mpcharts("noteOutsideTheVisible",' (NOTE: outside the visible price range - the reader will not see it unless they zoom out)');
     return s;
   }catch(e){return '';}}
-  function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;_aiRej=[];_aiGeo=[];try{if(w.dr.mark)w.dr.mark();}catch(e){}/* one undo step per AI batch */var n=w.bars.length,px=+w.bars[n-1].close,k=0;
+  var _aiSh=[],_aiUidN=0;
+  function aiShapesDrawn(){return _aiSh.slice(0,16);}
+  /* light one AI shape on the chart (hover on its receipt chip) or take it off (its X) - by the uid stamped at draw time */
+  function aiShapeHl(w,uid,on){if(!w||!w.dr||!w.dr.shapes)return;var hit=false;w.dr.shapes.forEach(function(s){if(s.by==='ai'&&s.uid&&(s.uid===uid||s.uid.indexOf(uid+'.')===0)){s._hl=on?1:0;hit=true;}});if(hit&&w.dr.redraw)w.dr.redraw();}
+  function aiShapeRm(w,uid){if(!w||!w.dr||!w.dr.shapes)return 0;try{if(w.dr.mark)w.dr.mark();}catch(e){}var n0=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.uid&&(s.uid===uid||s.uid.indexOf(uid+'.')===0));});var k=n0-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;_aiRej=[];_aiGeo=[];_aiSh=[];try{if(w.dr.mark)w.dr.mark();}catch(e){}/* one undo step per AI batch */var n=w.bars.length,px=+w.bars[n-1].close,k=0;
     var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){var b=w.bars[i];if(!b)continue;if(+b.low<lo)lo=+b.low;if(+b.high>hi)hi=+b.high;}
     // the snap table: every price this chart can prove - the pivots, the levels it respected, the liquidation pools around price
-    var snap=[];try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(w.bars,_k,16);
+    var snap=[],_tolV=aiTolOf(w.bars);try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(w.bars,_k,16);
       _P.forEach(function(q){snap.push(q.price);});
-      levelsOf(_P,px,0.004).forEach(function(q){snap.push(q.price);});
+      levelsOf(_P,px,_tolV.lvl).forEach(function(q){snap.push(q.price);});
       poolsNow(w.bars).forEach(function(q){if(q&&q.price>0&&Math.abs(q.price-px)/px<=0.09)snap.push(q.price);});
       snap.push(lo,hi);}catch(e){}
     var rhythm=null;try{rhythm=rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16),px);}catch(e){}
@@ -1877,7 +1979,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* the bars the reader is actually looking at - a volume profile tool must describe the VISIBLE range (VRVP), or its mass
        sits off the bottom of the frame where nobody can see it (2026-10-04) */
     var visBars=null;try{var _vr0=w.chart&&w.chart.timeScale().getVisibleLogicalRange();if(_vr0){var _vf=Math.max(0,Math.floor(_vr0.from)),_vt=Math.min(n-1,Math.ceil(_vr0.to));if(_vt-_vf>=10)visBars=w.bars.slice(_vf,_vt+1);}}catch(e){}
-    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars,visBars:visBars,rhythm:rhythm,px:px,structure:struct2,piv:(function(){try{return pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16);}catch(e){return [];}})()};
+    var ctx={lo:lo,hi:hi,snap:snap,tol:_tolV.snap,bars:w.bars,visBars:visBars,rhythm:rhythm,px:px,structure:struct2,piv:(function(){try{return pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16);}catch(e){return [];}})()};
     var ghost=0;
     (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;
       var _sh=String(a.shape||'').toLowerCase();
@@ -1896,7 +1998,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       // AFTER snapping: a horizontal level/line that landed on a plan price (entry/stop/target) is a duplicate of a
       // line the plan already drew - drop it, it was the right-axis pile-up the vision gate kept flagging (2026-10-04)
       if(w._aiPlanObj&&sh.length===1&&(sh[0].t==='hray'||sh[0].t==='hline')){var _hp=+sh[0].p||0;if(_hp>0){var _plo=w._aiPlanObj,_ps=[+_plo.entry||0,+_plo.stop||0].concat((_plo.targets||[]).map(Number));if(_ps.some(function(x){return x>0&&Math.abs(x-_hp)/_hp<0.002;}))return;}}
-      sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;var _gn=_geoNote(a,sh,lo,hi);if(_gn)_aiGeo.push(_gn);});
+      /* EVERY AI SHAPE GETS AN ID AND A NAME (2026-10-29, items 17-18): the receipt under the answer lists them one by one,
+         hovering one lights it on the chart and its X removes just that one - Undo used to be the whole batch or nothing. */
+      var _nm=String(a.label||a.txt||_sh||'shape').trim().slice(0,22)||_sh,_u=(++_aiUidN)+'.'+(Date.now()%100000);
+      sh.forEach(function(s,si){s.aiB=batch;s.uid=_u+(si?'.'+si:'');w.dr.shapes.push(s);});_aiSh.push({u:_u,n:_nm,t:_sh});k++;var _gn=_geoNote(a,sh,lo,hi);if(_gn)_aiGeo.push(_gn);});
     if(ghost)try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr)w.chart.timeScale().setVisibleLogicalRange({from:_vr.from,to:n-1+ghost+2});}catch(e){}
     if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);
       /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
@@ -1944,6 +2049,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         else if(a.a==='clear_ai'){cleared+=aiClearAi(w);}
         else if(a.a==='draw'){drawn+=aiDrawActs(w,[a],batch);geo=geo.concat(aiGeom());}
         else if(a.a==='zoom'&&+a.bars>0){var n=w.bars?w.bars.length:0,k=Math.max(20,Math.min(600,Math.round(+a.bars)));if(n&&w.chart){w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k),to:n+6});out.push(__esT_mpcharts("zoomedTo",'Zoomed to ')+k+' candles');}}
+        /* AN ALERT THE ASSISTANT SETS (2026-10-29, item 16): the same price alert the palette's bell sets by hand - a real
+           server alert, emailed, drawn as the amber line. The model names the price; the chart does what a click would. */
+        else if(a.a==='alert'&&+a.p>0){var px0=(w.bars&&w.bars.length)?+w.bars[w.bars.length-1].close:0;if(px0>0&&+a.p>=px0*0.4&&+a.p<=px0*2.5){createChartAlert(w,null,+a.p);out.push(__esT_mpcharts("setAnAlertAt",'Set an alert at ')+cwFmt(+a.p));}}
       }catch(e){}});
       out.geo=geo; // geometric feedback for the model next turn (2026-10-04), carried on the receipt array as a side property
       if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
@@ -1951,6 +2059,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       return out;});}
   function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.partial)h+='<div class="aipartial">'+__esT_mpcharts("interruptedRead",'The page closed before this read finished - ask again for the full answer.')+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;if(aiW)aiStampReach(aiW,m.plan);h+=aiPlanCard(m.plan,_pr);}
     if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+escHtml(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';
+    /* the shapes themselves, one chip each: hover lights the shape, the X takes that one off the chart (2026-10-29) */
+    if(m.sh&&m.sh.length)h+='<div class="aishs">'+m.sh.map(function(s){return '<span class="aish" data-u="'+escAttr(s.u)+'" title="'+escAttr(aiT('aiShapeChipT','shapeChipT',__esT_mpcharts("hoverToSeeIt",'Hover to see it on the chart; X removes just this one')))+'">'+escHtml(s.n)+'<b data-x="1" aria-label="remove">×</b></span>';}).join('')+'</div>';
+    if(m.rp)h+='<div class="aipc-rec aipc-rp" data-rp="'+escAttr(m.rp.state||'')+'"><span>'+aiT('aiReplayVerdict','replayVerdict',__esT_mpcharts("replayVerdict",'Replay verdict'))+'</span>'+escHtml(m.rp.text||'')+'</div>';
     h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
   function aiClearPlan(w){aiGhostClear(w);if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
@@ -2065,11 +2176,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var ch=e.target.closest&&e.target.closest('.cwin-ai-chip');if(ch){askAi(ch.getAttribute('data-q'),{quick:ch.getAttribute('data-quick')==='1'});return;}
       var pr=e.target.closest&&e.target.closest('.aipr');if(pr){aiFlash(aiW,+pr.getAttribute('data-px'));return;}
       var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=aiUndoBatch(aiW,+un.getAttribute('data-b'));un.remove();chartToast(k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):__esT_mpcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'));return;}
+      var shx=e.target.closest&&e.target.closest('.aish');if(shx&&e.target.closest('[data-x]')){var kk=aiShapeRm(aiW,shx.getAttribute('data-u'));shx.remove();chartToast(kk?aiT('aiShapeRemoved','shapeRemoved',__esT_mpcharts("shapeRemoved",'Removed that drawing.')):__esT_mpcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'));return;}
       var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){aiClearPlan(aiW);}else{try{aiDrawPlan(aiW,JSON.parse(ob.getAttribute('data-plan')));}catch(_){}}try{if(aiW&&aiW.dr&&aiW.dr.save)aiW.dr.save();}catch(_s){}/* the reader decided what is on the chart - keep it that way across switches and reloads */return;}
       var tb=e.target.closest&&e.target.closest('.aipc-trade');if(tb){try{var _pl=JSON.parse(tb.getAttribute('data-plan'));openQuickTrade({sym:aiW&&aiW.sym,side:_pl.bias==='short'?'short':'long',sl:+_pl.stop||null,tp:(+((_pl.targets||[])[0])||null),lev:+_pl.leverage||null});try{if(window.__mpTrack)window.__mpTrack('aitrade',(aiW&&aiW.sym)+' '+_pl.bias);}catch(_e){}}catch(_){}return;}
       var alb=e.target.closest&&e.target.closest('.aipc-alert');if(alb){try{aiAlertPlan(aiW,JSON.parse(alb.getAttribute('data-plan')));try{if(window.__mpTrack)window.__mpTrack('aialert',(aiW&&aiW.sym)||'');}catch(_e){}}catch(_){}return;}
+      var sb=e.target.closest&&e.target.closest('.aipc-second');if(sb){try{aiSecondAsk(aiW,sb,JSON.parse(sb.getAttribute('data-plan')));}catch(_){}return;}
       var b=e.target.closest&&e.target.closest('.aicopy');if(!b)return;var t=b.parentNode.querySelector('.aitxt');if(t&&navigator.clipboard){navigator.clipboard.writeText(t.innerText||t.textContent||'').then(function(){var o=b.innerHTML;b.textContent='✓';setTimeout(function(){b.innerHTML=o;},1200);}).catch(function(){});}
     });
+    aiEl.querySelector('.cwin-ai-body').addEventListener('mouseover',function(e){var c=e.target.closest&&e.target.closest('.aish');if(c&&aiW)aiShapeHl(aiW,c.getAttribute('data-u'),true);});
+    aiEl.querySelector('.cwin-ai-body').addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.aish');if(c&&aiW)aiShapeHl(aiW,c.getAttribute('data-u'),false);});
     aiEl.querySelector('.cwin-ai-h').addEventListener('pointerdown',aiDragStart);
     document.addEventListener('pointerdown',function(e){if(aiEl&&!aiEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ai-panel')||e.target.closest('.cwin-ai'))))aiClose();},true);
   }
@@ -2117,7 +2232,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var uEntry={role:'user',text:q,ts:Date.now(),mode:aiMode,strategy:aiStrat};var hist=aiHistLoad(wk);hist.push(uEntry);aiHistSave(wk,hist,true);
     var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+aiActsNote(m)};});
     var ctx=aiContext(w);
-    var run=w._aiRun={acc:'',got:false,wk:wk,uEntry:uEntry,q:q,bub:null,t0:Date.now(),mode:aiMode,strategy:aiStrat,quick:quick};
+    /* ASK AI INSIDE A REPLAY (2026-10-29, item 24): the brief is the rewound chart, the server skips every LIVE block (funding,
+       OI, order flow, the calendar - all of which would date the read to today and leak the future), the call never enters the
+       public book, and once the reader steps the replay forward the plan is judged on the candles that followed - the one
+       way a reader can see for themselves whether the assistant's read holds, with nothing at stake. */
+    var inReplay=!!w._rp;if(inReplay){try{var _rt=+w.lastBar.time;if(_rt>2e10)_rt/=1000;ctx.replay={at:new Date(_rt*1000).toISOString().slice(0,16)+' UTC',note:'THIS IS A BAR REPLAY: the chart is rewound to the candle above and every candle after it is hidden from you. Read it as if that moment were now - never refer to today, and never guess what came next.'};}catch(e){}}
+    var run=w._aiRun={acc:'',got:false,wk:wk,uEntry:uEntry,q:q,bub:null,t0:Date.now(),mode:aiMode,strategy:aiStrat,quick:quick,replay:inReplay,rpI:inReplay?w._rp.i:0};
     aiBusy=true;aiStatus(w,'reading',(quick?aiT('aiQuick','quickRead',__esT_mpcharts("quickRead",'quick read'))+' · ':'')+aiBriefNote(ctx));aiRenderBody(w);
     var inp=aiEl.querySelector('.cwin-ai-in input');if(inp)inp.value='';
     function body(){return aiEl&&aiEl.querySelector('.cwin-ai-body');}
@@ -2127,7 +2247,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var tThink=setTimeout(function(){if(w._aiRun===run&&!run.got)aiStatus(w,'thinking');},900);
     /* NO IMAGE (2026-10-15): the A/B replay with and without the screenshot settled identically (4/16/4 both ways), and the
        picture cost ~1,500 tokens plus the capture time on every read - so it is no longer sent. The worker still accepts one. */
-    fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx,question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en'),mode:aiMode,strategy:aiMode==='analysis'?undefined:aiStrat,quick:quick||undefined})}).then(function(resp){
+    fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx,question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en'),mode:aiMode,strategy:aiMode==='analysis'?undefined:aiStrat,quick:quick||undefined,replay:inReplay||undefined})}).then(function(resp){
       if(!resp.ok){resp.json().then(function(d){w._aiRun=null;aiBusy=(aiW&&!!aiW._aiRun);clearTimeout(tThink);if(resp.status===401){if(run.bub)run.bub.remove();aiStatus(w,'idle');aiShowGate();}else if(resp.status===402){if(run.bub)run.bub.remove();aiStatus(w,'idle');aiShowPremiumGate();}else if(resp.status===429){fail((d&&d.plan==='premium')?(__esT_mpcharts("thatWasYour",'Those were your ')+((d&&d.limit)||aiPlans.premium)+__esT_mpcharts("readForTodayIt",' reads for today - it resets at midnight UTC. Premium AI+ is ')+((d&&d.plus_daily)||aiPlans.plus)+' a day.'):(__esT_mpcharts("youVeUsedAll",'You’ve used all ')+((d&&d.limit)||aiLimit)+__esT_mpcharts("aiQuestionsTodayResets",' AI questions today - resets tomorrow.')));aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail(__esT_mpcharts("aiIsNotSwitched",'AI is not switched on yet.'));}else{fail(__esT_mpcharts("couldNotReachAi",'Could not reach AI - please try again.'));}}).catch(function(){fail(__esT_mpcharts("couldNotReachAi",'Could not reach AI - please try again.'));});return;}
       var u=resp.headers.get('x-ai-used'),l=resp.headers.get('x-ai-limit');if(u)aiSetQuota(+u,+l);
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail(__esT_mpcharts("streamingNotSupportedHere",'Streaming not supported here.'));});return;}
@@ -2140,14 +2260,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         /* only a POSITION shape suppresses the plan's own R:R zones - structure the model draws (trend/zone) must NOT,
            or a plan with a drawn trendline would show no trade zones at all (declutter 2026-10-04) */
         var hasPos=(sp.actions||[]).some(function(a){return a&&a.a==='draw'&&/^(position|rr)$/i.test(String(a.shape||''));});
-        if(sp.plan){try{aiDrawPlan(w,sp.plan,hasPos);}catch(e){}try{if(w.dr&&w.dr.save)w.dr.save();}catch(e){}}
+        if(sp.plan){try{aiDrawPlan(w,sp.plan,hasPos);}catch(e){}try{if(w.dr&&w.dr.save)w.dr.save();}catch(e){}
+          /* a plan given inside a replay is judged as the reader steps forward (aiReplayJudge, called from replaySeek) */
+          try{if(run.replay&&w._rp&&aiTradable(aiStampReach(w,sp.plan))){var _b=String(sp.plan.bias||'').toLowerCase();w._rpCall={i0:run.rpI,ts:entry.ts,wk:wk,bias:_b,entry:+sp.plan.entry,stop:+sp.plan.stop,tp1:(sp.plan.targets||[]).map(Number).filter(function(x){return x>0;})[0]||0,hz:Math.max(6,Math.min(60,Math.round(+sp.plan.horizonBars)||14)),done:false};aiReplayJudge(w);}}catch(e){}}
         var nDraw=(sp.actions||[]).filter(function(a){return a&&a.a==='draw';}).length;
         if((sp.actions||[]).length)aiStatus(w,'drawing',nDraw?(nDraw+' '+(nDraw===1?__esT_mpcharts("shapeWord",'shape'):__esT_mpcharts("shapesWord",'shapes'))):'');
         /* EXECUTE, then write the receipt onto the message (thread + server) and re-render the bubble with it */
         aiExec(w,sp.actions,entry.b).then(function(acts){
           var _rj=(typeof aiRejections==='function')?aiRejections():[];
           var _geo=(acts&&acts.geo&&acts.geo.length)?acts.geo:null;
-          if((acts&&acts.length)||_rj.length){entry.acts=acts||[];if(_rj.length)entry.rej=_rj;if(_geo)entry.geo=_geo;var h3=aiHistLoad(wk);for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts||[];if(_rj.length)h3[i].rej=_rj;if(_geo)h3[i].geo=_geo;break;}}aiHistSave(wk,h3);
+          var _shd=(typeof aiShapesDrawn==='function')?aiShapesDrawn():[];
+          if((acts&&acts.length)||_rj.length){entry.acts=acts||[];if(_rj.length)entry.rej=_rj;if(_geo)entry.geo=_geo;if(_shd.length)entry.sh=_shd;var h3=aiHistLoad(wk);for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts||[];if(_rj.length)h3[i].rej=_rj;if(_geo)h3[i].geo=_geo;if(_shd.length)h3[i].sh=_shd;break;}}aiHistSave(wk,h3);
             try{if(run.bub&&run.bub.isConnected){paint(aiAiInner(entry));}}catch(e){}}
           else aiHistPush(wk,aiHistLoad(wk));
           w._aiRun=null;aiBusy=(aiW&&!!aiW._aiRun);
@@ -2167,6 +2290,40 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       pump();
     }).catch(function(){fail(__esT_mpcharts("networkErrorTryAgain",'Network error - try again.'));});
   }
+  /* SECOND OPINION (2026-10-29, item 12): one more read of the same brief, independent, answered as a verdict on the first
+     plan. Written onto the message in the thread (`plan._second`) so a reload shows it, and the button goes once asked. */
+  function aiSecondAsk(w,btn,plan){if(!w||!plan||!btn||btn.disabled)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me){aiShowGate();return;}
+    btn.disabled=true;btn.textContent=aiT('aiSecondBusy','secondBusy',__esT_mpcharts("readingAgain",'Reading again'))+'...';
+    var ctx=aiContext(w);
+    fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx,second:true,plan:{bias:plan.bias,entry:plan.entry,stop:plan.stop,targets:plan.targets,reason:plan.reason},lang:(window.mpLang||document.documentElement.lang||'en'),replay:!!w._rp||undefined})}).then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});}).then(function(x){var d=x.d;
+      if(!d||!d.ok||!d.second){btn.disabled=false;btn.textContent=aiT('aiSecond','secondWord','Second opinion');if(x.s===429)chartToast(__esT_mpcharts("noReadsLeftToday",'No reads left today.'));else chartToast(__esT_mpcharts("couldNotReachAi",'Could not reach AI - please try again.'));return;}
+      if(d.used!=null)aiSetQuota(d.used,d.limit);
+      var card=btn.closest('.aiplan-card');var el=document.createElement('div');el.innerHTML=aiSecondHtml(d.second);if(card)card.appendChild(el.firstChild);btn.remove();
+      try{var h=aiHistLoad(w);for(var i=h.length-1;i>=0;i--){if(h[i].role==='ai'&&h[i].plan&&+h[i].plan.entry===+plan.entry&&String(h[i].plan.bias)===String(plan.bias)){h[i].plan._second=d.second;break;}}aiHistSave(w,h);}catch(e){}
+      try{if(window.__mpTrack)window.__mpTrack('ind','ai-second-'+(d.second.agree?'agree':'disagree'));}catch(e){}
+    }).catch(function(){btn.disabled=false;btn.textContent=aiT('aiSecond','secondWord','Second opinion');chartToast(__esT_mpcharts("networkErrorTryAgain",'Network error - try again.'));});}
+  /* THE REPLAY SETTLES THE CALL (2026-10-29, item 24): the same rule the server's book uses - the entry must print inside the
+     horizon, then the first target before the stop is a win, the stop first a loss, both in one candle unclear. Judged on the
+     candles the reader has stepped INTO (rp.all between the call and the replay head), never on candles still hidden. The
+     verdict is written onto the answer in the thread and painted under its plan card. */
+  function aiReplayJudge(w){var c=w&&w._rpCall,rp=w&&w._rp;if(!c||!rp||c.done)return;
+    var after=rp.all.slice(c.i0,rp.i);if(!after.length)return;
+    var fill=-1;for(var i=0;i<after.length;i++){if(+after[i].low<=c.entry&&c.entry<=+after[i].high){fill=i;break;}}
+    var st=null,txt='';
+    if(fill<0){if(after.length>=c.hz){st='nofill';txt=aiT('aiRpNofill','rpNofill',__esT_mpcharts("rpNofillTxt",'The entry was never reached inside the plan horizon ({h} candles) - no trade, no fill.')).replace('{h}',c.hz);}
+      else txt=aiT('aiRpWaiting','rpWaiting',__esT_mpcharts("rpWaitingTxt",'Waiting for the entry - {n} of {h} candles stepped.')).replace('{n}',after.length).replace('{h}',c.hz);}
+    else{var long=c.bias==='long';for(var j=fill;j<after.length;j++){var hi=+after[j].high,lo=+after[j].low,tp=long?hi>=c.tp1:lo<=c.tp1,sl=long?lo<=c.stop:hi>=c.stop;
+        if(tp&&sl){st='unclear';break;}if(tp){st='win';txt=aiT('aiRpWin','rpWin',__esT_mpcharts("rpWinTxt",'Filled {f} candles after the call, target 1 reached {k} candles later, before the stop: WIN.')).replace('{f}',fill+1).replace('{k}',j-fill);break;}
+        if(sl){st='loss';txt=aiT('aiRpLoss','rpLoss',__esT_mpcharts("rpLossTxt",'Filled {f} candles after the call, stopped out {k} candles later: LOSS.')).replace('{f}',fill+1).replace('{k}',j-fill);break;}}
+      if(st==='unclear')txt=aiT('aiRpUnclear','rpUnclear',__esT_mpcharts("rpUnclearTxt",'Target and stop inside one candle - the order cannot be known from the candle.'));
+      if(!st){if(after.length-fill>=3*c.hz){st='expired';txt=aiT('aiRpExpired','rpExpired',__esT_mpcharts("rpExpiredTxt",'Filled, then neither target nor stop in three horizons - expired.'));}
+        else txt=aiT('aiRpRunning','rpRunning',__esT_mpcharts("rpRunningTxt",'Filled {f} candles after the call - running, neither target nor stop yet.')).replace('{f}',fill+1);}}
+    if(st)c.done=true;
+    var rec={state:st||'open',text:txt};
+    try{var h=aiHistLoad(c.wk);for(var q=h.length-1;q>=0;q--){if(h[q].role==='ai'&&h[q].ts===c.ts){h[q].rp=rec;break;}}aiHistSave(c.wk,h,true);}catch(e){}
+    try{if(aiW===w&&aiEl&&!aiEl.hidden){var cards=aiEl.querySelectorAll('.aiplan-card');var card=cards[cards.length-1];if(card){var el=card.querySelector('.aipc-rp');if(!el){el=document.createElement('div');el.className='aipc-rec aipc-rp';card.appendChild(el);}el.setAttribute('data-rp',rec.state);el.innerHTML='<span>'+aiT('aiReplayVerdict','replayVerdict',__esT_mpcharts("replayVerdict",'Replay verdict'))+'</span>'+escHtml(txt);}}}catch(e){}
+    if(st&&st!=='open'){try{chartToast(aiT('aiReplayVerdict','replayVerdict','Replay verdict')+': '+txt);}catch(e){}}}
+  try{window.__mpAiReplayJudge=aiReplayJudge;}catch(e){}
   /* a page that unloads mid-read keeps what had streamed, marked, so the thread never shows a question with no answer */
   try{window.addEventListener('beforeunload',function(){wins.forEach(function(w){var r=w&&w._aiRun;if(!r||!r.acc)return;try{var sp=aiSplit(r.acc),h=aiHistLoad(r.wk);h.push({role:'ai',text:(sp.prose||r.acc),partial:1,ts:Date.now()});aiHistSave(r.wk,h,true);}catch(e){}});});}catch(e){}
   function openAiPanel(w,btn){
@@ -2182,7 +2339,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     if(aiRaf)cancelAnimationFrame(aiRaf);aiRaf=requestAnimationFrame(aiFollow);
     /* the local thread painted at once; the server copy (other device, cleared cache) merges in behind it */
     if(me)aiHistPull(w,function(all){if(all&&aiW===w&&!aiBusy&&aiEl&&!aiEl.hidden&&!aiEl.classList.contains('gated')){aiRenderBody(w);aiSetChips(w);}});
-    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(d.record){aiRecordPub=d.record;try{window.__mpAiRec=d.record;}catch(_e){}}if(d.dailyByPlan){if(d.dailyByPlan.premium>0)aiPlans.premium=d.dailyByPlan.premium;if(d.dailyByPlan.plus>0)aiPlans.plus=d.dailyByPlan.plus;}if(Array.isArray(d.strategies)&&d.strategies.length>3){aiStratList=d.strategies.map(function(s){return {id:String(s.id),name:String(s.name||s.id),short:String(s.short||s.name||s.id),bt:s.bt||null};});if(aiStratOf(aiStrat).id!==aiStrat)aiStrat='auto';aiPaintMode();}if(!aiPremium){aiShowPremiumGate();}else{var wasGated=!!(aiEl&&aiEl.classList.contains('gated'));aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);if(wasGated&&aiW===w&&!aiBusy&&!aiEl.hidden){aiSetChips(w);aiRenderBody(w);}/* the FIRST open of a session showed the Premium gate until this answer came back and then never painted the thread (the gate HTML stayed in the body until the next question) - now that the thread persists, that was the thread "lost" on every reload */}}}).catch(function(){});
+    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(d.record){aiRecordPub=d.record;try{window.__mpAiRec=d.record;}catch(_e){}}try{window.__mpAiMine=d.mine||null;}catch(_e){}if(d.dailyByPlan){if(d.dailyByPlan.premium>0)aiPlans.premium=d.dailyByPlan.premium;if(d.dailyByPlan.plus>0)aiPlans.plus=d.dailyByPlan.plus;}if(Array.isArray(d.strategies)&&d.strategies.length>3){aiStratList=d.strategies.map(function(s){return {id:String(s.id),name:String(s.name||s.id),short:String(s.short||s.name||s.id),bt:s.bt||null};});if(aiStratOf(aiStrat).id!==aiStrat)aiStrat='auto';aiPaintMode();}if(!aiPremium){aiShowPremiumGate();}else{var wasGated=!!(aiEl&&aiEl.classList.contains('gated'));aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);if(wasGated&&aiW===w&&!aiBusy&&!aiEl.hidden){aiSetChips(w);aiRenderBody(w);}/* the FIRST open of a session showed the Premium gate until this answer came back and then never painted the thread (the gate HTML stayed in the body until the next question) - now that the thread persists, that was the thread "lost" on every reload */}}}).catch(function(){});
   }
   /* ARRIVING FROM THE SCREENER'S AI SCANNER (2026-10-04): /charts?coin=X&aiscan=1 opens the pair, then opens the AI
      panel and asks it to draw the best setup - "prepares the drawing for you". The user is Plus (the scanner is
@@ -2246,11 +2403,12 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         if(done===out.length){if(ok)chartToast(__esT_mpcharts("alertsSetOn",'Alerts set on ')+ok+__esT_mpcharts("levelsWeLlEmail",' level'+(ok===1?'':'s')+__esT_mpcharts("weWillEmailYou",' - we will email you when '))+w.sym+__esT_mpcharts("reachesThem",' reaches them.'));else chartToast(lastErr==='too_many'?__esT_mpcharts("tooManyActiveAlerts",'Too many active alerts (max 25). Remove some on /alerts.'):__esT_mpcharts("couldnTSetThe",'Couldn’t set the alert. Try again.'));}
       }).catch(function(){done++;if(done===out.length)chartToast(__esT_mpcharts("couldnTSetThe",'Couldn’t set the alert. Try again.'));});});
   }
-  function createChartAlert(w,y){
-    if(!w.candle)return;var price;try{price=w.candle.coordinateToPrice(y);}catch(e){}
+  function createChartAlert(w,y,priceOpt){
+    if(!w.candle)return;var price=+priceOpt||0;if(!(price>0)){try{price=w.candle.coordinateToPrice(y);}catch(e){}}
     if(!(price>0))return;
     // clicking on/near an existing alert line REMOVES it instead of stacking another (the way to delete a chart alert)
-    if(w.chAlerts&&w.chAlerts.length){for(var i=0;i<w.chAlerts.length;i++){var ex=w.chAlerts[i],ey=null;try{ey=w.candle.priceToCoordinate(ex.price);}catch(e){}if(ey!=null&&Math.abs(ey-y)<=8){chAlertDel(w,ex);return;}}}
+    if(y!=null&&w.chAlerts&&w.chAlerts.length){for(var i=0;i<w.chAlerts.length;i++){var ex=w.chAlerts[i],ey=null;try{ey=w.candle.priceToCoordinate(ex.price);}catch(e){}if(ey!=null&&Math.abs(ey-y)<=8){chAlertDel(w,ex);return;}}}
+    if(y==null&&w.chAlerts&&w.chAlerts.some(function(ex){return Math.abs(ex.price-price)/price<0.001;}))return;/* the assistant asked for one that is already set */
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){chartToast(__esT_mpcharts("signInFreeTo",'Sign in (free) to set price alerts.'));try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return;}
     var cur=(w.lastBar&&+w.lastBar.close)||price,dir=price>=cur?'up':'down';
@@ -2324,6 +2482,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">'+toolSvg('trend')+'</span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
+      +'<button class="cwin-tool cwin-tool-ic cwin-mag" data-magnet title="'+__esT_mpcharts("magnetSnapPoints",'Magnet - points snap to the candle (W)')+'" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v8a6 6 0 0 0 12 0V4"/><path d="M6 4h4v8a2 2 0 0 0 4 0V4h4"/><path d="M6 9h4M14 9h4" opacity=".6"/></svg></button>'
       +'<button class="cwin-tool cwin-done" data-done title="Finish this shape" type="button" hidden>Done</button>'
       +'<span class="cwin-sep"></span>'
       +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing" type="button"></button>'
@@ -2344,6 +2503,9 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
   var TOOLS_HTML=drawToolsHtml(true);
   try{window.__mpDrawToolsHtml=drawToolsHtml;}catch(e){} // mp-mcharts builds its palette from this (withAlert=false on mobile)
   var lastDrW=null;/* the window last pointed at - Ctrl+Z goes there */
+  /* one letter per tool while drawing (2026-10-29): S select, T trend, R ray, H horizontal, L level, V vertical, A arrow, B box,
+     Z zone, C channel, G pattern, F fib, E fib extension, K pitchfork, P position, M measure, O volume profile, X text, N pen, W magnet */
+  var DR_HOTKEYS={s:'select',t:'trend',r:'ray',h:'hline',l:'level',v:'vline',a:'arrow',b:'rect',z:'zone',c:'channel',g:'pattern',f:'fib',e:'fibext',k:'pitchfork',p:'position',m:'measure',o:'volprofile',x:'text',n:'pen',w:'magnet'};
   function setupDraw(w,bodyEl){
     var body=bodyEl||w.el.querySelector('.cwin-body'), cv=body&&body.querySelector('.cwin-draw');
     if(!body||!cv)return; var ctx=cv.getContext('2d');
@@ -2358,9 +2520,14 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     function yOf(p){if(p==null||!w.candle)return null;try{var c=w.candle.priceToCoordinate(p);return c==null?null:c;}catch(e){return null;}}
     function toL(x){if(!w.chart)return null;try{var l=w.chart.timeScale().coordinateToLogical(x);return l==null?null:l;}catch(e){return null;}}
     function toP(y){if(!w.candle)return null;try{var p=w.candle.coordinateToPrice(y);return p==null?null:p;}catch(e){return null;}}
+    /* MAGNET (2026-10-29, item 20): with it on, a point placed or dragged within 9px of a candle's open / high / low / close
+       lands exactly on that price - TradingView's magnet mode, and what `snapBar` already does for the assistant's lines.
+       Remembered per browser (mp_ch_magnet). Render-only: the snap is applied to the coordinate, nothing else changes. */
+    try{w.dr.magnet=localStorage.getItem('mp_ch_magnet')==='1';}catch(e){w.dr.magnet=false;}
+    function magP(L,P,y){if(!w.dr.magnet||L==null||P==null||!w.bars)return P;var b=w.bars[Math.round(L)];if(!b)return P;var best=P,bd=9.5;[+b.open,+b.high,+b.low,+b.close].forEach(function(v){if(!(v>0))return;var yy=yOf(v);if(yy==null)return;var d=Math.abs(yy-y);if(d<bd){bd=d;best=v;}});return best;}
     function proj2(s){return {x1:xOf(s.l1),y1:yOf(s.p1),x2:xOf(s.l2),y2:yOf(s.p2)};}
     function rayEnd(x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,k=(w.dr.W+w.dr.H)/len;return {x:x2+dx*k,y:y2+dy*k};}
-    function setStyle(s){ctx.lineWidth=s.w||2;ctx.strokeStyle=s.color;ctx.setLineDash(s.dash?[6,5]:[]);ctx.lineCap='round';ctx.lineJoin='round';}
+    function setStyle(s){ctx.lineWidth=(s.w||2)+(s._hl?2.5:0);ctx.strokeStyle=s.color;ctx.setLineDash(s.dash?[6,5]:[]);ctx.lineCap='round';ctx.lineJoin='round';if(s._hl){ctx.shadowColor=s.color;ctx.shadowBlur=10;}else{ctx.shadowBlur=0;}}/* _hl = lit from its receipt chip (render-only, never saved) */
     function drawFib(s){var y1=yOf(s.p1),y2=yOf(s.p2),x1=xOf(s.l1),x2=xOf(s.l2);if(y1==null||y2==null)return;ctx.save();ctx.lineWidth=1;ctx.font="10px 'Space Mono',monospace";ctx.textBaseline='bottom';
       if(x1!=null&&x2!=null){ctx.strokeStyle=s.color;ctx.globalAlpha=.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);}
       for(var i=0;i<FIBLV.length;i++){var L=FIBLV[i],pr=s.p1+(s.p2-s.p1)*L,yy=yOf(pr);if(yy==null)continue;
@@ -2677,7 +2844,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.restore();
         inkTxt(x-(buy?12:14),buy?ty+1:ty-13,buy?'BUY':'SELL',col,11);
       }}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);try{drawAlBadges();}catch(e){}if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
 
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
@@ -2691,7 +2858,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          refused. */
       if(w.dr._lk!==k)return;
       var all=drawStoreAll();
-      var ser=[];w.dr.shapes.filter(function(s){return !s.ai;}).slice(-400).forEach(function(s){var o;try{o=JSON.parse(JSON.stringify(s));}catch(e){return;}delete o._bb;
+      var ser=[];w.dr.shapes.filter(function(s){return !s.ai;}).slice(-400).forEach(function(s){var o;try{o=JSON.parse(JSON.stringify(s));}catch(e){return;}delete o._bb;delete o._hl;
         var tm=function(l){return g.t0+l*g.iv;};
         if(o.l!=null)o.l=tm(o.l);if(o.l1!=null)o.l1=tm(o.l1);if(o.l2!=null)o.l2=tm(o.l2);if(o.l3!=null)o.l3=tm(o.l3);
         if(o.pts)o.pts=o.pts.filter(function(pt){return pt&&pt.l!=null&&pt.p!=null;}).map(function(pt){return {l:tm(pt.l),p:pt.p};});
@@ -2701,11 +2868,19 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          on it and the trade it described missing. The plan object is stored beside the shapes and redrawn by reload();
          the forecast candles are NOT (a projection made then would sit on top of the real candles that came since). */
       var plan=null;try{if(w._aiPlanObj&&typeof w._aiPlanObj==='object')plan=JSON.parse(JSON.stringify(w._aiPlanObj));}catch(e){}
+      /* HORIZONTAL LEVELS ARE THE SYMBOL'S, NOT THE TIMEFRAME'S (2026-10-29, item 21). A support drawn on the 4-hour is the same
+         price on the 15-minute, so hand-drawn hline / level rays live in ONE bucket per symbol (`__sh:<SYM>`) that every
+         timeframe loads and every save rewrites from the shapes it holds - which is also what makes a delete on one frame a
+         delete on all. The assistant's own lines (`by:'ai'`) stay per key: those were drawn for one frame's read. */
+      var shk='__sh:'+String(w.sym||'').toUpperCase(),shared=[];
+      ser=ser.filter(function(o){if((o.t==='hline'||o.t==='hray')&&o.by!=='ai'){shared.push(o);return false;}return true;});
+      if(shared.length)all[shk]={ts:Date.now(),shapes:shared};else delete all[shk];
       if(ser.length||plan)all[k]={ts:Date.now(),shapes:ser,plan:plan||undefined,planDrew:plan?!!w._aiPlanDrew:undefined};else delete all[k];
       var ks=Object.keys(all);if(ks.length>200){ks.sort(function(a,b2){return ((all[a]&&all[a].ts)||0)-((all[b2]&&all[b2].ts)||0);});ks.slice(0,ks.length-200).forEach(function(x){delete all[x];});}
       try{localStorage.setItem(DRAW_LS,JSON.stringify(all));}catch(e){}}
-    function reload(){var g=grid(),k=dKey();if(!g||!k)return;var rec=drawStoreAll()[k];w.dr.sel=null;w.dr.cur=null;
-      w.dr.shapes=((rec&&rec.shapes)||[]).map(function(o){var s;try{s=JSON.parse(JSON.stringify(o));}catch(e){return null;}
+    function reload(){var g=grid(),k=dKey();if(!g||!k)return;var _all=drawStoreAll(),rec=_all[k],shRec=_all['__sh:'+String(w.sym||'').toUpperCase()];w.dr.sel=null;w.dr.cur=null;
+      var _own=((rec&&rec.shapes)||[]).filter(function(o){return !((o.t==='hline'||o.t==='hray')&&o.by!=='ai'&&shRec);});/* once a symbol has a shared bucket, it is the one source for hand-drawn levels */
+      w.dr.shapes=_own.concat((shRec&&shRec.shapes)||[]).map(function(o){var s;try{s=JSON.parse(JSON.stringify(o));}catch(e){return null;}
         var lg=function(t){return (t-g.t0)/g.iv;};
         if(s.l!=null)s.l=lg(s.l);if(s.l1!=null)s.l1=lg(s.l1);if(s.l2!=null)s.l2=lg(s.l2);if(s.l3!=null)s.l3=lg(s.l3);
         if(s.pts)s.pts.forEach(function(pt){pt.l=lg(pt.l);});
@@ -2738,6 +2913,26 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       if(s.ai){planWipe(w);w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();try{chartToast(__esT_mpcharts("aiPlanRemoved",'AI plan removed - Show on chart in the answer brings it back.'));}catch(e){}return true;}
       var ix=w.dr.shapes.indexOf(s);if(ix>=0){mark();w.dr.shapes.splice(ix,1);}w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();return true;}
     w.dr.delSel=delSel;w.dr.planHit=planHit;w.dr.planSel=planSel;
+    /* A TREND LINE CAN RING (2026-10-29, item 22): the bell tool on a trend or ray line registers a server alert carrying the
+       line's two (time, price) anchors - the same anchors save() stores - so the cron can price the line at any minute and
+       fire on the first cross. One-shot. A second tap on a ringing line takes the alert off. Sign-in needed, like a price alert. */
+    function lineAlertToggle(s){var g=grid();if(!g||!s)return;
+      var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
+      if(!me){chartToast(__esT_mpcharts("signInFreeTo",'Sign in (free) to set price alerts.'));try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return;}
+      if(s.al){var id=s.al;delete s.al;redraw();save();fetch('/api/alerts/line',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'rm',id:id})}).catch(function(){});chartToast(__esT_mpcharts("lineAlertRemoved",'Line alert removed.'));return;}
+      var a1=Math.min(s.l1,s.l2),a2=Math.max(s.l1,s.l2),p1=(a1===s.l1)?s.p1:s.p2,p2=(a1===s.l1)?s.p2:s.p1;
+      var t1=g.t0+a1*g.iv,t2=g.t0+a2*g.iv;if(t1>2e10){t1/=1000;t2/=1000;}
+      if(!(t2>t1)){chartToast(__esT_mpcharts("lineAlertNeedsTwo",'A line alert needs two different candles.'));return;}
+      fetch('/api/alerts/line',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:w.sym,t1:t1,p1:p1,t2:t2,p2:p2,ray:s.t==='ray',label:String(s.txt||'').slice(0,40)})}).then(function(r){return r.json();}).then(function(d){
+        if(d&&d.ok){s.al=d.id;redraw();save();chartToast(__esT_mpcharts("lineAlertSet",'Line alert set - ')+w.sym+(d.telegram?__esT_mpcharts("tgWhenCrosses",' · Telegram when price crosses it'):__esT_mpcharts("emailWhenCrosses",' · email when price crosses it'))+__esT_mpcharts("tapLineBellRemove",' · the bell on the line again removes it'));}
+        else if(d&&d.error==='too_many')chartToast(__esT_mpcharts("tooManyLineAlerts",'Too many line alerts (max ')+(d.max||10)+').');
+        else if(d&&d.error==='line_ended')chartToast(__esT_mpcharts("lineEndsBeforeNow",'That line ends before now - draw it as a ray to alert on it.'));
+        else if(d&&d.error==='not_signed_in'){chartToast(__esT_mpcharts("signInFreeTo",'Sign in (free) to set price alerts.'));try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}}
+        else chartToast(__esT_mpcharts("couldnTSetThe",'Couldn’t set the alert. Try again.'));
+      }).catch(function(){chartToast(__esT_mpcharts("networkErrorAlertNot",'Network error - alert not set.'));});}
+    w.dr.lineAlertToggle=lineAlertToggle;
+    /* the ringing line wears a small amber bell at its newer anchor */
+    function drawAlBadges(){w.dr.shapes.forEach(function(s){if(!s.al||!(s.t==='trend'||s.t==='ray'))return;var q=proj2(s);if(q.x2==null||q.y2==null)return;ctx.save();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(q.x2,q.y2,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1a1200';ctx.font="700 8px 'Space Mono',monospace";ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',q.x2,q.y2+0.5);ctx.restore();});}
     function hitShape(s,x,y){var TH=7;
       if(s.t==='hline'){var hy=yOf(s.p);return hy!=null&&Math.abs(y-hy)<=TH;}
       if(s.t==='vline'){var vx=xOf(s.l);return vx!=null&&Math.abs(x-vx)<=TH;}
@@ -2762,18 +2957,22 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       if(Math.hypot(x-q.x1,y-q.y1)<=11)return 'h1';if(Math.hypot(x-q.x2,y-q.y2)<=11)return 'h2';return null;}
     var drag=null;
     cv.addEventListener('pointerdown',function(e){if(!w.dr.on)return;e.preventDefault();e.stopPropagation();if(w.el&&w.el.classList.contains('cwin'))bringFront(w);
-      var p=pos(e),tl=w.dr.tool,L=toL(p.x),P=toP(p.y);try{cv.setPointerCapture(e.pointerId);}catch(_){}
+      var p=pos(e),tl=w.dr.tool,L=toL(p.x),P=magP(L,toP(p.y),p.y);try{cv.setPointerCapture(e.pointerId);}catch(_){}
       if(tl==='select'){
         var h=handleAt(w.dr.sel,p.x,p.y);
         if(h){mark();drag={mode:h,s:w.dr.sel};return;}
         var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
         if(!hitS&&planHit(p.y))hitS=planSel();/* a tap on the AI's entry / stop / target line selects the plan as one unit */
+        /* ALT+DRAG DUPLICATES (2026-10-29, item 23): the copy is what gets dragged, the original stays where it was */
+        if(hitS&&!hitS.ai&&!aiFixed(hitS)&&e.altKey){try{var dup=JSON.parse(JSON.stringify(hitS));delete dup.uid;delete dup._bb;delete dup._hl;mark();w.dr.shapes.push(dup);hitS=dup;}catch(_d){}}
         w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
         if(hitS&&!hitS.ai&&!aiFixed(hitS)){var snap;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){snap=null;}mark();drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};}
         else if(hitS){/* the AI's plan or one of its composite shapes: selected (the bin lights up), never dragged */}
         else if(w.dr._auto){w.dr._auto=0;w.dr.on=false;try{w.el.classList.remove('drawing');var _atg=w.el.querySelector('.cwin-draw-tg');if(_atg)_atg.classList.remove('on');}catch(_3){}}/* auto edit-session (entered by clicking a drawing outside draw mode) ends on an empty click - this one click is consumed, the next gesture pans the chart normally */
         return;}
-      if(tl==='alert'){createChartAlert(w,p.y);return;}
+      if(tl==='alert'){var hitL=null;for(var li=w.dr.shapes.length-1;li>=0;li--){var ls=w.dr.shapes[li];if((ls.t==='trend'||ls.t==='ray')&&!ls.ai&&hitShape(ls,p.x,p.y)){hitL=ls;break;}}
+        if(hitL){lineAlertToggle(hitL);return;}/* the bell on a TREND LINE sets an alert that moves with it (2026-10-29, item 22) */
+        createChartAlert(w,p.y);return;}
       var st={color:w.dr.color,w:w.dr.lw,dash:w.dr.dash};
       var placed=function(s){mark();w.dr.shapes.push(s);w.dr.sel=s;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';redraw();save();if(w._drSyncUI)w._drSyncUI();};/* TradingView parity (2026-07-30): after placing a shape, revert to select + auto-select it (immediate adjust/style); pen is the exception - stays active for multi-stroke annotation */
       if(tl==='pen')w.dr.cur=Object.assign({t:'pen',pts:[{l:L,p:P}]},st);
@@ -2832,7 +3031,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var bins=[];for(i=0;i<N;i++)bins.push({p:lo+step*(i+0.5),rel:mx?vol[i]/mx:0});
       return {bins:bins,step:step,poc:lo+step*(pi+0.5),vah:lo+step*(hi2+1),val:lo+step*li};}
     cv.addEventListener('pointermove',function(e){if(!w.dr.on)return;var p=pos(e),L=toL(p.x),P=toP(p.y);
-      if(drag&&drag.s){var s=drag.s;
+      if(drag&&drag.s){var s=drag.s;if(drag.mode==='h1'||drag.mode==='h2')P=magP(L,P,p.y);/* an endpoint being dragged snaps to the candle under it when the magnet is on */
         if(drag.mode==='move'&&drag.snap){var o=drag.snap,dL=(L!=null&&drag.l0!=null)?L-drag.l0:0,dP=(P!=null&&drag.p0!=null)?P-drag.p0:0;
           if(o.l!=null)s.l=o.l+dL;if(o.l1!=null)s.l1=o.l1+dL;if(o.l2!=null)s.l2=o.l2+dL;
           if(o.p!=null)s.p=o.p+dP;if(o.p1!=null)s.p1=o.p1+dP;if(o.p2!=null)s.p2=o.p2+dP;
@@ -2842,6 +3041,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         else if(drag.mode==='h2'){if(L!=null)s.l2=L;if(P!=null)s.p2=P;}
         redraw();return;}
       if(!w.dr.cur)return;
+      if(w.dr.cur.t!=='pen')P=magP(L,P,p.y);/* the second point of a drag, or the preview point of a tap-tap tool, snaps too */
       if(w.dr.cur._multi)multiPreview(w.dr.cur,L,P);
       else if(w.dr.cur.t==='pen')w.dr.cur.pts.push({l:L,p:P});
       else if(w.dr.cur.t==='zone'){if(P!=null)w.dr.cur.p2=P;}
@@ -2892,6 +3092,9 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          tries first. Only one window may answer a keystroke, so the most recently pointed-at one does. */
       if((e.ctrlKey||e.metaKey)&&!e.altKey&&/^[zyZY]$/.test(e.key||'')){if(lastDrW&&lastDrW!==w)return;var isRedo=(e.key==='y'||e.key==='Y'||e.shiftKey);var did=isRedo?(w.dr.redo&&w.dr.redo()):(w.dr.undo&&w.dr.undo());if(did){e.preventDefault();try{if(typeof chartToast==='function')chartToast(isRedo?__esT_mpcharts("redone",'Redone'):__esT_mpcharts("undone",'Undone - the drawing is back where it was'));}catch(_){}}return;}
       if(!w.dr.on)return;
+      /* TOOL HOTKEYS (2026-10-29, item 23): one letter picks the tool while draw mode is on, the way a desk terminal does -
+         no modifier, because Ctrl/Alt+letter is the browser's. Only the window last pointed at answers. */
+      if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&(!lastDrW||lastDrW===w)&&DR_HOTKEYS[String(e.key||'').toLowerCase()]){var _hk=DR_HOTKEYS[String(e.key||'').toLowerCase()];if(_hk==='magnet'){w.dr.magnet=!w.dr.magnet;try{localStorage.setItem('mp_ch_magnet',w.dr.magnet?'1':'0');}catch(_m){}if(w._drSyncUI)w._drSyncUI();try{chartToast(w.dr.magnet?__esT_mpcharts("magnetOn",'Magnet on - points snap to the candle'):__esT_mpcharts("magnetOff",'Magnet off'));}catch(_t){}}else if(w._drSetTool)w._drSetTool(_hk);e.preventDefault();return;}
       if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){delSel();e.preventDefault();}
       else if(e.key==='Escape'&&w._drCancelMulti&&w._drCancelMulti()){e.preventDefault();}
       else if(e.key==='Enter'&&w.dr.cur&&w.dr.cur._multi){finishMulti();e.preventDefault();}
@@ -2942,6 +3145,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var db=tools.querySelector('[data-dash]');if(db)db.classList.toggle('on',da);
       var sc=tools.querySelector('.scur');if(sc){sc.textContent=da?'┄':'━';sc.style.fontSize=(lw===1?'9px':(lw===3?'15px':'12px'));}
       var del=tools.querySelector('[data-del]');if(del)del.classList.toggle('sel',!!s);
+      var mg=tools.querySelector('[data-magnet]');if(mg)mg.classList.toggle('on',!!w.dr.magnet);
       var ub=tools.querySelector('[data-undo]'),rb=tools.querySelector('[data-redo]');if(ub)ub.classList.toggle('dim',!((w.dr.hist&&w.dr.hist.length)||w.dr.shapes.length));if(rb)rb.classList.toggle('dim',!(w.dr.redoS&&w.dr.redoS.length));}
     w._drSyncUI=syncUI;
     w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();
@@ -2953,6 +3157,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
       if(b.hasAttribute('data-cpick')){togglePop('color',b);return;}
       if(b.hasAttribute('data-spick')){togglePop('style',b);return;}
+      if(b.hasAttribute('data-magnet')){w.dr.magnet=!w.dr.magnet;try{localStorage.setItem('mp_ch_magnet',w.dr.magnet?'1':'0');}catch(_m){}closePops();syncUI();try{chartToast(w.dr.magnet?__esT_mpcharts("magnetOn",'Magnet on - points snap to the candle'):__esT_mpcharts("magnetOff",'Magnet off'));}catch(_t){}return;}
       var sel=w.dr.sel;
       if(b.hasAttribute('data-done')){if(w._drFinishMulti)w._drFinishMulti();closePops();return;}
       if(b.hasAttribute('data-drawx')){if(w._drCancelMulti)w._drCancelMulti();closePops();if(w._drExit)w._drExit();return;}/* mobile: the palette's own exit (the dock is hidden while drawing) */

@@ -1764,6 +1764,19 @@
   .aiacts{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:7px;border-top:1px dashed #233043;align-items:center;}
   .aiacts span{font:700 10px 'Space Mono',monospace;color:#9bd6ff;background:rgba(127,182,255,.09);border:1px solid #2a3a52;border-radius:6px;padding:2px 7px;}
   .aiacts .aiundo{margin-left:auto;font:700 10.5px 'Familjen Grotesk',sans-serif;color:#ffb347;background:none;border:1px solid rgba(255,179,71,.4);border-radius:6px;padding:2px 8px;cursor:pointer;}
+  /* the AI's shapes, one chip each (2026-10-29): hover lights the shape on the chart, the X removes just that one */
+  .aishs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
+  .aish{display:inline-flex;align-items:center;gap:5px;font:600 10.5px 'Familjen Grotesk',sans-serif;color:#cfd8e6;background:rgba(255,255,255,.04);border:1px solid #2a3a52;border-radius:6px;padding:2px 4px 2px 7px;cursor:default;transition:border-color .15s,background .15s;}
+  .aish:hover{border-color:#3fd8e6;background:rgba(63,216,230,.1);}
+  .aish b{font:700 12px/1 'Space Mono',monospace;color:#8292a8;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;}
+  .aish b:hover{color:#ff6258;background:rgba(255,98,88,.14);}
+  .aipc-rp{border-top:1px dashed #233043;}
+  .aipc-second{font:700 10.5px 'Familjen Grotesk',sans-serif;color:#b18cff;background:none;border:1px solid rgba(177,140,255,.4);border-radius:6px;padding:3px 8px;cursor:pointer;}
+  .aipc-second:disabled{opacity:.55;cursor:default;}
+  .aipc-2nd b{font:700 10.5px 'Space Mono',monospace;color:#dfe4ec;}
+  .aipc-2nd[data-agree="1"] span{color:#2ebd85;}.aipc-2nd[data-agree="0"] span{color:#ffb347;}
+  .aipc-rp[data-rp="win"]{color:#2ebd85;}.aipc-rp[data-rp="loss"]{color:#ff6258;}.aipc-rp[data-rp="nofill"],.aipc-rp[data-rp="expired"],.aipc-rp[data-rp="unclear"]{color:#ffb347;}
+  body.ch-light .aish{color:#2c3540;background:rgba(0,0,0,.03);border-color:#d6dce6;}
   .aiacts .aiundo:hover{background:rgba(255,179,71,.12);}
   .mfc-ai-msg .aiacts{border-top-color:#2a3442;}
   .mfc-ai-chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 0 2px;}

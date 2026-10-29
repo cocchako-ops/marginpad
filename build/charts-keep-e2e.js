@@ -49,7 +49,7 @@ withBrowser(async (browser) => {
   console.log('\ndesktop 1366x768' + (LOCAL ? ' (--local)' : ''));
   {
     const page = await prep(browser, false, 1366, 768);
-    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForFunction('!!document.getElementById("cwsAdd") || (window.__mpWinsDbg && window.__mpWinsDbg.length)', { timeout: 30000 }).catch(() => {});
     await page.evaluate(() => { if (!(window.__mpWinsDbg && window.__mpWinsDbg.length)) { const a = document.getElementById('cwsAdd'); a && a.click(); } });
     await ready(page, W);
@@ -97,7 +97,7 @@ withBrowser(async (browser) => {
     await page.waitForFunction(W + '.sym==="' + other + '" && ' + W + '.dr._lk==="' + other + ':"+' + W + '.tf', { timeout: 30000 }); await sleep(600);
     s = await state(page, W); ok('a save() fired before the new candles landed did NOT wipe that coin\'s drawings (the guard)', s.user === 1, s);
     await sw(sym0);
-    await page.reload({ waitUntil: 'networkidle2', timeout: 90000 }); await ready(page, W); await sleep(1200);
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 90000 }); await ready(page, W); await sleep(1200);
     s = await state(page, W); ok('after a full reload everything is still there, plan lines included', s.sym === sym0 && s.user === 1 && s.ai === 1 && s.planLines >= 3, s);
     // maximize + full screen buttons
     const mx = await page.evaluate(() => { const w = window.__mpWinsDbg[0], b = w.el.querySelector('.cwin-max'); if (!b) return { no: true }; b.click(); const board = w.el.parentElement, cs = getComputedStyle(board); const inner = board.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0); return { w: w.el.offsetWidth, bw: inner, maxed: w.el.classList.contains('maxed') }; });
@@ -116,7 +116,7 @@ withBrowser(async (browser) => {
   console.log('\nphone 390x844' + (LOCAL ? ' (--local)' : ''));
   {
     const page = await prep(browser, true, 390, 844);
-    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     const G = 'window.__mpMfcDbg()[0].w';
     await page.waitForFunction('window.__mpMfcDbg && window.__mpMfcDbg()[0] && ' + G + ' && ' + G + '.dr && ' + G + '.dr._lk', { timeout: 40000 }); await sleep(800);
     const pal = await page.evaluate(() => { const t = document.querySelector('.mfc .cwin-tools'); return { undo: !!(t && t.querySelector('[data-undo]')), redo: !!(t && t.querySelector('[data-redo]')) }; });

@@ -105,9 +105,16 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
   await withBrowser(async (browser) => {
     { // desktop
       const { ctx, page, errs, saves } = await fresh(browser, 1366, 900);
-      await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+      await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForFunction('!!document.getElementById("cwsAdd") || (window.__mpWinsDbg && window.__mpWinsDbg.length)', { timeout: 30000 }).catch(() => {});
-      await page.evaluate(() => { if (!(window.__mpWinsDbg && window.__mpWinsDbg.length)) { const a = document.getElementById('cwsAdd') || document.querySelector('[data-cws-add]'); a && a.click(); } });
+      /* domcontentloaded (2026-10-29; networkidle2 never fires on /charts since the font preload) lands BEFORE the rail has bound
+         its handlers, so one click on the picker may fall on nothing - click until a window exists */
+      for (let tries = 0; tries < 12; tries++) {
+        const has = await page.evaluate(() => !!(window.__mpWinsDbg && window.__mpWinsDbg.length));
+        if (has) break;
+        await page.evaluate(() => { const a = document.getElementById('cwsAdd') || document.querySelector('[data-cws-add]'); a && a.click(); });
+        await new Promise(r => setTimeout(r, 1500));
+      }
       await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50 && window.__mpWinsDbg[0].dr', { timeout: 40000 }).catch(() => {});
       await page.evaluate(() => { const b = document.querySelector('.cwin-ai'); b && b.click(); });
       await page.waitForFunction("!!document.querySelector('.cwin-ai-panel') && !document.querySelector('.cwin-ai-panel').hidden && !document.querySelector('.cwin-ai-panel').classList.contains('gated')", { timeout: 15000 }).catch(() => {});
@@ -187,7 +194,7 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
       });
       chk('desktop: closing and reopening the panel keeps the thread (2 messages, the card, the receipt) - stored per SYMBOL', hist1.closed && hist1.reopened && hist1.msgs === 2 && hist1.card && hist1.receipts >= 3 && hist1.key && hist1.n === 2 && Array.isArray(hist1.acts), hist1);
       chk('desktop: the thread was saved to the server with the receipt on the answer', saves.length >= 1 && saves.some(s => s.n === 2 && Array.isArray(s.acts) && s.acts.length >= 3), saves.slice(-2));
-      await page.reload({ waitUntil: 'networkidle2', timeout: 90000 });
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50 && window.mpAuth && window.mpAuth.me && window.mpAuth.me()', { timeout: 40000 }).catch(() => {}); // the account must be restored before the panel opens, else it shows the sign-in gate (a real reader has the cookie + cached account before they can click)
       await page.evaluate(() => { const b = document.querySelector('.cwin-ai'); b && b.click(); });
       await page.waitForFunction("!!document.querySelector('.cwin-ai-panel .aimsg')", { timeout: 15000 }).catch(() => {});
@@ -199,7 +206,7 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
     }
     { // mobile, landscape phone
       const { ctx, page, errs } = await fresh(browser, 844, 390);
-      await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+      await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForFunction('window.__mfcPanes && window.__mfcPanes().length && window.__mfcPanes()[0].bars && window.__mfcPanes()[0].bars.length>50 && window.__mfcPanes()[0].w', { timeout: 40000 }).catch(() => {});
       await page.evaluate(() => { const b = document.querySelector('[data-act="ai"]'); b && b.click(); });
       await page.waitForFunction("!!document.getElementById('mfcAI')", { timeout: 10000 }).catch(() => {});

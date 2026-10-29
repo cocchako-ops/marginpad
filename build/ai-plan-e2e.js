@@ -45,6 +45,13 @@ console.log('\nPURE - the one rule, run out of the shipped bundle');
   ok(!!mAtr, 'the bundle declares a stop floor in ATR');
   const AI_MIN_STOP_ATR = mAtr ? +mAtr[1] : 1.5;
   eval(grab('aiStopTight'));
+  /* FIFTH rule 2026-10-29: a first target that is not a level on this chart is not a trade. The snap table rides on the plan
+     as `_snap` (stamped by the chart, non-enumerable); a plan without it is judged as before. */
+  eval(grab('aiTargetLoose'));
+  ok(aiTargetLoose({ entry: 100, stop: 98, targets: [104], _snap: { prices: [90, 95, 104.05, 110], tol: 0.002 } }) === null
+    && aiTargetLoose({ entry: 100, stop: 98, targets: [104], _snap: { prices: [90, 95, 101, 110], tol: 0.002 } }) !== null
+    && aiTargetLoose({ entry: 100, stop: 98, targets: [104] }) === null,
+    'the first target must sit within tolerance of a proven price; with no snap table the rule abstains');
   const withAtr = (p, a) => { Object.defineProperty(p, '_atr', { value: a, enumerable: false }); return p; };
   ok(aiTradable(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2)) === false, 'a stop 0.5 ATR from the entry is NOT a trade, whatever the ratio', aiStopTight(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2)));
   ok(aiTradable(withAtr({ bias: 'long', entry: 100, stop: 97, targets: [104.5] }, 2)) === true, 'a stop exactly 1.5 ATR away paying 1.5x is a trade');
