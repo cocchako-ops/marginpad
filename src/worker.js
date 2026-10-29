@@ -1263,17 +1263,29 @@ function cxEnrich(items, labels) {
 // member gets all of it: conf, the coins, a velocity bonus on the score, and `major` when it is big and confirmed.
 function cxTok(s) { const STOP = { with: 1, from: 1, that: 1, this: 1, will: 1, after: 1, into: 1, over: 1, than: 1, have: 1, been: 1, more: 1, about: 1, says: 1, said: 1, just: 1, latest: 1, breaking: 1, crypto: 1, market: 1, price: 1, news: 1, token: 1, coin: 1, perpetual: 1, futures: 1, launch: 1, launches: 1, plans: 1, partners: 1, signals: 1, major: 1, regulated: 1, institutional: 1 }; const o = {}; for (const w of String(s || '').toLowerCase().replace(/[^a-z0-9$ ]+/g, ' ').split(' ')) if (w.length >= 4 && !STOP[w]) o[w] = 1; return o; }
 function cxJac(a, b) { let i = 0, u = 0; for (const k in a) { u++; if (b[k]) i++; } for (const k in b) if (!a[k]) u++; return u ? i / u : 0; }
+// ENTITIES DECIDE A STORY, NOT WORD OVERLAP (2026-10-29): the same event written seven ways shares a tenth of its words
+// (measured on the ICE x Hyperliquid story: Jaccard 0.10-0.29 between summaries, 0.00 against unrelated items) but it
+// shares its NAMES - NYSE, ICE, Hyperliquid, Trade.xyz. Capitalised words and tickers from the title and the model's
+// summary are the entities; two shared specific ones (or four generic ones such as Bitcoin, ETF, SEC) make one story.
+const CX_ENT_GENERIC = { BITCOIN: 1, BTC: 1, ETHEREUM: 1, ETH: 1, ETF: 1, ETFS: 1, SEC: 1, US: 1, USA: 1, USD: 1, USDT: 1, USDC: 1, CRYPTO: 1, BINANCE: 1, COINBASE: 1, BYBIT: 1, OKX: 1, JUST: 1, IN: 1, BREAKING: 1, LATEST: 1, NEW: 1, BIG: 1, THE: 1, A: 1, AN: 1, FED: 1, FEDERAL: 1, RESERVE: 1, TRUMP: 1, CEO: 1, CFTC: 1, DOJ: 1, NYSE: 0.75, NASDAQ: 0.75, SOLANA: 1, SOL: 1, XRP: 1, RIPPLE: 1, DOGE: 1, MARKET: 1, MARKETS: 1, PRICE: 1, TODAY: 1, WEEK: 1, UPDATE: 1, NEWS: 1, REPORT: 1, REPORTS: 1, SAYS: 1, SAY: 1, WHY: 1, HOW: 1, WHAT: 1, WHO: 1, IT: 1, ITS: 1, FOR: 1, TO: 1, OF: 1, ON: 1, AND: 1, AT: 1, BY: 1, IS: 1, AS: 1, FROM: 1, WITH: 1, AFTER: 1, OVER: 1, INTO: 1, MILLION: 1, BILLION: 1, TRILLION: 1 };
+function cxEnt(c) {
+  const o = {}; const src = String(c.title || '') + ' ' + String((c.lbl && c.lbl.sum) || '');
+  for (const m of src.matchAll(/\$[A-Za-z0-9]{2,12}|\b[A-Z][A-Za-z0-9.'-]{1,}\b/g)) { const w = m[0].replace(/^\$/, '').replace(/[.'-]+$/, '').toUpperCase(); if (w.length < 2) continue; const g = CX_ENT_GENERIC[w]; if (g === 1) continue; o[w] = g === 0.75 ? 0.75 : 1; }
+  return o;
+}
+function cxEntShared(a, b) { let s = 0; for (const k in a) if (b[k]) s += Math.min(a[k], b[k]); return s; }
 function cxStories(items) {
   const n = items.length, par = new Array(n).fill(0).map((_, i) => i);
   const find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
   const uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par[a] = b; };
   const tok = items.map(c => c.lbl ? cxTok((c.lbl.sum || '') + ' ' + (c.title || '')) : null);
+  const ent = items.map(c => c.lbl ? cxEnt(c) : null);
   for (let i = 0; i < n; i++) {
     const a = items[i]; if (!a.lbl || a.kind === 'promo' || a.kind === 'pair') continue;
     for (let j = i + 1; j < n; j++) {
       const b = items[j]; if (!b.lbl || b.kind === 'promo' || b.kind === 'pair') continue;
       if (Math.abs((+a.ts_src || 0) - (+b.ts_src || 0)) > 12 * 3600000) continue;
-      if ((a.lbl.story && a.lbl.story === b.lbl.story) || cxJac(tok[i], tok[j]) >= 0.34) uni(i, j);
+      if ((a.lbl.story && a.lbl.story === b.lbl.story) || cxJac(tok[i], tok[j]) >= 0.34 || cxEntShared(ent[i], ent[j]) >= 2) uni(i, j);
     }
   }
   const groups = {};
@@ -1672,7 +1684,7 @@ function cxNote(mv, a, ctx, sym) {
 }
 function cxLabel(c) {
   const t = String(c.title || ''), k = c.kind;
-  if (k === 'macro') { if (/cpi/i.test(t)) return 'CPI'; if (/fomc|fed |rate decision/i.test(t)) return 'FOMC'; return 'Macro'; }
+  if (k === 'macro') { if (c.source !== 'calendar') return 'Macro news'; if (/cpi/i.test(t)) return 'CPI'; if (/fomc|fed |rate decision/i.test(t)) return 'FOMC'; return 'Macro'; }
   const src = /^bybit/.test(c.source) ? 'Bybit ' : /^okx/.test(c.source) ? 'OKX ' : /^hl-/.test(c.source) ? 'Hyperliquid ' : /binance/i.test(c.source) ? 'Binance ' : '';
   const map = { listing: 'listing', delisting: 'delisting', hack: 'Hack', etf: 'ETF', regulation: 'Regulation', politics: 'Politics', whale: 'Whale', unlock: 'Unlock', protocol: 'Protocol', adoption: 'Adoption', filing: 'Filing', news: 'News' };
   const w = map[k] || 'News';
@@ -24349,6 +24361,14 @@ export default {
     if (url.pathname === '/api/catalysts/moves') return handleCatalystMoves(url, env);
     if (url.pathname === '/api/catalysts/top') return handleCatalystTop(url, env);
     if (url.pathname === '/api/catalysts/health') return handleCatalystHealth(url, env);
+    if (url.pathname === '/api/admin/fetchprobe') { // can THIS egress reach a host? (admin key; allow-listed hosts; status + size, never the body) - Truth Social 403s the droplet, 200s a home IP
+      if (adminKeyFrom(request, url) !== adminKeyOf(env)) return new Response('forbidden', { status: 403 });
+      const u = String(url.searchParams.get('u') || ''); let h = ''; try { h = new URL(u).hostname; } catch (e) {}
+      if (!/^(truthsocial\.com|cryptopanic\.com|www\.binance\.com)$/.test(h)) return new Response(JSON.stringify({ error: 'host_not_allowed' }), { status: 400, headers: { 'content-type': 'application/json' } });
+      const t0 = Date.now(); let st = 0, len = 0, ct = '', head = '';
+      try { const r = await fetchTO(u, { headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36', accept: 'application/json, text/html;q=0.8' } }, 8000); st = r ? r.status : 0; ct = r ? String(r.headers.get('content-type') || '') : ''; const b = r ? await r.text() : ''; len = b.length; head = b.slice(0, 120).replace(/\s+/g, ' '); } catch (e) { head = String(e && e.message || e).slice(0, 100); }
+      return new Response(JSON.stringify({ host: h, status: st, bytes: len, type: ct, ms: Date.now() - t0, head }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/catalysts') return handleCatalysts(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
