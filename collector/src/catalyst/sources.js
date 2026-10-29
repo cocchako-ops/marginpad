@@ -66,11 +66,19 @@ export async function bybitAnn() {
 }
 export async function okxAnn() {
   const out = [];
+  // OKX answers `latest-events` 400 ("Parameter annType error") from the droplet's region while the same call is 200
+  // from Serbia (measured 2026-10-29) - the set of types is regional. One refused type must not sink the other three,
+  // so each is its own try; the whole source throws only when every type failed.
+  let okN = 0, lastErr = null;
   for (const annType of ['announcements-new-listings', 'announcements-delistings', 'latest-events', 'announcements-trading-updates']) {
-    const d = await get(`https://www.okx.com/api/v5/support/announcements?annType=${annType}&page=1`, { json: true });
-    const dd = d && d.data && d.data[0];
-    for (const a of (dd && dd.details) || []) out.push({ nid: 'okx:' + (a.url || a.title), ts: +a.pTime, title: a.title, url: a.url || '', snippet: '', meta: { type: annType } });
+    try {
+      const d = await get(`https://www.okx.com/api/v5/support/announcements?annType=${annType}&page=1`, { json: true });
+      const dd = d && d.data && d.data[0];
+      for (const a of (dd && dd.details) || []) out.push({ nid: 'okx:' + (a.url || a.title), ts: +a.pTime, title: a.title, url: a.url || '', snippet: '', meta: { type: annType } });
+      okN++;
+    } catch (e) { lastErr = e; }
   }
+  if (!okN && lastErr) throw lastErr;
   return out;
 }
 // Hyperliquid has no announcements API: the LISTING is the perp appearing in `meta`. Diffed against the last call.
