@@ -135,7 +135,10 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     ok('volume profile: drag a range of candles = 24 bins with a point of control', sh.length === 8 && sh[7] && sh[7].t === 'vp' && sh[7].bins === 24, JSON.stringify(sh[7] || sh).slice(0, 160));
     await shot(page, 'desk-drawn');
     // persistence round trip: every new field survives save + reload
-    const rt = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const before = JSON.stringify(w.dr.shapes.map(s => [s.t, s.pts && s.pts.length, s.bins && s.bins.length, s.l3 != null, s.off])); w.dr.save(); w.dr.shapes = []; w.dr.reload(); return { before, after: JSON.stringify(w.dr.shapes.map(s => [s.t, s.pts && s.pts.length, s.bins && s.bins.length, s.l3 != null, s.off])), n: w.dr.shapes.length }; });
+    /* ORDER-FREE since 2026-10-29: hand-drawn hline/level rays live in ONE per-symbol bucket (`__sh:<SYM>`) and come back AFTER the
+       per-key shapes on reload, so the list's order is an artefact of the store, not a loss; the invariant is that every shape
+       survives WITH its fields */
+    const rt = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const sig = () => JSON.stringify(w.dr.shapes.map(s => [s.t, s.pts && s.pts.length, s.bins && s.bins.length, s.l3 != null, s.off]).sort((x, y) => String(x[0]).localeCompare(String(y[0])))); const before = sig(); w.dr.save(); w.dr.shapes = []; w.dr.reload(); return { before, after: sig(), n: w.dr.shapes.length }; });
     ok('all eight survive a save + reload with their third point, width and bins', rt.n === 8 && rt.before === rt.after, rt.before + ' vs ' + rt.after);
     // selection: a click on the zone selects it (the reader's composite shapes are hittable, the AI's are not)
     await page.evaluate(() => { const w = window.__mpWinsDbg[0]; w._drSetTool('select'); w.dr.shapes = w.dr.shapes.filter(s => s.t === 'zone' || s.t === 'hray'); w.dr.redraw(); });/* the channel's band covers the zone - hit-testing walks newest first, so isolate the zone */

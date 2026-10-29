@@ -127,7 +127,9 @@ async function prodLeg() {
   ok('the live path answers for a move starting ten minutes ago', l.status === 200 && lj.live === true && lj.at === at && ['news', 'cascade', 'news+cascade', 'unknown'].includes(lj.cause), JSON.stringify(lj).slice(0, 200));
   ok('with the catalysts it saw counted', lj.catalystsSeen >= 0 && lj.collector === 'ok', lj.catalystsSeen + ' ' + lj.collector);
   const cached = await fetch(BASE + '/api/catalysts/moves?symbol=BTC');
-  ok('the month is edge-cached', cached.status === 200 && /max-age=(300|60)/.test(cached.headers.get('cache-control') || ''), cached.headers.get('cache-control'));
+  // the worker says max-age 300 (60 with the collector down); a zone Cache Rule rewrites the browser TTL on /api/* edge HITs to
+  // 14400 (documented 2026-10-22, the owner's to remove) - either reading is the edge cache working, a missing header is not
+  ok('the month is edge-cached', cached.status === 200 && /max-age=(300|60|14400)/.test(cached.headers.get('cache-control') || ''), cached.headers.get('cache-control'));
 }
 
 // ---------- browser ----------
