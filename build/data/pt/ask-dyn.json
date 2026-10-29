@@ -1,0 +1,78 @@
+[
+ {
+  "en": "{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}",
+  "pt": "{a1}: acima de 100x, {a2} dos trades terminaram em liquidação - com 1-2x, {a3}"
+ },
+ {
+  "en": "{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month",
+  "pt": "{a1} fechamentos &middot; ROE mediano de {a2}% &middot; {a3}% do mês"
+ },
+ {
+  "en": "{a1} of {a2} finished runs passed - {a3}%",
+  "pt": "{a1} de {a2} execuções concluídas aprovadas - {a3}%"
+ },
+ {
+  "en": "+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book",
+  "pt": "meta de +{a1}%, perda diária de {a2}%, drawdown máximo de {a3}%, mínimo de {a4} dias de trading, em uma conta de ${a5}"
+ },
+ {
+  "en": "{a1} closes &middot; median {a2}% ROE",
+  "pt": "{a1} fechamentos &middot; ROE mediano de {a2}%"
+ },
+ {
+  "en": "Bitcoin funding is {a1}, so {a2}. ",
+  "pt": "O funding do Bitcoin está {a1}, então {a2}. "
+ },
+ {
+  "en": "Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative",
+  "pt": "Entre os {a1} contratos perpétuos que acompanhamos, {a2} estão positivos e {a3} estão negativos"
+ },
+ {
+  "en": ", with the widest spread running from {a1} on {a2} down to {a3} on {a4}",
+  "pt": ", com a maior diferença indo de {a1} em {a2} até {a3} em {a4}"
+ },
+ {
+  "en": "{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.",
+  "pt": "{a1} posições alavancadas foram fechadas à força em {a2} exchanges nas últimas 24 horas, somando {a3} e distribuídas em {a4} moedas. Isso dá uma média de {a5} por liquidação - o tamanho da posição típica que morreu, o que descreve quem opera com alavancagem melhor do que o valor total em dólares."
+ },
+ {
+  "en": "{a1} in the last 24 hours",
+  "pt": "{a1} nas últimas 24 horas"
+ },
+ {
+  "en": "MarginPad&#39;s own collector, {a1} exchange websockets",
+  "pt": "Coletor próprio da MarginPad, {a1} websockets de exchanges"
+ },
+ {
+  "en": "Longs, {a1}% of the damage",
+  "pt": "Longs, {a1}% do prejuízo"
+ },
+ {
+  "en": "Shorts, {a1}% of the damage",
+  "pt": "Shorts, {a1}% do prejuízo"
+ },
+ {
+  "en": "Close to even, {a1}% long",
+  "pt": "Quase empatado, {a1}% long"
+ },
+ {
+  "en": "Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}",
+  "pt": "Dos {a1} liquidados em {a2} exchanges nas últimas 24 horas, {a3} ({a4}%) eram posições long e {a5} ({a6}%) eram shorts. {a7}"
+ },
+ {
+  "en": "MarginPad&#39;s own collector, {a1} exchange websockets",
+  "pt": "Coletor próprio da MarginPad, {a1} websockets de exchanges"
+ },
+ {
+  "en": "The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).",
+  "pt": "O maior fechamento forçado individual que nosso coletor viu nas últimas 24 horas foi uma posição <strong>{a1}</strong> em {a2} em {a3}, no valor de {a4} ao preço em que foi fechada. Isso representa {a5} de tudo o que foi liquidado no mercado inteiro na mesma janela ({a6} em {a7} posições)."
+ },
+ {
+  "en": " - {a1} {a2} on {a3}",
+  "pt": " - {a1} {a2} em {a3}"
+ },
+ {
+  "en": "MarginPad&#39;s own collector, {a1} exchange websockets",
+  "pt": "Coletor próprio da MarginPad, {a1} websockets de exchanges"
+ }
+]
