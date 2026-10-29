@@ -300,6 +300,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     /* body + fluke + spout. The first cut was a single closed curve with an eye inside it and at 19px it read as
        an EYE, not a whale - an icon has to survive the size it actually ships at, so it was redrawn from the
        screenshot, not from the path data. */
+    catal: '<path d="M13 2.5L5 13.5h6l-1 8 9-11.5h-6z"/><path d="M19.5 3.5v3M18 5h3"/>',
     whale: '<path d="M2.6 12.4c0 3.4 2.8 6.2 6.2 6.2h5.4c2.5 0 4.6-2.1 4.6-4.6s-2.1-4.6-4.6-4.6c-4.6 0-6.1 3-11.6 3z"/><path d="M18.6 13.2c1.3-.4 2.4-1.4 3.1-2.7-1.7-.5-3-.2-3.9.5"/><path d="M11.2 7.3c.3-1.2 1.3-2.1 2.5-2.3"/><circle cx="7.9" cy="13" r=".95" fill="currentColor" stroke="none"/>',
     funding: '<path d="M20 12a8 8 0 0 1-8 8"/><path d="M4 12a8 8 0 0 1 8-8"/><path d="M17.6 3.9v3.7h-3.7"/><path d="M6.4 20.1v-3.7h3.7"/><circle cx="9.9" cy="9.9" r="1.25"/><circle cx="14.1" cy="14.1" r="1.25"/><path d="M15.2 8.8l-6.4 6.4"/>',
     oi: '<path d="M4 20V11.5M9.3 20V8M14.7 20v-5M20 20V4.5"/><path d="M2.5 20.5h19"/>',
@@ -422,7 +423,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // The heatmap takes no symbol from the URL, so no row pretends to open a particular coin.
     + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes order book orderbook tape prints live order flow depth bid ask'))
     + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today records'))
-    + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale', __esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
+    + row('Catalysts', 'Listings, filings, macro, hacks and whale alerts as they land, scored - and what moved each coin', '/catalysts/', '#c2f64a', 'catal', 'catalysts catalyst news events announcements listing delisting binance bybit okx upbit sec filing fomc cpi hack etf headlines whale alert what moved it why did it drop pump mentions most talked about meme')
+    + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale',__esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
     // Funding, open interest and long/short are three readings of ONE question - what the crowd is holding and
     // what it pays - so they sit as a tight group rather than three full-width rows. They keep their own icon
     // and their own keywords; nothing is hidden, and the section drops from 11 rows to 8.

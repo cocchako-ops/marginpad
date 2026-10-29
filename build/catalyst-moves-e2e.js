@@ -89,6 +89,25 @@ function pureLeg() {
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.9, dir: -1 }, [], liq.slice(0, 2000), { sym: 'BTC', liqFloor: 250000 });
   ok('a quiet feed is no cascade', a.cause === 'unknown' && !a.cascade, a.cause);
   ok('the window rules are the documented ones', X.CX_BEFORE_MS === 90 * 60000 && X.CX_AFTER_MS === 30 * 60000);
+  // the factors no desk can name (2026-10-29)
+  const altMv = { t0: T0, t1: T0 + 15 * 60000, pct: -2.0, dir: -1 };
+  a = X.cxAttribute(altMv, [], null, { sym: 'SOL', btcMoves: [{ t0: T0 - 5 * 60000, t1: T0 + 10 * 60000, pct: -1.4, dir: -1 }] });
+  ok('an alt that dropped while BTC dropped is marked as following Bitcoin', a.cause === 'btc' && a.label === 'BTC move' && a.factors.some(f => f.k === 'btc'), JSON.stringify(a.factors));
+  a = X.cxAttribute(altMv, [], null, { sym: 'SOL', btcMoves: [{ t0: T0 - 5 * 60000, t1: T0 + 10 * 60000, pct: 1.4, dir: 1 }] });
+  ok('but not when BTC went the other way', a.cause === 'unknown', a.cause);
+  a = X.cxAttribute(altMv, [], null, { sym: 'SOL', whales: [{ ts: T0 + 60000, act: 'open', long: 0, usd: 3000000 }, { ts: T0 + 120000, act: 'close', long: 1, usd: 800000 }] });
+  ok('tracked whales selling into the drop are a flow cause', a.cause === 'whale' && a.factors.some(f => f.k === 'whale' && f.whale.n === 2), JSON.stringify(a.factors));
+  a = X.cxAttribute(altMv, [], null, { sym: 'SOL', whales: [{ ts: T0 + 60000, act: 'open', long: 1, usd: 3000000 }] });
+  ok('a whale BUYING into a drop is not its cause', a.cause === 'unknown', a.cause);
+  a = X.cxAttribute({ t0: Date.UTC(2026, 9, 20, 0, 2), t1: Date.UTC(2026, 9, 20, 0, 17), pct: -1.2, dir: -1 }, [], null, { sym: 'BTC' });
+  ok('a move at 00:02 UTC carries the daily-open session as context, never as the cause', a.cause === 'unknown' && a.factors.some(f => f.id === 'daily-open'), JSON.stringify(a.factors));
+  a = X.cxAttribute({ t0: Date.UTC(2026, 9, 20, 13, 31), t1: Date.UTC(2026, 9, 20, 13, 46), pct: 1.2, dir: 1 }, [], null, { sym: 'BTC' });
+  ok('a move at 13:31 UTC in October is the New York open', a.factors.some(f => f.id === 'us-open'), JSON.stringify(a.factors));
+  a = X.cxAttribute(mv, [cat({ kind: 'listing', expect: 1 })], null, { sym: 'BTC', btcMoves: [], whales: [{ ts: T0, act: 'open', long: 1, usd: 5000000 }] });
+  ok('news still outranks a whale when both are there, and the whale rides along as a factor', a.cause === 'news' && a.factors.some(f => f.k === 'whale'), a.cause);
+  const liqS = []; for (let i = 0; i < 2000; i++) liqS.push({ t: T0 - 2000 * 300000 + i * 300000, long: 10000, short: 10000 }); liqS.push({ t: T0, long: 20000, short: 400000 }); liqS.push({ t: T0 + 300000, long: 10000, short: 300000 });
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: 2.2, dir: 1 }, [], liqS, { sym: 'BTC', liqFloor: 250000 });
+  ok('a rise on short liquidations is labelled a short squeeze', a.cause === 'cascade' && a.label === 'Short squeeze', a.label);
 }
 
 // ---------- production ----------

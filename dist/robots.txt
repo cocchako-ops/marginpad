@@ -17,6 +17,7 @@ Allow: /api/apiplan
 Allow: /api/premium/status
 Allow: /api/openapi
 Allow: /api/status
+Allow: /api/catalysts
 Allow: /api/changelog
 Allow: /api/latam/
 Allow: /api/cg/

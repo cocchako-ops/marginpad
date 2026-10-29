@@ -150,7 +150,7 @@
   </div>
 
   <nav class="toc" aria-label="On this page">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#catalyst">6 · What moved it</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -318,6 +318,25 @@
     <p class="lim"><b>Limits.</b> It covers the ten coins our feed records - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX and LTC. On any other market the indicator cannot be switched on at all and says it has no data, rather than drawing an empty chart you might read as calm. The window is the last 24 hours and nothing older is kept on the chart, so a level that mattered last week is not marked. And an exchange only publishes what it chooses to publish: the marks are a floor on what really liquidated, never a total.</p>
   </section>
 
+  <section class="ind" id="catalyst" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; A cause for every move, or an honest question mark</small>What moved it (30d)</h2></div>
+    <p class="q">Why did price just jump or drop - and <em>which</em> of this month's moves had a dated reason behind them?</p>
+    <p>Every abnormal move of the last 30 days gets a flag on the candle it started on, and the flag carries the most likely cause in one word. The causes come from MarginPad's Catalyst Engine, which reads exchange announcements (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, the macro calendar, the fast news desks and the official channels with each item's own timestamp - and from our own data: the liquidation feed, the whale tracker and Bitcoin itself. A move is judged against this coin's own 30-day volatility, never a fixed percent, so 0.6% can be a move on BTC and nothing on a meme coin.</p>
+    <div class="box"><i>What you see</i><ul>
+      <li><b>A flag per move</b> - above a rise, below a drop - with the size and the cause: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> or <b>Short squeeze</b> (our feed liquidated six times the typical amount while the move ran), <b>Whale</b> (a tracked wallet traded the coin in size at that moment), <b>BTC move</b> (the coin followed Bitcoin), or a grey <b>?</b> when nothing dated explains it.</li>
+      <li><b>Tap a flag</b> for the evidence: the headline, its source, how many minutes before the move it was published, its score, what was liquidated during the move, and the other items that fell inside the window.</li>
+      <li><b>A lime LIVE flag</b> on the newest candle while a move is forming now, answered by the same engine with the same rules - the live verdict is never a different model from the history.</li>
+      <li><b>The legend</b> says how many of the month's moves were explained, which is the honest measure of how much of this coin's action is news-driven.</li>
+    </ul></div>
+    <div class="box"><i>Before a trade</i><ul>
+      <li><b>Before a long:</b> a rise flagged with a dated catalyst is a move with a reason, and the question is whether the reason is still true; a rise flagged ? is flow, and flow reverses. Look at how the last three flagged rises resolved.</li>
+      <li><b>Before a short:</b> a drop flagged Long liquidations is forced selling, which exhausts itself; a drop flagged with news - a delisting, a hack, a regulation headline - tends to keep its ground. Short the second kind, not the first.</li>
+      <li><b>What to avoid:</b> treating a ? as "no reason". It means no reason we can date and prove - and an engine that explains every move is lying.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>WHAT MOVED IT 30d &middot; 62 moves &middot; 10 news &middot; 26 cascade &middot; 31 unknown (50% explained)</div>
+    <p class="lim"><b>Limits.</b> News must be dated inside 90 minutes before the move (or 30 minutes after, in which case the card says the market led the news); a source that publishes thirty items a day cannot claim a move by time alone, so a transfer alert or a generic headline rarely counts. The cascade test needs our liquidation feed, which covers ten coins; elsewhere only news, whales and BTC can be named. The whale tracker keeps 14 days. Causes are attributed by rules, not read by a model, so a headline that merely mentions a coin can be named for a move it did not cause - the score and the confidence on the card say how strong the match is. Checked against a placebo: shifting every news item by a week collapses the explained share, which is the proof the matching is not chance.</p>
+  </section>
+
   <h3 id="honesty">The hit-rate chip: every arrow grades itself</h3>
   <div class="hon">
     <p>Any indicator can draw arrows on the past. MarginPad's arrow indicators grade every arrow they drew on the loaded chart: entry at the signal bar's close, target and stop both 1.5x the 14-bar ATR away, scanned up to 80 bars forward, and a bar that touches both counts as a loss. The chip appears once five arrows have resolved and is coloured for what it says:</p>
@@ -355,6 +374,6 @@
   </footer>
 </div>
 <script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
-<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+<script defer src="/assets/mp-nav.js?v=8bebdf96"></script>
 </body>
 </html>

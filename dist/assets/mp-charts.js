@@ -134,7 +134,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function tfIsSec(tf){return SEC_TFS.indexOf(String(tf||''))>=0;}
   function tfPrem(tf){for(var i=0;i<TFS.length;i++)if(TFS[i][0]===String(tf))return !!TFS[i][2];return false;}
   var INDS=[['sig','Buy / Sell signals (+ TP)'],['casc','Cascade Radar'],['brain','Market Brain'],['memory','Market Memory'],['magnet','Liquidation Magnet'],['whaleliq','Big Liquidations (24h)'],['catalyst',__esT_mpcharts("whatMovedIt30d",'What moved it (30d)')],['ema','EMA'],['sma','SMA'],['hma','Hull MA (21)'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['ichi','Ichimoku Cloud'],['psar','Parabolic SAR'],['sr','Support / Resistance'],['pp','Pivot Points'],['dl',__esT_mpcharts("dailyLevelsPdhPdl",'Daily levels (PDH / PDL / open)')],['sess',__esT_mpcharts("tradingSessions",'Trading sessions')],['vol','Volume'],['rsi','RSI (14)'],['macd','MACD (12/26/9)'],['stoch','Stochastic (14/3)'],['atr','ATR (14)'],['wr','Williams %R (14)'],['cci','CCI (20)']];
-  var MP_INDS={casc:1,brain:1,memory:1,magnet:1,whaleliq:1}; // FIVE Premium indicators since 2026-10-13 (the Liquidation Wall was deleted: it priced one 0.1% bin and every reader took it for the cost of a move) (four since 2026-09-17 (were eight: Momentum shift, Squeeze, Liquidation reversal and Sentiment Flip retired - generic TA or folded into the Brain's factors). Guide: /ai-indicators/
+  var MP_INDS={casc:1,brain:1,memory:1,magnet:1,whaleliq:1,catalyst:1}; // SIX since 2026-10-29: What moved it (30d) joined (owner: "Indikator sam po sebi treba da bude uvrstan u premium") // FIVE Premium indicators since 2026-10-13 (the Liquidation Wall was deleted: it priced one 0.1% bin and every reader took it for the cost of a move) (four since 2026-09-17 (were eight: Momentum shift, Squeeze, Liquidation reversal and Sentiment Flip retired - generic TA or folded into the Brain's factors). Guide: /ai-indicators/
   var INDACC={ok:false};
   function indAllowed(){return !!INDACC.ok;}
   function fetchIndAccess(cb){try{fetch('/api/ind/access',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){INDACC.ok=!!(j&&j.allowed);if(cb)cb();});}catch(e){}} // MarginPad-exclusive signals - lime in every menu so they stand out
@@ -214,8 +214,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var up=m.dir>0,col=up?'#2ebd85':'#ff6258',hh=function(n){return (n<10?'0':'')+n;},d0=new Date(m.t0),d1=new Date(m.t1);
     var mins=Math.max(1,Math.round((m.t1-m.t0)/60000));
     var c=m.catalyst,esc=function(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');};
-    var causeLine=m.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):m.cause==='cascade'?__esT_mpcharts("liquidationCascade",'Liquidation cascade'):m.cause==='news+cascade'?__esT_mpcharts("newsPlusCascade",'News + a liquidation cascade'):__esT_mpcharts("newsWord",'News');
+    var causeLine=m.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):m.cause==='cascade'?(m.label||__esT_mpcharts("liquidationCascade",'Liquidation cascade')):m.cause==='news+cascade'?__esT_mpcharts("newsPlusCascade",'News + a liquidation cascade'):m.cause==='btc'?__esT_mpcharts("followedBitcoin",'Followed Bitcoin'):m.cause==='whale'?__esT_mpcharts("whaleFlow",'Whale flow'):__esT_mpcharts("newsWord",'News');
     var catHtml='';if(c){catHtml='<div class="cxc-cat"><b>'+esc(c.title)+'</b><span>'+esc(c.source.replace(/^rss:|^tg:/,''))+' · '+esc(c.kind)+' · '+(c.after?Math.abs(c.leadMin)+' '+__esT_mpcharts("minAfterStart",'min after the move started'):c.leadMin+' '+__esT_mpcharts("minBeforeTheMove",'min before the move'))+' · '+__esT_mpcharts("scoreWord",'score')+' '+c.score+'</span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+__esT_mpcharts("openSource",'open the source')+'</a>':'')+'</div>';}
+    var facHtml='';if(m.factors&&m.factors.length){facHtml='<div class="cxc-oth cxc-fac"><i>'+__esT_mpcharts("atThatMoment",'At that moment')+'</i>'+m.factors.slice(0,3).map(function(f){return '<div><b>'+esc(f.label)+'</b> '+esc(f.text)+'</div>';}).join('')+'</div>';}
     var othHtml='';if(m.others&&m.others.length){othHtml='<div class="cxc-oth"><i>'+__esT_mpcharts("alsoInTheWindow",'Also in the window')+'</i>'+m.others.slice(0,3).map(function(o){return '<div>'+esc(o.title).slice(0,90)+' <small>'+(o.after?'+':'-')+Math.abs(o.leadMin)+'m</small></div>';}).join('')+'</div>';}
     var liqHtml='';if(m.liq&&m.liq.usd>0)liqHtml='<dt>'+__esT_mpcharts("liquidatedDuring",'Liquidated during')+'</dt><dd>'+money(m.liq.usd)+(m.liq.x!=null?' <small>'+m.liq.x+'x</small>':'')+'</dd>';
     var el=document.createElement('div');el.className='cwin-liqc cwin-cxc';
@@ -226,7 +227,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<dl class="lqc-d"><dt>'+__esT_mpcharts("whenWord",'When')+'</dt><dd>'+hh(d0.getHours())+':'+hh(d0.getMinutes())+'–'+hh(d1.getHours())+':'+hh(d1.getMinutes())+' · '+d0.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
       +'<dt>'+__esT_mpcharts("priceWord",'Price')+'</dt><dd>'+cwFmt(m.p0)+' → '+cwFmt(m.p1)+'</dd>'
       +'<dt>'+__esT_mpcharts("sizeVsUsual",'Vs usual bar')+'</dt><dd>'+m.z+'x</dd>'+liqHtml+'</dl>'
-      +othHtml
+      +facHtml+othHtml
       +'<p class="lqc-n">'+__esT_mpcharts("cxMethodNote",'A move is judged against this coin’s own 30-day volatility. News must be dated inside 90 min before (or 30 min after) the move; a cascade is our own feed liquidating 6x the typical amount. Unknown is said out loud.')+'</p>';
     body.appendChild(el);
     var bw=body.clientWidth||300,bh=body.clientHeight||200,cw=el.offsetWidth||220,ch=el.offsetHeight||170;
@@ -791,12 +792,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        own click reports in); here we only decide WHICH events and which candle each belongs to. */
     /* WHAT MOVED IT: the route's month onto these bars, one legend line for the month and one for a move forming now */
     w._cxMarks=null;if(!w.inds.catalyst){w._cxHit=null;cxWatch(w,false);}
-    if(w.inds.catalyst){
+    if(w.inds.catalyst&&IA){
       wireLiqClick(w);loadCx(w);cxWatch(w,true);
       var _cx=w._cx;
       if(_cx&&_cx.moves){
         var _cm=cxBuildMarks(bars,_cx);w._cxMarks=_cm.length?_cm:null;var _s=_cx.summary||{};
-        var _lab2=__esT_mpcharts("whatMovedItLeg",'WHAT MOVED IT 30d')+' · '+(_s.n||0)+' '+__esT_mpcharts("movesWord",'moves')+' · '+((_s.news||0)+(_s.both||0))+' '+__esT_mpcharts("newsLc",'news')+' · '+((_s.cascade||0)+(_s.both||0))+' '+__esT_mpcharts("cascadeLc",'cascade')+' · '+(_s.unknown||0)+' '+__esT_mpcharts("unknownLc",'unknown')+(_s.explainedPct!=null?' ('+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained')+')':'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
+        var _lab2=__esT_mpcharts("whatMovedItLeg",'WHAT MOVED IT 30d')+' · '+(_s.n||0)+' '+__esT_mpcharts("movesWord",'moves')+' · '+((_s.news||0)+(_s.both||0))+' '+__esT_mpcharts("newsLc",'news')+' · '+((_s.cascade||0)+(_s.both||0))+' '+__esT_mpcharts("cascadeLc",'cascade')+(_s.whale?' · '+_s.whale+' '+__esT_mpcharts("whaleLc",'whale'):'')+(_s.btc?' · '+_s.btc+' BTC':'')+' · '+(_s.unknown||0)+' '+__esT_mpcharts("unknownLc",'unknown')+(_s.explainedPct!=null?' ('+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained')+')':'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab2,title:__esT_mpcharts("whatMovedItTitle",'Every abnormal move of the last 30 days on 15-minute candles, each with its most likely cause. A flag on the candle the move started on; tap it for the evidence. Scale: ')+_cx.scale+'% '+__esT_mpcharts("medianBarMove",'median 15m move, a move is at least ')+(+_cx.mult||4)+'x '+__esT_mpcharts("thatOrFloor",'that or ')+(+_cx.floorPct||0.6)+'%.'});
         var _lv=cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);
         var _L=w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a,_col=_L.pct>=0?'#2ebd85':'#ff6258';

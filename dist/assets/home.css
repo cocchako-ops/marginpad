@@ -3753,6 +3753,7 @@ undefined
 .cwin-cxc .cxc-oth i{display:block;font-style:normal;color:#6e7885;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
 .cwin-cxc .cxc-oth div{padding:2px 0;border-top:1px solid rgba(255,255,255,.05);}
 .cwin-cxc .cxc-oth small{font-family:"Space Mono",monospace;color:#6e7885;}
+.cwin-cxc .cxc-fac div b{color:#c2f64a;font-weight:700;margin-right:4px;}
 .cwin-liqc .lqc-list{margin:8px 0 2px;max-height:150px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:3px;}
 .cwin-liqc .lqc-row{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:3px 6px;background:rgba(255,255,255,.04);border-radius:6px;}
 .cwin-liqc .lqc-row b{font-family:"Space Mono",monospace;font-weight:700;min-width:58px;}

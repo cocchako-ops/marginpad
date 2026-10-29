@@ -1311,8 +1311,51 @@ function cxAttribute(mv, cats, liq, opt) {
   const cascade = !!(liqOut && liqOut.x != null && liqOut.x >= 6 && liqOut.usd >= o.liqFloor);
   const cause = best && cascade ? 'news+cascade' : best ? 'news' : cascade ? 'cascade' : 'unknown';
   const confidence = best ? Math.min(0.95, best.w) : cascade ? 0.6 : 0;
-  const label = best ? cxLabel(best) : cascade ? 'Cascade' : 'No known cause';
-  return { cause, confidence: +confidence.toFixed(2), label, catalyst: best, others, liq: liqOut, cascade };
+  // a cascade has a side: long liquidations under a drop, a short squeeze under a rise
+  const cascLabel = liqOut && liqOut.longShare != null ? (mv.dir < 0 && liqOut.longShare >= 0.6 ? 'Long liquidations' : mv.dir > 0 && liqOut.longShare <= 0.4 ? 'Short squeeze' : 'Cascade') : 'Cascade';
+  const ctx = cxContext(mv, o.btcMoves, o.whales, sym);
+  let cause2 = cause, label = best ? cxLabel(best) : cascade ? cascLabel : 'No known cause', confidence2 = confidence;
+  if (cause === 'unknown') {
+    const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc').sort((a, b) => b.w - a.w)[0];
+    if (strong) { cause2 = strong.k; label = strong.label; confidence2 = strong.w; }
+  }
+  return { cause: cause2, confidence: +confidence2.toFixed(2), label, catalyst: best, others, liq: liqOut, cascade, factors: ctx };
+}
+// THE FACTORS NO NEWS DESK CAN NAME (2026-10-29, owner: "dosta stvari ne znamo zbog cega se desavaju toliki pomaci"): a coin
+// that followed Bitcoin, a tracked whale trading it in size at that minute, and the clock - funding, the daily open, the
+// US cash open and close, the Friday options expiry. Each is a fact about the move's moment, stated with its own weight;
+// 'btc' and 'whale' may be the cause when no news is, a session is only ever context (0.35) and never beats a cause.
+function cxNyHM(ms) { try { const p = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date(ms)); const g = t => (p.find(x => x.type === t) || {}).value; return { wd: g('weekday'), h: +g('hour') % 24, m: +g('minute') }; } catch (e) { return null; } }
+function cxSession(t0) {
+  const d = new Date(t0), uh = d.getUTCHours(), um = d.getUTCMinutes(), near = (h, m, tol) => { const a = uh * 60 + um, b = h * 60 + m; return Math.abs(a - b) <= tol || Math.abs(a - b - 1440) <= tol; };
+  const out = [];
+  if (near(0, 0, 6)) out.push({ k: 'session', id: 'daily-open', label: 'Daily open + funding', text: 'started at the 00:00 UTC daily open, when funding settles and the day books reset' });
+  else if (near(8, 0, 6) || near(16, 0, 6)) out.push({ k: 'session', id: 'funding', label: 'Funding', text: 'started at a funding settlement (every 8 hours), when crowded positions are re-priced' });
+  const ny = cxNyHM(t0);
+  if (ny && ny.wd !== 'Sat' && ny.wd !== 'Sun') {
+    const a = ny.h * 60 + ny.m;
+    if (Math.abs(a - 570) <= 6) out.push({ k: 'session', id: 'us-open', label: 'US open', text: 'started at the New York cash open (09:30), when US equity and ETF flow lands' });
+    else if (Math.abs(a - 960) <= 6) out.push({ k: 'session', id: 'us-close', label: 'US close', text: 'started at the New York cash close (16:00)' });
+    else if (Math.abs(a - 510) <= 6) out.push({ k: 'session', id: 'us-data', label: 'US data 08:30', text: 'started at 08:30 New York, the minute US economic releases print' });
+  }
+  if (d.getUTCDay() === 5 && near(8, 0, 10)) out.push({ k: 'session', id: 'expiry', label: 'Options expiry', text: 'started at the Friday 08:00 UTC Deribit options expiry' });
+  return out;
+}
+// btcMoves = the month's BTC moves (same detector); whales = the tracker's trade groups for this coin
+function cxContext(mv, btcMoves, whales, sym) {
+  const f = [];
+  if (sym !== 'BTC' && btcMoves && btcMoves.length) {
+    let best = null;
+    for (const b of btcMoves) { if (b.dir !== mv.dir) continue; const overlap = Math.min(b.t1, mv.t1) - Math.max(b.t0 - 15 * 60000, mv.t0); if (overlap >= 0 && (!best || Math.abs(b.pct) > Math.abs(best.pct))) best = b; }
+    if (best) f.push({ k: 'btc', label: 'BTC move', w: 0.55, text: 'Bitcoin moved ' + (best.pct > 0 ? '+' : '') + best.pct + '% at the same time - this coin followed', btc: { t0: best.t0, pct: best.pct } });
+  }
+  if (whales && whales.length) {
+    let usd = 0, n = 0, big = null;
+    for (const w of whales) { const ts = +w.ts || 0; if (ts < mv.t0 - 10 * 60000 || ts > mv.t1) continue; const l = !!(+w.long); const opens = /open|flip/.test(String(w.act || '')); const sameDir = opens ? (l === (mv.dir > 0)) : (l !== (mv.dir > 0)); if (!sameDir) continue; usd += +w.usd || 0; n++; if (!big || +w.usd > +big.usd) big = w; }
+    if (n && usd >= 1000000) f.push({ k: 'whale', label: 'Whale', w: Math.min(0.7, 0.4 + usd / 20000000), text: n + ' tracked whale trade' + (n > 1 ? 's' : '') + ' in this direction, ' + Math.round(usd / 1e6 * 10) / 10 + 'M USD, as the move ran', whale: { n, usd: Math.round(usd), biggest: big ? { usd: Math.round(+big.usd), act: big.act, long: !!(+big.long), lev: big.lev != null ? +big.lev : null, ts: +big.ts } : null } });
+  }
+  for (const s of cxSession(mv.t0)) f.push(Object.assign({ w: 0.35 }, s));
+  return f;
 }
 function cxLabel(c) {
   const t = String(c.title || ''), k = c.kind;
@@ -1321,6 +1364,15 @@ function cxLabel(c) {
   const map = { listing: 'listing', delisting: 'delisting', hack: 'Hack', etf: 'ETF', regulation: 'Regulation', politics: 'Politics', whale: 'Whale', unlock: 'Unlock', protocol: 'Protocol', adoption: 'Adoption', filing: 'Filing', news: 'News' };
   const w = map[k] || 'News';
   return (src ? src + w : w.charAt(0).toUpperCase() + w.slice(1));
+}
+// BTC's own moves for the beta factor, computed once and kept five minutes - every alt asks for the same list
+async function cxBtcMoves(env, tf, days, since) {
+  const ck = new Request('https://marginpad.io/__cxbtc_v1_' + tf + '_' + days);
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  let out = [];
+  try { const kl = await aiKlinesAfter(env, 'BTC', tf, since, Math.min(8, Math.ceil(days * 1440 / +tf / 1000) + 1)); out = cxDetectMoves((kl && kl.bars) || []).moves; } catch (e) {}
+  try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
+  return out;
 }
 // GET /api/catalysts/moves?symbol=BTC&tf=15&days=30   |   &at=<ms>&pct=&n=   (one live move, same rules, no month)
 async function handleCatalystMoves(url, env) {
@@ -1348,12 +1400,16 @@ async function handleCatalystMoves(url, env) {
     ]);
     const cats = (cj && cj.items) || [];
     const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
-    const a = cxAttribute(mv, cats, liq, { sym, liqFloor: (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000 });
+    const [btcMoves, whales] = await Promise.all([
+      sym === 'BTC' ? Promise.resolve(null) : cxBtcMoves(env, tf, 2, at - 2 * 86400000),
+      colFetch('/api/v1/whalefills?sym=' + sym + '&since=' + (at - 3 * 3600000) + '&min=250000&limit=300', 2500, 20).then(j => (j && j.items) || null),
+    ]);
+    const a = cxAttribute(mv, cats, liq, { sym, liqFloor: (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000, btcMoves, whales });
     const res = J({ symbol: sym, at, pct, live: true, collector: cj ? 'ok' : 'down', catalystsSeen: cats.length, ...a, now }, 20);
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v2_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v3_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1370,12 +1426,34 @@ async function handleCatalystMoves(url, env) {
   const cats = ((cj && cj.items) || []).map(c => shift ? { ...c, ts_src: (+c.ts_src || 0) + shift } : c);
   const liq = lj && lj.buckets ? lj.buckets.map(b => ({ t: +b.t || +b.ts || 0, long: +b.long || 0, short: +b.short || 0 })) : null;
   const liqFloor = (sym === 'BTC' || sym === 'ETH') ? 250000 : 50000;
-  const moves = det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor }) }));
+  // BTC's own moves (an alt that moved WITH Bitcoin followed it) and the tracker's trades in this coin (14-day table)
+  const [btcMoves, whales] = await Promise.all([
+    sym === 'BTC' ? Promise.resolve(null) : cxBtcMoves(env, tf, days, since),
+    colFetch('/api/v1/whalefills?sym=' + sym + '&since=' + since + '&min=250000&limit=2000', 3000, 120).then(j => (j && j.items) || null),
+  ]);
+  const moves = det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales }) }));
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
-  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else sum.unknown++; }
+  sum.btc = 0; sum.whale = 0;
+  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else sum.unknown++; }
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
-  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor } };
+  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor } };
   const res = J(body, cj ? 300 : 60);
+  if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
+  return res;
+}
+// GET /api/catalysts/top?h=24&min=20 - the coins the catalysts named, ranked (the /catalysts/ page's "most talked about")
+async function handleCatalystTop(url, env) {
+  const h = Math.max(1, Math.min(720, +url.searchParams.get('h') || 24)), min = Math.max(0, Math.min(100, +url.searchParams.get('min') || 20)), limit = Math.max(1, Math.min(300, +url.searchParams.get('limit') || 60));
+  const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
+  const ck = new Request('https://marginpad.io/__cxtop_v1_' + h + '_' + min + '_' + limit), nc = url.searchParams.get('nc') === '1';
+  if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  let body = { ts: Date.now(), hours: h, n: 0, items: [], collector: 'down' };
+  if (base && Date.now() >= COL_DOWN_UNTIL) {
+    const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 3000);
+    try { const r = await __realFetch(base + '/api/v1/catalysts/top?h=' + h + '&min=' + min + '&limit=' + limit, { signal: ctl.signal }); if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.items)) body = { ...j, collector: 'ok' }; } } catch (e) {} finally { clearTimeout(tmr); }
+  }
+  const res = J(body, body.collector === 'ok' ? 60 : 20);
   if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
   return res;
 }
@@ -9012,7 +9090,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c7f25e7a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8bebdf96" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -18697,7 +18775,7 @@ const AI_CHART_TOOLS_SYS = "\n\nCHART CONTROL - you can OPERATE the chart the re
 // The six MarginPad-exclusive indicators, explained the way /ai-indicators/ explains them (what you see -> what it means ->
 // before a long / before a short). ONE source of truth for the coach; the ids are the ones the chart bundles use.
 const AI_IND_GUIDE_SYS = "\n\nORDER BOOK AND TAPE: when the brief carries `orderFlow`, you DO have the live order book and the trade tape for this coin (MarginPad's own collector: resting depth in bps, bid/ask ratio, the cost of a $250k market order, aggressor flow, standing walls and how the last walls ended) - read it and quote it, whatever an earlier turn in this conversation said. It exists for six coins; `orderFlowUnavailable` names them when this coin has none. If `_omitted` lists orderFlow, say it was cut from THIS turn for size and ask the reader to ask again, never that you have no access to it."
-  + "\n\nINDICATOR GUIDE (say the human name in prose, use the id in actions). Standard ids: ema (average price, recent candles weigh more; periods 9/21/50/100/200 - price above it leans up), sma (plain average), hma (Hull MA - smoother and faster), vwap (volume-weighted average, the day's fair price), bb (Bollinger Bands - two bands around price: wide = wild, tight = calm, near the top band = pricey), kc (Keltner Channels), dc (Donchian - highest high / lowest low), ichi (Ichimoku cloud), psar (Parabolic SAR - trailing dots that flip sides), sr (support / resistance lines), pp (pivot points), vol (volume), rsi (a 0-100 speed meter: above 70 overbought, below 30 oversold), macd (is the trend speeding up or slowing down; above 0 = buyers in control), stoch (Stochastic - timing turns, 80/20), atr (how much price moves per candle - sizes a stop), wr (Williams %R), cci (distance from average), sig (Supertrend buy/sell arrows with a TP mark).\nMarginPad EXCLUSIVE indicators (Premium; built on our own liquidation data - the reader pays for these, explain them with care and always in terms of what to do before a long or a short):\n- casc = Cascade Radar. What you see: a 0-100 line in a lower pane, a dashed 90 line, and a red or green CASC arrow now and then. What it means: how much leveraged-liquidation fuel sits within 5% of price against what 20 candles of volume can absorb, ranked against the last 200 candles. Above 70 the market is fragile; above 90 one push can start a chain of forced liquidations. The legend names which SIDE the fuel is on. Before a long: fuel BELOW price is a chain of long liquidations under you - a dip can run, so keep the stop wider or wait. Before a short: fuel ABOVE price is short-squeeze fuel. Fuel on the OTHER side of your trade is a target.\n- brain = Market Brain. What you see: a -100..+100 line with +55 and -55 bands, BRAIN arrows, and a legend saying what drives it and its own live hit-rate on this chart. What it means: a learned blend of 8 factors (trend, momentum, volume, fragility, real liquidation flow, funding, crowd positioning, structure); the weights are re-learned every 10 candles from the trailing 280, walk-forward, so a factor that does not predict THIS coin weighs itself to zero. Beyond +55 or -55 the market is strongly one-sided; between the bands it has no strong opinion. It goes quiet around FOMC and CPI on purpose. Before a trade: trade WITH a strong lean; inside the band size down or wait.\n- memory = Market Memory. What you see: a lower pane with the expected move over the next 6 candles, a dashed MEM line at the projected price, and a legend with how many past analogs matched and what share of them went up. What it means: the 25 past candles whose 8-factor state most resembles right now, and what price did next. It is a BASE RATE, not a call: 70% up with a tiny projected move says drift, not breakout. Before a trade: use it to size and to set the horizon, never as the entry trigger.\n- magnet = Liquidation Magnet. What you see: a red line above price (short liquidations, with the dollar size) and a green line below (long liquidations); the BOLD one is the stronger magnet. What it means: price is pulled toward big pools of forced orders, size times proximity. Before a trade: the bold pool is the likelier next visit - a target when it sits on your side, and the level to keep a stop BEYOND when it does not.\n- whaleliq = Big Liquidations (24h). What you see: circles ON the candles, at the exact price and candle where a big liquidation happened in the last 24 hours - red where a long was force-SOLD, green where a short was force-BOUGHT, the circle sized by the position; tapping one gives its size, side, venue and distance from price. What it means: these are NOT estimates and NOT forecasts - they are events MarginPad's own collector recorded across eight exchanges, so where the circles cluster is where leverage really died and where the stops really sat. It covers ten coins (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC) and cannot be switched on anywhere else. Before a trade: price returning into a thick band of red circles is arriving where forced selling already happened once - it either gets absorbed there or breaks and does it again; green circles above you mark where shorts were already squeezed out, so a move back up through them has fuel behind it. An empty chart means 24 calm hours, not a setup. The brief carries these under `premiumReadouts.whaleLiquidations`.\nThe full guide for all five is marginpad.io/ai-indicators/ - mention it once when you explain one of them.";
+  + "\n\nINDICATOR GUIDE (say the human name in prose, use the id in actions). Standard ids: ema (average price, recent candles weigh more; periods 9/21/50/100/200 - price above it leans up), sma (plain average), hma (Hull MA - smoother and faster), vwap (volume-weighted average, the day's fair price), bb (Bollinger Bands - two bands around price: wide = wild, tight = calm, near the top band = pricey), kc (Keltner Channels), dc (Donchian - highest high / lowest low), ichi (Ichimoku cloud), psar (Parabolic SAR - trailing dots that flip sides), sr (support / resistance lines), pp (pivot points), vol (volume), rsi (a 0-100 speed meter: above 70 overbought, below 30 oversold), macd (is the trend speeding up or slowing down; above 0 = buyers in control), stoch (Stochastic - timing turns, 80/20), atr (how much price moves per candle - sizes a stop), wr (Williams %R), cci (distance from average), sig (Supertrend buy/sell arrows with a TP mark).\nMarginPad EXCLUSIVE indicators (Premium; built on our own liquidation data - the reader pays for these, explain them with care and always in terms of what to do before a long or a short):\n- casc = Cascade Radar. What you see: a 0-100 line in a lower pane, a dashed 90 line, and a red or green CASC arrow now and then. What it means: how much leveraged-liquidation fuel sits within 5% of price against what 20 candles of volume can absorb, ranked against the last 200 candles. Above 70 the market is fragile; above 90 one push can start a chain of forced liquidations. The legend names which SIDE the fuel is on. Before a long: fuel BELOW price is a chain of long liquidations under you - a dip can run, so keep the stop wider or wait. Before a short: fuel ABOVE price is short-squeeze fuel. Fuel on the OTHER side of your trade is a target.\n- brain = Market Brain. What you see: a -100..+100 line with +55 and -55 bands, BRAIN arrows, and a legend saying what drives it and its own live hit-rate on this chart. What it means: a learned blend of 8 factors (trend, momentum, volume, fragility, real liquidation flow, funding, crowd positioning, structure); the weights are re-learned every 10 candles from the trailing 280, walk-forward, so a factor that does not predict THIS coin weighs itself to zero. Beyond +55 or -55 the market is strongly one-sided; between the bands it has no strong opinion. It goes quiet around FOMC and CPI on purpose. Before a trade: trade WITH a strong lean; inside the band size down or wait.\n- memory = Market Memory. What you see: a lower pane with the expected move over the next 6 candles, a dashed MEM line at the projected price, and a legend with how many past analogs matched and what share of them went up. What it means: the 25 past candles whose 8-factor state most resembles right now, and what price did next. It is a BASE RATE, not a call: 70% up with a tiny projected move says drift, not breakout. Before a trade: use it to size and to set the horizon, never as the entry trigger.\n- magnet = Liquidation Magnet. What you see: a red line above price (short liquidations, with the dollar size) and a green line below (long liquidations); the BOLD one is the stronger magnet. What it means: price is pulled toward big pools of forced orders, size times proximity. Before a trade: the bold pool is the likelier next visit - a target when it sits on your side, and the level to keep a stop BEYOND when it does not.\n- whaleliq = Big Liquidations (24h). What you see: circles ON the candles, at the exact price and candle where a big liquidation happened in the last 24 hours - red where a long was force-SOLD, green where a short was force-BOUGHT, the circle sized by the position; tapping one gives its size, side, venue and distance from price. What it means: these are NOT estimates and NOT forecasts - they are events MarginPad's own collector recorded across eight exchanges, so where the circles cluster is where leverage really died and where the stops really sat. It covers ten coins (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC) and cannot be switched on anywhere else. Before a trade: price returning into a thick band of red circles is arriving where forced selling already happened once - it either gets absorbed there or breaks and does it again; green circles above you mark where shorts were already squeezed out, so a move back up through them has fuel behind it. An empty chart means 24 calm hours, not a setup. The brief carries these under `premiumReadouts.whaleLiquidations`.\n- catalyst = What moved it (30d). What you see: a flag on the candle where every abnormal jump or drop of the last 30 days STARTED, carrying its size and its cause in one word (CPI, FOMC, Bybit delisting, Hack, ETF, Cascade, Short squeeze, Whale, BTC move) or a grey question mark; a lime LIVE flag on the newest candle while a move is forming; the legend says how many of the month's moves were explained. What it means: a move is judged against this coin's own 30-day volatility, and the cause comes from MarginPad's Catalyst Engine (dated exchange announcements, filings, fast news desks) matched by symbol and by time (inside 90 minutes before the move or 30 after), from our own liquidation feed (a cascade = six times the typical amount, with its side), from the whale tracker, or from BTC moving at the same time; a source that speaks thirty times a day cannot claim a move by time alone. The brief carries the moves under `whatMovedIt` - cite the cause exactly as given there and NEVER invent one for a move marked unknown. Before a trade: a rise with a dated reason is a move whose reason can be checked; a rise marked ? is flow, and flow reverses.\nThe full guide for all six is marginpad.io/ai-indicators/ - mention it once when you explain one of them.";
 // The chart brief for /v1/ai, built server-side from candles - the same fields the chart panel sends, computed the
 // same way (RSI via _rsi, simple MAs, ATR14, Bollinger 20/2). null = symbol unknown to every price source.
 async function aiBrief(sym, iv, env) {
@@ -23957,6 +24035,7 @@ export default {
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);
     if (url.pathname === '/api/catalysts/moves') return handleCatalystMoves(url, env);
+    if (url.pathname === '/api/catalysts/top') return handleCatalystTop(url, env);
     if (url.pathname === '/api/catalysts') return handleCatalysts(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}

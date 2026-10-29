@@ -67,6 +67,7 @@ const EXTRAS = [
   ['/trading-api/', '0.8', W],
   ['/api-docs/', '0.8', W],
   ['/free-crypto-api/', '0.9', W],
+  ['/catalysts/', '0.9', D],   // the live catalysts feed changes every minute (2026-10-29)
   ['/premium/', '0.9', W],
   ['/ai-indicators/', '0.8', W],
   ['/trading-report/', '0.8', W],
