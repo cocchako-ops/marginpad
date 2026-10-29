@@ -9,6 +9,8 @@
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/catalysts/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/catalysts/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/catalysts/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/catalysts/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/catalysts/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow" />
 <meta property="og:title" content="Crypto catalysts, live - what is moving the market right now" />
@@ -264,7 +266,7 @@ a{color:var(--lime);text-decoration:none}
     var t=S.top.filter(function(x){return x.sym===sym;})[0];$('mvMent').textContent=t?t.n+' mention'+(t.n===1?'':'s')+' today':'';
     if(!j||!j.moves){el.innerHTML='<span style="color:var(--dim);font-size:13px">No candles for '+esc(sym)+' here.</span>';$('explTxt').textContent='';$('explBar').innerHTML='';return;}
     var s=j.summary||{},n=s.n||1,seg=function(cls,v){return v?'<b class="'+cls+'" style="width:'+Math.round(100*v/n)+'%" title="'+v+'"></b>':'';};
-    $('explBar').innerHTML=seg('n',(s.news||0)+(s.both||0))+seg('c',s.cascade||0)+seg('b',(s.btc||0)+(s.stocks||0))+seg('w',(s.whale||0)+(s.flow||0));
+    $('explBar').innerHTML=seg('n',(s.news||0)+(s.both||0))+seg('c',(s.cascade||0)+(s.liqs||0))+seg('b',(s.btc||0)+(s.stocks||0))+seg('w',(s.whale||0)+(s.flow||0));
     $('explTxt').textContent=(s.explainedPct!=null?s.explainedPct+'% explained':'')+' \u00b7 '+(s.n||0)+' moves';
     el.innerHTML=j.moves.slice(0,8).map(function(m){var up=m.dir>0,col=up?'var(--green)':'var(--red)';var d=new Date(m.t0);var c=m.catalyst;
       var ev=c?esc(c.title).slice(0,100)+' <em>'+esc(srcName(c.source))+' \u00b7 '+(c.after?Math.abs(c.leadMin)+'m after':c.leadMin+'m before')+(c.realism&&c.realism.x15!=null?' \u00b7 this kind '+c.realism.x15+'x usual':'')+'</em>':esc(m.note||'');

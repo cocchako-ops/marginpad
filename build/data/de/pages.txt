@@ -385,3 +385,4 @@
 /xrp-liquidation-calculator/
 /xrp-liquidation-map/
 /zec-liquidation-calculator/
+/catalysts/

@@ -15,7 +15,7 @@
 const fs = require('fs'), path = require('path');
 const ARGS = process.argv.slice(2), has = k => ARGS.includes(k);
 const PURE = has('--pure'), BROWSER = has('--browser'), LOCAL = has('--local'), FALSIFY = has('--falsify');
-const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'unknown'];
+const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'unknown'];
 const BASE = 'https://marginpad.io', DIST = path.join(__dirname, '..', 'dist'), A = path.join(DIST, 'assets');
 let pass = 0, fail = 0;
 const ok = (name, cond, note) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (note !== undefined ? '  -> ' + String(note).slice(0, 220) : '')); } };
@@ -125,6 +125,9 @@ function pureLeg() {
   ok('nine million of one-sided market sells on the tape as a drop runs is order flow', a.cause === 'flow' && a.factors.some(f => f.k === 'flow' && f.flow.n === 6), a.cause + ' ' + JSON.stringify(a.factors.filter(f => f.k === 'flow')));
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'BTC', tape: tape.map(t => ({ ...t, side: 'buy' })) });
   ok('market BUYS under a drop are not its flow', a.cause === 'unknown', a.cause);
+  const liqM = []; for (let i = 0; i < 2000; i++) liqM.push({ t: T0 - 2000 * 300000 + i * 300000, long: 10000, short: 10000 }); liqM.push({ t: T0, long: 120000, short: 10000 }); liqM.push({ t: T0 + 300000, long: 85000, short: 5000 });
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.6, dir: -1 }, [], liqM, { sym: 'BTC', liqFloor: 250000 });
+  ok('liquidations at 3x the bucket but under the cascade bar are named as forced closes, not a cascade', a.cause === 'liqs' && !a.cascade && /forced closes/.test(a.note), a.cause + ' ' + a.note);
   const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained', why: 'forced selling', ts: Date.now() } } });
   ok('a label lifts a rules-only news row: blended score, the real kind, the coins unioned, the direction', en[0].score > 40 && en[0].kind === 'hack' && en[0].kind0 === 'news' && /ETH/.test(en[0].syms) && en[0].expect === -1 && en[0].lbl.sum, JSON.stringify(en[0]));
 }
@@ -142,7 +145,7 @@ async function prodLeg() {
   const mv = j.moves || [];
   ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => CAUSES.includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
   const s = j.summary || {};
-  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + s.unknown === s.n, JSON.stringify(s));
+  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + s.unknown === s.n, JSON.stringify(s));
   ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0) || (m.factors || []).some(f => f.k === m.cause)));
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
@@ -176,7 +179,7 @@ async function prodLeg() {
 // ---------- browser ----------
 // the indicator is Premium (2026-10-29): the browser legs walk a throwaway member with a one-day grant, removed at the end
 const ADMIN = (() => { try { return fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean).find(x => /^mpadm_/.test(x)) || ''; } catch (e) { return ''; } })();
-const E2E_UID = 'e2e-cxprem';
+const E2E_UID = 'e2ecxprem';   // NO HYPHEN: the username sanitiser strips it and the premium grant by name then misses the account
 async function adminJ(u, body) { const r = await fetch(BASE + u, { method: body ? 'POST' : 'GET', headers: { 'x-admin-key': ADMIN, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); const t = await r.text(); try { return { status: r.status, j: JSON.parse(t) }; } catch (e) { return { status: r.status, j: null, raw: t }; } }
 async function premiumSession() {
   if (!ADMIN) return null;
@@ -231,7 +234,7 @@ async function browserLeg() {
         const card = await page.evaluate(() => { const c = document.querySelector('.cwin-cxc'); if (!c) return null; const r = c.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + 20); return { text: c.textContent.slice(0, 200), inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight, reach: !!(hit && c.contains(hit)), cause: (c.querySelector('.cxc-cause') || {}).textContent }; });
         ok('a real click on a flag opens its card', !!card, hit.label);
         ok('the card is inside the viewport and under the pointer', card && card.inside && card.reach, JSON.stringify(card));
-        ok('and names the cause the flag carried', card && (hit.cause === 'unknown' ? /No known cause/i.test(card.cause || '') : /News|cascade|Bitcoin|Whale|stocks|flow/i.test(card.cause || '')), card && card.cause);
+        ok('and names the cause the flag carried', card && (hit.cause === 'unknown' ? /No known cause/i.test(card.cause || '') : /News|cascade|squeeze|liquidations|Bitcoin|Whale|stocks|flow|Forced/i.test(card.cause || '')), card && card.cause);
         await page.keyboard.press('Escape'); await page.evaluate(() => { const c = document.querySelector('.cwin-cxc'); if (c) c.remove(); });
       } else ok('a flag to click', false, 'no hit rects');
       // the live path, injected: a -1.5% move starting ten minutes ago

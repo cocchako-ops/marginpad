@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 1,
-  "hit": 154,
-  "missing": 0
+  "cover": 0.9935064935064936,
+  "hit": 153,
+  "missing": 1
  },
  {
   "rel": "alerts/index.html",
@@ -1100,7 +1100,7 @@
  {
   "rel": "catalysts/index.html",
   "cover": 1,
-  "hit": 36,
+  "hit": 54,
   "missing": 0
  },
  {

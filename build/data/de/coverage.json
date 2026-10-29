@@ -1099,11 +1099,9 @@
  },
  {
   "rel": "catalysts/index.html",
-  "cover": 0.05555555555555555,
-  "hit": 2,
-  "missing": 34,
-  "skipped": true,
-  "allowed": false
+  "cover": 1,
+  "hit": 54,
+  "missing": 0
  },
  {
   "rel": "coin/bnb/index.html",
@@ -1989,9 +1987,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.9923076923076923,
-  "hit": 258,
-  "missing": 2
+  "cover": 1,
+  "hit": 260,
+  "missing": 0
  },
  {
   "rel": "privacy/index.html",

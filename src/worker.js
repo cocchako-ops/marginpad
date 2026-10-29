@@ -1458,9 +1458,12 @@ function cxAttribute(mv, cats, liq, opt) {
   // a cascade has a side: long liquidations under a drop, a short squeeze under a rise
   const cascLabel = liqOut && liqOut.longShare != null ? (mv.dir < 0 && liqOut.longShare >= 0.6 ? 'Long liquidations' : mv.dir > 0 && liqOut.longShare <= 0.4 ? 'Short squeeze' : 'Cascade') : 'Cascade';
   const ctx = cxContext(mv, o.btcMoves, o.whales, sym, { spx: o.spx, tape: o.tape });
+  // forced closes UNDER the cascade bar (3x the typical bucket and half the floor) are still a mechanism the feed measured: a
+  // weaker cause than a cascade, said as 'forced closes were in it', never as a cascade
+  if (!cascade && liqOut && liqOut.x != null && liqOut.x >= 3 && liqOut.usd >= o.liqFloor / 2) ctx.unshift({ k: 'liqs', label: 'Forced closes', w: Math.min(0.55, 0.3 + liqOut.x / 20), text: 'The feed liquidated ' + liqOut.x + 'x its typical 5-minute amount (' + Math.round(liqOut.usd / 1000) + 'k USD) as the move ran - not a cascade, but forced closes were in it', liq: { usd: liqOut.usd, x: liqOut.x } });
   let cause2 = cause, label = best ? cxLabel(best) : cascade ? cascLabel : 'No known cause', confidence2 = confidence;
   if (cause === 'unknown') {
-    const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow').sort((a, b) => b.w - a.w)[0];
+    const strong = ctx.filter(x => x.k === 'whale' || x.k === 'btc' || x.k === 'stocks' || x.k === 'flow' || x.k === 'liqs').sort((a, b) => b.w - a.w)[0];
     if (strong) { cause2 = strong.k; label = strong.label; confidence2 = strong.w; }
   }
   const out = { cause: cause2, confidence: +confidence2.toFixed(2), label, catalyst: best, others, liq: liqOut, cascade, factors: ctx };
@@ -1525,7 +1528,7 @@ function cxNote(mv, a, ctx, sym) {
     parts.push('No dated catalyst inside the 90 minutes before this move' + (a.liq ? ' and no liquidation cascade (' + (a.liq.x != null ? a.liq.x + 'x the typical 5-minute bucket' : 'quiet feed') + ')' : ''));
     const sess = ctx.filter(c => c.k === 'session')[0]; if (sess) parts.push(sess.text);
     if (sym !== 'BTC' && !ctx.some(c => c.k === 'btc')) parts.push('Bitcoin was not moving the same way, so this was the coin\'s own flow');
-    if (!ctx.some(c => c.k === 'stocks') && !ctx.some(c => c.k === 'flow')) parts.push('read it as positioning being worked through the book rather than a headline');
+    if (!ctx.some(c => c.k === 'stocks') && !ctx.some(c => c.k === 'flow') && !ctx.some(c => c.k === 'liqs')) parts.push('read it as positioning being worked through the book rather than a headline');
   } else if (a.catalyst && a.catalyst.realism) parts.push(a.catalyst.realism.text + (a.catalyst.realism.capped ? ' - this move is bigger than that kind usually produces, so the headline is only part of it' : ''));
   else if (a.cause === 'cascade') parts.push('The feed liquidated ' + (a.liq ? '$' + Math.round(a.liq.usd / 1000) + 'k' : 'many times its usual amount') + ' while the move ran - forced closes drove it');
   else { const fx = ctx.filter(c => c.k === a.cause)[0]; if (fx) parts.push(fx.text); }
@@ -1614,8 +1617,8 @@ async function handleCatalystMoves(url, env) {
   const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
   const moves = det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape }) }));
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
-  sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0;
-  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else sum.unknown++; }
+  sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0;
+  for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else sum.unknown++; }
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
   const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor } };
   const res = J(body, cj ? 300 : 60);

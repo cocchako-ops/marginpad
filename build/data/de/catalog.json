@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "de",
-  "generated": "2026-10-29T15:51:47.742Z",
-  "pages": 386,
-  "unique": 14524,
-  "words": 273725,
-  "untranslated": 4,
-  "untranslatedWords": 246,
-  "merged": "2026-10-29T15:54:20.828Z"
+  "generated": "2026-10-29T16:20:44.521Z",
+  "pages": 387,
+  "unique": 14566,
+  "words": 274455,
+  "untranslated": 1,
+  "untranslatedWords": 20,
+  "merged": "2026-10-29T16:23:59.334Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -101,7 +101,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 106,
+   "n": 96,
    "w": 1,
    "de": "Long"
   },
@@ -117,7 +117,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 106,
+   "n": 96,
    "w": 1,
    "de": "Short"
   },
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1939,
+   "n": 1927,
    "w": 1,
    "de": "MarginPad"
   },
@@ -7057,7 +7057,7 @@
     "/app.html",
     "/bitcoin-cycle/"
    ],
-   "n": 23,
+   "n": 24,
    "w": 2,
    "de": "Anmelden"
   },
@@ -7985,7 +7985,7 @@
    ],
    "n": 1,
    "w": 99,
-   "de": ""
+   "de": "Jede ungewöhnliche Bewegung der letzten 30 Tage bekommt eine Markierung auf der Kerze, mit der sie begann, und die Markierung nennt die wahrscheinlichste Ursache in einem Wort. Die Ursachen stammen aus der Catalyst Engine von MarginPad, die Börsenankündigungen (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC-Filings, den Makrokalender, die schnellen Newsredaktionen und die offiziellen Kanäle mit dem eigenen Zeitstempel jedes Eintrags liest - und aus unseren eigenen Daten: dem Liquidations-Feed, dem Whale-Tracker und Bitcoin selbst. Eine Bewegung wird an der 30-Tage-Volatilität des jeweiligen Coins gemessen, nie an einem festen Prozentwert, sodass 0.6% bei BTC eine Bewegung sein können und bei einem Meme-Coin nichts."
   },
   "M9S9Jn1vtz": {
    "en": "<b>A flag per move</b> - above a rise, below a drop - with the size and the cause: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> or <b>Short squeeze</b> (our feed liquidated six times the typical amount while the move ran), <b>Whale</b> (a tracked wallet traded the coin in size at that moment), <b>BTC move</b> (the coin followed Bitcoin), or a grey <b>?</b> when nothing dated explains it.",
@@ -11577,738 +11577,6 @@
    "w": 33,
    "de": "Kostenlose Krypto-Marktdaten-API ohne Key (Preise, OHLC, Screener, Funding, Open Interest, Liquidationen, Kalender, Rechner), eine Paper-Trading Bot API (REST, WebSocket, Webhooks, Limit-/Stop-Orders, Trailing Stops) und ein Remote-MCP-Server mit 22 Tools. OpenAPI 3.1."
   },
-  "UaHCDQd_L3": {
-   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/"
-   ],
-   "n": 12,
-   "w": 1,
-   "de": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>"
-  },
-  "4vZ0c5CpM-": {
-   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/"
-   ],
-   "n": 13,
-   "w": 5,
-   "de": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "leaf": true
-  },
-  "QFwW0TOIo2": {
-   "en": "My Trades",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/",
-    "/rekt/"
-   ],
-   "n": 10,
-   "w": 2,
-   "de": "My Trades",
-   "leaf": true
-  },
-  "Qf9bqcA4go": {
-   "en": "Tools ▸",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "Tools ▸"
-  },
-  "Xy4AMa-6JD": {
-   "en": "<span>Sync</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "<span>Sync</span>"
-  },
-  "YIhqIjcd76": {
-   "en": "<span>Layouts</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "<span>Layouts</span>"
-  },
-  "SKYW2Zbiby": {
-   "en": "Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Watchlist"
-  },
-  "RSoVO-G-Pk": {
-   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 5,
-   "de": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "leaf": true
-  },
-  "_lx_OlpzjG": {
-   "en": "<span data-i18n=\"heatDl\">Download</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "<span data-i18n=\"heatDl\">Download</span>"
-  },
-  "m9FuWK2UCT": {
-   "en": "Screener",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/free-crypto-api/"
-   ],
-   "n": 6,
-   "w": 1,
-   "de": "Screener"
-  },
-  "b_Fxxmc486": {
-   "en": "Funding",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Funding"
-  },
-  "5zNu03p97d": {
-   "en": "★ Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "★ Watchlist"
-  },
-  "ABSrPRUDss": {
-   "en": "Liquidation",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/",
-    "/glossary/"
-   ],
-   "n": 7,
-   "w": 1,
-   "de": "Liquidation"
-  },
-  "0I_PksYvAu": {
-   "en": "Cross Liq",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "de": "Cross Liq",
-   "leaf": true
-  },
-  "rrrREQMzV2": {
-   "en": "PnL / ROI",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 6,
-   "w": 2,
-   "de": "PnL / ROI"
-  },
-  "ovemx4owHS": {
-   "en": "Take-Profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 5,
-   "w": 1,
-   "de": "Take-Profit"
-  },
-  "Rt2tHuR3sW": {
-   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "de": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>"
-  },
-  "DwNisxlHs5": {
-   "en": "Forex",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Forex"
-  },
-  "Vpu9dX4buL": {
-   "en": "Market",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/hyperliquid-whales/",
-    "/trading-api/"
-   ],
-   "n": 7,
-   "w": 1,
-   "de": "Market"
-  },
-  "JNlI5L2-W4": {
-   "en": "Limit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "Limit"
-  },
-  "BJLQQ88bfb": {
-   "en": "<span data-i18n=\"long\">Long</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "<span data-i18n=\"long\">Long</span>"
-  },
-  "OIWeOUDbe-": {
-   "en": "<span data-i18n=\"short\">Short</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "<span data-i18n=\"short\">Short</span>"
-  },
-  "aQyK0fclKF": {
-   "en": "MarginPad - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "de": "MarginPad - 0.5%",
-   "leaf": true
-  },
-  "7yKqDeDTd0": {
-   "en": "Binance - 0.4%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Binance - 0.4%",
-   "leaf": true
-  },
-  "5ZOCKqG5Bp": {
-   "en": "Bybit - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Bybit - 0.5%",
-   "leaf": true
-  },
-  "b5sJgE-gp2": {
-   "en": "OKX - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "OKX - 0.5%"
-  },
-  "4xOEJckW1n": {
-   "en": "Bitget - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Bitget - 0.5%",
-   "leaf": true
-  },
-  "f4tyacp3SN": {
-   "en": "MEXC - 0.1%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "MEXC - 0.1%"
-  },
-  "PgRAMeug7a": {
-   "en": "KuCoin - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "KuCoin - 0.5%",
-   "leaf": true
-  },
-  "xfF7XoGeHA": {
-   "en": "Gate - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Gate - 0.5%",
-   "leaf": true
-  },
-  "tidhONmH-4": {
-   "en": "Kraken - 0.6%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Kraken - 0.6%",
-   "leaf": true
-  },
-  "bJmVCli3x5": {
-   "en": "Hyperliquid - 1.25%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Hyperliquid - 1.25%",
-   "leaf": true
-  },
-  "NbY1pa6AcP": {
-   "en": "Coinbase - 1.33%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "de": "Coinbase - 1.33%",
-   "leaf": true
-  },
-  "xnU-pHn9BQ": {
-   "en": "MarginPad - 0.055%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "de": "MarginPad - 0.055%",
-   "leaf": true
-  },
-  "_PpDgEI9T5": {
-   "en": "<span class=\"mp-dot\"></span><b>Market Pulse</b><span class=\"mp-livetag\">LIVE</span><span class=\"mp-upd\" id=\"mpUpd\"></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 3,
-   "de": "<span class=\"mp-dot\"></span><b>Market Pulse</b><span class=\"mp-livetag\">LIVE</span><span class=\"mp-upd\" id=\"mpUpd\"></span>",
-   "leaf": true
-  },
-  "0UMyAHvt53": {
-   "en": "<span class=\"eyebrow\" data-i18n=\"ebPartners\">Partners</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "<span class=\"eyebrow\" data-i18n=\"ebPartners\">Partners</span>"
-  },
-  "uMs9BK8HRr": {
-   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>"
-  },
-  "Mf46iRDWup": {
-   "en": "TradingView",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "TradingView"
-  },
-  "7qxtMaeb-F": {
-   "en": "Koinly",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Koinly"
-  },
-  "YNDGY6v7RI": {
-   "en": "3Commas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "3Commas"
-  },
-  "VtoQU5BbyJ": {
-   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "de": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "leaf": true
-  },
-  "T6jMhgxSsm": {
-   "en": "Tools",
-   "kind": [
-    "html",
-    "attr:aria-label",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/crypto-backtester/",
-    "/crypto-correlation-matrix/"
-   ],
-   "n": 18,
-   "w": 1,
-   "de": "Tools"
-  },
-  "V_TTAcNK31": {
-   "en": "<span>My Trades</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "de": "<span>My Trades</span>",
-   "leaf": true
-  },
-  "ClPoxqx5JT": {
-   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "<span data-i18n=\"chatBtn\">Chat</span>"
-  },
-  "lyrY2KUDl7": {
-   "en": "Layout",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Layout"
-  },
-  "qXSSU8Np0M": {
-   "en": "Coin",
-   "kind": [
-    "attr:aria-label",
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/hyperliquid-liquidations/",
-    "/liquidation-statistics/"
-   ],
-   "n": 6,
-   "w": 1,
-   "de": "Coin"
-  },
-  "P4TvUx-duZ": {
-   "en": "Symbol",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "de": "Symbol"
-  },
-  "J6JbU5D47S": {
-   "en": "planExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "planExHint"
-  },
-  "DeFJ3eHlTO": {
-   "en": "planFeeHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "planFeeHint"
-  },
-  "a3_8lyG-KA": {
-   "en": "planRzHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "planRzHint"
-  },
-  "5MN3jTT9VP": {
-   "en": "liqExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "liqExHint"
-  },
-  "6MRy4Bu8n3": {
-   "en": "crExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "crExHint"
-  },
-  "Oxjo4zJQDz": {
-   "en": "Volume",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 3,
-   "w": 1,
-   "de": "Volumen"
-  },
-  "Qqcee-_jcA": {
-   "en": "Take-profit",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/glossary/"
-   ],
-   "n": 5,
-   "w": 1,
-   "de": "Take-Profit"
-  },
-  "XIfnOuScDy": {
-   "en": "Stop-loss",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/how-to-set-a-stop-loss/",
-    "/glossary/"
-   ],
-   "n": 5,
-   "w": 1,
-   "de": "Stop-Loss"
-  },
-  "WyBZXB2UvT": {
-   "en": "Trailing stop",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/what-is-a-trailing-stop/",
-    "/glossary/"
-   ],
-   "n": 4,
-   "w": 2,
-   "de": "Trailing Stop"
-  },
-  "V_X177xZkP": {
-   "en": "Menu",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/",
-    "/calendar/"
-   ],
-   "n": 13,
-   "w": 1,
-   "de": "Menü"
-  },
   "xB-wafRBzr": {
    "en": "Crypto Liquidation Map, Heatmap & Calculators - MarginPad",
    "kind": [
@@ -12330,11 +11598,59 @@
     "/app.html",
     "/bitcoin-cycle/",
     "/calendar/",
-    "/defi/"
+    "/catalysts/"
    ],
-   "n": 12,
+   "n": 13,
    "w": 2,
    "de": "<a href=\"/\" class=\"mark\" aria-label=\"MarginPad - Start\">MARGIN<b>PAD</b></a>"
+  },
+  "UaHCDQd_L3": {
+   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/catalysts/",
+    "/defi/"
+   ],
+   "n": 11,
+   "w": 1,
+   "de": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>"
+  },
+  "4vZ0c5CpM-": {
+   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/calendar/",
+    "/catalysts/"
+   ],
+   "n": 12,
+   "w": 5,
+   "de": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "leaf": true
+  },
+  "QFwW0TOIo2": {
+   "en": "My Trades",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/catalysts/",
+    "/",
+    "/rekt/"
+   ],
+   "n": 8,
+   "w": 2,
+   "de": "My Trades",
+   "leaf": true
   },
   "_OT7_SufkL": {
    "en": "<span data-auth-status>Sign in</span>",
@@ -12345,9 +11661,9 @@
     "/app.html",
     "/bitcoin-cycle/",
     "/calendar/",
-    "/community/"
+    "/catalysts/"
    ],
-   "n": 12,
+   "n": 13,
    "w": 2,
    "de": "<span data-auth-status>Anmelden</span>"
   },
@@ -12459,6 +11775,18 @@
    "w": 19,
    "de": "<a class=\"prod prod-rekt\" href=\"/rekt/\" role=\"tab\"><span class=\"pi\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z\"/></svg></span><span class=\"pt\"><b data-i18n=\"navRekt\">Rekt</b><small data-i18n=\"prodRektS\">Live-Liquidations-Feed</small></span></a> <a class=\"prod\" href=\"/alerts/\"><span class=\"pi\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\"/><path d=\"M13.7 21a2 2 0 0 1-3.4 0\"/></svg></span><span class=\"pt\"><b data-i18n=\"prodAlerts\">Alarme</b><small>E-Mail- &amp; Telegram-Alarme</small></span><span class=\"pnew\">NEU</span></a> <a class=\"prod prod-screener\" href=\"/screener\" role=\"tab\"><span class=\"pi\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/></svg></span><span class=\"pt\"><b data-i18n=\"prodScreener\">Screener</b><small data-i18n=\"prodScreenerS\">Bewerteter Markt-Scanner</small></span></a> <a class=\"prod prod-tools\" href=\"/tools/\" role=\"tab\"><span class=\"pi\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 6h10\"/><path d=\"M18 6h2\"/><circle cx=\"16\" cy=\"6\" r=\"2\"/><path d=\"M4 12h2\"/><path d=\"M10 12h10\"/><circle cx=\"8\" cy=\"12\" r=\"2\"/><path d=\"M4 18h10\"/><path d=\"M18 18h2\"/><circle cx=\"16\" cy=\"18\" r=\"2\"/></svg></span><span class=\"pt\"><b>Trading-Tools</b><small>Backtester · Journal · Risiko</small></span><span class=\"pnew\">NEU</span></a>"
   },
+  "Qf9bqcA4go": {
+   "en": "Tools ▸",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Tools ▸"
+  },
   "NNi2D-JTMv": {
    "en": "Hide",
    "kind": [
@@ -12495,6 +11823,18 @@
    "w": 3,
    "de": "<span>Paper Trade öffnen</span>"
   },
+  "Xy4AMa-6JD": {
+   "en": "<span>Sync</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span>Sync</span>"
+  },
   "zpmhBUvLJc": {
    "en": "<span>Note</span>",
    "kind": [
@@ -12530,6 +11870,18 @@
    "n": 1,
    "w": 2,
    "de": "<span>Layout speichern</span>"
+  },
+  "YIhqIjcd76": {
+   "en": "<span>Layouts</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span>Layouts</span>"
   },
   "tDlV1cMhbv": {
    "en": "<span>Light / dark</span>",
@@ -12590,6 +11942,18 @@
    "n": 1,
    "w": 1,
    "de": "Hell"
+  },
+  "SKYW2Zbiby": {
+   "en": "Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Watchlist"
   },
   "FmUsfdDTNU": {
    "en": "Star coins on the homepage to pin them here.",
@@ -12666,6 +12030,19 @@
    "w": 5,
    "de": "<b>Scalping</b><span>BTC · 5m · Signale + EMA</span>"
   },
+  "RSoVO-G-Pk": {
+   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "leaf": true
+  },
   "O8Sd5zpAME": {
    "en": "<b>BTC multi-TF</b><span>15m + 1H side by side</span>",
    "kind": [
@@ -12702,6 +12079,18 @@
    "w": 4,
    "de": "Oder füge einen leeren Chart hinzu"
   },
+  "_lx_OlpzjG": {
+   "en": "<span data-i18n=\"heatDl\">Download</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span data-i18n=\"heatDl\">Download</span>"
+  },
   "FJjJgny6g9": {
    "en": "<span data-i18n=\"heatSh\">Share</span>",
    "kind": [
@@ -12734,9 +12123,10 @@
    "ctx": [
     "/app.html",
     "/blog/",
-    "/coins/"
+    "/coins/",
+    "/glossary/"
    ],
-   "n": 7,
+   "n": 6,
    "w": 1,
    "de": "Alle"
   },
@@ -12861,6 +12251,21 @@
    "w": 1,
    "de": "<span class=\"eyebrow\" data-i18n=\"ebMarkets\">Märkte</span>"
   },
+  "m9FuWK2UCT": {
+   "en": "Screener",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/free-crypto-api/",
+    "/",
+    "/spot/"
+   ],
+   "n": 4,
+   "w": 1,
+   "de": "Screener"
+  },
   "HcjEOqAAWP": {
    "en": "Perp futures",
    "kind": [
@@ -12947,6 +12352,31 @@
    "w": 1,
    "de": "Verlierer"
   },
+  "Oxjo4zJQDz": {
+   "en": "Volume",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 2,
+   "w": 1,
+   "de": "Volumen"
+  },
+  "b_Fxxmc486": {
+   "en": "Funding",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Funding"
+  },
   "rDAi4RNELb": {
    "en": "Volatile",
    "kind": [
@@ -12982,6 +12412,19 @@
    "n": 1,
    "w": 2,
    "de": "▼ Short-Setups"
+  },
+  "5zNu03p97d": {
+   "en": "★ Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 2,
+   "w": 1,
+   "de": "★ Watchlist"
   },
   "8zVMfZfkFf": {
    "en": "Loading live markets…",
@@ -13067,6 +12510,35 @@
    "w": 24,
    "de": "Live-Daten von mehreren Börsen (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + MarginPad-Derivatedaten (unser eigener Liquidations-Collector für acht Börsen) · nur Paper Trading, keine Finanzberatung."
   },
+  "ABSrPRUDss": {
+   "en": "Liquidation",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/",
+    "/glossary/",
+    "/hyperliquid-liquidations/"
+   ],
+   "n": 5,
+   "w": 1,
+   "de": "Liquidation"
+  },
+  "0I_PksYvAu": {
+   "en": "Cross Liq",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Cross Liq",
+   "leaf": true
+  },
   "J2ra3Twex3": {
    "en": "Position Size",
    "kind": [
@@ -13078,6 +12550,18 @@
    "n": 2,
    "w": 2,
    "de": "Positionsgröße"
+  },
+  "rrrREQMzV2": {
+   "en": "PnL / ROI",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2,
+   "de": "PnL / ROI"
   },
   "D6w0az6TOa": {
    "en": "Average / DCA",
@@ -13091,6 +12575,18 @@
    "w": 2,
    "de": "Durchschnitt / DCA"
   },
+  "ovemx4owHS": {
+   "en": "Take-Profit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "de": "Take-Profit"
+  },
   "pX5LlEWjaF": {
    "en": "Risk / Reward",
    "kind": [
@@ -13102,6 +12598,18 @@
    "n": 2,
    "w": 2,
    "de": "Chance / Risiko"
+  },
+  "Rt2tHuR3sW": {
+   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>"
   },
   "6ElJRITtLj": {
    "en": "Crypto",
@@ -13127,6 +12635,18 @@
    "w": 1,
    "de": "Aktien"
   },
+  "DwNisxlHs5": {
+   "en": "Forex",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Forex"
+  },
   "MKo7Cf-Cfs": {
    "en": "Metals",
    "kind": [
@@ -13150,6 +12670,57 @@
    "n": 1,
    "w": 1,
    "de": "Indizes"
+  },
+  "Vpu9dX4buL": {
+   "en": "Market",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/hyperliquid-whales/",
+    "/trading-api/"
+   ],
+   "n": 6,
+   "w": 1,
+   "de": "Market"
+  },
+  "JNlI5L2-W4": {
+   "en": "Limit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Limit"
+  },
+  "BJLQQ88bfb": {
+   "en": "<span data-i18n=\"long\">Long</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span data-i18n=\"long\">Long</span>"
+  },
+  "OIWeOUDbe-": {
+   "en": "<span data-i18n=\"short\">Short</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span data-i18n=\"short\">Short</span>"
   },
   "sjos3CGOIM": {
    "en": "Limit price",
@@ -13285,6 +12856,147 @@
    "w": 4,
    "de": "Börse (legt Margin-Satz fest)"
   },
+  "aQyK0fclKF": {
+   "en": "MarginPad - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "MarginPad - 0.5%",
+   "leaf": true
+  },
+  "7yKqDeDTd0": {
+   "en": "Binance - 0.4%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Binance - 0.4%",
+   "leaf": true
+  },
+  "5ZOCKqG5Bp": {
+   "en": "Bybit - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Bybit - 0.5%",
+   "leaf": true
+  },
+  "b5sJgE-gp2": {
+   "en": "OKX - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "OKX - 0.5%"
+  },
+  "4xOEJckW1n": {
+   "en": "Bitget - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Bitget - 0.5%",
+   "leaf": true
+  },
+  "f4tyacp3SN": {
+   "en": "MEXC - 0.1%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "MEXC - 0.1%"
+  },
+  "PgRAMeug7a": {
+   "en": "KuCoin - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "KuCoin - 0.5%",
+   "leaf": true
+  },
+  "xfF7XoGeHA": {
+   "en": "Gate - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Gate - 0.5%",
+   "leaf": true
+  },
+  "tidhONmH-4": {
+   "en": "Kraken - 0.6%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Kraken - 0.6%",
+   "leaf": true
+  },
+  "bJmVCli3x5": {
+   "en": "Hyperliquid - 1.25%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Hyperliquid - 1.25%",
+   "leaf": true
+  },
+  "NbY1pa6AcP": {
+   "en": "Coinbase - 1.33%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Coinbase - 1.33%",
+   "leaf": true
+  },
   "if_zv_6NFN": {
    "en": "<b>Maintenance margin</b> is the slice of your position the exchange makes you keep on deposit; the moment your margin falls to it, you are liquidated. Binance asks 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% on its first tier, Hyperliquid 1.25% on BTC, Coinbase 1.33%; MarginPad default is 0.5%. It moves <b>only where your liquidation price sits</b>. Position size, fees and P&amp;L do not change.",
    "kind": [
@@ -13308,6 +13020,19 @@
    "n": 1,
    "w": 6,
    "de": "Gebühren wie bei (setzt Taker-Gebühr)"
+  },
+  "xnU-pHn9BQ": {
+   "en": "MarginPad - 0.055%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "MarginPad - 0.055%",
+   "leaf": true
   },
   "eDNj8OEvti": {
    "en": "<b>Taker fee</b> is what the venue charges per side on the full position size (not on your margin), once at open and once at close, less the discount a MarginPad sign-up gets there. It changes <b>only what the trade costs and your net P&amp;L</b>, never the liquidation price. <a href=\"/trading-api/#fees\" target=\"_blank\" rel=\"noopener\">How the fee schedules work</a>",
@@ -13369,6 +13094,22 @@
    "w": 135,
    "de": "Standardmäßig wird eine Market-Order zum <b>Live-Preis</b> ausgeführt und die Maintenance Margin beträgt pauschal <b>0.5%</b> - die Einstiegslinie liegt genau dort, wo du geklickt hast, und eine neue Position zeigt 0.00. Das ist einfacher als an einer echten Börse. <b>Slippage</b> bewegt den Fill gegen dich, so wie beim Durchlaufen eines echten Orderbuchs: 0.01% bei den Majors, 0.05% bei dünneren Kryptowerten, 0.005% bei Forex, 0.02% bei Aktien, Metallen und Indizes. <b>Margin-Stufen</b> erhöhen die Maintenance Margin mit wachsender Position, so wie eine Risk-Limit-Tabelle einer Börse, sodass eine große Position früher liquidiert wird - eine höhere Maintenance-Anforderung lässt weniger Spielraum, bevor sie dich schließt. Beides ist aus, solange du es nicht einschaltest, gilt für <b>ab jetzt eröffnete Positionen</b>, und eine Position behält immer die Maintenance Margin, mit der sie ausgeführt wurde. Dieselbe Einstellung nutzen deine Bots über die API."
   },
+  "XIfnOuScDy": {
+   "en": "Stop-loss",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/how-to-set-a-stop-loss/",
+    "/glossary/",
+    "/risk-reward-calculator/"
+   ],
+   "n": 4,
+   "w": 1,
+   "de": "Stop-Loss"
+  },
   "cZ6jlq2S4B": {
    "en": "Clear",
    "kind": [
@@ -13393,6 +13134,20 @@
    "w": 18,
    "de": "Das Prozent bezieht sich auf deine Margin, nicht auf den Preis - bei 20x sind 1% Bewegung gegen dich 20%."
   },
+  "Qqcee-_jcA": {
+   "en": "Take-profit",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/glossary/"
+   ],
+   "n": 2,
+   "w": 1,
+   "de": "Take-Profit"
+  },
   "uWFLSW40C-": {
    "en": "Type a price, or the profit you are aiming for as a percent of your margin.",
    "kind": [
@@ -13404,6 +13159,21 @@
    "n": 1,
    "w": 14,
    "de": "Gib einen Preis ein oder den Gewinn, den du anpeilst, in Prozent deiner Margin."
+  },
+  "WyBZXB2UvT": {
+   "en": "Trailing stop",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/what-is-a-trailing-stop/",
+    "/glossary/"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": "Trailing Stop"
   },
   "vcKsh1cExG": {
    "en": "Break-even at ROE",
@@ -14275,6 +14045,19 @@
    "w": 27,
    "de": "Ein Verhältnis von 2.0 heißt, du willst doppelt so viel gewinnen, wie du riskierst. Die Break-even-Trefferquote ist die Gewinnquote in %, die bei diesem Verhältnis nötig ist, um kein Geld zu verlieren."
   },
+  "_PpDgEI9T5": {
+   "en": "<span class=\"mp-dot\"></span><b>Market Pulse</b><span class=\"mp-livetag\">LIVE</span><span class=\"mp-upd\" id=\"mpUpd\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<span class=\"mp-dot\"></span><b>Market Pulse</b><span class=\"mp-livetag\">LIVE</span><span class=\"mp-upd\" id=\"mpUpd\"></span>",
+   "leaf": true
+  },
   "ZLeaKnG4_1": {
    "en": "Loading live market data…",
    "kind": [
@@ -14286,6 +14069,18 @@
    "n": 1,
    "w": 4,
    "de": "Live-Marktdaten werden geladen…"
+  },
+  "0UMyAHvt53": {
+   "en": "<span class=\"eyebrow\" data-i18n=\"ebPartners\">Partners</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span class=\"eyebrow\" data-i18n=\"ebPartners\">Partners</span>"
   },
   "8YWPbrDS9T": {
    "en": "Where to trade",
@@ -14382,6 +14177,18 @@
    "n": 1,
    "w": 24,
    "de": "Live-Preise und 24-Stunden-Bewegungen der aktivsten Märkte. Tippe auf den ★, um ein Paar an deine Watchlist zu pinnen - markierte Paare rücken nach vorn."
+  },
+  "uMs9BK8HRr": {
+   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>"
   },
   "6kRqBe-Mo1": {
    "en": "See where liquidations cluster",
@@ -14587,6 +14394,18 @@
    "w": 10,
    "de": "Die Plattformen, die wir zu MarginPad empfehlen - Charts, Steuern und Automatisierung."
   },
+  "Mf46iRDWup": {
+   "en": "TradingView",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "TradingView"
+  },
   "HMUGCPsOFe": {
    "en": "Pro charts, 100+ indicators and price alerts - the industry-standard charting platform.",
    "kind": [
@@ -14611,6 +14430,18 @@
    "w": 1,
    "de": "<span class=\"tc-go\" data-i18n=\"toolGo\">Ansehen →</span>"
   },
+  "7qxtMaeb-F": {
+   "en": "Koinly",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Koinly"
+  },
   "0c4JVku-R8": {
    "en": "Crypto tax reports done in minutes - connects to every major exchange.",
    "kind": [
@@ -14623,6 +14454,18 @@
    "w": 11,
    "de": "Krypto-Steuerberichte in Minuten - verbindet sich mit jeder großen Börse."
   },
+  "YNDGY6v7RI": {
+   "en": "3Commas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "3Commas"
+  },
   "sgujG0PYfr": {
    "en": "Automated trading bots, smart orders and a multi-exchange terminal.",
    "kind": [
@@ -14634,6 +14477,19 @@
    "n": 1,
    "w": 8,
    "de": "Automatisierte Trading-Bots, Smart Orders und ein Multi-Exchange-Terminal."
+  },
+  "VtoQU5BbyJ": {
+   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "leaf": true
   },
   "FJcqz0QOt4": {
    "en": "Log your trades, win USDT",
@@ -15063,6 +14919,23 @@
    "w": 12,
    "de": "Kostenlose Krypto-Futures-Tools - Liquidationsrechner, Heatmap, Charts &amp; risikofreies Paper Trading. Keine Anmeldung."
   },
+  "T6jMhgxSsm": {
+   "en": "Tools",
+   "kind": [
+    "html",
+    "attr:aria-label",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/crypto-backtester/",
+    "/crypto-correlation-matrix/",
+    "/crypto-cost-basis-calculator/"
+   ],
+   "n": 16,
+   "w": 1,
+   "de": "Tools"
+  },
   "RyRUE5d9Wa": {
    "en": "<a href=\"/calculators\" data-i18n=\"prodCalc\">Calculators</a> <a href=\"/paper-trade\">Paper Trade</a> <a href=\"/charts\" data-i18n=\"prodCharts\">Charts</a> <a href=\"/heatmap\" data-i18n=\"prodHeat\">Liquidation Heatmap</a> <a href=\"/rekt/\" data-i18n=\"navRekt\">Live Liquidations</a> <a href=\"/tools/\">Trading Tools</a> <a href=\"/trading-api/\">Bot API</a>",
    "kind": [
@@ -15163,6 +15036,31 @@
    "n": 1,
    "w": 10,
    "de": "Noch keine Tickets. Plane einen Trade und tippe auf “In Journal speichern”."
+  },
+  "V_TTAcNK31": {
+   "en": "<span>My Trades</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span>My Trades</span>",
+   "leaf": true
+  },
+  "ClPoxqx5JT": {
+   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span data-i18n=\"chatBtn\">Chat</span>"
   },
   "otpSlG_baZ": {
    "en": "<span class=\"ct-title\" data-i18n=\"chatTitleW\">Trader Chat</span><span class=\"ct-online\" id=\"ctOnline\"></span>",
@@ -15278,6 +15176,21 @@
    "w": 9,
    "de": "<span data-i18n=\"pwaStep3\">Tippe auf Hinzufügen - es öffnet sich im Vollbild, genau wie eine App</span>"
   },
+  "V_X177xZkP": {
+   "en": "Menu",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/calendar/",
+    "/catalysts/"
+   ],
+   "n": 13,
+   "w": 1,
+   "de": "Menü"
+  },
   "M7iFr1ELQD": {
    "en": "MarginPad - home",
    "kind": [
@@ -15287,9 +15200,9 @@
     "/app.html",
     "/bitcoin-cycle/",
     "/calendar/",
-    "/defi/"
+    "/catalysts/"
    ],
-   "n": 12,
+   "n": 13,
    "w": 2,
    "de": "MarginPad - Start"
   },
@@ -15303,9 +15216,9 @@
     "/app.html",
     "/bitcoin-cycle/",
     "/calendar/",
-    "/defi/"
+    "/catalysts/"
    ],
-   "n": 22,
+   "n": 24,
    "w": 2,
    "de": "MarginPad folgen"
   },
@@ -15316,11 +15229,11 @@
    ],
    "ctx": [
     "/app.html",
+    "/catalysts/",
     "/defi/",
-    "/",
-    "/rekt/"
+    "/"
    ],
-   "n": 6,
+   "n": 7,
    "w": 1,
    "de": "Sprache"
   },
@@ -15435,6 +15348,18 @@
    "n": 1,
    "w": 3,
    "de": "Paper Trade öffnen"
+  },
+  "lyrY2KUDl7": {
+   "en": "Layout",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Layout"
   },
   "1T2AJCOwKB": {
    "en": "2 charts",
@@ -15588,6 +15513,22 @@
    "w": 2,
    "de": "Liquidations-Heatmap"
   },
+  "qXSSU8Np0M": {
+   "en": "Coin",
+   "kind": [
+    "attr:aria-label",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/hyperliquid-liquidations/",
+    "/liquidation-statistics/",
+    "/trading-report/"
+   ],
+   "n": 5,
+   "w": 1,
+   "de": "Coin"
+  },
   "ePEgBUGqDb": {
    "en": "Market screener",
    "kind": [
@@ -15687,6 +15628,18 @@
    "w": 2,
    "de": "Asset-Klasse"
   },
+  "P4TvUx-duZ": {
+   "en": "Symbol",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Symbol"
+  },
   "ndFi5Pc_Kc": {
    "en": "Entry style",
    "kind": [
@@ -15771,6 +15724,18 @@
    "w": 2,
    "de": "Hebel-Regler"
   },
+  "J6JbU5D47S": {
+   "en": "planExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "planExHint"
+  },
   "on6EHMOYn-": {
    "en": "What does the margin rate do?",
    "kind": [
@@ -15795,6 +15760,18 @@
    "w": 3,
    "de": "Maintenance-Margin-Preset der Börse"
   },
+  "DeFJ3eHlTO": {
+   "en": "planFeeHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "planFeeHint"
+  },
   "NuZ844-Cq5": {
    "en": "What does the fee schedule do?",
    "kind": [
@@ -15818,6 +15795,18 @@
    "n": 1,
    "w": 2,
    "de": "Gebührentabelle"
+  },
+  "a3_8lyG-KA": {
+   "en": "planRzHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "planRzHint"
   },
   "di0iGuc9Zf": {
    "en": "What do realistic fills change?",
@@ -15903,6 +15892,18 @@
    "w": 2,
    "de": "Märkte durchsuchen"
   },
+  "5MN3jTT9VP": {
+   "en": "liqExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "liqExHint"
+  },
   "r3T3xTYqru": {
    "en": "Copy",
    "kind": [
@@ -15919,6 +15920,18 @@
    "n": 19,
    "w": 1,
    "de": "Kopieren"
+  },
+  "6MRy4Bu8n3": {
+   "en": "crExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "crExHint"
   },
   "OcZtDV9p8R": {
    "en": "Live market pulse",
@@ -78785,6 +78798,510 @@
    "n": 1,
    "w": 9,
    "de": "Krypto-Wirtschaftskalender - FOMC, CPI, NFP &amp; Optionsverfall"
+  },
+  "RmB06ARlQO": {
+   "en": "Crypto Catalysts Live: What Is Moving the Market Right Now",
+   "kind": [
+    "title"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "Krypto-Katalysatoren live: Was den Markt gerade bewegt"
+  },
+  "Ho2_btXwLM": {
+   "en": "Catalysts <em>live</em> <span class=\"live\"><i id=\"pulse\"></i>LIVE</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Katalysatoren <em>live</em> <span class=\"live\"><i id=\"pulse\"></i>LIVE</span>"
+  },
+  "TyZhCoi26J": {
+   "en": "Every dated event that can move a coin, as it lands: exchange listings and delistings, SEC filings, FOMC and CPI, hacks, ETF and regulation headlines, official channels, fast news desks and eight X accounts. Each item keeps its source's own clock, the coins it names, a score, how many desks confirm it, and how much events of its kind have really moved price.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 60,
+   "de": "Jedes datierte Ereignis, das einen Coin bewegen kann, sobald es eintrifft: Börsen-Listings und -Delistings, SEC-Filings, FOMC und CPI, Hacks, ETF- und Regulierungsschlagzeilen, offizielle Kanäle, schnelle Newsredaktionen und acht X-Konten. Jeder Eintrag behält die Uhrzeit seiner Quelle, die genannten Coins, einen Score, die Zahl der bestätigenden Redaktionen und die Stärke, mit der Ereignisse dieser Art den Preis tatsächlich bewegt haben."
+  },
+  "cwHmbwMBbo": {
+   "en": "<small>last hour</small><b id=\"sH\"></b><span id=\"sH2\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>letzte Stunde</small><b id=\"sH\"></b><span id=\"sH2\"></span>"
+  },
+  "fG9SrPSi59": {
+   "en": "<small>24 hours</small><b id=\"sD\"></b><span id=\"sD2\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>24 Stunden</small><b id=\"sD\"></b><span id=\"sD2\"></span>"
+  },
+  "kIYFud4WL2": {
+   "en": "<small>coins named</small><b id=\"sC\"></b><span id=\"sC2\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>genannte Coins</small><b id=\"sC\"></b><span id=\"sC2\"></span>"
+  },
+  "bABmXWyKNA": {
+   "en": "<small>sources</small><b id=\"sS\"></b><span id=\"sS2\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<small>Quellen</small><b id=\"sS\"></b><span id=\"sS2\"></span>"
+  },
+  "Yf6DD_Wikm": {
+   "en": "Right now <small id=\"nowSub\">the highest-scored items of the last 60 minutes</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "Gerade jetzt <small id=\"nowSub\">die Einträge mit dem höchsten Score der letzten 60 Minuten</small>"
+  },
+  "1YI-azT-3_": {
+   "en": "The feed <small id=\"feedSub\">newest first</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Der Feed <small id=\"feedSub\">neueste zuerst</small>"
+  },
+  "fW44V2Oxix": {
+   "en": "All <b id=\"nAll\"></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Alle <b id=\"nAll\"></b>"
+  },
+  "L99orFfGai": {
+   "en": "Listings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Listings <b></b>"
+  },
+  "S_CUOhvqjq": {
+   "en": "Delistings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Delistings <b></b>"
+  },
+  "81NtIvfSps": {
+   "en": "Macro <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Makro <b></b>"
+  },
+  "2EStwo6PVx": {
+   "en": "Hacks <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Hacks <b></b>"
+  },
+  "uRwDN5dVZ7": {
+   "en": "Regulation <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Regulierung <b></b>"
+  },
+  "uk_DgFK2OB": {
+   "en": "Whales <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Wale <b></b>"
+  },
+  "1PsVPnPDXw": {
+   "en": "Politics <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Politik <b></b>"
+  },
+  "AHmENFoHaH": {
+   "en": "Filings <b></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Filings <b></b>"
+  },
+  "uYE9UH_JlD": {
+   "en": "<input type=\"checkbox\" id=\"hiOnly\" /> important only",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<input type=\"checkbox\" id=\"hiOnly\" /> nur Wichtiges"
+  },
+  "JZEdSOAjzR": {
+   "en": "Show more",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Mehr anzeigen"
+  },
+  "OS7-i2TzDN": {
+   "en": "What moved it <small>last 30 days, 15-minute candles</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "What moved it <small>letzte 30 Tage, 15-Minuten-Kerzen</small>"
+  },
+  "tBZ4rzp0tD": {
+   "en": "<a class=\"cta\" id=\"mvLink\" href=\"/charts\">Open it on the chart as the What moved it indicator &rarr;</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 11,
+   "de": "<a class=\"cta\" id=\"mvLink\" href=\"/charts\">Auf dem Chart als Indikator What moved it öffnen &rarr;</a>"
+  },
+  "v9aTHjuvn4": {
+   "en": "Most talked about <small>24 h, distinct items naming the coin</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "Am meisten besprochen <small>24 h, verschiedene Einträge, die den Coin nennen</small>"
+  },
+  "JnQ5f0K-1h": {
+   "en": "Scheduled <small>next 48 hours</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Geplant <small>nächste 48 Stunden</small>"
+  },
+  "1OJ-fir_zN": {
+   "en": "Sources <small>how fresh the feed is</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "Quellen <small>wie aktuell der Feed ist</small>"
+  },
+  "7QM9T5D0ep": {
+   "en": "<small>online</small><b id=\"hOn\"></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<small>online</small><b id=\"hOn\"></b>"
+  },
+  "qY2PPtxcpY": {
+   "en": "<small>exchange lag</small><b id=\"hLag0\"></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>Börsen-Verzug</small><b id=\"hLag0\"></b>"
+  },
+  "33YKIUFLl_": {
+   "en": "<small>media lag</small><b id=\"hLag1\"></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>Medien-Verzug</small><b id=\"hLag1\"></b>"
+  },
+  "jbEHt2tJid": {
+   "en": "How this is made",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "So entsteht das"
+  },
+  "4n5NgIqStT": {
+   "en": "Each source is polled on its own clock and every item keeps two times: when the source published it and when we saw it. Classification is by rules first, then a language model reads each headline for importance, the coins it is really about and the direction it implies; promotions and trading-pair housekeeping score zero. Confirmation counts distinct desks reporting one story within six hours. Realism: for every kind of event we measured how much price moved in the 15 minutes after it, against the same market's ordinary minutes and a week-earlier placebo - that multiple is shown on each item and caps how much credit an item can take for a move. Nothing here is a buy or sell call. The same events drive the <a href=\"/ai-indicators/#catalyst\">What moved it</a> indicator on every chart and the Ask AI brief. Free JSON: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 138,
+   "de": "Jede Quelle wird in ihrem eigenen Takt abgefragt, und jeder Eintrag behält zwei Zeitpunkte: wann die Quelle ihn veröffentlicht hat und wann wir ihn gesehen haben. Die Einordnung erfolgt zuerst über Regeln, danach liest ein Sprachmodell jede Schlagzeile auf Wichtigkeit, die Coins, um die es wirklich geht, und die Richtung, die sie nahelegt; Werbeaktionen und Handelspaar-Routinemeldungen erhalten den Score null. Die Bestätigung zählt, wie viele verschiedene Redaktionen innerhalb von sechs Stunden über dieselbe Meldung berichten. Realismus: Für jede Art von Ereignis haben wir gemessen, wie stark sich der Preis in den 15 Minuten danach bewegt hat, im Vergleich zu den gewöhnlichen Minuten desselben Marktes und zu einem Placebo eine Woche zuvor - dieses Vielfache steht bei jedem Eintrag und begrenzt, wie viel Verantwortung ein Eintrag für eine Bewegung übernehmen darf. Nichts davon ist eine Kauf- oder Verkaufsempfehlung. Dieselben Ereignisse speisen den Indikator <a href=\"/ai-indicators/#catalyst\">What moved it</a> auf jedem Chart und den Ask-AI-Brief. Kostenloses JSON: <a href=\"/api/catalysts?min=20\">/api/catalysts</a>, <a href=\"/api/catalysts/top?h=24\">/api/catalysts/top</a>, <a href=\"/api/catalysts/moves?symbol=BTC\">/api/catalysts/moves</a>."
+  },
+  "NHj-acfc68": {
+   "en": "coin",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Coin"
+  },
+  "gQTCnKagiX": {
+   "en": "Every dated event that can move a coin, as it lands: exchange listings and delistings (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, FOMC and CPI, hacks, ETF headlines, the fast news desks and whale alerts - scored, deduplicated, with the coins each one names, how many desks confirm it and how much events like it have really moved price. Plus which coins are talked about most, and what moved each one.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 69,
+   "de": "Jedes datierte Ereignis, das einen Coin bewegen kann, sobald es eintrifft: Börsen-Listings und -Delistings (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC-Filings, FOMC und CPI, Hacks, ETF-Schlagzeilen, die schnellen Newsredaktionen und Wal-Alarme - mit Score, dedupliziert, mit den jeweils genannten Coins, der Zahl der bestätigenden Redaktionen und der Stärke, mit der solche Ereignisse den Preis tatsächlich bewegt haben. Dazu: welche Coins am meisten besprochen werden und was jeden bewegt hat."
+  },
+  "0jRXptbDz4": {
+   "en": "Crypto catalysts, live - what is moving the market right now",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "Krypto-Katalysatoren live - was den Markt gerade bewegt"
+  },
+  "7_Dgqhv5It": {
+   "en": "Exchange listings, filings, macro prints, hacks and whale alerts as they land, scored and tied to the coins they name. Which coins are talked about most, and what moved each one.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 31,
+   "de": "Börsen-Listings, Filings, Makrodaten, Hacks und Wal-Alarme, sobald sie eintreffen, mit Score und den genannten Coins verknüpft. Welche Coins am meisten besprochen werden und was jeden bewegt hat."
+  },
+  "LfAvNNAGfl": {
+   "en": "MarginPad crypto catalysts",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "MarginPad Krypto-Katalysatoren"
+  },
+  "SGzoE1mWUd": {
+   "en": "Dated events that can move a cryptocurrency - exchange listings and delistings, SEC filings, FOMC and CPI prints, hacks, ETF headlines, official channels and fast news desks - collected every 15-60 seconds from the sources' own feeds, classified by rules and a language model, scored 0-100, tied to the coins they name and to how much events of that kind have really moved price.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 60,
+   "de": "Datierte Ereignisse, die eine Kryptowährung bewegen können - Börsen-Listings und -Delistings, SEC-Filings, FOMC- und CPI-Daten, Hacks, ETF-Schlagzeilen, offizielle Kanäle und schnelle Newsredaktionen - alle 15-60 Sekunden aus den eigenen Feeds der Quellen erfasst, per Regeln und Sprachmodell eingeordnet, mit einem Score von 0-100 versehen und verknüpft mit den genannten Coins und damit, wie stark Ereignisse dieser Art den Preis tatsächlich bewegt haben."
+  },
+  "VQSazuGzgb": {
+   "en": "What is a catalyst here?",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Was ist hier ein Katalysator?"
+  },
+  "asIk5jVNE4": {
+   "en": "A dated event that can move a coin: an exchange listing or delisting, a filing, a scheduled macro print such as CPI or an FOMC decision, a hack, an ETF headline, a regulation headline, an official announcement or a fast news desk's item. Each one carries the source's own timestamp, the coins it names, a score from 0 to 100, the number of independent desks that reported the same story, and how much events of its kind have really moved price in the past.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 75,
+   "de": "Ein datiertes Ereignis, das einen Coin bewegen kann: ein Börsen-Listing oder -Delisting, ein Filing, ein geplanter Makrotermin wie CPI oder eine FOMC-Entscheidung, ein Hack, eine ETF-Schlagzeile, eine Regulierungsschlagzeile, eine offizielle Ankündigung oder die Meldung einer schnellen Newsredaktion. Jedes trägt den eigenen Zeitstempel der Quelle, die genannten Coins, einen Score von 0 bis 100, die Zahl der unabhängigen Redaktionen, die dieselbe Meldung gebracht haben, und wie stark Ereignisse dieser Art den Preis in der Vergangenheit tatsächlich bewegt haben."
+  },
+  "vFMQGh_5e3": {
+   "en": "How is the score made?",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Wie entsteht der Score?"
+  },
+  "UrG7fudEz2": {
+   "en": "From the credibility of the source (an exchange's own announcement or a filing is primary, an official channel next, the media desks after), the kind of event, how many independent sources confirm it within six hours, how much events of that kind have measurably moved price before, and a language-model reading of the headline for importance. Promotions and trading-pair housekeeping score zero. The score measures how much attention an item deserves, never a direction.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 71,
+   "de": "Aus der Glaubwürdigkeit der Quelle (die eigene Ankündigung einer Börse oder ein Filing ist erstrangig, danach ein offizieller Kanal, dann die Medienredaktionen), der Art des Ereignisses, der Zahl unabhängiger Quellen, die es innerhalb von sechs Stunden bestätigen, der messbaren früheren Preisbewegung nach Ereignissen dieser Art und der Bewertung der Schlagzeile auf Wichtigkeit durch ein Sprachmodell. Werbeaktionen und Handelspaar-Routinemeldungen erhalten den Score null. Der Score misst, wie viel Aufmerksamkeit ein Eintrag verdient, nie eine Richtung."
+  },
+  "TkwWS1vqhv": {
+   "en": "What does 'what moved it' mean?",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "Was bedeutet \"What moved it\"?"
+  },
+  "OipyBm7ZHL": {
+   "en": "Every abnormal jump or drop of the last 30 days, judged against the coin's own volatility, is matched to the catalysts published inside 90 minutes before it, to our own liquidation feed, to the whale tracker, to Bitcoin's moves at the same minute, to US stocks, to the market orders over a million dollars on our own tape, and to the clock (funding, the New York open). A move with nothing dated behind it is marked unknown and still gets a sentence saying what was checked. Shifting every item by a week collapses the explained share, which is how we know the matching is not chance.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/catalysts/"
+   ],
+   "n": 1,
+   "w": 102,
+   "de": "Jeder ungewöhnliche Sprung oder Absturz der letzten 30 Tage, gemessen an der eigenen Volatilität des Coins, wird mit den Katalysatoren abgeglichen, die in den 90 Minuten davor veröffentlicht wurden, mit unserem eigenen Liquidations-Feed, dem Whale-Tracker, den Bewegungen von Bitcoin in derselben Minute, den US-Aktien, den Market-Orders über einer Million Dollar auf unserem eigenen Tape und mit der Uhrzeit (Funding, die Eröffnung in New York). Eine Bewegung ohne datierten Auslöser wird als unbekannt markiert und bekommt trotzdem einen Satz, der sagt, was geprüft wurde. Verschiebt man jeden Eintrag um eine Woche, bricht der erklärte Anteil zusammen - so wissen wir, dass die Zuordnung kein Zufall ist."
   },
   "gePrZYeO5H": {
    "en": "BNB Perpetual Futures - Price, Funding, Open Interest & Liquidations | MarginPad",
@@ -144965,7 +145482,7 @@
    ],
    "n": 1,
    "w": 62,
-   "de": ""
+   "de": "Jedes Premium-Feature oben - die 6 exklusiven KI-Indikatoren, die vollständige Liquidations-Heatmap, Ask-AI auf Charts (fünf Auswertungen pro Tag; 50 pro Tag mit Premium AI+), Balance Mode, alle fünf Duell-Formate und die Premium-Lounge, der Daily Brief, +5% XP, das Premium-Badge, Positionsalarme und der vollständige Trading Report auf der Seite. Neue Premium-Tools kommen mit der Zeit ohne Aufpreis dazu."
   },
   "mdafGQSj8X": {
    "en": "Does Premium include the Bot API?",
@@ -145085,7 +145602,7 @@
    ],
    "n": 1,
    "w": 65,
-   "de": ""
+   "de": "Fünf Auswertungen auf Basis von Daten, die nur MarginPad hat - unser eigener Liquidations-Feed, die Hebelleiter hinter der Heatmap, Funding und die Positionierung der Masse - und jede beantwortet eine Frage, die du dir vor dem Öffnen einer Position stellen solltest. Jeder Pfeil-Indikator bewertet sich außerdem selbst auf dem geladenen Chart (1.5x ATR Ziel gegen Stop) und zeigt seine eigene Trefferquote, sodass du siehst, wann er hier funktioniert und wann nicht."
   },
   "U2p0S44nza": {
    "en": "Cascade Radar <i>FRAGILITY</i>",
