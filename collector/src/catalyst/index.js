@@ -81,7 +81,8 @@ export function startCatalyst(storage) {
   // symbol universe first, then the sources on their own clocks (staggered so no source bursts at :00)
   const syms = async () => { try { const l = await S.bybitSymbols(); setSymbols(l); status.symbols = symbolsKnown(); } catch (e) { status.symErr = String(e.message || e).slice(0, 60); } };
   const layer0 = async () => { await run('bybit-ann', S.bybitAnn, 'primary'); await run('okx-ann', S.okxAnn, 'primary'); await run('hl-meta', S.hlMeta, 'primary'); };
-  const layer0b = async () => { await run('binance-ann', SX.binanceAnn, 'primary'); await run('upbit-ann', SX.upbitAnn, 'primary'); };
+  const layer0b = async () => { await run('binance-ann', SX.binanceAnn, 'primary'); };
+  const upbit = async () => { await run('upbit-ann', SX.upbitAnn, 'primary'); };   // Cloudflare 1015s Upbit inside a minute: every two minutes, alone
   // X: one account per tick, round-robin, so the per-IP budget (30 / 15 min) is never exhausted by a burst
   let xi = 0; const xTick = async () => { const [h, tier] = SX.X_ACCOUNTS[xi % SX.X_ACCOUNTS.length]; xi++; await run('x:' + h, () => SX.xSynd(h), tier); };
   const gov = async () => { await run('sec', S.sec, 'primary'); };
@@ -97,6 +98,7 @@ export function startCatalyst(storage) {
   every(3600e3, syms);
   every(20e3, layer0);
   every(60e3, layer0b);
+  every(120e3, upbit);
   every(SX.X_INTERVAL_MS, xTick);
   every(60e3, gov);
   every(600e3, govSlow);

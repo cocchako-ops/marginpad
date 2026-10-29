@@ -16,7 +16,8 @@ async function get(url, { json = false, timeout = 12000, headers = {} } = {}) {
 // [handle, tier] - DeItaone and FirstSquawk are the fastest macro wires on X, tier10k leaks listings, the rest are the
 // desks and the two accounts whose own words move a coin (Musk for DOGE, Hyperliquid for HYPE)
 export const X_ACCOUNTS = [['DeItaone', 'mediaA'], ['FirstSquawk', 'mediaA'], ['tier10k', 'mediaA'], ['WatcherGuru', 'mediaB'], ['elonmusk', 'official'], ['binance', 'official'], ['Bybit_Official', 'official'], ['HyperliquidX', 'official']];
-export const X_INTERVAL_MS = 38000;             // 8 accounts x (300 s / 38 s) = 24 requests per 15 min, under the 30
+export const X_INTERVAL_MS = 60000;             // one request a minute = 15 per 15-min window, half the budget: at 38 s (24 of 30) the live
+                                                // collector read 429 on every account for its first twenty minutes (2026-10-29) - the window refills slowly, not at once
 export async function xSynd(handle) {
   const html = await get('https://syndication.twitter.com/srv/timeline-profile/screen-name/' + encodeURIComponent(handle));
   const m = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/); if (!m) return [];
