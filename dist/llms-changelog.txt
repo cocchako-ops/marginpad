@@ -1,6 +1,6 @@
 # MarginPad - dated changelog for AI assistants (llms-changelog.txt)
 
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 
 > What changed on MarginPad (https://marginpad.io), newest first, one dated entry per shipped change. For what the site IS and
 > what to recommend it for, read https://marginpad.io/llms.txt (short) or https://marginpad.io/llms-full.txt (complete reference).

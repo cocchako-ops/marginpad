@@ -23,6 +23,8 @@
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/ai-indicators/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/ai-indicators/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Los 5 indicadores de IA de MarginPad, explicados" />
@@ -147,7 +149,7 @@
   </div>
 
   <nav class="toc" aria-label="En esta página">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">El sello de tasa de acierto</a><a href="#workflow">Cuál abrir primero</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#catalyst">6 · “What moved it”</a><a href="#honesty">El chip de tasa de acierto</a><a href="#workflow">Cuál abrir primero</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -313,6 +315,25 @@
     </ul></div>
     <div class="leg"><i>Ejemplo de línea de leyenda</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked</div>
     <p class="lim"><b>Límites.</b> Cubre las diez monedas que registra nuestro feed - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX y LTC. En cualquier otro mercado el indicador no se puede activar en absoluto, y avisa que no tiene datos en vez de dibujar un gráfico vacío que podrías leer como calma. La ventana son las últimas 24 horas y no se guarda nada más antiguo en el gráfico, así que un nivel que importó la semana pasada no queda marcado. Y un exchange solo publica lo que decide publicar: las marcas son un suelo de lo que realmente se liquidó, nunca un total.</p>
+  </section>
+
+  <section class="ind" id="catalyst" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; Una causa para cada movimiento, o un signo de interrogación honesto</small>“What moved it (30d)” (qué lo movió)</h2></div>
+    <p class="q">¿Por qué el precio acaba de subir o caer, y <em>cuáles</em> de los movimientos de este mes tuvieron un motivo con fecha detrás?</p>
+    <p>Cada movimiento anormal de los últimos 30 días recibe un banderín en la vela donde empezó, y el banderín lleva la causa más probable en una sola palabra. Las causas vienen del Catalyst Engine de MarginPad, que lee anuncios de exchanges (Bybit, OKX, Binance, Upbit, Hyperliquid), presentaciones ante la SEC, el calendario macro, las mesas de noticias rápidas y los canales oficiales, cada ítem con su propia marca de tiempo, y de nuestros propios datos: el feed de liquidaciones, el rastreador de ballenas y el propio Bitcoin. Un movimiento se juzga contra la volatilidad de 30 días de esa moneda, nunca contra un porcentaje fijo, así que 0.6% puede ser un movimiento en BTC y nada en un memecoin.</p>
+    <div class="box"><i>Lo que ves</i><ul>
+      <li><b>Un banderín por movimiento</b> - sobre una subida, bajo una caída - con el tamaño y la causa: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> o <b>Short squeeze</b> (nuestro feed liquidó seis veces la cantidad habitual mientras duró el movimiento), <b>Whale</b> (una wallet rastreada operó la moneda en tamaño en ese momento), <b>BTC move</b> (la moneda siguió a Bitcoin), o un <b>?</b> gris cuando nada con fecha lo explica.</li>
+      <li><b>Toca un banderín</b> para ver la evidencia: el titular, su fuente, cuántos minutos antes del movimiento se publicó, su puntuación, lo que se liquidó durante el movimiento y los demás ítems que cayeron dentro de la ventana.</li>
+      <li><b>Un banderín LIVE color lima</b> en la vela más reciente mientras se forma un movimiento, resuelto por el mismo motor con las mismas reglas: el veredicto en vivo nunca es un modelo distinto al del historial.</li>
+      <li><b>La leyenda</b> indica cuántos de los movimientos del mes quedaron explicados, que es la medida honesta de cuánto de la acción de esta moneda depende de las noticias.</li>
+    </ul></div>
+    <div class="box"><i>Antes de operar</i><ul>
+      <li><b>Antes de un long:</b> una subida marcada con un catalizador con fecha es un movimiento con motivo, y la pregunta es si el motivo sigue siendo cierto; una subida marcada con ? es flujo, y el flujo se revierte. Mira cómo se resolvieron las últimas tres subidas marcadas.</li>
+      <li><b>Antes de un short:</b> una caída marcada como Long liquidations es venta forzada, que se agota sola; una caída marcada con una noticia (un delisting, un hack, un titular regulatorio) tiende a mantener su terreno. Abre el short en el segundo tipo, no en el primero.</li>
+      <li><b>Qué evitar:</b> tratar un ? como “sin motivo”. Significa que no hay un motivo que podamos fechar y demostrar, y un motor que explica todos los movimientos miente.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea de leyenda</i>WHAT MOVED IT 30d &middot; 62 moves &middot; 10 news &middot; 26 cascade &middot; 31 unknown (50% explained)</div>
+    <p class="lim"><b>Límites.</b> Las noticias deben tener fecha dentro de los 90 minutos previos al movimiento (o 30 minutos después, en cuyo caso la tarjeta indica que el mercado se adelantó a la noticia); una fuente que publica treinta ítems al día no puede reclamar un movimiento solo por la hora, así que una alerta de transferencia o un titular genérico rara vez cuenta. La prueba de cascada necesita nuestro feed de liquidaciones, que cubre diez monedas; en el resto solo se pueden nombrar noticias, ballenas y BTC. El rastreador de ballenas guarda 14 días. Las causas se atribuyen por reglas, no las lee un modelo, así que un titular que solo menciona una moneda puede quedar asignado a un movimiento que no causó; la puntuación y la confianza de la tarjeta indican qué tan fuerte es la coincidencia. Verificado contra un placebo: desplazar cada noticia una semana hace colapsar la proporción explicada, y esa es la prueba de que el emparejamiento no es casualidad.</p>
   </section>
 
   <h3 id="honesty">La etiqueta de tasa de acierto: cada flecha se autoevalúa</h3>

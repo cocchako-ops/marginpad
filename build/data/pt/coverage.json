@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 1,
-  "hit": 140,
-  "missing": 0
+  "cover": 0.987012987012987,
+  "hit": 152,
+  "missing": 2
  },
  {
   "rel": "alerts/index.html",
@@ -1098,6 +1098,14 @@
   "missing": 0
  },
  {
+  "rel": "catalysts/index.html",
+  "cover": 0.05555555555555555,
+  "hit": 2,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
   "rel": "coin/bnb/index.html",
   "cover": 1,
   "hit": 68,
@@ -1981,9 +1989,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 1,
-  "hit": 255,
-  "missing": 0
+  "cover": 0.9961538461538462,
+  "hit": 259,
+  "missing": 1
  },
  {
   "rel": "privacy/index.html",

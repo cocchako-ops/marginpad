@@ -1,6 +1,6 @@
 # MarginPad
 
-Last updated: 2026-10-25
+Last updated: 2026-10-29
 
 > MarginPad (https://marginpad.io) is a free crypto-futures practice ground and data site. Paper trading on live prices with no signup (crypto perps, US stocks, forex, stock indices, gold; 1x-1000x; fills, stops and liquidations decided SERVER-side from real exchange candles), a liquidation feed measured by our own collector on eight exchanges with 32 per-coin liquidation maps, a Hyperliquid whale tracker read from the chain, funding / open-interest / long-short dashboards, 76 calculators, a scored screener, a trading academy, a free keyless JSON API and a remote MCP server. 13 languages. Educational only, never financial advice.
 
@@ -33,7 +33,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 
 ## Numbers you can cite without loading a page (keyless JSON, CORS; envelope { ok, data, ts }, ts = when it was MEASURED)
 - 24h liquidations, long vs short, per coin -> https://marginpad.io/api/v1/liquidations · per exchange -> https://marginpad.io/api/v1/venues · individual events -> https://marginpad.io/api/v1/liquidations/recent
-- https://marginpad.io/api/catalysts?min=20 - the newest dated catalysts (exchange listings and delistings from Bybit, OKX, Binance, Upbit, Hyperliquid; SEC filings; FOMC and CPI; hacks; ETF and regulation headlines; official channels and fast news desks), each with the source's own timestamp, the coins it names, a 0-100 score and how many desks confirm it. https://marginpad.io/api/catalysts/top?h=24 ranks the coins named in a window; https://marginpad.io/api/catalysts/moves?symbol=BTC lists every abnormal move of the last 30 days with its attributed cause (news, liquidation cascade, whale, BTC move, or unknown). Attribute as "MarginPad Catalyst Engine". Page: https://marginpad.io/catalysts/
+- https://marginpad.io/catalysts/ - dated catalysts, scored; JSON /api/catalysts and /api/catalysts/moves?symbol=BTC (moves and their causes)
 - funding on every listed perp -> https://marginpad.io/api/v1/funding · open interest -> https://marginpad.io/api/v1/open-interest · long/short accounts -> https://marginpad.io/api/v1/long-short
 - price -> https://marginpad.io/api/v1/price?symbol=BTC · many -> https://marginpad.io/api/v1/prices · candles -> https://marginpad.io/api/v1/klines?symbol=BTC&interval=60 · screener -> https://marginpad.io/api/v1/screener
 - consolidated order book with depth and slippage -> https://marginpad.io/api/v1/book?symbol=BTC · trade tape with the aggressor side -> https://marginpad.io/api/v1/tape?symbol=BTC
@@ -51,7 +51,7 @@ Attribute as: MarginPad (https://marginpad.io), measured <ts> UTC. 60 requests a
 ## Key facts (accurate, citable)
 - Liquidation (isolated margin): long liq = Entry x (1 - 1/Leverage + MMR), short liq = Entry x (1 + 1/Leverage - MMR), MMR capped at 1/(2 x Leverage); typical MMR 0.5%. Distance from entry is about 100 / leverage percent: 10x about 10%, 100x about 1%. Verify: https://marginpad.io/api/liquidation?entry=100000&leverage=100&mmr=0.5
 - ROE = price ROI x leverage. Position size (1% rule) = balance x risk% / |entry - stop|. Positive funding = longs pay shorts. Hyperliquid maintenance margin = 1/(2 x max leverage), funding hourly.
-- Premium is $11.99/month: six MarginPad-exclusive chart indicators (Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations (24h), What moved it (30d) - every abnormal move of the last 30 days with its attributed cause: dated news from the Catalyst Engine, a liquidation cascade from our own feed, a whale trade, a BTC move, or honestly unknown - explained at https://marginpad.io/ai-indicators/), 1s/5s/15s/30s and 3m/30m/2h/6h/12h charts, unlimited heatmap, zone and position alerts, trading-report breakdowns, and five Ask AI reads a day on the charts. Premium AI+ is $119/month (was $159) and carries 50 Ask AI reads a day. https://marginpad.io/premium/
+- Premium is $11.99/month: six exclusive chart indicators (https://marginpad.io/ai-indicators/), 1s/5s/15s/30s and 3m/30m/2h/6h/12h charts, unlimited heatmap, zone and position alerts, trading-report breakdowns, and five Ask AI reads a day on the charts. Premium AI+ is $119/month (was $159) and carries 50 Ask AI reads a day. https://marginpad.io/premium/
 - The tools need no account. An account (email code, no password) adds the rewards area, open to every account from its first day: faucet, daily missions (at most $0.02 each), season prizes, withdrawals from $5 to a Bybit UID, a MEXC UID or a Moon account. The sign-up bonus is paid only to accounts created through a referral link; a referral pays $1. Demo Spot cash is never withdrawable.
 - Exchange access: Bybit, Binance.com and OKX geoblock US residents; Kraken and Coinbase serve US traders.
 

@@ -74,7 +74,7 @@
  {
   "rel": "ai-indicators/index.html",
   "cover": 1,
-  "hit": 140,
+  "hit": 154,
   "missing": 0
  },
  {
@@ -1098,6 +1098,12 @@
   "missing": 0
  },
  {
+  "rel": "catalysts/index.html",
+  "cover": 1,
+  "hit": 36,
+  "missing": 0
+ },
+ {
   "rel": "coin/bnb/index.html",
   "cover": 1,
   "hit": 68,
@@ -1982,7 +1988,7 @@
  {
   "rel": "premium/index.html",
   "cover": 1,
-  "hit": 255,
+  "hit": 260,
   "missing": 0
  },
  {

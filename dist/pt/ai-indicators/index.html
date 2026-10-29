@@ -24,6 +24,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
 <link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/ai-indicators/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/ai-indicators/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Os 5 indicadores de IA da MarginPad, explicados" />
@@ -148,7 +149,7 @@
   </div>
 
   <nav class="toc" aria-label="Nesta página">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">O chip de taxa de acerto</a><a href="#workflow">Qual abrir primeiro</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#catalyst">6 · What moved it</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -314,6 +315,25 @@
     </ul></div>
     <div class="leg"><i>Exemplo de linha da legenda</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked</div>
     <p class="lim"><b>Limites.</b> Cobre as dez moedas que o nosso feed registra - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX e LTC. Em qualquer outro mercado o indicador não pode ser ativado e avisa que não tem dados, em vez de desenhar um gráfico vazio que você poderia ler como calmaria. A janela são as últimas 24 horas e nada mais antigo fica no gráfico, então um nível que importou na semana passada não é marcado. E uma corretora só publica o que escolhe publicar: as marcas são um piso do que realmente foi liquidado, nunca um total.</p>
+  </section>
+
+  <section class="ind" id="catalyst" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; Uma causa para cada movimento, ou um ponto de interrogação honesto</small>What moved it (30d)</h2></div>
+    <p class="q">Por que o preço acabou de subir ou cair - e <em>quais</em> dos movimentos deste mês tiveram um motivo datado por trás?</p>
+    <p>Every abnormal move of the last 30 days gets a flag on the candle it started on, and the flag carries the most likely cause in one word. The causes come from MarginPad's Catalyst Engine, which reads exchange announcements (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, the macro calendar, the fast news desks and the official channels with each item's own timestamp - and from our own data: the liquidation feed, the whale tracker and Bitcoin itself. A move is judged against this coin's own 30-day volatility, never a fixed percent, so 0.6% can be a move on BTC and nothing on a meme coin.</p>
+    <div class="box"><i>O que você vê</i><ul>
+      <li><b>Uma bandeirinha por movimento</b> - acima de uma alta, abaixo de uma queda - com o tamanho e a causa: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> ou <b>Short squeeze</b> (nosso feed liquidou seis vezes o volume típico enquanto o movimento acontecia), <b>Whale</b> (uma carteira rastreada negociou a moeda em volume naquele momento), <b>BTC move</b> (a moeda seguiu o Bitcoin), ou um <b>?</b> cinza quando nada datado explica o movimento.</li>
+      <li><b>Toque em uma bandeirinha</b> para ver as evidências: a manchete, a fonte, quantos minutos antes do movimento foi publicada, sua pontuação, o que foi liquidado durante o movimento e os outros itens que caíram dentro da janela.</li>
+      <li><b>Uma bandeirinha LIVE verde-limão</b> no candle mais recente enquanto um movimento está se formando agora, respondida pelo mesmo motor com as mesmas regras - o veredito ao vivo nunca é um modelo diferente do histórico.</li>
+      <li><b>A legenda</b> informa quantos dos movimentos do mês foram explicados, que é a medida honesta de quanto da ação desta moeda é movido por notícias.</li>
+    </ul></div>
+    <div class="box"><i>Antes de um trade</i><ul>
+      <li><b>Antes de um long:</b> uma alta marcada com um catalisador datado é um movimento com motivo, e a pergunta é se o motivo ainda é verdadeiro; uma alta marcada com ? é fluxo, e fluxo reverte. Veja como as últimas três altas marcadas se resolveram.</li>
+      <li><b>Antes de um short:</b> uma queda marcada como Long liquidations é venda forçada, que se esgota sozinha; uma queda marcada com notícia - uma remoção de listagem, um hack, uma manchete regulatória - tende a manter o terreno. Faça short no segundo tipo, não no primeiro.</li>
+      <li><b>O que evitar:</b> tratar um ? como "sem motivo". Ele significa nenhum motivo que possamos datar e comprovar - e um motor que explica todo movimento está mentindo.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linha da legenda</i>WHAT MOVED IT 30d &middot; 62 movimentos &middot; 10 notícias &middot; 26 cascata &middot; 31 desconhecidos (50% explicados)</div>
+    <p class="lim"><b>Limites.</b> A notícia precisa estar datada até 90 minutos antes do movimento (ou 30 minutos depois, caso em que o cartão diz que o mercado antecipou a notícia); uma fonte que publica trinta itens por dia não pode reivindicar um movimento só pelo horário, então um alerta de transferência ou uma manchete genérica raramente conta. O teste de cascata de liquidações precisa do nosso feed de liquidações, que cobre dez moedas; nas demais, só notícias, baleias e BTC podem ser apontados. O rastreador de baleias guarda 14 dias. As causas são atribuídas por regras, não lidas por um modelo, então uma manchete que apenas menciona uma moeda pode ser apontada por um movimento que ela não causou - a pontuação e a confiança no cartão mostram a força da correspondência. Verificado contra um placebo: deslocar cada notícia em uma semana derruba a parcela explicada, e essa é a prova de que a correspondência não é acaso.</p>
   </section>
 
   <h3 id="honesty">O chip de taxa de acerto: cada seta se avalia sozinha</h3>

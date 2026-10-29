@@ -86,7 +86,7 @@ const SAMPLE = [
     (function walk(d, rel) {
       for (const e of fs.readdirSync(d, { withFileTypes: true })) {
         if (e.isDirectory()) { if (e.name === 'assets' || e.name === 'i18n') continue; walk(path.join(d, e.name), rel + '/' + e.name); continue; }
-        if (!e.name.endsWith('.html') || /^app(-es)?\.html$/.test(e.name)) continue;
+        if (!e.name.endsWith('.html') || /^app(-es|-pt|-de)?\.html$/.test(e.name)) continue;
         const h = fs.readFileSync(path.join(d, e.name), 'utf8');
         if (/name="robots" content="[^"]*noindex/.test(h)) continue;
         const img = (h.match(/property="og:image" content="([^"]*)"/) || [])[1] || '';

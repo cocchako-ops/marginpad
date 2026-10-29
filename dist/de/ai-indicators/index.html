@@ -149,7 +149,7 @@
   </div>
 
   <nav class="toc" aria-label="Auf dieser Seite">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">Der Trefferquoten-Chip</a><a href="#workflow">Welchen zuerst öffnen</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#catalyst">6 · What moved it</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -315,6 +315,25 @@
     </ul></div>
     <div class="leg"><i>Beispiel-Legendenzeile</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked</div>
     <p class="lim"><b>Grenzen.</b> Er deckt die zehn Coins ab, die unser Feed erfasst - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX und LTC. Bei jedem anderen Markt lässt sich der Indikator gar nicht einschalten und sagt, dass er keine Daten hat, statt einen leeren Chart zu zeichnen, den du als ruhig lesen könntest. Das Fenster sind die letzten 24 Stunden, nichts Älteres bleibt im Chart, ein Level, das letzte Woche wichtig war, ist also nicht markiert. Und eine Börse veröffentlicht nur, was sie veröffentlichen will: Die Markierungen sind eine Untergrenze dessen, was wirklich liquidiert wurde, nie eine Gesamtsumme.</p>
+  </section>
+
+  <section class="ind" id="catalyst" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; Eine Ursache für jede Bewegung – oder ein ehrliches Fragezeichen</small>What moved it (30d)</h2></div>
+    <p class="q">Warum ist der Kurs gerade gesprungen oder gefallen – und bei <em>welchen</em> Bewegungen dieses Monats gab es einen datierten Grund?</p>
+    <p>Every abnormal move of the last 30 days gets a flag on the candle it started on, and the flag carries the most likely cause in one word. The causes come from MarginPad's Catalyst Engine, which reads exchange announcements (Bybit, OKX, Binance, Upbit, Hyperliquid), SEC filings, the macro calendar, the fast news desks and the official channels with each item's own timestamp - and from our own data: the liquidation feed, the whale tracker and Bitcoin itself. A move is judged against this coin's own 30-day volatility, never a fixed percent, so 0.6% can be a move on BTC and nothing on a meme coin.</p>
+    <div class="box"><i>Was du siehst</i><ul>
+      <li><b>Eine Markierung pro Bewegung</b> – über einem Anstieg, unter einem Rückgang – mit Größe und Ursache: <b>CPI</b>, <b>FOMC</b>, <b>Bybit delisting</b>, <b>Hack</b>, <b>ETF</b>, <b>Long liquidations</b> oder <b>Short squeeze</b> (unser Feed hat während der Bewegung das Sechsfache der üblichen Menge liquidiert), <b>Whale</b> (ein getracktes Wallet hat den Coin in diesem Moment in Größe gehandelt), <b>BTC move</b> (der Coin ist Bitcoin gefolgt) oder ein graues <b>?</b>, wenn nichts Datiertes die Bewegung erklärt.</li>
+      <li><b>Tippe auf eine Markierung</b> für die Belege: die Schlagzeile, ihre Quelle, wie viele Minuten vor der Bewegung sie erschien, ihr Score, was während der Bewegung liquidiert wurde und die weiteren Einträge, die ins Zeitfenster fielen.</li>
+      <li><b>Eine lime LIVE-Markierung</b> auf der neuesten Kerze, solange sich gerade eine Bewegung bildet – beantwortet von derselben Engine mit denselben Regeln: Das Live-Urteil ist nie ein anderes Modell als die Historie.</li>
+      <li><b>Die Legende</b> sagt, wie viele Bewegungen des Monats erklärt wurden – das ehrliche Maß dafür, wie stark das Geschehen bei diesem Coin von News getrieben ist.</li>
+    </ul></div>
+    <div class="box"><i>Vor einem Trade</i><ul>
+      <li><b>Vor einem Long:</b> Ein Anstieg mit datiertem Katalysator ist eine Bewegung mit Grund, und die Frage ist, ob der Grund noch gilt; ein Anstieg mit ? ist Flow, und Flow dreht. Schau, wie die letzten drei markierten Anstiege ausgegangen sind.</li>
+      <li><b>Vor einem Short:</b> Ein Rückgang mit der Markierung Long liquidations ist erzwungenes Verkaufen, das sich selbst erschöpft; ein Rückgang mit News – ein Delisting, ein Hack, eine Regulierungsmeldung – behält tendenziell sein Terrain. Shorte die zweite Sorte, nicht die erste.</li>
+      <li><b>Was du vermeiden solltest:</b> ein ? als „kein Grund“ zu lesen. Es heißt: kein Grund, den wir datieren und belegen können – und eine Engine, die jede Bewegung erklärt, lügt.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel einer Legendenzeile</i>WHAT MOVED IT 30d &middot; 62 moves &middot; 10 news &middot; 26 cascade &middot; 31 unknown (50% explained)</div>
+    <p class="lim"><b>Grenzen.</b> News müssen innerhalb von 90 Minuten vor der Bewegung datiert sein (oder 30 Minuten danach – dann sagt die Karte, dass der Markt den News vorausging); eine Quelle, die dreißig Meldungen am Tag veröffentlicht, kann eine Bewegung nicht allein über die Zeit für sich beanspruchen, daher zählen Transfer-Alerts oder generische Schlagzeilen selten. Der Kaskaden-Test braucht unseren Liquidations-Feed, der zehn Coins abdeckt; anderswo können nur News, Whales und BTC genannt werden. Der Whale-Tracker hält 14 Tage vor. Ursachen werden per Regeln zugeordnet, nicht von einem Modell gelesen; eine Schlagzeile, die einen Coin nur erwähnt, kann also für eine Bewegung genannt werden, die sie nicht verursacht hat – Score und Konfidenz auf der Karte zeigen, wie stark der Treffer ist. Gegen einen Placebo geprüft: Verschiebt man jede Meldung um eine Woche, bricht der erklärte Anteil zusammen – der Beleg, dass die Zuordnung kein Zufall ist.</p>
   </section>
 
   <h3 id="honesty">Der Trefferquoten-Chip: Jeder Pfeil bewertet sich selbst</h3>
