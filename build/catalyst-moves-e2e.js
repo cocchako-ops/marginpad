@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -128,7 +128,7 @@ function pureLeg() {
   const liqM = []; for (let i = 0; i < 2000; i++) liqM.push({ t: T0 - 2000 * 300000 + i * 300000, long: 10000, short: 10000 }); liqM.push({ t: T0, long: 120000, short: 10000 }); liqM.push({ t: T0 + 300000, long: 85000, short: 5000 });
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.6, dir: -1 }, [], liqM, { sym: 'BTC', liqFloor: 250000 });
   ok('liquidations at 3x the bucket but under the cascade bar are named as forced closes, not a cascade', a.cause === 'liqs' && !a.cascade && /forced closes/.test(a.note), a.cause + ' ' + a.note);
-  const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained', why: 'forced selling', ts: Date.now() } } });
+  const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained of $40M', why: 'forced selling', ts: Date.now() } } });
   ok('a label lifts a rules-only news row: blended score, the real kind, the coins unioned, the direction', en[0].score > 40 && en[0].kind === 'hack' && en[0].kind0 === 'news' && /ETH/.test(en[0].syms) && en[0].expect === -1 && en[0].lbl.sum, JSON.stringify(en[0]));
   // THE HYPE CASE (2026-10-29, owner): seven desks, seven wordings, the first at 10:32, the moves at 10:30 / 12:30 / 15:00, whales buying all day
   const ice = [['tg:unfolded', 'NYSE owner ICE invests in trade[XYZ] and partners to launch regulated perps', ['HYPE']], ['tg:WatcherGuru', 'JUST IN: NYSE owner to bring Hyperliquid $HYPE perpetual futures to regulated US markets', ['HYPE']], ['tg:cointelegraph', 'JUST IN: NYSE parent ICE takes a stake in Trade.xyz and plans a US-regulated perps market', []], ['rss:defiant', 'ICE plans US-regulated Hyperliquid perpetuals via TradeXYZ', ['HYPE']], ['rss:unchained', 'NYSE owner ICE brings Hyperliquid perpetuals to US via Trade.xyz', ['HYPE']]];
@@ -159,6 +159,18 @@ function pureLeg() {
   ok('a drop through a support touched three times is a support break with heavy volume', te && te.kind === 'break' && /support that held 3 times/.test(te.text) && te.vol >= 3, JSON.stringify(te));
   a = X.cxAttribute(tmv, [], null, { sym: 'BTC', bars: tb });
   ok('with nothing dated the broken level is the cause and the note says so', a.cause === 'tech' && a.label === 'Support break' && /Fell through/.test(a.note), a.cause + ' ' + a.note);
+  // ONE STORY, ONE MOVE: the HYPE legs of 2026-10-29 collapse into one episode; a cascade between them stays its own
+  const st = { k: 'ice-hyperliquid', n: 8, first: T0 - 150 * 60000, peak: 75, syms: 'HYPE' };
+  const leg = (t0, pct, cause, cat, p0) => ({ t0, t1: t0 + 15 * 60000, pct, dir: pct > 0 ? 1 : -1, n: 1, z: 5, p0, p1: p0 * (1 + pct / 100), hi: p0 * (1 + pct / 100), lo: p0, cause, label: cause === 'news' ? 'Listing' : 'Cascade', confidence: 0.8, note: 'x', catalyst: cat ? { ts: T0 - 150 * 60000, source: 'tg:unfolded', story: st } : null });
+  const eps = X.cxEpisodes([leg(T0, 9.6, 'news', 1, 100), leg(T0 + 3600000, 2, 'news', 1, 109.6), leg(T0 + 2 * 3600000, -1.2, 'cascade', 0, 111.8), leg(T0 + 3 * 3600000, 3.2, 'news', 1, 110.5)]);
+  ok('consecutive legs of one story become one move with the legs counted, a cascade between them stays separate', eps.length === 3 && eps.some(e => e.legs === 2 && /2 legs over/.test(e.note)) && eps.some(e => e.cause === 'cascade' && e.legs === 1), JSON.stringify(eps.map(e => [e.legs, e.cause, e.pct])));
+  ok('the episode runs from the first leg to the last and its size is the whole run', eps[0].legs === 1 && eps[eps.length - 1].legs === 2 && eps[eps.length - 1].pct > 9.6 && eps[eps.length - 1].t1 === T0 + 3600000 + 15 * 60000, JSON.stringify(eps[eps.length - 1]));
+  // A HACK IS THE MONEY LOST
+  const hk = X.cxEnrich([cat({ id: 'h1', kind: 'hack', tier: 'mediaA', score: 57, title: 'Coinbase denies data breach after vendor incident, no customer funds at risk' }), cat({ id: 'h2', kind: 'hack', tier: 'mediaA', score: 57, title: 'Bridge exploit drains about $120 million from protocol' }), cat({ id: 'h3', kind: 'hack', tier: 'mediaA', score: 57, title: 'Protocol loses $780k in flash loan attack' })], { m: {} });
+  ok('a breach denial with no money lost cannot score above 28; a $120M drain scores 80+; $780k sits in between', hk[0].score <= 28 && hk[1].score >= 80 && hk[2].score <= 35 && hk[2].score > hk[0].score, JSON.stringify(hk.map(h => [h.score, h.usd])));
+  ok('the dollar reader knows k, M and B', X.cxUsd('lost $1.2M') === 1200000 && X.cxUsd('$779,000 drained') === 779000 && X.cxUsd('a $2B hole') === 2e9 && X.cxUsd('no figure') === null);
+  const pr = X.cxEnrich([cat({ id: 'p1', kind: 'news', tier: 'mediaB', score: 11, title: 'GOOG IS A STRONG BUY' })], { m: { p1: { imp: 3, kind: 'promo', syms: [], expect: 0, sum: 'A trade idea', why: 'no event', ts: Date.now() } } });
+  ok('a trade idea the model calls promo scores zero', pr[0].kind === 'promo' && pr[0].score === 0, JSON.stringify([pr[0].kind, pr[0].score]));
 }
 
 // ---------- production ----------

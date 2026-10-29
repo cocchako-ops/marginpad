@@ -198,7 +198,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function cxLiveAsk(w,lv){if(!w||w.dead||!lv)return;var key=w.sym+'|'+lv.t0+'|'+(lv.pct>=0?'u':'d');
     if(w._cxLive&&w._cxLive.key===key&&Date.now()-(w._cxLive.at||0)<45000)return;if(w._cxLiveFetch)return;w._cxLiveFetch=true;
     fetch('/api/catalysts/moves?symbol='+encodeURIComponent(w.sym)+'&at='+lv.t0+'&pct='+lv.pct+'&n='+lv.n).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._cxLiveFetch=false;if(!w||w.dead)return;
-      w._cxLive=j?{key:key,at:Date.now(),on:true,t0:lv.t0,pct:lv.pct,n:lv.n,a:j}:{key:key,at:Date.now(),on:false};try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
+      /* the SAME story the newest flag already carries is a continuation, not a new flag: the band extends to the live candle and the legend says so */
+      var cont=false;try{var nm=(w._cx&&w._cx.moves||[])[0],ka=j&&j.catalyst?(j.catalyst.story?'s:'+j.catalyst.story.k:'c:'+j.catalyst.ts+'|'+j.catalyst.source):null,kb=nm&&nm.catalyst?(nm.catalyst.story?'s:'+nm.catalyst.story.k:'c:'+nm.catalyst.ts+'|'+nm.catalyst.source):null;cont=!!(ka&&kb&&ka===kb&&Date.now()-nm.t1<6*3600000&&(lv.pct>=0)===(nm.dir>0));}catch(e){cont=false;}
+      w._cxLive=j?{key:key,at:Date.now(),on:true,t0:lv.t0,pct:lv.pct,n:lv.n,a:j,cont:cont}:{key:key,at:Date.now(),on:false};try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   /* the live watch: every 20 s while the indicator is on, measure; a move that has ended clears the live line by itself */
   function cxWatch(w,on){if(!w)return;if(!on){if(w._cxIv){clearInterval(w._cxIv);w._cxIv=0;}w._cxLive=null;return;}
     if(w._cxIv)return;w._cxIv=setInterval(function(){if(w.dead||!w.inds||!w.inds.catalyst){clearInterval(w._cxIv);w._cxIv=0;return;}
@@ -222,7 +224,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var liqHtml='';if(m.liq&&m.liq.usd>0)liqHtml='<dt>'+__esT_mpcharts("liquidatedDuring",'Liquidated during')+'</dt><dd>'+money(m.liq.usd)+(m.liq.x!=null?' <small>'+m.liq.x+'x</small>':'')+'</dd>';
     var el=document.createElement('div');el.className='cwin-liqc cwin-cxc';
     el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
-      +'<div class="lqc-h" style="color:'+col+'">'+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+mins+' min</small></div>'
+      +'<div class="lqc-h" style="color:'+col+'">'+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+(mins>=120?Math.round(mins/6)/10+' h':mins+' min')+(m.legs>1?' · '+m.legs+' '+__esT_mpcharts("legsWord",'legs'):'')+'</small></div>'
       +'<div class="lqc-s cxc-cause" style="color:'+(m.cause==='unknown'?'#aab5c4':col)+'">'+causeLine+(m.confidence>0?' <small>'+Math.round(m.confidence*100)+'%</small>':'')+'</div>'
       +catHtml
       +(m.note?'<p class="cxc-note">'+esc(m.note)+'</p>':'')
@@ -803,6 +805,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab2,title:__esT_mpcharts("whatMovedItTitle",'Every abnormal move of the last 30 days on 15-minute candles, each with its most likely cause. A flag on the candle the move started on; tap it for the evidence. Scale: ')+_cx.scale+'% '+__esT_mpcharts("medianBarMove",'median 15m move, a move is at least ')+(+_cx.mult||4)+'x '+__esT_mpcharts("thatOrFloor",'that or ')+(+_cx.floorPct||0.6)+'%.'});
         var _lv=cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);
         var _L=w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a,_col=_L.pct>=0?'#2ebd85':'#ff6258';
+          if(_L.cont){var _nm=(w._cx&&w._cx.moves||[])[0];w.legItems.push({raw:true,color:_col,label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% · '+__esT_mpcharts("stillTheStory",'still the')+' '+_la.label+' '+__esT_mpcharts("storyWord",'story')+(_nm&&_nm.legs>1?' ('+_nm.legs+' '+__esT_mpcharts("legsWord",'legs')+')':''),title:cxCauseText(_la)});}else
           w.legItems.push({raw:true,color:_col,label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% '+__esT_mpcharts("inTheLast",'in the last')+' '+Math.max(1,Math.round((Date.now()-_L.t0)/60000))+' min · '+(_la.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):_la.label+(_la.catalyst?' ('+(_la.catalyst.after?__esT_mpcharts("newsAfterWord",'news after'):_la.catalyst.leadMin+' min '+__esT_mpcharts("beforeWord",'before'))+', '+__esT_mpcharts("scoreWord",'score')+' '+_la.catalyst.score+')':'')+(_la.cascade&&_la.liq?' · '+money(_la.liq.usd)+' '+__esT_mpcharts("liquidatedLc",'liquidated'):'')),title:cxCauseText(_la)});}
       } else w.legItems.push({raw:true,color:'#8b95a3',label:__esT_mpcharts("whatMovedItLoading",'WHAT MOVED IT · reading the month…')});
     }
@@ -2894,7 +2897,8 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     function drawCxMarks(){var mk=w._cxMarks;w._cxHit=[];if(!mk||!mk.length)return;
       var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th),W=w.dr.W||0,bs=6;try{bs=w.chart.timeScale().options().barSpacing||6;}catch(e){}
       var lastI=(w.bars||[]).length-1,lvKey=w._cxLive&&w._cxLive.on?w._cxLive.t0:0;
-      for(var i=0;i<mk.length;i++){var k=mk[i],m=k.m,x0=xOf(k.i0),x1=xOf(k.i1);if(x0==null||x1==null)continue;
+      var Lc=w._cxLive;
+      for(var i=0;i<mk.length;i++){var k=mk[i],m=k.m,x0=xOf(k.i0),x1=xOf(i===0&&Lc&&Lc.on&&Lc.cont&&lastI>=0?lastI:k.i1);if(x0==null||x1==null)continue;
         var xa=Math.min(x0,x1)-bs/2,xb=Math.max(x0,x1)+bs/2;if(xb<-10||xa>W+10)continue;
         var up=m.dir>0,col=up?'#2ebd85':'#ff6258',known=m.cause!=='unknown';
         ctx.save();
@@ -2910,7 +2914,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.restore();
         w._cxHit.push({x:bx,y:by,w:bw,h:bh,k:k});}
       /* the live flag on the newest candle, lime-framed: the verdict the route gave for the move forming now */
-      var L=w._cxLive;if(L&&L.on&&L.a&&lastI>=0){var xl=xOf(lastI),yl=yOf(+w.bars[lastI].close);if(xl!=null&&yl!=null){
+      var L=w._cxLive;if(L&&L.on&&L.a&&!L.cont&&lastI>=0){var xl=xOf(lastI),yl=yOf(+w.bars[lastI].close);if(xl!=null&&yl!=null){
         var a=L.a,upL=L.pct>=0,colL=upL?'#2ebd85':'#ff6258',t2='LIVE '+(upL?'+':'')+L.pct+'% '+(a.cause==='unknown'?'?':a.label);
         ctx.save();ctx.font='800 10.5px "Space Mono",monospace';var tw2=ctx.measureText(t2).width,bw2=tw2+14,bh2=18,bx2=Math.max(2,Math.min(W-bw2-2,xl-bw2+8)),by2=upL?Math.max(2,yl-30):Math.min(plotH-bh2-2,yl+12);
         ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx2,by2,bw2,bh2,6);else ctx.rect(bx2,by2,bw2,bh2);ctx.fillStyle='rgba(12,14,18,.95)';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#c2f64a';ctx.stroke();

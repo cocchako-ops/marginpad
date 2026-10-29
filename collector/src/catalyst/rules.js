@@ -37,6 +37,7 @@ const R = {
   delisting: /\b(delist(s|ed|ing)?|removal of|will be removed|terminat(e|es|ed|ion) (of )?(the )?(perpetual|contract|trading)|cease trading)\b/i,
   listing: /\b(list(s|ed|ing)?|launch(es|ed|ing)? (spot|perpetual|perps?|futures|pre-?market)|new (spot|perpetual|perps?|futures)( trading)? (pair|contract|market)|now (live|trading)|pre-?market perpetual)\b/i,
   hack: /\b(hack(s|ed|er|ers)?|exploit(s|ed)?|drain(s|ed)?|stolen|breach(ed)?|rug(ged|-?pull)?|attack(s|ed|er)?|compromised|phishing|depeg(s|ged)?)\b/i,
+  hackSoft: /\b(possible|potential|could|may|might|vulnerabilit(y|ies)|bug(s)?|patch(ed|es)?|fix(ed|es)?|warn(s|ed|ing)?|phishing|scam(s|mers)?|rumou?rs?|denies|denied|no (customer |user )?funds (at risk|lost|affected)|data (breach|leak)|exposed? (customer|user|personal)|test(s|ing)?|tips?|how to|guide|lessons?)\b/i,
   etf: /\b(ETF|ETFs|S-1|19b-4|spot (bitcoin|ether|ethereum|solana|xrp|litecoin|dogecoin|avalanche) (fund|trust)|iShares|Grayscale|net inflows?|net outflows?)\b/i,
   regulation: /\b(SEC|CFTC|DOJ|FCA|ESMA|MiCA|regulat(or|ion|ory|e|es|ed)|lawsuit|sue[sd]?|charg(e|es|ed) (with|by)|indict(ed|ment)|fine[ds]?|penalt(y|ies)|settle(s|d|ment)|court|judge|ruling|ban(s|ned)?|licen[cs]e[sd]?|approv(al|ed|es)|reject(s|ed|ion)|sanction(s|ed)?|subpoena|executive order|stablecoin (bill|act)|GENIUS Act|CLARITY Act)\b/i,
   unlock: /\b(token )?unlock(s|ed|ing)?\b/i,
@@ -68,7 +69,7 @@ export function classify(title, source) {
   else if (R.pair.test(t)) kind = 'pair';                         // a trading PAIR added or removed is housekeeping, not a listing
   else if (R.delisting.test(t)) kind = 'delisting';
   else if (exch && R.listing.test(t)) kind = 'listing';
-  else if (R.hack.test(t)) kind = 'hack';
+  else if (R.hack.test(t) && !R.hackSoft.test(t)) kind = 'hack';          // a warning, a denial, a data leak or a patched bug is news, not an exploit
   else if (R.etf.test(t)) kind = 'etf';
   else if (R.unlock.test(t)) kind = 'unlock';
   else if (R.regulation.test(t)) kind = 'regulation';
@@ -83,6 +84,7 @@ export function classify(title, source) {
     if (/\b(approv(al|ed|es)|green ?light|inflows?|record inflow|clears?|wins?|dismiss(ed|es)|drops? (the )?(case|charges|lawsuit)|grants?)\b/i.test(t)) expect = 1;
     else if (/\b(reject(s|ed|ion)|delay(s|ed)|outflows?|denies|denied|sue[sd]?|lawsuit|charg(es|ed)|fine[ds]?|ban(s|ned)?|halt|freez(e|es|ing)|indict)\b/i.test(t)) expect = -1;
   }
+  if (/^rss:tradingview/.test(src) && (kind === 'news' || kind === 'adoption' || kind === 'politics')) kind = 'promo'; // a trade idea, a target, a sizing post: never a catalyst
   const market = exch ? marketOf(t) : '';
   if (market === 'tradfi') expect = 0; // a stock perp is not a coin event
   const syms = src === 'sec' ? issuerSymbols(t) : extractSymbols(t, { anyTicker: exch && market !== 'tradfi' });

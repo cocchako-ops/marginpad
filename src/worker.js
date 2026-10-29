@@ -1231,6 +1231,10 @@ function cxScoreAdj(score, im) { if (!im) return score; const m = Math.max(0.75,
 // LABELS: what the language model read into each item (cxLabelTick, KV cx:labels) - importance 0-100, the kind and the coins
 // it is REALLY about, the direction it implies, one sentence of what it means. Merged onto the collector's row: the blended
 // score, the kind when the rules only said "news", the coins unioned, the direction when the rules had none.
+// A HACK IS SCORED BY THE MONEY LOST (2026-10-29, owner: data-leak warnings, denials and bug reports were scored like
+// exploits). The dollar figure is read off the headline and the model's summary; none = at most 28, under $1M 35, under
+// $10M 55, under $50M 72, $50M and up at least 80.
+function cxUsd(s) { const m = String(s || '').match(/\$\s?([0-9][0-9,.]*)\s*(k|m|mn|million|b|bn|billion)?\b/i); if (!m) return null; let v = parseFloat(m[1].replace(/,/g, '')); if (!(v > 0)) return null; const u = (m[2] || '').toLowerCase(); if (u === 'k') v *= 1e3; else if (u === 'm' || u === 'mn' || u === 'million') v *= 1e6; else if (u === 'b' || u === 'bn' || u === 'billion') v *= 1e9; return v; }
 function cxEnrich(items, labels) {
   const m = (labels && labels.m) || {};
   const out = (items || []).map(c => {
@@ -1249,6 +1253,8 @@ function cxEnrich(items, labels) {
       if (!(+c.expect) && l.expect) o.expect = l.expect;
       const im2 = cxImpactOf(o.kind, c.tier, !String(o.syms || '').length); o.impact = cxImpactPack(im2);
     }
+    if (o.kind === 'hack') { const usd = cxUsd(String(c.title || '') + ' ' + ((l && l.sum) || '')); o.usd = usd; const cap = usd == null ? 28 : usd < 1e6 ? 35 : usd < 1e7 ? 55 : usd < 5e7 ? 72 : 100; o.score = Math.min(o.score, cap); if (usd != null && usd >= 5e7) o.score = Math.max(o.score, 80); }
+    if (o.kind === 'promo' || o.kind === 'pair') o.score = 0;
     return o;
   });
   cxStories(out);
@@ -1410,7 +1416,7 @@ async function cxLabelTick(env) {
   const todo = items.filter(c => c && c.id && !labels.m[c.id] && c.kind !== 'promo' && c.kind !== 'pair').slice(0, 20);
   if (!todo.length) return;
   const lines = todo.map(c => c.id.slice(0, 12) + ' | ' + String(c.source || '') + ' | ' + String(c.kind || '') + ' | ' + String(c.syms || '-') + ' | ' + String(c.title || '').replace(/\s+/g, ' ').slice(0, 200));
-  const sys = 'You read crypto market catalysts for a trading terminal. For each line (id | source | rule kind | coins the rules found | headline) answer ONE JSON object and nothing else: {"items":[{"id":"<id>","imp":0-100,"kind":"<one of listing delisting macro hack etf regulation politics whale unlock protocol adoption filing news promo pair>","syms":["BTC"],"expect":-1|0|1,"story":"<a short stable slug naming the EVENT itself, e.g. ice-hyperliquid-us-perps, identical for every headline about that same event whatever the wording>","sum":"<=90 chars: what it means for the coin\'s price, plainly","why":"<=40 chars: why it matters or does not"}]}. imp = how much a futures trader should care in the next hour: 85+ only for a decision that forces real buying or selling now (a listing or delisting on a major exchange, a hack of a live protocol, a rate decision, an ETF approval, a sudden regulatory action); 50-70 for material but priced-in or slow news; under 30 for opinion, recaps, price commentary, sponsored or promotional items, ETF flow recaps, routine transfers. syms = tickers of the coins whose PRICE this is about, uppercase, at most 4 - map project names to their ticker (Hyperliquid -> HYPE, Solana -> SOL, Ethereum -> ETH, Trade.xyz runs on Hyperliquid -> HYPE); empty only when it is genuinely market-wide. expect = the direction a trader would expect for those coins (-1 down, 1 up, 0 none). Never invent facts beyond the headline.';
+  const sys = 'You read crypto market catalysts for a trading terminal. For each line (id | source | rule kind | coins the rules found | headline) answer ONE JSON object and nothing else: {"items":[{"id":"<id>","imp":0-100,"kind":"<one of listing delisting macro hack etf regulation politics whale unlock protocol adoption filing news promo pair>","syms":["BTC"],"expect":-1|0|1,"story":"<a short stable slug naming the EVENT itself, e.g. ice-hyperliquid-us-perps, identical for every headline about that same event whatever the wording>","sum":"<=90 chars: what it means for the coin\'s price, plainly","why":"<=40 chars: why it matters or does not"}]}. imp = how much a futures trader should care in the next hour: 85+ only for a decision that forces real buying or selling now (a listing or delisting on a major exchange, a hack of a live protocol, a rate decision, an ETF approval, a sudden regulatory action); 50-70 for material but priced-in or slow news; under 30 for opinion, recaps, price commentary, sponsored or promotional items, ETF flow recaps, routine transfers. syms = tickers of the coins whose PRICE this is about, uppercase, at most 4 - map project names to their ticker (Hyperliquid -> HYPE, Solana -> SOL, Ethereum -> ETH, Trade.xyz runs on Hyperliquid -> HYPE); empty only when it is genuinely market-wide. expect = the direction a trader would expect for those coins (-1 down, 1 up, 0 none). A hack is scored by the money actually lost: no figure, no funds at risk, a data leak, a phishing warning, a denial or a bug report = under 20. A trade idea, a price target, position sizing, a chart pattern call or a how-to post = kind promo, imp under 5. Never invent facts beyond the headline.';
   let j = null, status = 0;
   try {
     const r = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 2200, system: sys, messages: [{ role: 'user', content: lines.join('\n') }] }) }, 25000);
@@ -1527,6 +1533,28 @@ function cxDetectMoves(bars, opt) {
   moves.sort((a, b) => b.t0 - a.t0);
   const allSc = cxMedian(scale.filter(x => x > 0));
   return { moves: moves.slice(0, o.max), scale: allSc != null ? +(allSc * 100).toFixed(3) : null, floorPct: o.floorPct * 100, mult: o.mult };
+}
+// ONE STORY IS ONE MOVE, HOWEVER MANY CANDLE RUNS IT TOOK (2026-10-29, owner: the ICE x Hyperliquid story flagged HYPE at
+// 10:30, 11:30, 12:30, 15:00 and 16:00 - five flags for one thing, plus a LIVE flag for the same thing). Consecutive moves
+// in one direction that name the SAME story (or the same lone catalyst) inside six hours of each other are one episode:
+// it starts where the first leg started, ends where the last one ended, its size is the whole run, and it says how many
+// legs it took. Cascades, flow and structure stay separate moves - each is its own event.
+function cxEpKey(m) { if (!m || !m.catalyst) return null; return m.catalyst.story ? 's:' + m.catalyst.story.k : 'c:' + (+m.catalyst.ts) + '|' + m.catalyst.source; }
+function cxEpisodes(moves) {
+  const asc = (moves || []).slice().sort((a, b) => a.t0 - b.t0), out = [];
+  for (const m of asc) {
+    const prev = out[out.length - 1], k = cxEpKey(m);
+    if (prev && k && cxEpKey(prev) === k && prev.dir === m.dir && m.t0 - prev.t1 <= 6 * 3600000 && String(prev.cause).indexOf('news') === 0 && String(m.cause).indexOf('news') === 0) {
+      prev.legs = (prev.legs || 1) + 1; prev.legList = (prev.legList || [{ t0: prev.t0, pct: prev.pct }]).concat([{ t0: m.t0, pct: m.pct }]);
+      prev.t1 = Math.max(prev.t1, m.t1); if (m.p1 != null) prev.p1 = m.p1; if (prev.p0 > 0 && prev.p1 > 0) prev.pct = +((prev.p1 / prev.p0 - 1) * 100).toFixed(2);
+      if (m.hi != null) prev.hi = Math.max(+prev.hi || 0, +m.hi); if (m.lo != null) prev.lo = Math.min(prev.lo != null ? +prev.lo : Infinity, +m.lo);
+      prev.n = (+prev.n || 0) + (+m.n || 0); prev.z = Math.max(+prev.z || 0, +m.z || 0); prev.confidence = Math.max(+prev.confidence || 0, +m.confidence || 0);
+      prev.note = String(prev.note || '').replace(/\s*\(\d+ legs over [^)]*\)$/, '') + ' (' + prev.legs + ' legs over ' + Math.round((prev.t1 - prev.t0) / 360000) / 10 + ' h)';
+      continue;
+    }
+    out.push({ ...m, legs: 1 });
+  }
+  return out.sort((a, b) => b.t0 - a.t0);
 }
 // one move against the catalysts and the liquidation buckets around it; `sym` is the chart's coin
 function cxAttribute(mv, cats, liq, opt) {
@@ -1757,12 +1785,12 @@ async function handleCatalystMoves(url, env) {
   ]);
   // the tape ring reaches back hours, not the month: the flow factor applies to the newest moves and the live verdict
   const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
-  const moves = det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars }) }));
+  const moves = cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars }) })));
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
   sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0;
   for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else sum.unknown++; }
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
-  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor } };
+  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
   const res = J(body, cj ? 300 : 60);
   if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
   return res;
