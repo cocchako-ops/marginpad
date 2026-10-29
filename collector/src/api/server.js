@@ -4,7 +4,7 @@ import express from 'express';
 import { config } from '../../config.js';
 import { log } from '../logger.js';
 import { getWhales, getWhaleOne } from '../whales.js';
-import { getCatalysts, catalystStatus } from '../catalyst/index.js';
+import { getCatalysts, catalystStatus, ingestRows } from '../catalyst/index.js';
 import { EXPORTS } from '../storage/sqlite.js';
 
 // ---- tiny in-memory rate limiter (per IP per minute) ----
@@ -574,6 +574,18 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       res.set('Cache-Control', 'public, max-age=20');
       res.json(getCatalysts(q));
     } catch (e) { res.status(500).json({ error: 'server', why: String(e && e.message || e).slice(0, 80) }); }
+  });
+  // INGEST FROM OUTSIDE (2026-10-29): a source this box cannot read itself - Truth Social answers a home IP and 403s every
+  // datacentre (the droplet, the Worker) - is polled wherever it can be read (tools/truth-poller.js) and handed in here over
+  // the export key. Same ingest, same dedupe, same classification as every other source; at most 50 items a call.
+  app.post('/api/v1/catalysts/ingest', express.json({ limit: '256kb' }), (req, res) => {
+    const key = req.headers['x-export-key'] || '';
+    if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) return res.status(403).json({ error: 'forbidden' });
+    const b = req.body || {}; const source = String(b.source || '').replace(/[^a-zA-Z0-9:_-]/g, '').slice(0, 40); const tier = ['primary', 'official', 'mediaA', 'mediaB', 'social'].includes(b.tier) ? b.tier : 'social';
+    if (!/^(truth|x|tg|rss|ext):/.test(source)) return res.status(400).json({ error: 'bad_source' });
+    const items = (Array.isArray(b.items) ? b.items : []).slice(0, 50).map(it => ({ title: String(it.title || '').slice(0, 300), url: String(it.url || '').slice(0, 500), ts: +it.ts || Date.now(), nid: String(it.nid || '').slice(0, 80), meta: it.meta && typeof it.meta === 'object' ? it.meta : {} })).filter(it => it.title && it.ts > 0);
+    let added = 0; try { added = ingestRows(items, source, tier) || 0; } catch (e) { return res.status(500).json({ error: String(e && e.message || e).slice(0, 80) }); }
+    res.set('Cache-Control', 'no-store'); res.json({ ok: true, received: items.length, added });
   });
   app.get('/api/v1/catalysts/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(catalystStatus()); });
   // the coins the catalysts name in a window, ranked by mentions (the /catalysts/ page)

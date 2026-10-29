@@ -1554,6 +1554,8 @@ function cxAttribute(mv, cats, liq, opt) {
     const lead = mv.t0 - tsFirst;                                      // + = the news came BEFORE the move started
     const winB = major ? 6 * 3600000 : CX_BEFORE_MS, winA = major ? 3600000 : CX_AFTER_MS;
     if (lead > winB || lead < -winA) continue;
+    const ex0 = +c.expect || 0;
+    if (major && lead > 2 * 3600000 && ex0 && ex0 !== mv.dir) continue;   // a retrace hours after a bullish story is not the story's doing
     const syms = String(c.syms || '').split(',').filter(Boolean);
     let symW = 0;
     if (syms.indexOf(sym) >= 0) symW = 1;
