@@ -345,12 +345,24 @@ export function createSqliteStorage(path, opts = {}) {
     const spec = EXPORTS[ds]; if (!spec) throw new Error('unknown dataset: ' + ds);
     return db.prepare(spec.sql).all(d0, d1);
   }
+  // CATALYSTS BEYOND THE 48-HOUR RING (2026-10-29, the "what moved it" indicator reads a month back). Read on
+  // the reader thread like every other API read; newest first, bounded, the `syms` csv matched as a whole token
+  // so BTC never matches BTCB. The main thread never runs this - it only inserts.
+  function catalystRange(since, until, sym, min, kind, limit) { ensure();
+    const w = ['ts_src>=?', 'ts_src<?'], a = [+since || 0, +until || Date.now() + 1];
+    if (+min > 0) { w.push('score>=?'); a.push(+min); }
+    if (kind) { w.push('kind=?'); a.push(String(kind)); }
+    if (sym) { w.push("(','||syms||',') LIKE ?"); a.push('%,' + String(sym).toUpperCase() + ',%'); }
+    a.push(Math.min(5000, Math.max(1, +limit || 1000)));
+    return db.prepare('SELECT id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,cluster,title,url,snippet,meta FROM catalyst WHERE ' + w.join(' AND ') + ' ORDER BY ts_src DESC LIMIT ?').all(...a);
+  }
+  function catalystCount(since) { ensure(); return db.prepare('SELECT COUNT(*) n, MIN(ts_src) t0, MAX(ts_src) t1 FROM catalyst WHERE ts_src>=?').get(+since || 0); }
 
   return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
     insertWhaleFills, insertWhalePos, pruneWhale,
-    insertCatalyst, pruneCatalyst,
+    insertCatalyst, pruneCatalyst, catalystRange, catalystCount,
     saveState, loadState,
     close: () => db.close() };
 }

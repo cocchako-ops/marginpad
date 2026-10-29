@@ -25,12 +25,15 @@ function clusterFor(title, ts) {
 const sha = s => createHash('sha1').update(String(s)).digest('hex').slice(0, 20);
 const normUrl = u => String(u || '').trim().replace(/^http:/, 'https:').replace(/[?#].*$/, '').replace(/\/+$/, '').toLowerCase();
 
-function ingest(items, source, tier) {
+function ingest(items, source, tier, opt) {
+  const bf = !!(opt && opt.backfill);
   const now = Date.now(); let added = 0, late = [];
-  for (const it of items) {
+  // a backfill walks a source backwards; clustering wants time order, so its rows are sorted oldest-first here
+  const list = bf ? items.slice().sort((a, b) => a.ts - b.ts) : items;
+  for (const it of list) {
     if (!it || !it.title || !(it.ts > 0)) continue;
     if (it.ts > now + 60000 && source !== 'calendar') continue;             // a future-dated article is a feed bug
-    if (now - it.ts > 3 * 86400000 && source !== 'calendar') continue;       // a backfilled old row is not an event
+    if (!bf && now - it.ts > 3 * 86400000 && source !== 'calendar') continue; // a backfilled old row is not a LIVE event
     const id = sha(source + '|' + (normUrl(it.url) || it.nid || it.title));
     if (seen.has(id)) continue;
     const title = stripEmoji(it.title).slice(0, 300); if (!title) continue;
@@ -38,19 +41,27 @@ function ingest(items, source, tier) {
     const cl = clusterFor(title, it.ts);
     cl.srcs.add(source.split(':')[0] === 'rss' ? source : source.split(':')[0]); cl.ids.push(id);
     const conf = cl.srcs.size;
-    const row = { id, ts_src: it.ts, ts_seen: now, source, tier, kind: c.kind, expect: c.expect, syms: c.syms.join(','), market: c.market, score: scoreOf({ tier, kind: c.kind, conf, market: c.market, syms: c.syms }), conf, cluster: cl.key, title, url: it.url || '', snippet: stripEmoji(it.snippet || '').slice(0, 170), meta: it.meta ? JSON.stringify(it.meta).slice(0, 800) : null };
-    seen.set(id, now); ring.unshift(row); added++;
+    const meta = Object.assign({}, it.meta || {}, bf ? { bf: 1 } : {});
+    // a backfilled row was never SEEN by this process: ts_seen = ts_src says so, meta.bf says so again
+    const row = { id, ts_src: it.ts, ts_seen: bf ? it.ts : now, source, tier, kind: c.kind, expect: c.expect, syms: c.syms.join(','), market: c.market, score: scoreOf({ tier, kind: c.kind, conf, market: c.market, syms: c.syms }), conf, cluster: cl.key, title, url: it.url || '', snippet: stripEmoji(it.snippet || '').slice(0, 170), meta: Object.keys(meta).length ? JSON.stringify(meta).slice(0, 800) : null };
+    seen.set(id, now); added++;
+    if (now - it.ts < RING_MS) ring.unshift(row);                            // the ring holds 48 h; an older backfilled row goes to the table only
     // lateness = our clock minus the source's, only for items that are genuinely fresh (the first pass drains a backlog)
-    if (status.warm && source !== 'calendar' && now - it.ts < LATE_MAX_MS) late.push(now - it.ts);
+    if (!bf && status.warm && source !== 'calendar' && now - it.ts < LATE_MAX_MS) late.push(now - it.ts);
     // a confirmation lifts the earlier rows of the same cluster too
     if (conf > 1) for (const r of ring) if (cl.ids.includes(r.id) && r.conf < conf) { r.conf = conf; r.score = scoreOf({ tier: r.tier, kind: r.kind, conf, market: r.market, syms: r.syms ? r.syms.split(',') : [] }); }
     if (store) { try { store.insertCatalyst(row); status.stored++; } catch (e) { status.errors++; } }
   }
+  if (bf) { ring.sort((a, b) => b.ts_seen - a.ts_seen); return added; }
   late.sort((a, b) => a - b);
   const st = status.sources[source] = status.sources[source] || { ok: 0, err: 0, added: 0 };
   st.ok++; st.added += added; st.last = now; if (late.length) { st.lateP50 = late[Math.floor(late.length / 2)]; st.lateMin = late[0]; }
   return added;
 }
+// the backfill's door: the same ingest, flagged, with the store attached but no timers started
+export function ingestRows(items, source, tier, opt) { return ingest(items, source, tier, opt); }
+export function setSymbolsFrom(list) { setSymbols(list); status.symbols = symbolsKnown(); }
+export function startCatalystStore(storage) { store = storage && typeof storage.insertCatalyst === 'function' ? storage : null; }
 function trim() {
   const cut = Date.now() - RING_MS;
   while (ring.length && ring[ring.length - 1].ts_seen < cut) ring.pop();

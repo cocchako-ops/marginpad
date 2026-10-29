@@ -560,11 +560,20 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // CATALYST ENGINE (2026-10-29, phase 1): dated events from exchange announcements, filings, media and the
   // official channels, classified by rules and scored. Read off the 48-hour memory ring, never the database.
   //   ?sym=BTC&since=<ms>&min=<score>&kind=listing&limit=100   ·   /status = per-source health and lateness
-  app.get('/api/v1/catalysts', (req, res) => {
+  app.get('/api/v1/catalysts', async (req, res) => {
     try {
+      const q = { sym: String(req.query.sym || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12), since: +req.query.since || 0, min: +req.query.min || 0, kind: String(req.query.kind || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.min(5000, Math.max(1, +req.query.limit || 100)) };
+      // THE RING ANSWERS 48 HOURS; A MONTH COMES OFF THE TABLE, ON THE READER THREAD (2026-10-29, the "what moved
+      // it" indicator). The two answers share one shape so a caller never needs to know which one it got.
+      if (q.since > 0 && q.since < Date.now() - 46 * 3600000) {
+        const until = +req.query.until || Date.now();
+        const rows = await storage.async.catalystRange(q.since, until, q.sym, q.min, q.kind, q.limit);
+        res.set('Cache-Control', 'public, max-age=120');
+        return res.json({ ts: Date.now(), n: rows.length, hist: true, items: rows, upcoming: [] });
+      }
       res.set('Cache-Control', 'public, max-age=20');
-      res.json(getCatalysts({ sym: String(req.query.sym || '').slice(0, 12), since: +req.query.since || 0, min: +req.query.min || 0, kind: String(req.query.kind || '').slice(0, 16), limit: Math.min(500, Math.max(1, +req.query.limit || 100)) }));
-    } catch (e) { res.status(500).json({ error: 'server' }); }
+      res.json(getCatalysts(q));
+    } catch (e) { res.status(500).json({ error: 'server', why: String(e && e.message || e).slice(0, 80) }); }
   });
   app.get('/api/v1/catalysts/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(catalystStatus()); });
 

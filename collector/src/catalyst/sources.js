@@ -58,10 +58,14 @@ export async function rss(name, url) { return parseFeed(await get(url)); }
 // Layer 0 - exchange announcements, straight from the exchange, with their own timestamps
 export async function bybitAnn() {
   const out = [];
-  for (const type of ['new_crypto', 'delistings', 'latest_bybit_news']) {
-    const d = await get(`https://api.bybit.com/v5/announcements/index?locale=en-US&type=${type}&limit=30`, { json: true });
-    for (const a of (d && d.result && d.result.list) || []) out.push({ nid: 'bybit:' + (a.id || a.url || a.title), ts: +a.dateTimestamp, title: a.title, url: a.url || '', snippet: dec(a.description || '').slice(0, 170), meta: { type, tags: a.tags } });
-  }
+  for (const type of ['new_crypto', 'delistings', 'latest_bybit_news']) out.push(...await bybitAnnPage(type, 1, 30));
+  return out;
+}
+// one page of one Bybit announcement type - the live poll reads page 1, the backfill walks pages back
+export async function bybitAnnPage(type, page, limit) {
+  const d = await get(`https://api.bybit.com/v5/announcements/index?locale=en-US&type=${type}&limit=${limit || 30}&page=${page || 1}`, { json: true });
+  const out = [];
+  for (const a of (d && d.result && d.result.list) || []) out.push({ nid: 'bybit:' + (a.id || a.url || a.title), ts: +a.dateTimestamp, title: a.title, url: a.url || '', snippet: dec(a.description || '').slice(0, 170), meta: { type, tags: a.tags } });
   return out;
 }
 export async function okxAnn() {
@@ -71,15 +75,17 @@ export async function okxAnn() {
   // so each is its own try; the whole source throws only when every type failed.
   let okN = 0, lastErr = null;
   for (const annType of ['announcements-new-listings', 'announcements-delistings', 'latest-events', 'announcements-trading-updates']) {
-    try {
-      const d = await get(`https://www.okx.com/api/v5/support/announcements?annType=${annType}&page=1`, { json: true });
-      const dd = d && d.data && d.data[0];
-      for (const a of (dd && dd.details) || []) out.push({ nid: 'okx:' + (a.url || a.title), ts: +a.pTime, title: a.title, url: a.url || '', snippet: '', meta: { type: annType } });
-      okN++;
-    } catch (e) { lastErr = e; }
+    try { out.push(...(await okxAnnPage(annType, 1)).rows); okN++; } catch (e) { lastErr = e; }
   }
   if (!okN && lastErr) throw lastErr;
   return out;
+}
+// one page of one OKX announcement type; `pages` is the total the API reports, for the backfill's walk
+export async function okxAnnPage(annType, page) {
+  const d = await get(`https://www.okx.com/api/v5/support/announcements?annType=${annType}&page=${page || 1}`, { json: true });
+  const dd = d && d.data && d.data[0], rows = [];
+  for (const a of (dd && dd.details) || []) rows.push({ nid: 'okx:' + (a.url || a.title), ts: +a.pTime, title: a.title, url: a.url || '', snippet: '', meta: { type: annType } });
+  return { rows, pages: +(dd && dd.totalPage) || 1 };
 }
 // Hyperliquid has no announcements API: the LISTING is the perp appearing in `meta`. Diffed against the last call.
 let hlSeen = null;
@@ -119,15 +125,20 @@ export async function cftc() {
   return out.filter(it => /crypto|digital asset|bitcoin|ether|stablecoin|token|prediction market|perpetual|binance|coinbase|kraken|polymarket|kalshi/i.test(it.title + ' ' + it.snippet));
 }
 // Telegram public channel preview page (no account, newest ~20 posts). Official exchange channels and the alert bots.
-export const TG = [['binance_announcements', 'official'], ['Bybit_Announcements', 'official'], ['OKX_Official', 'official'], ['whale_alert_io', 'official'], ['PeckShieldAlert', 'official'], ['lookonchain', 'mediaA'], ['WatcherGuru', 'mediaB'], ['CoinMarketCapAnnouncements', 'mediaB']];
-export async function tg(channel) {
-  const html = await get('https://t.me/s/' + channel, { headers: { accept: 'text/html' } });
+// OKX_Official and lookonchain answer 302 (no public preview) and were dropped 2026-10-29; the five added that day are the
+// fast desks that mirror X in seconds (BWEnews, Wu Blockchain, Cointelegraph, Bitcoin Magazine, Unfolded) - the free half
+// of what X would cost, measured against the X API before any budget is spent there.
+export const TG = [['binance_announcements', 'official'], ['Bybit_Announcements', 'official'], ['whale_alert_io', 'official'], ['PeckShieldAlert', 'official'], ['BWEnews', 'mediaA'], ['wublockchainenglish', 'mediaA'], ['cointelegraph', 'mediaA'], ['Bitcoin_Magazine', 'mediaB'], ['unfolded', 'mediaB'], ['WatcherGuru', 'mediaB'], ['CoinMarketCapAnnouncements', 'mediaB']];
+export async function tg(channel, before) {
+  // `?before=<post number>` pages the public preview backwards (20 posts a page) - how the backfill reaches a month
+  const html = await get('https://t.me/s/' + channel + (before ? '?before=' + before : ''), { headers: { accept: 'text/html' } });
   const out = [];
   for (const b of html.match(/<div class="tgme_widget_message_wrap[\s\S]*?<\/time>/g) || []) {
     const post = attr(b, 'div', 'data-post'); const txt = dec(pick(b, 'div class="tgme_widget_message_text js-message_text" dir="auto"') || (b.match(/<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '');
     const when = (b.match(/<time[^>]*datetime="([^"]+)"/) || [])[1]; const ts = Date.parse(when || '');
     if (!txt || !(ts > 0)) continue;
-    out.push({ nid: 'tg:' + (post || txt.slice(0, 40)), ts, title: txt.slice(0, 200), url: post ? 'https://t.me/' + post : '', snippet: txt.slice(0, 170) });
+    const num = +(String(post || '').split('/')[1] || 0) || 0;
+    out.push({ nid: 'tg:' + (post || txt.slice(0, 40)), ts, title: txt.slice(0, 200), url: post ? 'https://t.me/' + post : '', snippet: txt.slice(0, 170), num });
   }
   return out;
 }
