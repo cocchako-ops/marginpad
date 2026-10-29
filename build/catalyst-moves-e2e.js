@@ -128,7 +128,7 @@ function pureLeg() {
   const liqM = []; for (let i = 0; i < 2000; i++) liqM.push({ t: T0 - 2000 * 300000 + i * 300000, long: 10000, short: 10000 }); liqM.push({ t: T0, long: 120000, short: 10000 }); liqM.push({ t: T0 + 300000, long: 85000, short: 5000 });
   a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.6, dir: -1 }, [], liqM, { sym: 'BTC', liqFloor: 250000 });
   ok('liquidations at 3x the bucket but under the cascade bar are named as forced closes, not a cascade', a.cause === 'liqs' && !a.cascade && /forced closes/.test(a.note), a.cause + ' ' + a.note);
-  const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained of $40M', why: 'forced selling', ts: Date.now() } } });
+  const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained of $140M', why: 'forced selling', ts: Date.now() } } });
   ok('a label lifts a rules-only news row: blended score, the real kind, the coins unioned, the direction', en[0].score > 40 && en[0].kind === 'hack' && en[0].kind0 === 'news' && /ETH/.test(en[0].syms) && en[0].expect === -1 && en[0].lbl.sum, JSON.stringify(en[0]));
   // THE HYPE CASE (2026-10-29, owner): seven desks, seven wordings, the first at 10:32, the moves at 10:30 / 12:30 / 15:00, whales buying all day
   const ice = [['tg:unfolded', 'NYSE owner ICE invests in trade[XYZ] and partners to launch regulated perps', ['HYPE']], ['tg:WatcherGuru', 'JUST IN: NYSE owner to bring Hyperliquid $HYPE perpetual futures to regulated US markets', ['HYPE']], ['tg:cointelegraph', 'JUST IN: NYSE parent ICE takes a stake in Trade.xyz and plans a US-regulated perps market', []], ['rss:defiant', 'ICE plans US-regulated Hyperliquid perpetuals via TradeXYZ', ['HYPE']], ['rss:unchained', 'NYSE owner ICE brings Hyperliquid perpetuals to US via Trade.xyz', ['HYPE']]];
@@ -167,7 +167,7 @@ function pureLeg() {
   ok('the episode runs from the first leg to the last and its size is the whole run', eps[0].legs === 1 && eps[eps.length - 1].legs === 2 && eps[eps.length - 1].pct > 9.6 && eps[eps.length - 1].t1 === T0 + 3600000 + 15 * 60000, JSON.stringify(eps[eps.length - 1]));
   // A HACK IS THE MONEY LOST
   const hk = X.cxEnrich([cat({ id: 'h1', kind: 'hack', tier: 'mediaA', score: 57, title: 'Coinbase denies data breach after vendor incident, no customer funds at risk' }), cat({ id: 'h2', kind: 'hack', tier: 'mediaA', score: 57, title: 'Bridge exploit drains about $120 million from protocol' }), cat({ id: 'h3', kind: 'hack', tier: 'mediaA', score: 57, title: 'Protocol loses $780k in flash loan attack' })], { m: {} });
-  ok('a breach denial with no money lost cannot score above 28; a $120M drain scores 80+; $780k sits in between', hk[0].score <= 28 && hk[1].score >= 80 && hk[2].score <= 35 && hk[2].score > hk[0].score, JSON.stringify(hk.map(h => [h.score, h.usd])));
+  ok('a breach denial with no money lost cannot score above 20; a $120M drain scores 80+; $780k is capped at 25 (a hack under $50M is news, never a cause)', hk[0].score <= 20 && hk[1].score >= 80 && hk[2].score <= 25, JSON.stringify(hk.map(h => [h.score, h.usd])));
   ok('the dollar reader knows k, M and B', X.cxUsd('lost $1.2M') === 1200000 && X.cxUsd('$779,000 drained') === 779000 && X.cxUsd('a $2B hole') === 2e9 && X.cxUsd('no figure') === null);
   const pr = X.cxEnrich([cat({ id: 'p1', kind: 'news', tier: 'mediaB', score: 11, title: 'GOOG IS A STRONG BUY' })], { m: { p1: { imp: 3, kind: 'promo', syms: [], expect: 0, sum: 'A trade idea', why: 'no event', ts: Date.now() } } });
   ok('a trade idea the model calls promo scores zero', pr[0].kind === 'promo' && pr[0].score === 0, JSON.stringify([pr[0].kind, pr[0].score]));
@@ -206,6 +206,13 @@ function pureLeg() {
   ok('money in a sentence reads as money', X.cxMoney(28610000) === '$28.6M' && X.cxMoney(684000) === '$684k' && X.cxMoney(2.4e9) === '$2.4B', X.cxMoney(28610000));
   const bl = X.cxEpisodes([{ t0: T0, t1: T0 + 45 * 60000, pct: 9.6, dir: 1, p0: 100, p1: 109.6, cause: 'news', catalyst: { story: { k: 'ice' } }, note: 'a' }, { t0: T0 + 45 * 60000, t1: T0 + 60 * 60000, pct: -0.9, dir: -1, p0: 109.6, p1: 108.6, cause: 'news', catalyst: { ts: 1, source: 'rss:x' }, note: 'b' }, { t0: T0 + 60 * 60000, t1: T0 + 5 * 3600000, pct: 12.1, dir: 1, p0: 108.6, p1: 121.7, cause: 'news', catalyst: { story: { k: 'ice' } }, note: 'c' }]);
   const big = bl.find(m => m.legs === 2);
+  // ONLY WHAT WE ARE SURE OF IS FLAGGED (owner, 2026-10-29): a $2.7M breach never explains a dip; a tech-only move is said, not drawn
+  const smallHack = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.2, dir: -1, p0: 100, p1: 98.8, hi: 100, lo: 98.7 }, [cat({ kind: 'hack', tier: 'mediaA', score: 60, expect: -1, syms: 'HYPE', title: 'Polymarket breach drains $2.7M from users', ts_src: T0 - 20 * 60000, lbl: { imp: 50, kind: 'hack', sum: 'Polymarket breach, $2.7M drained' } })], null, { sym: 'HYPE' });
+  ok('a $2.7M hack is never the cause of a move', smallHack.cause !== 'news' && smallHack.cause !== 'news+cascade' && smallHack.sure === false, JSON.stringify([smallHack.cause, smallHack.sure]));
+  const bigHack = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -2.6, dir: -1, p0: 100, p1: 97.4, hi: 100, lo: 97.3 }, [cat({ kind: 'hack', tier: 'mediaA', score: 85, expect: -1, syms: 'HYPE', major: true, title: 'Exchange hot wallet drained of $140M', ts_src: T0 - 20 * 60000, lbl: { imp: 90, kind: 'hack', sum: 'A $140M exchange hack' } })], null, { sym: 'HYPE' });
+  ok('a $140M hack can be the cause and is sure', bigHack.cause === 'news' && bigHack.sure === true, JSON.stringify([bigHack.cause, bigHack.sure, bigHack.confidence]));
+  const techOnly = X.cxAttribute(tmv, [], null, { sym: 'HYPE', bars: tb });
+  ok('a move explained by structure alone is said but not sure (no flag on the chart)', techOnly.cause === 'tech' && techOnly.sure === false, JSON.stringify([techOnly.cause, techOnly.sure]));
   ok('a -0.9% blip between two legs of one story does not split the episode', !!big && Math.abs(big.pct - 21.7) < 0.2 && bl.length === 2 && bl.some(m => m.blip), JSON.stringify(bl.map(m => [m.pct, m.legs, !!m.blip])));
 }
 

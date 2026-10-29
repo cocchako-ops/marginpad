@@ -1256,7 +1256,7 @@ function cxEnrich(items, labels) {
       if (!(+c.expect) && l.expect) o.expect = l.expect;
       const im2 = cxImpactOf(o.kind, c.tier, !String(o.syms || '').length); o.impact = cxImpactPack(im2);
     }
-    if (o.kind === 'hack') { const usd = cxUsd(String(c.title || '') + ' ' + ((l && l.sum) || '')); o.usd = usd; const cap = usd == null ? 28 : usd < 1e6 ? 35 : usd < 1e7 ? 55 : usd < 5e7 ? 72 : 100; o.score = Math.min(o.score, cap); if (usd != null && usd >= 5e7) o.score = Math.max(o.score, 80); }
+    if (o.kind === 'hack') { const usd = cxUsd(String(c.title || '') + ' ' + ((l && l.sum) || '')); o.usd = usd; const cap = usd == null ? 20 : usd < CX_HACK_MIN_USD ? 25 : 100; o.score = Math.min(o.score, cap); if (usd != null && usd >= 5e7) o.score = Math.max(o.score, 80); }
     if (o.kind === 'promo' || o.kind === 'pair') o.score = 0;
     return o;
   });
@@ -1285,6 +1285,8 @@ function cxEnt(c) {
 }
 // a model reading under this is 'not a catalyst' in the model's own words: it caps the score, joins no story, earns no desk bonus
 const CX_IMP_NOISE = 25;
+// a hack under this is news to read, never the cause of a move (the owner: only a Lazarus-sized hack moves price)
+const CX_HACK_MIN_USD = 5e7;
 // 'ice-hyperliquid-perps' -> 'ICE Hyperliquid Perps' (a short word is an acronym); a fallback slug (s43) names nothing
 function cxStoryName(slug) { const s = String(slug || ''); if (!s || /^s\d+$/.test(s)) return null; const w = s.split(/[-_]+/).filter(Boolean).map(x => x.length <= 3 ? x.toUpperCase() : x.charAt(0).toUpperCase() + x.slice(1)); const t = w.join(' '); return t.length > 30 ? t.slice(0, 29).replace(/\s+\S*$/, '') : t; }
 function cxMoney(v) { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(v >= 1e8 ? 0 : 1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'k' : '$' + Math.round(v); }
@@ -1388,7 +1390,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v5_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v6_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -1557,7 +1559,7 @@ function cxEpKey(m) { if (!m || !m.catalyst) return null; return m.catalyst.stor
 function cxEpisodes(moves) {
   const asc = (moves || []).slice().sort((a, b) => a.t0 - b.t0), out = [];
   const fold = (prev, m) => {
-    prev.legs = (prev.legs || 1) + 1; prev.legList = (prev.legList || [{ t0: prev.t0, pct: prev.pct }]).concat([{ t0: m.t0, pct: m.pct }]);
+    prev.sure = !!(prev.sure || m.sure); prev.legs = (prev.legs || 1) + 1; prev.legList = (prev.legList || [{ t0: prev.t0, pct: prev.pct }]).concat([{ t0: m.t0, pct: m.pct }]);
     prev.t1 = Math.max(prev.t1, m.t1); if (m.p1 != null) prev.p1 = m.p1; if (prev.p0 > 0 && prev.p1 > 0) prev.pct = +((prev.p1 / prev.p0 - 1) * 100).toFixed(2);
     if (m.hi != null) prev.hi = Math.max(+prev.hi || 0, +m.hi); if (m.lo != null) prev.lo = Math.min(prev.lo != null ? +prev.lo : Infinity, +m.lo);
     prev.n = (+prev.n || 0) + (+m.n || 0); prev.z = Math.max(+prev.z || 0, +m.z || 0); prev.confidence = Math.max(+prev.confidence || 0, +m.confidence || 0);
@@ -1591,6 +1593,7 @@ function cxAttribute(mv, cats, liq, opt) {
     const ts = +c.ts_src || +c.ts || 0; if (!(ts > 0)) continue;
     const score = +c.score || 0; if (score < CX_MIN_SCORE) continue;
     if (CX_SKIP_KIND[c.kind]) continue;
+    if (c.kind === 'hack') { const hu = c.usd != null ? +c.usd : cxUsd(String(c.title || '') + ' ' + ((c.lbl && c.lbl.sum) || '')); if (!(hu >= CX_HACK_MIN_USD)) continue; }
     let meta = c.meta; if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch (e) { meta = null; } }
     if (meta && meta.dayres) continue;                                 // a row dated to the day cannot name a candle
     // A MAJOR STORY KEEPS ITS CLAIM FOR HOURS (2026-10-29, owner: the ICE x Hyperliquid story broke at 10:32 and HYPE rose at
@@ -1665,7 +1668,8 @@ function cxAttribute(mv, cats, liq, opt) {
   if (causes.length && causes[0].k === 'news') causes[0].label = label; else if (causes.length && causes[0].k === 'cascade') causes[0].label = cascLabel;
   for (const cc of causes) { if (!cc.label) cc.label = cc.k === 'cascade' ? cascLabel : cc.k === 'news' ? label : cc.k; }
   const labelFull = causes.length ? causes.filter((cc, i) => i === 0 || cc.share >= 0.2).slice(0, 3).map(cc => cc.label).join(' + ') : label;
-  const out = { cause: cause2, confidence: +confidence2.toFixed(2), label, labelFull, causes, catalyst: best, others, liq: liqOut, cascade, factors: ctx, tech: tech ? { kind: tech.kind, label: tech.label, text: tech.text, level: tech.level, vol: tech.vol } : null };
+  const sure = (cause2 === 'news' || cause2 === 'news+cascade') ? (confidence2 >= 0.7 || !!(best && best.major)) : cause2 === 'cascade' ? true : cause2 === 'btc' ? !!((ctx.filter(f => f.k === 'btc')[0] || {}).sure) : false;
+  const out = { cause: cause2, sure, confidence: +confidence2.toFixed(2), label, labelFull, causes, catalyst: best, others, liq: liqOut, cascade, factors: ctx, tech: tech ? { kind: tech.kind, label: tech.label, text: tech.text, level: tech.level, vol: tech.vol } : null };
   out.note = cxNote(mv, out, ctx, sym);
   return out;
 }
@@ -1764,7 +1768,7 @@ function cxContext(mv, btcMoves, whales, sym, extra) {
   if (sym !== 'BTC' && btcMoves && btcMoves.length) {
     let best = null;
     for (const b of btcMoves) { if (b.dir !== mv.dir) continue; const overlap = Math.min(b.t1, mv.t1) - Math.max(b.t0 - 15 * 60000, mv.t0); if (overlap >= 0 && (!best || Math.abs(b.pct) > Math.abs(best.pct))) best = b; }
-    if (best) { const why = best.cause && best.cause !== 'unknown' ? ' (Bitcoin: ' + best.label + (best.note ? ' - ' + String(best.note).split('. ')[0].slice(0, 160) : '') + ')' : (best.note ? ' (Bitcoin itself: ' + String(best.note).split('. ')[0].slice(0, 140) + ')' : ''); f.push({ k: 'btc', label: 'BTC move', w: 0.55, text: 'Bitcoin moved ' + (best.pct > 0 ? '+' : '') + best.pct + '% at the same time' + why + ' - this coin followed', btc: { t0: best.t0, pct: best.pct, cause: best.cause || null, label: best.label || null } }); }
+    if (best) { const why = best.cause && best.cause !== 'unknown' ? ' (Bitcoin: ' + best.label + (best.note ? ' - ' + String(best.note).split('. ')[0].slice(0, 160) : '') + ')' : (best.note ? ' (Bitcoin itself: ' + String(best.note).split('. ')[0].slice(0, 140) + ')' : ''); f.push({ k: 'btc', label: 'BTC move', w: 0.55, sure: !!best.sure, text: 'Bitcoin moved ' + (best.pct > 0 ? '+' : '') + best.pct + '% at the same time' + why + ' - this coin followed', btc: { t0: best.t0, pct: best.pct, cause: best.cause || null, label: best.label || null } }); }
   }
   // US stocks: the S&P 500 (futures) moving the same way inside the same quarter hour is risk-on/off across every asset
   if (x.spx && x.spx.length) {
@@ -1836,7 +1840,7 @@ async function handleCatalystMoves(url, env) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v5_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v6_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       colFetch('/api/v1/catalysts?since=' + (at - 43200000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 15),
@@ -1860,7 +1864,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v8_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v9_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1893,6 +1897,7 @@ async function handleCatalystMoves(url, env) {
   sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0; sum.oi = 0; sum.book = 0; sum.multi = 0;
   for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else if (m.cause === 'oi') sum.oi++; else if (m.cause === 'book') sum.book++; else sum.unknown++; }
   for (const m of moves) if (m.causes && m.causes.length >= 2) sum.multi++;
+  sum.sure = moves.filter(m => m.sure).length;
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown) / moves.length) : null;
   const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, oiMeasured: !!(oiS && oiS.length), fundingMeasured: !!(fundS && fundS.length), shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
   const res = J(body, cj ? 300 : 60);
@@ -1919,7 +1924,7 @@ async function handleCatalystTop(url, env) {
 async function handleCatalysts(url, env) {
   const q = { sym: String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12), min: Math.max(0, Math.min(100, +url.searchParams.get('min') || 0)), kind: String(url.searchParams.get('kind') || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.max(1, Math.min(300, +url.searchParams.get('limit') || 100)), since: Math.max(0, +url.searchParams.get('since') || 0) };
   const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
-  const ck = new Request('https://marginpad.io/__catalysts_v5_' + q.sym + '_' + q.min + '_' + q.kind + '_' + q.limit + '_' + q.since);
+  const ck = new Request('https://marginpad.io/__catalysts_v6_' + q.sym + '_' + q.min + '_' + q.kind + '_' + q.limit + '_' + q.since);
   const nc = url.searchParams.get('nc') === '1';
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
