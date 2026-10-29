@@ -150,5 +150,7 @@ run('Stamp bundle versions (?v=)', 'node build/bump-home-assets.js');
 run('Spanish site (/es/ twins)', 'node build/es/gen-pages.js');
 // 15) PORTUGUESE TWINS (2026-10-29): the top pages only (build/data/pt/pages.txt), same generator, catalog build/data/pt/catalog.json.
 run('Portuguese site (/pt/ twins)', 'node build/es/gen-pages.js --lang pt');
+// 16) GERMAN TWINS (2026-10-29): the whole site under /de/ (build/data/de/pages.txt), catalog build/data/de/catalog.json.
+run('German site (/de/ twins)', 'node build/es/gen-pages.js --lang de');
 
 process.stdout.write('\n Build complete. Review dist/, then: npm run deploy\n');

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de" data-es-twin="/leverage-report/"><head>
+<meta charset="UTF-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Krypto-Hebelreport (monatlich) - gemessene Liquidationsrate nach Hebel | MarginPad</title>
+<meta name="description" content="Eine monatliche Zählung, keine Umfrage: jeder auf MarginPad geschlossene Trade, gruppiert nach dem Hebel bei der Eröffnung, mit dem Anteil, der in einer Liquidation endete, und der Median-Rendite je Band. Pro Monat archiviert, kostenloses JSON pro Monat.">
+<link rel="canonical" href="https://marginpad.io/de/leverage-report/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/leverage-report/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/leverage-report/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/leverage-report/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/leverage-report/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/leverage-report/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Krypto-Hebelreport (monatlich) - gemessene Liquidationsrate nach Hebel | MarginPad">
+<meta property="og:description" content="Eine monatliche Zählung, keine Umfrage: jeder auf MarginPad geschlossene Trade, gruppiert nach dem Hebel bei der Eröffnung, mit dem Anteil, der in einer Liquidation endete, und der Median-Rendite je Band. Pro Monat archiviert, kostenloses JSON pro Monat.">
+<meta property="og:url" content="https://marginpad.io/de/leverage-report/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Monatlicher MarginPad-Hebelreport","description":"Jeder in einem Kalendermonat auf MarginPad geschlossene Paper-Trade, gruppiert nach dem Hebel bei der Eröffnung, mit dem Anteil jedes Bands, der in einer Liquidation endete, dem Median-ROE und dem Anteil des Bands an allen Schließungen. Ein Datensatz pro Monat, archiviert; der aktuelle Monat ist ein laufender Teilstand.","url":"https://marginpad.io/de/leverage-report/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/leverage?months=1"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"Wie viel Prozent der gehebelten Krypto-Trades werden liquidiert?","acceptedAnswer":{"@type":"Answer","text":"Das hängt stärker vom Hebel ab als von allem anderen. Auf MarginPad, jeden Monat über alle geschlossenen Trades gezählt, enden grob 0-1% der Trades bei 1-2x in der Liquidation, etwa 10-12% bei 11-25x, knapp 30% bei 26-50x und über die Hälfte der Trades, die über 100x eröffnet wurden. Die genauen Zahlen je Monat stehen auf dieser Seite und im kostenlosen JSON."}},{"@type":"Question","name":"Welchen Hebel nutzen die meisten Krypto-Trader?","acceptedAnswer":{"@type":"Answer","text":"In unserer Zählung hält das 11-25x-Band jeden Monat den größten Anteil der geschlossenen Trades - typischerweise ein Drittel -, gefolgt von 26-50x. Sehr niedriger Hebel (1-2x) und sehr hoher Hebel (über 100x) machen jeweils nur eine kleine Minderheit der Schließungen aus."}},{"@type":"Question","name":"Basiert der Hebelreport auf echtem Geld?","acceptedAnswer":{"@type":"Answer","text":"Nein. Er wird an Paper-Trades gemessen, die serverseitig zu echten Live-Preisen ausgeführt werden, mit echten Börsengebühren, Funding und Liquidationsregeln. Preisverlauf und Mechanik sind echt; das Geld nicht - deshalb ist es auch der einzige Hebel-Datensatz, der vollständig veröffentlicht werden kann."}},{"@type":"Question","name":"Warum der Median-ROE statt des Durchschnitts?","acceptedAnswer":{"@type":"Answer","text":"Weil der Durchschnitt eines Hebelbands von ein paar extremen Accounts dominiert wird und nichts über einen typischen Trade aussagt - das oberste Band lag einmal im Schnitt bei +25,776%. Der Median ist die Rendite des mittleren Trades, und das ist die Zahl, die beschreibt, was üblicherweise passiert."}},{"@type":"Question","name":"Kann ich den Report für einen bestimmten Monat bekommen?","acceptedAnswer":{"@type":"Answer","text":"Ja. GET https://marginpad.io/api/leverage?month=YYYY-MM liefert die Bänder dieses Monats, und ?months=1 listet jeden archivierten Monat. Kein API-Key, CORS aktiviert."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/de/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/de/liquidations/">Liquidationen</a><a href="/de/heatmap">Heatmap</a><a href="/de/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Eine Frage, eine Antwort</p>
+    <h1>Krypto-Hebelreport: Was Trader tatsächlich nutzen, Monat für Monat</h1>
+    <p class="lead">Jeden Monat aus unserem eigenen Book veröffentlicht: wie viele Trades jedes Hebelband geschlossen hat, welcher Anteil davon liquidiert wurde und was der mittlere Trade zurückbrachte. Nichts modelliert, nichts per Umfrage erhoben.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Lese die Live-Zahl&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/de/what-leverage-should-a-beginner-use/">Welchen Hebel Einsteiger nutzen sollten, gemessen über 30 Tage</a><a class="ask-cta alt" href="/de/paper-trade">Übe kostenlos mit deinem gewählten Hebel</a><a class="ask-cta alt" href="/de/calculators?c=liq">Liquidationspreis-Rechner</a><a class="ask-cta alt" href="/de/how-many-traders-liquidated-today/">Wie viele Trader heute liquidiert wurden</a><a class="ask-cta alt" href="/de/practice-for-a-funded-account/">Unsere eigene Bestehensquote beim Funded-Challenge</a></p>
+
+    <h2>Was gezählt wird und was nicht</h2>
+    <p>Ein Trade kommt in diesen Report, wenn er <strong>schließt</strong> - per Stop, Take-Profit, manuellem Schließen oder Liquidation. Das Band ist der Hebel, mit dem er <strong>eröffnet</strong> wurde; ein 100x-Trade, der mit 2% Gewinn endet, zählt also als 100x-Trade, nicht als Glückstreffer. Die Liquidationsrate ist der Anteil dieser Schließungen, der erzwungen war; der Median-ROE ist die Rendite auf die Margin des mittleren Trades im Band, weshalb er nie +25,776% anzeigt, wie es der Durchschnitt des obersten Bands einmal tat. Ein Band mit weniger als 200 Schließungen im Monat zeigt <em>zu wenig</em> statt einer Rate: Ein Prozentwert aus 40 Trades ist Rauschen im Zahlenkostüm.</p>
+
+    <h2>Warum sich die Form der Tabelle kaum verändert</h2>
+    <p>Monat für Monat halten die mittleren Bänder die meisten Schließungen - bei 11-25x findet auf jeder Börse der Großteil des gehebelten Krypto-Handels statt - und die Liquidationsrate steigt mit dem Hebel jedes Mal in derselben Reihenfolge. Das ist Arithmetik, keine Stimmung: Bei 100x ist eine Bewegung von 0.5% gegen die Position die ganze Margin; bei 5x braucht es etwa 19.5%. Ein volatiler Monat hebt jedes Band ein wenig an; er ändert die Reihenfolge nicht. Wenn sich die Reihenfolge doch ändert, lohnt sich dieser Monat für einen zweiten Blick.</p>
+
+    <h2>So nutzt du das bei einem echten Konto</h2>
+    <p>Finde das Band, in dem du handelst. Wenn seine Liquidationsrate eine Zahl ist, die du als Wahrscheinlichkeit, bei einer einzigen Position die ganze Margin zu verlieren, nicht akzeptieren würdest, geh ein Band tiefer, bevor es der Markt für dich tut. Die <a href="/de/what-leverage-should-a-beginner-use/">Seite zum Einsteiger-Hebel</a> liest dieselbe Zählung über die letzten 30 Tage; diese Seite ist das Archiv, damit du siehst, ob der Monat, in dem du handelst, ungewöhnlich ist. Jede Zahl lässt sich aus dem kostenlosen JSON nachrechnen - ein Aufruf pro Monat, kein Key.</p>
+
+    <h2>Teste deinen Hebel, bevor er Geld kostet</h2>
+    <p>All das stammt von Leuten, die im <a href="/de/paper-trade">Paper-Trading-Terminal von MarginPad</a> handeln: echte Live-Preise, Gebühren auf beiden Seiten, Funding auf gehaltene Positionen, Liquidation gegen Ein-Minuten-Kerzen geprüft und keine Einzahlung. Eröffne eine Position mit dem Hebel, den du real nutzt, halte sie durch eine Marktwoche, und deine eigene Zeile in dieser Zählung sagt dir mehr als jede Meinung.</p>
+
+    <h2>Fragen</h2>
+    <details><summary>Wie viel Prozent der gehebelten Krypto-Trades werden liquidiert?</summary><p>Das hängt stärker vom Hebel ab als von allem anderen. Auf MarginPad, jeden Monat über alle geschlossenen Trades gezählt, enden grob 0-1% der Trades bei 1-2x in der Liquidation, etwa 10-12% bei 11-25x, knapp 30% bei 26-50x und über die Hälfte der Trades, die über 100x eröffnet wurden. Die genauen Zahlen je Monat stehen auf dieser Seite und im kostenlosen JSON.</p></details>
+    <details><summary>Welchen Hebel nutzen die meisten Krypto-Trader?</summary><p>In unserer Zählung hält das 11-25x-Band jeden Monat den größten Anteil der geschlossenen Trades - typischerweise ein Drittel -, gefolgt von 26-50x. Sehr niedriger Hebel (1-2x) und sehr hoher Hebel (über 100x) machen jeweils nur eine kleine Minderheit der Schließungen aus.</p></details>
+    <details><summary>Basiert der Hebelreport auf echtem Geld?</summary><p>Nein. Er wird an Paper-Trades gemessen, die serverseitig zu echten Live-Preisen ausgeführt werden, mit echten Börsengebühren, Funding und Liquidationsregeln. Preisverlauf und Mechanik sind echt; das Geld nicht - deshalb ist es auch der einzige Hebel-Datensatz, der vollständig veröffentlicht werden kann.</p></details>
+    <details><summary>Warum der Median-ROE statt des Durchschnitts?</summary><p>Weil der Durchschnitt eines Hebelbands von ein paar extremen Accounts dominiert wird und nichts über einen typischen Trade aussagt - das oberste Band lag einmal im Schnitt bei +25,776%. Der Median ist die Rendite des mittleren Trades, und das ist die Zahl, die beschreibt, was üblicherweise passiert.</p></details>
+    <details><summary>Kann ich den Report für einen bestimmten Monat bekommen?</summary><p>Ja. GET https://marginpad.io/api/leverage?month=YYYY-MM liefert die Bänder dieses Monats, und ?months=1 listet jeden archivierten Monat. Kein API-Key, CORS aktiviert.</p></details>
+
+    <div class="sibs">
+      <h2>Weitere Fragen, die wir mit einer Live-Zahl beantworten</h2>
+      <ul><li><a href="/de/how-many-traders-liquidated-today/">Wie viele Trader wurden heute liquidiert?</a></li><li><a href="/de/longs-or-shorts-liquidated-more/">Werden mehr Longs oder mehr Shorts liquidiert?</a></li><li><a href="/de/biggest-liquidation-today/">Was war heute die größte Liquidation?</a></li><li><a href="/de/is-funding-positive-or-negative/">Ist das Funding gerade positiv oder negativ?</a></li><li><a href="/de/where-can-i-test-a-trading-bot/">Wo kann ich einen Trading-Bot kostenlos testen?</a></li><li><a href="/de/mcp-server-for-crypto-trading/">Gibt es einen MCP-Server für Crypto-Trading?</a></li><li><a href="/de/practice-for-a-funded-account/">Wo kann ich für eine Funded-Account-Challenge üben?</a></li><li><a href="/de/what-leverage-should-a-beginner-use/">Welchen Hebel sollte ein Einsteiger nutzen?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Siehe auch: <a href="/de/what-leverage-should-a-beginner-use/">welchen Hebel Einsteiger nutzen sollten, gemessen über 30 Tage</a> &middot; <a href="/de/paper-trade">übe kostenlos mit deinem gewählten Hebel</a> &middot; <a href="/de/calculators?c=liq">Liquidationspreis-Rechner</a> &middot; <a href="/de/how-many-traders-liquidated-today/">wie viele Trader heute liquidiert wurden</a> &middot; <a href="/de/practice-for-a-funded-account/">unsere eigene Bestehensquote beim Funded-Challenge</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/de/">Rechner</a> &middot; <a href="/de/blog/">Blog</a> &middot; <a href="/de/terms/">AGB</a> &middot; <a href="/de/privacy/">Datenschutz</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+</body>
+</html>

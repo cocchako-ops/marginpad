@@ -558,9 +558,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
      page that translates itself (Demo Spot, the app shell's i18n loader) still gets __mpSetLang / its own listener.
      esRedirect: a reader who chose Spanish and lands on an English URL is sent to the twin once per path per session
      (sessionStorage mp_es_miss stops the bounce when the worker answers 302 because no twin exists). */
-  var _LANG_HOME = { de: 1, fr: 1, ru: 1, tr: 1, zh: 1, ja: 1, ko: 1, ar: 1, id: 1, nl: 1 }; // pt left this list 2026-10-29: /pt/ is a twin (keeps the path) like /es/
-  var _TWIN = { es: 1, pt: 1 };
-  function _twinOf(p) { var m = p.match(/^\/(es|pt)(\/|$)/); return m ? m[1] : ''; }
+  var _LANG_HOME = { fr: 1, ru: 1, tr: 1, zh: 1, ja: 1, ko: 1, ar: 1, id: 1, nl: 1 }; // pt and de left this list 2026-10-29: twins (keep the path) like /es/
+  var _TWIN = { es: 1, pt: 1, de: 1 };
+  function _twinOf(p) { var m = p.match(/^\/(es|pt|de)(\/|$)/); return m ? m[1] : ''; }
   function langCode(v) { v = String(v || ''); if (!v || v === '/') return v === '/' ? 'en' : ''; var m = v.match(/^\/([a-z]{2})\/?$/); return m ? m[1] : (/^[a-z]{2}$/.test(v) ? v : ''); }
   function syncLangSel() {
     try {
@@ -589,7 +589,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     try {
       if (window.__mpEsRedir) return; window.__mpEsRedir = 1;
       var L = localStorage.getItem('mp_lang'), p = location.pathname;
-      if (!_TWIN[L] || _twinOf(p) || /^\/(api|assets|mcp|widget|community)\//.test(p) || /^\/(de|fr|ru|tr|zh|ja|ko|ar|id|nl)\//.test(p)) return;
+      if (!_TWIN[L] || _twinOf(p) || /^\/(api|assets|mcp|widget|community)\//.test(p) || /^\/(fr|ru|tr|zh|ja|ko|ar|id|nl)\//.test(p)) return;
       if (/^\/(dolar-cripto|bitcoin-hoje|simulador-trading-cripto-argentina|simulador-trading-cripto-brasil)\//.test(p)) return;
       if (new URLSearchParams(location.search).get('lang')) return;
       var miss = (sessionStorage.getItem('mp_es_miss') || '').split('|');

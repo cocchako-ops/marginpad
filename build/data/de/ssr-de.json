@@ -1,0 +1,565 @@
+{
+ "SSR_DE": {
+  "liqTotal": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf {t}: {l} Longs und {s} Shorts über {n} beobachtete Coins.",
+  "whaleHold": "Hyperliquid-Wale halten derzeit {t} in offenen Positionen, verteilt auf {n} beobachtete Wallets - {l} in Longs gegenüber {s} in Shorts, insgesamt {net}.",
+  "netLong": "netto Long",
+  "netShort": "netto Short",
+  "netFlat": "nahezu ausgeglichen",
+  "fngNow": "Der Crypto Fear & Greed Index steht gerade bei {v} ({c})",
+  "fngYday": ", gegenüber {v} ({c}) gestern",
+  "fngWeek": " und {v} vor einer Woche",
+  "fngRange": "In den letzten {n} Tagen bewegte sich der Index zwischen {lo} und {hi}.",
+  "fngCls": {
+   "Extreme Fear": "Extreme Angst",
+   "Fear": "Angst",
+   "Neutral": "Neutral",
+   "Greed": "Gier",
+   "Extreme Greed": "Extreme Gier"
+  }
+ },
+ "SSR_TBL_DE": {
+  "MARKET STATE": "MARKTSTATUS",
+  "Price": "Preis",
+  "Market cap": "Marktkapitalisierung",
+  "rank #": "Rang #",
+  "in 24h": "in 24 Std.",
+  "24h spot volume": "Spot-Volumen 24 Std.",
+  "7-day change": "Veränderung 7 Tage",
+  "30-day change": "Veränderung 30 Tage",
+  "All-time high": "Allzeithoch",
+  "from here": "von hier",
+  "Funding rate": "Funding-Rate",
+  "longs pay shorts": "Longs zahlen an Shorts",
+  "shorts pay longs": "Shorts zahlen an Longs",
+  "flat": "neutral",
+  "Open interest": "Open Interest",
+  "Open interest / market cap": "Open Interest / Marktkapitalisierung",
+  "Liquidated in 24h": "Liquidiert in 24 Std.",
+  "MarginPad collector, 8 exchanges": "MarginPad-Collector, 8 Exchanges",
+  "- longs liquidated": "- Longs liquidiert",
+  "- shorts liquidated": "- Shorts liquidiert",
+  "Accounts long / short": "Konten Long / Short",
+  "our own daily records": "unsere eigenen Tagesdaten",
+  "Heaviest of those days": "Der schwerste dieser Tage",
+  "-day average": "-Tage-Durchschnitt",
+  "Liquidations, ": "Liquidationen, ",
+  " / day": " / Tag"
+ },
+ "SSR_MAP_DE": [
+  [
+   " LIQUIDATION MAP &middot; UPDATED ",
+   " LIQUIDATIONSKARTE &middot; AKTUALISIERT "
+  ],
+  [
+   ">Price<",
+   ">Preis<"
+  ],
+  [
+   ">Liquidated 24h<",
+   ">Liquidiert 24h<"
+  ],
+  [
+   ">Long vs short<",
+   ">Long vs. Short<"
+  ],
+  [
+   "Above &mdash; where shorts get liquidated",
+   "Darüber &mdash; wo Shorts liquidiert werden"
+  ],
+  [
+   "Below &mdash; where longs get liquidated",
+   "Darunter &mdash; wo Longs liquidiert werden"
+  ],
+  [
+   ">trading now<",
+   ">wird jetzt gehandelt<"
+  ],
+  [
+   "Zoom, hover a band, read the clusters",
+   "Zoomen, ein Band anfahren, die Cluster lesen"
+  ],
+  [
+   "Deep perpetual liquidity",
+   "Tiefe Perpetual-Liquidität"
+  ],
+  [
+   "3.5% of your trading fees back",
+   "3.5% deiner Trading-Gebühren zurück"
+  ],
+  [
+   " A $250,000 buy would really cost ",
+   " Ein Kauf über $250,000 würde dich real "
+  ],
+  [
+   " in slippage",
+   " Slippage kosten"
+  ],
+  [
+   "This is <strong",
+   "Das ist <strong"
+  ],
+  [
+   "measured</strong>, not modelled: real limit orders standing on ",
+   "gemessen</strong>, nicht modelliert: echte Limit-Orders in den Orderbüchern von "
+  ],
+  [
+   " exchange order books a second ago. ",
+   " Exchanges vor einer Sekunde. "
+  ],
+  [
+   " exchange order books ",
+   " Exchanges vor "
+  ],
+  [
+   " seconds ago. ",
+   " Sekunden. "
+  ],
+  [
+   "The real book right now &middot; measured",
+   "Das echte Orderbuch jetzt &middot; gemessen"
+  ],
+  [
+   "Bids resting",
+   "Offene Kaufgebote"
+  ],
+  [
+   "Offers resting",
+   "Offene Verkaufsangebote"
+  ],
+  [
+   "within 0.25% of the price, summed across",
+   "innerhalb von 0.25% des Preises, summiert über"
+  ],
+  [
+   " venues",
+   " Exchanges"
+  ],
+  [
+   "A $250,000 buy would really cost",
+   "Ein Kauf über $250,000 würde dich real"
+  ],
+  [
+   "in slippage",
+   "Slippage kosten"
+  ],
+  [
+   " a $250,000 sell, ",
+   " ein Verkauf über $250,000 "
+  ],
+  [
+   "&middot; UPDATED ",
+   "&middot; AKTUALISIERT "
+  ],
+  [
+   "· UPDATED ",
+   "· AKTUALISIERT "
+  ],
+  [
+   "See it live:",
+   "Live ansehen:"
+  ],
+  [
+   "Practice risk-free with paper trading",
+   "Übe risikofrei mit Paper Trading"
+  ],
+  [
+   "Practice risk-free",
+   "Übe risikofrei"
+  ],
+  [
+   "Full liquidation calculator",
+   "Vollständiger Liquidationsrechner"
+  ],
+  [
+   "24h liquidation totals",
+   "Liquidationen gesamt (24h)"
+  ],
+  [
+   "Live liquidation feed",
+   "Live-Liquidations-Feed"
+  ],
+  [
+   "LIVE MARKET DATA",
+   "LIVE-MARKTDATEN"
+  ],
+  [
+   "It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ",
+   "Es beantwortet eine andere Frage als die Zonen oben, und der Unterschied ist wichtig: Ein Orderbuch zeigt Orders, die jemand <em>freiwillig</em> platziert hat und jederzeit zurückziehen kann, während eine Liquidationszone dort liegt, wo Hebel geschlossen wird, ob der Besitzer will oder nicht &mdash; und das zeigt kein Orderbuch der Welt, in keiner Entfernung. "
+  ],
+  [
+   "On top of which the deepest book we can read only reaches ",
+   "Hinzu kommt: Das tiefste Orderbuch, das wir lesen können, reicht nur bis "
+  ],
+  [
+   " from the price",
+   " vom Preis"
+  ],
+  [
+   ", while the nearest zone above sits ",
+   ", während die nächste Zone darüber "
+  ],
+  [
+   "% away",
+   "% entfernt liegt"
+  ],
+  [
+   ": past that, even the resting orders are out of sight.",
+   ": dahinter sind selbst die offenen Orders nicht mehr sichtbar."
+  ],
+  [
+   "Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ",
+   "Die Balkenlänge ist das Gewicht einer bestehenden Zone im Vergleich zu den anderen in dieser Liste; die Zahl daneben zeigt, wie oft sie das durchschnittliche bestehende Band nahe am Preis enthält. Das sind "
+  ],
+  [
+   "modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.",
+   "modellierte</strong> Zonen, kein Geld, das den Besitzer gewechselt hat &mdash; die einzigen Dollar-Zahlen hier sind die 24h-Summen oben, die unser Collector live miterlebt hat."
+  ],
+  [
+   ">measured<",
+   ">gemessen<"
+  ],
+  [
+   ">modelled<",
+   ">modelliert<"
+  ],
+  [
+   " from longs and ",
+   " aus Longs und "
+  ],
+  [
+   " from shorts",
+   " aus Shorts"
+  ],
+  [
+   ", so the recent damage came on the way down",
+   ", der jüngste Schaden kam also beim Rückgang"
+  ],
+  [
+   ", so shorts were squeezed on a move up",
+   ", Shorts wurden also bei einem Anstieg ausgequetscht"
+  ],
+  [
+   ", a fairly even two-sided battle",
+   ", ein recht ausgeglichener Kampf auf beiden Seiten"
+  ],
+  [
+   "There is currently ",
+   "Aktuell gibt es "
+  ],
+  [
+   " of open ",
+   " an Open Interest in "
+  ],
+  [
+   " interest that the market can test",
+   ", den der Markt testen kann"
+  ],
+  [
+   " (roughly steady over 24 hours)",
+   " (über 24 Stunden ungefähr stabil)"
+  ],
+  [
+   " (up ",
+   " (plus "
+  ],
+  [
+   " (down ",
+   " (minus "
+  ],
+  [
+   "% in a day)",
+   "% an einem Tag)"
+  ],
+  [
+   "Funding is flat right now - no crowded side for the market to hunt.",
+   "Das Funding ist gerade neutral - keine überfüllte Seite, die der Markt jagen könnte."
+  ],
+  [
+   "Funding is positive (",
+   "Das Funding ist positiv ("
+  ],
+  [
+   ") - the crowd is long, and long clusters below the price are usually the first this map fills.",
+   ") - die Masse ist Long, und Long-Cluster unter dem Preis sind meist die ersten, die diese Karte füllt."
+  ],
+  [
+   "Funding is negative (",
+   "Das Funding ist negativ ("
+  ],
+  [
+   ") - the crowd is short, and short clusters above the price are the first targets.",
+   ") - die Masse ist Short, und Short-Cluster über dem Preis sind die ersten Ziele."
+  ],
+  [
+   " trades at ",
+   " notiert bei "
+  ],
+  [
+   ", up ",
+   ", plus "
+  ],
+  [
+   ", down ",
+   ", minus "
+  ],
+  [
+   "% in 24 hours",
+   "% in 24 Stunden"
+  ],
+  [
+   "Live liquidation feed",
+   "Live-Liquidations-Feed"
+  ],
+  [
+   "24h totals by coin",
+   "24h-Summen je Coin"
+  ],
+  [
+   " billion",
+   " Milliarden"
+  ],
+  [
+   " million",
+   " Millionen"
+  ]
+ ],
+ "MAP_FRAG_DE": {
+  "openHeatmap": "Öffne die Live-{c}-Heatmap",
+  "tradeOn": "{c} auf Bybit traden",
+  "hitMap": "{t} an {c}-Positionen wurden in den letzten 24 Stunden auf dieser Karte liquidiert - ",
+  "quiet": "Die {c}-Karte war ruhig - unter $50K in den letzten 24 Stunden liquidiert."
+ },
+ "SSR_COMP_DE": [
+  [
+   ">Day of season<",
+   ">Tag der Season<"
+  ],
+  [
+   "Right now it is <b>day ",
+   "Gerade ist <b>Tag "
+  ],
+  [
+   "</b>. This season ends <b>",
+   "</b>. Diese Season endet am <b>"
+  ],
+  [
+   "</b>, in ",
+   "</b>, in "
+  ],
+  [
+   " days, and the next one starts the same day - you can join on any day and still place.",
+   " Tagen, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."
+  ],
+  [
+   " hours, and the next one starts the same day - you can join on any day and still place.",
+   " Stunden, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."
+  ],
+  [
+   "<span>Entry <b>",
+   "<span>Teilnahme <b>"
+  ],
+  [
+   "<span>Deposit <b>none</b></span>",
+   "<span>Einzahlung <b>keine</b></span>"
+  ],
+  [
+   "</b> person is competing</span>",
+   "</b> Person tritt an</span>"
+  ],
+  [
+   "</b> people are competing</span>",
+   "</b> Personen treten an</span>"
+  ],
+  [
+   "</b> placements</span>",
+   "</b> Plätze</span>"
+  ],
+  [
+   "<h2>The nine boards</h2>",
+   "<h2>Die neun Boards</h2>"
+  ],
+  [
+   "Free - daily call",
+   "Gratis - Tagestipp"
+  ],
+  [
+   "Free - Demo Spot",
+   "Gratis - Demo Spot"
+  ],
+  [
+   "<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>",
+   "<p>Jedes Board bewertet etwas anderes, daher gewinnt ein einziger Trading-Stil nicht alle. Jedes zahlt seine Top-Plätze aus, und du kannst auf mehreren platziert sein.</p>"
+  ],
+  [
+   ">Leading<",
+   ">Führt<"
+  ],
+  [
+   ">Open board<",
+   ">Offenes Board<"
+  ],
+  [
+   ">nobody has scored yet<",
+   ">noch niemand hat gepunktet<"
+  ],
+  [
+   ">one qualifying trade puts you first<",
+   ">ein gültiger Trade bringt dich auf Platz 1<"
+  ],
+  [
+   " entered</div>",
+   " angemeldet</div>"
+  ],
+  [
+   "% win rate",
+   "% Trefferquote"
+  ],
+  [
+   " green days",
+   " grüne Tage"
+  ],
+  [
+   " green day",
+   " grüner Tag"
+  ],
+  [
+   " wagered",
+   " eingesetzt"
+  ],
+  [
+   ">Real money<",
+   ">Echtgeld<"
+  ],
+  [
+   ">Free - paper<",
+   ">Gratis - Paper<"
+  ],
+  [
+   ">Measured ",
+   ">Gemessen "
+  ],
+  [
+   " UTC by MarginPad, from the same data that pays the prizes.",
+   " UTC von MarginPad, aus denselben Daten, die die Preise auszahlen."
+  ],
+  [
+   ">Highest ROE<",
+   ">Höchster ROE<"
+  ],
+  [
+   ">Green Days<",
+   ">Grüne Tage<"
+  ],
+  [
+   ">Best Win Rate<",
+   ">Beste Trefferquote<"
+  ],
+  [
+   ">Season XP<",
+   ">Season XP<"
+  ],
+  [
+   ">Bybit Volume<",
+   ">Bybit-Volumen<"
+  ],
+  [
+   ">the best return on a single closed trade.<",
+   ">die beste Rendite auf einen einzelnen geschlossenen Trade.<"
+  ],
+  [
+   ">the most days closed in profit.<",
+   ">die meisten im Gewinn geschlossenen Tage.<"
+  ],
+  [
+   ">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",
+   ">die höchste Trefferquote, gereiht nach Wilson-Score, damit eine Glückssträhne sie nicht gewinnen kann.<"
+  ],
+  [
+   ">the most XP earned this season.<",
+   ">die meisten in dieser Season verdienten XP.<"
+  ],
+  [
+   ">the best points score across wins and losses.<",
+   ">die beste Punktzahl über Gewinne und Verluste.<"
+  ],
+  [
+   ">the most REAL futures volume on a Bybit account opened through MarginPad.<",
+   ">das meiste ECHTE Futures-Volumen auf einem über MarginPad eröffneten Bybit-Konto.<"
+  ],
+  [
+   ">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"
+  ],
+  [
+   ">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"
+  ],
+  [
+   ">the most REAL amount eingesetzt on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"
+  ]
+ ],
+ "COMP_FRAG_DE": {
+  "dayOf": "Tag {x} von {y}",
+  "onTheLine": "in dieser Season im Spiel, kostenlose Teilnahme"
+ },
+ "COMM_CATS_DE": {
+  "ideas": "Trading-Ideen",
+  "analysis": "Technische Analyse",
+  "news": "Marktnachrichten",
+  "education": "Bildung",
+  "crypto": "Krypto",
+  "forex": "Forex",
+  "stocks": "Aktien",
+  "futures": "Futures",
+  "strategies": "Strategien",
+  "psychology": "Psychologie",
+  "risk": "Risikomanagement",
+  "indicators": "Indikatoren",
+  "platform": "Plattform-Updates",
+  "thesis": "Thesen"
+ },
+ "ASK_DE": {
+  "too few": "zu wenige",
+  "over 100x ": "über 100x ",
+  " closes": " Closes",
+  "thin - no rate printed": "dünne Datenbasis - keine Quote angezeigt",
+  "Here, free - under the same rules a paid challenge uses": "Hier kostenlos - mit denselben Regeln wie bei einer kostenpflichtigen Challenge",
+  "Ten times or less - and here is the count behind that": "Zehnfach oder weniger - und hier die Zahlen dahinter",
+  "Positive on Bitcoin: ": "Positiv bei Bitcoin: ",
+  "Negative on Bitcoin: ": "Negativ bei Bitcoin: ",
+  "Flat on Bitcoin": "Neutral bei Bitcoin",
+  "Positive across most of the market": "Positiv im Großteil des Marktes",
+  "Negative across most of the market": "Negativ im Großteil des Marktes",
+  "<strong>longs are paying shorts</strong>": "<strong>Longs zahlen an Shorts</strong>",
+  "<strong>shorts are paying longs</strong>": "<strong>Shorts zahlen an Longs</strong>",
+  "neither side is paying a meaningful premium": "keine Seite zahlt eine nennenswerte Prämie",
+  "longs pay": "Longs zahlen",
+  "shorts pay": "Shorts zahlen",
+  "flat": "neutral",
+  "read from each exchange&#39;s own public funding endpoint": "direkt aus dem öffentlichen Funding-Endpoint jeder Börse gelesen",
+  "free JSON at": "kostenloses JSON unter",
+  "and": "und",
+  "% long": "% Long",
+  "% short": "% Short",
+  "long": "Long",
+  "short": "Short",
+  "{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}": "{a1}: Über 100x endeten {a2} der Trades in der Liquidation - bei 1-2x waren es {a3}",
+  "{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month": "{a1} Closes &middot; Median {a2}% ROE &middot; {a3}% des Monats",
+  "{a1} of {a2} finished runs passed - {a3}%": "{a1} von {a2} abgeschlossenen Durchläufen bestanden - {a3}%",
+  "+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book": "+{a1}% Ziel, {a2}% Tagesverlust, {a3}% maximaler Drawdown, mindestens {a4} Handelstage, auf einem Konto von ${a5}",
+  "{a1} closes &middot; median {a2}% ROE": "{a1} Closes &middot; Median {a2}% ROE",
+  "Bitcoin funding is {a1}, so {a2}. ": "Das Bitcoin-Funding liegt bei {a1}, daher gilt: {a2}. ",
+  "Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative": "Von den {a1} Perpetual-Kontrakten, die wir beobachten, sind {a2} positiv und {a3} negativ",
+  ", with the widest spread running from {a1} on {a2} down to {a3} on {a4}": ", mit der größten Spanne von {a1} bei {a2} bis hinunter zu {a3} bei {a4}",
+  "{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.": "{a1} gehebelte Positionen wurden in den letzten 24 Stunden auf {a2} Exchanges zwangsgeschlossen, im Gesamtwert von {a3} und verteilt auf {a4} Coins. Das ergibt durchschnittlich {a5} pro Liquidation - die Größe der typischen Position, die es erwischt hat. Sie sagt besser als die Schlagzeilen-Dollarzahl, wer mit Hebel handelt.",
+  "{a1} in the last 24 hours": "{a1} in den letzten 24 Stunden",
+  "MarginPad&#39;s own collector, {a1} exchange websockets": "Eigener Collector von MarginPad, {a1} Exchange-Websockets",
+  "Longs, {a1}% of the damage": "Longs, {a1}% des Schadens",
+  "Shorts, {a1}% of the damage": "Shorts, {a1}% des Schadens",
+  "Close to even, {a1}% long": "Nahezu ausgeglichen, {a1}% Long",
+  "Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}": "Von den {a1}, die in den letzten 24 Stunden auf {a2} Exchanges liquidiert wurden, entfielen {a3} ({a4}%) auf Long-Positionen und {a5} ({a6}%) auf Shorts. {a7}",
+  "The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).": "Die größte einzelne Zwangsschließung, die unser Collector in den letzten 24 Stunden gesehen hat, war eine <strong>{a1}</strong>-Position in {a2} auf {a3}, im Wert von {a4} zum Schlusskurs. Das sind {a5} von allem, was im selben Zeitraum marktweit liquidiert wurde ({a6} über {a7} Positionen).",
+  " - {a1} {a2} on {a3}": " - {a1} {a2} auf {a3}"
+ }
+}

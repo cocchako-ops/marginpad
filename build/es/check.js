@@ -13,7 +13,8 @@ const KEEP_EN = /^(MarginPad|Paper Trade|MP Shop|The Vault|Rekt|The Gold Room|De
 // English function words that should not survive in Spanish running text (word boundary, case-insensitive)
 const EN_WORDS = /\b(the|and|with|your|you|for|from|this|that|are|is|when|how|what|which|before|after|price|position|margin|leverage|liquidation|calculator|free|trade|trades|open|close|about|more|every|each|without|only|also|because|between|market|order|orders)\b/i;
 const PT_HINT = /[ãõçâêôáéíóú]|(o|a|os|as|de|do|da|dos|das|um|uma|que|com|para|por|sem|seu|sua|se|em|ao|mais|como|preço|posição|margem|alavancagem|liquidação|calculadora|grátis|você|não|são|está|cada|quando|onde|aqui|agora|também|entre|sobre|até|todos|todas)/i;
-const ES_HINT = LANG === 'pt' ? PT_HINT : /[áéíóúñ¿¡]|\b(el|la|los|las|de|del|un|una|que|con|para|por|sin|tu|tus|se|es|en|al|más|cómo|qué|precio|posición|margen|apalancamiento|liquidación|calculadora|gratis|operación|operaciones|abrir|cerrar|sobre|cada|solo|también|porque|entre|mercado|orden|órdenes)\b/i;
+const DE_HINT = /[äöüß]|(der|die|das|und|mit|dein|deine|für|von|bei|nicht|ist|sind|wird|werden|auf|ein|eine|einen|oder|wenn|wie|was|auch|nur|mehr|Preis|Position|Hebel|Liquidation|Rechner|kostenlos|Gebühr|Gebühren|Börse|Margin|Konto|jetzt|hier|ohne)/i;
+const ES_HINT = LANG === 'pt' ? PT_HINT : LANG === 'de' ? DE_HINT : /[áéíóúñ¿¡]|\b(el|la|los|las|de|del|un|una|que|con|para|por|sin|tu|tus|se|es|en|al|más|cómo|qué|precio|posición|margen|apalancamiento|liquidación|calculadora|gratis|operación|operaciones|abrir|cerrar|sobre|cada|solo|también|porque|entre|mercado|orden|órdenes)\b/i;
 
 function placeholders(s) { return (s.match(/\{[a-zA-Z0-9_]+\}|%[sd]|\$\{[^}]+\}/g) || []).sort().join('|'); }
 function codeBits(s) { return (s.match(/<code[^>]*>[\s\S]*?<\/code>/g) || []).sort().join('|'); }

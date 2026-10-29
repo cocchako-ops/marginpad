@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="de" data-es-twin="/glossary/">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_glossaryindex = {"enterAnEntryPrice":"Introduce un precio de entrada y un apalancamiento.","enterAMoveAnd":"Introduce un movimiento y un apalancamiento.","middotAMoveThe":" &middot; un movimiento en contra de ","wipesItOut":" lo liquida por completo","enterBalanceRiskEntry":"Introduce saldo, riesgo, entrada y stop.","theStopHasTo":"El stop tiene que estar separado de la entrada.","ofNotionalRisks":"</b><span>de nocional arriesga ","xYourBalance":"x tu saldo</span>","enterARewardTo":"Introduce una relación beneficio-riesgo.","ofTradesMustWin":"%</b><span>de las operaciones tienen que ganar solo para no perder nada, antes de comisiones</span>","enterNotionalRateAnd":"Introduce nocional, tasa y días.","paidByLongs":"lo pagan los longs","paidByShorts":"lo pagan los shorts","middot3PaymentsA":" &middot; 3 pagos al día</span>"};
+function __esT_glossaryindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_glossaryindex[k] != null) return __esD_glossaryindex[k]; } catch (e) {} return en; }
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Krypto-Futures-Glossar - Jeder Begriff mit der Zahl von heute | MarginPad</title>
+<meta name="description" content="60 Krypto-Futures- und Hebel-Begriffe in einfachem Deutsch - und für zehn davon die aktuelle Zahl, gemessen aus unseren eigenen Feeds: Funding, Open Interest, Positionierung, Liquidationen der letzten 24h und Sentiment. Mit dem Rechner direkt im Begriff." />
+<meta name="keywords" content="crypto futures glossary, leverage trading terms, liquidation meaning, funding rate meaning, margin terms crypto, perpetual futures dictionary" />
+<link rel="canonical" href="https://marginpad.io/de/glossary/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/glossary/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/glossary/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/glossary/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/glossary/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/glossary/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Krypto-Futures-Glossar - Jeder Begriff mit der Zahl von heute" />
+<meta property="og:description" content="60 Krypto-Futures- und Hebel-Begriffe in einfachem Deutsch - und für zehn davon die aktuelle Zahl, gemessen aus unseren eigenen Feeds: Funding, Open Interest, Positionierung, Liquidationen der letzten 24h und Sentiment. Mit dem Rechner direkt im Begriff." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/de/glossary/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/glossary.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/glossary.jpg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+body.gloss .wrap{max-width:1180px}
+body.gloss article{max-width:none}
+.gl-hero{margin:0 0 18px}
+.gl-hero h1{margin:0 0 8px}
+.gl-lead{color:#9aa3ad;font-size:15.5px;line-height:1.55;max-width:660px;margin:0 0 16px}
+/* THE MARKET RIGHT NOW, IN THE GLOSSARY'S OWN WORDS. Server-rendered; the whole strip is absent when we could
+   not measure it, which is the house rule - a figure below its threshold is not printed at all. */
+.gl-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:#1c2230;border:1px solid #1c2230;border-radius:14px;overflow:hidden;margin:0 0 18px}
+.gl-strip[hidden]{display:none}
+.gl-st{background:#0e1116;padding:11px 13px;min-width:0}
+.gl-st b{display:block;font:800 18px/1.1 "Bricolage Grotesque",system-ui,sans-serif;color:#e9e7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gl-st b.up{color:#2ebd85}.gl-st b.dn{color:#ff6258}
+.gl-st span{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#6e7782;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gl-st a{color:inherit;text-decoration:none}
+.gl-bar{position:sticky;top:0;z-index:20;background:rgba(10,11,13,.92);backdrop-filter:blur(8px);padding:10px 0 11px;margin:0 0 16px;border-bottom:1px solid #1c2230}
+.gl-find{display:flex;align-items:center;gap:9px;background:#0e1116;border:1px solid #2a323d;border-radius:11px;padding:0 12px;height:44px}
+.gl-find:focus-within{border-color:#c2f64a}
+.gl-find svg{width:16px;height:16px;flex:0 0 16px;color:#6e7782}
+.gl-find input{flex:1;min-width:0;background:none;border:0;outline:none;color:#e9e7df;font-weight:500;font-size:16px;line-height:1}
+.gl-find input::placeholder{color:#6e7782}
+.gl-count{font-size:11.5px;color:#6e7782;white-space:nowrap;flex:0 0 auto}
+.gl-chips{display:flex;gap:6px;margin-top:9px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gl-chips::-webkit-scrollbar{display:none}
+.gl-chips button{flex:0 0 auto;background:#12161d;border:1px solid #242c38;border-radius:999px;color:#9aa3ad;font-weight:600;font-size:12.5px;line-height:1;padding:8px 13px;cursor:pointer;white-space:nowrap}
+.gl-chips button:hover{border-color:#3a4554;color:#e9e7df}
+.gl-chips button.on{background:rgba(194,246,74,.13);border-color:rgba(194,246,74,.55);color:#c2f64a}
+.gl-gh{margin:26px 0 12px}
+.gl-gh h2{margin:0;font-size:19px}
+.gl-gh p{margin:3px 0 0;color:#6e7782;font-size:13px}
+/* EVERY CLOSED CARD IS THE SAME SIZE (owner, 2026-10-19: "ove kartice nisu iste dimenzije ... ako treba vise
+   prostora da se nesto procita, da mogu na klik da se otvore ... pazi da se ne kvari forma drugim karticama").
+   Closed, a card is a fixed box: the term, the answer in at most three lines, and a marker saying whether it
+   carries today's number or a calculator. Opening it does NOT stretch its row - the card takes the WHOLE row
+   (grid-column:1/-1) and everything else keeps the size it had; one card is open at a time, so the page can
+   never end up a patchwork of different heights. */
+.gl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+.gl-card{display:flex;flex-direction:column;height:154px;overflow:hidden;background:#0e1116;border:1px solid #1c2230;border-radius:14px;padding:14px 15px;min-width:0;scroll-margin-top:130px;cursor:pointer;transition:border-color .13s,background .13s}
+.gl-card:hover{border-color:#2d3747;background:#101419}
+.gl-card:target,.gl-card.lit{border-color:rgba(194,246,74,.55);box-shadow:0 0 0 3px rgba(194,246,74,.09)}
+.gl-card h3{margin:0 0 6px;font:800 15.5px/1.25 "Bricolage Grotesque",system-ui,sans-serif;color:#e9e7df;display:flex;align-items:baseline;gap:7px}
+.gl-card h3 a{color:inherit;text-decoration:none;pointer-events:none}
+.gl-permalink{margin-left:auto;flex:0 0 auto;border:0;background:none;color:#4e5763;font-size:11px;cursor:pointer;padding:2px 3px;opacity:0;transition:opacity .12s}
+.gl-card:hover .gl-permalink,.gl-permalink:focus{opacity:1}
+.gl-s{margin:0;color:#e9e7df;font-size:14.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* the marker row sits on the floor of the box, so every card's foot lines up with its neighbours' */
+.gl-foot{margin-top:auto;padding-top:9px;display:flex;align-items:center;gap:6px}
+.gl-mk{font-weight:700;font-size:9.5px;line-height:1;letter-spacing:.07em;text-transform:uppercase;border-radius:999px;padding:4px 7px;border:1px solid #242c38;color:#6e7782}
+.gl-mk.now{border-color:rgba(194,246,74,.4);color:#c2f64a}
+.gl-more{margin-left:auto;font-size:11px;color:#4e5763}
+.gl-x{display:none}
+.gl-card.open{height:auto;overflow:visible;grid-column:1/-1;cursor:default;border-color:#2d3747;background:#101419}
+.gl-card.open .gl-s{-webkit-line-clamp:unset;display:block;font-size:16px;max-width:760px}
+.gl-card.open .gl-foot{display:none}
+.gl-card.open .gl-x{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-top:11px}
+.gl-card.open .gl-x.solo{grid-template-columns:minmax(0,760px)}
+.gl-xa,.gl-xb{min-width:0}
+.gl-close{position:absolute;top:10px;right:12px;border:0;background:none;color:#6e7782;font-size:12px;cursor:pointer;padding:4px 6px;display:none}
+.gl-card.open{position:relative}
+.gl-card.open .gl-close{display:block}
+.gl-card.open .gl-close:hover{color:#e9e7df}
+.gl-b{margin:0;color:#8f99a5;font-size:13.5px;line-height:1.6}
+.gl-b a{color:#c2f64a}
+.gl-live{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:9px 11px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);border-radius:10px;font-size:13px;line-height:1.5;color:#cfd6de}
+.gl-live[hidden]{display:none}
+.gl-live i{flex:0 0 auto;font-style:normal;font-weight:800;font-size:9.5px;line-height:1.9;letter-spacing:.08em;color:#c2f64a;text-transform:uppercase}
+.gl-live b{color:#e9e7df}
+.gl-tool{margin:11px 0 0;padding:11px;background:#0a0c10;border:1px solid #232b36;border-radius:11px}
+.gl-tool>span{display:block;font-weight:700;font-size:10.5px;line-height:1;letter-spacing:.08em;text-transform:uppercase;color:#6e7782;margin-bottom:9px}
+.gl-tool .gl-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:7px}
+.gl-tool label{display:block;font-size:10.5px;color:#6e7782;min-width:0}
+.gl-tool input,.gl-tool select{display:block;width:100%;box-sizing:border-box;margin-top:3px;background:#12161d;border:1px solid #2a323d;border-radius:8px;color:#e9e7df;font:600 14px/1 "Space Mono",ui-monospace,monospace;padding:8px 9px}
+.gl-tool input:focus,.gl-tool select:focus{outline:none;border-color:#c2f64a}
+.gl-out{margin-top:9px;font-size:12px;color:#8f99a5}
+.gl-out b{display:block;font:800 21px/1.15 "Bricolage Grotesque",system-ui,sans-serif;color:#c2f64a}
+.gl-out span{display:block;margin-top:2px}
+.gl-out.bad{color:#6e7782}.gl-out.bad b{display:none}
+.gl-see{display:flex;flex-wrap:wrap;gap:5px;margin:11px 0 0}
+.gl-see a{font-size:11.5px;color:#8f99a5;background:#12161d;border:1px solid #242c38;border-radius:999px;padding:4px 9px;text-decoration:none}
+.gl-see a:hover{border-color:#3a4554;color:#e9e7df}
+.gl-empty{padding:30px 0;color:#6e7782;text-align:center}
+.gl-empty[hidden]{display:none}
+/* the reason to cite us rather than harvest us - what was measured, from what, and the free JSON that returns it */
+.gl-prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:30px 0 0;padding:15px 0 0;border-top:1px solid #1c2230}
+.gl-prov div{font-size:12.5px;color:#8f99a5;line-height:1.55;min-width:0}
+.gl-prov b{display:block;font-weight:800;font-size:10.5px;line-height:1;letter-spacing:.08em;text-transform:uppercase;color:#6e7782;margin-bottom:5px}
+.gl-prov a{color:#c2f64a;word-break:break-word}
+/* ON A PHONE A GLOSSARY IS A LIST YOU OPEN, NOT A WALL YOU SCROLL. Measured on the first build: one column of
+   sixty full cards was 20.3 phone screens, twice the flat <dl> it replaced - which is the wrong direction even
+   with a search box on top. Closed, a card is its name, its one-line answer and (where we have it) today's
+   number; the explanation, the calculator and the related terms open on a tap. Measured after: 8.1 screens.
+   Nothing is removed from the HTML - a crawler and an assistant read the whole card either way. */
+@media (max-width:760px){
+  .gl-bar{padding-top:8px}
+  .gl-grid{grid-template-columns:1fr;gap:9px}
+  .gl-strip{grid-template-columns:1fr 1fr}
+  .gl-st b{font-size:16px}
+  .gl-lead{font-size:14.5px}
+  .gl-card{height:122px;padding:12px 13px}
+  .gl-card h3{margin-bottom:5px}
+  .gl-permalink{display:none}
+  .gl-card .gl-s{-webkit-line-clamp:2;font-size:14px}
+  .gl-card.open .gl-s{font-size:15px}
+  .gl-card.open .gl-x,.gl-card.open .gl-x.solo{grid-template-columns:1fr;gap:11px}
+  .gl-live{font-size:12.5px}
+}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"DefinedTermSet","@id":"https://marginpad.io/glossary/#set","name":"Krypto-Futures-Glossar","url":"https://marginpad.io/de/glossary/","inLanguage":"de","description":"60 Krypto-Futures- und Hebel-Begriffe in einfachem Deutsch - und für zehn davon die aktuelle Zahl, gemessen aus unseren eigenen Feeds: Funding, Open Interest, Positionierung, Liquidationen der letzten 24h und Sentiment. Mit dem Rechner direkt im Begriff.","hasDefinedTerm":[{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#liquidation","name":"Liquidation","description":"Die Börse schließt deine Position für dich, weil die Margin aufgebraucht ist. Die erzwungene Schließung einer gehebelten Position, wenn Verluste die Margin dahinter aufzehren. Siehe den Liquidationsrechner.","url":"https://marginpad.io/glossary/#liquidation","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#liquidation-price","name":"Liquidationspreis","description":"Der genaue Preis, bei dem das passiert - und du kannst ihn vor dem Einstieg ausrechnen. Der Preis, bei dem deine Position liquidiert wird. Long ≈ Entry × (1 − 1/Leverage + MMR).","url":"https://marginpad.io/glossary/#liquidation-price","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#leverage","name":"Hebel","description":"Geliehene Größe. Sie multipliziert die Bewegung, die Gebühr und die Geschwindigkeit, mit der du liquidiert wirst. Geliehenes Exposure, das Gewinne und Verluste gleichermaßen multipliziert. 10× heißt: $1 kontrolliert $10. Siehe Hebel erklärt.","url":"https://marginpad.io/glossary/#leverage","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#margin","name":"Margin","description":"Dein eigenes Geld, hinter der Position gesperrt, solange sie offen ist. Das Collateral, das du hinterlegst, um eine gehebelte Position zu eröffnen und zu halten.","url":"https://marginpad.io/glossary/#margin","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#initial-margin","name":"Initial Margin","description":"Was das Eröffnen kostet: grob Nominalwert geteilt durch Hebel. Das Collateral, das zum Eröffnen einer Position nötig ist - grob Nominalwert ÷ Hebel.","url":"https://marginpad.io/glossary/#initial-margin","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#maintenance-margin-mmr","name":"Maintenance Margin (MMR)","description":"Die Untergrenze. Fällst du darunter, wird die Position für dich geschlossen. Die Mindest-Margin, um eine Position offen zu halten. Fällst du darunter, wirst du liquidiert.","url":"https://marginpad.io/glossary/#maintenance-margin-mmr","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#isolated-margin","name":"Isolated Margin","description":"Nur das Geld, das du in diesen Trade steckst, kann verloren gehen. Margin-Modus, bei dem nur die einer Position zugewiesene Margin riskiert wird. Siehe Cross vs. Isolated.","url":"https://marginpad.io/glossary/#isolated-margin","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#cross-margin","name":"Cross Margin","description":"Dein gesamtes Guthaben steht hinter dem Trade - weiter von der Liquidation entfernt, mehr steht auf dem Spiel. Margin-Modus, in dem dein gesamtes Guthaben die Position absichert; das senkt das Liquidationsrisiko, bringt aber mehr Kapital in Gefahr.","url":"https://marginpad.io/glossary/#cross-margin","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#perpetual-futures","name":"Perpetual Futures","description":"Ein Futures-Kontrakt ohne Verfall, durch das Funding nahe am Spot gehalten. Ein Futures-Kontrakt ohne Ablaufdatum, durch den Funding-Mechanismus nahe am Spot gehalten.","url":"https://marginpad.io/glossary/#perpetual-futures","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#funding-rate","name":"Funding-Rate","description":"Eine kleine Zahlung alle paar Stunden zwischen Longs und Shorts. Positiv heißt: Longs zahlen. Eine regelmäßige Zahlung zwischen Longs und Shorts bei Perpetuals. Siehe den Funding-Gebühren-Rechner.","url":"https://marginpad.io/glossary/#funding-rate","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#pnl","name":"PnL","description":"Was der Trade gewonnen oder verloren hat. Profit and Loss - der Gewinn oder Verlust einer Position. Siehe den PnL-Rechner.","url":"https://marginpad.io/glossary/#pnl","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#roi","name":"ROI","description":"Wie weit sich der Preis bewegt hat, in Prozent. Hat nichts mit deinem Hebel zu tun. Return on Investment - die rohe Prozentbewegung des Assets.","url":"https://marginpad.io/glossary/#roi","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#roe","name":"ROE","description":"Was diese Bewegung mit DEINEM Geld gemacht hat. Eine Bewegung von 2% bei 20× sind 40%. Return on Equity - deine Rendite auf die eingesetzte Margin, verstärkt durch den Hebel. Eine Bewegung von 10% bei 10× ≈ 100% ROE.","url":"https://marginpad.io/glossary/#roe","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#long","name":"Long","description":"Du gewinnst, wenn es steigt. Eine Position, die bei steigendem Preis Gewinn macht.","url":"https://marginpad.io/glossary/#long","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#short","name":"Short","description":"Du gewinnst, wenn es fällt. Eine Position, die bei fallendem Preis Gewinn macht.","url":"https://marginpad.io/glossary/#short","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#position-size","name":"Positionsgröße","description":"Wie viel du hältst. Bestimme es vom Stop aus, nie vom Guthaben. Wie viel von einem Asset du hältst. Dimensioniere nach Risiko mit dem Positionsgrößen-Rechner.","url":"https://marginpad.io/glossary/#position-size","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#notional-value","name":"Nominalwert","description":"Der volle Wert, den du kontrollierst - Größe mal Preis, nicht das, was du hinterlegt hast. Der volle Marktwert einer Position - Größe × Preis - nicht nur die hinterlegte Margin.","url":"https://marginpad.io/glossary/#notional-value","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#mark-price","name":"Mark Price","description":"Der geglättete Preis, gegen den die Börse dich liquidiert - nicht der letzte Trade. Ein geglätteter Referenzpreis zur Berechnung des unrealisierten PnL und zum Auslösen von Liquidationen, schwerer zu manipulieren als der letzte Preis.","url":"https://marginpad.io/glossary/#mark-price","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#index-price","name":"Indexpreis","description":"Der Spot-Durchschnitt über mehrere Exchanges, an dem der Mark Price verankert ist. Ein Durchschnitt von Spot-Preisen über Exchanges hinweg, der den Mark Price verankert.","url":"https://marginpad.io/glossary/#index-price","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#stop-loss","name":"Stop-Loss","description":"Die Order, die vorab festlegt, wie viel dieser Trade dich höchstens kosten darf. Eine Order, die eine Position zu einem festen Preis schließt, um Verluste zu begrenzen. Siehe, wie du einen Stop-Loss setzt.","url":"https://marginpad.io/glossary/#stop-loss","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#take-profit","name":"Take-Profit","description":"Die Order, die dich im Gewinn schließt, ohne dass du zuschauen musst. Eine Order, die eine Position bei einem Zielpreis schließt, um Gewinne zu sichern. Siehe den Take-Profit-Rechner.","url":"https://marginpad.io/glossary/#take-profit","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#risk-reward-ratio","name":"Chance-Risiko-Verhältnis (CRV)","description":"Wie viel du für jede riskierte Einheit gewinnen kannst. Gewinn geteilt durch Risiko eines Trades. Siehe Risk/Reward erklärt.","url":"https://marginpad.io/glossary/#risk-reward-ratio","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#break-even-win-rate","name":"Break-even-Trefferquote","description":"Wie oft du bei diesem Verhältnis richtig liegen musst, nur um auf null zu bleiben. Die Trefferquote, die bei einem gegebenen Risk/Reward zum Break-even nötig ist - z. B. 33% bei 2:1.","url":"https://marginpad.io/glossary/#break-even-win-rate","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#dca","name":"DCA","description":"Die Position in Teilen aufbauen statt auf einmal. Dollar-Cost-Averaging - eine Position in Tranchen aufbauen, um den Einstieg zu glätten. Siehe den DCA-Rechner.","url":"https://marginpad.io/glossary/#dca","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#maker","name":"Maker","description":"Du hast eine Order wartend hinterlegt, also zahlst du die niedrigere Gebühr. Eine Order, die dem Orderbuch Liquidität hinzufügt (eine offene Limit-Order), meist mit niedrigerer Gebühr. Siehe Maker vs Taker.","url":"https://marginpad.io/glossary/#maker","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#taker","name":"Taker","description":"Du hast genommen, was da war, also zahlst du die höhere Gebühr - und den Spread. Eine Order, die Liquidität entzieht (eine Market-Order), meist mit höherer Gebühr.","url":"https://marginpad.io/glossary/#taker","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#open-interest","name":"Open Interest","description":"Wie viel gehebeltes Geld gerade im Markt steckt. Der Gesamtwert aller offenen Futures-Kontrakte - ein Maß für die Marktbeteiligung.","url":"https://marginpad.io/glossary/#open-interest","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#slippage","name":"Slippage","description":"Die Differenz zwischen dem erwarteten und dem tatsächlich erhaltenen Preis. Am schlimmsten in dünnen oder schnellen Märkten.","url":"https://marginpad.io/glossary/#slippage","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#adl","name":"ADL","description":"Wenn der Insurance Fund nicht zahlen kann, schließt die Börse stattdessen einen Teil eines GEWINNENDEN Trades. Auto-Deleveraging - wenn der Insurance Fund eine Liquidation nicht decken kann, werden profitable Gegenseiten teilweise geschlossen.","url":"https://marginpad.io/glossary/#adl","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#insurance-fund","name":"Insurance Fund","description":"Die Reserve, die die Gewinner bezahlt, wenn eine Liquidation ins Minus rutscht. Eine Reserve, die bankrotte Liquidationen auffängt, damit Gewinner voll ausgezahlt werden.","url":"https://marginpad.io/glossary/#insurance-fund","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#basis","name":"Basis","description":"Die Differenz zwischen Futures- und Spot-Preis. Die Differenz zwischen Futures- und Spot-Preis.","url":"https://marginpad.io/glossary/#basis","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#margin-call","name":"Margin Call","description":"Die Warnung vor der Liquidation. Auf den meisten Krypto-Börsen kommt sie sehr kurz. Eine Warnung, dass deine Margin vor der Liquidation knapp wird. Siehe was ist ein Margin Call.","url":"https://marginpad.io/glossary/#margin-call","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#drawdown","name":"Drawdown","description":"Wie weit das Konto von seinem eigenen Hoch gefallen ist. Der Rückgang des Konto-Eigenkapitals vom Hoch zum Tief.","url":"https://marginpad.io/glossary/#drawdown","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#hedge","name":"Hedge","description":"Eine zweite Position, die das Risiko der ersten ausgleicht. Eine Position zum Ausgleich des Risikos einer anderen.","url":"https://marginpad.io/glossary/#hedge","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#spot","name":"Spot","description":"Den echten Coin kaufen. Kein Hebel, kein Funding, keine Liquidation. Den echten Coin mit sofortiger Lieferung kaufen - kein Hebel, keine Liquidation. Siehe Spot vs. Futures.","url":"https://marginpad.io/glossary/#spot","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#derivative","name":"Derivat","description":"Ein Kontrakt, dessen Preis von etwas anderem kommt. Ein Kontrakt, dessen Wert von einem zugrunde liegenden Asset abgeleitet ist, etwa Futures oder Optionen.","url":"https://marginpad.io/glossary/#derivative","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#long-short-ratio","name":"Long/Short-Verhältnis","description":"Wohin die Masse tendiert. Extreme liegen meist falsch. Der Anteil der Konten (oder Positionen), die bei einem Kontrakt long bzw. short sind. Extreme sind Contrarian-Signale - eine stark long positionierte Masse ist Treibstoff für einen Squeeze nach unten. Live-Werte pro Coin: Long/Short-Dashboard.","url":"https://marginpad.io/glossary/#long-short-ratio","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#liquidation-cascade","name":"Liquidationskaskade","description":"Eine Kettenreaktion, bei der eine Liquidationswelle den Preis in das nächste Cluster von Liquidationslevels drückt und weitere erzwungene Orders in dieselbe Richtung auslöst. Kaskaden erklären, warum gehebelte Märkte überschießen. Sieh sie auf der Liquidationskarte abgebildet und täglich im Recap-Archiv gemessen.","url":"https://marginpad.io/glossary/#liquidation-cascade","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#short-squeeze","name":"Short Squeeze","description":"Ein Anstieg, getrieben von Shorts, die zurückkaufen müssen. Ein scharfer Move NACH OBEN, befeuert von Shorts, die zum Rückkauf gezwungen werden - entweder ausgestoppt oder liquidiert. Überfüllte Shorts (negatives Funding, short-lastige Positionierung) sind der Treibstoff; der Squeeze verbraucht ihn.","url":"https://marginpad.io/glossary/#short-squeeze","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#long-squeeze","name":"Long Squeeze","description":"Eine Bewegung nach unten, getrieben von Longs, die zum Verkaufen gezwungen werden. Das Spiegelbild eines Short Squeeze: eine scharfe Bewegung NACH UNTEN, beschleunigt durch Longs, die zum Verkaufen gezwungen werden. Am häufigsten nach überfüllten, überhebelten Rallyes mit stark positivem Funding.","url":"https://marginpad.io/glossary/#long-squeeze","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#stop-hunt","name":"Stop Hunt","description":"Ein Vorstoß durch den Preis, bei dem alle ihre Stops liegen haben. Ein schneller Vorstoß durch ein offensichtliches Preisniveau, an dem viele Stop-Losses und Liquidationen liegen. Das füllt größere Spieler zu besseren Preisen, bevor der Markt dreht. Typische Ziele sind runde Zahlen und frische Tiefs/Hochs.","url":"https://marginpad.io/glossary/#stop-hunt","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#limit-order","name":"Limit-Order","description":"Dein Preis oder nichts. Eine Order, die zu deinem gewählten Preis im Orderbuch wartet und nur zu diesem Preis oder besser ausgeführt wird. Zahlt an den meisten Börsen die niedrigere Maker-Gebühr, wird aber nicht garantiert ausgeführt.","url":"https://marginpad.io/glossary/#limit-order","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#market-order","name":"Market-Order","description":"Sofort, egal was es kostet. Eine Order, die sofort gegen die besten verfügbaren Preise im Orderbuch ausgeführt wird. Die Ausführung ist garantiert, aber du zahlst die Taker-Gebühr und erleidest Slippage in dünnen Märkten.","url":"https://marginpad.io/glossary/#market-order","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#post-only","name":"Post-only","description":"Nur wenn sie im Orderbuch warten kann - nie als Taker. Ein Order-Flag, das deine Order storniert, statt sie als Taker auszuführen - es garantiert, dass du entweder den Markt machst (niedrigere Gebühr) oder gar nicht handelst.","url":"https://marginpad.io/glossary/#post-only","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#reduce-only","name":"Reduce-Only","description":"Kann die Position nur verkleinern. Eröffnet nie versehentlich eine neue. Ein Order-Flag, das eine bestehende Position nur verkleinern oder schließen kann, nie eröffnen oder vergrößern. Standardschutz bei Take-Profit- und Stop-Orders, damit sie dich nicht versehentlich umdrehen.","url":"https://marginpad.io/glossary/#reduce-only","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#trailing-stop","name":"Trailing Stop","description":"Ein Stop, der dem Preis nach oben folgt und nie wieder zurück. Ein Stop-Loss, der dem Preis in festem Abstand folgt, solange der Trade zu deinen Gunsten läuft, und auslöst, wenn der Preis um diesen Abstand zurückfällt - er sichert Gewinn ohne festen Ausstieg.","url":"https://marginpad.io/glossary/#trailing-stop","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#unrealized-pnl","name":"Unrealisierter PnL","description":"Der Gewinn auf dem Bildschirm. Noch nicht deiner. Der Papiergewinn oder -verlust einer OFFENEN Position, bewertet zum aktuellen Preis. Er ändert sich mit jedem Tick und gehört dir erst, wenn die Position ganz oder teilweise geschlossen ist.","url":"https://marginpad.io/glossary/#unrealized-pnl","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#realized-pnl","name":"Realisierter PnL","description":"Der Gewinn nach dem Schließen, abzüglich Gebühren und Funding. Der echte. Gewinn oder Verlust, der durch das Schließen (oder Teilschließen) einer Position festgeschrieben wurde, nach Gebühren und Funding. Die Zahl, die dein Guthaben tatsächlich verändert.","url":"https://marginpad.io/glossary/#realized-pnl","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#partial-close","name":"Teilschließung","description":"Etwas vom Tisch nehmen und den Rest laufen lassen. Nur einen Teil einer Position schließen - Gewinn mitnehmen oder Risiko senken und den Rest des Trades offen lassen. Die verbleibende Position behält den ursprünglichen Einstiegspreis.","url":"https://marginpad.io/glossary/#partial-close","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#order-book-depth","name":"Orderbuch-Tiefe","description":"Wie viel Größe auf jedem Preis wartet. Wie viel offene Kauf- und Verkaufsgröße auf jedem Preisniveau liegt. Tiefe Orderbücher fangen große Market-Orders mit wenig Slippage ab; dünne Orderbücher springen. Die Tiefe ist der Grund, warum derselbe Trade an einer kleinen Börse mehr kostet.","url":"https://marginpad.io/glossary/#order-book-depth","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#liquidity","name":"Liquidität","description":"Wie viel du handeln kannst, ohne den Preis selbst zu bewegen. Wie leicht sich Größe handeln lässt, ohne den Preis zu bewegen. Bei Futures kommt sie aus der Tiefe des Orderbuchs und aktiven Market Makern. Majors wie BTC sind sehr liquide; Small-Cap-Perps nicht - Hebel ist dort deutlich gefährlicher.","url":"https://marginpad.io/glossary/#liquidity","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#spread","name":"Spread","description":"Die Lücke zwischen bestem Kauf- und bestem Verkaufskurs. Du zahlst sie bei jeder Market-Order. Die Lücke zwischen bestem Bid und bestem Ask. Ein Kostenfaktor bei jeder Market-Order, zusätzlich zu den Gebühren - eng bei liquiden Majors, weit bei illiquiden Paaren.","url":"https://marginpad.io/glossary/#spread","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#funding-interval","name":"Funding-Intervall","description":"Wie oft Funding tatsächlich berechnet wird - meist alle 8 Stunden. Wie oft das Funding bei Perpetuals zwischen Longs und Shorts getauscht wird - an den meisten Börsen alle 8 Stunden (manche nutzen 1h oder 4h). Die genannte Rate gilt pro Intervall, die Haltekosten summieren sich also über einen Tag. Aktuelle Raten: Funding-Übersicht.","url":"https://marginpad.io/glossary/#funding-interval","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#liquidation-heatmap","name":"Liquidations-Heatmap","description":"Eine Karte der Preise, bei denen andere liquidiert werden. Ein Chart-Overlay, das schätzt, wo sich Liquidationslevel je Hebelstufe häufen, damit du siehst, welche Preiszonen die meisten erzwungenen Orders auslösen würden. Die von MarginPad findest du unter /heatmap; Karten pro Coin z. B. unter /btc-liquidation-map/.","url":"https://marginpad.io/glossary/#liquidation-heatmap","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#fear-and-greed-index","name":"Fear & Greed Index","description":"Eine Zahl von 0 bis 100 dafür, wie sich der Markt heute anfühlt. Ein Index von 0-100 aus Volatilität, Momentum, Social- und Dominanzdaten, der die Krypto-Stimmung zusammenfasst - extreme Angst markierte historisch bessere Einstiege als extreme Gier. Aktueller Wert: Fear &amp; Greed-Seite.","url":"https://marginpad.io/glossary/#fear-and-greed-index","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#one-way-vs-hedge-mode","name":"One-Way- vs. Hedge-Modus","description":"Ob sich ein Long und ein Short auf demselben Coin aufheben oder nebeneinander stehen. Der One-Way-Modus verrechnet Longs und Shorts zu einer einzigen Position pro Kontrakt; im Hedge-Modus kannst du auf demselben Kontrakt gleichzeitig einen Long UND einen Short halten. Einsteiger bleiben besser im One-Way-Modus - der Hedge-Modus verdoppelt die Gebühren und versteckt Risiko.","url":"https://marginpad.io/glossary/#one-way-vs-hedge-mode","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#entry-price","name":"Einstiegspreis","description":"Der Durchschnittspreis, zu dem du eingestiegen bist. Alles andere wird davon aus gemessen. Der Durchschnittspreis, zu dem deine Position eröffnet wurde, inklusive Nachkäufen. Alles andere - PnL, ROE, Abstand zur Liquidation - wird davon aus gemessen.","url":"https://marginpad.io/glossary/#entry-price","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#wick","name":"Wick","description":"Die dünne Spitze, an der der Preis angekommen ist und nicht geblieben ist. Die dünne Linie über oder unter einem Kerzenkörper, die die Extrempreise innerhalb der Periode zeigt. Wicks durch Liquidationscluster sind der Grund, warum überhebelte Positionen in Sekunden sterben - und warum das Paper Trading von MarginPad eine Liquidation auf dem Server gegen Ein-Minuten-Kerzen abwickelt, nie gegen einen einzelnen Preis, den der Browser zufällig geholt hat.","url":"https://marginpad.io/glossary/#wick","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#volatility","name":"Volatilität","description":"Wie heftig sich der Preis bewegt. Das bestimmt, wie viel Luft dein Stop braucht. Wie stark und wie schnell sich der Preis bewegt. Höhere Volatilität erfordert für dieselbe Sicherheit einen größeren Liquidationspuffer - ein Coin mit 1% Tagesrange und einer mit 10% können nicht denselben Hebel tragen.","url":"https://marginpad.io/glossary/#volatility","inDefinedTermSet":"https://marginpad.io/glossary/#set"},{"@type":"DefinedTerm","@id":"https://marginpad.io/glossary/#whale","name":"Wal","description":"Ein Konto, so groß, dass schon sein eigener Ausstieg den Preis bewegt. Ein Trader oder Wallet, groß genug, um den Markt zu bewegen. Große Positionen und ihre Liquidationen sind in der Summe im Wal-Tracking und im Live-Liquidations-Feed sichtbar.","url":"https://marginpad.io/glossary/#whale","inDefinedTermSet":"https://marginpad.io/glossary/#set"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Start","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Glossar","item":"https://marginpad.io/de/glossary/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<style id="mp-xr-css">
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body class="gloss">
+<div class="wrap">
+  <header>
+    <a class="brand" href="/de/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/de/">Rechner</a><a href="/de/blog/">Blog</a><a href="/de/glossary/">Glossar</a></nav>
+  </header>
+  <div class="crumb"><a href="/de/">Start</a> / Glossar</div>
+  <article>
+    <div class="gl-hero">
+      <h1>Krypto-Futures-Glossar</h1>
+      <p class="gl-lead">60 Begriffe in einfachem Deutsch. Bei den zehn, die wir tatsächlich messen, trägt die Karte die heutige Zahl aus unseren eigenen Feeds - und wo der Begriff Rechnerei ist, steckt der Rechner in der Karte.</p>
+    </div>
+    <!--GLOSS_STRIP--><div class="gl-strip" id="glStrip" hidden></div>
+    <div class="gl-bar">
+      <div class="gl-find">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="glQ" type="search" placeholder="Begriff suchen oder was er bewirkt - probier &quot;zum Verkaufen gezwungen&quot;" autocomplete="off" aria-label="Glossar durchsuchen"> <span class="gl-count" id="glN">60 Begriffe</span>
+      </div>
+      <div class="gl-chips" id="glChips"><button type="button" data-g="all" class="on">Alle</button><button type="button" data-g="money">Margin und Geld</button><button type="button" data-g="order">Einstieg und Ausstieg</button><button type="button" data-g="risk">Wenn es schiefgeht</button><button type="button" data-g="market">Was der Markt gerade tut</button><button type="button" data-g="contract">Der Kontrakt selbst</button></div>
+    </div>
+    <p class="gl-empty" id="glNone" hidden>Dazu passt nichts. Leere die Suche, um alle 60 Begriffe zu sehen.</p>
+    <div class="gl-gh" data-g="money"><h2>Margin und Geld</h2><p>Was du einsetzt, was du kontrollierst und was du zurückbekommst. &middot; 16 Begriffe</p></div>
+    <div class="gl-grid">
+      <div class="gl-card" id="leverage" data-g="money" data-k="leverage borrowed size. it multiplies the move, the fee and the speed you get liquidated at. borrowed exposure that multiplies both gains and losses. 10× means $1 controls $10. see leverage explained. margin notional-value liquidation-price money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#leverage">Hebel</a><button class="gl-permalink" type="button" data-id="leverage" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Geliehene Größe. Sie multipliziert die Bewegung, die Gebühr und die Geschwindigkeit, mit der du liquidiert wirst.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Geliehenes Exposure, das Gewinne und Verluste vervielfacht. 10× heißt: $1 kontrolliert $10. Siehe <a href="/de/blog/crypto-leverage-explained/">Hebel erklärt</a>.</p><div class="gl-see"><a href="#margin">Margin</a><a href="#notional-value">Nominalwert</a><a href="#liquidation-price">Liquidationspreis</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="margin" data-g="money" data-k="margin your own money, locked behind the position while it is open. the collateral you post to open and hold a leveraged position. initial-margin maintenance-margin-mmr isolated-margin money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#margin">Margin</a><button class="gl-permalink" type="button" data-id="margin" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Dein eigenes Geld, das hinter der Position gebunden ist, solange sie offen ist.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Das Collateral, das du hinterlegst, um eine gehebelte Position zu eröffnen und zu halten.</p><div class="gl-see"><a href="#initial-margin">Initial Margin</a><a href="#maintenance-margin-mmr">Maintenance Margin (MMR)</a><a href="#isolated-margin">Isolated Margin</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="initial-margin" data-g="money" data-k="initial margin what it costs to open: roughly notional divided by leverage. the collateral required to open a position - roughly notional ÷ leverage. margin notional-value leverage money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#initial-margin">Initial Margin</a><button class="gl-permalink" type="button" data-id="initial-margin" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Was das Eröffnen kostet: grob Nominalwert geteilt durch Hebel.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die Sicherheit, die zum Eröffnen einer Position nötig ist - grob Nominalwert ÷ Hebel.</p><div class="gl-see"><a href="#margin">Margin</a><a href="#notional-value">Nominalwert</a><a href="#leverage">Hebel</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="maintenance-margin-mmr" data-g="money" data-k="maintenance margin (mmr) the floor. fall under it and the position is closed for you. the minimum margin to keep a position open. drop below it and you are liquidated. liquidation-price margin insurance-fund money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#maintenance-margin-mmr">Maintenance Margin (MMR)</a><button class="gl-permalink" type="button" data-id="maintenance-margin-mmr" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Untergrenze. Fällt der Preis darunter, wird die Position für dich geschlossen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die Mindest-Margin, um eine Position offen zu halten. Fällst du darunter, wirst du liquidiert.</p><div class="gl-see"><a href="#liquidation-price">Liquidationspreis</a><a href="#margin">Margin</a><a href="#insurance-fund">Insurance Fund</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="isolated-margin" data-g="money" data-k="isolated margin only the money you put on this trade can be lost. margin mode where only the margin assigned to a position is at risk. see cross vs isolated. cross-margin margin liquidation money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#isolated-margin">Isolated Margin</a><button class="gl-permalink" type="button" data-id="isolated-margin" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Nur das Geld, das du auf diesen Trade gesetzt hast, kann verloren gehen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Margin-Modus, bei dem nur die einer Position zugewiesene Margin riskiert wird. Siehe <a href="/de/blog/cross-vs-isolated-margin/">Cross vs. Isolated</a>.</p><div class="gl-see"><a href="#cross-margin">Cross Margin</a><a href="#margin">Margin</a><a href="#liquidation">Liquidation</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="cross-margin" data-g="money" data-k="cross margin your whole balance backs the trade - further from liquidation, more at stake. margin mode where your whole balance backs the position, lowering liquidation risk but exposing more capital. isolated-margin margin liquidation money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#cross-margin">Cross Margin</a><button class="gl-permalink" type="button" data-id="cross-margin" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Dein gesamtes Guthaben steht hinter dem Trade - weiter von der Liquidation entfernt, mehr steht auf dem Spiel.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Margin-Modus, bei dem dein gesamtes Guthaben die Position absichert. Das senkt das Liquidationsrisiko, setzt aber mehr Kapital aus.</p><div class="gl-see"><a href="#isolated-margin">Isolated Margin</a><a href="#margin">Margin</a><a href="#liquidation">Liquidation</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="pnl" data-g="money" data-k="pnl what the trade made or lost. profit and loss - the gain or loss on a position. see the pnl calculator. unrealized-pnl realized-pnl roe money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#pnl">PnL</a><button class="gl-permalink" type="button" data-id="pnl" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Was der Trade gewonnen oder verloren hat.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Profit and Loss - Gewinn oder Verlust einer Position. Siehe den <a href="/de/calculators?c=pnl">PnL-Rechner</a>.</p><div class="gl-see"><a href="#unrealized-pnl">Unrealisierter PnL</a><a href="#realized-pnl">Realisierter PnL</a><a href="#roe">ROE</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="roi" data-g="money" data-k="roi how far the price moved, in percent. nothing to do with your leverage. return on investment - the raw percentage the asset moved. roe pnl leverage money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#roi">ROI</a><button class="gl-permalink" type="button" data-id="roi" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie weit sich der Preis bewegt hat, in Prozent. Hat nichts mit deinem Hebel zu tun.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Return on Investment - die rohe Prozentbewegung des Assets.</p><div class="gl-see"><a href="#roe">ROE</a><a href="#pnl">PnL</a><a href="#leverage">Hebel</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="roe" data-g="money" data-k="roe what that move did to your money. a 2% move at 20x is 40%. return on equity - your return on posted margin, amplified by leverage. a 10% move at 10× ≈ 100% roe. roi leverage margin money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#roe">ROE</a><button class="gl-permalink" type="button" data-id="roe" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Was diese Bewegung mit DEINEM Geld gemacht hat. Eine Bewegung von 2% bei 20x sind 40%.</p>
+        <div class="gl-foot"><span class="gl-mk">Rechner</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Return on Equity - deine Rendite auf die eingesetzte Margin, verstärkt durch den Hebel. Eine Bewegung von 10% bei 10× ≈ 100% ROE.</p><div class="gl-see"><a href="#roi">ROI</a><a href="#leverage">Hebel</a><a href="#margin">Margin</a></div></div>
+          <div class="gl-xb">
+        <div class="gl-tool" data-tool="roe"><span>Was eine Bewegung mit deiner Margin macht</span><div class="gl-f"><label>Preisbewegung %<input id="glRoeM" type="text" inputmode="decimal" value="2"></label><label>Hebel<input id="glRoeL" type="text" inputmode="decimal" value="20"></label></div><div class="gl-out" id="glRoeO"></div></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="position-size" data-g="money" data-k="position size how much you hold. decide it from the stop, never from the balance. how much of an asset you hold. size it by risk with the position size calculator. notional-value stop-loss risk-reward-ratio money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#position-size">Positionsgröße</a><button class="gl-permalink" type="button" data-id="position-size" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie viel du hältst. Bestimme es vom Stop aus, nie vom Guthaben.</p>
+        <div class="gl-foot"><span class="gl-mk">Rechner</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Wie viel von einem Asset du hältst. Bestimme die Größe nach Risiko mit dem <a href="/de/calculators?c=size">Positionsgrößen-Rechner</a>.</p><div class="gl-see"><a href="#notional-value">Nominalwert</a><a href="#stop-loss">Stop-Loss</a><a href="#risk-reward-ratio">Chance-Risiko-Verhältnis</a></div></div>
+          <div class="gl-xb">
+        <div class="gl-tool" data-tool="size"><span>Dimensioniere vom Stop aus</span><div class="gl-f"><label>Guthaben $<input id="glSzB" type="text" inputmode="decimal" value="1000"></label><label>Risiko %<input id="glSzR" type="text" inputmode="decimal" value="1"></label><label>Einstieg<input id="glSzE" type="text" inputmode="decimal" value="80000"></label><label>Stop<input id="glSzS" type="text" inputmode="decimal" value="78400"></label></div><div class="gl-out" id="glSzO"></div></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="notional-value" data-g="money" data-k="notional value the full value you control - size times price, not what you posted. the full market value of a position - size × price - not just the margin posted. leverage initial-margin position-size money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#notional-value">Nominalwert</a><button class="gl-permalink" type="button" data-id="notional-value" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der gesamte Wert, den du kontrollierst - Größe mal Preis, nicht das, was du eingesetzt hast.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Der volle Marktwert einer Position - Größe × Preis - nicht nur die hinterlegte Margin.</p><div class="gl-see"><a href="#leverage">Hebel</a><a href="#initial-margin">Initial Margin</a><a href="#position-size">Positionsgröße</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="dca" data-g="money" data-k="dca building the position in pieces instead of all at once. dollar-cost averaging - building a position in tranches to smooth your entry. see the dca calculator. entry-price position-size money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#dca">DCA</a><button class="gl-permalink" type="button" data-id="dca" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Position in Teilen aufbauen statt auf einmal.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Dollar-Cost-Averaging - eine Position in Tranchen aufbauen, um den Einstieg zu glätten. Siehe den <a href="/de/#dca">DCA-Rechner</a>.</p><div class="gl-see"><a href="#entry-price">Einstiegspreis</a><a href="#position-size">Positionsgröße</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="drawdown" data-g="money" data-k="drawdown how far the account fell from its own high. the peak-to-trough drop in account equity. break-even-win-rate risk-reward-ratio money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#drawdown">Drawdown</a><button class="gl-permalink" type="button" data-id="drawdown" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie weit das Konto von seinem eigenen Hoch gefallen ist.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Der Rückgang des Konto-Eigenkapitals vom Hoch zum Tief.</p><div class="gl-see"><a href="#break-even-win-rate">Break-even-Trefferquote</a><a href="#risk-reward-ratio">Chance-Risiko-Verhältnis</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="unrealized-pnl" data-g="money" data-k="unrealized pnl the profit on screen. not yours yet. the paper profit or loss of an open position, marked against the current price. it changes every tick and is not yours until the position is closed or partially closed. realized-pnl mark-price pnl money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#unrealized-pnl">Unrealisierter PnL</a><button class="gl-permalink" type="button" data-id="unrealized-pnl" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der Gewinn auf dem Bildschirm. Noch nicht deiner.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Der Buchgewinn oder -verlust einer OFFENEN Position, bewertet zum aktuellen Preis. Er ändert sich mit jedem Tick und gehört dir erst, wenn die Position geschlossen oder teilweise geschlossen ist.</p><div class="gl-see"><a href="#realized-pnl">Realisierter PnL</a><a href="#mark-price">Mark Price</a><a href="#pnl">PnL</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="realized-pnl" data-g="money" data-k="realized pnl the profit after you closed, fees and funding taken out. the real one. profit or loss that has been locked in by closing (or partially closing) a position, after fees and funding. the number that actually changes your balance. unrealized-pnl pnl funding-rate money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#realized-pnl">Realisierter PnL</a><button class="gl-permalink" type="button" data-id="realized-pnl" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der Gewinn nach dem Schließen, abzüglich Gebühren und Funding. Der echte.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Gewinn oder Verlust, der durch das Schließen (oder Teilschließen) einer Position festgeschrieben wurde, nach Gebühren und Funding. Die Zahl, die dein Guthaben tatsächlich verändert.</p><div class="gl-see"><a href="#unrealized-pnl">Unrealisierter PnL</a><a href="#pnl">PnL</a><a href="#funding-rate">Funding-Rate</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="entry-price" data-g="money" data-k="entry price the average price you got in at. everything else is measured from it. the average price at which your position was opened, including any adds. everything else - pnl, roe, liquidation distance - is measured from it. dca liquidation-price roe money" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#entry-price">Einstiegspreis</a><button class="gl-permalink" type="button" data-id="entry-price" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der Durchschnittspreis, zu dem du eingestiegen bist. Alles andere wird davon aus gemessen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Der Durchschnittspreis, zu dem deine Position eröffnet wurde, inklusive Nachkäufen. Alles andere - PnL, ROE, Abstand zur Liquidation - wird davon aus gemessen.</p><div class="gl-see"><a href="#dca">DCA</a><a href="#liquidation-price">Liquidationspreis</a><a href="#roe">ROE</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gl-gh" data-g="order"><h2>Einstieg und Ausstieg</h2><p>Die Orders, die einen Trade eröffnen, schließen und für dich entscheiden. &middot; 12 Begriffe</p></div>
+    <div class="gl-grid">
+      <div class="gl-card" id="stop-loss" data-g="order" data-k="stop-loss the order that decides, in advance, how much this trade may cost you. an order that closes a position at a set price to cap losses. see how to set a stop-loss. take-profit trailing-stop position-size order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#stop-loss">Stop-Loss</a><button class="gl-permalink" type="button" data-id="stop-loss" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Order, die im Voraus entscheidet, wie viel dich dieser Trade maximal kosten darf.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die eine Position zu einem festgelegten Preis schließt, um Verluste zu begrenzen. Siehe <a href="/de/blog/how-to-set-a-stop-loss/">Stop-Loss richtig setzen</a>.</p><div class="gl-see"><a href="#take-profit">Take-Profit</a><a href="#trailing-stop">Trailing Stop</a><a href="#position-size">Positionsgröße</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="take-profit" data-g="order" data-k="take-profit the order that closes you in profit without you watching. an order that closes a position at a target price to lock in gains. see the take-profit calculator. stop-loss risk-reward-ratio partial-close order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#take-profit">Take-Profit</a><button class="gl-permalink" type="button" data-id="take-profit" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Order, die dich im Plus schließt, ohne dass du zusehen musst.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die eine Position zu einem Zielpreis schließt, um Gewinne zu sichern. Siehe den <a href="/de/#tp">Take-Profit-Rechner</a>.</p><div class="gl-see"><a href="#stop-loss">Stop-Loss</a><a href="#risk-reward-ratio">Chance-Risiko-Verhältnis</a><a href="#partial-close">Teilschließung</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="maker" data-g="order" data-k="maker you left an order waiting, so you pay the lower fee. an order that adds liquidity to the book (a resting limit order), usually with a lower fee. see maker vs taker. taker limit-order post-only order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#maker">Maker</a><button class="gl-permalink" type="button" data-id="maker" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Du hast eine Order warten lassen, also zahlst du die niedrigere Gebühr.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die dem Orderbuch Liquidität hinzufügt (eine offene Limit-Order), meist mit niedrigerer Gebühr. Siehe <a href="/de/blog/maker-vs-taker-fees/">Maker vs Taker</a>.</p><div class="gl-see"><a href="#taker">Taker</a><a href="#limit-order">Limit-Order</a><a href="#post-only">Post-Only</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="taker" data-g="order" data-k="taker you took what was there, so you pay the higher fee - and the spread. an order that removes liquidity (a market order), usually with a higher fee. maker market-order spread order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#taker">Taker</a><button class="gl-permalink" type="button" data-id="taker" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Du hast genommen, was da war, also zahlst du die höhere Gebühr - und den Spread.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die Liquidität entzieht (eine Market-Order), meist mit höherer Gebühr.</p><div class="gl-see"><a href="#maker">Maker</a><a href="#market-order">Market-Order</a><a href="#spread">Spread</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="hedge" data-g="order" data-k="hedge a second position taken to cancel the risk of the first. a position taken to offset risk in another. one-way-vs-hedge-mode short long order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#hedge">Hedge</a><button class="gl-permalink" type="button" data-id="hedge" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine zweite Position, die das Risiko der ersten ausgleicht.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Position, die ein Risiko in einer anderen ausgleicht.</p><div class="gl-see"><a href="#one-way-vs-hedge-mode">One-Way- vs. Hedge-Modus</a><a href="#short">Short</a><a href="#long">Long</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="limit-order" data-g="order" data-k="limit order your price or nothing. an order that rests in the book at your chosen price and only fills at that price or better. pays the lower maker fee on most venues, but is not guaranteed to fill. market-order post-only maker order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#limit-order">Limit-Order</a><button class="gl-permalink" type="button" data-id="limit-order" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Dein Preis oder nichts.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die zu deinem gewählten Preis im Orderbuch wartet und nur zu diesem Preis oder besser ausgeführt wird. Zahlt an den meisten Börsen die niedrigere Maker-Gebühr, wird aber nicht garantiert ausgeführt.</p><div class="gl-see"><a href="#market-order">Market-Order</a><a href="#post-only">Post-only</a><a href="#maker">Maker</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="market-order" data-g="order" data-k="market order right now, at whatever it costs. an order that executes immediately against the best available prices in the book. guaranteed to fill, but pays the taker fee and suffers slippage in thin markets. limit-order slippage taker order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#market-order">Market-Order</a><button class="gl-permalink" type="button" data-id="market-order" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Sofort, egal was es kostet.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Order, die sofort gegen die besten verfügbaren Preise im Orderbuch ausgeführt wird. Die Ausführung ist garantiert, aber du zahlst die Taker-Gebühr und erleidest <a href="/de/glossary/#slippage">Slippage</a> in dünnen Märkten.</p><div class="gl-see"><a href="#limit-order">Limit-Order</a><a href="#slippage">Slippage</a><a href="#taker">Taker</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="post-only" data-g="order" data-k="post-only only if it can wait in the book - never as a taker. an order flag that cancels your order instead of letting it execute as a taker - it guarantees you either make the market (lower fee) or do not trade at all. maker limit-order order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#post-only">Post-Only</a><button class="gl-permalink" type="button" data-id="post-only" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Nur wenn sie im Orderbuch warten kann - nie als Taker.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Order-Flag, das deine Order storniert, statt sie als Taker ausführen zu lassen - es garantiert, dass du entweder den Markt machst (niedrigere Gebühr) oder gar nicht tradest.</p><div class="gl-see"><a href="#maker">Maker</a><a href="#limit-order">Limit-Order</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="reduce-only" data-g="order" data-k="reduce-only can only make the position smaller. never opens a new one by accident. an order flag that can only shrink or close an existing position, never open or grow one. standard protection on take-profit and stop orders so they cannot accidentally flip you. stop-loss take-profit partial-close order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#reduce-only">Reduce-Only</a><button class="gl-permalink" type="button" data-id="reduce-only" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Kann die Position nur verkleinern. Eröffnet nie versehentlich eine neue.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Order-Flag, mit dem sich eine bestehende Position nur verkleinern oder schließen, aber nie eröffnen oder vergrößern lässt. Standardschutz bei Take-Profit- und Stop-Orders, damit sie dich nicht versehentlich drehen.</p><div class="gl-see"><a href="#stop-loss">Stop-Loss</a><a href="#take-profit">Take-Profit</a><a href="#partial-close">Teilschließung</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="trailing-stop" data-g="order" data-k="trailing stop a stop that follows the price up and never back down. a stop-loss that follows the price at a set distance while the trade moves in your favour, then triggers when price retraces by that distance - locking in profit without a fixed exit. stop-loss take-profit order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#trailing-stop">Trailing Stop</a><button class="gl-permalink" type="button" data-id="trailing-stop" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ein Stop, der dem Preis nach oben folgt und nie wieder zurück.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Stop-Loss, der dem Preis in festem Abstand folgt, solange der Trade zu deinen Gunsten läuft, und auslöst, wenn der Preis um diesen Abstand zurückfällt - er sichert Gewinn ohne festen Ausstieg.</p><div class="gl-see"><a href="#stop-loss">Stop-Loss</a><a href="#take-profit">Take-Profit</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="partial-close" data-g="order" data-k="partial close taking some off the table and letting the rest run. closing only part of a position - taking some profit or cutting some risk while keeping the rest of the trade on. the remaining position keeps the original entry price. take-profit reduce-only position-size order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#partial-close">Teilschließung</a><button class="gl-permalink" type="button" data-id="partial-close" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Etwas vom Tisch nehmen und den Rest laufen lassen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Nur einen Teil einer Position schließen - Gewinn mitnehmen oder Risiko senken und den Rest des Trades offen lassen. Die verbleibende Position behält den ursprünglichen Einstiegspreis.</p><div class="gl-see"><a href="#take-profit">Take-Profit</a><a href="#reduce-only">Reduce-Only</a><a href="#position-size">Positionsgröße</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="one-way-vs-hedge-mode" data-g="order" data-k="one-way vs hedge mode whether a long and a short on the same coin cancel out or sit side by side. one-way mode nets longs and shorts into a single position per contract; hedge mode lets you hold a long and a short on the same contract simultaneously. beginners should stay in one-way - hedge mode doubles fees and hides risk. hedge long short order" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#one-way-vs-hedge-mode">One-Way- vs. Hedge-Modus</a><button class="gl-permalink" type="button" data-id="one-way-vs-hedge-mode" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ob sich ein Long und ein Short auf demselben Coin aufheben oder nebeneinander bestehen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Der One-Way-Modus verrechnet Longs und Shorts zu einer einzigen Position pro Kontrakt; im Hedge-Modus kannst du auf demselben Kontrakt gleichzeitig einen Long UND einen Short halten. Einsteiger bleiben besser im One-Way-Modus - der Hedge-Modus verdoppelt die Gebühren und versteckt Risiko.</p><div class="gl-see"><a href="#hedge">Hedge</a><a href="#long">Long</a><a href="#short">Short</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gl-gh" data-g="risk"><h2>Wenn es schiefgeht</h2><p>Die Liquidation und alles, was dorthin führt. &middot; 12 Begriffe</p></div>
+    <div class="gl-grid">
+      <div class="gl-card" id="liquidation" data-g="risk" data-k="liquidation the exchange closes your position for you because the margin ran out. the forced closure of a leveraged position when losses consume the margin backing it. see the liquidation calculator. liquidation-price maintenance-margin-mmr margin-call risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#liquidation">Liquidation</a><button class="gl-permalink" type="button" data-id="liquidation" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Exchange schließt deine Position für dich, weil die Margin aufgebraucht ist.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Die erzwungene Schließung einer gehebelten Position, wenn Verluste die Margin dahinter aufzehren. Siehe den <a href="/de/calculators?c=liq">Liquidationsrechner</a>.</p><div class="gl-see"><a href="#liquidation-price">Liquidationspreis</a><a href="#maintenance-margin-mmr">Maintenance Margin (MMR)</a><a href="#margin-call">Margin Call</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="liq" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="liquidation-price" data-g="risk" data-k="liquidation price the exact price at which that happens - and you can work it out before you open. the price at which your position is liquidated. long ≈ entry × (1 − 1/leverage + mmr). liquidation leverage maintenance-margin-mmr risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#liquidation-price">Liquidationspreis</a><button class="gl-permalink" type="button" data-id="liquidation-price" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der genaue Preis, bei dem das passiert - und du kannst ihn vor dem Einstieg ausrechnen.</p>
+        <div class="gl-foot"><span class="gl-mk">Rechner</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Der Preis, bei dem deine Position liquidiert wird. Long ≈ Einstieg × (1 − 1/Hebel + MMR).</p><div class="gl-see"><a href="#liquidation">Liquidation</a><a href="#leverage">Hebel</a><a href="#maintenance-margin-mmr">Maintenance Margin (MMR)</a></div></div>
+          <div class="gl-xb">
+        <div class="gl-tool" data-tool="liq"><span>Rechne es selbst aus</span><div class="gl-f"><label>Einstieg<input id="glLiqE" type="text" inputmode="decimal" value="80000"></label><label>Hebel<input id="glLiqL" type="text" inputmode="decimal" value="20"></label><label>Seite<select id="glLiqS"><option value="long">Long</option><option value="short">Short</option></select></label></div><div class="gl-out" id="glLiqO"></div></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="risk-reward-ratio" data-g="risk" data-k="risk/reward ratio how much you stand to make for every unit you are risking. reward divided by risk on a trade. see risk/reward explained. break-even-win-rate stop-loss take-profit risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#risk-reward-ratio">Chance-Risiko-Verhältnis</a><button class="gl-permalink" type="button" data-id="risk-reward-ratio" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie viel du für jede riskierte Einheit gewinnen kannst.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Gewinn geteilt durch Risiko eines Trades. Siehe <a href="/de/blog/risk-reward-ratio-explained/">Risk/Reward erklärt</a>.</p><div class="gl-see"><a href="#break-even-win-rate">Break-even-Trefferquote</a><a href="#stop-loss">Stop-Loss</a><a href="#take-profit">Take-Profit</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="break-even-win-rate" data-g="risk" data-k="break-even win rate how often you must be right at that ratio just to stay level. the win rate needed to break even at a given risk/reward - e.g. 33% at 2:1. risk-reward-ratio drawdown risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#break-even-win-rate">Break-even-Trefferquote</a><button class="gl-permalink" type="button" data-id="break-even-win-rate" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie oft du bei diesem Verhältnis richtig liegen musst, nur um auf null zu bleiben.</p>
+        <div class="gl-foot"><span class="gl-mk">Rechner</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Die Trefferquote, die bei einem gegebenen Risk/Reward zum Break-even nötig ist - z. B. 33% bei 2:1.</p><div class="gl-see"><a href="#risk-reward-ratio">Chance-Risiko-Verhältnis</a><a href="#drawdown">Drawdown</a></div></div>
+          <div class="gl-xb">
+        <div class="gl-tool" data-tool="bewr"><span>Wie oft du richtig liegen musst</span><div class="gl-f"><label>Reward : Risk<input id="glBeR" type="text" inputmode="decimal" value="2"></label></div><div class="gl-out" id="glBeO"></div></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="slippage" data-g="risk" data-k="slippage the gap between the price you expected and the one you got. the difference between expected and executed price, worst in thin or fast markets. order-book-depth liquidity market-order risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#slippage">Slippage</a><button class="gl-permalink" type="button" data-id="slippage" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Differenz zwischen dem erwarteten und dem tatsächlich erhaltenen Preis.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die Differenz zwischen erwartetem und ausgeführtem Preis, am größten in dünnen oder schnellen Märkten.</p><div class="gl-see"><a href="#order-book-depth">Orderbuch-Tiefe</a><a href="#liquidity">Liquidität</a><a href="#market-order">Market-Order</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="adl" data-g="risk" data-k="adl when the insurance fund cannot pay, the exchange closes part of a winning trade instead. auto-deleveraging - when the insurance fund can't cover a liquidation, profitable opposing traders are partially closed. insurance-fund liquidation liquidation-cascade risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#adl">ADL</a><button class="gl-permalink" type="button" data-id="adl" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wenn der Insurance Fund nicht zahlen kann, schließt die Börse stattdessen einen Teil eines GEWINNENDEN Trades.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Auto-Deleveraging - wenn der Insurance Fund eine Liquidation nicht decken kann, werden profitable Gegenpositionen teilweise geschlossen.</p><div class="gl-see"><a href="#insurance-fund">Insurance Fund</a><a href="#liquidation">Liquidation</a><a href="#liquidation-cascade">Liquidationskaskade</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="insurance-fund" data-g="risk" data-k="insurance fund the reserve that pays the winners when a liquidation goes bankrupt. a reserve that absorbs bankrupt liquidations so winners get paid in full. adl liquidation risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#insurance-fund">Insurance Fund</a><button class="gl-permalink" type="button" data-id="insurance-fund" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Reserve, die die Gewinner auszahlt, wenn eine Liquidation ins Minus rutscht.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Reserve, die bankrotte Liquidationen auffängt, damit Gewinner voll ausgezahlt werden.</p><div class="gl-see"><a href="#adl">ADL</a><a href="#liquidation">Liquidation</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="margin-call" data-g="risk" data-k="margin call the warning before the liquidation. on most crypto venues it is very short. a warning that your margin is running low before liquidation. see what is a margin call. liquidation maintenance-margin-mmr risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#margin-call">Margin Call</a><button class="gl-permalink" type="button" data-id="margin-call" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Warnung vor der Liquidation. An den meisten Krypto-Börsen ist sie sehr kurz.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Warnung, dass deine Margin vor der Liquidation knapp wird. Siehe <a href="/de/blog/what-is-a-margin-call/">was ein Margin Call ist</a>.</p><div class="gl-see"><a href="#liquidation">Liquidation</a><a href="#maintenance-margin-mmr">Maintenance Margin (MMR)</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="liquidation-cascade" data-g="risk" data-k="liquidation cascade one wave of liquidations knocking price into the next wave. a chain reaction where one wave of liquidations pushes price into the next cluster of liquidation levels, firing more forced orders in the same direction. cascades explain why leveraged markets overshoot. see them mapped on the liquidation map and measured daily in the recap archive. liquidation-heatmap liquidation open-interest risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#liquidation-cascade">Liquidationskaskade</a><button class="gl-permalink" type="button" data-id="liquidation-cascade" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine Liquidationswelle, die den Preis in die nächste schiebt.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Eine Kettenreaktion, bei der eine Liquidationswelle den Preis in den nächsten Cluster von Liquidationsniveaus drückt und weitere erzwungene Orders in dieselbe Richtung auslöst. Kaskaden erklären, warum gehebelte Märkte überschießen. Sieh sie auf der <a href="/de/btc-liquidation-map/">Liquidationskarte</a> und täglich gemessen im <a href="/de/liquidations/">Recap-Archiv</a>.</p><div class="gl-see"><a href="#liquidation-heatmap">Liquidations-Heatmap</a><a href="#liquidation">Liquidation</a><a href="#open-interest">Open Interest</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="casc" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="short-squeeze" data-g="risk" data-k="short squeeze a move up driven by shorts being forced to buy back. a sharp move up fueled by shorts being forced to buy back - either stopped out or liquidated. crowded shorts (negative funding, short-heavy positioning) are the fuel; the squeeze consumes it. long-squeeze long-short-ratio funding-rate risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#short-squeeze">Short Squeeze</a><button class="gl-permalink" type="button" data-id="short-squeeze" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine Bewegung nach oben, getrieben von Shorts, die zum Zurückkaufen gezwungen werden.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Eine scharfe Bewegung NACH OBEN, angetrieben von Shorts, die zum Zurückkaufen gezwungen werden - entweder ausgestoppt oder liquidiert. Überfüllte Shorts (negatives Funding, Short-lastige Positionierung) sind der Treibstoff; der Squeeze verbrennt ihn.</p><div class="gl-see"><a href="#long-squeeze">Long Squeeze</a><a href="#long-short-ratio">Long/Short-Verhältnis</a><a href="#funding-rate">Funding-Rate</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="sqz" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="long-squeeze" data-g="risk" data-k="long squeeze a move down driven by longs being forced to sell. the mirror of a short squeeze: a sharp move down accelerated by longs being forced to sell. most common after crowded, over-leveraged rallies with heavy positive funding. short-squeeze long-short-ratio liquidation-cascade risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#long-squeeze">Long Squeeze</a><button class="gl-permalink" type="button" data-id="long-squeeze" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine Bewegung nach unten, getrieben von Longs, die zum Verkaufen gezwungen werden.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Das Spiegelbild eines Short Squeeze: eine scharfe Bewegung NACH UNTEN, beschleunigt durch Longs, die zum Verkaufen gezwungen werden. Am häufigsten nach überfüllten, überhebelten Rallyes mit stark positivem Funding.</p><div class="gl-see"><a href="#short-squeeze">Short Squeeze</a><a href="#long-short-ratio">Long/Short-Verhältnis</a><a href="#liquidation-cascade">Liquidationskaskade</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="sqzl" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="stop-hunt" data-g="risk" data-k="stop hunt a push through the price where everyone keeps their stops. a quick push through an obvious price level where many stop-losses and liquidations sit, which fills larger players at better prices before the market reverses. obvious round numbers and recent lows/highs are the usual targets. stop-loss liquidation-heatmap wick risk" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#stop-hunt">Stop Hunt</a><button class="gl-permalink" type="button" data-id="stop-hunt" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ein Vorstoß durch den Preis, bei dem alle ihre Stops liegen haben.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein schneller Vorstoß durch ein offensichtliches Preislevel, an dem viele Stop-Losses und Liquidationen liegen. Er füllt größere Marktteilnehmer zu besseren Preisen, bevor der Markt dreht. Typische Ziele sind runde Zahlen und jüngste Tiefs/Hochs.</p><div class="gl-see"><a href="#stop-loss">Stop-Loss</a><a href="#liquidation-heatmap">Liquidations-Heatmap</a><a href="#wick">Wick</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gl-gh" data-g="market"><h2>Was der Markt gerade tut</h2><p>Die Zahlen, die das ganze Buch beschreiben, nicht deinen Trade. &middot; 12 Begriffe</p></div>
+    <div class="gl-grid">
+      <div class="gl-card" id="funding-rate" data-g="market" data-k="funding rate a small payment every few hours between longs and shorts. positive means longs pay. a periodic payment between longs and shorts on perpetuals. see the funding fee calculator. funding-interval perpetual-futures basis market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#funding-rate">Funding-Rate</a><button class="gl-permalink" type="button" data-id="funding-rate" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine kleine Zahlung alle paar Stunden zwischen Longs und Shorts. Positiv heißt: Longs zahlen.</p>
+        <div class="gl-foot"><span class="gl-mk now">live jetzt</span><span class="gl-mk">Rechner</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Eine regelmäßige Zahlung zwischen Longs und Shorts bei Perpetuals. Siehe den <a href="/de/funding-fee-calculator/">Funding-Gebühren-Rechner</a>.</p><div class="gl-see"><a href="#funding-interval">Funding-Intervall</a><a href="#perpetual-futures">Perpetual Futures</a><a href="#basis">Basis</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="funding" hidden></p>
+        <div class="gl-tool" data-tool="funding"><span>Was das Halten kostet</span><div class="gl-f"><label>Nominal $<input id="glFnN" type="text" inputmode="decimal" value="10000"></label><label>Rate % / 8h<input id="glFnR" type="text" inputmode="decimal" value="0.01"></label><label>Tage<input id="glFnD" type="text" inputmode="decimal" value="7"></label></div><div class="gl-out" id="glFnO"></div></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="open-interest" data-g="market" data-k="open interest how much leveraged money is currently in the market. the total value of outstanding futures contracts - a gauge of market participation. funding-rate long-short-ratio liquidation-cascade market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#open-interest">Open Interest</a><button class="gl-permalink" type="button" data-id="open-interest" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie viel gehebeltes Geld gerade im Markt steckt.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Der Gesamtwert aller offenen Futures-Kontrakte - ein Maß für die Marktbeteiligung.</p><div class="gl-see"><a href="#funding-rate">Funding-Rate</a><a href="#long-short-ratio">Long/Short-Verhältnis</a><a href="#liquidation-cascade">Liquidationskaskade</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="oi" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="basis" data-g="market" data-k="basis the gap between the futures price and spot. the gap between futures and spot price. funding-rate spot perpetual-futures market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#basis">Basis</a><button class="gl-permalink" type="button" data-id="basis" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Differenz zwischen Futures-Preis und Spot.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die Differenz zwischen Futures- und Spot-Preis.</p><div class="gl-see"><a href="#funding-rate">Funding-Rate</a><a href="#spot">Spot</a><a href="#perpetual-futures">Perpetual Futures</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="long-short-ratio" data-g="market" data-k="long/short ratio which way the crowd is leaning. extremes tend to be the wrong way. the share of accounts (or positions) that are long versus short a contract. extremes are contrarian signals - a heavily long crowd is fuel for a squeeze down. live per-coin readings: long/short dashboard. short-squeeze long-squeeze open-interest market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#long-short-ratio">Long/Short-Verhältnis</a><button class="gl-permalink" type="button" data-id="long-short-ratio" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">In welche Richtung die Masse lehnt. Extreme liegen meist falsch.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Der Anteil der Konten (oder Positionen), die bei einem Kontrakt long bzw. short sind. Extreme sind Contrarian-Signale - eine stark long positionierte Masse ist Treibstoff für einen Squeeze nach unten. Live-Werte pro Coin: <a href="/de/long-short/">Long/Short-Dashboard</a>.</p><div class="gl-see"><a href="#short-squeeze">Short Squeeze</a><a href="#long-squeeze">Long Squeeze</a><a href="#open-interest">Open Interest</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="ls" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="order-book-depth" data-g="market" data-k="order book depth how much size is waiting at each price. how much resting buy and sell size sits at each price level. deep books absorb large market orders with little slippage; thin books gap. depth is why the same trade costs more on a small exchange. liquidity slippage spread market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#order-book-depth">Orderbuch-Tiefe</a><button class="gl-permalink" type="button" data-id="order-book-depth" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie viel Größe auf jedem Preis wartet.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Wie viel offene Kauf- und Verkaufsgröße auf jedem Preisniveau liegt. Tiefe Orderbücher fangen große Market-Orders mit wenig <a href="/de/glossary/#slippage">Slippage</a> ab; dünne Orderbücher springen. Die Tiefe ist der Grund, warum derselbe Trade an einer kleinen Börse mehr kostet.</p><div class="gl-see"><a href="#liquidity">Liquidität</a><a href="#slippage">Slippage</a><a href="#spread">Spread</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="liquidity" data-g="market" data-k="liquidity how much you can trade without moving the price yourself. how easily size can be traded without moving the price. in futures it comes from order-book depth and active market makers. majors like btc are deeply liquid; small-cap perps are not - leverage there is far more dangerous. order-book-depth spread slippage market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#liquidity">Liquidität</a><button class="gl-permalink" type="button" data-id="liquidity" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie viel du handeln kannst, ohne den Preis selbst zu bewegen.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Wie leicht sich Größe handeln lässt, ohne den Preis zu bewegen. Bei Futures kommt sie aus der Tiefe des Orderbuchs und aktiven Market Makern. Majors wie BTC sind sehr liquide; Small-Cap-Perps nicht - Hebel ist dort deutlich gefährlicher.</p><div class="gl-see"><a href="#order-book-depth">Orderbuch-Tiefe</a><a href="#spread">Spread</a><a href="#slippage">Slippage</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="spread" data-g="market" data-k="spread the gap between the best buy and the best sell. you pay it every market order. the gap between the best bid and best ask. a cost you pay on every market order, on top of fees - tight on liquid majors, wide on illiquid pairs. order-book-depth taker liquidity market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#spread">Spread</a><button class="gl-permalink" type="button" data-id="spread" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die Lücke zwischen bestem Kauf- und bestem Verkaufspreis. Du zahlst sie bei jeder Market-Order.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die Lücke zwischen bestem Bid und bestem Ask. Ein Kostenfaktor bei jeder Market-Order, zusätzlich zu den Gebühren - eng bei liquiden Majors, weit bei illiquiden Paaren.</p><div class="gl-see"><a href="#order-book-depth">Orderbuch-Tiefe</a><a href="#taker">Taker</a><a href="#liquidity">Liquidität</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="funding-interval" data-g="market" data-k="funding interval how often funding is actually charged - usually every 8 hours. how often perpetual funding is exchanged between longs and shorts - every 8 hours on most venues (some use 1h or 4h). the quoted rate applies per interval, so holding costs compound across a day. live rates: funding dashboard. funding-rate perpetual-futures market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#funding-interval">Funding-Intervall</a><button class="gl-permalink" type="button" data-id="funding-interval" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie oft Funding tatsächlich berechnet wird - meist alle 8 Stunden.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Wie oft Perpetual-Funding zwischen Longs und Shorts ausgetauscht wird - bei den meisten Börsen alle 8 Stunden (manche nutzen 1h oder 4h). Die genannte Rate gilt pro Intervall, daher summieren sich die Haltekosten über einen Tag. Live-Raten: <a href="/de/funding/">Funding-Dashboard</a>.</p><div class="gl-see"><a href="#funding-rate">Funding-Rate</a><a href="#perpetual-futures">Perpetual Futures</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="liquidation-heatmap" data-g="market" data-k="liquidation heatmap a map of the prices where other people get liquidated. a chart overlay estimating where liquidation levels cluster at each leverage tier, so you can see which price zones would fire the most forced orders. marginpad&#39;s is at /heatmap; per-coin maps at e.g. /btc-liquidation-map/. liquidation-cascade stop-hunt liquidation-price market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#liquidation-heatmap">Liquidations-Heatmap</a><button class="gl-permalink" type="button" data-id="liquidation-heatmap" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine Karte der Preise, bei denen andere liquidiert werden.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Chart-Overlay, das schätzt, wo sich Liquidationslevel je Hebelstufe häufen, damit du siehst, welche Preiszonen die meisten erzwungenen Orders auslösen würden. Die von MarginPad findest du unter <a href="/de/heatmap">/heatmap</a>; Karten pro Coin z. B. unter <a href="/de/btc-liquidation-map/">/btc-liquidation-map/</a>.</p><div class="gl-see"><a href="#liquidation-cascade">Liquidationskaskade</a><a href="#stop-hunt">Stop Hunt</a><a href="#liquidation-price">Liquidationspreis</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="fear-and-greed-index" data-g="market" data-k="fear &amp; greed index one number, 0 to 100, for how the market feels today. a 0-100 composite of volatility, momentum, social and dominance data summarising crypto sentiment - extreme fear has historically marked better entries than extreme greed. live reading: fear &amp; greed page. long-short-ratio volatility market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#fear-and-greed-index">Fear &amp; Greed Index</a><button class="gl-permalink" type="button" data-id="fear-and-greed-index" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Eine Zahl von 0 bis 100 dafür, wie sich der Markt heute anfühlt.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Ein Index von 0-100 aus Volatilität, Momentum, Social- und Dominanzdaten, der die Krypto-Stimmung zusammenfasst - extreme Angst markierte historisch bessere Einstiege als extreme Gier. Aktueller Wert: <a href="/de/fear-greed/">Fear &amp; Greed-Seite</a>.</p><div class="gl-see"><a href="#long-short-ratio">Long/Short-Verhältnis</a><a href="#volatility">Volatilität</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="fng" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="volatility" data-g="market" data-k="volatility how hard the price is moving. it decides how much room your stop needs. how much and how fast price moves. higher volatility means a wider liquidation buffer is needed for the same safety - a 1% daily-range coin and a 10% one cannot carry the same leverage. liquidation-price stop-loss position-size market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#volatility">Volatilität</a><button class="gl-permalink" type="button" data-id="volatility" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Wie stark sich der Preis bewegt. Davon hängt ab, wie viel Spielraum dein Stop braucht.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Wie stark und wie schnell sich der Preis bewegt. Höhere Volatilität erfordert für dieselbe Sicherheit einen größeren Liquidationspuffer - ein Coin mit 1% Tagesspanne und einer mit 10% können nicht denselben Hebel tragen.</p><div class="gl-see"><a href="#liquidation-price">Liquidationspreis</a><a href="#stop-loss">Stop-Loss</a><a href="#position-size">Positionsgröße</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="vol" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="whale" data-g="market" data-k="whale an account big enough that its own exit moves the price. a trader or wallet large enough to move the market. large positions and their liquidations are visible in aggregate on whale tracking and the live liquidation feed. open-interest liquidation-cascade liquidity market" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#whale">Wal</a><button class="gl-permalink" type="button" data-id="whale" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ein Konto, das so groß ist, dass sein eigener Ausstieg den Preis bewegt.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Trader oder Wallet, groß genug, um den Markt zu bewegen. Große Positionen und ihre Liquidationen sind in der Summe sichtbar im <a href="/de/hyperliquid-whales/">Wal-Tracking</a> und im <a href="/de/rekt/">Live-Liquidations-Feed</a>.</p><div class="gl-see"><a href="#open-interest">Open Interest</a><a href="#liquidation-cascade">Liquidationskaskade</a><a href="#liquidity">Liquidität</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gl-gh" data-g="contract"><h2>Der Kontrakt selbst</h2><p>Was du eigentlich handelst, wenn du einen Perp handelst. &middot; 8 Begriffe</p></div>
+    <div class="gl-grid">
+      <div class="gl-card" id="perpetual-futures" data-g="contract" data-k="perpetual futures a futures contract that never expires, held near spot by funding. a futures contract with no expiry, kept near spot by the funding mechanism. funding-rate spot basis contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#perpetual-futures">Perpetual Futures</a><button class="gl-permalink" type="button" data-id="perpetual-futures" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ein Futures-Kontrakt, der nie verfällt und durch Funding nah am Spot gehalten wird.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Futures-Kontrakt ohne Ablaufdatum, durch den Funding-Mechanismus nahe am Spot gehalten.</p><div class="gl-see"><a href="#funding-rate">Funding-Rate</a><a href="#spot">Spot</a><a href="#basis">Basis</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="long" data-g="contract" data-k="long you win if it goes up. a position that profits when price rises. short liquidation-price funding-rate contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#long">Long</a><button class="gl-permalink" type="button" data-id="long" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Du gewinnst, wenn es steigt.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Position, die bei steigendem Preis Gewinn macht.</p><div class="gl-see"><a href="#short">Short</a><a href="#liquidation-price">Liquidationspreis</a><a href="#funding-rate">Funding-Rate</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="short" data-g="contract" data-k="short you win if it goes down. a position that profits when price falls. long short-squeeze funding-rate contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#short">Short</a><button class="gl-permalink" type="button" data-id="short" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Du gewinnst, wenn es fällt.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Eine Position, die profitiert, wenn der Preis fällt.</p><div class="gl-see"><a href="#long">Long</a><a href="#short-squeeze">Short Squeeze</a><a href="#funding-rate">Funding-Rate</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="mark-price" data-g="contract" data-k="mark price the smoothed price the exchange liquidates you against - not the last trade. a smoothed reference price used to calculate unrealised pnl and trigger liquidations, less manipulable than last price. index-price liquidation-price wick contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#mark-price">Mark Price</a><button class="gl-permalink" type="button" data-id="mark-price" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der geglättete Preis, gegen den die Börse dich liquidiert - nicht der letzte Trade.</p>
+        <div class="gl-foot"><span class="gl-mk now">jetzt live</span><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x">
+          <div class="gl-xa"><p class="gl-b">Ein geglätteter Referenzpreis zur Berechnung des unrealisierten PnL und zum Auslösen von Liquidationen, schwerer zu manipulieren als der letzte Preis.</p><div class="gl-see"><a href="#index-price">Index Price</a><a href="#liquidation-price">Liquidationspreis</a><a href="#wick">Wick</a></div></div>
+          <div class="gl-xb"><p class="gl-live" data-gl="mark" hidden></p></div>
+        </div>
+      </div>
+      <div class="gl-card" id="index-price" data-g="contract" data-k="index price the spot average across exchanges that the mark price is anchored to. an average of spot prices across exchanges that anchors the mark price. mark-price spot basis contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#index-price">Indexpreis</a><button class="gl-permalink" type="button" data-id="index-price" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Der Spot-Durchschnitt über mehrere Börsen, an den der Mark Price gekoppelt ist.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Durchschnitt der Spot-Preise über mehrere Börsen, der den Mark Price verankert.</p><div class="gl-see"><a href="#mark-price">Mark Price</a><a href="#spot">Spot</a><a href="#basis">Basis</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="spot" data-g="contract" data-k="spot buying the actual coin. no leverage, no funding, no liquidation. buying the actual asset for immediate delivery - no leverage, no liquidation. see spot vs futures. perpetual-futures index-price derivative contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#spot">Spot</a><button class="gl-permalink" type="button" data-id="spot" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Den echten Coin kaufen. Kein Hebel, kein Funding, keine Liquidation.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Den echten Coin kaufen, mit sofortiger Lieferung - kein Hebel, keine Liquidation. Siehe <a href="/de/blog/spot-vs-futures-trading/">Spot vs. Futures</a>.</p><div class="gl-see"><a href="#perpetual-futures">Perpetual Futures</a><a href="#index-price">Index Price</a><a href="#derivative">Derivat</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="derivative" data-g="contract" data-k="derivative a contract whose price comes from something else. a contract whose value derives from an underlying asset, like futures or options. perpetual-futures spot contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#derivative">Derivat</a><button class="gl-permalink" type="button" data-id="derivative" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Ein Kontrakt, dessen Preis von etwas anderem kommt.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Ein Kontrakt, dessen Wert von einem zugrunde liegenden Asset abgeleitet ist, etwa Futures oder Optionen.</p><div class="gl-see"><a href="#perpetual-futures">Perpetual Futures</a><a href="#spot">Spot</a></div></div>
+        </div>
+      </div>
+      <div class="gl-card" id="wick" data-g="contract" data-k="wick the thin spike where price touched and did not stay. the thin line above or below a candle body showing the extreme prices touched inside the period. wicks through liquidation clusters are how over-leveraged positions die in seconds - and why marginpad&#39;s paper trading settles a liquidation on the server against one-minute candles, never on a single price the browser happened to fetch. mark-price stop-hunt liquidation contract" role="button" tabindex="0" aria-expanded="false">
+        <h3><a href="#wick">Wick</a><button class="gl-permalink" type="button" data-id="wick" aria-label="Link zu diesem Begriff kopieren">Link</button></h3>
+        <p class="gl-s">Die dünne Spitze, an der der Preis angekommen ist und nicht geblieben ist.</p>
+        <div class="gl-foot"><span class="gl-more">mehr</span></div>
+        <button class="gl-close" type="button" aria-label="Schließen">schließen</button>
+        <div class="gl-x solo">
+          <div class="gl-xa"><p class="gl-b">Die dünne Linie über oder unter einem Kerzenkörper, die die Extrempreise innerhalb der Periode zeigt. Wicks durch Liquidationscluster sind der Grund, warum überhebelte Positionen in Sekunden sterben - und warum das Paper Trading von MarginPad eine Liquidation auf dem Server gegen Ein-Minuten-Kerzen abwickelt, nie gegen einen einzelnen Preis, den der Browser zufällig geholt hat.</p><div class="gl-see"><a href="#mark-price">Mark Price</a><a href="#stop-hunt">Stop Hunt</a><a href="#liquidation">Liquidation</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gl-prov">
+      <div><b>Woher die Zahlen kommen</b>Funding, Open Interest und Positionierung stammen aus den öffentlichen Endpunkten der Exchanges selbst. Die 24-Stunden-Liquidationszahlen stammen von unserem eigenen Collector, der jede erkannte Zwangsschließung an acht Börsen erfasst. Das Sentiment ist der Fear &amp; Greed Index.</div>
+      <div><b>Wann</b>Die Zahlen auf dieser Seite werden beim Ausliefern der Seite erzeugt und alle paar Minuten aktualisiert, solange sie offen ist. Eine Zahl, die wir nicht messen konnten, wird gar nicht erst angezeigt.</div>
+      <div><b>Nimm die Zahlen mit</b>Dieselben Werte gibt es als kostenloses JSON, ohne Key und ohne Konto: <a href="https://marginpad.io/api/glossary/live">/api/glossary/live</a> &middot; <a href="https://marginpad.io/api/cg/board?symbol=BTC">/api/cg/board</a> &middot; <a href="https://marginpad.io/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440">/api/v1/liquidations/recent</a></div>
+    </div>
+    <h2>Setze die Begriffe ein</h2>
+    <div class="related">
+      <a href="/de/paper-trade">Auf einem kostenlosen Simulator üben</a><a href="/de/calculators?c=liq">Liquidationsrechner</a><a href="/de/calculators?c=size">Positionsgröße</a><a href="/de/heatmap">Liquidations-Heatmap</a><a href="/de/funding/">Live-Funding-Raten</a><a href="/de/academy/">Die Akademie</a>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">SETZ ES IN DIE PRAXIS UM</div><p class="mp-xr-w">Darüber zu lesen bringt dich nur ein Stück weit. Übe es kostenlos in unserem Terminal und nimm es erst an ein echtes Orderbuch, wenn es sitzt.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-Perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Jeder Markt, rauf oder runter</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate-Links. Wir erhalten eine Provision, wenn du dich registrierst; für dich ändert sich der Preis nicht.</p></div>
+</article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/de/">Rechner</a> &middot; <a href="/de/blog/">Blog</a> &middot; <a href="/de/terms/">Nutzungsbedingungen</a> &middot; <a href="/de/privacy/">Datenschutz</a> &middot; <a href="/de/glossary/">Glossar</a> &middot; <a href="/de/about/">Über uns</a></span>
+  </footer>
+</div>
+<script>
+function glLiq(entry, lev, mmr, long, rate) {
+  lev = Math.max(1, +lev || 1); mmr = Math.max(0, +mmr || 0);
+  var im = Math.max(1e-6, 1 / lev - Math.min(0.1 / lev, Math.max(0, +rate || 0)));
+  var me = Math.min(mmr, im / 2);
+  return long ? entry * (1 - im + me) : entry * (1 + im - me);
+}
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var num = function (id) { var e = $(id); return e ? parseFloat(String(e.value).replace(/,/g, '')) : NaN; };
+  var money = function (v) { if (!isFinite(v)) return '-'; var d = Math.abs(v) >= 1000 ? 2 : Math.abs(v) >= 1 ? 2 : 6; return '$' + v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); };
+  var pct = function (v, d) { return isFinite(v) ? (v >= 0 ? '' : '-') + Math.abs(v).toFixed(d == null ? 2 : d) + '%' : '-'; };
+  var out = function (id, html, bad) { var e = $(id); if (!e) return; e.innerHTML = html; e.className = 'gl-out' + (bad ? ' bad' : ''); };
+
+  var CALC = {
+    liq: function () {
+      var e = num('glLiqE'), l = num('glLiqL'), s = $('glLiqS').value === 'short';
+      if (!(e > 0) || !(l >= 1)) return out('glLiqO', __esT_glossaryindex("enterAnEntryPrice",'Enter an entry price and leverage.'), 1);
+      var p = glLiq(e, l, 0.005, !s, 0);
+      var away = Math.abs(p - e) / e * 100;
+      out('glLiqO', '<b>' + money(p) + '</b><span>' + pct(away) + ' away &middot; at 0.5% maintenance margin</span>');
+    },
+    roe: function () {
+      var m = num('glRoeM'), l = num('glRoeL');
+      if (!isFinite(m) || !(l >= 1)) return out('glRoeO', __esT_glossaryindex("enterAMoveAnd",'Enter a move and a leverage.'), 1);
+      var r = m * l;
+      out('glRoeO', '<b>' + pct(r, 1) + '</b><span>on your margin' + (Math.abs(r) >= 100 ? __esT_glossaryindex("middotAMoveThe",' &middot; a move the other way of ') + pct(100 / l, 2) + __esT_glossaryindex("wipesItOut",' wipes it out') : '') + '</span>');
+    },
+    size: function () {
+      var b = num('glSzB'), r = num('glSzR'), e = num('glSzE'), s = num('glSzS');
+      if (!(b > 0) || !(r > 0) || !(e > 0) || !(s > 0)) return out('glSzO', __esT_glossaryindex("enterBalanceRiskEntry",'Enter balance, risk, entry and stop.'), 1);
+      var dist = Math.abs(e - s) / e;
+      if (!(dist > 0)) return out('glSzO', __esT_glossaryindex("theStopHasTo",'The stop has to be away from the entry.'), 1);
+      var risk = b * r / 100, notional = risk / dist;
+      out('glSzO', '<b>' + money(notional) + __esT_glossaryindex("ofNotionalRisks",'</b><span>of notional risks ') + money(risk) + ' &middot; ' + (notional / b).toFixed(1) + __esT_glossaryindex("xYourBalance",'x your balance</span>'));
+    },
+    bewr: function () {
+      var rr = num('glBeR');
+      if (!(rr > 0)) return out('glBeO', __esT_glossaryindex("enterARewardTo",'Enter a reward-to-risk ratio.'), 1);
+      var w = 100 / (1 + rr);
+      out('glBeO', '<b>' + w.toFixed(1) + __esT_glossaryindex("ofTradesMustWin",'%</b><span>of trades must win just to break even, before fees</span>'));
+    },
+    funding: function () {
+      var n = num('glFnN'), r = num('glFnR'), d = num('glFnD');
+      if (!(n > 0) || !isFinite(r) || !(d > 0)) return out('glFnO', __esT_glossaryindex("enterNotionalRateAnd",'Enter notional, rate and days.'), 1);
+      var pays = n * (r / 100) * (d * 3);
+      out('glFnO', '<b>' + money(Math.abs(pays)) + '</b><span>' + (r >= 0 ? __esT_glossaryindex("paidByLongs",'paid by longs') : __esT_glossaryindex("paidByShorts",'paid by shorts')) + ' over ' + d + ' day' + (d === 1 ? '' : 's') + __esT_glossaryindex("middot3PaymentsA",' &middot; 3 payments a day</span>'));
+    }
+  };
+  Object.keys(CALC).forEach(function (k) {
+    var box = document.querySelector('[data-tool="' + k + '"]');
+    if (!box) return;
+    box.addEventListener('input', CALC[k]);
+    box.addEventListener('change', CALC[k]);
+    CALC[k]();
+  });
+})();</script>
+<script>
+(function () {
+  var cards = [].slice.call(document.querySelectorAll('.gl-card'));
+  var box = document.getElementById('glQ'), cnt = document.getElementById('glN');
+  var empty = document.getElementById('glNone'), chips = document.getElementById('glChips');
+  var group = 'all';
+  /* The haystack is the term, the one-line answer, the body AND the related terms - the Browse lesson: a reader
+     who types what a thing DOES must find the page that does it, not only the one named after it. */
+  cards.forEach(function (c) { c.__h = (c.getAttribute('data-k') || '').toLowerCase(); });
+  var STOP = { the: 1, a: 1, an: 1, of: 1, to: 1, is: 1, in: 1, on: 1, for: 1, and: 1, or: 1, my: 1, your: 1, what: 1, whats: 1, how: 1, does: 1, do: 1, it: 1, i: 1 };
+  function tokens(q) { return q.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean); }
+  function hits(q) {
+    var t = tokens(q); if (!t.length) return null;
+    var strict = cards.filter(function (c) { return t.every(function (w) { return c.__h.indexOf(w) >= 0; }); });
+    if (strict.length) return strict;
+    /* nothing matched every word - drop the function words and ask again, never return nothing while a real
+       word in the query still matches something */
+    var t2 = t.filter(function (w) { return !STOP[w]; });
+    if (!t2.length || t2.length === t.length) return strict;
+    return cards.filter(function (c) { return t2.every(function (w) { return c.__h.indexOf(w) >= 0; }); });
+  }
+  function apply() {
+    var q = (box.value || '').trim(), h = hits(q), n = 0;
+    cards.forEach(function (c) {
+      var okG = group === 'all' || c.getAttribute('data-g') === group;
+      var okQ = !h || h.indexOf(c) >= 0;
+      var show = okG && okQ;
+      c.hidden = !show; if (show) n++;
+    });
+    [].forEach.call(document.querySelectorAll('.gl-gh'), function (g) {
+      var k = g.getAttribute('data-g');
+      g.hidden = !document.querySelector('.gl-card[data-g="' + k + '"]:not([hidden])');
+    });
+    cnt.textContent = n === cards.length ? cards.length + ' terms' : n + ' of ' + cards.length;
+    empty.hidden = n > 0;
+    if (openCard && openCard.hidden) close();   // a card filtered off the page must not stay the open one
+    if (q) { try { window.__mpTrack && window.__mpTrack('glossary', 'find'); } catch (e) {} }
+  }
+  var t = null;
+  box.addEventListener('input', function () { clearTimeout(t); t = setTimeout(apply, 90); });
+  box.addEventListener('keydown', function (e) { if (e.key === 'Escape') { box.value = ''; apply(); } });
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-g]'); if (!b) return;
+    group = b.getAttribute('data-g');
+    [].forEach.call(chips.querySelectorAll('[data-g]'), function (x) { x.classList.toggle('on', x === b); });
+    apply();
+    try { window.__mpTrack && window.__mpTrack('glossary', 'group:' + group); } catch (e2) {}
+    try { if (window.mpHaptic) window.mpHaptic('tick'); } catch (e3) {}
+  });
+  /* ONE CARD OPEN AT A TIME, AND IT TAKES THE WHOLE ROW. That is what keeps every other card exactly the size
+     it was - the alternative, letting a card grow inside its own column, leaves its two neighbours short and the
+     row ragged, which is the thing being fixed. Opening is a click anywhere on the box that is not already
+     something (a link, a chip, a calculator field). */
+  var openCard = null;
+  function setOpen(c) {
+    if (openCard && openCard !== c) { openCard.classList.remove('open'); openCard.setAttribute('aria-expanded', 'false'); }
+    openCard = c || null;
+    if (c) { c.classList.add('open'); c.setAttribute('aria-expanded', 'true'); }
+  }
+  function close() { if (openCard) { openCard.classList.remove('open'); openCard.setAttribute('aria-expanded', 'false'); openCard = null; } }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.gl-close')) { close(); return; }
+    if (e.target.closest('a, input, select, label, .gl-tool, .gl-permalink')) return;
+    var c = e.target.closest('.gl-card'); if (!c) return;
+    if (c === openCard) { close(); return; }
+    setOpen(c);
+    try { if (window.mpHaptic) window.mpHaptic('tick'); } catch (e2) {}
+    try { window.__mpTrack && window.__mpTrack('glossary', 'open:' + c.id); } catch (e3) {}
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && openCard) { close(); return; }
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var c = e.target && e.target.classList && e.target.classList.contains('gl-card') ? e.target : null;
+    if (!c) return;
+    e.preventDefault(); if (c === openCard) close(); else setOpen(c);
+  });
+  /* a deep link must survive the filter: clear it, show the card, light it */
+  function lite() {
+    var id = (location.hash || '').slice(1); if (!id) return;
+    var c = document.getElementById(id); if (!c) return;
+    box.value = ''; group = 'all';
+    [].forEach.call(chips.querySelectorAll('[data-g]'), function (x) { x.classList.toggle('on', x.getAttribute('data-g') === 'all'); });
+    apply();
+    c.classList.add('lit'); setOpen(c); c.scrollIntoView({ block: 'center' });   // a deep link lands on the term OPEN
+    setTimeout(function () { c.classList.remove('lit'); }, 2400);
+  }
+  window.addEventListener('hashchange', lite);
+  document.addEventListener('click', function (e) {
+    var p = e.target.closest && e.target.closest('.gl-permalink'); if (!p) return;
+    var id = p.getAttribute('data-id'), u = location.origin + location.pathname + '#' + id;
+    try { navigator.clipboard.writeText(u); } catch (e2) {}
+    var o = p.textContent; p.textContent = 'copied'; setTimeout(function () { p.textContent = o; }, 1300);
+    try { window.__mpTrack && window.__mpTrack('glossary', 'copy:' + id); } catch (e3) {}
+  });
+  apply(); setTimeout(lite, 60);
+  /* The live figures are already on the page, server-rendered. This only keeps them fresh for a tab left open:
+     ONE request, and it fills the SAME slots the server filled - no second renderer to drift. */
+  function live() {
+    fetch('/api/glossary/live', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      var m = (j && j.slots) || {};
+      Object.keys(m).forEach(function (k) {
+        [].forEach.call(document.querySelectorAll('[data-gl="' + k + '"]'), function (el) { el.innerHTML = m[k]; el.hidden = false; });
+      });
+      var s = document.getElementById('glStrip');
+      if (s && j && j.strip) { s.innerHTML = j.strip; s.hidden = false; }
+    }).catch(function () {});
+  }
+  setTimeout(live, 1200);
+  setInterval(function () { if (!document.hidden) live(); }, 180000);
+})();</script>
+<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+</body>
+</html>

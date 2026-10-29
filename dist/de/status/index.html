@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de" data-es-twin="/status/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>MarginPad Status - Uptime von API, Trading Store und Liquidations-Feed</title>
+<meta name="description" content="Live-Status der MarginPad Bot API, des Paper-Trading-Stores, des Liquidations-Collectors und des Price Floor, mit 90 Tagen gemessener Uptime. Ohne Login." />
+<link rel="canonical" href="https://marginpad.io/de/status/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/status/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/status/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/status/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/status/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/status/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="MarginPad Status" />
+<meta property="og:description" content="Bot API, Trading Store, Liquidations-Feed und Price Floor: Live-Checks und 90 Tage Uptime." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/de/status/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--lime)}
+  .wrap{max-width:820px;margin:0 auto;padding:18px 18px calc(48px + env(safe-area-inset-bottom))}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+  .brand b{color:var(--lime)}
+  .hnav{display:flex;align-items:center;gap:14px}.hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.03em;margin:0 0 6px;line-height:1.05}
+  .sub{color:var(--dim);margin:0 0 18px;max-width:64ch}
+  .overall{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 14px}
+  .overall i{width:12px;height:12px;border-radius:50%;background:var(--faint);flex:none}
+  .overall.ok i{background:var(--up);box-shadow:0 0 10px var(--up)}.overall.bad i{background:var(--red);box-shadow:0 0 10px var(--red)}.overall.warn i{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .overall b{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;letter-spacing:-.01em}
+  .overall span{color:var(--dim);font:12px 'Space Mono',monospace;margin-left:auto;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:0 0 22px}
+  .c{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+  .c .k{font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px}
+  .c .k i{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none;margin-top:3px}
+  .c.ok .k i{background:var(--up)}.c.bad .k i{background:var(--red)}.c.warn .k i{background:var(--amber)}
+  .c b{display:block;font:700 20px 'Space Mono',monospace;letter-spacing:-.02em;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .c small{display:block;color:var(--dim);font-size:12px;margin-top:3px}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em;margin:26px 0 10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  h2 small{font:12px 'Space Mono',monospace;color:var(--faint);font-weight:400}
+  .bars{display:grid;grid-template-columns:repeat(90,minmax(0,1fr));gap:2px;height:34px}
+  .bars i{display:block;border-radius:2px;background:#1a2027;position:relative}
+  .bars i.ok{background:var(--up)}.bars i.part{background:var(--amber)}.bars i.bad{background:var(--red)}.bars i.none{background:#1a2027}
+  /* A day we under-sampled keeps the colour of what the checks DID say and is drawn pale, because fewer
+     checks is less evidence about the service - not evidence against it (2026-10-18). */
+  .bars i.thin{opacity:.42}
+  .bars i:hover::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1b212a;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font:11px 'Space Mono',monospace;color:var(--ink);white-space:nowrap;z-index:5}
+  .legend{display:flex;justify-content:space-between;font:11px 'Space Mono',monospace;color:var(--faint);margin-top:6px}
+  .pct{font:700 13px 'Space Mono',monospace;color:var(--ink)}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+  th{text-align:left;font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:8px 8px 8px 0;border-bottom:1px solid var(--line2)}
+  td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td.n{font-family:'Space Mono',monospace;white-space:nowrap}
+  .tag{display:inline-block;font:700 10px 'Space Mono',monospace;letter-spacing:.05em;border-radius:5px;padding:2px 7px}
+  .tag.ok{color:var(--up);background:rgba(46,189,133,.12)}.tag.bad{color:var(--red);background:rgba(255,98,88,.12)}.tag.quiet{color:var(--dim);background:#161b22}
+  .note{color:var(--dim);font-size:13px;max-width:70ch;margin-top:20px;line-height:1.55}
+  .note code{font-family:'Space Mono',monospace;font-size:12px;background:#12161c;border-radius:5px;padding:1px 5px}
+  @media(max-width:520px){.bars{height:28px}.hnav a.hide{display:none}}
+</style>
+<meta property="og:image" content="https://marginpad.io/assets/og/status.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/status.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad Status - Uptime von API, Trading Store und Liquidations-Feed","url":"https://marginpad.io/de/status/","dateModified":"2026-09-28T13:00:51.276Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a href="/de/" class="brand">MARGIN<b>PAD</b></a>
+  <nav class="hnav"><a href="/de/trading-api/">Bot API</a><a href="/de/api-docs/" class="hide">Referenz</a><a href="/de/rekt/" class="hide">Liquidationen</a></nav>
+</header>
+<h1>Systemstatus</h1>
+<p class="sub">Wovon ein Bot abhängt, alle 10 Minuten geprüft: der Paper-Trading-Store, der Liquidations-Collector und der Price Floor. Tage in UTC. Nichts hier braucht ein Login.</p>
+<div class="overall" id="overall"><i></i><b id="ovT">Prüfe…</b><span id="ovS"></span></div>
+<div class="grid" id="cards"></div>
+
+<h2>Trading Store <small id="upStore"></small></h2>
+<div class="bars" id="bStore"></div><div class="legend"><span>vor 90 Tagen</span><span id="pStore" class="pct"></span><span>heute</span></div>
+<h2>Liquidations-Collector <small id="upColl"></small></h2>
+<div class="bars" id="bColl"></div><div class="legend"><span>vor 90 Tagen</span><span id="pColl" class="pct"></span><span>heute</span></div>
+<h2>Price Floor <small id="upPx"></small></h2>
+<div class="bars" id="bPx"></div><div class="legend"><span>vor 90 Tagen</span><span id="pPx" class="pct"></span><span>heute</span></div>
+
+<h2>Liquidationsquellen <small>live vom Collector</small></h2>
+<table><thead><tr><th>Venue</th><th>Socket</th><th>Letzte Liquidation</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Wird geladen…</td></tr></tbody></table>
+
+<p class="note">Jeder Tag zeigt den Anteil der bestandenen Checks. Ein blass gezeichneter Tag ist ein Tag, an dem weniger Checks liefen, als der 10-Minuten-Takt erwartet - der Scheduler selbst hat Durchläufe verpasst - es gibt also weniger Belege für diesen Tag; fahr mit der Maus darüber, um zu sehen, wie viele liefen. Wir zeigen ihn, statt ihn zu verstecken, aber ein Tag, an dem jeder Check bestanden wurde, wird dem Service nicht angelastet, nur weil wir seltener geschaut haben. <b>Der Price Floor sind nicht die Preis-Endpunkte.</b> Er ist eine zwischengespeicherte Kopie aller Preise, die einmal pro Minute neu geschrieben wird und die ein kalter Cloudflare-Standort sofort ausliefert, statt auf die Börsen zu warten; ein fehlgeschlagener Check bedeutet, dass dieses Neuschreiben ausgeblieben ist und die Anfragen die Live-Runde bezahlen mussten - langsamer, nicht nicht verfügbar. <code>GET /api/v1/price</code> antwortet in beiden Fällen, und die eigene Latenz steht auf der API-Seite. Dünne Venues (dYdX, Bitfinex) kommen berechtigterweise stundenlang ohne Liquidation aus; ein verbundener Socket mit altem letztem Event ist ruhig, nicht kaputt. Maschinenlesbar: <code>GET /api/status</code>, externe Monitore können <code>GET /api/health</code> nutzen (200, solange der Scheduler lebt). Änderungen an der API: <a href="/api/changelog.xml">RSS</a>.</p>
+</div>
+<script>
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_statusindex = {"justNow":"justo ahora","noSamples":": sin muestras","pctChecksPassed":"% de comprobaciones superadas","checksRan":" comprobaciones realizadas","ofSamplesPassed":"% de muestras superadas","noSamplesYet":"todavía sin muestras","tradingStore":"almacén de trading","priceFeed":"precio base","allSystemsOperational":"Todos los sistemas operativos","lastPass":"última comprobación ","tradingStore2":"Almacén de trading","noAnswer":"sin respuesta","socketsConnectedUp":"sockets conectados · activo hace ","priceFeed2":"Precio base","pairsAgeOfThe":" pares · antigüedad de la copia en caché"};
+function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_statusindex[k] != null) return __esD_statusindex[k]; } catch (e) {} return en; }
+
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function ago(m){return m==null?'':m<1?__esT_statusindex("justNow",'just now'):m<60?m+' min ago':Math.round(m/60)+' h ago';}
+  function bars(el,days,field,pctEl,upEl){
+    var html='',okDays=0,seen=0,sumOk=0,sumN=0,today=new Date().toISOString().slice(0,10);
+    days.forEach(function(d){var cls='none',t=d.d+__esT_statusindex("noSamples",': no samples');
+      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var start=Date.parse(d.d+'T00:00:00Z'),end=Math.min(Date.now(),start+86400000),from=Math.max(start,d.first||start);var exp=Math.max(1,Math.floor((end-from)/600000)+1);var cov=Math.min(1,d.n/exp);cls=r>=0.995?'ok':r>=0.9?'part':'bad';if(cls==='ok')okDays++;var thin=cov<0.9;t=d.d+': '+Math.round(r*100)+__esT_statusindex("pctChecksPassed",'% of checks passed')+' ('+d[field]+'/'+d.n+(thin?' - '+d.n+'/'+exp+__esT_statusindex("checksRan",' checks ran'):'')+')';if(thin)cls+=' thin';}
+      html+='<i class="'+cls+'" data-t="'+t+'"></i>';});
+    el.innerHTML=html;
+    if(sumN){pctEl.textContent=(sumOk/sumN*100).toFixed(2)+__esT_statusindex("pctChecksPassed",'% of checks passed');upEl.textContent=seen+' day'+(seen===1?'':'s')+' measured';}else{pctEl.textContent=__esT_statusindex("noSamplesYet",'no samples yet');upEl.textContent='';}
+  }
+  function card(cls,k,v,s){return '<div class="c '+cls+'"><div class="k"><span>'+k+'</span><i></i></div><b>'+v+'</b><small>'+s+'</small></div>';}
+  fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    var n=j.now||{},st=n.store,co=n.collector,px=n.prices,cr=n.cron;
+    var bad=[],warn=[];
+    if(!cr||!cr.ok)bad.push('scheduler');if(st&&!st.ok)bad.push(__esT_statusindex("tradingStore",'trading store'));if(co&&!co.ok)bad.push('liquidation collector');if(px&&!px.ok)warn.push(__esT_statusindex("priceFeed",'price floor'));
+    var ov=$('overall');ov.className='overall '+(bad.length?'bad':warn.length?'warn':'ok');
+    $('ovT').textContent=bad.length?'Degraded: '+bad.join(', '):warn.length?'Partly degraded: '+warn.join(', '):__esT_statusindex("allSystemsOperational",'All systems operational');
+    $('ovS').textContent='checked '+new Date(j.ts).toISOString().slice(11,16)+' UTC';
+    var h='';
+    h+=card(cr&&cr.ok?'ok':'bad','Scheduler',cr&&cr.ok?'alive':'down',__esT_statusindex("lastPass",'last pass ')+ago(cr?cr.ageMin:null));
+    h+=card(st?(st.ok?'ok':'bad'):'',__esT_statusindex("tradingStore2",'Trading store'),st?(st.ok?(st.ms+' ms'):__esT_statusindex("noAnswer",'no answer')):'-',st?'round trip, sampled '+ago(st.sampledAgoMin):'');
+    h+=card(co?(co.ok?'ok':'bad'):'','Liquidation collector',co?co.connected+' / '+co.total:'-',co?__esT_statusindex("socketsConnectedUp",'sockets connected · up ')+(co.uptimeSec?Math.round(co.uptimeSec/3600)+' h':'?'):'');
+    h+=card(px?(px.ok?'ok':'warn'):'',__esT_statusindex("priceFeed2",'Price floor'),px?(px.ageSec!=null?px.ageSec+' s':'live'):'-',px?px.pairs+__esT_statusindex("pairsAgeOfThe",' pairs · age of the cached copy'):'');
+    $('cards').innerHTML=h;
+    bars($('bStore'),j.days,'store',$('pStore'),$('upStore'));
+    bars($('bColl'),j.days,'coll',$('pColl'),$('upColl'));
+    bars($('bPx'),j.days,'px',$('pPx'),$('upPx'));
+    var vs=(co&&co.venues)||[];
+    $('venues').innerHTML=vs.length?vs.map(function(v){var q=v.lastEventAgeMin;return '<tr><td>'+v.name+'</td><td><span class="tag '+(v.connected?'ok':'bad')+'">'+(v.connected?'connected':'down')+'</span></td><td class="n">'+(q==null?'<span class="tag quiet">none yet</span>':q<60?q+' min ago':Math.round(q/60)+' h ago')+'</td></tr>';}).join(''):'<tr><td colspan="3" style="color:var(--faint)">Collector unreachable</td></tr>';
+  }).catch(function(){$('ovT').textContent='Status endpoint unreachable';$('overall').className='overall bad';});
+})();
+</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+</body>
+</html>

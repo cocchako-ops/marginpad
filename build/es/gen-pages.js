@@ -10,7 +10,7 @@ const { extract, apply } = require('./lib');
 const ROOT = path.join(__dirname, '..', '..');
 const DIST = path.join(ROOT, 'dist');
 const LI = process.argv.indexOf('--lang'); const LANG = LI > 0 ? process.argv[LI + 1] : 'es'; // --lang pt: a second twin language from build/data/pt (2026-10-29)
-const LOCALE = { es: 'es_ES', pt: 'pt_BR' }[LANG] || LANG;
+const LOCALE = { es: 'es_ES', pt: 'pt_BR', de: 'de_DE' }[LANG] || LANG;
 const CAT = path.join(ROOT, 'build', 'data', LANG, 'catalog.json');
 // An allowlist (build/data/<lang>/pages.txt) restricts a pass-1 language to the pages it was seeded with - a page that shares
 // 60% of its strings with a listed one (coin/bnb beside coin/btc) must not ship as a half-English twin (2026-10-29).
@@ -19,7 +19,7 @@ const ORIGIN = 'https://marginpad.io';
 const LANG_DIR = /^(es|pt|fr|de|ru|tr|zh|ja|ko|ar|id|nl|sv|no|da|fi)$/;
 const SKIP_DIRS = new Set(['assets', 'demo-home', 'i18n', 'sdk', 'og', 'img', 'fonts', 'widget']);
 const SKIP_PAGES = new Set(['dolar-cripto/index.html', 'bitcoin-hoje/index.html', 'simulador-trading-cripto-argentina/index.html',
-  'simulador-trading-cripto-brasil/index.html', 'app.html' /* → app-es.html, handled apart */, 'app-es.html', 'app-pt.html' /* our own output */]);
+  'simulador-trading-cripto-brasil/index.html', 'app.html' /* → app-es.html, handled apart */, 'app-es.html', 'app-pt.html', 'app-de.html' /* our own output */]);
 const NOINDEX_OK = true; // a noindex English page gets a noindex Spanish twin (same meta) - nothing to decide here
 const TOOL_ROUTES = ['/paper-trade', '/charts', '/calculators', '/screener', '/heatmap', '/swap'];
 const MIN_COVER = 0.6; // a twin with less than 60% of its text in Spanish is not published (English fallback would read as a broken page)

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="de" data-es-twin="/ai-indicators/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Die 5 MarginPad-KI-Indikatoren erklärt - echte Big Liquidations und vier Modelle</title>
+<meta name="description" content="Was jeder MarginPad-Premium-Indikator misst, was er im Chart zeichnet und wie du ihn liest, bevor du eine gehebelte Position eröffnest. Auf unseren eigenen Liquidationsdaten gebaut; jeder Pfeil bewertet seine eigene Trefferquote." />
+<link rel="canonical" href="https://marginpad.io/de/ai-indicators/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/ai-indicators/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/ai-indicators/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Die 5 MarginPad-KI-Indikatoren, erklärt" />
+<meta property="og:description" content="Big Liquidations (24h), Cascade Radar, Liquidation Magnet, Market Brain und Market Memory: was jeder misst und wie du ihn vor einer Position liest." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/de/ai-indicators/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;--violet:#b18cff;--cyan:#3fd8e6;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;}
+  a{color:var(--lime);}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 18px calc(56px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,6vw,50px);line-height:1.02;letter-spacing:-.035em;margin:12px 0 12px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:16px;margin:0 0 18px;max-width:62ch;}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0 34px;}
+  .fact{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:13px 14px;}
+  .fact b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1.05;}
+  .fact span{font-size:12px;color:var(--faint);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 30px;}
+  .toc a{font:700 12px 'Space Mono',monospace;color:var(--ink);text-decoration:none;border:1px solid var(--line2);border-radius:99px;padding:8px 13px;background:#0d1014;}
+  .toc a:hover{border-color:var(--lime);color:var(--lime);}
+  .ind{border:1px solid var(--line2);border-radius:20px;padding:24px;margin:0 0 20px;background:linear-gradient(180deg,var(--panel),#0c0f13);position:relative;overflow:hidden;scroll-margin-top:80px;}
+  .ind::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--ac,var(--lime));}
+  .ind-h{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .ind h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(23px,3.4vw,30px);letter-spacing:-.03em;margin:0;line-height:1.1;}
+  .ind h2 small{display:block;font:700 11px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac,var(--lime));margin-bottom:6px;}
+  .q{font-size:17px;font-weight:700;color:#fff;margin:14px 0 4px;}
+  .q em{font-style:normal;color:var(--ac,var(--lime));}
+  .ind p{margin:0 0 10px;color:var(--dim);font-size:14.5px;}
+  .ind p b,.ind li b{color:#fff;}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;margin-top:14px;align-items:start;}
+  @media(max-width:700px){.cols{grid-template-columns:1fr;}}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  .viz{background:#0a0d11;border:1px solid var(--line);border-radius:14px;padding:12px 12px 8px;}
+  .viz svg{width:100%;height:auto;display:block;}
+  .viz .cap{font-size:11.5px;color:var(--faint);margin:8px 2px 2px;line-height:1.45;}
+  .read{background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22);border-radius:14px;padding:14px 16px;margin-top:14px;}
+  .read .lbl{color:var(--lime);}
+  .read ul{margin:0;padding-left:18px;}
+  .read li{margin:0 0 7px;font-size:14px;color:var(--ink);}
+  .leg{margin-top:12px;font:600 12.5px 'Space Mono',monospace;color:#c7ccd4;background:#0a0d11;border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;line-height:1.5;overflow-wrap:anywhere;}
+  .leg i{font-style:normal;color:var(--faint);display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .lim{margin-top:12px;font-size:13px;color:var(--faint);}
+  .lim b{color:var(--dim);}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3vw,27px);letter-spacing:-.025em;margin:34px 0 10px;}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0 6px;}
+  .step{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:14px;position:relative;}
+  .step i{font:800 11px 'Space Mono',monospace;color:#0a0b0d;background:var(--lime);border-radius:6px;padding:2px 7px;font-style:normal;}
+  .step b{display:block;margin:8px 0 4px;color:#fff;}
+  .step span{font-size:12.5px;color:var(--dim);}
+  .hon{border:1px solid var(--line2);border-radius:16px;padding:18px 20px;background:#0d1014;margin-top:14px;}
+  .hon p{margin:0 0 8px;color:var(--dim);font-size:14px;}
+  .chip{display:inline-block;font:700 11.5px 'Space Mono',monospace;border-radius:7px;padding:3px 8px;margin-right:6px;}
+  .chip.g{color:var(--up);background:rgba(46,189,133,.14);} .chip.r{color:var(--red);background:rgba(255,98,88,.14);} .chip.n{color:#8fa3c4;background:rgba(143,163,196,.14);}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:8px;background:#0d1014;}
+  .faq summary{cursor:pointer;font-weight:700;padding:13px 0;color:#fff;}
+  .faq p{margin:0 0 14px;color:var(--dim);font-size:14px;}
+  .cta{margin:34px 0 10px;border:1px solid rgba(194,246,74,.3);border-radius:20px;padding:26px;text-align:center;background:linear-gradient(180deg,rgba(194,246,74,.07),transparent);}
+  .cta h3{margin:0 0 8px;}
+  .cta p{color:var(--dim);margin:0 0 16px;}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#0d1014;}
+  .btn.p{background:var(--lime);color:#0a0b0d;border-color:var(--lime);}
+  footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 0;border-top:1px solid var(--line);margin-top:30px;}
+  footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
+</style>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Die 5 MarginPad-KI-Indikatoren, erklärt","description":"Was jeder MarginPad-Premium-Indikator misst, was er im Chart zeichnet und wie du ihn liest, bevor du eine gehebelte Position eröffnest.","url":"https://marginpad.io/de/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-10-13","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"},{"@type":"Thing","name":"Big Liquidations (24h)"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Sind die MarginPad-KI-Indikatoren ein Kauf- oder Verkaufssignal?","acceptedAnswer":{"@type":"Answer","text":"Nein. Jeder beantwortet eine Frage, die du dir vor einer Position stellen solltest: wie fragil der Markt ist, wohin der Preis gezogen wird, wohin die Evidenz neigt und was passierte, als es früher so aussah. Pfeile erscheinen nur an Extremen, und jeder Pfeil-Indikator zeigt seine eigene Trefferquote auf dem geladenen Chart, damit du siehst, ob er bei diesem Symbol und Zeitrahmen einen Vorteil hat."}},{"@type":"Question","name":"Auf welchen Daten basieren sie?","acceptedAnswer":{"@type":"Answer","text":"MarginPads eigener Liquidations-Feed (acht Exchanges, intern erfasst), ein Hebelleiter-Modell dafür, wo Positionen liquidiert werden (dasselbe Modell wie hinter der Liquidations-Heatmap), Funding-Historie und die Long/Short-Positionierung der Masse, dazu Preis und Volumen des Charts selbst. Nichts davon stammt von einem Drittanbieter für Indikatoren."}},{"@type":"Question","name":"Was unterscheidet diese von anderen Liquidationsindikatoren?","acceptedAnswer":{"@type":"Answer","text":"Einer der fünf ist überhaupt kein Modell. Big Liquidations (24h) markiert Liquidationen, die wirklich passiert sind, jeweils auf dem exakten Preis und der Kerze, auf der sie gedruckt wurden, aus MarginPads eigenem Feed über acht Exchanges. Das gibt es nirgendwo sonst, weil die Skriptsprachen anderer Chart-Seiten kein Orderbuch und keinen Liquidations-Feed erreichen können - jedes dort veröffentlichte Liquidationsskript wird aus Volumen- und Open-Interest-Spitzen abgeleitet. Die anderen vier sind Modelle, aufgebaut auf unseren eigenen Liquidationsdaten, und jedes bewertet seine eigene Live-Trefferquote auf dem Chart, auf dem du gerade bist."}},{"@type":"Question","name":"Brauche ich Premium, um sie zu nutzen?","acceptedAnswer":{"@type":"Answer","text":"Ja. Die fünf Indikatoren sind Teil von MarginPad Premium ($11.99 im Monat) im Multi-Chart-Workspace unter marginpad.io/charts und in den mobilen Charts. Jeder andere Indikator im Chart ist kostenlos."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Start","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"KI-Indikatoren","item":"https://marginpad.io/de/ai-indicators/"}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/de/">Margin<b>Pad</b></a>
+    <nav class="hnav">
+      <a href="/de/charts">Charts</a> <a href="/de/premium/">Premium</a>
+      <button class="hauth" type="button" data-auth-open>Anmelden</button>
+    </nav>
+  </header>
+
+  <span class="eyebrow"><i></i>MarginPad Premium</span>
+  <h1>Die 5 KI-Indikatoren, <em>erklärt</em></h1>
+  <p class="sub">Sechs Messwerte auf Daten, die nur MarginPad hat, zwei davon gemessen statt modelliert. Jeder beantwortet eine Frage, die du dir vor einer gehebelten Position stellen solltest, und jeder wird hier so erklärt, wie es von Anfang an hätte sein sollen: was er misst, was er zeichnet und was du mit der Zahl anfängst.</p>
+
+  <div class="facts">
+    <div class="fact"><b>Unsere Daten</b><span>Eigener Liquidations-Feed über acht Exchanges, eigenes Hebelleiter-Modell, Funding und Positionierung der Masse</span></div>
+    <div class="fact"><b>Selbstbewertet</b><span>Jeder Pfeil wird mit 1.5x ATR Ziel vs. Stop auf dem geladenen Chart bewertet; die Trefferquote steht in der Legende</span></div>
+    <div class="fact"><b>Jedes Symbol, jeder Zeitrahmen</b><span>Berechnet in deinem Browser aus den geladenen Kerzen, daher funktionieren sie bei jedem Paar, das der Chart laden kann</span></div>
+    <div class="fact"><b>Premium</b><span>$11.99 im Monat, auf /charts und den mobilen Charts</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Auf dieser Seite">
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">Der Trefferquoten-Chip</a><a href="#workflow">Welchen zuerst öffnen</a>
+  </nav>
+
+  <section class="ind" id="cascade" style="--ac:#ffb020">
+    <div class="ind-h"><h2><small>1 · Fragilität</small>Cascade Radar</h2></div>
+    <p class="q">Wie <em>fragil</em> ist der Markt gerade?</p>
+    <p>Eine Liquidationskaskade ist eine Kette: Eine erzwungene Schließung schiebt den Preis in den nächsten Stop, der die nächste Schließung erzwingt. Ob diese Kette starten kann, hängt von zwei Dingen ab: wie viel gehebelte Position nah am aktuellen Preis sitzt und wie viel Volumen der Markt zuletzt absorbiert hat. Cascade Radar misst beides.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Was er misst</p>
+        <p>Bei jedem Schlusskurs öffnet er eine Leiter hypothetischer Positionen mit <b>5x, 10x, 25x, 50x und 100x</b>, gewichtet nach dem gehandelten Wert dieser Kerze, und legt ihre Liquidationspreise darüber und darunter. Handelt der Preis durch ein Level, ist es abgeräumt. Übrig bleibt eine Live-Karte des <b>Liquidations-Treibstoffs</b>; der Radar summiert den Treibstoff innerhalb von 5% um den Preis (näher zählt mehr), teilt ihn durch den durchschnittlichen gehandelten Wert der letzten 20 Kerzen und reiht ihn gegen die letzten 200 Kerzen ein. Das Ergebnis ist ein <b>Score von 0-100</b>: 70 ist fragil, 90 heißt, ein Stoß kann die Kette auslösen.</p>
+        <p class="lbl">Was du siehst</p>
+        <p>Ein 0-100-Panel unter den Kerzen mit einer Linie bei 90. Die Legende zeigt den Score, ein Wort dafür (calm / fragile / EXTREME) und seit September 2026 <b>auf welcher Seite der Treibstoff liegt</b>. Ein <b>CASC</b>-Pfeil erscheint nur bei einem Score ab 90 und klar einseitigem Treibstoff: rot über der Kerze, wenn er unter dem Preis liegt, grün unter der Kerze, wenn er darüber liegt.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Cascade Radar panel: a 0-100 fragility line crossing the 90 threshold, with the fuel sitting below price">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="34" x2="306" y2="34" stroke="rgba(255,215,90,.45)" stroke-dasharray="4 4"/><text x="16" y="29" fill="#8b95a1" font-size="9" font-family="Space Mono">90</text>
+          <polyline fill="none" stroke="#ffb020" stroke-width="2" points="14,118 40,104 62,110 84,92 106,96 128,78 150,84 172,66 194,58 216,44 238,30 258,22 280,28 306,24"/>
+          <circle cx="306" cy="24" r="3.5" fill="#ffb020"/>
+          <text x="196" y="130" fill="#ffb020" font-size="11" font-family="Space Mono" font-weight="700">Cascade 93/100</text>
+          <text x="196" y="143" fill="#8b95a1" font-size="9.5" font-family="Space Mono">fuel BELOW price (long liqs)</text>
+          <path d="M230 12 l8 0 l-4 6 z" fill="#ff6258"/><text x="242" y="18" fill="#ff6258" font-size="9" font-family="Space Mono" font-weight="700">CASC</text>
+        </svg>
+        <div class="cap">Extrem und einseitig: Der Treibstoff liegt unter dem Preis, daher zeigt der Pfeil nach unten. Ein Long hat hier eine Kette von Liquidationen unter sich.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In einfachen Worten, bevor du klickst</p><ul>
+      <li><b>Die Linie:</b> unter 50 = ruhig, nichts zu tun. Über 70 steigend = fragil, ein Stoß kann eine Kette erzwungener Schließungen auslösen. Über 90 = extrem.</li>
+      <li><b>Vor einem Long:</b> Linie über 70 und die Legende sagt, Treibstoff <b>unten</b> = du würdest oben auf einer Falltür kaufen. Warte auf den Flush oder nimm halbe Größe mit weiterem Stop. Treibstoff <b>oben</b> = ein Squeeze liefe zu deinen Gunsten.</li>
+      <li><b>Vor einem Short:</b> das Spiegelbild. Treibstoff darunter ist deine Zielzone; Treibstoff darüber und 70+ heißt, du stehst auf der Falltür.</li>
+      <li><b>Der Pfeil:</b> rotes CASC über einer Kerze = die Kette ist nach unten gespannt; grünes CASC unter einer Kerze = nach oben gespannt.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel-Legendenzeile</i>Cascade 93/100 — EXTREME Fragilität · Treibstoff UNTER dem Preis (Long-Liqs): ein Dip kann durchlaufen<br>CASC 61% (11W/7L)</div>
+    <p class="lim"><b>Grenzen.</b> Die Leiter ist ein Modell dafür, wo Positionen liquidiert <em>würden</em>, kein Feed offener Orders. Sie sagt, wie fragil der Markt ist, nicht wann der Stoß kommt.</p>
+  </section>
+
+  <section class="ind" id="magnet" style="--ac:#2ebd85">
+    <div class="ind-h"><h2><small>2 · Ziele</small>Liquidation Magnet</h2></div>
+    <p class="q">Wohin wird der Preis als Nächstes <em>gezogen</em>?</p>
+    <p>Der Preis besucht oft große Liquidationspools, bevor er dreht: Im Pool warten erzwungene Orders, und erzwungene Orders bewegen einen Markt, den sonst niemand bewegen will. Der Magnet findet den dominanten Pool auf jeder Seite und sagt, welcher stärker zieht.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Was er misst</p>
+        <p>Dieselbe Hebelleiter wie beim Cascade Radar, gelesen als Liste von Pools: Preislevel, Größe in Dollar und ob es Long-Liquidationen (unter dem Preis) oder Short-Liquidationen (darüber) sind. Der <b>Sog</b> jedes Pools ist seine Größe mal seine Nähe; Pools jenseits von 9% werden ignoriert. Der stärkste Sog darüber und der stärkste darunter sind die zwei Magnete, und der größere von beiden ist die <b>Seite, die der Preis wahrscheinlicher zuerst besucht</b>.</p>
+        <p class="lbl">Was du siehst</p>
+        <p>Zwei Preislinien auf den Kerzen: <b>rot</b> für den Short-Liquidationspool darüber, <b>grün</b> für den Long-Liquidationspool darunter, jeweils mit Größe beschriftet. Die <b>kräftige</b> Linie ist der stärkere Magnet, die dünn gestrichelte der schwächere. Die Legende zeigt beide Pools mit ihrem Abstand zum Preis.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Liquidation Magnet: a bold green pool line below price and a thin red pool line above">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <g stroke-width="1.5">
+            <line x1="40" y1="70" x2="40" y2="96" stroke="#2ebd85"/><rect x="36" y="76" width="8" height="14" fill="#2ebd85"/>
+            <line x1="62" y1="60" x2="62" y2="88" stroke="#ff6258"/><rect x="58" y="64" width="8" height="18" fill="#ff6258"/>
+            <line x1="84" y1="66" x2="84" y2="92" stroke="#2ebd85"/><rect x="80" y="70" width="8" height="16" fill="#2ebd85"/>
+            <line x1="106" y1="54" x2="106" y2="80" stroke="#2ebd85"/><rect x="102" y="58" width="8" height="18" fill="#2ebd85"/>
+            <line x1="128" y1="50" x2="128" y2="78" stroke="#ff6258"/><rect x="124" y="56" width="8" height="16" fill="#ff6258"/>
+            <line x1="150" y1="58" x2="150" y2="86" stroke="#ff6258"/><rect x="146" y="62" width="8" height="18" fill="#ff6258"/>
+            <line x1="172" y1="64" x2="172" y2="90" stroke="#2ebd85"/><rect x="168" y="70" width="8" height="14" fill="#2ebd85"/>
+            <line x1="194" y1="60" x2="194" y2="84" stroke="#2ebd85"/><rect x="190" y="64" width="8" height="14" fill="#2ebd85"/>
+          </g>
+          <line x1="14" y1="28" x2="306" y2="28" stroke="rgba(255,98,88,.6)" stroke-dasharray="5 4"/><text x="212" y="24" fill="#ff6258" font-size="9.5" font-family="Space Mono">SHORT $18.2M · +2.4%</text>
+          <line x1="14" y1="118" x2="306" y2="118" stroke="#2ebd85" stroke-width="2.4"/><text x="196" y="133" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">LONG $41.6M · −1.8%  ← pulled DOWN</text>
+          <line x1="14" y1="74" x2="306" y2="74" stroke="rgba(255,255,255,.25)" stroke-dasharray="2 3"/><text x="16" y="70" fill="#8b95a1" font-size="9" font-family="Space Mono">price</text>
+        </svg>
+        <div class="cap">Der größere Pool darunter ist der kräftige Magnet: Der wahrscheinlichere nächste Besuch liegt 1.8% tiefer. Der Stop eines Longs gehört dahinter, nicht nur knapp darüber.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In einfachen Worten, bevor du klickst</p><ul>
+      <li><b>Die Linien:</b> rot oben = wo Shorts liquidiert werden, grün unten = wo Longs liquidiert werden. Die kräftige ist der stärkere Sog und der wahrscheinlichere nächste Besuch.</li>
+      <li><b>Vor einem Long:</b> Kräftige Linie über dir = dein erstes Ziel, nimm dort einen Teil des Gewinns mit. Kräftige Linie unter dir = erwarte zuerst einen Dip dorthin; setz deinen Stop <b>unter</b> diese Linie, nicht nur knapp darüber, sonst ist deine die Order, auf die Jagd gemacht wird.</li>
+      <li><b>Vor einem Short:</b> das Spiegelbild. Eine kräftige grüne Linie darunter ist das Ziel; eine kräftige rote Linie darüber heißt, der Stop bleibt dahinter.</li>
+      <li><b>Keine Linien innerhalb von 9%:</b> Beide Seiten wurden schon geleert. Nichts zieht; erwarte einen langsameren Markt.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel-Legendenzeile</i>Magnet: pulled DOWN · above 76,410 (+2.4%, $18.2M short liqs) · below 73,220 (−1.8%, $41.6M long liqs)</div>
+    <p class="lim"><b>Grenzen.</b> Ein Magnet ist eine Wahrscheinlichkeit, kein Fahrplan. Große News schieben den Preis durch beide Pools, ohne an einem anzuhalten.</p>
+  </section>
+
+  <section class="ind" id="brain" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>3 · Adaptiv</small>Market Brain</h2></div>
+    <p class="q">Wohin <em>neigt</em> sich die Evidenz, und was treibt sie?</p>
+    <p>Die meisten "KI"-Indikatoren sind eine Formel mit einem Namen. Market Brain besteht aus acht Messwerten und einem Lernschritt: Er misst, welcher der acht <b>bei diesem Coin und in diesem Zeitrahmen</b> tatsächlich die nächsten sechs Kerzen vorhergesagt hat, und gewichtet sie entsprechend. Ein Faktor, der hier nicht funktioniert, gewichtet sich selbst auf null.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Was er misst</p>
+        <p>Die acht Faktoren sind <b>Trend</b> (EMA 21 vs. 50 in ATR-Einheiten), <b>Momentum</b> (MACD-Histogramm und RSI), <b>Volumen</b> (diese Kerze gegen die letzten 20, mit Richtungsvorzeichen), <b>Fragilität</b> (Seite und Score des Cascade Radar), <b>echter Liquidationsfluss</b> (Long- vs. Short-Liquidationen pro Kerze aus unserem Collector, skaliert danach, wie ungewöhnlich die Kerze war), <b>Funding</b> (die aktuelle Rate gegen ihren Median, konträr gelesen), <b>Positionierung der Masse</b> (Long/Short-Account-Verhältnis, konträr gelesen) und <b>Struktur</b> (wo der Schlusskurs in der 55-Kerzen-Range liegt). Alle 10 Kerzen lernt das Modell für jeden Faktor ein Gewicht neu aus den letzten 280 Kerzen - der Korrelation zwischen dem Faktor und dem, was der Preis über die nächsten sechs Kerzen tat - und nie aus Kerzen, die es noch nicht gesehen hat. Die gewichtete Mischung ist der Score, <b>-100 bis +100</b>.</p>
+        <p class="lbl">Was du siehst</p>
+        <p>Ein Panel mit dem Score und Bändern bei +55 und -55. Ein <b>BRAIN</b>-Pfeil erscheint, wenn der Score zum ersten Mal ein Band kreuzt, und wird neu scharf, sobald er unter 25 zurückfällt. Pfeile werden innerhalb von 2.5 Stunden um ein Makro-Event mit hoher Wirkung (FOMC, CPI) absichtlich zurückgehalten. Die Legende zeigt den Score, ein Wort dafür, die <b>zwei Faktoren, die ihn gerade treiben</b>, und den Trefferquoten-Chip.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Brain panel: a score line crossing the +55 band, with the two driving factors named">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="40" x2="306" y2="40" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="36" fill="#8b95a1" font-size="9" font-family="Space Mono">+55</text>
+          <line x1="14" y1="78" x2="306" y2="78" stroke="rgba(120,130,140,.4)" stroke-dasharray="2 3"/><text x="16" y="74" fill="#8b95a1" font-size="9" font-family="Space Mono">0</text>
+          <line x1="14" y1="116" x2="306" y2="116" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="112" fill="#8b95a1" font-size="9" font-family="Space Mono">−55</text>
+          <polyline fill="none" stroke="#c2f64a" stroke-width="2" points="14,96 36,102 58,90 80,84 102,70 124,76 146,62 168,52 190,44 212,34 234,30 256,36 278,26 306,30"/>
+          <path d="M208 22 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="220" y="22" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">BRAIN</text>
+          <text x="150" y="132" fill="#c2f64a" font-size="10.5" font-family="Space Mono" font-weight="700">Brain +62 · strong bullish lean</text>
+          <text x="150" y="144" fill="#8b95a1" font-size="9.5" font-family="Space Mono">driven by: liq flow + funding</text>
+        </svg>
+        <div class="cap">Ein Kreuzen von +55, getrieben von erzwungenem Short-Eindecken und von Shorts gezahltem Funding: Die Masse steht auf der falschen Seite und zahlt dafür.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In einfachen Worten, bevor du klickst</p><ul>
+      <li><b>Die Linie:</b> steigend = die Evidenz neigt sich bullisch, fallend = bärisch. Innerhalb der Bänder +55 / -55 hat das Modell keine starke Meinung.</li>
+      <li><b>Vor einem Long:</b> Du willst die Linie über +55 oder steigend durch +55. Unter -55 handelst du gegen alles, was das Modell hier gelernt hat - lass es.</li>
+      <li><b>Vor einem Short:</b> das Spiegelbild, unter -55. Innerhalb der Bänder: kein Vorteil, kleiner werden oder stattdessen die Magnet-Levels handeln.</li>
+      <li><b>"Driven by":</b> "funding + crowd" = die Masse sitzt in der Falle und zahlt fürs Dabeibleiben (ein Squeeze-Setup); "liq flow" = erzwungenes Verkaufen oder Eindecken läuft schon; "trend + momentum" = schlichte Fortsetzung.</li>
+      <li><b>Der Chip:</b> Die Prozentzahl sagt, wie oft seine Pfeile auf genau diesem Chart funktioniert haben. Unter 50% = kein Vorteil bei diesem Coin und Zeitrahmen; ignoriere dort seine Pfeile, egal was die Linie macht.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel-Legendenzeilen</i>Brain +62 — strong bullish lean<br>BRAIN driven by: liq flow + funding<br>BRAIN 58% (14W/10L)</div>
+    <p class="lim"><b>Grenzen.</b> Lernen aus 280 Kerzen heißt, die Gewichte hinken einem Regimewechsel um einige Dutzend Kerzen hinterher. Funding- und Crowd-Faktoren brauchen die Veröffentlichung durch die Börse für das Paar; wo sie fehlt, lesen diese zwei Faktoren null, und das Modell sagt es, indem es sie nicht nennt.</p>
+  </section>
+
+  <section class="ind" id="memory" style="--ac:#b18cff">
+    <div class="ind-h"><h2><small>4 · Prognose</small>Market Memory</h2></div>
+    <p class="q">Als es früher so aussah, <em>was passierte danach</em>?</p>
+    <p>Market Memory modelliert den Markt nicht. Er schlägt ihn nach. Mit denselben acht Faktoren wie Market Brain findet er die vergangenen Kerzen, deren Gesamtzustand dem jetzigen am meisten ähnelt, und berichtet, was der Preis danach tat. Es ist das Gedächtnis des Marktes: eine Basisrate, ehrlich beschriftet.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Was er misst</p>
+        <p>Jede Kerze ist ein Punkt in einem Raum mit acht Faktoren. Für die aktuelle Kerze findet er die <b>25 nächsten vergangenen Kerzen</b> - nur Kerzen, die alt genug sind, um ein bekanntes Sechs-Kerzen-Ergebnis zu haben, damit nie etwas aus der Zukunft gelesen wird - und mittelt ihre Folgebewegung in ATR-Einheiten. Er zählt außerdem, wie viele der 25 gestiegen sind. Das Forecast-Panel zeigt diesen Durchschnitt über die Zeit; der aktuelle wird auf die Preisachse projiziert.</p>
+        <p class="lbl">Was du siehst</p>
+        <p>Ein Forecast-Panel, eine gestrichelte <b>MEM</b>-Linie auf dem projizierten Level (grün über dem Preis, rot darunter) und eine Legendenzeile mit Analogiezahl, Aufwärtsquote und projizierter Bewegung. Ein <b>MEMO</b>-Pfeil erscheint nur, wenn die Analogien übereinstimmen: eine erwartete Bewegung von mindestens 0.85 ATR, wobei 62% oder mehr auf derselben Seite liegen.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Memory: price with a dashed projected level above it and the analog readout">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <polyline fill="none" stroke="#c7ccd4" stroke-width="1.6" points="14,104 40,98 66,108 92,90 118,94 144,80 170,86 196,72 222,78 238,70"/>
+          <circle cx="238" cy="70" r="3" fill="#fff"/>
+          <line x1="238" y1="70" x2="306" y2="46" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="14" y1="46" x2="306" y2="46" stroke="rgba(46,189,133,.7)" stroke-dasharray="5 4"/><text x="252" y="41" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">MEM</text>
+          <path d="M230 90 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="242" y="90" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">MEMO</text>
+          <text x="16" y="128" fill="#b18cff" font-size="10.5" font-family="Space Mono" font-weight="700">Memory: 25 analogs · 72% up</text>
+          <text x="16" y="141" fill="#8b95a1" font-size="9.5" font-family="Space Mono">proj +1.4% / 6 bars</text>
+        </svg>
+        <div class="cap">Fünfundzwanzig ähnliche Momente, achtzehn davon stiegen, im Schnitt +1.4% über die nächsten sechs Kerzen. Das ist ein Ziel und ein Horizont, kein Versprechen.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In einfachen Worten, bevor du klickst</p><ul>
+      <li><b>Die Anzeige:</b> "25 analogs · 72% up · proj +1.4%" = Die letzten 25 Male, als der Markt so aussah, stiegen 72% davon, um etwa 1.4% über die nächsten sechs Kerzen. Eine Basisrate, keine Prognose.</li>
+      <li><b>Vor einem Long:</b> 65% hoch oder mehr UND eine projizierte Bewegung, die größer ist als deine Gebühren und dein Stop = go, mit der gestrichelten MEM-Linie als realistischem Ziel und sechs Kerzen als Horizont (sechs Stunden im 1h-Chart).</li>
+      <li><b>Vor einem Short:</b> das Spiegelbild, 35% oben oder weniger.</li>
+      <li><b>45-55%:</b> Die Geschichte lief von hier in beide Richtungen - ein Münzwurf. Bleib draußen oder handle statt einer Richtung die Magnet-Levels. 72% hoch bei einer Bewegung von +0.3% ist Drift, kein Ausbruch: Lies die Größe der Bewegung, nicht nur den Prozentwert.</li>
+      <li><b>Der Pfeil:</b> MEMO erscheint nur, wenn die Analogien übereinstimmen; es ist die stärkste Form dieser Anzeige.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel-Legendenzeile</i>Memory: 25 analogs · 72% up · proj +1.40% / 6 bars</div>
+    <p class="lim"><b>Grenzen.</b> Das Gedächtnis ist nur so lang wie die geladene Historie (einige hundert bis einige tausend Kerzen). Bei einem Coin, der letzten Monat gelistet wurde, gibt es wenig zu erinnern, und er braucht 160 Kerzen, bevor er etwas zeichnet.</p>
+  </section>
+
+  <section class="ind" id="whaleliq" style="--ac:#ff6258">
+    <div class="ind-h"><h2><small>5 &middot; Eine Aufzeichnung, keine Prognose</small>Big Liquidations (24h)</h2></div>
+    <p class="q">Wo wurde in den letzten 24 Stunden tatsächlich Hebel zwangsgeschlossen - und <em>was passiert</em>, wenn der Preis dorthin zurückkehrt?</p>
+    <p>Dieser hier ist kein Modell und kann es nicht sein. Jede Markierung ist eine Liquidation, die bereits passiert ist: Unser eigener Collector erfasst sie über acht Exchanges, so wie die Börsen sie veröffentlichen, und der Indikator setzt jede große auf den Preis, auf dem sie gedruckt wurde, und auf die Kerze, auf der sie gedruckt wurde. Nichts wird nach vorn projiziert. Es ist die Aufzeichnung, wo Hebel gestorben ist, gelesen aus demselben Feed, der die Liquidations-Heatmap und die Rekt-Seite antreibt.</p>
+    <div class="box"><i>Was du siehst</i><ul>
+      <li><b>Kreise auf den Kerzen.</b> <b style="color:#ff6258">Rot</b> = ein LONG wurde dort zwangsverkauft. <b style="color:#2ebd85">Grün</b> = ein SHORT wurde dort zwangsgekauft. Je größer der Kreis, desto größer die geschlossene Position.</li>
+      <li><b>Tippe oder klicke einen Kreis</b> für eine Karte mit Größe, Seite in Worten, der Börse, auf der es passierte, und wie weit dieser Preis vom aktuellen Preis entfernt ist.</li>
+      <li><b>Die Legende</b> nennt die im Fenster liquidierte Summe, den größten Einzeltreffer und wie viele Markierungen im Chart sind.</li>
+    </ul></div>
+    <div class="box"><i>Vor einem Trade</i><ul>
+      <li><b>Vor einem Long:</b> Kommt der Preis zurück RUNTER in ein dickes Band roter Kreise, trifft er dort ein, wo schon einmal erzwungen verkauft wurde. Entweder wird es absorbiert und das ist dein Level, oder es bricht und dasselbe passiert noch einmal. Grüne Kreise über dir markieren, wo Shorts rausgequetscht wurden, ein Move zurück nach oben durch sie hat also Treibstoff.</li>
+      <li><b>Vor einem Short:</b> das Spiegelbild. Zu shorten in ein Band grüner Kreise heißt zu shorten, wo Shorts schon einmal zwangsgeschlossen wurden, und eine Wand roter Kreise darunter zeigt, wo das Verkaufen schon erledigt ist.</li>
+      <li><b>Was du vermeiden solltest:</b> einen leeren Chart als Signal zu lesen. Keine Kreise heißt nur, dass der Markt 24 Stunden ruhig war - das ist eine Information, kein Setup.</li>
+    </ul></div>
+    <div class="leg"><i>Beispiel-Legendenzeile</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked</div>
+    <p class="lim"><b>Grenzen.</b> Er deckt die zehn Coins ab, die unser Feed erfasst - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX und LTC. Bei jedem anderen Markt lässt sich der Indikator gar nicht einschalten und sagt, dass er keine Daten hat, statt einen leeren Chart zu zeichnen, den du als ruhig lesen könntest. Das Fenster sind die letzten 24 Stunden, nichts Älteres bleibt im Chart, ein Level, das letzte Woche wichtig war, ist also nicht markiert. Und eine Börse veröffentlicht nur, was sie veröffentlichen will: Die Markierungen sind eine Untergrenze dessen, was wirklich liquidiert wurde, nie eine Gesamtsumme.</p>
+  </section>
+
+  <h3 id="honesty">Der Trefferquoten-Chip: Jeder Pfeil bewertet sich selbst</h3>
+  <div class="hon">
+    <p>Jeder Indikator kann Pfeile in die Vergangenheit zeichnen. Die Pfeil-Indikatoren von MarginPad bewerten jeden Pfeil, den sie auf dem geladenen Chart gezeichnet haben: Einstieg am Schlusskurs der Signalkerze, Ziel und Stop jeweils 1.5x den 14-Kerzen-ATR entfernt, bis zu 80 Kerzen vorwärts geprüft, und eine Kerze, die beides berührt, zählt als Verlust. Der Chip erscheint, sobald fünf Pfeile aufgelöst sind, und ist nach seiner Aussage eingefärbt:</p>
+    <p><span class="chip g">CASC 61% (11W/7L)</span> ein Vorteil auf diesem Chart &nbsp; <span class="chip n">BRAIN 50% (6W/6L)</span> ein Münzwurf &nbsp; <span class="chip r">MEMO 38% (5W/8L)</span> hier kein Vorteil - nicht nutzen</p>
+    <p>Der Chip gilt pro Symbol und pro Zeitrahmen, denn dort entscheidet sich, ob ein Vorteil existiert. Ein Indikator, der auf BTC 1h 61% erreicht und im 5m-Chart eines dünnen Altcoins 38%, sagt dir genau, wo du ihn einsetzen solltest.</p>
+  </div>
+
+  <h3 id="workflow">Welchen du zuerst öffnest</h3>
+  <p style="color:var(--dim);margin:0 0 6px">Die ersten vier sind dafür gedacht, der Reihe nach gelesen zu werden, jeder engt ein, was der vorige sagte. Der fünfte gehört nicht zu dieser Abfolge - er ist eine Aufzeichnung statt einer Prognose: die Liquidationen, die schon passiert sind, auf den Preisen und Kerzen, auf denen sie passierten.</p>
+  <div class="flow">
+    <div class="step"><i>1</i><b>Cascade Radar</b><span>Ist der Markt fragil, und auf welcher Seite? Bestimmt deine Größe und wie weit der Stop sein muss.</span></div>
+    <div class="step"><i>2</i><b>Liquidation Magnet</b><span>Wo liegen die Pools? Setzt das erste Ziel und sagt dir, wo ein Stop nicht liegen darf.</span></div>
+    <div class="step"><i>3</i><b>Market Brain</b><span>Wohin neigt sich die gelernte Evidenz, und warum? Entscheidet die Richtung oder sagt dir, dass es keine gibt.</span></div>
+    <div class="step"><i>4</i><b>Market Memory</b><span>Was passierte die letzten 25 Male? Setzt ein realistisches Ziel und einen Horizont oder warnt, dass die Geschichte in beide Richtungen lief.</span></div>
+  </div>
+
+  <h3>Fragen</h3>
+  <div class="faq">
+    <details><summary>Sind das Kauf- oder Verkaufssignale?</summary><p>Nein. Jeder beantwortet eine Frage, die du dir vor einer Position stellen solltest. Pfeile erscheinen nur an Extremen, und jeder Pfeil-Indikator zeigt seine eigene Trefferquote auf dem geladenen Chart, damit du siehst, ob er bei diesem Symbol und Zeitrahmen einen Vorteil hat.</p></details>
+    <details><summary>Auf welchen Daten basieren sie?</summary><p>MarginPads eigener Liquidations-Feed (acht Exchanges, intern erfasst), das Hebelleiter-Modell hinter der Liquidations-Heatmap, Funding-Historie und die Long/Short-Positionierung der Masse, dazu Preis und Volumen des Charts selbst. Nichts davon stammt von einem Indikator-Anbieter.</p></details>
+    <details><summary>Was unterscheidet diese von anderen Liquidationsindikatoren?</summary><p>Einer der fünf ist überhaupt kein Modell. Big Liquidations (24h) markiert Liquidationen, die <b>wirklich passiert sind</b>, jeweils auf Preis und Kerze, auf denen sie gedruckt wurden, aus unserem eigenen Feed über acht Exchanges. Kein Skript auf einer anderen Chart-Seite kann das, weil diese Skriptsprachen weder ein Orderbuch noch einen Liquidations-Feed erreichen - jeder dort veröffentlichte Liquidationsindikator wird aus Volumen- und Open-Interest-Spitzen abgeleitet. Die anderen vier sind Modelle auf unseren eigenen Liquidationsdaten, und jedes bewertet seine eigene Live-Trefferquote auf dem Chart, den du gerade ansiehst. (Bis September 2026 waren es acht, und ein sechster wurde im Oktober zurückgezogen; was wegfiel, war entweder generische technische Analyse, die auf jedem Chart verfügbar ist, oder eine Zahl, die eine engere Frage beantwortete, als Leser dachten.)</p></details>
+    <details><summary>Brauche ich Premium?</summary><p>Ja. Die fünf sind Teil von MarginPad Premium ($11.99 im Monat) im Multi-Chart-Workspace unter <a href="/de/charts">/charts</a> und in den mobilen Charts. Jeder andere Indikator im Chart ist kostenlos.</p></details>
+    <details><summary>Wo schalte ich sie ein?</summary><p>Öffne unter <a href="/de/charts">/charts</a> das Indikatoren-Menü eines Chartfensters: Die fünf stehen oben in Lime. Auf dem Handy listet das Indikatoren-Sheet des Charts dieselben fünf. Die Anzeigen erscheinen in der Legende oben links im Chart.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>Probier sie an einem Live-Chart aus</h3>
+    <p>Premium kostet $11.99 im Monat. Alles andere auf MarginPad bleibt kostenlos.</p>
+    <div class="btns"><a class="btn p" href="/de/premium/">Premium holen</a><a class="btn" href="/de/charts">Charts öffnen</a></div>
+  </div>
+
+  <footer>
+    <div><a href="/de/">Start</a> · <a href="/de/premium/">Premium</a> · <a href="/de/charts">Charts</a> · <a href="/de/liquidations/">Liquidationen</a> · <a href="/de/privacy/">Datenschutz</a></div>
+    <div style="margin-top:8px">&copy; MarginPad &middot; Nur zur Bildung, keine Finanzberatung. Die Indikatoren analysieren Daten und liegen manchmal falsch.</div>
+  </footer>
+</div>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+</body>
+</html>

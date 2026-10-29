@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="de" data-es-twin="/leverage-trading-simulator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Hebel-Trading-Simulator - bis zu 1000x üben, kostenlos | MarginPad</title>
+<meta name="description" content="Kostenloser Hebel-Trading-Simulator mit echter Liquidationsmathematik: Übe Long und Short mit 1x bis 1000x Hebel zu Live-Preisen auf Krypto, Aktien, Forex und Indizes. Keine Anmeldung, keine Einzahlung - sieh genau, wie Hebel und Liquidation funktionieren, bevor du Geld riskierst." />
+<meta name="keywords" content="leverage trading simulator, crypto leverage trading simulator, 100x leverage demo, practice leverage trading, margin trading simulator, leverage demo account, liquidation simulator" />
+<link rel="canonical" href="https://marginpad.io/de/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/leverage-trading-simulator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/de/leverage-trading-simulator/" />
+<meta property="og:title" content="Hebel-Trading-Simulator - bis zu 1000x üben, kostenlos" />
+<meta property="og:description" content="Kostenloser Hebel-Trading-Simulator mit echter Liquidationsmathematik: Übe Long und Short mit 1x bis 1000x Hebel zu Live-Preisen. Keine Anmeldung, keine Einzahlung." />
+<meta property="og:image" content="https://marginpad.io/assets/og/leverage-trading-simulator.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Hebel-Trading-Simulator - bis zu 1000x üben, kostenlos" />
+<meta name="twitter:description" content="Kostenloser Hebel-Trading-Simulator mit echter Liquidationsmathematik: Übe Long und Short mit 1x bis 1000x Hebel zu Live-Preisen. Keine Anmeldung, keine Einzahlung." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/leverage-trading-simulator.jpg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .simtop{display:block;margin:0 0 20px}
+.simtop .btn{display:block;width:100%;max-width:400px;text-align:center;padding:15px 22px;font-size:15.5px;text-decoration:none}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+  .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+  .scard{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);transition:border-color .16s,transform .16s}
+  .scard:hover{border-color:var(--line2);transform:translateY(-2px);color:var(--ink)}
+  .scard .tk{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:var(--lime)}
+  .scard .nm{font-size:12.5px;color:var(--dim);line-height:1.25}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px}
+  .step{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:20px}
+  .step .n{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--cyan);letter-spacing:.1em}
+  .step h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;margin:10px 0 7px}
+  .step p{color:var(--dim);font-size:13.5px;margin:0;line-height:1.55}
+  .prose{max-width:760px;color:var(--ink2);font-size:15.5px;line-height:1.7}
+  .prose p{margin:0 0 14px}
+  .faq{max-width:820px;margin-top:6px}
+  .qa{border-bottom:1px solid var(--line);padding:18px 0}
+  .qa:last-child{border-bottom:none}
+  .qa h3{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;margin:0 0 8px;color:var(--ink)}
+  .qa p{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+  .cmp td:first-child{color:var(--ink2)}
+  .cta-band{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:var(--r);padding:30px 26px;margin-top:40px;text-align:center;box-shadow:var(--shadow)}
+  .cta-band h2{justify-content:center;margin-top:0}
+  .lnav{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none}
+  .lnav::-webkit-scrollbar{display:none}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Hebel-Trading-Simulator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/de/leverage-trading-simulator/","description":"Kostenloser Hebel-Trading-Simulator mit echter Liquidationsmathematik: Übe Long und Short mit 1x bis 1000x Hebel zu Live-Preisen auf Krypto, Aktien, Forex und Indizes. Keine Anmeldung, keine Einzahlung.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Hebel-Trading-Simulator","item":"https://marginpad.io/de/leverage-trading-simulator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Gibt es eine kostenlose 100x-Hebel-Demo?","acceptedAnswer":{"@type":"Answer","text":"Ja. Mit MarginPad übst du mit jedem Hebel von 1x bis 1000x auf großen Krypto-Paaren (je Symbol gelten Obergrenzen, z. B. 100x-200x bei kleineren Alts), mit Live-Preisen und virtuellem Guthaben. Es ist kostenlos und öffnet ohne Anmeldung."}},{"@type":"Question","name":"Liquidiert der Simulator Positionen wirklich?","acceptedAnswer":{"@type":"Answer","text":"Ja. Positionen nutzen dieselbe Isolated-Margin-Liquidationsformel wie echte Futures-Börsen, inklusive Maintenance-Margin-Puffer. Bei 100x liquidiert dich eine Gegenbewegung von grob 1% - im Simulator genauso wie auf einem echten Konto."}},{"@type":"Question","name":"Mit welchem Hebel sollte ein Einsteiger üben?","acceptedAnswer":{"@type":"Answer","text":"Fang mit 3x-10x an. Bei 10x liegt deine Liquidation grob 10% entfernt, was Raum lässt, die Platzierung des Stop-Loss zu lernen. Hoher Hebel (50x+) ist im Simulator genau deshalb eine Erfahrung wert, weil er zeigt, wie wenig Spielraum es gibt - eine 50x-Position stirbt bei einer Bewegung von 2%."}},{"@type":"Question","name":"Sind die Preise echt?","acceptedAnswer":{"@type":"Answer","text":"Ja. Die Preise kommen live aus einem echten Börsen-Feed und dein PnL bewegt sich Tick für Tick, sodass sich das Erlebnis wie ein echtes gehebeltes Konto anfühlt - ohne Geld im Risiko."}},{"@type":"Question","name":"Kann ich Hebel auch auf Aktien und Forex üben?","acceptedAnswer":{"@type":"Answer","text":"Ja. Dasselbe Konto handelt US-Aktien, Forex-Paare, Aktienindizes und Gold als gehebelte Positionen, mit realistischen Hebelgrenzen und Gebühren je Klasse."}},{"@type":"Question","name":"Brauche ich ein Konto?","acceptedAnswer":{"@type":"Answer","text":"Nein. Der Simulator öffnet und handelt ohne Anmeldung. Ein kostenloses Konto ist optional und bringt Ranglisten, Missionen, XP und Belohnungen dazu."}},{"@type":"Question","name":"Was ist die maximale Positionsgröße?","acceptedAnswer":{"@type":"Answer","text":"Bis zu $100,000 Margin pro Position, mit Hebel bis 1000x auf Majors - groß genug, um die Positionsgröße so zu üben, wie es ein Funded-Konto verlangt."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hebel-Trading-Simulator - bis zu 1000x üben, kostenlos","url":"https://marginpad.io/de/leverage-trading-simulator/","dateModified":"2026-09-28T13:00:51.134Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/de/">MARGIN<b>PAD</b></a><nav class="tool-switch lnav"><a href="/de/paper-trade">Paper Trade</a><a href="/de/crypto-trading-simulator-no-sign-up/">Simulator ohne Anmeldung</a><a href="/de/stock-trading-simulator/">Aktien-Simulator</a><a href="/de/calculators">Rechner</a><a href="/de/tools/">Tools</a></nav><a class="home" href="/de/paper-trade">App öffnen &rarr;</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="simtop"><a class="btn" href="/de/paper-trade">Trading-Simulator öffnen &rarr;</a></div>
+    <span class="eyebrow">Kostenloser Hebel-Simulator</span>
+    <h1>Hebel-Trading-Simulator</h1>
+    <p class="sub">Übe Long und Short mit 1x bis 1000x Hebel zu Live-Preisen - mit der echten Liquidationsmathematik, nicht als Spiel. Der Simulator von MarginPad öffnet im Browser ohne Anmeldung: 130+ Krypto-Perpetual-Paare, 18 US-Aktien und 2 ETFs, Forex, Indizes und Gold, Stop-Loss und Take-Profit, bis zu $100,000 Margin pro Position und $0 Risiko.</p>
+    <div class="hero-cta">
+      <a class="btn" href="/de/paper-trade">Kostenlos üben</a> <a class="btn ghost" href="/de/calculators">Liquidationsrechner</a>
+    </div>
+    <p class="note" style="margin-top:16px">Live-Preise · echte Liquidationsmechanik · 1x-1000x · keine Anmeldung, nichts zu installieren</p>
+  </section>
+
+  <h2>Was ist ein Hebel-Trading-Simulator?</h2>
+  <div class="prose"><p>Ein Hebel-Trading-Simulator lässt dich gehebelte Long- und Short-Positionen mit virtuellem Geld zu echten Marktpreisen eröffnen. Hebel vervielfacht Gewinn und Verlust: Eine 10x-Position gewinnt oder verliert 10% deiner Margin für jedes 1%, das der Preis sich bewegt - und läuft die Bewegung weit genug gegen dich, wird die Position liquidiert und die Margin ist weg. Genau diese Mechanik vernichtet die meisten neuen Hebel-Trader, und genau sie kannst du in einem Simulator kostenlos erleben.</p><p>MarginPad simuliert es ehrlich: Der Liquidationspreis wird mit derselben Isolated-Margin-Formel berechnet, die echte Futures-Börsen nutzen, samt Maintenance-Margin-Puffer. Eine 100x-Position, die auf einem echten Konto hochgeht, geht auch hier hoch - zum selben Preis.</p></div>
+
+  <h2>Wie weit ist die Liquidation bei jedem Hebel entfernt?</h2>
+  <p class="muted">Isolated Margin, 0.5% Maintenance Margin - die ungünstige Preisbewegung, die die Position liquidiert:</p>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>Hebel</th><th>Bewegung bis zur Liquidation</th><th>Was das bedeutet</th></tr></thead>
+    <tbody>
+      <tr><td>5x</td><td class="pos">-19.9%</td><td>Übersteht normale Volatilität; Spielraum, den Trade zu managen</td></tr>
+      <tr><td>10x</td><td class="pos">-9.95%</td><td>Ein schlechter Tag kann ihn beenden; Stop-Loss dringend empfohlen</td></tr>
+      <tr><td>25x</td><td>-3.50%</td><td>Eine durchschnittliche Tagesspanne kann dich liquidieren</td></tr>
+      <tr><td>50x</td><td class="neg">-1.50%</td><td>Eine scharfe Kerze reicht</td></tr>
+      <tr><td>100x</td><td class="neg">-0.50%</td><td>Routinerauschen liquidiert dich</td></tr>
+      <tr><td>500x</td><td class="neg">-0.10%</td><td>Spread plus ein Tick-Cluster kann reichen</td></tr>
+      <tr><td>1000x</td><td class="neg">-0.05%</td><td>Praktisch ein Münzwurf, gemessen in Sekunden</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Prüfe jeden Coin und Einstiegspreis genau mit dem <a href="/de/btc-liquidation-calculator/">BTC-Liquidationsrechner</a> oder der kompletten <a href="/de/calculators">Rechner-Suite</a>.</p>
+
+  <h2>Märkte, auf denen du Hebel üben kannst</h2>
+  <div class="sgrid">
+    <a class="scard" href="/de/paper-trade?coin=BTC"><span class="tk">BTC</span><span class="nm">Bitcoin · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=ETH"><span class="tk">ETH</span><span class="nm">Ethereum · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=SOL"><span class="tk">SOL</span><span class="nm">Solana · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=XRP"><span class="tk">XRP</span><span class="nm">XRP · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=DOGE"><span class="tk">DOGE</span><span class="nm">Dogecoin · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=HYPE"><span class="tk">HYPE</span><span class="nm">Hyperliquid · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=PEPE"><span class="tk">PEPE</span><span class="nm">Pepe · bis zu 1000x</span></a> <a class="scard" href="/de/paper-trade?coin=AAPL"><span class="tk">AAPL</span><span class="nm">Apple · Aktien</span></a> <a class="scard" href="/de/paper-trade?coin=NVDA"><span class="tk">NVDA</span><span class="nm">Nvidia · Aktien</span></a> <a class="scard" href="/de/paper-trade?coin=EURUSD"><span class="tk">EURUSD</span><span class="nm">Euro · Forex</span></a> <a class="scard" href="/de/paper-trade?coin=SPX500"><span class="tk">SPX500</span><span class="nm">S&amp;P 500 · Index</span></a> <a class="scard" href="/de/paper-trade?coin=XAU"><span class="tk">XAU</span><span class="nm">Gold · Metalle</span></a>
+  </div>
+
+  <h2>So funktioniert es</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Wähle einen Markt und einen Hebel</h3><p>Öffne ein beliebiges Paar, lege deine Margin fest und schiebe den Hebel von 1x bis 1000x. Das Terminal zeigt dir deinen exakten Liquidationspreis, bevor du bestätigst.</p></div>
+    <div class="step"><div class="n">2</div><h3>Long oder Short gehen</h3><p>Ausführung zum Live-Preis. Füge Stop-Loss und Take-Profit hinzu - das Terminal zeigt, was jedes Level in Dollar und in Prozent der Margin bedeutet.</p></div>
+    <div class="step"><div class="n">3</div><h3>Überleben oder liquidiert werden</h3><p>Dein PnL bewegt sich Tick für Tick. Manage die Position, nimm Teilgewinne mit oder sieh zu, wie die Liquidation zuschlägt - und lerne die Lektion zum Preis von $0.</p></div>
+  </div>
+
+  <h2>Warum du Hebel zuerst im Simulator üben solltest</h2>
+  <div class="prose"><p>Hebel ist der häufigste Grund, warum neue Trader ihr erstes Konto verlieren. Nicht, weil sie den falschen Coin gewählt haben - sondern weil sie nie gespürt haben, wie schnell 50x gegen sie läuft, bis echtes Geld im Spiel war. In einem Simulator kannst du auf jeder Hebelstufe bewusst Positionen verbrennen und ein Gefühl dafür entwickeln, wie sich jeder Multiplikator wirklich anfühlt: wie eng der Stop sein muss, wie viel Rauschen ein Level aushält, was Funding über Tage kostet.</p><p>MarginPad zeigt dir auch, wo der Rest des Marktes liquidiert wird: Die kostenlose <a href="/de/heatmap">Liquidations-Heatmap</a> und der <a href="/de/rekt/">Live-Liquidations-Feed</a> setzen dein Üben in den Zusammenhang - du kannst eine Kaskade live sehen und verstehst, warum dein eigener Liquidationspreis zählt.</p></div>
+
+  <h2>Simulator vs. echter Hebelhandel</h2>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>&nbsp;</th><th>MarginPad-Simulator</th><th>Echte Börse</th></tr></thead>
+    <tbody>
+      <tr><td>Gefährdetes Geld</td><td class="pos">$0</td><td class="neg">Dein Kapital</td></tr>
+      <tr><td>Max. Hebel</td><td>1000x (Majors)</td><td>Typisch 100x-125x</td></tr>
+      <tr><td>Liquidationsmathematik</td><td>Echte Isolated-Margin-Formel</td><td>Echte Isolated-Margin-Formel</td></tr>
+      <tr><td>Anmeldung / KYC</td><td class="pos">Keine</td><td class="neg">Konto + KYC</td></tr>
+      <tr><td>Verfügbarkeit in den USA</td><td class="pos">Funktioniert überall</td><td class="neg">Die meisten Hebel-Börsen sperren die USA</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Häufige Fragen</h2>
+  <div class="faq">
+    <div class="qa"><h3>Gibt es eine kostenlose 100x-Hebel-Demo?</h3><p>Ja. Mit MarginPad übst du mit jedem Hebel von 1x bis 1000x auf großen Krypto-Paaren (je Symbol gelten Obergrenzen, z. B. 100x-200x bei kleineren Alts), mit Live-Preisen und virtuellem Guthaben. Es ist kostenlos und öffnet ohne Anmeldung.</p></div>
+    <div class="qa"><h3>Liquidiert der Simulator Positionen wirklich?</h3><p>Ja. Positionen nutzen dieselbe Isolated-Margin-Liquidationsformel wie echte Futures-Börsen, inklusive Maintenance-Margin-Puffer. Bei 100x liquidiert dich eine Gegenbewegung von grob 1% - im Simulator genauso wie auf einem echten Konto.</p></div>
+    <div class="qa"><h3>Mit welchem Hebel sollte ein Einsteiger üben?</h3><p>Fang mit 3x-10x an. Bei 10x liegt deine Liquidation grob 10% entfernt, was Raum lässt, die Platzierung des Stop-Loss zu lernen. Hoher Hebel (50x+) ist im Simulator genau deshalb eine Erfahrung wert, weil er zeigt, wie wenig Spielraum es gibt - eine 50x-Position stirbt bei einer Bewegung von 2%.</p></div>
+    <div class="qa"><h3>Sind die Preise echt?</h3><p>Ja. Die Preise kommen live aus einem echten Börsen-Feed und dein PnL bewegt sich Tick für Tick, sodass sich das Erlebnis wie ein echtes gehebeltes Konto anfühlt - ohne Geld im Risiko.</p></div>
+    <div class="qa"><h3>Kann ich Hebel auch auf Aktien und Forex üben?</h3><p>Ja. Dasselbe Konto handelt US-Aktien, Forex-Paare, Aktienindizes und Gold als gehebelte Positionen, mit realistischen Hebelgrenzen und Gebühren je Klasse.</p></div>
+    <div class="qa"><h3>Brauche ich ein Konto?</h3><p>Nein. Der Simulator öffnet und handelt ohne Anmeldung. Ein kostenloses Konto ist optional und bringt Ranglisten, Missionen, XP und Belohnungen dazu.</p></div>
+    <div class="qa"><h3>Was ist die maximale Positionsgröße?</h3><p>Bis zu $100,000 Margin pro Position, mit Hebel bis 1000x auf Majors - groß genug, um die Positionsgröße so zu üben, wie es ein Funded-Konto verlangt.</p></div>
+  </div>
+
+  <div class="cta-band">
+    <h2>Spüre, was 100x wirklich bewirkt - kostenlos</h2>
+    <p class="sub" style="margin:0 auto 20px">Öffne das Terminal, stelle deinen Hebel ein und platziere einen Paper-Trade zum Live-Preis. Kein Konto, kein Risiko.</p>
+    <a class="btn" href="/de/paper-trade">Simulator öffnen</a>
+  </div>
+
+  <p class="note">Siehe auch: <a href="/de/crypto-trading-simulator-no-sign-up/">Krypto-Simulator ohne Anmeldung</a> · <a href="/de/paper-trading/">Kompletter Paper-Trading-Guide</a> · <a href="/de/blog/crypto-leverage-explained/">Krypto-Hebel erklärt</a> · <a href="/de/blog/how-to-avoid-liquidation/">So vermeidest du die Liquidation</a>. MarginPad ist eine kostenlose Übungsplattform - keine Anlageberatung, und simulierte Ergebnisse garantieren keine echten Renditen.</p>
+</div>
+
+
+<div class="mp-xr"><div class="mp-xr-t">WENN ÜBEN NICHTS MEHR BRINGT</div><p class="mp-xr-w">Ein Simulator kann dir nicht beibringen, was echtes Geld mit deinem Urteilsvermögen macht - Ausführungen, Funding und Gebühren sind hier schon modelliert. Wenn dich das Paper-Konto nicht mehr überrascht, geh mit kleinerer Größe live.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-Perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Jeder Markt, rauf oder runter</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate-Links. Wir erhalten eine Provision, wenn du dich registrierst; für dich ändert sich der Preis nicht.</p></div>
+<footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
+  <div><a class="brand" href="/de/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Übe Hebel auf Krypto, Aktien, Forex und Indizes mit Live-Preisen und ohne Risiko. Kostenlos, ohne Anmeldung.</p></div>
+  <div><h4>Übung</h4><a href="/de/paper-trade">Paper Trade</a><a href="/de/crypto-trading-simulator-no-sign-up/">Simulator ohne Anmeldung</a><a href="/de/stock-trading-simulator/">Aktien-Simulator</a><a href="/de/forex-trading-simulator/">Forex-Simulator</a></div>
+  <div><h4>Liquidationen</h4><a href="/de/heatmap">Heatmap</a><a href="/de/rekt/">Live-Feed</a><a href="/de/calculators">Rechner</a><a href="/de/liquidations/">Liquidations-Hub</a></div>
+</div><div class="bottom">© MarginPad · Übungsplattform, keine Anlageberatung · marginpad.io</div></div></footer>
+
+<script defer src="/assets/mp-nav.js?v=c7f25e7a"></script>
+</body>
+</html>
