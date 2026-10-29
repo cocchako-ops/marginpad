@@ -27180,7 +27180,7 @@ export default {
           const keep = r => ({ mask: r.mask, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual });
           const rows = ((endp ? endp.rows : startp.rows) || []).map(keep); // no END yet = the last known figures are the START ones
           let updated = 0, added = 0;
-          for (const r of manual.rows) { const i = rows.findIndex(x => x.mask.toLowerCase() === r.mask.toLowerCase()); if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
+          for (const r of manual.rows) { const i = rows.findIndex(x => x.mask.toLowerCase() === r.mask.toLowerCase() && (!r.reg || !x.reg || x.reg === r.reg)); /* two accounts can share a mask (*****786): the registration date tells them apart, or a typed total lands on the wrong one (2026-10-29: azmat786 carried salma786's figure) */ if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
           const seenp = {}; for (const r of rows) { const k = r.mask.toLowerCase(); seenp[k] = (seenp[k] || 0) + 1; } for (const r of rows) r.dupMask = seenp[r.mask.toLowerCase()] > 1;
           const membersp = await moonMembers(env);
           let pinsp = {}; try { pinsp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
