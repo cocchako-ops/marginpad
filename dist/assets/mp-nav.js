@@ -558,7 +558,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
      page that translates itself (Demo Spot, the app shell's i18n loader) still gets __mpSetLang / its own listener.
      esRedirect: a reader who chose Spanish and lands on an English URL is sent to the twin once per path per session
      (sessionStorage mp_es_miss stops the bounce when the worker answers 302 because no twin exists). */
-  var _LANG_HOME = { pt: 1, de: 1, fr: 1, ru: 1, tr: 1, zh: 1, ja: 1, ko: 1, ar: 1, id: 1, nl: 1 };
+  var _LANG_HOME = { de: 1, fr: 1, ru: 1, tr: 1, zh: 1, ja: 1, ko: 1, ar: 1, id: 1, nl: 1 }; // pt left this list 2026-10-29: /pt/ is a twin (keeps the path) like /es/
+  var _TWIN = { es: 1, pt: 1 };
+  function _twinOf(p) { var m = p.match(/^\/(es|pt)(\/|$)/); return m ? m[1] : ''; }
   function langCode(v) { v = String(v || ''); if (!v || v === '/') return v === '/' ? 'en' : ''; var m = v.match(/^\/([a-z]{2})\/?$/); return m ? m[1] : (/^[a-z]{2}$/.test(v) ? v : ''); }
   function syncLangSel() {
     try {
@@ -576,9 +578,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       try { localStorage.setItem('mp_lang', _code); } catch (e) {}
       try { sessionStorage.removeItem('mp_es_miss'); } catch (e) {}
       if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; // self-translating page (Demo Spot)
-      var _p = location.pathname, _onEs = _p.indexOf('/es/') === 0 || _p === '/es';
-      if (_code === 'en') { location.href = _onEs ? (_p.slice(3) || '/') + location.search : (_LANG_HOME[(_p.match(/^\/([a-z]{2})\//) || [])[1]] ? '/' : (_p + location.search)); return; }
-      if (_code === 'es') { if (_onEs) return; location.href = (/^\/([a-z]{2})\/$/.test(_p) ? '/es/' : '/es' + _p) + location.search; return; }
+      var _p = location.pathname, _onTw = _twinOf(_p), _enP = _onTw ? (_p.slice(3) || '/') : _p;
+      if (_code === 'en') { location.href = _onTw ? _enP + location.search : (_LANG_HOME[(_p.match(/^\/([a-z]{2})\//) || [])[1]] ? '/' : (_p + location.search)); return; }
+      if (_TWIN[_code]) { if (_onTw === _code) return; location.href = (/^\/([a-z]{2})\/$/.test(_enP) ? '/' + _code + '/' : '/' + _code + (_enP === '/' ? '/' : _enP)) + location.search; return; }
       if (window.mpT && document.getElementById('langSel') === ls) return; // app shell: i18n.js applies the pack in place
       location.href = '/' + _code + '/';
     });
@@ -587,13 +589,13 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     try {
       if (window.__mpEsRedir) return; window.__mpEsRedir = 1;
       var L = localStorage.getItem('mp_lang'), p = location.pathname;
-      if (L !== 'es' || /^\/es(\/|$)/.test(p) || /^\/(api|assets|mcp|widget|community)\//.test(p) || /^\/(pt|de|fr|ru|tr|zh|ja|ko|ar|id|nl)\//.test(p)) return;
+      if (!_TWIN[L] || _twinOf(p) || /^\/(api|assets|mcp|widget|community)\//.test(p) || /^\/(de|fr|ru|tr|zh|ja|ko|ar|id|nl)\//.test(p)) return;
       if (/^\/(dolar-cripto|bitcoin-hoje|simulador-trading-cripto-argentina|simulador-trading-cripto-brasil)\//.test(p)) return;
       if (new URLSearchParams(location.search).get('lang')) return;
       var miss = (sessionStorage.getItem('mp_es_miss') || '').split('|');
       if (miss.indexOf(p) >= 0) return;
       miss.push(p); sessionStorage.setItem('mp_es_miss', miss.filter(Boolean).join('|'));
-      location.replace('/es' + (p === '/' ? '/' : p) + location.search + location.hash);
+      location.replace('/' + L + (p === '/' ? '/' : p) + location.search + location.hash);
     } catch (e) {}
   }
   esRedirect();

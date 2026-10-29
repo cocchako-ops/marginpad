@@ -108,3 +108,4 @@ build/liqmap-shots/
 # Ask-AI replay backtest captures (build/gen-ai-backtest.js) - evidence, not site assets
 build/bt-shots/
 kb-sheet.png
+build/data/pt/chunks/

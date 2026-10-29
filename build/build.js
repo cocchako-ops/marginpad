@@ -148,5 +148,7 @@ run('Stamp bundle versions (?v=)', 'node build/bump-home-assets.js');
 // the SAME English markup - after the stamper so the twins inherit the ?v= references. Missing strings fall back to English
 // and are listed by `node build/es/extract.js --chunks` for the translators.
 run('Spanish site (/es/ twins)', 'node build/es/gen-pages.js');
+// 15) PORTUGUESE TWINS (2026-10-29): the top pages only (build/data/pt/pages.txt), same generator, catalog build/data/pt/catalog.json.
+run('Portuguese site (/pt/ twins)', 'node build/es/gen-pages.js --lang pt');
 
 process.stdout.write('\n Build complete. Review dist/, then: npm run deploy\n');

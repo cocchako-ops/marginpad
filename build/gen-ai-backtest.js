@@ -119,9 +119,16 @@ function settle(plan, bars, i0, lastClose) {
           return req.continue();
         });
 
-        await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+        /* domcontentloaded (2026-10-29): networkidle2 never fires on /charts since the font-preload round, and it lands before the
+           rail has bound its handlers, so the picker is clicked until a window exists */
+        await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
         await page.waitForFunction('!!document.getElementById("cwsAdd") || (window.__mpWinsDbg && window.__mpWinsDbg.length)', { timeout: 30000 }).catch(() => {});
-        await page.evaluate(() => { if (!(window.__mpWinsDbg && window.__mpWinsDbg.length)) { const a = document.getElementById('cwsAdd'); a && a.click(); } });
+        for (let tries = 0; tries < 12; tries++) {
+          const has = await page.evaluate(() => !!(window.__mpWinsDbg && window.__mpWinsDbg.length));
+          if (has) break;
+          await page.evaluate(() => { const a = document.getElementById('cwsAdd'); a && a.click(); });
+          await new Promise(r => setTimeout(r, 1500));
+        }
         await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50 && window.__mpWinsDbg[0].dr', { timeout: 40000 });
         await page.evaluate(() => {
           ['#mpCkBar', '.top', 'header', '#mpGn', '.mpbn'].forEach(sel => document.querySelectorAll(sel).forEach(e => e.remove()));

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt" data-es-twin="/liquidations/">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Liquidações cripto hoje - rastreador de liquidações ao vivo | MarginPad</title>
+<meta name="description" content="Liquidações de futuros cripto ao vivo: total de liquidações em 24h, longs vs shorts, as moedas e corretoras mais liquidadas agora. Medido em oito feeds de corretoras, grátis, sem cadastro." />
+<meta name="keywords" content="crypto liquidations, liquidation tracker, liquidations today, btc liquidations, eth liquidations, long short liquidations, futures liquidations, liquidation data" />
+<link rel="canonical" href="https://marginpad.io/pt/liquidations/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/liquidations/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/liquidations/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/liquidations/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/liquidations/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Liquidações cripto hoje - rastreador de liquidações ao vivo" />
+<meta property="og:description" content="Liquidações de futuros cripto ao vivo: total de liquidações em 24h, longs vs shorts, as moedas e corretoras mais liquidadas agora. Medido em oito feeds de corretoras, grátis, sem cadastro." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/pt/liquidations/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/liquidations.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Liquidações cripto hoje - rastreador de liquidações ao vivo" />
+<meta name="twitter:description" content="Liquidações de futuros cripto ao vivo: total de liquidações em 24h, longs vs shorts, as moedas e corretoras mais liquidadas agora. Medido em oito feeds de corretoras, grátis, sem cadastro." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/liquidations.jpg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6}
+  .lq-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(52% 50% at 8% 0%,rgba(255,90,77,.07),transparent 60%),radial-gradient(48% 55% at 94% 20%,rgba(46,189,133,.06),transparent 60%)}
+  .wrap{position:relative;z-index:1}
+  .crumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+  .crumb-upd{margin-left:auto;font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a95a1;border:1px solid var(--line-bright);border-radius:99px;padding:4px 10px;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+  .crumb-upd i{width:7px;height:7px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn)}
+  article .lead{margin-bottom:14px}
+  /* stat strip */
+  .lq-top{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;gap:10px;margin:16px 0 12px}
+  .lq-stat{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:16px;padding:15px 16px;min-width:0}
+  .lq-stat .k{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:7px}
+  .lq-stat .v{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.03em;line-height:1.05;margin-top:8px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-stat.big .v{font-size:clamp(34px,4.2vw,50px);color:#fff}
+  .lq-stat .v.up{color:var(--grn)}.lq-stat .v.dn{color:var(--red)}
+  .lq-stat .s{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lqdot{width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 7px var(--grn)}
+  .lqls{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line);margin:12px 0 7px}
+  .lqls i{display:block;height:100%}.lqls .l{background:var(--red)}.lqls .s{background:var(--grn)}
+  .lqls-l{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;gap:8px}
+  .lqls-l .lng{color:#ff7b72}.lqls-l .sht{color:#34d99a}
+  .lqls-l small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint)}
+  /* 2026-10-27 (layout shift): the two side labels gain their dollar line when the data lands (19 -> 35px, 54 on a phone where
+     the label wraps), the count's sub-line wraps to two lines on a phone, and the "updated" span goes from empty to one line -
+     every one of them pushed the tape, the chips and the list down. Reserved at the filled size. */
+  .lqls-l .lng,.lqls-l .sht{display:inline-block;min-height:35px}
+  #lqUpd:empty::before{content:"\00a0"}
+  @media(max-width:480px){.lqls-l .lng,.lqls-l .sht{min-height:54px}#lqCntS{min-height:29px}}
+  @media(max-width:900px){.lq-top{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.lq-top{grid-template-columns:1fr 1fr;gap:8px}.lq-stat{padding:12px 13px}.lq-stat.big{grid-column:1/-1}.lq-stat .k{font-size:8.5px;letter-spacing:.06em}.lq-stat .s{white-space:normal;line-height:1.4}} /* measured at 390px: the two-word labels wrapped and the biggest-hit note was cut mid-word */
+  /* live tape */
+  .lq-tape{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 0 6px;margin:0 0 14px}
+  .lq-tape::-webkit-scrollbar{display:none}
+  .lq-ev{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;padding:7px 11px;border-radius:9px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink);white-space:nowrap}
+  .lq-ev b{font-weight:800}.lq-ev.l b{color:#ff7b72}.lq-ev.s b{color:#34d99a}
+  .lq-ev .x{color:var(--ink-faint);font-size:9.5px}
+  .lq-ev.head{background:transparent;border-style:dashed;color:var(--ink-faint);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+  /* chips + list */
+  .lq-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+  .lq-chips{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+  .lq-chips button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:7px 11px;border-radius:8px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink-faint);cursor:pointer;min-height:34px}
+  .lq-chips button:hover{color:var(--ink);border-color:var(--lime)}
+  .lq-chips button.on{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .lq-search{margin-left:auto;flex:1 1 150px;max-width:220px;min-width:120px;font-family:'Space Mono',monospace;font-size:12px;padding:8px 11px;border-radius:9px;border:1px solid var(--line-bright);background:#0b0d10;color:var(--ink);outline:none}
+  .lq-search:focus{border-color:var(--lime)}
+  .lq-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;margin:14px 0 9px}
+  .lq-h span:last-child{font-weight:400;text-transform:none;letter-spacing:0;font-size:10px}
+  .lq-list{display:flex;flex-direction:column;gap:6px}
+  .lq-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .12s,background .12s;position:relative}
+  .lq-row:hover{border-color:var(--lime);background:rgba(194,246,74,.03)}
+  .lq-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;height:48px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+  .lq-tile b{font-family:'Space Mono',monospace;font-size:14px;font-weight:800;line-height:1;color:var(--ink)}
+  .lq-tile small{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.1em;color:var(--ink-faint);margin-top:3px}
+  .lq-tile.t1 b{color:var(--red)}.lq-tile.t1{border-color:rgba(255,90,77,.35);background:rgba(255,90,77,.08)}
+  .lq-tile.t2 b{color:var(--amber)}.lq-tile.t2{border-color:rgba(255,176,32,.3);background:rgba(255,176,32,.06)}
+  .lq-main{min-width:0;display:flex;flex-direction:column;gap:6px}
+  .lq-main .l1{display:flex;align-items:center;gap:8px;min-width:0}
+  .lq-main .sym{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.01em;color:#fff;white-space:nowrap}
+  .lq-main .pill{font-family:'Space Mono',monospace;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.04em;white-space:nowrap}
+  .lq-main .pill.l{background:rgba(255,90,77,.16);color:#ff7b72}.lq-main .pill.s{background:rgba(46,189,133,.16);color:#34d99a}.lq-main .pill.e{background:rgba(255,255,255,.07);color:var(--ink-dim)}
+  .lq-main .tot{margin-left:auto;font-family:'Space Mono',monospace;font-size:13.5px;font-weight:800;color:var(--ink);white-space:nowrap}
+  .lq-main .bar{display:flex;height:6px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.05)}
+  .lq-main .bar i{display:block;height:100%}.lq-main .bar .l{background:var(--red)}.lq-main .bar .s{background:var(--grn)}
+  .lq-main .l2{display:flex;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint)}
+  .lq-main .l2 .lg{color:#ff7b72}.lq-main .l2 .sh{color:#34d99a}
+  .lq-more{display:block;width:100%;margin:10px 0 0;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:11px;border-radius:10px;border:1px dashed var(--line-bright);background:transparent;color:var(--ink-dim);cursor:pointer}
+  .lq-more:hover{color:var(--lime);border-color:var(--lime)}
+  .lq-empty{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);text-align:center;padding:22px 12px;border:1px dashed var(--line-bright);border-radius:12px}
+  .lq-sk{height:70px;border-radius:12px;margin-bottom:6px;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.07),rgba(255,255,255,.03))}
+  /* venues + go deeper */
+  .lq-two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin:18px 0 6px}
+  @media(max-width:760px){.lq-two{grid-template-columns:1fr}}
+  .lq-card{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:13px 14px;min-width:0}
+  .lq-card .lq-h{margin:0 0 8px}
+  .lq-ven{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-family:'Space Mono',monospace;font-size:11.5px}
+  .lq-ven:first-child{border-top:0}
+  .lq-ven b{color:var(--ink);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-ven .vb{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.05)}.lq-ven .vb i{display:block;height:100%}.lq-ven .vb .l{background:var(--red)}.lq-ven .vb .s{background:var(--grn)}
+  .lq-ven .vv{text-align:right;color:var(--ink);white-space:nowrap}.lq-ven .vv small{display:block;font-size:9px;color:var(--ink-faint)}
+  .lq-card .more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--lime);text-decoration:none;font-weight:700}
+  .lq-go{display:flex;flex-direction:column;gap:6px}
+  .lq-go a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;color:var(--ink);font-size:13px;padding:9px 11px;border-radius:10px;border:1px solid var(--line-bright);background:#0b0d10}
+  .lq-go a:hover{border-color:var(--lime)}
+  .lq-go a small{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);white-space:nowrap}
+  .lqcta{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}
+  .lqcta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .lqcta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  .lq-prose{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+  .lq-prose h2{font-size:19px;margin:22px 0 8px}
+  .lq-prose p{font-size:14px;color:var(--ink-dim)}
+  .lq-prose .fine{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin-top:18px}
+  /* coin sheet */
+  [hidden]{display:none!important}
+  .lq-dim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:2147483000}
+  .lq-sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow-y:auto;background:#0d0f12;border:1px solid var(--line-bright);border-radius:18px;z-index:2147483001;padding:18px 18px 20px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  @media(max-width:620px){.lq-sheet{left:0;top:auto;bottom:0;transform:none;width:100vw;max-height:92vh;border-radius:16px 16px 0 0;border-left:0;border-right:0;border-bottom:0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
+  .lq-sh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .lq-sh .t{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:#fff;line-height:1}
+  .lq-sh .t small{display:block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:400;color:var(--ink-faint);letter-spacing:0;margin-top:5px}
+  .lq-x{flex:0 0 auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);font-size:13px;cursor:pointer}
+  .lq-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+  .lq-tiles .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 10px;min-width:0}
+  .lq-tiles .k{font-family:'Space Mono',monospace;font-size:8.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase}
+  .lq-tiles .v{font-family:'Space Mono',monospace;font-size:13.5px;font-weight:800;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-tiles .v.up{color:#34d99a}.lq-tiles .v.dn{color:#ff7b72}
+  .lq-read{margin-top:12px;font-size:13px;color:var(--ink-dim);line-height:1.55;background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.2);border-radius:10px;padding:10px 12px}
+  .lq-read b{color:#fff}
+  .lq-lnk{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .lq-lnk a{flex:1;min-width:130px;text-align:center;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:10px 12px;border-radius:10px;border:1px solid var(--line-bright);background:transparent;color:var(--ink);text-decoration:none}
+  .lq-lnk a.go{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .lq-lnk a:hover{border-color:var(--lime)}
+  .lq-exh{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:14px 0 4px}
+  .lq-ex{display:flex;flex-direction:column;gap:6px}
+  .lq-ex a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line-bright);background:#0b0d10}
+  .lq-ex a i{width:8px;height:8px;border-radius:50%;background:var(--c,#f7a600);box-shadow:0 0 8px -1px var(--c,#f7a600);flex:0 0 auto}
+  .lq-ex a small{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint)}
+  .lq-ex a.off{opacity:.5}
+  @media(min-width:861px){.wrap{max-width:1180px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Rastreador de liquidações cripto","url":"https://marginpad.io/pt/liquidations/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Liquidações em futuros cripto, últimas 24 horas","description":"Fechamentos forçados de posições alavancadas de futuros perpétuos em oito corretoras, medidos continuamente pelo coletor próprio da MarginPad: totais do mercado, long vs short, por moeda e por corretora.","url":"https://marginpad.io/pt/liquidations/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"license":"https://marginpad.io/terms/","isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/venues"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidações","item":"https://marginpad.io/pt/liquidations/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"O que é uma liquidação em cripto?","acceptedAnswer":{"@type":"Answer","text":"Uma liquidação acontece quando uma posição alavancada de futuros é fechada à força pela corretora porque a margem do trader não consegue mais cobrir a perda. As liquidações de long ocorrem quando o preço cai; as de short, quando o preço sobe."}},{"@type":"Question","name":"Quanta cripto é liquidada em 24 horas?","acceptedAnswer":{"@type":"Answer","text":"Oscila com a volatilidade. Dias calmos eliminam dezenas de milhões de dólares em todos os mercados de futuros perpétuos; um movimento brusco pode eliminar mais de um bilhão em um único dia. O número ao vivo desta página é medido continuamente nos websockets de liquidação das corretoras e traz seu próprio horário."}},{"@type":"Question","name":"Por que os rastreadores de liquidação mostram números diferentes?","acceptedAnswer":{"@type":"Answer","text":"As corretoras publicam os fechamentos forçados em níveis de detalhe diferentes, algumas agrupam cascatas em eventos únicos, e os feeds sofrem limitação justamente sob a carga que produz mais liquidações. Rastreadores que modelam os dados ausentes informam totais maiores do que os que só contam eventos observados. A MarginPad conta apenas eventos observados, o que deixa nossos números no extremo conservador."}},{"@type":"Question","name":"Stop-losses contam como liquidações?","acceptedAnswer":{"@type":"Answer","text":"Não. Um stop-loss é uma saída voluntária que você mesmo definiu; uma liquidação é um fechamento forçado executado pela corretora quando a margem não consegue mais cobrir a perda. Só a segunda aparece em um feed de liquidações. Os totais aqui também excluem opções, futuros com vencimento e liquidações de empréstimos on-chain."}},{"@type":"Question","name":"Qual corretora tem mais liquidações?","acceptedAnswer":{"@type":"Answer","text":"Muda todo dia. A Binance costuma ser a maior em valor absoluto porque concentra mais alavancagem aberta, mas a participação muda bruscamente durante as cascatas. O detalhamento por plataforma com a divisão entre long e short está nesta página e em marginpad.io/liquidations/by-exchange/."}},{"@type":"Question","name":"Posso obter os dados de liquidação como API grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim, sem chave e com CORS habilitado: /api/v1/liquidations para os totais do mercado, /api/v1/venues para o detalhamento por corretora, /api/v1/liquidations/live para eventos individuais recentes e /api/v1/clusters para as faixas do mapa de calor."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
+.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
+.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
+.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
+.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
+.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
+.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
+.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
+.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
+.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
+.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
+@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="lq-glow" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/pt/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/pt/markets/">Mercados</a><a href="/pt/liquidations/">Liquidações</a><a href="/pt/funding/">Funding</a><a href="/pt/open-interest/">Interesse Aberto</a><a href="/pt/long-short/">Long/Short</a><a href="/pt/screener">Screener</a></nav>
+  </header>
+  <div class="crumb"><a href="/pt/">Início</a> / Liquidações <span class="crumb-upd"><i></i>Ao vivo · oito feeds de corretoras</span></div>
+  <article>
+    <h1>Liquidações de Cripto Hoje</h1>
+    <p class="lead">Cada fechamento forçado em oito corretoras de futuros perpétuos, contado pelo coletor próprio da MarginPad assim que acontece: quanto foi eliminado em 24 horas, qual lado pagou, quais moedas e quais plataformas.</p>
+
+    <section class="lq-top" id="lqTop" aria-label="Totais de 24 horas">
+      <div class="lq-stat big"><div class="k"><i class="lqdot"></i>Liquidado · 24h</div><div class="v" id="lqTot">…</div><div class="s" id="lqTotS">medindo</div></div>
+      <div class="lq-stat"><div class="k">Longs vs shorts</div><div class="lqls" id="lqLs"><i class="l" style="width:50%"></i><i class="s" style="width:50%"></i></div><div class="lqls-l"><span class="lng" id="lqLong">…</span><span class="sht" id="lqShort">…</span></div></div>
+      <div class="lq-stat"><div class="k">Maior liquidação individual</div><div class="v" id="lqBig">…</div><div class="s" id="lqBigS">maior fechamento forçado individual de hoje</div></div>
+      <div class="lq-stat"><div class="k">Posições fechadas à força</div><div class="v" id="lqCnt">…</div><div class="s" id="lqCntS">nas últimas 24 horas</div></div>
+    </section>
+
+    <div class="lq-tape" id="lqTape" aria-label="Últimas liquidações"><span class="lq-ev head">mais recente</span><span class="lq-ev">carregando o feed…</span></div>
+
+    <div class="lq-bar">
+      <div class="lq-chips" id="lqChips" role="group" aria-label="Ordenar">
+        <button type="button" data-sort="liq" class="on">Maior total</button><button type="button" data-sort="long">Longs eliminados</button><button type="button" data-sort="short">Shorts eliminados</button><button type="button" data-sort="lpct">Pesado em long</button><button type="button" data-sort="spct">Pesado em short</button>
+      </div>
+      <input class="lq-search" id="lqQ" type="search" placeholder="Buscar uma moeda" autocomplete="off" aria-label="Buscar uma moeda" />
+    </div>
+    <div class="lq-h"><span>Moedas mais liquidadas · 24h</span><span id="lqUpd"></span></div>
+    <div class="lq-list" id="lqList"><div class="lq-sk"></div><div class="lq-sk"></div><div class="lq-sk"></div><div class="lq-sk"></div></div>
+    <button type="button" class="lq-more" id="lqMore" hidden>Mostrar todos os mercados</button>
+
+    <div class="lq-two">
+      <div class="lq-card"><div class="lq-h"><span>Por corretora · 24h</span><span>participação em todas as liquidações</span></div><div id="lqVen"><div class="lq-sk" style="height:40px"></div><div class="lq-sk" style="height:40px"></div></div><a class="more" href="/pt/liquidations/by-exchange/">Detalhamento completo por plataforma &rarr;</a></div>
+      <div class="lq-card"><div class="lq-h"><span>Vá mais fundo</span></div><div class="lq-go">
+        <a href="/pt/rekt/">Feed ao vivo, cada evento assim que acontece <small>/rekt</small></a> <a href="/pt/heatmap">Onde estão empilhados os próximos stops <small>mapa de calor</small></a> <a href="/pt/how-many-traders-liquidated-today/">Quantos traders foram liquidados hoje <small>uma resposta</small></a> <a href="/pt/liquidation-statistics/">Maiores liquidações individuais, BTC e ETH <small>estatísticas</small></a> <a href="/pt/free-crypto-api/">Estes dados em JSON grátis <small>API</small></a>
+      </div></div>
+    </div>
+
+    <div class="lqcta">
+      <a class="go" href="/pt/paper-trade">Pratique com alavancagem, sem arriscar nada →</a> <a href="/pt/screener">Screener de mercado</a> <a href="/pt/calculators?c=liq">Calculadora de preço de liquidação</a>
+    </div>
+
+    <section class="lq-prose">
+      <h2>O que é uma liquidação?</h2>
+      <p>Uma <strong>liquidação</strong> é quando uma corretora fecha à força uma posição alavancada de futuros porque a margem do trader não consegue mais cobrir a perda. A posição é vendida (ou recomprada) a mercado e a margem se vai. Em alavancagem alta, o preço de liquidação fica perto da entrada, então um pequeno movimento contra a posição basta. <strong>Liquidações de long</strong> são compradores eliminados por uma queda; <strong>liquidações de short</strong> são vendedores eliminados por uma alta. Um pico unilateral muitas vezes marca um extremo local: uma limpeza de longs pode ser um fundo de capitulação, uma onda de shorts pode alimentar um squeeze.</p>
+      <h2>Por que os totais de liquidação diferem entre os sites</h2>
+      <p>As corretoras publicam os fechamentos forçados em níveis de detalhe diferentes - algumas transmitem cada execução, outras agrupam uma cascata em um único evento, e os feeds sofrem limitação justamente sob a carga que produz mais liquidações. Um rastreador que modela as lacunas informa mais do que um que conta o que observou. A MarginPad conta eventos observados e nada além disso, então esses totais ficam no extremo conservador; um número várias vezes maior num dia violento geralmente é estimativa, não cobertura.</p>
+      <h2>O que este número não inclui</h2>
+      <p>Liquidações de futuros perpétuos nas plataformas que assinamos, e nada além disso: sem stop-losses ou fechamentos manuais (nunca forçados, nunca em um feed), sem opções ou futuros com vencimento, sem liquidações de empréstimos on-chain na Aave ou Maker, e sem plataformas que não tenham stream público de liquidações. Leia como posições perp alavancadas sendo eliminadas, não como toda venda forçada em cripto.</p>
+      <p class="fine">Medido pelo coletor da MarginPad em oito websockets de corretoras. Somente para informação - não é recomendação financeira. Opere com responsabilidade.</p>
+    </section>
+  
+<div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
+<div class="mp-hl-e"><i></i>OPERE PERPS ON-CHAIN</div>
+<div class="mp-hl-row">
+<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid - perps <b>on-chain</b>, com desconto nas taxas por nossa conta.</div><p class="mp-hl-w">A Hyperliquid opera perps na sua própria blockchain: sem custodiante, subcontas com suas próprias chaves de API, livros profundos nas principais moedas. 4% de desconto nas taxas com o nosso código.</p></div>
+<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>de desconto nas taxas<br>para contas indicadas</span></div><div class="mp-hl-code"><span>use o código</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Entrar na Hyperliquid &rarr;</a></div>
+</div>
+<p class="mp-hl-d">Link de indicação - a MarginPad pode receber uma comissão se você abrir uma conta. O desconto de 4% nas taxas é o desconto de indicação da Hyperliquid; você nunca paga mais do que pagaria indo direto. Indisponível para pessoas dos EUA, conforme os termos da Hyperliquid.</p>
+</div>
+<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
+/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) - Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
+function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
+var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
+if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
+var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
+<div class="mp-xr"><div class="mp-xr-t">ONDE ESSAS LIQUIDAÇÕES ACONTECEM</div><p class="mp-xr-w">Nada nesta página é teórico - são posições reais sendo fechadas à força em livros de ordens reais. Estas são as corretoras a que esses livros pertencem.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#5ee6c8" data-ex="Hyperliquid" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Hyperliquid')}catch(e){}"><span class="mp-xr-k">Hyperliquid</span><span class="mp-xr-d">perps on-chain &middot; 4% de desconto &middot; código MARGINPAD</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Links de afiliado. Ganhamos uma comissão se você criar uma conta; você paga o mesmo de qualquer forma.</p></div>
+</article>
+  <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
+<nav class="hublinks" data-hublinks aria-label="Mapas de liquidações por moeda"><h2>Mapas de liquidações por moeda</h2><p>Mapas de calor por moeda ao vivo, construídos com o feed do nosso próprio coletor.</p><div class="hl"><a href="/pt/aave-liquidation-map/">AAVE</a><a href="/pt/ada-liquidation-map/">ADA</a><a href="/pt/apt-liquidation-map/">APT</a><a href="/pt/arb-liquidation-map/">ARB</a><a href="/pt/atom-liquidation-map/">ATOM</a><a href="/pt/avax-liquidation-map/">AVAX</a><a href="/pt/bnb-liquidation-map/">BNB</a><a href="/pt/bonk-liquidation-map/">BONK</a><a href="/pt/btc-liquidation-map/">BTC</a><a href="/pt/doge-liquidation-map/">DOGE</a><a href="/pt/dot-liquidation-map/">DOT</a><a href="/pt/eth-liquidation-map/">ETH</a><a href="/pt/fil-liquidation-map/">FIL</a><a href="/pt/floki-liquidation-map/">FLOKI</a><a href="/pt/hype-liquidation-map/">HYPE</a><a href="/pt/inj-liquidation-map/">INJ</a><a href="/pt/link-liquidation-map/">LINK</a><a href="/pt/ltc-liquidation-map/">LTC</a><a href="/pt/near-liquidation-map/">NEAR</a><a href="/pt/op-liquidation-map/">OP</a><a href="/pt/ordi-liquidation-map/">ORDI</a><a href="/pt/pepe-liquidation-map/">PEPE</a><a href="/pt/sei-liquidation-map/">SEI</a><a href="/pt/shib-liquidation-map/">SHIB</a><a href="/pt/sol-liquidation-map/">SOL</a><a href="/pt/sui-liquidation-map/">SUI</a><a href="/pt/tao-liquidation-map/">TAO</a><a href="/pt/ton-liquidation-map/">TON</a><a href="/pt/trx-liquidation-map/">TRX</a><a href="/pt/uni-liquidation-map/">UNI</a><a href="/pt/wif-liquidation-map/">WIF</a><a href="/pt/xrp-liquidation-map/">XRP</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Calculadoras de liquidação por moeda"><h2>Calculadoras de liquidação por moeda</h2><div class="hl"><a href="/pt/100x-liquidation-calculator/">100X</a><a href="/pt/10x-liquidation-calculator/">10X</a><a href="/pt/20x-liquidation-calculator/">20X</a><a href="/pt/25x-liquidation-calculator/">25X</a><a href="/pt/50x-liquidation-calculator/">50X</a><a href="/pt/5x-liquidation-calculator/">5X</a><a href="/pt/aave-liquidation-calculator/">AAVE</a><a href="/pt/ada-liquidation-calculator/">ADA</a><a href="/pt/algo-liquidation-calculator/">ALGO</a><a href="/pt/ape-liquidation-calculator/">APE</a><a href="/pt/apt-liquidation-calculator/">APT</a><a href="/pt/arb-liquidation-calculator/">ARB</a><a href="/pt/atom-liquidation-calculator/">ATOM</a><a href="/pt/avax-liquidation-calculator/">AVAX</a><a href="/pt/axs-liquidation-calculator/">AXS</a><a href="/pt/bch-liquidation-calculator/">BCH</a><a href="/pt/binance-liquidation-calculator/">BINANCE</a><a href="/pt/bitget-liquidation-calculator/">BITGET</a><a href="/pt/bnb-liquidation-calculator/">BNB</a><a href="/pt/bonk-liquidation-calculator/">BONK</a><a href="/pt/btc-liquidation-calculator/">BTC</a><a href="/pt/bybit-liquidation-calculator/">BYBIT</a><a href="/pt/crv-liquidation-calculator/">CRV</a><a href="/pt/doge-liquidation-calculator/">DOGE</a><a href="/pt/dot-liquidation-calculator/">DOT</a><a href="/pt/ena-liquidation-calculator/">ENA</a><a href="/pt/ens-liquidation-calculator/">ENS</a><a href="/pt/etc-liquidation-calculator/">ETC</a><a href="/pt/eth-liquidation-calculator/">ETH</a><a href="/pt/fet-liquidation-calculator/">FET</a><a href="/pt/fil-liquidation-calculator/">FIL</a><a href="/pt/floki-liquidation-calculator/">FLOKI</a><a href="/pt/gala-liquidation-calculator/">GALA</a><a href="/pt/gate-liquidation-calculator/">GATE</a><a href="/pt/grt-liquidation-calculator/">GRT</a><a href="/pt/hbar-liquidation-calculator/">HBAR</a><a href="/pt/hype-liquidation-calculator/">HYPE</a><a href="/pt/hyperliquid-liquidation-calculator/">HYPERLIQUID</a><a href="/pt/icp-liquidation-calculator/">ICP</a><a href="/pt/imx-liquidation-calculator/">IMX</a><a href="/pt/inj-liquidation-calculator/">INJ</a><a href="/pt/jup-liquidation-calculator/">JUP</a><a href="/pt/kas-liquidation-calculator/">KAS</a><a href="/pt/kraken-liquidation-calculator/">KRAKEN</a><a href="/pt/kucoin-liquidation-calculator/">KUCOIN</a><a href="/pt/link-liquidation-calculator/">LINK</a><a href="/pt/ltc-liquidation-calculator/">LTC</a><a href="/pt/mana-liquidation-calculator/">MANA</a><a href="/pt/matic-liquidation-calculator/">MATIC</a><a href="/pt/mexc-liquidation-calculator/">MEXC</a><a href="/pt/mkr-liquidation-calculator/">MKR</a><a href="/pt/near-liquidation-calculator/">NEAR</a><a href="/pt/okx-liquidation-calculator/">OKX</a><a href="/pt/ondo-liquidation-calculator/">ONDO</a><a href="/pt/op-liquidation-calculator/">OP</a><a href="/pt/ordi-liquidation-calculator/">ORDI</a><a href="/pt/pepe-liquidation-calculator/">PEPE</a><a href="/pt/rndr-liquidation-calculator/">RNDR</a><a href="/pt/rune-liquidation-calculator/">RUNE</a><a href="/pt/sand-liquidation-calculator/">SAND</a><a href="/pt/sei-liquidation-calculator/">SEI</a><a href="/pt/shib-liquidation-calculator/">SHIB</a><a href="/pt/sol-liquidation-calculator/">SOL</a><a href="/pt/stx-liquidation-calculator/">STX</a><a href="/pt/sui-liquidation-calculator/">SUI</a><a href="/pt/tao-liquidation-calculator/">TAO</a><a href="/pt/tia-liquidation-calculator/">TIA</a><a href="/pt/ton-liquidation-calculator/">TON</a><a href="/pt/trx-liquidation-calculator/">TRX</a><a href="/pt/uni-liquidation-calculator/">UNI</a><a href="/pt/wif-liquidation-calculator/">WIF</a><a href="/pt/wld-liquidation-calculator/">WLD</a><a href="/pt/xlm-liquidation-calculator/">XLM</a><a href="/pt/xmr-liquidation-calculator/">XMR</a><a href="/pt/xrp-liquidation-calculator/">XRP</a><a href="/pt/zec-liquidation-calculator/">ZEC</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Leia mais"><h2>Leia mais</h2><div class="hl"><a href="/pt/best-liquidation-heatmap-tools/">Melhores ferramentas de mapa de calor de liquidações</a><a href="/pt/liquidation-statistics/">Estatísticas de liquidações</a><a href="/pt/liquidations/by-exchange/">Liquidações por corretora</a><a href="/pt/hyperliquid-liquidations/">Liquidações da Hyperliquid</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Uma pergunta, uma resposta"><h2>Uma pergunta, uma resposta</h2><p>Cada uma destas responde a uma única pergunta com um número ao vivo e diz quem o mediu.</p><div class="hl"><a href="/pt/how-many-traders-liquidated-today/">Quantos traders foram liquidados hoje?</a><a href="/pt/longs-or-shorts-liquidated-more/">Longs ou shorts estão sendo mais liquidados?</a><a href="/pt/biggest-liquidation-today/">Qual é a maior liquidação de hoje?</a><a href="/pt/is-funding-positive-or-negative/">O funding está positivo ou negativo agora?</a><a href="/pt/where-can-i-test-a-trading-bot/">Onde posso testar um bot de trading de graça?</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Construa com estes dados"><h2>Construa com estes dados</h2><p>Toda liquidação desta página está na API JSON grátis, e a mesma conta pode fazer paper trading em cima dela pela Bot API ou por um servidor MCP.</p><div class="hl"><a href="/pt/trading-api/">Bot API de paper trading</a><a href="/pt/free-crypto-api/">API grátis de dados de mercado, sem chave</a><a href="/pt/api-docs/">Referência da API ao vivo</a></div></nav>
+<footer>
+    <span>© 2026 MarginPad</span> <span><a href="/pt/screener">Screener</a> · <a href="/pt/rekt/">Rekt</a> · <a href="/pt/">Ferramentas</a> · <a href="/pt/blog/">Blog</a> · <a href="/pt/terms/">Termos</a> · <a href="/pt/privacy/">Privacidade</a></span>
+  </footer>
+
+  <div class="lq-dim" id="lqDim" hidden></div>
+  <div class="lq-sheet" id="lqSheet" hidden role="dialog" aria-modal="true" aria-labelledby="lqShT"><div class="lq-sh"><div class="t" id="lqShT">-</div><button type="button" class="lq-x" id="lqShX" aria-label="Fechar">&#10005;</button></div><div id="lqShB"></div></div>
+</div>
+<script>(function(){
+  var MAPS=["AAVE","ADA","APT","ARB","ATOM","AVAX","BNB","BONK","BTC","DOGE","DOT","ETH","FIL","FLOKI","HYPE","INJ","LINK","LTC","NEAR","OP","ORDI","PEPE","SEI","SHIB","SOL","SUI","TAO","TON","TRX","UNI","WIF","XRP"],COINS=["BNB","BTC","DOGE","ETH","SOL","XRP"];
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});};
+  function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+  function ago(ts){var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d';}
+  var D=null,V=null,SORT='liq',Q='',ALL=false,CAP=30;
+  /* ── stat strip ─────────────────────────────────────────────────────────────────────────── */
+  function paintTop(d){
+    var m=d.market||{},lp=m.total?m.long/m.total*100:50,sp=100-lp;
+    $('lqTot').textContent=bn(m.total); $('lqTotS').textContent=(((document.documentElement.lang||'').slice(0,2)==='es')?'en ':'across ')+(m.coinsN||d.coins.length)+(((document.documentElement.lang||'').slice(0,2)==='es')?' mercados en ':' markets on ')+(d.exchanges||9)+' exchanges';
+    $('lqLs').innerHTML='<i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i>';
+    $('lqLong').innerHTML=lp.toFixed(0)+'% longs<small>'+bn(m.long)+'</small>'; $('lqShort').innerHTML=sp.toFixed(0)+'% shorts<small>'+bn(m.short)+'</small>';
+    var b=d.big; if(b&&b.usd){ var el=$('lqBig'); el.textContent=bn(b.usd); el.className='v '+(b.side==='long_liquidated'?'dn':'up'); $('lqBigS').textContent=(b.s||'')+' '+(b.side==='long_liquidated'?'long':'short')+(((document.documentElement.lang||'').slice(0,2)==='es')?' en ':' on ')+(b.ex||'')+(((document.documentElement.lang||'').slice(0,2)==='es')?' - un cierre forzado':' - one forced close'); }
+    $('lqCnt').textContent=(m.count||0).toLocaleString('en-US'); $('lqCntS').textContent=((document.documentElement.lang||'').slice(0,2)==='es')?'posiciones en las últimas 24 horas':'positions in the last 24 hours';
+    $('lqUpd').textContent=(((document.documentElement.lang||'').slice(0,2)==='es')?'actualizado ':'updated ')+new Date(d.ts||Date.now()).toUTCString().slice(17,22)+(((document.documentElement.lang||'').slice(0,2)==='es')?' UTC · se actualiza cada minuto':' UTC · refreshes every minute');
+  }
+  /* ── coin rows ───────────────────────────────────────────────────────────────────────────── */
+  function rows(){
+    var cs=(D&&D.coins||[]).slice(), tot=(D&&D.market&&D.market.total)||1;
+    cs=cs.map(function(c){var lp=c.liq?c.long/c.liq*100:50;return {s:c.s,liq:c.liq,long:c.long,short:c.short,lp:lp,sp:100-lp,share:c.liq/tot*100};});
+    if(Q){var q=Q.toUpperCase();cs=cs.filter(function(c){return String(c.s).toUpperCase().indexOf(q)>=0;});}
+    if(SORT==='long')cs.sort(function(a,b){return b.long-a.long;});
+    else if(SORT==='short')cs.sort(function(a,b){return b.short-a.short;});
+    else if(SORT==='lpct')cs=cs.filter(function(c){return c.liq>=1e6;}).sort(function(a,b){return b.lp-a.lp;}); /* a $40k market at 100% long is noise, not a signal */
+    else if(SORT==='spct')cs=cs.filter(function(c){return c.liq>=1e6;}).sort(function(a,b){return b.sp-a.sp;});
+    else cs.sort(function(a,b){return b.liq-a.liq;});
+    return cs;
+  }
+  function paintList(){
+    var box=$('lqList'),cs=rows(),more=$('lqMore');
+    if(!cs.length){box.innerHTML='<div class="lq-empty">No market matches'+(Q?' "'+esc(Q)+'"':'')+'.</div>';more.hidden=true;return;}
+    var show=ALL||Q?cs:cs.slice(0,CAP);
+    box.innerHTML=show.map(function(c,i){
+      var dom=c.lp>=60?'l':(c.sp>=60?'s':'e'), pillT=dom==='l'?'LONGS '+c.lp.toFixed(0)+'%':dom==='s'?'SHORTS '+c.sp.toFixed(0)+'%':'EVEN';
+      var tcls=c.share>=15?'t1':(c.share>=5?'t2':'');
+      return '<button type="button" class="lq-row" data-sym="'+esc(c.s)+'">'+
+        '<span class="lq-tile '+tcls+'"><b>'+(c.share>=10?c.share.toFixed(0):c.share.toFixed(1))+'%</b><small>SHARE</small></span>'+
+        '<span class="lq-main"><span class="l1"><b class="sym">'+esc(c.s)+'</b><span class="pill '+dom+'">'+pillT+'</span><span class="tot">'+bn(c.liq)+'</span></span>'+
+        '<span class="bar"><i class="l" style="width:'+c.lp.toFixed(1)+'%"></i><i class="s" style="width:'+c.sp.toFixed(1)+'%"></i></span>'+
+        '<span class="l2"><span class="lg">'+bn(c.long)+' longs</span><span class="sh">'+bn(c.short)+' shorts</span></span></span></button>';
+    }).join('');
+    more.hidden=!(cs.length>show.length); if(!more.hidden)more.textContent='Show all '+cs.length+' markets';
+  }
+  /* ── venues ──────────────────────────────────────────────────────────────────────────────── */
+  function paintVen(v){
+    var box=$('lqVen'); if(!box)return; var vs=(v&&v.venues)||[];
+    if(!vs.length){box.innerHTML='<div class="lq-empty">Venue split appears with the next rollup.</div>';return;}
+    var mx=Math.max.apply(null,vs.map(function(x){return x.total||0;}))||1;
+    box.innerHTML=vs.slice(0,9).map(function(x){var lp=+x.longPct||50,w=(x.total||0)/mx*100;
+      return '<div class="lq-ven"><b>'+esc(x.venue)+'</b><span class="vb" style="width:'+Math.max(6,w).toFixed(0)+'%"><i class="l" style="width:'+lp.toFixed(0)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(0)+'%"></i></span><span class="vv">'+bn(x.total)+'<small>'+(+x.share||0).toFixed(1)+'% · '+lp.toFixed(0)+'% longs</small></span></div>';}).join('');
+  }
+  /* ── live tape ───────────────────────────────────────────────────────────────────────────── */
+  function paintTape(ev){
+    var t=$('lqTape'); if(!t)return; ev=(ev||[]).slice(0,14);
+    if(!ev.length){t.innerHTML='<span class="lq-ev head">latest</span><span class="lq-ev">quiet right now</span>';return;}
+    t.innerHTML='<span class="lq-ev head">latest</span>'+ev.map(function(e){var l=e.side==='long_liquidated';return '<span class="lq-ev '+(l?'l':'s')+'"><b>'+esc(e.symbol)+' '+(l?'LONG':'SHORT')+'</b>'+bn(e.notional)+'<span class="x">'+esc(e.exchange)+' · '+ago(e.ts)+' ago</span></span>';}).join('');
+  }
+  /* ── the coin sheet ──────────────────────────────────────────────────────────────────────── */
+  function shOpen(sym){
+    var c=(D&&D.coins||[]).filter(function(x){return x.s===sym;})[0]; if(!c)return;
+    var tot=(D.market&&D.market.total)||1, lp=c.liq?c.long/c.liq*100:50, sp=100-lp, share=c.liq/tot*100;
+    $('lqShT').innerHTML=esc(sym)+'<small>'+bn(c.liq)+' liquidated in 24h · '+share.toFixed(1)+'% of all liquidations</small>';
+    var read=lp>=65?'<b>Longs took the pain</b> - '+lp.toFixed(0)+'% of what was wiped on '+esc(sym)+' was buyers liquidated by a drop. A flush like this often marks a local low, but only once it stops.':
+             sp>=65?'<b>Shorts got squeezed</b> - '+sp.toFixed(0)+'% of what was wiped on '+esc(sym)+' was sellers liquidated by a rally. Squeezes feed on themselves until the short side is empty.':
+             '<b>Two-sided</b> - both longs and shorts were liquidated on '+esc(sym)+', which is what a range with leverage on both sides looks like.';
+    var links='<div class="lq-lnk">'+
+      '<a class="go" href="/pt/paper-trade?coin='+encodeURIComponent(sym)+'">Trade '+esc(sym)+' on paper &rarr;</a>'+
+      (MAPS.indexOf(sym)>=0?'<a href="/'+esc(sym.toLowerCase())+'-liquidation-map/">'+esc(sym)+' liquidation map</a>':'')+
+      (COINS.indexOf(sym)>=0?'<a href="/coin/'+esc(sym.toLowerCase())+'/">'+esc(sym)+' coin page</a>':'<a href="/pt/rekt/">Live feed</a>')+'</div>';
+    var ex='';
+    try{ if(window.mpEx){ var cc=window.mpEx.ccNow(), order=window.mpEx.rank(cc);
+      ex='<div class="lq-exh">Trade it for real</div><div class="lq-ex">'+order.slice(0,5).map(function(n){var p=window.mpEx.P[n]||{},blk=window.mpEx.blocked(n,cc),u=window.mpEx.url(n,sym);if(!u)return '';return '<a class="'+(blk?'off':'')+'" style="--c:'+(p.c||'#f7a600')+'" data-mpex="'+esc(n)+'" href="'+esc(u)+'" target="_blank" rel="sponsored noopener noreferrer"><i></i>'+esc(n)+'<small>'+(blk?'not available in '+esc(cc):(p.deep?esc(sym)+' perp':'open'))+'</small></a>';}).join('')+'</div>'; } }catch(e){}
+    $('lqShB').innerHTML='<div class="lq-tiles">'+
+      '<div class="c"><div class="k">Longs wiped</div><div class="v dn">'+bn(c.long)+'</div></div>'+
+      '<div class="c"><div class="k">Shorts wiped</div><div class="v up">'+bn(c.short)+'</div></div>'+
+      '<div class="c"><div class="k">Split</div><div class="v">'+lp.toFixed(0)+' / '+sp.toFixed(0)+'</div></div></div>'+
+      '<div class="lq-read">'+read+'</div>'+links+ex;
+    $('lqSheet').hidden=false; $('lqDim').hidden=false; document.documentElement.style.overflow='hidden';
+    try{ navigator.sendBeacon('/api/track?t=liqsheet&e='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
+  }
+  function shClose(){ $('lqSheet').hidden=true; $('lqDim').hidden=true; document.documentElement.style.overflow=''; }
+  document.addEventListener('click',function(e){
+    var r=e.target.closest&&e.target.closest('.lq-row[data-sym]'); if(r){shOpen(r.getAttribute('data-sym'));return;}
+    if(e.target.closest&&(e.target.closest('#lqShX')||e.target.closest('#lqDim'))){shClose();return;}
+    var c=e.target.closest&&e.target.closest('#lqChips button[data-sort]'); if(c){SORT=c.getAttribute('data-sort');[].forEach.call(c.parentNode.children,function(x){x.classList.toggle('on',x===c);});ALL=false;paintList();return;}
+    if(e.target.closest&&e.target.closest('#lqMore')){ALL=true;paintList();return;}
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape')shClose(); });
+  var qEl=$('lqQ'); if(qEl){ var qt; qEl.addEventListener('input',function(){ clearTimeout(qt); qt=setTimeout(function(){ Q=qEl.value.trim(); paintList(); },120); }); }
+  /* ── data ────────────────────────────────────────────────────────────────────────────────── */
+  function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
+  function load(){
+    J('/api/cg/liquidations').then(function(d){ if(!d||d.error||!d.market||!d.coins){ if(!D){$('lqTot').textContent='-';$('lqTotS').textContent='live data unavailable right now - retry shortly';$('lqList').innerHTML='<div class="lq-empty">Live data unavailable right now - retry shortly.</div>';} return; } D=d; paintTop(d); paintList(); });
+    J('/api/v1/venues').then(function(v){ if(v&&v.data)paintVen(v.data); });
+    J('/api/v1/feed?limit=200').then(function(j){ if(j&&j.events){ var ev=j.events.filter(function(e){return +e.notional>=10000;}); if(ev.length<6)ev=j.events.filter(function(e){return +e.notional>=1000;}); paintTape(ev); } }); /* the all-symbol feed; the tape shows what a reader would call a liquidation, not $28 dust */
+  }
+  load(); setInterval(load,60000);
+  window.__lq={rows:rows,get:function(){return D;}};
+})();</script>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=34829f57"></script>
+</body>
+</html>

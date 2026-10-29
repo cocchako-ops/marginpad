@@ -1,0 +1,2944 @@
+[
+ {
+  "rel": "100x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "10x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "20x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "25x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "50x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "5x-liquidation-calculator/index.html",
+  "cover": 0.2835820895522388,
+  "hit": 19,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "aave-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "aave-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "about/index.html",
+  "cover": 1,
+  "hit": 33,
+  "missing": 0
+ },
+ {
+  "rel": "academy/index.html",
+  "cover": 1,
+  "hit": 231,
+  "missing": 0
+ },
+ {
+  "rel": "ada-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ada-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ai-indicators/index.html",
+  "cover": 1,
+  "hit": 140,
+  "missing": 0
+ },
+ {
+  "rel": "alerts/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "algo-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ape-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "api-docs/index.html",
+  "cover": 0.35,
+  "hit": 7,
+  "missing": 13,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "api/index.html",
+  "cover": 0.10218978102189781,
+  "hit": 14,
+  "missing": 123,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "apr-apy-calculator/index.html",
+  "cover": 0.1590909090909091,
+  "hit": 7,
+  "missing": 37,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "apt-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "apt-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "arb-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "arb-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "arena/index.html",
+  "cover": 1,
+  "hit": 39,
+  "missing": 0
+ },
+ {
+  "rel": "atom-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "atom-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "avax-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "avax-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "axs-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bch-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-altcoins/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-beginners/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-bitcoin-futures/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-copy-trading/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-day-trading/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-ethereum-futures/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-meme-coins/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-scalping/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-shorting/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-solana-futures/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-for-swing-trading/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-exchange-mobile-app/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-futures-exchange/index.html",
+  "cover": 0.25882352941176473,
+  "hit": 22,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "best-crypto-paper-trading-platforms/index.html",
+  "cover": 1,
+  "hit": 147,
+  "missing": 0
+ },
+ {
+  "rel": "best-liquidation-heatmap-tools/index.html",
+  "cover": 0.25806451612903225,
+  "hit": 32,
+  "missing": 92,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "biggest-liquidation-today/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "binance-liquidation-calculator/index.html",
+  "cover": 0.26744186046511625,
+  "hit": 23,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "binance-pnl-calculator/index.html",
+  "cover": 0.1774193548387097,
+  "hit": 11,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "binance-testnet-alternative/index.html",
+  "cover": 1,
+  "hit": 75,
+  "missing": 0
+ },
+ {
+  "rel": "binance-vs-gate/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "binance-vs-kucoin/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "binance-vs-okx/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitcoin-cycle/index.html",
+  "cover": 1,
+  "hit": 61,
+  "missing": 0
+ },
+ {
+  "rel": "bitget-liquidation-calculator/index.html",
+  "cover": 0.3,
+  "hit": 27,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-pnl-calculator/index.html",
+  "cover": 0.22727272727272727,
+  "hit": 15,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-vs-binance/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-vs-gate/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-vs-kraken/index.html",
+  "cover": 0.29850746268656714,
+  "hit": 20,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-vs-kucoin/index.html",
+  "cover": 0.29850746268656714,
+  "hit": 20,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bitget-vs-okx/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/ai-crypto-trading-strategies-2026/index.html",
+  "cover": 0.1935483870967742,
+  "hit": 12,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/backtesting-vs-paper-trading-vs-live/index.html",
+  "cover": 0.23214285714285715,
+  "hit": 13,
+  "missing": 43,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/best-crypto-exchanges-canada/index.html",
+  "cover": 0.359375,
+  "hit": 23,
+  "missing": 41,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/best-crypto-exchanges-europe-mica/index.html",
+  "cover": 0.34328358208955223,
+  "hit": 23,
+  "missing": 44,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/best-crypto-exchanges-us-traders/index.html",
+  "cover": 0.1724137931034483,
+  "hit": 10,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/best-crypto-futures-exchanges/index.html",
+  "cover": 0.19672131147540983,
+  "hit": 12,
+  "missing": 49,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/best-leverage-for-beginners/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/binance-alternatives-belgium/index.html",
+  "cover": 0.20689655172413793,
+  "hit": 12,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/binance-alternatives-netherlands/index.html",
+  "cover": 0.2,
+  "hit": 12,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/bitcoin-depot-bankruptcy/index.html",
+  "cover": 0.2608695652173913,
+  "hit": 12,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/bitcoin-etf-flows-explained/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/btc-dominance-altcoin-season/index.html",
+  "cover": 0.28888888888888886,
+  "hit": 13,
+  "missing": 32,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/bybit-uae-dubai-availability/index.html",
+  "cover": 0.21428571428571427,
+  "hit": 12,
+  "missing": 44,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/bybit-vs-binance-futures/index.html",
+  "cover": 0.13793103448275862,
+  "hit": 12,
+  "missing": 75,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/bybit-vs-binance/index.html",
+  "cover": 0.2153846153846154,
+  "hit": 14,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/can-ai-trade-crypto-futures/index.html",
+  "cover": 0.22641509433962265,
+  "hit": 12,
+  "missing": 41,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/cardano-ada-breaks-020-support/index.html",
+  "cover": 0.22641509433962265,
+  "hit": 12,
+  "missing": 41,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/copy-trading-crypto-explained/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/cpi-week-crypto-playbook/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/cross-vs-isolated-margin/index.html",
+  "cover": 0.19480519480519481,
+  "hit": 15,
+  "missing": 62,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-cost-basis-fifo-lifo-hifo/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-economic-calendar-guide/index.html",
+  "cover": 0.21666666666666667,
+  "hit": 13,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-exchanges-for-chinese-traders/index.html",
+  "cover": 0.26666666666666666,
+  "hit": 12,
+  "missing": 33,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-exchanges-india/index.html",
+  "cover": 0.25,
+  "hit": 12,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-australia/index.html",
+  "cover": 0.1935483870967742,
+  "hit": 12,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-canada/index.html",
+  "cover": 0.20689655172413793,
+  "hit": 12,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-europe/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-france/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-germany/index.html",
+  "cover": 0.21428571428571427,
+  "hit": 12,
+  "missing": 44,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-italy/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-legal-in-the-us/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-netherlands/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-poland/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-scandinavia/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-singapore/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-spain/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-switzerland/index.html",
+  "cover": 0.2,
+  "hit": 12,
+  "missing": 48,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-taxes-us/index.html",
+  "cover": 0.18461538461538463,
+  "hit": 12,
+  "missing": 53,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-uk/index.html",
+  "cover": 0.16901408450704225,
+  "hit": 12,
+  "missing": 59,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-us-taxes/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-usa/index.html",
+  "cover": 0.17647058823529413,
+  "hit": 12,
+  "missing": 56,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-futures-vs-options/index.html",
+  "cover": 0.16091954022988506,
+  "hit": 14,
+  "missing": 73,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-leverage-explained/index.html",
+  "cover": 0.1,
+  "hit": 14,
+  "missing": 126,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-options-expiry-btc/index.html",
+  "cover": 0.26666666666666666,
+  "hit": 12,
+  "missing": 33,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-position-sizing-risk-management/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-tax-india/index.html",
+  "cover": 0.2553191489361702,
+  "hit": 12,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-tax-loss-harvesting/index.html",
+  "cover": 0.2765957446808511,
+  "hit": 13,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-taxes-canada/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/crypto-trading-for-beginners/index.html",
+  "cover": 0.2033898305084746,
+  "hit": 12,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/do-you-pay-tax-on-crypto-losses/index.html",
+  "cover": 0.24489795918367346,
+  "hit": 12,
+  "missing": 37,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/dxy-dollar-index-bitcoin/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/fomc-july-2026-bitcoin/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/funding-rate-arbitrage/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/grid-trading-bot-explained/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-much-to-start-crypto-futures/index.html",
+  "cover": 0.1935483870967742,
+  "hit": 12,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-avoid-liquidation-crypto/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-avoid-liquidation/index.html",
+  "cover": 0.13541666666666666,
+  "hit": 13,
+  "missing": 83,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-calculate-liquidation-price/index.html",
+  "cover": 0.1744186046511628,
+  "hit": 15,
+  "missing": 71,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-calculate-pnl/index.html",
+  "cover": 0.25,
+  "hit": 12,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-calculate-position-size/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 12,
+  "missing": 42,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-hedge-crypto-with-futures/index.html",
+  "cover": 0.19672131147540983,
+  "hit": 12,
+  "missing": 49,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-read-a-liquidation-heatmap/index.html",
+  "cover": 0.15584415584415584,
+  "hit": 12,
+  "missing": 65,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-read-crypto-candlestick-charts/index.html",
+  "cover": 0.19672131147540983,
+  "hit": 12,
+  "missing": 49,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-set-a-stop-loss/index.html",
+  "cover": 0.24528301886792453,
+  "hit": 13,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-swap-crypto-without-an-account/index.html",
+  "cover": 0.13636363636363635,
+  "hit": 12,
+  "missing": 76,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-test-a-crypto-trading-bot/index.html",
+  "cover": 0.1875,
+  "hit": 12,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/how-to-use-ai-to-analyze-crypto-charts/index.html",
+  "cover": 0.20689655172413793,
+  "hit": 12,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/htx-sanctioned-what-us-traders-should-know/index.html",
+  "cover": 0.22641509433962265,
+  "hit": 12,
+  "missing": 41,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/index.html",
+  "cover": 0.03764705882352941,
+  "hit": 16,
+  "missing": 409,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/is-binance-banned-in-europe/index.html",
+  "cover": 0.18181818181818182,
+  "hit": 12,
+  "missing": 54,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/is-binance-bybit-okx-legal-us/index.html",
+  "cover": 0.25925925925925924,
+  "hit": 14,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/is-kucoin-safe-2026/index.html",
+  "cover": 0.25,
+  "hit": 13,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/limit-vs-market-orders/index.html",
+  "cover": 0.21818181818181817,
+  "hit": 12,
+  "missing": 43,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/liquidation-cascade-explained/index.html",
+  "cover": 0.14634146341463414,
+  "hit": 12,
+  "missing": 70,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/liquidation-clusters-explained/index.html",
+  "cover": 0.13953488372093023,
+  "hit": 12,
+  "missing": 74,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/long-short-ratio-explained/index.html",
+  "cover": 0.2549019607843137,
+  "hit": 13,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/long-vs-short-crypto/index.html",
+  "cover": 0.2549019607843137,
+  "hit": 13,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/long-vs-short-liquidations/index.html",
+  "cover": 0.15384615384615385,
+  "hit": 12,
+  "missing": 66,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/maker-vs-taker-fees/index.html",
+  "cover": 0.34782608695652173,
+  "hit": 16,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/mark-price-vs-last-price/index.html",
+  "cover": 0.26,
+  "hit": 13,
+  "missing": 37,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/mica-deadline-passed-what-happened/index.html",
+  "cover": 0.1935483870967742,
+  "hit": 12,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/mica-stablecoins-vs-usdt/index.html",
+  "cover": 0.25,
+  "hit": 12,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/moon-trading-platform-review/index.html",
+  "cover": 0.13559322033898305,
+  "hit": 8,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/new-crypto-futures-exchanges-2026/index.html",
+  "cover": 0.19672131147540983,
+  "hit": 12,
+  "missing": 49,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/nfp-bitcoin-jobs-report/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/nodejs-crypto-trading-bot-tutorial/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/paper-trade-crypto-futures/index.html",
+  "cover": 0.2413793103448276,
+  "hit": 14,
+  "missing": 44,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/pce-inflation-crypto/index.html",
+  "cover": 0.26666666666666666,
+  "hit": 12,
+  "missing": 33,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/perpetual-futures-explained/index.html",
+  "cover": 0.2549019607843137,
+  "hit": 13,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/python-crypto-trading-bot-tutorial/index.html",
+  "cover": 0.1935483870967742,
+  "hit": 12,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/risk-reward-ratio-explained/index.html",
+  "cover": 0.24528301886792453,
+  "hit": 13,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/roe-vs-roi/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/rsi-indicator-explained/index.html",
+  "cover": 0.22033898305084745,
+  "hit": 13,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/spot-vs-futures-trading/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/trading-crypto-in-china/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/treasury-yields-bitcoin/index.html",
+  "cover": 0.23529411764705882,
+  "hit": 12,
+  "missing": 39,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/uae-crypto-tax-residency/index.html",
+  "cover": 0.18461538461538463,
+  "hit": 12,
+  "missing": 53,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/usdt-mica-eu-2026/index.html",
+  "cover": 0.22641509433962265,
+  "hit": 12,
+  "missing": 41,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-a-margin-call/index.html",
+  "cover": 0.24528301886792453,
+  "hit": 13,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-a-trading-journal/index.html",
+  "cover": 0.22033898305084745,
+  "hit": 13,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-a-trailing-stop/index.html",
+  "cover": 0.22033898305084745,
+  "hit": 13,
+  "missing": 46,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-funding-rate/index.html",
+  "cover": 0.08695652173913043,
+  "hit": 12,
+  "missing": 126,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-liquidation-in-crypto/index.html",
+  "cover": 0.19402985074626866,
+  "hit": 13,
+  "missing": 54,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-open-interest/index.html",
+  "cover": 0.2692307692307692,
+  "hit": 14,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-is-slippage/index.html",
+  "cover": 0.23214285714285715,
+  "hit": 13,
+  "missing": 43,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/what-leverage-to-use-crypto/index.html",
+  "cover": 0.21818181818181817,
+  "hit": 12,
+  "missing": 43,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/why-most-crypto-traders-lose-money/index.html",
+  "cover": 0.21052631578947367,
+  "hit": 12,
+  "missing": 45,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "blog/zcash-orchard-counterfeiting-bug/index.html",
+  "cover": 0.23076923076923078,
+  "hit": 12,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bnb-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bnb-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bonk-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bonk-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "btc-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "btc-liquidation-map/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "bybit-liquidation-calculator/index.html",
+  "cover": 0.3,
+  "hit": 27,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-pnl-calculator/index.html",
+  "cover": 0.22727272727272727,
+  "hit": 15,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-binance/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-bitget/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-gate/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-kraken/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-kucoin/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "bybit-vs-okx/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "calendar/index.html",
+  "cover": 1,
+  "hit": 46,
+  "missing": 0
+ },
+ {
+  "rel": "coin/bnb/index.html",
+  "cover": 0.6029411764705882,
+  "hit": 41,
+  "missing": 27,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "coin/btc/index.html",
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "coin/doge/index.html",
+  "cover": 0.6029411764705882,
+  "hit": 41,
+  "missing": 27,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "coin/eth/index.html",
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "coin/sol/index.html",
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "coin/xrp/index.html",
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "coinglass-alternative/index.html",
+  "cover": 1,
+  "hit": 82,
+  "missing": 0
+ },
+ {
+  "rel": "coins/index.html",
+  "cover": 1,
+  "hit": 38,
+  "missing": 0
+ },
+ {
+  "rel": "community/index.html",
+  "cover": 1,
+  "hit": 52,
+  "missing": 0
+ },
+ {
+  "rel": "contact/index.html",
+  "cover": 0.36363636363636365,
+  "hit": 8,
+  "missing": 14,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crv-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-backtester/index.html",
+  "cover": 0.2676056338028169,
+  "hit": 19,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-break-even-calculator/index.html",
+  "cover": 0.2222222222222222,
+  "hit": 10,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-compound-calculator/index.html",
+  "cover": 0.13636363636363635,
+  "hit": 6,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-correlation-matrix/index.html",
+  "cover": 0.38,
+  "hit": 19,
+  "missing": 31,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-cost-basis-calculator/index.html",
+  "cover": 0.27941176470588236,
+  "hit": 19,
+  "missing": 49,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-dca-calculator/index.html",
+  "cover": 0.1111111111111111,
+  "hit": 5,
+  "missing": 40,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-drawdown-calculator/index.html",
+  "cover": 0.125,
+  "hit": 5,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-fee-calculator/index.html",
+  "cover": 0.12195121951219512,
+  "hit": 5,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-funding-cost-calculator/index.html",
+  "cover": 0.11627906976744186,
+  "hit": 5,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-futures-tax-calculator/index.html",
+  "cover": 0.07692307692307693,
+  "hit": 5,
+  "missing": 60,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-liquidations-today/index.html",
+  "cover": 1,
+  "hit": 85,
+  "missing": 0
+ },
+ {
+  "rel": "crypto-margin-calculator/index.html",
+  "cover": 0.17073170731707318,
+  "hit": 7,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-profit-calculator/index.html",
+  "cover": 0.24444444444444444,
+  "hit": 11,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-roi-calculator/index.html",
+  "cover": 0.12195121951219512,
+  "hit": 5,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-slippage-calculator/index.html",
+  "cover": 0.12195121951219512,
+  "hit": 5,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-tax-calculator/index.html",
+  "cover": 0.2878787878787879,
+  "hit": 19,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-trading-canada/index.html",
+  "cover": 0.1794871794871795,
+  "hit": 7,
+  "missing": 32,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-trading-simulator-no-sign-up/index.html",
+  "cover": 1,
+  "hit": 108,
+  "missing": 0
+ },
+ {
+  "rel": "crypto-trading-usa/index.html",
+  "cover": 0.1794871794871795,
+  "hit": 7,
+  "missing": 32,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "crypto-win-rate-calculator/index.html",
+  "cover": 0.12195121951219512,
+  "hit": 5,
+  "missing": 36,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "defi/index.html",
+  "cover": 1,
+  "hit": 79,
+  "missing": 0
+ },
+ {
+  "rel": "doge-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "doge-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "dot-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "dot-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "embed/calendar/index.html",
+  "cover": 0.5714285714285714,
+  "hit": 4,
+  "missing": 3,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "embed/fear-greed/index.html",
+  "cover": 0.5714285714285714,
+  "hit": 4,
+  "missing": 3,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ena-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ens-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "etc-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "etf-flows/index.html",
+  "cover": 0.3392857142857143,
+  "hit": 19,
+  "missing": 37,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "eth-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "eth-liquidation-map/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "exchanges/index.html",
+  "cover": 1,
+  "hit": 368,
+  "missing": 0
+ },
+ {
+  "rel": "fear-greed/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "fet-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "fil-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "fil-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "floki-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "floki-liquidation-map/index.html",
+  "cover": 0.49056603773584906,
+  "hit": 26,
+  "missing": 27,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "forex-trading-simulator/index.html",
+  "cover": 1,
+  "hit": 98,
+  "missing": 0
+ },
+ {
+  "rel": "free-crypto-api/index.html",
+  "cover": 1,
+  "hit": 234,
+  "missing": 0
+ },
+ {
+  "rel": "funding-fee-calculator/index.html",
+  "cover": 0.26666666666666666,
+  "hit": 12,
+  "missing": 33,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "funding/index.html",
+  "cover": 1,
+  "hit": 50,
+  "missing": 0
+ },
+ {
+  "rel": "gala-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "gate-liquidation-calculator/index.html",
+  "cover": 0.3,
+  "hit": 27,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "gate-pnl-calculator/index.html",
+  "cover": 0.22727272727272727,
+  "hit": 15,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "gate-vs-kraken/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "gate-vs-kucoin/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "gate-vs-okx/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "glossary/index.html",
+  "cover": 1,
+  "hit": 718,
+  "missing": 0
+ },
+ {
+  "rel": "grt-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/how-to-avoid-liquidation/index.html",
+  "cover": 0.3829787234042553,
+  "hit": 18,
+  "missing": 29,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/how-to-calculate-position-size/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/how-to-read-funding-rates/index.html",
+  "cover": 0.46511627906976744,
+  "hit": 20,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/how-to-read-liquidations/index.html",
+  "cover": 0.4186046511627907,
+  "hit": 18,
+  "missing": 25,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/index.html",
+  "cover": 1,
+  "hit": 36,
+  "missing": 0
+ },
+ {
+  "rel": "guides/isolated-vs-cross-margin/index.html",
+  "cover": 0.4878048780487805,
+  "hit": 20,
+  "missing": 21,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/long-short-ratio-explained/index.html",
+  "cover": 0.5609756097560976,
+  "hit": 23,
+  "missing": 18,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/long-vs-short-crypto/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/maker-vs-taker-fees/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/perpetual-vs-futures/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/what-is-leverage-in-crypto/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/what-is-liquidation-price/index.html",
+  "cover": 0.46511627906976744,
+  "hit": 20,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/what-is-mark-price/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "guides/what-is-open-interest/index.html",
+  "cover": 0.43902439024390244,
+  "hit": 18,
+  "missing": 23,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hbar-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "highest-leverage-crypto-exchange/index.html",
+  "cover": 0.24444444444444444,
+  "hit": 22,
+  "missing": 68,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "how-many-traders-liquidated-today/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "hype-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hype-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-liquidation-calculator/index.html",
+  "cover": 0.3157894736842105,
+  "hit": 30,
+  "missing": 65,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-liquidations/index.html",
+  "cover": 1,
+  "hit": 97,
+  "missing": 0
+ },
+ {
+  "rel": "hyperliquid-vs-binance/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-vs-bitget/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-vs-bybit/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-vs-okx/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "hyperliquid-whales/index.html",
+  "cover": 1,
+  "hit": 98,
+  "missing": 0
+ },
+ {
+  "rel": "icp-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "imx-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "index-trading-simulator/index.html",
+  "cover": 1,
+  "hit": 98,
+  "missing": 0
+ },
+ {
+  "rel": "index.html",
+  "cover": 1,
+  "hit": 233,
+  "missing": 0
+ },
+ {
+  "rel": "inj-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "inj-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "is-funding-positive-or-negative/index.html",
+  "cover": 1,
+  "hit": 58,
+  "missing": 0
+ },
+ {
+  "rel": "journal/index.html",
+  "cover": 0.3333333333333333,
+  "hit": 4,
+  "missing": 8,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "jup-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kas-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kraken-liquidation-calculator/index.html",
+  "cover": 0.26744186046511625,
+  "hit": 23,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kraken-pnl-calculator/index.html",
+  "cover": 0.1774193548387097,
+  "hit": 11,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kraken-vs-binance/index.html",
+  "cover": 0.29577464788732394,
+  "hit": 21,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kucoin-liquidation-calculator/index.html",
+  "cover": 0.26744186046511625,
+  "hit": 23,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kucoin-pnl-calculator/index.html",
+  "cover": 0.1774193548387097,
+  "hit": 11,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "kucoin-vs-kraken/index.html",
+  "cover": 0.29850746268656714,
+  "hit": 20,
+  "missing": 47,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "leaderboards/index.html",
+  "cover": 1,
+  "hit": 94,
+  "missing": 0
+ },
+ {
+  "rel": "levels/index.html",
+  "cover": 1,
+  "hit": 122,
+  "missing": 0
+ },
+ {
+  "rel": "leverage-calculator/index.html",
+  "cover": 0.125,
+  "hit": 5,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "leverage-report/index.html",
+  "cover": 0.3333333333333333,
+  "hit": 19,
+  "missing": 38,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "leverage-trading-simulator/index.html",
+  "cover": 1,
+  "hit": 114,
+  "missing": 0
+ },
+ {
+  "rel": "link-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "link-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "liquidation-statistics/index.html",
+  "cover": 1,
+  "hit": 92,
+  "missing": 0
+ },
+ {
+  "rel": "liquidations/by-exchange/index.html",
+  "cover": 1,
+  "hit": 84,
+  "missing": 0
+ },
+ {
+  "rel": "liquidations/index.html",
+  "cover": 1,
+  "hit": 94,
+  "missing": 0
+ },
+ {
+  "rel": "long-short/index.html",
+  "cover": 1,
+  "hit": 43,
+  "missing": 0
+ },
+ {
+  "rel": "longs-or-shorts-liquidated-more/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "lowest-fee-crypto-exchange/index.html",
+  "cover": 0.24444444444444444,
+  "hit": 22,
+  "missing": 68,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ltc-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ltc-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "mana-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "markets/index.html",
+  "cover": 1,
+  "hit": 41,
+  "missing": 0
+ },
+ {
+  "rel": "matic-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "mcp-server-for-crypto-trading/index.html",
+  "cover": 1,
+  "hit": 65,
+  "missing": 0
+ },
+ {
+  "rel": "mexc-liquidation-calculator/index.html",
+  "cover": 0.3076923076923077,
+  "hit": 28,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "mexc-pnl-calculator/index.html",
+  "cover": 0.22727272727272727,
+  "hit": 15,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "mkr-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "near-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "near-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "news/index.html",
+  "cover": 0.34782608695652173,
+  "hit": 8,
+  "missing": 15,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "okx-liquidation-calculator/index.html",
+  "cover": 0.27586206896551724,
+  "hit": 24,
+  "missing": 63,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "okx-pnl-calculator/index.html",
+  "cover": 0.1774193548387097,
+  "hit": 11,
+  "missing": 51,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "okx-vs-kraken/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "okx-vs-kucoin/index.html",
+  "cover": 0.2753623188405797,
+  "hit": 19,
+  "missing": 50,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ondo-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "op-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "op-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "open-interest/index.html",
+  "cover": 1,
+  "hit": 40,
+  "missing": 0
+ },
+ {
+  "rel": "ordi-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ordi-liquidation-map/index.html",
+  "cover": 0.49056603773584906,
+  "hit": 26,
+  "missing": 27,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "paper-trading/index.html",
+  "cover": 1,
+  "hit": 131,
+  "missing": 0
+ },
+ {
+  "rel": "pepe-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "pepe-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "pivot-point-calculator/index.html",
+  "cover": 0.33962264150943394,
+  "hit": 18,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "pnl-fee-checker/index.html",
+  "cover": 1,
+  "hit": 81,
+  "missing": 0
+ },
+ {
+  "rel": "position-size-calculator/index.html",
+  "cover": 0.19047619047619047,
+  "hit": 8,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "practice-for-a-funded-account/index.html",
+  "cover": 1,
+  "hit": 71,
+  "missing": 0
+ },
+ {
+  "rel": "premium/index.html",
+  "cover": 1,
+  "hit": 255,
+  "missing": 0
+ },
+ {
+  "rel": "privacy/index.html",
+  "cover": 1,
+  "hit": 82,
+  "missing": 0
+ },
+ {
+  "rel": "rekt/index.html",
+  "cover": 1,
+  "hit": 135,
+  "missing": 0
+ },
+ {
+  "rel": "rewards/index.html",
+  "cover": 1,
+  "hit": 248,
+  "missing": 0
+ },
+ {
+  "rel": "risk-of-ruin-calculator/index.html",
+  "cover": 0.33962264150943394,
+  "hit": 18,
+  "missing": 35,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "risk-reward-calculator/index.html",
+  "cover": 0.25,
+  "hit": 11,
+  "missing": 33,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "rndr-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "rune-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sand-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "season/index.html",
+  "cover": 1,
+  "hit": 109,
+  "missing": 0
+ },
+ {
+  "rel": "sei-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sei-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "shib-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "shib-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sol-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sol-liquidation-map/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "spot/index.html",
+  "cover": 1,
+  "hit": 75,
+  "missing": 0
+ },
+ {
+  "rel": "squads/index.html",
+  "cover": 1,
+  "hit": 32,
+  "missing": 0
+ },
+ {
+  "rel": "status/index.html",
+  "cover": 1,
+  "hit": 27,
+  "missing": 0
+ },
+ {
+  "rel": "stock-trading-simulator/index.html",
+  "cover": 1,
+  "hit": 102,
+  "missing": 0
+ },
+ {
+  "rel": "stop-loss-calculator/index.html",
+  "cover": 0.20930232558139536,
+  "hit": 9,
+  "missing": 34,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "stx-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sui-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "sui-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "support/index.html",
+  "cover": 1,
+  "hit": 36,
+  "missing": 0
+ },
+ {
+  "rel": "tao-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "tao-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "terms/index.html",
+  "cover": 1,
+  "hit": 104,
+  "missing": 0
+ },
+ {
+  "rel": "tia-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ton-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "ton-liquidation-map/index.html",
+  "cover": 0.49056603773584906,
+  "hit": 26,
+  "missing": 27,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "tools/index.html",
+  "cover": 1,
+  "hit": 89,
+  "missing": 0
+ },
+ {
+  "rel": "trading-api/index.html",
+  "cover": 1,
+  "hit": 524,
+  "missing": 0
+ },
+ {
+  "rel": "trading-competition/index.html",
+  "cover": 1,
+  "hit": 129,
+  "missing": 0
+ },
+ {
+  "rel": "trading-journal/index.html",
+  "cover": 1,
+  "hit": 81,
+  "missing": 0
+ },
+ {
+  "rel": "trading-report/index.html",
+  "cover": 1,
+  "hit": 47,
+  "missing": 0
+ },
+ {
+  "rel": "tradingview-paper-trading-alternative/index.html",
+  "cover": 1,
+  "hit": 75,
+  "missing": 0
+ },
+ {
+  "rel": "trx-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "trx-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "uni-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "uni-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "vault/index.html",
+  "cover": 1,
+  "hit": 91,
+  "missing": 0
+ },
+ {
+  "rel": "what-leverage-should-a-beginner-use/index.html",
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "where-can-i-test-a-trading-bot/index.html",
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
+ },
+ {
+  "rel": "where-to-start/index.html",
+  "cover": 1,
+  "hit": 69,
+  "missing": 0
+ },
+ {
+  "rel": "widgets/index.html",
+  "cover": 1,
+  "hit": 48,
+  "missing": 0
+ },
+ {
+  "rel": "wif-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "wif-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "wld-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "wordpress-crypto-widgets/index.html",
+  "cover": 0.1951219512195122,
+  "hit": 16,
+  "missing": 66,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "xlm-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "xmr-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "xrp-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "xrp-liquidation-map/index.html",
+  "cover": 0.4642857142857143,
+  "hit": 26,
+  "missing": 30,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "zec-liquidation-calculator/index.html",
+  "cover": 0.2463768115942029,
+  "hit": 17,
+  "missing": 52,
+  "skipped": true,
+  "allowed": false
+ },
+ {
+  "rel": "app.html → app-pt.html",
+  "cover": 1,
+  "hit": 491,
+  "missing": 0
+ }
+]

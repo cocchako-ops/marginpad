@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="pt" data-es-twin="/trading-api/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_tradingapiindex = {"storeAnsweredIn":"el store respondió en ","ofChecksSoFar":" de las comprobaciones hasta ahora, ","statusIsMeasuredEvery":"el estado se mide cada 10 minutos","notSignedInSign":"<b>No has iniciado sesión.</b> <a href=\"#akb\">Inicia sesión</a> para ver tu plan, generar una clave o elegir un plan.","youAreOnThe":"Estás en la <b>prueba gratis</b> del motor. <span class=\"apdays\">","1DayLeft":"queda 1 día","daysLeft":" días restantes</span>","itEndsOn":" - termina el ","afterThatTheEngine":". Después de eso el motor necesita un plan; los datos de mercado en <code>/api/v1/*</code> siguen siendo gratis y sin clave.","yourFreeTrialOf":"Tu <b>prueba gratis</b> del motor terminó el ","marketDataStaysFree":". Los datos de mercado siguen siendo gratis y sin clave; el motor necesita un plan más abajo.","youAreOnFree":"Estás en <b>Free</b> - 120 peticiones por minuto, 3 claves, 50 posiciones abiertas. Elige un plan más abajo para subir el límite.","youAreOnPro":"Estás en <b>Pro</b>, gratis, porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class=\"apdays\">","leftItEndsOn":" restantes</span> - termina el ","youAreOn":"Estás en <b>","grantedByMarginpad":" - otorgado por MarginPad.","signInFirstThen":"Inicia sesión primero y luego elige un plan.","doneApi":"Hecho - API ","isActiveUntil":" está activa hasta ","yourRewardsBalanceIs":"Tu saldo de recompensas es de $","andThePlanIs":" y el plan cuesta $","youAreAlreadyOn":"Ya tienes un plan más grande.","thatIsAlreadyGoing":"Eso ya se está procesando - dale unos segundos.","invoiceOpenInA":"La factura se abrió en una pestaña nueva. Tu plan empieza en cuanto se confirme el pago.","couldNotOpenAn":"No se pudo abrir la factura. Inténtalo de nuevo en un minuto, o escribe a support@marginpad.io.","couldNotOpenAn2":"No se pudo abrir la factura. Inténtalo de nuevo en un minuto.","paymentReceivedIfThe":"Pago recibido - si el plan todavía no aparece, dale un minuto a la confirmación y recarga la página.","notAvailableIn":"no disponible en ","yourCountry":"tu país","bybitDoesNotOnboard":"Bybit no admite traders en ","insteadAVenueThat":"</b> en su lugar - un exchange que sí lo hace, con una API REST documentada.","justNow":"justo ahora","freeMonth":" · <b style=\"color:#c2f64a\">mes gratis: ","leftKeepProRarr":" restantes</b> <a href=\"#plans\">mantener Pro &rarr;</a>","renewsIn":" · se renueva en ","pro600Min10":" · <a href=\"#plans\">Pro: 600/min, 10 claves, 200 posiciones, webhooks &rarr;</a>","openPositions":" posiciones abiertas","noKeysYetCreate":"<tr><td colspan=\"6\" style=\"color:var(--faint)\">Todavía no hay claves - crea una más abajo.</td></tr>","usageHistoryKeptThey":" (se conserva el historial de uso, ya no autentican)","youHoldTheMaximum":"Tienes el número máximo de claves en este plan","revokeOneOrApi":" - revoca una, o con API Pro sube a 10.","yourUsageLast7":"<h4>Tu uso · últimos 7 días</h4>","refused429ABot":" rechazadas (429)</span> - un bot que llega al límite debería usar el stream WebSocket en vez de hacer polling","full30DaysPer":". Los 30 días completos por clave: <code>GET /api/bot/v1/usage</code>.</div>","couldNotLoadYour":"No se pudieron cargar tus claves - inténtalo de nuevo en un momento.","networkErrorTryAgain":"Error de red - inténtalo de nuevo.","copyItNowAnd":"<small>Cópiala ahora y guárdala en secreto - quien la tenga puede operar en tu cuenta de simulado. La lista de abajo oculta las claves; usa mostrar para revelar una de nuevo.</small></div>","makeYourFirstCall":"<h3>Haz tu primera llamada ahora</h3>","thisIsAReal":"<p>Esta es una petición real contra tu cuenta real. Ejecútala aquí, o pégala en una terminal - es la misma llamada.</p>","runIt":"<div class=\"agb\"><button class=\"btn akb-sm\" type=\"button\" data-go=\"run\">Ejecutar</button>","copyTheCurl":"<button class=\"btn akb-sm\" type=\"button\" data-go=\"copy\">Copiar el curl</button></div>","copyTheCurl2":"Copiar el curl","thatWasYourFirst":"Esa fue tu primera llamada a la API. La misma clave funciona en todos los endpoints de esta página.","theBodyAboveSays":" - el cuerpo de arriba explica por qué. Cada rechazo aquí indica qué hacer en su lugar.","runItAgain":"Ejecutar de nuevo","theRequestCouldNot":"La petición no se pudo hacer desde esta página. Copia el curl y ejecútalo en una terminal.","keyLimitReachedOn":"Límite de claves alcanzado en este plan.","bookLimitReached":"Límite de books alcanzado: ","freeAccountsGetOne":"las cuentas Free tienen un book además de la cuenta principal, Premium cinco.","revokeTheKeysOf":"revoca las claves de un book que ya no uses.","mainIsTheAccount":"\"main\" es la cuenta misma - deja el book vacío para ella.","signInFirst":"Inicia sesión primero.","couldNotCreateA":"No se pudo crear la clave - inténtalo de nuevo.","newNameForThis":"Nuevo nombre para esta clave:","revokeThisKeyAny":"¿Revocar esta clave? Cualquier bot que la use dejará de funcionar de inmediato.","signInFirstThe":"Inicia sesión primero - el modal está abierto.","signInOnThe":"Inicia sesión en la página de inicio primero y luego vuelve."};
+function __esT_tradingapiindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_tradingapiindex[k] != null) return __esD_tradingapiindex[k]; } catch (e) {} return en; }
+
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<title>API grátis de paper trading cripto - Teste seu bot | MarginPad</title>
+<meta name="description" content="Teste seu bot de trading cripto de GRAÇA com uma API REST de paper trading em preços reais ao vivo: abra e feche posições alavancadas, fechamentos parciais, SL/TP e simulação de liquidação. Sem depósito, sem KYC, sem risco - só uma chave de API." />
+<meta name="keywords" content="crypto paper trading api, test trading bot free, crypto bot testing, trading bot simulator, futures simulator api, paper trading rest api, crypto sandbox api, forward test trading bot, demo trading api" />
+<link rel="canonical" href="https://marginpad.io/pt/trading-api/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/trading-api/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/trading-api/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/trading-api/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/trading-api/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/pt/trading-api/" />
+<meta property="og:title" content="API grátis de paper trading cripto - Teste seu bot | MarginPad" />
+<meta property="og:description" content="Aponte seu bot para nossa API gratuita de paper trading: preços reais ao vivo, alavancagem, SL/TP, fechamentos parciais e simulação de liquidação. Sem depósito, sem risco." />
+<meta property="og:image" content="https://marginpad.io/assets/og/trading-api.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="API grátis de paper trading cripto - Teste seu bot" />
+<meta name="twitter:description" content="Uma API REST de paper trading grátis com preços reais ao vivo. Alavancagem, SL/TP, fechamentos parciais, simulação de liquidação. Sem depósito." />
+<link rel="icon" href="/favicon.ico" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebAPI","@id":"https://marginpad.io/trading-api/#webapi","name":"MarginPad Bot API","description":"API REST, WebSocket e MCP para rodar e fazer forward-test de bots de futuros cripto contra preços reais ao vivo, com posições alavancadas simuladas. Dados de mercado grátis sem chave de API; uma chave grátis libera o motor de paper trading.","documentation":"https://marginpad.io/pt/trading-api/","termsOfService":"https://marginpad.io/terms/#api","provider":{"@type":"Organization","@id":"https://marginpad.io/#org","name":"MarginPad","url":"https://marginpad.io"}},{"@type":"SoftwareApplication","@id":"https://marginpad.io/trading-api/#app","name":"MarginPad Bot API","applicationCategory":"DeveloperApplication","applicationSubCategory":"Crypto trading API","operatingSystem":"Any (HTTP)","url":"https://marginpad.io/pt/trading-api/","softwareVersion":"3.0.1","featureList":["Paper trading on live crypto, stock, forex, index and metal prices","Market, limit and stop orders with trailing stops","Server-side fills, funding and liquidation from 1-minute candles","Separate strategy books with their own balance and report","WebSocket position stream","HMAC-signed webhooks","Remote MCP server with 29 tools for AI agents","Keyless market-data endpoints","Official Python and JavaScript clients (pip install marginpad, npm install marginpad)"],"offers":[{"@type":"Offer","name":"Grátis","price":"0","priceCurrency":"USD","description":"O motor de trading inteiro, replay, books, o stream WebSocket e todos os dados de mercado sem chave.","url":"https://marginpad.io/trading-api/#plans","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"0","priceCurrency":"USD","billingIncrement":1,"unitCode":"MON","billingDuration":1,"description":"Grátis para sempre, sem cartão"}},{"@type":"Offer","name":"API Pro","price":"27","priceCurrency":"USD","description":"Cinco books de estratégia, webhooks, 90 dias de histórico de trades e o Trading Report completo com conclusões.","url":"https://marginpad.io/trading-api/#plans","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"27","priceCurrency":"USD","billingIncrement":1,"unitCode":"MON","billingDuration":1,"description":"Por mês, pago em cripto ou do saldo de recompensas da MarginPad. Nada renova automaticamente."}},{"@type":"Offer","name":"API Max","price":"69","priceCurrency":"USD","description":"Vinte books, quinze webhooks.","url":"https://marginpad.io/trading-api/#plans","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"69","priceCurrency":"USD","billingIncrement":1,"unitCode":"MON","billingDuration":1,"description":"Por mês, pago em cripto ou do saldo de recompensas da MarginPad. Nada renova automaticamente."}},{"@type":"Offer","name":"API Business","price":"139","priceCurrency":"USD","description":"Cinquenta books, cinquenta webhooks e cem chaves.","url":"https://marginpad.io/trading-api/#plans","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"139","priceCurrency":"USD","billingIncrement":1,"unitCode":"MON","billingDuration":1,"description":"Por mês, pago em cripto ou do saldo de recompensas da MarginPad. Nada renova automaticamente."}}],"provider":{"@id":"https://marginpad.io/#org"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Ferramentas de trading","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":3,"name":"API de Paper Trading","item":"https://marginpad.io/pt/trading-api/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Como testar um bot de trading cripto de graça","description":"Faça forward-test de qualquer bot de trading cripto contra preços reais ao vivo com uma API REST de paper trading grátis - sem depósito, sem risco.","totalTime":"PT5M","step":[{"@type":"HowToStep","position":1,"name":"Obtenha uma chave de API grátis","text":"Entre em marginpad.io/trading-api só com um e-mail (sem senha, sem KYC) e gere sua chave de API."},{"@type":"HowToStep","position":2,"name":"Alimente sua estratégia com dados ao vivo","text":"Busque preços ao vivo em GET /api/bot/v1/price e candles OHLC em GET /api/bot/v1/klines - ambos funcionam sem chave."},{"@type":"HowToStep","position":3,"name":"Deixe o bot abrir posições simuladas","text":"POST /api/bot/v1/open abre uma posição paper alavancada ao preço real ao vivo, com stop-loss e take-profit opcionais que executam automaticamente."},{"@type":"HowToStep","position":4,"name":"Acompanhe o desempenho e itere","text":"GET /api/bot/v1/positions retorna o PnL não realizado ao vivo e GET /api/bot/v1/account retorna a taxa de acerto e o PnL realizado - meça, corrija, repita até a estratégia estar provada."}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"A API de bots de trading é mesmo grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim. É um simulador de paper trading - as posições usam preços reais de mercado ao vivo, mas nenhum dinheiro real. Entre com um e-mail, gere uma chave de API e comece a testar seu bot na hora. 120 requisições por minuto por chave, 3 chaves e 50 posições abertas, com o motor de trading inteiro, o stream WebSocket e todos os dados de mercado sem chave incluídos. Os planos pagos só elevam os tetos - não adicionam nenhum endpoint que o plano grátis não alcance, exceto webhooks."}},{"@type":"Question","name":"Quão realista é a simulação?","acceptedAnswer":{"@type":"Answer","text":"As ordens são executadas ao preço real ao vivo, as posições usam margem isolada com alavancagem de até 1000x, as perdas ficam limitadas à sua margem, e as posições são liquidadas quando o preço ao vivo cruza o nível de liquidação. Stop-loss e take-profit são executados automaticamente. Fechamentos parciais são aceitos."}},{"@type":"Question","name":"Quais moedas meu bot pode operar?","acceptedAnswer":{"@type":"Answer","text":"Qualquer par USDT com preço ao vivo nas principais corretoras - BTC, ETH, SOL e centenas de altcoins. Consulte qualquer símbolo com GET /api/bot/v1/price?symbol=SOL."}},{"@type":"Question","name":"Preciso de conta em corretora ou de depósito?","acceptedAnswer":{"@type":"Answer","text":"Não. Não há depósito, carteira nem KYC. Você só entra com um e-mail para obter uma chave de API e suas posições persistirem entre as sessões."}},{"@type":"Question","name":"Quais linguagens de programação posso usar?","acceptedAnswer":{"@type":"Answer","text":"Qualquer linguagem que consiga fazer uma requisição HTTPS - Python, JavaScript/Node.js, Go, Rust, PHP ou curl puro. É uma API REST padrão com respostas em JSON e um único header X-API-Key."}},{"@type":"Question","name":"Qual a diferença entre fazer backtest e paper trading de um bot?","acceptedAnswer":{"@type":"Answer","text":"O backtesting reproduz candles históricos, o que é rápido mas pode esconder bugs e overfitting. O paper trading (forward testing) roda seu bot contra preços reais ao vivo em tempo real - pega erros de lógica, dimensionamento ruim de posição e excesso de alavancagem antes de haver dinheiro real em jogo. Faça os dois: backtest primeiro, depois forward-test aqui."}},{"@type":"Question","name":"Quais são os limites?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requisições por minuto por chave, 3 chaves por conta, 50 posições abertas. API Pro ($27 por mês): 600 requisições por minuto, 10 chaves, 200 posições abertas, 5 books de estratégia, 3 webhooks e 90 dias de histórico de trades. API Max ($69 por mês): 2000 requisições por minuto, 30 chaves, 500 posições abertas, 20 books, 15 webhooks. API Business ($139 por mês): 5000 requisições por minuto, 100 chaves, 1000 posições abertas, 50 books, 50 webhooks. Nenhuma chave jamais foi limitada por taxa em qualquer plano."}},{"@type":"Question","name":"O MarginPad Premium inclui a API?","acceptedAnswer":{"@type":"Answer","text":"Não. Desde 15 de setembro de 2026 a Bot API tem seus próprios planos e uma assinatura Premium não altera nenhum limite da API. O Premium libera recursos no site - os indicadores exclusivos de gráfico, o mapa de calor de liquidações, o Ask-AI nos gráficos. Os planos da API liberam limites da API. São comprados separadamente."}},{"@type":"Question","name":"Posso ver os trades do meu bot no site?","acceptedAnswer":{"@type":"Answer","text":"Posições abertas pela API ficam na sua conta MarginPad no lado do servidor, então persistem entre sessões. O Trading Journal e as análises de perfil para posições da API estão no roadmap."}}]}</script>
+<style>
+  /* ── tokens ───────────────────────────────────────────────────────────────────────────────────────────── */
+  :root{
+    --bg:#0a0b0d; --band:#0c0e12; --panel:#0e1117; --panel2:#12161d;
+    --line:#1b212a; --line2:#2a313c;
+    --ink:#e9e7df; --dim:#98a1ab; --faint:#5d6670;
+    --lime:#c2f64a; --cyan:#5cd6e6; --green:#2ebd85; --red:#ff6258; --amber:#ffd75a;
+    --mono:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;
+    --shell:1280px;
+  }
+  *{box-sizing:border-box;}
+  html{touch-action:manipulation;scroll-behavior:smooth;scroll-padding-top:76px;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--lime);text-decoration:none;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:4px;}
+  h1,h2,h3,h4{font-family:var(--disp);margin:0;letter-spacing:-.022em;text-wrap:balance;}
+  p{margin:0;}
+  code{font-family:var(--mono);}
+  /* base: EVERY pre scrolls inside itself. The quickstart panes sit outside .doc, and with the old global
+     rule gone they fell back to overflow:visible and widened the whole document at 390px. */
+  pre{background:#08090c;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0;
+      overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#c8d0d8;max-width:100%;}
+  pre b{color:var(--lime);font-weight:400;}
+  pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
+  .shell{max-width:var(--shell);margin:0 auto;padding:0 28px;}
+
+  /* the status strip: uptime is the first thing a developer checks before building on you, and we had it
+     and hid it. Numbers come from the public /api/status, and the note states how MUCH history there is -
+     four days of sampling is not "99.9% uptime" and must not be dressed up as it. */
+  .statusbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0;padding:13px 0;border-bottom:1px solid var(--line);color:var(--dim);font-size:13px;}
+  .statusbar:hover{text-decoration:none;}
+  .statusbar .sb-l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--faint);}
+  .statusbar .sb-i{display:inline-flex;align-items:center;gap:7px;}
+  .statusbar .sb-i i{width:7px;height:7px;border-radius:50%;background:var(--line2);flex:0 0 auto;}
+  .statusbar .sb-i.ok i{background:var(--green);}
+  .statusbar .sb-i.bad i{background:var(--red);}
+  .statusbar .sb-n{color:var(--faint);font-size:12.5px;}
+  .statusbar .sb-go{margin-left:auto;color:var(--lime);font-weight:600;}
+  @media(max-width:760px){.statusbar .sb-go{margin-left:0;}}
+
+  /* ── live background, ported from the bento homepage (desktop only) ──────────────────────────────────
+     Two things that were learned there and must not be undone here:
+     1. body carries an opaque --bg and a z-index:-1 layer paints BELOW block backgrounds, so the aurora
+        was being painted over by the page itself. The ground colour lives on html, which paints first.
+     2. The drift is driven by the Web Animations API, never @keyframes: the owner's Windows has
+        animation effects off, which silences every @keyframes on his machine. WAAPI still plays, and
+        Chrome hands a pure transform animation to the compositor, so three blurred blobs cost nothing. */
+  .bgfx{display:none;}
+  @media(min-width:941px){
+    html{background:var(--bg);}
+    body{background:transparent;}
+    .bgfx{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+    .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(92,214,230,.06),transparent 65%);}
+    .bgfx::before{content:'';position:absolute;inset:0;background:radial-gradient(62% 44% at 50% -8%,rgba(255,255,255,.055),transparent 70%);}
+    #bgline{position:absolute;inset:0;width:100%;height:100%;}
+  }
+  .kick{font-family:var(--mono);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--faint);}
+
+  /* ── header ───────────────────────────────────────────────────────────────────────────────────────────── */
+  .top{position:sticky;top:0;z-index:60;background:rgba(10,11,13,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .top .shell{display:flex;align-items:center;gap:22px;height:58px;}
+  .brand{font-family:var(--disp);font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.03em;}
+  .brand b{color:var(--lime);}
+  .brand:hover{text-decoration:none;}
+  .tnav{display:flex;align-items:center;gap:20px;margin-left:auto;}
+  .tnav a{color:var(--dim);font-size:14px;font-weight:500;}
+  .tnav a:hover{color:var(--ink);text-decoration:none;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:8px;padding:7px 14px;font:600 13px/1 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .hauth:hover{border-color:var(--lime);}
+
+  /* ── hero ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  /* min-height is RESERVED SPACE, not styling. Measured on a cold font cache: the hero renders 540px tall
+     in the fallback face and collapses to 512 when Bricolage/Familjen swap in, which shoved every section
+     below it up by 28px - 0.176 of layout shift on a first visit, against 0.029 on /premium/. Reserving the
+     taller of the two heights means the swap moves nothing. (The zero-whitespace fix is a metric-adjusted
+     fallback @font-face in the shared fonts.css; that is a site-wide change, not this page's.) */
+  .hero{padding:58px 0 40px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:52px;align-items:start;min-height:540px;}
+  .hero h1{font-size:clamp(34px,4.2vw,54px);font-weight:800;line-height:1.02;margin:18px 0 0;}
+  .hero h1 em{font-style:normal;color:var(--lime);}
+  .hlead{margin-top:20px;font-size:18px;line-height:1.6;color:var(--dim);max-width:52ch;}
+  .hlead b{color:var(--ink);font-weight:600;}
+  .live{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--lime);}
+  .live i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(194,246,74,.55);}
+  .hcta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:0;border-radius:10px;padding:13px 20px;font:700 14px/1 var(--disp);cursor:pointer;background:var(--lime);color:#0a0b0d;}
+  .btn:hover{filter:brightness(1.07);text-decoration:none;}
+  .btn.sec{background:transparent;border:1px solid var(--line2);color:var(--ink);}
+  .btn.sec:hover{border-color:var(--lime);filter:none;}
+  .hnote{margin-top:16px;font-size:13.5px;color:var(--faint);line-height:1.6;}
+  .hnote a{color:var(--dim);}
+
+  /* terminal */
+  .term{min-width:0;border:1px solid var(--line2);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden;box-shadow:0 30px 70px -40px rgba(0,0,0,.9);}
+  .term-h{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .term-h .dot{width:9px;height:9px;border-radius:50%;background:#2a313c;}
+  .term-h .lbl{margin-left:auto;letter-spacing:.1em;text-transform:uppercase;font-size:9.5px;}
+  .term pre{margin:0;padding:17px 18px;font-family:var(--mono);font-size:12.5px;line-height:1.72;color:#c8d0d8;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .term pre + .term-h{border-top:1px solid var(--line);}
+  .c-cm{color:var(--faint);}
+  .c-fn{color:var(--lime);}
+  .c-k{color:var(--cyan);}
+  .c-s{color:#e3c98a;}
+  .c-n{color:#eaeff4;}
+  .c-g{color:var(--green);}
+
+  /* ── proof strip ──────────────────────────────────────────────────────────────────────────────────────── */
+  .proof{display:grid;grid-template-columns:repeat(4,1fr);align-items:start;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .proof div{padding:22px 24px 20px;border-left:1px solid var(--line);}
+  .proof div:first-child{border-left:0;padding-left:0;}
+  .proof .v{font-family:var(--disp);font-size:27px;font-weight:700;letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums;}
+  .proof .l{margin-top:9px;font-size:13px;color:var(--dim);line-height:1.45;}
+
+  /* ── generic section ──────────────────────────────────────────────────────────────────────────────────── */
+  .band{background:var(--band);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  section{padding:64px 0;}
+  .shead{max-width:64ch;}
+  .shead h2{font-size:clamp(25px,2.6vw,33px);font-weight:700;margin:12px 0 0;}
+  .shead p{margin-top:13px;font-size:16.5px;line-height:1.65;color:var(--dim);}
+  .shead p b{color:var(--ink);font-weight:600;}
+
+  /* ── quickstart ───────────────────────────────────────────────────────────────────────────────────────── */
+  .qs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:34px;border-top:1px solid var(--line);}
+  .qstep{min-width:0;padding:24px 26px 26px;border-left:1px solid var(--line);}
+  .qstep:first-child{border-left:0;padding-left:0;}
+  .qn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--lime);}
+  .qstep h3{font-size:18px;font-weight:700;margin:12px 0 8px;}
+  .qstep p{font-size:14px;line-height:1.6;color:var(--dim);}
+  .qstep p code{font-size:12px;color:var(--ink);}
+  .tabs{display:flex;gap:6px;margin:32px 0 0;flex-wrap:wrap;}
+  .tab{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--dim);background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;}
+  .tab[aria-selected="true"]{color:#0a0b0d;background:var(--lime);border-color:var(--lime);font-weight:700;}
+  .tab:hover:not([aria-selected="true"]){color:var(--ink);border-color:var(--line2);}
+  .tpane[hidden]{display:none;}
+  .tpane{margin-top:14px;}
+
+  /* ── key box ──────────────────────────────────────────────────────────────────────────────────────────── */
+  .keybox{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:40px;align-items:start;overflow:hidden;padding:30px;border:1px solid var(--line2);border-radius:16px;background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.055),transparent 55%),var(--panel);margin-top:30px;}
+  .keybox h3{font-size:21px;font-weight:700;}
+  .keybox h2{font-size:27px;font-weight:700;letter-spacing:-.01em;}
+  /* THE FIRST CALL (2026-10-10). Measured: 67% of keys ever minted never made one request, so the key
+     box now hands over a working call and runs it. */
+  .akb-go{margin-top:14px;border:1px solid rgba(194,246,74,.3);border-radius:12px;padding:14px 16px;background:rgba(194,246,74,.045);}
+  .akb-go h3{margin:0 0 6px;font-size:15px;letter-spacing:.01em;}
+  .akb-go p{margin:0 0 10px;font-size:13.5px;opacity:.82;}
+  .akb-go pre{margin:0 0 10px;padding:11px 12px;background:#0b0c0e;border:1px solid rgba(255,255,255,.08);border-radius:9px;overflow-x:auto;font-size:12.5px;line-height:1.55;}
+  .akb-go .agb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .akb-go .ago{margin-top:10px;padding:11px 12px;background:#0b0c0e;border:1px solid rgba(255,255,255,.08);border-radius:9px;max-height:260px;overflow:auto;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+  .akb-go .agok{margin-top:9px;font-size:13.5px;color:#c2f64a;font-weight:600;}
+  /* THE SIMULATION PROFILE */
+  .simg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 6px;}
+  .simc{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;background:rgba(255,255,255,.02);min-width:0;}
+  .simc h3{margin:0 0 7px;font-size:14px;letter-spacing:.01em;}
+  .simc code{font-size:11.5px;}
+  .simc p{margin:0;font-size:13px;opacity:.8;line-height:1.5;}
+  .simc.lead{border-color:rgba(194,246,74,.3);background:rgba(194,246,74,.05);}
+  .simt{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:13px;}
+  .simt th,.simt td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top;}
+  .simt th{font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.55;font-weight:600;}
+  .simt td:first-child{white-space:nowrap;}
+  .simt tr.grp td{padding-top:16px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.55;border-bottom:none;}
+  .simt .rg{opacity:.6;white-space:nowrap;font-size:12px;}
+  @media(max-width:1000px){.simg{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:620px){.simg{grid-template-columns:minmax(0,1fr);}.simtw{overflow-x:auto;}.simt{min-width:520px;}}
+  .keybox.kb-lead{margin-top:0;padding:34px;border-color:rgba(194,246,74,.28);}
+  #getkey{margin-top:34px;}
+  @media(max-width:860px){.keybox h2{font-size:23px;}.keybox.kb-lead{padding:24px;}#getkey{margin-top:24px;}}
+  .keybox > div > p{margin-top:11px;font-size:14.5px;line-height:1.65;color:var(--dim);}
+  .akb-key{display:none;margin-top:14px;background:#08090c;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--lime);word-break:break-all;}
+  .akb-key.on{display:block;}
+  .akb-msg{font-size:12.5px;color:var(--amber);margin-top:10px;}
+  .akb-empty{font-size:13.5px;color:var(--faint);line-height:1.6;}
+
+  /* ── why / differentiators ────────────────────────────────────────────────────────────────────────────── */
+  .diffs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:36px;border-top:1px solid var(--line);}
+  .diff{min-width:0;padding:26px 26px 4px;border-left:1px solid var(--line);}
+  .diff:first-child{border-left:0;padding-left:0;}
+  .diff .dn{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);}
+  .diff h3{font-size:19px;font-weight:700;margin:11px 0 9px;}
+  .diff p{font-size:14.5px;line-height:1.65;color:var(--dim);}
+  .diff p b{color:var(--ink);font-weight:600;}
+  .diff + .diff + .diff + .diff{border-top:1px solid var(--line);margin-top:26px;padding-top:26px;}
+
+  /* ── plans ────────────────────────────────────────────────────────────────────────────────────────────── */
+  .apgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:38px 0 0;border-top:1px solid var(--line2);}
+  .apcard[data-plan="business"] .thr-t i{background:linear-gradient(90deg,var(--lime),var(--cyan));}
+  .apcard{display:flex;flex-direction:column;position:relative;padding:28px 24px 30px;border-left:1px solid var(--line);min-width:0;}
+  .apcard:first-child{border-left:0;}
+  .apcard.feat{background:linear-gradient(180deg,rgba(194,246,74,.055),rgba(194,246,74,0) 70%);box-shadow:inset 0 2px 0 0 var(--lime);}
+  .aphead{display:flex;align-items:center;gap:10px;}
+  .apcard h3{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--dim);}
+  .apcard.feat h3{color:var(--lime);}
+  .appill{font:700 9px/1 var(--mono);letter-spacing:.14em;color:#0a0b0d;background:var(--lime);border-radius:4px;padding:4px 7px;}
+  .appx{font-family:var(--disp);font-size:44px;font-weight:800;letter-spacing:-.035em;color:var(--ink);line-height:1;margin-top:16px;}
+  .appx small{font-size:14px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:4px;}
+    .apwas{margin-top:6px;font-size:12.5px;font-weight:600;letter-spacing:.01em;display:flex;align-items:center;gap:7px;}
+    .apwas s{color:var(--faint);text-decoration-thickness:1.5px;}
+    .apwas b{color:#0a0b0d;background:#c2f64a;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+  .apsub{margin-top:12px;font-size:14px;line-height:1.55;color:var(--dim);min-height:44px;}
+  /* throughput at TRUE scale: 120 / 600 / 2000 req per minute. The free sliver is the honest picture. */
+  /* What a plan UNLOCKS, where the throughput bar used to be. The bar was honest and it drew the wrong thing:
+     measured over a fortnight, no key on this API has ever been rate-limited and the busiest sits at 38% of the
+     FREE ceiling, so a pricing page led by requests-per-minute was selling the one axis nobody is short of. */
+  .apkey{margin:20px 0 6px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#0e1116;}
+  .apkey b{display:block;font-size:15px;color:var(--ink);line-height:1.3;}
+  .apkey span{display:block;margin-top:5px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--faint);}
+  .apkey.feat{border-color:rgba(194,246,74,.28);background:rgba(194,246,74,.045);}
+  .apkey.feat b{color:var(--lime);}
+  .apmeas{margin:26px 0 8px;padding:16px 18px;border-left:2px solid var(--line2);background:#0d1014;border-radius:0 10px 10px 0;}
+  .apmeas b{color:var(--ink);font-size:14.5px;}
+  .apmeas p{margin:8px 0 0;font-size:13.5px;line-height:1.65;color:var(--dim);}
+  .thr{margin:22px 0 4px;}
+  .thr-t{height:6px;border-radius:3px;background:#161b22;overflow:hidden;}
+  .thr-t i{display:block;height:100%;width:0;border-radius:3px;background:var(--dim);}  /* the free sliver is only 6% wide - --line2 made it read as an empty track */
+  .apcard.feat .thr-t i{background:var(--lime);}
+  .apcard[data-plan="max"] .thr-t i{background:var(--lime);}
+  .thr-l{display:flex;align-items:baseline;gap:7px;margin-top:10px;font-family:var(--mono);}
+  .thr-l b{font-size:17px;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
+  .thr-l span{font-size:11px;color:var(--faint);letter-spacing:.06em;}
+  .apfeat{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .apfeat li{font-size:14px;line-height:1.5;color:var(--dim);padding-left:17px;position:relative;}
+  .apfeat li:before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;background:var(--line2);}
+  .apcard.feat .apfeat li:before,.apcard[data-plan="max"] .apfeat li:before,.apcard[data-plan="business"] .apfeat li:before{background:var(--lime);}
+  .apfeat li b{color:var(--ink);font-weight:600;}
+  .apx{font:700 10px var(--mono);color:var(--lime);letter-spacing:.04em;margin-left:5px;}
+  .apbtn{width:100%;margin-top:26px;border:0;border-radius:10px;padding:13px 16px;font:700 13.5px/1 var(--disp);color:#0a0b0d;background:var(--lime);cursor:pointer;}
+  .apbtn:hover:not(:disabled){filter:brightness(1.07);}
+  .apbtn.ghost{background:transparent;border:1px solid var(--line2,var(--line));color:var(--dim);cursor:default;} /* was --faint on near-black: read as a control that failed to load (audit 2026-09-25) */
+  .apbtn:disabled{opacity:.65;cursor:default;}
+  .apbtn.busy{opacity:.7;cursor:progress;}
+  #apPlanState{margin:30px 0 0;border:1px solid var(--line2);border-left:2px solid var(--lime);border-radius:0 12px 12px 0;padding:16px 18px;background:var(--panel);font-size:14.5px;line-height:1.6;color:var(--dim);}
+  #apPlanState b{color:var(--ink);}
+  #apPlanState .apdays{font-family:var(--mono);color:var(--lime);font-weight:700;}
+  #apMsg{margin-top:14px;}
+  .plantw{margin-top:34px;}
+  .plantw table.vs{min-width:760px;}
+  .plantw table.vs th:first-child,.plantw table.vs td:first-child{width:36%;}
+  /* One colour per COLUMN, so the eye climbs the ladder instead of reading the same green four times.
+     Free is the baseline in grey, Pro is the accent, Max is full ink, Business picks up the cyan its
+     throughput bar ends on. The number carries the meaning - there is no "yes" anywhere. */
+  .plantw td:nth-child(2),.plantw th:nth-child(2){color:var(--dim);}
+  .plantw td:nth-child(3),.plantw th:nth-child(3){color:var(--lime);}
+  .plantw td:nth-child(4),.plantw th:nth-child(4){color:var(--ink);}
+  .plantw td:nth-child(5),.plantw th:nth-child(5){color:var(--cyan);}
+  .plantw td:not(:first-child){font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .plantw td b{font-weight:700;}
+  .plantw td.no{color:var(--faint);font-style:normal;}
+  .plantw td:first-child{color:var(--ink);font-weight:500;white-space:normal;}
+  .plantw td:first-child .sub{display:block;margin-top:3px;font-size:12.5px;color:var(--faint);font-weight:400;}
+  .plantw th{color:var(--faint);}
+  .plantw th:nth-child(3){color:var(--lime);}
+  .plantw th:nth-child(5){color:var(--cyan);}
+  .allplans{margin-top:20px;padding:16px 18px;border-left:2px solid var(--line2);font-size:14.5px;line-height:1.7;color:var(--dim);max-width:88ch;}
+  .allplans b{color:var(--ink);}
+  .apfoot{margin-top:26px;font-size:14px;line-height:1.7;color:var(--dim);max-width:78ch;}
+  .apfoot b{color:var(--ink);}
+
+  /* ── docs: rail + column ──────────────────────────────────────────────────────────────────────────────── */
+  .docs{display:grid;grid-template-columns:224px minmax(0,1fr);gap:56px;padding:64px 0 20px;align-items:start;}
+  .docs > *{min-width:0;}
+  .rail{position:sticky;top:78px;max-height:calc(100vh - 100px);overflow-y:auto;padding-right:6px;}
+  .rail .kick{display:block;padding-bottom:12px;border-bottom:1px solid var(--line);}
+  .rail ol{list-style:none;margin:12px 0 0;padding:0;counter-reset:r;}
+  .rail li{counter-increment:r;}
+  .rail a{display:flex;gap:11px;align-items:baseline;padding:6px 0;font-size:13.5px;color:var(--dim);}
+  .rail a:hover{color:var(--ink);text-decoration:none;}
+  .rail a:before{content:counter(r,decimal-leading-zero);font-family:var(--mono);font-size:10px;color:var(--faint);flex:0 0 auto;}
+  .rail a.on{color:var(--lime);}
+  .rail a.on:before{color:var(--lime);}
+  .doc{min-width:0;max-width:880px;}
+  .doc h2{font-size:26px;font-weight:700;margin:0 0 14px;scroll-margin-top:78px;}
+  .doc h2 .tag{font:700 10px/1 var(--mono);letter-spacing:.11em;vertical-align:3px;border-radius:4px;padding:4px 7px;margin-left:9px;}
+  .tag.pro{background:rgba(255,215,90,.13);border:1px solid rgba(255,215,90,.38);color:var(--amber);}
+  .tag.ver{background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);color:var(--lime);}
+  .tag.data{background:rgba(255,98,88,.13);border:1px solid rgba(255,98,88,.36);color:#ff8a80;}
+  .doc > section{padding:0 0 52px;border-bottom:1px solid var(--line);margin-bottom:52px;}
+  .doc > section:last-child{border-bottom:0;}
+  .doc p{font-size:15.5px;line-height:1.72;color:var(--dim);margin:0 0 14px;}
+  .doc p b{color:var(--ink);font-weight:600;}
+  .doc p code,.doc li code{font-size:13px;color:var(--ink);background:#0b0e13;border:1px solid var(--line);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere;}
+  .doc pre{background:#08090c;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#c8d0d8;margin:0 0 16px;-webkit-overflow-scrolling:touch;}
+  .doc pre b{color:var(--lime);font-weight:400;}
+  .doc pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
+
+  /* endpoint matrix */
+  .epg{margin:0 0 18px;border-top:1px solid var(--line);}
+  .epgh{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 0 10px;}
+  .ep{display:grid;grid-template-columns:54px minmax(170px,.75fr) 1.6fr;gap:16px;padding:14px 0;border-top:1px solid var(--line);align-items:baseline;}
+  .ep .m{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 0;text-align:left;}
+  .ep .m.get{color:var(--cyan);}
+  .ep .m.post{color:var(--green);}
+  .ep .u{font-family:var(--mono);font-size:13px;color:var(--ink);overflow-wrap:anywhere;}
+  .ep .u em{font-style:normal;color:var(--lime);}
+  .ep .d{font-size:14px;line-height:1.6;color:var(--dim);}
+  .ep .d b{color:var(--ink);font-weight:600;}
+  .ep .d code{font-size:12px;color:var(--ink);overflow-wrap:anywhere;}
+  .ep .d .tag{font-size:9px;padding:3px 6px;margin-left:0;margin-right:6px;vertical-align:1px;}
+
+  /* tables */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 16px;}
+  table.vs{border-collapse:collapse;width:100%;min-width:520px;font-size:14px;}
+  table.vs th,table.vs td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);}
+  table.vs th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700;border-bottom:1px solid var(--line2);white-space:nowrap;}
+  table.vs td{color:var(--dim);line-height:1.55;}
+  table.vs td:first-child{color:var(--ink);font-weight:500;}
+  table.vs tr:last-child td{border-bottom:0;}
+  table.vs .y{color:var(--green);}table.vs .n{color:var(--red);}table.vs .hl{color:var(--lime);}
+  table.vs code{font-size:12.5px;color:var(--ink);}
+
+  .faq{border-top:1px solid var(--line);padding:18px 0;}
+  .faq b{display:block;font-size:16px;color:var(--ink);margin-bottom:7px;font-weight:600;}
+  .faq p{font-size:14.5px;line-height:1.7;margin:0;}
+  .note{font-size:13.5px;line-height:1.65;color:var(--faint);}
+  .note a{color:var(--dim);}
+  details{border-top:1px solid var(--line);padding:16px 0;}
+  details summary{cursor:pointer;font-size:16px;color:var(--ink);font-weight:600;}
+  details p{margin:9px 0 0;font-size:14.5px;}
+
+  .links{display:grid;grid-template-columns:repeat(2,1fr);gap:0 34px;}
+  .links .faq:nth-child(-n+2){border-top:1px solid var(--line);}
+
+  /* key manager table */
+  .akb-plan{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:0 0 14px;font-size:13.5px;color:var(--dim);}
+  .akb-plan b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:5px 11px;border:1px solid var(--line2);color:var(--ink);}
+  .akb-plan b.prem{border-color:rgba(194,246,74,.45);color:var(--lime);}
+  .akb-plan a{color:var(--lime);font-weight:600;}
+  .akb-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0 12px;}
+  table.akb-t{width:100%;min-width:520px;border-collapse:collapse;font-size:13px;}
+  table.akb-t th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:7px 8px;border-bottom:1px solid var(--line2);}
+  table.akb-t td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--dim);}
+  table.akb-t td:first-child{color:var(--ink);font-weight:600;}
+  table.akb-t td:nth-child(2){font-family:var(--mono);font-size:12px;color:var(--lime);white-space:nowrap;}
+  .akb-kv{font-family:var(--mono);font-size:12px;}
+  .akb-lnk{background:none;border:0;color:var(--faint);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;text-decoration:underline;}
+  .akb-lnk:hover{color:var(--ink);}.akb-lnk.red:hover{color:var(--red);}
+  .akb-new{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px;}
+  .akb-new input{flex:1 1 190px;min-width:0;background:#08090c;border:1px solid var(--line2);border-radius:9px;color:var(--ink);font:inherit;font-size:13px;padding:10px 12px;}
+  .akb-new input:focus{outline:none;border-color:var(--lime);}
+  .akb-sm{padding:10px 18px;font-size:13px;}
+  .akb-rev{font-size:12px;color:var(--faint);margin-top:4px;}
+  .akb-use{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+  .akb-use h4{margin:0 0 7px;font:700 10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--faint);}
+  .akb-use .u{display:grid;grid-template-columns:minmax(90px,1.2fr) repeat(7,minmax(0,1fr));gap:4px;align-items:end;font:11px 'Space Mono',monospace;color:var(--dim)}
+  .akb-use .u b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .akb-use .u i{display:block;font-style:normal;text-align:center}
+  .akb-use .u i em{display:block;height:26px;border-radius:3px 3px 0 0;background:rgba(194,246,74,.35);position:relative}
+  .akb-use .u i em s{position:absolute;left:0;right:0;bottom:0;background:#ff6258;border-radius:0;text-decoration:none}
+  .akb-use .u i small{display:block;color:var(--faint);font-size:9.5px;margin-top:2px}
+  .akb-use .n{font-size:11.5px;color:var(--faint);margin-top:6px}
+  .akb-show{margin-top:12px;background:#08090c;border:1px solid rgba(194,246,74,.45);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--lime);word-break:break-all;}
+  .akb-show small{display:block;font-family:'Familjen Grotesk',sans-serif;font-size:12px;color:var(--amber);margin-top:6px;}
+
+  /* go live */
+  .golive{margin:0;padding:28px 30px;border:1px solid var(--line2);border-radius:16px;background:var(--panel);}
+  .golive .gl-h{font-family:var(--disp);font-weight:700;font-size:21px;color:var(--ink);margin:0 0 10px;}
+  .golive > p{color:var(--dim);font-size:15px;line-height:1.7;margin:0 0 18px;}
+  .golive p b{color:var(--ink);}
+  .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 16px;}
+  .gl-card{position:relative;display:flex;flex-direction:column;gap:11px;padding:20px;border-radius:13px;border:1px solid var(--line2);background:#0b0e13;overflow:hidden;}
+  .gl-card p{margin:0;font-size:14px;line-height:1.6;color:var(--dim);}
+  .gl-hl{border-color:rgba(94,230,200,.35);background:radial-gradient(110% 130% at 100% 0%,rgba(94,230,200,.12),transparent 55%),#0a1210;}
+  .gl-hl::after{content:'HL';position:absolute;right:-6px;bottom:-30px;font:800 100px/1 var(--disp);letter-spacing:-7px;color:rgba(94,230,200,.07);pointer-events:none;}
+  .gl-ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .gl-ch b{font-family:var(--disp);font-size:17px;color:var(--ink);}
+  .gl-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#0f1f1b;color:#5ee6c8;font:800 12px/1 var(--disp);}
+  .gl-pill{font:700 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:99px;padding:5px 9px;}
+  .gl-offer{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28);position:relative;z-index:1;}
+  .gl-offer b{font:800 30px/1 var(--disp);color:#5ee6c8;letter-spacing:-.02em;}
+  .gl-offer span{font-size:12.5px;line-height:1.3;color:#cfe3dd;}
+  .gl-offer i{font-style:normal;font-family:var(--mono);font-weight:700;letter-spacing:.1em;color:#f2fbf8;}
+  .gl-cta{display:inline-flex;align-items:center;gap:9px;font:700 12.5px/1 var(--mono);letter-spacing:.04em;color:#0a0b0d;background:var(--lime);border-radius:10px;padding:12px 18px;margin-top:auto;}
+  .gl-cta:hover{filter:brightness(1.08);text-decoration:none;}
+  .gl-hl .gl-cta{background:#5ee6c8;color:#062a24;position:relative;z-index:1;}
+  .gl-card.mp-ex-off{opacity:.55;filter:saturate(.35);}
+  .mp-ex-na{font:700 9.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .gl-note{display:block;font-size:12px;line-height:1.6;color:var(--faint);}
+
+  footer{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 46px;color:var(--faint);font-size:13px;line-height:1.8;}
+  footer a{color:var(--dim);}
+
+  /* ── responsive ───────────────────────────────────────────────────────────────────────────────────────── */
+  @media(min-width:901px) and (max-width:1099px){ .hero{min-height:578px;} }
+  @media(max-width:1150px){
+    .apgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .apcard:nth-child(odd){border-left:0;}
+    .apcard:nth-child(n+3){border-top:1px solid var(--line);}
+  }
+  @media(max-width:1100px){
+    .docs{grid-template-columns:minmax(0,1fr);gap:0;}
+    .rail{position:static;max-height:none;margin-bottom:34px;overflow:visible;}
+    .rail ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0 20px;}
+  }
+  @media(max-width:760px){ .tnav a{display:none;} }
+  /* On a phone the hero's terminal mock is 411px of decoration standing between the headline and the key box,
+     and the real curl lives in the quickstart directly under it. Same rule the bento homepage already follows. */
+  @media(max-width:720px){ #heroTerm{display:none;} }
+  @media(max-width:900px){
+    .hero{grid-template-columns:minmax(0,1fr);gap:34px;padding:34px 0 30px;min-height:0;}
+    .proof{grid-template-columns:1fr 1fr;}
+    .proof div:nth-child(3){border-left:0;padding-left:0;}
+    .proof div:nth-child(-n+2){border-bottom:1px solid var(--line);}
+    .proof div:nth-child(3),.proof div:nth-child(4){padding-top:20px;}
+    .qs,.diffs,.apgrid{grid-template-columns:minmax(0,1fr);}
+    .qstep,.diff,.apcard{border-left:0;padding-left:0;padding-right:0;border-top:1px solid var(--line);}
+    .apcard:nth-child(odd){border-left:0;}
+    .qs,.diffs{border-top:0;}
+    .apgrid{border-top:0;}
+    .apcard.feat{padding-left:20px;padding-right:20px;background:linear-gradient(180deg,rgba(194,246,74,.06),transparent 60%);box-shadow:inset 2px 0 0 0 var(--lime);}
+    .diff + .diff + .diff + .diff{margin-top:0;padding-top:26px;}
+    .keybox{grid-template-columns:1fr;gap:26px;padding:22px;}
+    .gl-grid,.links{grid-template-columns:1fr;}
+    .ep{grid-template-columns:48px 1fr;gap:6px 12px;}
+    .ep .d{grid-column:1 / -1;}
+    section{padding:44px 0;}
+    .shell{padding:0 18px;}
+    .apsub{min-height:0;}
+  }
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+  /* LAST in the sheet on purpose: the base .band rule is opaque and would hide the live background.
+     Same specificity, so only source order decides. */
+  @media(min-width:941px){ .band{background:rgba(12,14,18,.72);} }
+</style>
+
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<meta name="twitter:image" content="https://marginpad.io/assets/og/trading-api.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"API grátis de paper trading cripto - Teste seu bot","url":"https://marginpad.io/pt/trading-api/","dateModified":"2026-09-28T13:00:51.323Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
+
+<div class="top">
+  <div class="shell">
+    <a class="brand" href="/pt/">MARGIN<b>PAD</b></a>
+    <div class="tnav">
+      <a href="#akb">Obter chave</a> <a href="#plans">Planos</a> <a href="#quickstart">Início rápido</a> <a href="#endpoints">Endpoints</a> <a href="/pt/api-docs/">Referência</a> <a href="/pt/arena/">Arena</a>
+      <button class="hauth" type="button" data-auth-open data-auth-status>Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="shell">
+<div class="hero">
+  <div>
+    <span class="live" id="liveDot"><i></i> Preços ao vivo · execuções no servidor · sem depósito</span>
+    <h1>A corretora que seu bot pode <em>se dar ao luxo de quebrar</em>.</h1>
+    <p class="hlead">Uma API de futuros de paper trading com preços reais ao vivo. Seu bot abre posições alavancadas, deixa ordens limite e stop pendentes, move seus stops e é liquidado - <b>tudo liquidado nos nossos servidores, em dólares simulados</b>. O mesmo código que você vai rodar de verdade, sem nenhuma das consequências.</p>
+    <div class="hcta">
+      <a class="btn" href="#akb">Obtenha uma chave de API grátis</a> <a class="btn sec" href="#quickstart">Leia o quickstart</a>
+    </div>
+    <p class="hnote">Sem cartão, sem KYC, sem depósito. Toda condição de execução é você quem define - tamanho do book, slippage, latência, execuções parciais, recusas, taxas. Grátis para sempre com 120 requisições por minuto - <a href="#plans">o Pro custa $27</a> quando um bot vira quatro. Os dados de mercado continuam sem chave em todos os planos.</p>
+  </div>
+
+  <div class="term" id="heroTerm">
+    <div class="term-h"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>marginpad.io/api/bot/v1</span><span class="lbl" id="termLbl">ao vivo agora</span></div>
+<pre><span class="c-cm"># no key needed - run this right now</span>
+<span class="c-fn">curl</span> <span class="c-s">"https://marginpad.io/api/bot/v1/price?symbol=BTC"</span>
+
+{ <span class="c-k">"symbol"</span>: <span class="c-s">"BTC"</span>, <span class="c-k">"price"</span>: <span class="c-n" id="hpx">…</span>, <span class="c-k">"ts"</span>: <span class="c-n" id="hts">…</span> }</pre>
+    <div class="term-h"><span>POST /open</span><span class="lbl">exemplo</span></div>
+<pre><span class="c-fn">curl</span> -X POST <span class="c-s">".../v1/open"</span> -H <span class="c-s">"X-API-Key: mpb_…"</span> \
+  -d <span class="c-s">'{"symbol":"BTC","side":"long","margin_usd":100,
+       "leverage":10,"trail_pct":1.5}'</span>
+
+{ <span class="c-k">"ok"</span>: <span class="c-g">true</span>, <span class="c-k">"position"</span>: {
+    <span class="c-k">"id"</span>: <span class="c-s">"bot_9f21…"</span>,   <span class="c-k">"entry"</span>: <span class="c-n" id="hentry">…</span>,
+    <span class="c-k">"liq_price"</span>: <span class="c-n" id="hliq">…</span>,  <span class="c-k">"trail_pct"</span>: <span class="c-n">1.5</span>,
+    <span class="c-k">"fee_round_trip_usd"</span>: <span class="c-n">1.10</span> } }</pre>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<!-- GET A KEY -->
+<section id="getkey">
+  <div class="shell">
+    <div class="keybox kb-lead" id="akb">
+      <div>
+        <h2>Obtenha sua chave</h2>
+        <p>Entre com um e-mail - sem senha, sem KYC. As posições do seu bot ficam salvas na sua conta, e uma conta pode ter várias chaves para que um bot de backtest e um bot ao vivo nunca dividam o mesmo orçamento de requisições.</p>
+        <button class="btn" id="akbBtn" type="button">Entrar &amp; obter minha chave de API</button>
+        <div class="akb-key" id="akbKey"></div>
+        <!-- The first-call block lives HERE, not inside #akbKey: creating a key repaints that box and would
+             take the response with it. A confirmation must survive the repaint it triggers. -->
+        <div id="akbGoSlot"></div>
+        <div class="akb-msg" id="akbMsg"></div>
+      </div>
+      <div>
+        <div id="akbMgr" hidden>
+          <div class="akb-plan" id="akbPlan"></div>
+          <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Nome</th><th>Livro</th><th>Chave</th><th>Chamadas</th><th>Último uso</th><th></th></tr></thead><tbody></tbody></table></div>
+          <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Dê um nome à chave (ex.: grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (opcional)" autocomplete="off"><button class="btn akb-sm" type="submit">Criar chave</button></form>
+          <div class="akb-rev" id="akbRev" hidden></div>
+          <div class="akb-use" id="akbUse" hidden></div>
+        </div>
+        <p class="akb-empty" id="akbEmpty">Suas chaves, o uso delas e o book que cada uma opera aparecem aqui depois que você entrar. Chaves são segredos - quem tiver uma pode operar sua conta paper.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLANS ─────────────────────────────────────────────────────────────────────────────────────────── -->
+<section id="plans">
+  <div class="shell">
+    <span id="tiers"></span>
+    <div class="shead">
+      <span class="kick">Planos</span>
+      <h2>O plano grátis é o motor inteiro. Você paga para rodar mais de uma coisa ao mesmo tempo.</h2>
+      <p>Toda conta começa no Free e recebe o produto completo: o motor de trading, taxas reais das plataformas, entradas limite e stop, trailing stops, replay, books, o stream WebSocket e todos os dados de mercado sem chave. Os planos pagos elevam os limites e acrescentam <b>webhooks</b>, detalhamentos do relatório com conclusões escritas, 90 dias de histórico de trades em vez de 30, e mais chaves e books. O motor em si nunca é limitado.</p>
+    </div>
+    <div id="apPlanState" hidden></div>
+    <div class="apgrid">
+      <div class="apcard" data-plan="free">
+        <div class="aphead"><h3><span class="apn">Teste grátis</span></h3></div>
+        <div class="appx">$0 <small style="font-size:15px;color:var(--dim);font-weight:400">por 7 dias</small></div>
+        <p class="apsub">O motor completo, grátis por <b>7 dias</b> a partir do dia em que você cria sua primeira chave. Depois disso, o motor exige um plano - <b>os dados de mercado continuam grátis e sem chave para sempre</b>, sem nenhuma conta.</p>
+        <p class="apsub" id="apTrialMine" hidden></p>
+        <div class="apkey"><b>Uma estratégia</b><span>um book, um diário, um saldo</span></div>
+        <ul class="apfeat">
+          <li><b>3</b> chaves &middot; <b>50</b> posições abertas &middot; <b>120</b> req/min</li>
+          <li>Motor completo: ordens a mercado, limite &amp; stop, trailing stops, dry run, replay</li>
+          <li>Tabela de taxas de <a href="#fees">9 corretoras reais</a></li>
+          <li>Stream WebSocket &middot; MCP &middot; dados de mercado sem chave</li>
+          <li>Trading Report: totais + score de habilidade</li>
+        </ul>
+        <button class="apbtn ghost" type="button" disabled>Seu teste de 7 dias</button>
+      </div>
+      <div class="apcard feat" data-plan="pro">
+        <div class="aphead"><h3>Pro</h3><span class="appill">MAIORIA DOS BOTS</span></div>
+        <div class="appx">$27<small>/mês</small></div>
+        <div class="apwas"><s>$39</s> <b>30% de desconto</b></div>
+        <p class="apsub">Para um bot que roda sem supervisão e para comparar estratégias em vez de ficar no palpite.</p>
+        <div class="apkey feat"><b>10 chaves e 90 dias de histórico</b><span>uma chave por bot &middot; 5 books &middot; webhooks &middot; detalhamentos do relatório</span></div>
+        <ul class="apfeat">
+          <li><b>10</b> chaves &middot; <b>200</b> posições abertas &middot; <b>600</b> req/min</li>
+          <li><b>Webhooks</b> - 3 endpoints assinados, com novas tentativas, entregues enquanto você está offline</li>
+          
+          <li>Trading Report com detalhamentos e conclusões escritas</li>
+          <li><b>90 dias</b> de histórico de trades, relatório e curva de patrimônio - o Free guarda 30</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="pro">Obter Pro</button>
+      </div>
+      <div class="apcard" data-plan="max">
+        <div class="aphead"><h3><span class="apn">Max</span></h3></div>
+        <div class="appx">$69<small>/mês</small></div>
+        <div class="apwas"><s>$99</s> <b>30% de desconto</b></div>
+        <p class="apsub">Para uma frota - uma família de estratégias, cada uma com seu próprio book, rodando ao mesmo tempo.</p>
+        <div class="apkey"><b>30 chaves, 20 books</b><span>livro de ordens mais profundo &middot; 15 webhooks</span></div>
+        <ul class="apfeat">
+          <li><b>30</b> chaves &middot; <b>500</b> posições abertas &middot; <b>2000</b> req/min</li>
+          <li><b>15</b> webhooks</li>
+          
+          <li>Tudo do Pro</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="max">Obter Max</button>
+      </div>
+      <div class="apcard" data-plan="business">
+        <div class="aphead"><h3><span class="apn">Business</span></h3></div>
+        <div class="appx">$139<small>/mês</small></div>
+        <div class="apwas"><s>$199</s> <b>30% de desconto</b></div>
+        <p class="apsub">Para um app ou uma mesa que opera em nome de seus próprios usuários - uma chave para cada, um book para cada.</p>
+        <div class="apkey"><b>100 chaves, 50 books</b><span>uma chave por usuário final, mantidas separadas</span></div>
+        <ul class="apfeat">
+          <li><b>1000</b> posições abertas &middot; <b>5000</b> req/min</li>
+          <li><b>50</b> webhooks</li>
+          
+          <li>Tudo do Max</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="business">Obter Business</button>
+      </div>
+    </div>
+    <p id="apMsg" class="note" hidden></p>
+    <div class="apmeas"><b>Escolha por chaves e histórico, não por throughput - e aqui está a medição.</b><p>Em 125 contas e 174 chaves, o bot mais ativo em produção chega a <b>66 requisições por minuto das 120 que o Free já permite</b>, e <b>nenhuma chave jamais foi limitada por taxa em qualquer plano</b>. O único teto do Free que de fato é atingido são as <b>chaves</b>: 12 dessas 125 contas estão no limite de três chaves ou acima dele, porque uma configuração séria quer uma chave por bot, para que um backtest e uma estratégia ao vivo nunca dividam o mesmo orçamento de requisições. Webhooks e books extras estão nos planos pagos e <b>até agora não tiveram nenhuma adoção</b> - preferimos dizer isso a vender um plano por eles. Tudo o que decide se um resultado é real - o motor, todos os mercados, ordens limite e stop, replay, o stream WebSocket, a simulação totalmente configurável e o detalhamento de custos no seu relatório - está no Free.</p></div>
+    <div class="tw plantw"><table class="vs">
+      <tr><th>O que muda com o plano</th><th><span class="apn">Free</span></th><th>Pro &middot; $27</th><th>Max &middot; $69</th><th><span class="apn">Business</span> &middot; $139</th></tr>
+      <tr><td>API de dados de mercado (<code>/api/v1/*</code>) com a sua chave<br><span class="sub">60 / min por IP sem chave, em todos os planos</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
+      <tr><td>Chaves de API por conta</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
+      <tr><td>Posições abertas ao mesmo tempo</td><td>50</td><td><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
+      <tr><td><a href="#books">Books</a> - diário, saldo e relatório separados por estratégia<br><span class="sub">o limite que a maioria das pessoas realmente atinge</span></td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
+      <tr><td><b>Webhooks</b> - assinados, com novas tentativas, entregues enquanto você está offline</td><td class="no">nenhum</td><td><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
+      
+      <tr><td>Histórico de trades guardado<br><span class="sub">o que <code>/v1/trades</code>, o relatório e a curva de capital ainda conseguem ver</span></td><td>30 dias</td><td><b>90 dias</b></td><td><b>90 dias</b></td><td><b>90 dias</b></td></tr>
+      <tr><td>Requisições por minuto, por chave<br><span class="sub">medido: o bot mais ativo em produção usa 46, e nunca houve limitação</span></td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
+      <tr><td>Trading Report <code>/v1/report</code></td><td>totais + nota de habilidade<br><span class="sub">até 30 dias atrás</span></td><td><b>+ detalhamentos &amp; conclusões</b><br><span class="sub">até 90 dias atrás</span></td><td><b>+ detalhamentos &amp; conclusões</b></td><td><b>+ detalhamentos &amp; conclusões</b></td></tr>
+    </table></div>
+    <p class="allplans"><b>Em todos os planos, Free inclusive:</b> o motor de trading completo - ordens a mercado, limite e stop, trailing stops, fechamentos parciais, dry run e <a href="#replay">replay</a> - o <a href="#stream">stream WebSocket</a>, o <a href="#mcp">servidor MCP</a>, a <a href="#fees">tabela de taxas de 9 plataformas reais</a>, de $1 a $100,000 de margem por trade com até 1000&times; de alavancagem, e todos os endpoints de dados de mercado sem chave em velocidade total. Os planos pagos elevam limites. Não desbloqueiam o produto.</p>
+    <p class="apfoot"><b>O Premium é outro produto.</b> Uma assinatura do <a href="/pt/premium/">MarginPad Premium</a> libera recursos no site - os indicadores exclusivos de gráfico, o mapa de calor de liquidações, o Ask AI nos gráficos - e, desde 15 de setembro de 2026, não altera nenhum limite da API. Estes planos também não liberam esses recursos do site. Compre o que você realmente usa.</p>
+    <p class="apfoot">Os planos são mês a mês, pagos em cripto ou direto do seu saldo de recompensas da MarginPad, e um mês comprado antecipadamente é somado ao que você tem, em vez de substituí-lo. Seus tetos atuais estão sempre em <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - para que um bot os leia em vez de adivinhar.</p>
+    <p class="apfoot"><b>O que você está comprando, por escrito.</b> A <a href="/pt/terms/#api">seção 9 dos termos</a> trata da API em separado: o que um plano inclui e o que acontece no dia em que ele termina, que nada renova automaticamente e não há nada a cancelar, o que nos comprometemos e o que não nos comprometemos a entregar em disponibilidade (não há SLA - dizemos isso, e dizemos a que nos comprometemos em vez disso), aviso de trinta dias antes de qualquer mudança incompatível e que você pode criar e vender produtos comerciais sobre esta API sem nos pedir permissão.</p>
+    <p class="apfoot"><b>Seu bot é avisado antes de o plano vencer, não depois.</b> Toda resposta com chave traz <code>X-MP-Plan</code> e, nos últimos quatorze dias, também traz <code>X-MP-Plan-Expires</code> e <code>X-MP-Plan-Days-Left</code>. Registre esses valores e um bot sem supervisão pode avisar você por conta própria; a mesma contagem regressiva está nesta página e em <code>/v1/usage</code>. Um plano que acaba derruba a chave para o Free - ela nunca para de responder.</p>
+  </div>
+</section>
+
+<!-- ── QUICKSTART ────────────────────────────────────────────────────────────────────────────────────── -->
+<section id="quickstart">
+  <div class="shell">
+    <div class="shead">
+      <span class="kick">Quickstart</span>
+      <h2>Três chamadas do zero até uma posição ao vivo</h2>
+      <p>O primeiro não precisa de chave nenhuma - cole num terminal antes de decidir qualquer coisa. Cada caminho abaixo existe numa <code>v1</code> congelada e numa <code>v2</code> com envelope; escolha uma e ela não vai mudar sob seus pés.</p>
+    </div>
+    <div class="qs">
+      <div class="qstep"><span class="qn">PASSO 01</span><h3>Leia o mercado</h3><p><code>GET /v1/price</code> e <code>/v1/klines</code> não usam chave e têm CORS habilitado. Até 1,000 candles por chamada, sete intervalos, paginados para trás com <code>&amp;end=</code> para o tanto de histórico que um backtest precisar.</p></div>
+      <div class="qstep"><span class="qn">PASSO 02</span><h3>Abra uma posição</h3><p><code>POST /v1/open</code> executa ao preço ao vivo com margem isolada e devolve o nível de liquidação. Adicione <code>type:"limit"</code> ou <code>"stop"</code> para deixar uma ordem pendente no servidor, ou <code>dry_run</code> para precificar um trade sem gravar nada.</p></div>
+      <div class="qstep"><span class="qn">PASSO 03</span><h3>Deixe ele enviar, não faça polling</h3><p>Stops, alvos, trailing stops e liquidações são liquidados do nosso lado, em candles de 1 minuto, com seu bot rodando ou não. <b>Abra o WebSocket e o resultado chega em cerca de dois segundos</b> - é grátis em todos os planos, e é a diferença entre um bot que reage e um que espera o próximo loop.</p></div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Linguagem do quickstart">
+      <button class="tab" role="tab" id="tb-curl" aria-controls="tp-curl" aria-selected="true" type="button">curl</button>
+      <button class="tab" role="tab" id="tb-ws" aria-controls="tp-ws" aria-selected="false" type="button">websocket</button>
+      <button class="tab" role="tab" id="tb-py" aria-controls="tp-py" aria-selected="false" type="button">python</button>
+      <button class="tab" role="tab" id="tb-js" aria-controls="tp-js" aria-selected="false" type="button">node.js</button>
+      <button class="tab" role="tab" id="tb-http" aria-controls="tp-http" aria-selected="false" type="button">http simples</button>
+    </div>
+    <div class="tpane" id="tp-curl" role="tabpanel" aria-labelledby="tb-curl">
+<pre><b># price (no key)</b>
+curl "https://marginpad.io/api/bot/v1/price?symbol=SOL"
+
+<b># open a 20x long with $100 margin</b>
+curl -X POST "https://marginpad.io/api/bot/v1/open" \
+  -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+  -d '{"symbol":"SOL","side":"long","margin_usd":100,"leverage":20}'
+
+<b># check live P&amp;L</b>
+curl "https://marginpad.io/api/bot/v1/positions" -H "X-API-Key: YOUR_KEY"
+
+<b># close half, let the rest run</b>
+curl -X POST "https://marginpad.io/api/bot/v1/close" \
+  -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+  -d '{"id":"POSITION_ID","pct":50}'</pre>
+    </div>
+    <div class="tpane" id="tp-ws" role="tabpanel" aria-labelledby="tb-ws" hidden>
+<pre><b># the whole loop, without a single poll</b>
+const { MarginPad } = require("marginpad");
+const mp = new MarginPad("YOUR_KEY");
+
+mp.stream(ev =&gt; {
+  if (ev.type === "snapshot") console.log("open now:", ev.data.positions.length);
+  if (ev.type === "position") {
+    const p = ev.data.position;                       // opened | updated | closed
+    console.log(ev.data.event, p.symbol, p.pnl_usd ?? p.unrealized_pnl_usd);
+    if (ev.data.event === "closed") decideWhatIsNext(p);
+  }
+});
+
+<b># or with nothing but a URL - any language with a WebSocket client</b>
+wscat -c "wss://marginpad.io/api/bot/v2/stream?api_key=mpb_..."
+&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000}}
+&lt;- {"type":"snapshot","data":{"positions":[...]}}
+&lt;- {"type":"position","data":{"event":"closed","position":{...,"pnl_usd":-1.24}}}</pre>
+      <p class="note" style="margin-top:10px"><b style="color:var(--ink)">Medido, e o motivo de esta aba existir:</b> 76.4% de todas as chamadas a esta API nos últimos 40 dias foram polling de <code>/positions</code> ou <code>/account</code> - 890,921 e 471,390 chamadas - enquanto o WebSocket foi aberto 15 vezes em toda a sua vida. O stream é grátis em todos os planos de propósito - cobrá-lo empurraria todo mundo de volta ao polling, que nos custa mais que o stream. Se precisar fazer polling, devolva o <code>ETag</code>: uma consulta sem mudanças custa então um 304 com body vazio.</p>
+    </div>
+    <div class="tpane" id="tp-py" role="tabpanel" aria-labelledby="tb-py" hidden>
+<pre><b># python - the official client, zero dependencies</b>
+pip install marginpad
+
+from marginpad import MarginPad
+mp = MarginPad("YOUR_KEY")
+
+price = mp.price("BTC")["price"]
+if my_signal(price):  # your strategy here
+    r = mp.open("BTC", "long", margin_usd=50, leverage=10,
+                sl=price * 0.97, trail_pct=1.5,          # trailing stop, ratcheted server-side
+                client_order_id=f"sig-{int(time.time())}")  # a retry can never open twice
+    print("opened", r["position"]["id"], "liq @", r["position"]["liq_price"])
+
+changed = mp.positions(status="open")   # None when nothing changed (ETag / 304)
+print(mp.report()["skill"])</pre>
+    </div>
+    <div class="tpane" id="tp-js" role="tabpanel" aria-labelledby="tb-js" hidden>
+<pre><b># node.js - the official client, zero dependencies</b>
+npm install marginpad
+
+const { MarginPad } = require("marginpad");
+const mp = new MarginPad("YOUR_KEY");
+
+const { price } = await mp.price("ETH");
+if (mySignal(price)) {  // your strategy here
+  const { position } = await mp.open({ symbol: "ETH", side: "short", margin_usd: 50, leverage: 10,
+    trail_pct: 2, client_order_id: "sig-" + Date.now() });
+  console.log("opened", position.id, "liq @", position.liq_price);
+}
+mp.stream(ev =&gt; { if (ev.type === "position") console.log(ev.data.event, ev.data.position.id); });</pre>
+    </div>
+    <div class="tpane" id="tp-http" role="tabpanel" aria-labelledby="tb-http" hidden>
+<pre><b># plain HTTP, any language</b>
+import requests
+API = "https://marginpad.io/api/bot"; H = {"X-API-Key": "YOUR_KEY"}
+r = requests.post(f"{API}/v2/open", headers=H, json={"symbol": "BTC", "side": "long",
+      "margin_usd": 50, "leverage": 10, "dry_run": True}).json()   # priced, nothing written
+print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_price"])</pre>
+    </div>
+    <p class="note" style="margin-top:8px">Autentique com <code>X-API-Key</code> em toda chamada, exceto <code>/price</code>, <code>/klines</code> e <code>/time</code>. <b style="color:var(--ink)">Clientes oficiais</b>, zero dependências - <code>npm install marginpad</code> ou <code>pip install marginpad</code>, ou um arquivo de cada: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, polling com ETag, back-off de 429 e verificação de assinatura de webhook já embutidos.</p>
+
+  </div>
+</section>
+
+
+<!-- PROOF MOVED BELOW THE PRICES -->
+<div class="shell">
+<!-- ── PROOF ─────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="proof">
+  <div><div class="v">26</div><div class="l">endpoints, além de um WebSocket, webhooks e um servidor MCP</div></div>
+  <div><div class="v">9</div><div class="l">tabelas de taxas de corretoras reais pelas quais suas execuções podem ser cobradas</div></div>
+  <div><div class="v">1,000<span style="font-size:18px">&times;</span></div><div class="l">alavancagem máxima, em qualquer par USDT com preço ao vivo</div></div>
+  <div><div class="v">156</div><div class="l">mercados numa só chave: perps cripto, ações dos EUA, forex, índices e metais</div></div>
+  <div><div class="v" id="pvCalls">4.4M</div><div class="l">chamadas atendidas para os bots que já rodam nela</div></div>
+</div>
+
+<div class="shell">
+  <a class="statusbar" href="/pt/status/" id="statusBar" aria-label="Live service status"> <span class="sb-l">STATUS</span> <span class="sb-i" id="sbStore"><i></i>base de trading</span> <span class="sb-i" id="sbColl"><i></i>coletor de liquidações</span> <span class="sb-i" id="sbCron"><i></i>tarefas agendadas</span> <span class="sb-n" id="sbNote">lendo /api/status&hellip;</span> <span class="sb-go">Status completo e histórico &rarr;</span> </a>
+</div>
+
+<!-- ── WHY ───────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="band">
+<section id="why">
+  <div class="shell">
+    <div class="shead">
+      <span class="kick">Por que não uma testnet de exchange</span>
+      <h2>Uma testnet te dá preços falsos. Isto te dá preços reais e dinheiro falso.</h2>
+      <p>Os livros de testnet são rasos, os preços se afastam do mercado real e eles são resetados sem aviso. Tudo aqui é precificado a partir do feed multi-corretora ao vivo em que nossos próprios gráficos rodam - só os dólares são simulados.</p>
+    </div>
+    <div class="diffs">
+      <div class="diff"><span class="dn">Simulação</span><h3>Monte a corretora em que você vai realmente operar</h3><p>Dezoito campos e oito presets: o tamanho do book e se ele é um orçamento real, quanto custa atravessar o livro de ordens na entrada <em>e na saída</em>, quanto tempo sua ordem fica em trânsito, execuções parciais, com que frequência a plataforma recusa, sua própria taxa, funding e onde fica a liquidação. <b>O Freqtrade deixa você definir o saldo inicial e mais nada</b>; uma testnet dá o que o book dela der. <a href="#sim">Cada campo, com seu intervalo &rarr;</a></p></div>
+      <div class="diff"><span class="dn">Execução</span><h3>O servidor guarda as suas ordens</h3><p>Entradas limite, entradas stop, stop-losses, alvos e trailing stops são todos avaliados do nosso lado, contra candles de 1 minuto. <b>Seu bot pode estar offline, reiniciando ou sendo reimplantado</b> e a execução ainda acontece no seu nível, marcada com o minuto em que o mercado realmente o atingiu.</p></div>
+      <div class="diff"><span class="dn">Custos</span><h3>Taxas que batem com a sua conta real</h3><p>As duas pontas pagam uma taxa taker, cobrada como round trip no fechamento, com o funding acumulado nas marcações. Indique uma corretora e a conta paper é cobrada pela <b>tabela publicada dessa corretora</b> menos o nosso desconto de indicação - então uma estratégia de scalping falha aqui pelo mesmo motivo que falharia lá.</p></div>
+      <div class="diff"><span class="dn">Falha</span><h3>Liquidação que se comporta</h3><p>Margem isolada, manutenção de 0.5%, perdas limitadas à sua margem. Um trailing stop é movido pelo extremo de cada candle <b>depois</b> que esse candle foi checado contra o stop em vigor - assim, um candle nunca pode te stopar num nível que ele mesmo criou.</p></div>
+      <div class="diff"><span class="dn">Idempotência</span><h3>Um timeout não é um mistério</h3><p>Envie <code>client_order_id</code> e uma abertura repetida retorna a posição que a primeira chamada criou, marcada com <code>idempotent: true</code>. Fechar também aceita um. Esse único campo é a diferença entre um bot em que você confia sem supervisão e um que você precisa vigiar.</p></div>
+      <div class="diff"><span class="dn">Observabilidade</span><h3>Push, não polling</h3><p>Um WebSocket grátis envia eventos de posição e marcações a cada ~2 s; os webhooks fazem POST do mesmo formato para a sua própria URL, assinados com HMAC e com novas tentativas, mesmo sem nada seu conectado. ETags tornam quase gratuitas as consultas que você mantém.</p></div>
+      <div class="diff"><span class="dn">Medição</span><h3>Ela dá nota à sua estratégia</h3><p>Cada book tem seu próprio diário, curva de patrimônio e drawdown. <code>/v1/report</code> retorna taxa de acerto e retorno por moeda, faixa de alavancagem, lado e hora, com uma nota de habilidade - e <b>não diz nada com menos de oito trades</b> em vez de inventar um padrão.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- ── DOCS ──────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="band">
+<div class="shell">
+<div class="docs">
+  <nav class="rail" id="rail" aria-label="Referência">
+    <span class="kick">Referência</span>
+    <ol>
+      <li><a href="#endpoints">Endpoints</a></li>
+      <li><a href="#engine">Como o motor funciona</a></li>
+      <li><a href="#fees">Taxas por corretora</a> <a href="#realism">Realismo de execução</a> <a href="#sim">O perfil de simulação</a></li>
+      <li><a href="#reliable">Bots que não quebram</a></li>
+      <li><a href="#stream">WebSocket</a></li>
+      <li><a href="#webhooks">Webhooks</a></li>
+      <li><a href="#books">Books</a></li>
+      <li><a href="#replay">Replay</a></li>
+      <li><a href="#keys">Gerenciando chaves</a></li>
+      <li><a href="#arena">Arena de bots</a></li>
+      <li><a href="#mcp">MCP para clientes de IA</a></li>
+      <li><a href="#v2">v1 e v2</a></li>
+      <li><a href="#errors">Códigos de erro</a></li>
+      <li><a href="#liq-api">Dados de liquidação</a></li>
+      <li><a href="#workflow">Backtest, paper, real</a></li>
+      <li><a href="#faq">FAQ &amp; guias</a></li>
+    </ol>
+  </nav>
+
+  <div class="doc">
+
+<section id="endpoints">
+  <h2>Endpoints</h2>
+  <p>Vinte e quatro delas. Tudo é JSON sobre HTTPS, com CORS ativado e um único cabeçalho. Troque <code>v1</code> por <code>v2</code> em qualquer caminho para receber o envelope <code>{ok,data,ts}</code>.</p>
+
+  <div class="epg">
+    <div class="epgh">Dados de mercado - sem precisar de chave</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/price<em>?symbol=BTC</em></span><span class="d">Preço ao vivo de qualquer par USDT. <b>Não precisa de chave</b> - teste agora mesmo no seu navegador.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/klines<em>?symbol=BTC&amp;interval=60</em></span><span class="d">Candles OHLC para sua estratégia (intervalos: 1, 5, 15, 30, 60, 240, 1440 minutos). <b>Não precisa de chave.</b> Até <b>1000 candles</b> por chamada, o mais novo por último - cerca de 16 horas em 1m, 3 dias em 5m, 10 dias em 15m, 41 dias em 1h, 166 dias em 4h e aproximadamente 3 anos em 1d. Passe <code>&amp;end=&lt;unix ms&gt;</code> para paginar mais para trás.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/markets</span><span class="d">Tudo o que é negociável, com <code>asset_class</code>, <code>max_leverage</code> e <code>taker_fee_pct</code> por símbolo. Filtre com <code>?class=crypto|stock|forex|metal|index</code>. Chame uma vez na inicialização em vez de descobrir os limites por tentativa e erro.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/time<em>?client_ts=…</em></span><span class="d">Relógio do servidor. <b>Não precisa de chave.</b> Envie seu próprio unix ms e você recebe <code>drift_ms</code> de volta. Um bot que agrupa candles com base em um relógio local que deriva monta barras que ninguém mais vê, e isso é um sofrimento para depurar de fora.</span></div>
+  </div>
+<pre><code>bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1")
+while len(all_bars) &lt; wanted:
+    end_ms = bars[0]["time"] * 1000          # oldest candle in hand
+    bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1&amp;end={end_ms}")
+    if not bars: break
+    all_bars = bars + all_bars</code></pre>
+
+  <div class="epg">
+    <div class="epgh">Trading</div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open</span><span class="d">Abre uma posição simulada ao preço ao vivo. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp opcionais). Retorna a posição, incluindo seu <code>liq_price</code>. Adicione <code>"dry_run":true</code> para receber de volta o trade precificado - entrada, quantidade, preço de liquidação e distância, a taxa de abertura e o round trip completo - <b>sem gravar nada</b>. Use o dry run para dimensionar uma posição ou para testar seu bot unitariamente contra o motor real.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>trail_pct</em></span><span class="d"><code>trail_pct</code> define um stop que <b>acompanha o melhor preço visto desde a entrada</b> a essa distância percentual, ajustado <b>no servidor</b>: pelos extremos dos candles de 1 minuto na varredura por minuto e pelo preço ao vivo a cada leitura de <code>/positions</code>, então ele continua se movendo enquanto seu bot está offline e nunca afrouxa. Um long aberto a 60,000 com <code>trail_pct: 1</code> começa com o stop em 59,400; quando o preço marca 63,000, o stop vai para 62,370. As posições trazem <code>trail_pct</code> e <code>trail_hwm</code>.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>type:"limit"</em></span><span class="d">A ordem <b>fica pendente no servidor</b> em vez de executar agora: <code>{"symbol":"BTC","side":"long","type":"limit","limit_price":58000,"margin_usd":100,"leverage":20}</code>. Ela executa ao <b>seu</b> preço, não ao preço em que o motor percebeu o cruzamento - a execução é encontrada a partir da máxima/mínima de 1m, então um pavio que recuou entre duas checagens ainda conta. Seu bot não precisa estar rodando. Um long limite deve ficar <b>abaixo</b> do mercado e um short limite <b>acima</b>; caso contrário você recebe <code>limit_marketable</code> em vez de uma execução a mercado silenciosa.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>type:"stop"</em></span><span class="d">Uma <b>entrada em rompimento</b>: um long <b>acima</b> do mercado ou um short <b>abaixo</b> dele, por ex. <code>{"symbol":"BTC","side":"long","type":"stop","limit_price":66000,"margin_usd":100,"leverage":10}</code>. Mesmo motor de uma ordem limite - executa <b>no nível</b> a partir de candles de 1m, com o navegador fechado - mas o lado errado é recusado (<code>stop_wrong_side</code>) para que um stop e um limite nunca sejam confundidos. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> e <code>dry_run</code> valem todos.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/close</span><span class="d">Feche uma posição ao preço ao vivo. Body: <code>{"id":"bp...","pct":50}</code> - <code>pct</code> é opcional (padrão 100); fechamentos parciais dividem a posição exatamente como no site.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/close_all</span><span class="d">Botão de pânico - fecha todas as posições abertas ao preço ao vivo numa só chamada.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/sltp</span><span class="d">Mova o stop-loss, o take-profit ou o trailing stop de uma posição <b>aberta</b> sem fechá-la. Corpo: <code>{"id":"bot...","sl":63500,"tp":66000,"trail_pct":1.5}</code> - envie <code>null</code> para limpar um, omita um campo para mantê-lo. Os níveis são checados contra o lado da entrada. Antes disso existir, era preciso fechar e reabrir para mover um stop, o que mudava sua entrada e custava uma ida e volta completa.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Ordens pendentes</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/orders</span><span class="d">Suas ordens pendentes, cada uma com <code>type: "limit" | "stop"</code>, mais as últimas 20 que foram executadas, expiraram ou foram canceladas - uma executada traz o <code>position_id</code> que criou. As ordens valem até serem canceladas, expiram após 30 dias, e até 20 podem ficar pendentes por conta.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/modify_order</span><span class="d">Altere uma ordem pendente <b>no lugar</b>: <code>{"order_id":"lo...","limit_price":58500,"sl":57000,"tp":62000,"margin_usd":150,"leverage":10,"trail_pct":1}</code> - envie só o que muda. Antes disso o único jeito era cancelar e recriar, o que perdia o <code>client_order_id</code> da ordem. A direção é rederivada do mercado agora e a marca d'água de candles reinicia, então um nível movido nunca pode ser executado num candle impresso antes da mudança. Uma ordem executada, cancelada ou expirada responde <code>409</code>.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/cancel_order</span><span class="d">Cancela uma ordem pendente. Body: <code>{"order_id":"lo..."}</code>. Se já foi executada ou cancelada, volta <code>409</code>, então uma nova tentativa nunca desfaz uma execução.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Conta e estado</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/positions<em>?status=open</em></span><span class="d">Todas as suas posições com <code>mark_price</code> e <code>unrealized_pnl_usd</code> ao vivo; liquidações atingidas e SL/TP são liquidados automaticamente. <code>?status=open|closed</code> reduz o corpo ao que o seu loop realmente lê; <code>?since=&lt;unix ms&gt;</code> e <code>If-None-Match</code> (304 quando nada mudou) também são aceitos.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/account</span><span class="d">Resumo da conta: posições abertas, margem em uso, P&amp;L não realizado ao vivo, P&amp;L realizado <b>de todo o período</b>, ganhos/perdas, taxa de acerto, além de <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> e <code>return_pct</code>.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/balance</span><span class="d">Só o dinheiro: saldo inicial, saldo, patrimônio, margem em uso, margem livre, PnL não realizado. Mais barato que <code>/account</code> quando é só isso que a sua lógica de dimensionamento precisa.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/trades<em>?limit=100&amp;before=…</em></span><span class="d">O registro completo de trades fechados, com paginação. <code>/positions</code> é limitado a 100 linhas; este percorre toda a janela de retenção - siga <code>next_before</code> até voltar <code>null</code>. Use para calcular estatísticas da estratégia sobre o registro completo em vez de uma ponta truncada.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/accounts</span><span class="d">Todo <a href="#books">book</a> da conta com seus números acumulados e as chaves ligadas a ele.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/equity<em>?days=30&amp;step_min=60</em></span><span class="d">A curva de patrimônio deste book, agrupada em intervalos, com <code>max_drawdown_pct</code> e o ponto não realizado ao vivo no final.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/reset</span><span class="d">Devolve este book a $10,000 com <code>{"confirm":true}</code>: fechamentos arquivados, ordens canceladas. Recusado com <code>409 open_positions_exist</code> enquanto houver algo aberto.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/usage</span><span class="d">Seu plano, seus limites, o que resta na janela atual e <code>usage_30d</code> - chamadas por dia por endpoint mais <code>refused</code> (os 429), para um bot ver o quanto está perto do limite.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Custos, inteligência e entrega</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/fees</span><span class="d">Por qual tabela de taxas suas execuções são cobradas: as corretoras que modelamos com taker, maker, nosso desconto de indicação e a taxa efetiva, mais o seu padrão atual. <code>POST {"venue":"bybit"}</code> define o padrão da conta; <code>fee_venue</code> em <code>/open</code> o substitui para uma posição. Veja <a href="#fees">taxas por corretora</a>.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/report<em>?days=30</em></span><span class="d">O <a href="/pt/trading-report/">Trading Report</a> da conta por trás da chave, medido a partir dos próprios trades fechados: totais e a <b>pontuação de skill</b> em todos os planos; taxa de acerto e retorno por <b>moeda</b>, <b>faixa de alavancagem</b>, <b>lado</b>, <b>hora</b> e <b>dia</b>, além das <b>conclusões</b> escritas no API Pro e no Max (<code>locked[]</code> indica o que fica retido). Toda conclusão traz o <code>n</code> em que se apoia e não diz nada com menos de 8 trades.</span></div>
+    
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/webhooks</span><span class="d"><span class="tag pro">API PRO</span>Eventos de trading <b>enviados para a sua URL</b>, segundos depois de acontecerem, com seu bot conectado ou não - veja <a href="#webhooks">webhooks</a>. <code>POST {"act":"add","url":"https://…"}</code> registra um, <code>{"act":"test","id":…}</code> envia um ping e retorna o status que seu servidor respondeu, <code>{"act":"delete","id":…}</code> remove.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/replay</span><span class="d"><span class="tag ver">2.6</span>Execute seu bot por um dia UTC passado nos nossos próprios candles de 1 minuto - veja <a href="#replay">replay</a>.</span></div>
+  </div>
+  <p class="note">Legível por máquina: <a href="/api/openapi.json">especificação OpenAPI 3.1</a> com schemas completos de requisição e resposta · uma <a href="/pt/api-docs/">referência interativa</a> de onde você pode disparar chamadas · o <a href="/api/changelog">changelog</a> (<a href="/api/changelog?format=json">JSON</a>).</p>
+</section>
+
+<section id="engine">
+  <h2>Como o motor funciona</h2>
+  <div class="faq"><b>Execuções e preços</b><p>As ordens são executadas na hora ao preço real ao vivo (feed multi-corretora - os mesmos preços do nosso Paper Trade). Execuções pela API não têm <b>slippage</b> (as do próprio site têm), então trate os preços de entrada como levemente otimistas.</p></div>
+  <div class="faq"><b>Taxas de trading - leia isto antes de medir uma estratégia</b><p>Toda posição paga uma <b>taxa taker nos dois lados</b>, liquidada em <code>pnl_usd</code> no fechamento. É cobrada como round trip: <code>fee = qty × (entry + exit) × rate</code>. O funding é acumulado nas posições mantidas durante as marcações de funding e deduzido do mesmo jeito. Posições abertas já mostram o PnL <b>líquido</b> do round trip em <code>unrealized_pnl_usd</code>, então o que você vê é o que será liquidado.</p>
+    <div class="tw"><table class="vs">
+      <tr><th>A mercado</th><th class="hl">Taxa por lado</th><th>Round trip sobre $10,000 nocionais</th></tr>
+      <tr><td>Perps de cripto</td><td class="hl">0.055%</td><td>$11.00</td></tr>
+      <tr><td>Ações &amp; ETFs</td><td class="hl">0.02%</td><td>$4.00</td></tr>
+      <tr><td>Metais &amp; índices</td><td class="hl">0.015%</td><td>$3.00</td></tr>
+      <tr><td>Principais pares de forex</td><td class="hl">0.008%</td><td>$1.60</td></tr>
+    </table></div>
+    <p>Prefere a conta exata da corretora em que vai rodar? <a href="#fees">Cobre a conta paper pela tabela dela</a>, desconto de indicação incluído. Acima de cerca de 180× de alavancagem a taxa diminui para que o round trip nunca passe de 20% da sua margem. <code>GET /v1/markets</code> retorna a taxa exata e o limite de alavancagem de cada símbolo. <b>Estratégias de curto prazo vivem ou morrem por esse número</b> - um scalp que rende menos que o round trip é perdedor, não importa quantas vezes acerte.</p></div>
+  <div class="faq"><b>Margem, liquidação, SL/TP, trailing</b><p>Margem isolada. As perdas ficam limitadas à sua margem. O preço de liquidação usa uma taxa de margem de manutenção de 0.5%; quando o preço ao vivo a cruza, a posição é liquidada automaticamente ao preço de liquidação. <b>Ordens de stop-loss e take-profit também são executadas automaticamente</b> - quando o preço cruza o seu <code>sl</code> ou <code>tp</code> (verificado contra os pavios dos candles de 1 minuto na varredura por minuto, então um spike que recuou ainda conta), a posição é encerrada naquele nível. Um <b>trailing stop</b> avança a partir do melhor preço visto: na varredura ele é movido pelo extremo de cada candle <i>depois</i> que esse candle foi checado contra o stop em vigor, então uma barra nunca pode derrubar você em um nível que ela mesma criou.</p></div>
+  <div class="faq"><b>Saldo e patrimônio</b><p>Toda conta paper começa com um valor nominal de <b>$10,000</b>. <code>/v1/account</code> e <code>/v1/balance</code> informam <code>balance_usd</code>, <code>equity_usd</code> e <code>free_margin_usd</code> para você expressar resultados como retorno em vez de um valor solto em dólares. Esse saldo é um <b>placar, não uma restrição</b>: a margem não é debitada dele e uma abertura nunca é recusada por falta de fundos (<code>margin_enforced: false</code>). Dimensione suas posições por conta própria se quiser que a restrição seja real.</p></div>
+  <div class="faq"><b>Headers de rate limit</b><p>Toda resposta traz <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> e <code>X-RateLimit-Reset</code> (segundos epoch); um 429 acrescenta <code>Retry-After</code>. Os limites são contados <b>por chave</b>, então uma segunda chave tem o próprio orçamento. <code>X-RateLimit-Scope</code> informa se valeu o limite da chave ou o limite por IP.</p></div>
+  <div class="faq"><b>Os trades do seu bot no site</b><p>Posições abertas pela API ficam na sua conta no lado do servidor, então aparecem em <a href="/pt/paper-trade">My Trades</a>, contam para as tabelas da temporada e para o XP, e alimentam seu <a href="/pt/trading-report/">Trading Report</a> - o mesmo relatório que <code>GET /v1/report</code> devolve ao bot.</p></div>
+  <div class="faq"><b>A API de streaming é grátis de propósito</b><p>Colocá-lo atrás de um paywall empurraria todo mundo de volta ao polling, o que nos custa muito mais que o stream - então os incentivos se alinham: use o WebSocket e nós dois ganhamos. Os dados de mercado continuam sem chave e grátis para sempre; uma chave só eleva o limite.</p></div>
+</section>
+
+<section id="realism">
+  <h2>Realismo de execução, porque um backtest que te lisonjeia não vale nada</h2>
+  <p>Duas coisas neste motor são deliberadamente generosas, e é melhor citá-las do que deixar você descobrir numa conta real. Uma ordem a mercado executa ao <b>preço ao vivo</b>, então uma posição nova mostra 0.00 não realizado e a linha de entrada fica exatamente onde você pediu. E a margem de manutenção é fixa em <b>0.5%</b>, qualquer que seja o valor da posição. Para aprender a operar, as duas são a escolha certa. Para provar uma estratégia, são otimistas, e quanto maior o tamanho, mais otimistas ficam.</p>
+  <p>Por isso são chaves liga/desliga, não suposições. Desligadas por padrão - nada do que você já construiu muda - e ligadas, o preço de execução e o preço de liquidação se comportam como um book real e uma tabela real de limites de risco os fazem se comportar.</p>
+<pre><code>GET  /api/bot/v2/realism                     // your setting, the venue table and the whole tier ladder
+POST /api/bot/v2/realism {"slippage": true, "margin_tiers": true, "margin_venue": "binance"}
+
+<b># or per call, so one strategy can be tested both ways without touching the account</b>
+POST /api/bot/v1/open {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,
+                       "slippage": true, "margin_tiers": true, "mmr_pct": 0.4}</code></pre>
+  <div class="dgrid">
+    <div class="dcard"><h3>Slippage</h3><p>A execução se move contra você pelo que custa percorrer um livro de ordens real: <b>0.01%</b> nos majors, <b>0.05%</b> em cripto mais fina, <b>0.005%</b> em forex, <b>0.02%</b> em ações, metais e índices. Uma compra paga mais caro, uma venda vende mais barato - nunca o contrário.</p></div>
+    <div class="dcard"><h3>Faixas de margem</h3><p>A margem de manutenção sobe com o valor nocional, como numa tabela de limite de risco de corretora, então uma posição grande é liquidada <b>mais cedo</b> - uma exigência de manutenção maior tolera menos movimento adverso antes de fechar você, que é exatamente o que uma corretora quer em posições grandes. Este é o nosso modelo publicado, não a tabela de uma corretora específica, e <code>GET /realism</code> retorna a escada inteira - você nunca deveria precisar fazer engenharia reversa dela a partir de um preço de liquidação.</p></div>
+    <div class="dcard"><h3>Corretora da margem</h3><p>Em qual taxa de margem de manutenção publicada de cada plataforma se basear: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. Ela muda <b>apenas</b> onde fica o preço de liquidação - nunca o tamanho, as taxas ou o P&amp;L.</p></div>
+  </div>
+  <p class="note"><b>Esses três são apenas um subconjunto.</b> <a href="#sim">A simulação inteira é configurável</a> - o tamanho do book e se ele é um orçamento real, seus próprios números de slippage e taxas, impacto do tamanho, latência, execuções parciais, recusas e funding - e oito presets a configuram em uma chamada. Uma posição mantém a margem de manutenção com que foi executada, então ativar isso nunca reescreve um trade que você já tem, e cada fechamento registra com o que rodou. É daí que vem a coluna <i>Fills</i> da <a href="#arena">arena</a> - uma tabela que ranqueia bots deveria dizer quais deles estavam no modo fácil.</p>
+</section>
+
+<section id="sim">
+  <h2>Monte a plataforma em que você realmente vai operar</h2>
+  <p>As três chaves acima fazem parte de algo maior. <b>Tudo o que este motor assume é um campo que você pode definir</b>: o tamanho do book e se ele é um orçamento real, quanto custa atravessar o livro de ordens na entrada e na saída, quanto tempo sua ordem fica em trânsito, se uma ordem é executada parcialmente, com que frequência a plataforma diz não, quanto você paga de taxas, se o funding é cobrado e onde fica o preço de liquidação.</p>
+  <p><b>Os padrões são deliberadamente fáceis, e vale dizer isso com clareza.</b> Uma ordem a mercado é executada inteira ao preço ao vivo, a margem de manutenção é fixa em 0.5%, o saldo é um placar que nunca recusa uma abertura, e não há latência nem impacto do tamanho. É o lugar certo para colocar um bot <em>para rodar</em>. É o lugar errado para julgar se ele tem vantagem. Uma chamada muda isso.</p>
+<pre><code>GET  /api/bot/v2/sim                    <b># your profile, every field with its range, and the presets</b>
+POST /api/bot/v2/sim {"preset": "realistic"}
+
+<b># or exactly your own venue</b>
+POST /api/bot/v2/sim {"start_balance_usd": 2500, "margin_enforced": true,
+                      "slippage": true, "slippage_bps": 8, "impact_bps_per_100k": 15,
+                      "latency_ms": 250, "taker_bps": 5.5, "margin_venue": "bybit"}</code></pre>
+  <p>Valores fora do intervalo são <b>recusados, nunca ajustados</b> - uma estratégia jamais deve ser medida sob uma configuração que você não escolheu. Uma posição mantém, pelo resto da vida, a margem de manutenção, a taxa e o custo de cruzamento de saída com que foi executada; ligar qualquer coisa nunca reescreve um trade que você já tem.</p>
+
+  <h3>Oito presets, para você não ter que inventar dezoito números</h3>
+  <div class="simg">
+    <div class="simc"><h3>sem atrito</h3><p>O motor como sempre foi. Ponha o bot para rodar, veja os trades entrarem e só depois mude algo.</p></div>
+    <div class="simc lead"><h3>realista</h3><p>O ideal para medir um edge: o book custa o que medimos nas duas pontas, tamanho custa mais, a escada de limite de risco está ligada, o funding é cobrado e o book recusa o que não consegue bancar.</p></div>
+    <div class="simc"><h3>binance &middot; bybit &middot; okx &middot; hyperliquid</h3><p>A taxa taker e a margem de manutenção publicadas por essa corretora, com o nosso custo de cruzamento medido, margem aplicada e a escada ativados.</p></div>
+    <div class="simc"><h3>thin_book &middot; brutal</h3><p>Um perp de média capitalização em um horário ruim, e depois algo pior do que qualquer coisa que você vai encontrar: 60 bps para atravessar, 120 bps por $100k de tamanho, execuções a partir de um quarto, uma abertura em cada vinte recusada, um segundo de latência. <b>Números nossos, não de nenhuma plataforma.</b> Se uma estratégia ainda funciona aqui, ela não vive de sorte na execução.</p></div>
+  </div>
+
+  <h3>Cada campo, seu intervalo e o que ele muda</h3>
+  <div class="simtw"><table class="simt">
+  <thead><tr><th>Campo</th><th>Intervalo</th><th>O que faz</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">O book &mdash; quanto o bot pode arriscar</td></tr>
+    <tr><td><code>start_balance_usd</code></td><td class="rg">100 &ndash; 10,000,000</td><td>O book contra o qual seus resultados são medidos: <code>return_pct</code>, a curva de patrimônio e o drawdown máximo seguem ele. Teste com o tamanho de conta que você realmente vai operar.</td></tr>
+    <tr><td><code>margin_enforced</code></td><td class="rg">off / on</td><td><b>A maior diferença entre um placar e uma corretora.</b> Ligado, uma abertura que precisa de mais do que a sua margem livre é recusada com <code>402 insufficient_margin</code>. A margem livre é o saldo menos a margem comprometida &mdash; o lucro não realizado de uma posição aberta não serve de garantia para uma nova, porque toda posição aqui é de margem isolada.</td></tr>
+    <tr><td><code>leverage_max</code></td><td class="rg">0 &ndash; 10,000</td><td>Seu próprio teto abaixo do limite de cada mercado. Prova que uma estratégia nunca derivou em silêncio para 100&times;. 0 = o limite do mercado.</td></tr>
+    <tr><td><code>max_notional_usd</code></td><td class="rg">0 &ndash; 1,000,000,000</td><td>Seu próprio teto para o valor nocional de uma posição. 0 = nenhum teto seu.</td></tr>
+    <tr class="grp"><td colspan="3">A execução &mdash; quanto custa atravessar o livro</td></tr>
+    <tr><td><code>slippage</code></td><td class="rg">off / on</td><td>Execute contra si mesmo como percorrer um livro real: 0.01% nos majors cripto, 0.05% em cripto mais fina, 0.005% em forex, 0.02% em ações, metais e índices. Uma compra paga mais caro, uma venda vende mais barato.</td></tr>
+    <tr><td><code>slippage_bps</code></td><td class="rg">0 &ndash; 500</td><td>Seu próprio valor no lugar dessa tabela. 10 = 0.10%. <code>null</code> volta para a tabela.</td></tr>
+    <tr><td><code>impact_bps_per_100k</code></td><td class="rg">0 &ndash; 500</td><td>Tamanho custa mais, porque uma ordem maior percorre mais fundo o livro: este tanto de pontos-base a mais por $100,000 de valor nocional.</td></tr>
+    <tr><td><code>exit_slippage</code></td><td class="rg">ligado / desligado</td><td>Pague o custo de cruzamento também na saída, não só na entrada. <b>Sem isso, uma estratégia de scalping parece melhor do que jamais consegue operar.</b> Um stop, take-profit ou liquidação ainda executa no próprio nível &mdash; veja os limites abaixo.</td></tr>
+    <tr><td><code>latency_ms</code></td><td class="rg">0 &ndash; 2,000</td><td>Sua ordem fica em trânsito por esse tempo, e <b>o preço é relido depois</b> &mdash; então a execução é o mercado como estava quando sua ordem chegou, não quando você a enviou.</td></tr>
+    <tr><td><code>partial_fills</code></td><td class="rg">off / on</td><td>Uma ordem a mercado pode ser executada com menos do que pediu. O tamanho executado é <code>position.margin_usd</code>; a proporção está no header <code>X-MP-Fill-Pct</code> e no objeto <code>fill</code> da v2.</td></tr>
+    <tr><td><code>min_fill_pct</code></td><td class="rg">10 &ndash; 100</td><td>A pior proporção que você pode receber. 40 significa algo entre 40% e 100% do que você pediu.</td></tr>
+    <tr><td><code>reject_rate_pct</code></td><td class="rg">0 &ndash; 50</td><td>Esta parcela das aberturas é recusada com <code>503 venue_rejected</code> de propósito. <b>Um bot que não sabe lidar com uma recusa não está pronto</b>, e este é o lugar barato para descobrir isso.</td></tr>
+    <tr class="grp"><td colspan="3">O custo</td></tr>
+    <tr><td><code>taker_bps</code></td><td class="rg">0 &ndash; 100</td><td>Sua própria taxa por lado em vez da tabela de uma corretora. 5.5 = 0.055%. A redução por alavancagem continua valendo, então nenhuma configuração faz uma ida e volta comer o valor todo.</td></tr>
+    <tr><td><code>funding</code></td><td class="rg">ligado / desligado</td><td>Desligado, o funding nunca é cobrado. <b>É assim que você distingue um edge de execução de um edge de carry</b> &mdash; um short mantido durante funding positivo pode ser lucrativo só por causa do funding.</td></tr>
+    <tr><td><code>funding_mult</code></td><td class="rg">0 &ndash; 5</td><td>Escala a taxa real de 8 horas.</td></tr>
+    <tr class="grp"><td colspan="3">A liquidação</td></tr>
+    <tr><td><code>margin_venue</code></td><td class="rg">10 corretoras</td><td>De quem é a taxa de margem de manutenção publicada que decide onde fica a liquidação. Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. Ela move <b>só</b> o preço de liquidação.</td></tr>
+    <tr><td><code>margin_tiers</code></td><td class="rg">off / on</td><td>A margem de manutenção sobe com o valor nocional como uma escada de limite de risco, então uma posição grande é liquidada <b>mais cedo</b>. A escada inteira está publicada em <code>GET /v2/realism</code>.</td></tr>
+    <tr><td><code>mmr_pct</code></td><td class="rg">0.05 &ndash; 10</td><td>Sua própria margem de manutenção, prevalecendo sobre <code>margin_venue</code> e o nosso padrão.</td></tr>
+  </tbody></table></div>
+
+  <h3>O que isto não modela, declarado em vez de descoberto</h3>
+  <p>Um stop-loss, take-profit ou liquidação executa <b>no próprio nível</b> e nunca paga o custo de cruzamento: a varredura do lado do servidor roda sobre todas as contas de uma vez e não consegue ler um perfil por passada. Não há livro de ordens com profundidade real por trás do modelo de impacto &mdash; <code>impact_bps_per_100k</code> é um custo linear declarado, não um livro simulado. E todo o custo de cruzamento da saída é cobrado contra o preço de marcação, que é um spread só, não um bid e um ask que você possa cotar separadamente. Todo o resto acima é aplicado exatamente como escrito.</p>
+  <p class="note">Cada valor deste perfil pode ser lido de volta em <code>GET /api/bot/v2/sim</code>, incluindo como seria uma execução agora mesmo &mdash; um número que o bot não consegue ler de volta é um número que ele precisa adivinhar. <code>GET /api/bot/v2/report</code> então mostra quanto a execução realmente custou: taxas, funding, bruto contra líquido e <code>kept_pct</code>, a parcela do bruto que sobreviveu. Esse é grátis em todos os planos, porque não é um detalhamento de onde está o seu edge &mdash; é se o edge é real.</p>
+</section>
+<section id="fees">
+  <h2>Taxas como na corretora que você realmente vai usar</h2>
+  <p>Por padrão, toda execução paper paga a taxa da MarginPad: 0.055% por lado em cripto, as duas pontas, cobrada como round trip no fechamento. É uma média justa, mas não é a conta exata de ninguém. Se você já sabe onde o bot vai rodar de verdade, <b>cobre a conta paper pela tabela dessa corretora</b> - a taxa taker publicada, menos o desconto de indicação que um cadastro pela MarginPad recebe lá - para que o forward test se liquide como a conta real vai se liquidar:</p>
+<pre><code>GET  /api/bot/v2/fees                       // the table below + your current default
+POST /api/bot/v2/fees  {"venue":"hyperliquid"}   // account default: every open from now on, site and API
+POST /api/bot/v2/open  {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,"fee_venue":"bybit"}   // just this one
+POST /api/bot/v2/open  {..., "dry_run":true}      // -&gt; fee_venue, taker_fee_pct, fee_vs_marginpad_default_usd</code></pre>
+  <div class="tw"><table class="vs">
+    <tr><th>Corretora</th><th>Taker</th><th>Nosso desconto de indicação</th><th class="hl">Você paga por lado</th></tr>
+    <tr><td>Bybit</td><td>0.055%</td><td>20%</td><td class="hl"><b>0.044%</b></td></tr>
+    <tr><td>Binance</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
+    <tr><td>Bitget</td><td>0.060%</td><td>20%</td><td class="hl"><b>0.048%</b></td></tr>
+    <tr><td>Gate</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
+    <tr><td>Hyperliquid</td><td>0.045%</td><td>4% (código <code>MARGINPAD</code>)</td><td class="hl"><b>0.0432%</b></td></tr>
+    <tr><td>OKX &middot; Kraken</td><td>0.050%</td><td>-</td><td class="hl"><b>0.050%</b></td></tr>
+    <tr><td>MEXC</td><td>0.020%</td><td>-</td><td class="hl"><b>0.020%</b></td></tr>
+    <tr><td>KuCoin</td><td>0.060%</td><td>-</td><td class="hl"><b>0.060%</b></td></tr>
+    <tr><td>Padrão MarginPad</td><td colspan="2">nenhuma plataforma escolhida</td><td class="hl">0.055%</td></tr>
+  </table></div>
+  <p class="note">As taxas são o nível base publicado das corretoras e os descontos que informamos em <a href="/pt/exchanges/">/exchanges/</a>; a API as retorna com <code>source</code> para você saber que são números divulgados, não medições. As duas pontas pagam a taxa taker (o motor paper executa a mercado; um rebate maker numa entrada pendente não é modelado). Só perps cripto - ações, forex, metais e índices mantêm as taxas por classe da MarginPad, qualquer que seja a corretora. Posições abertas mantêm a taxa com que foram executadas; o teto de alavancagem extrema (um round trip nunca acima de 20% da margem) continua valendo. A mesma escolha é o seletor <b>"Taxas como na"</b> no formulário do <a href="/pt/paper-trade">Paper Trade</a>, então um bot e os trades manuais do dono dele pagam taxas idênticas.</p>
+</section>
+
+<section id="reliable">
+  <h2>Escrevendo um bot que não quebra</h2>
+  <p><b>Sempre envie <code>client_order_id</code> ao abrir.</b> Esta é a linha mais importante destes docs. Sem ele, uma requisição que expira na rede deixa você no escuro: a posição abriu ou não? Tente de novo e você pode ter duas. Com ele, a nova tentativa devolve a posição que a primeira chamada criou, marcada com <code>idempotent: true</code>:</p>
+<pre><code>POST /api/bot/v2/open
+{"symbol":"BTC","side":"long","margin_usd":100,"leverage":5,"client_order_id":"sig-2026-08-19-1403"}
+
+// first call            -&gt; {"ok":true,"data":{"position":{"id":"bot...", ...}}}
+// same call retried     -&gt; {"ok":true,"data":{"position":{"id":"bot...", ...},"idempotent":true}}</code></pre>
+  <p>Use um valor que a sua estratégia consiga gerar de forma determinística - um id de sinal, ou símbolo mais timestamp do candle. Os ids são lembrados por 7 dias.</p>
+  <p><b>Fechar também aceita uma.</b> Envie <code>client_order_id</code> em <code>/close</code> e uma nova tentativa informa o que a primeira chamada fez (<code>idempotent: true</code>) em vez de um erro que você precisa interpretar.</p>
+  <p><b>Envie o <code>symbol</code> ao fechar.</b> Toda linha de <code>/positions</code> já o traz, então é de graça adicionar e isso encurta o fechamento de forma mensurável:</p>
+<pre><code>POST /api/bot/v2/close
+{"id":"bot...","symbol":"BTC"}    // one price fetch, one round trip
+{"id":"bot..."}                   // server must first look up which symbol to price</code></pre>
+  <p>Nosso trading store é uma única instância fixada em uma região, então cada salto extra custa o que custa a ida e volta até ela de onde você está. Medido em 2026-08-19: cerca de <b>20&nbsp;ms a partir da Europa</b>, mas <b>198&nbsp;ms de mediana e 368&nbsp;ms no percentil 95 a partir de Singapura</b>. Um feed de preços frio soma cerca de 400&nbsp;ms por cima, e sem a dica um fechamento em um par líquido poderia acabar esperando por um ilíquido no mesmo lote. Com a dica, um fechamento é um salto mais um preço já aquecido. Um <code>symbol</code> errado ou desatualizado não custa nada - o servidor percebe e volta ao caminho normal.</p>
+  <p><b>Não gaste seu orçamento de requisições com polling.</b> A maioria dos bots gasta a maior parte das chamadas perguntando "algo mudou?". Duas coisas tornam isso quase gratuito:</p>
+<pre><code># 1. state changes: send back the ETag, get 304 and an empty body when nothing moved
+curl -H "X-API-Key: $KEY" -H 'If-None-Match: W/"1a2b3c-4"' \
+     https://marginpad.io/api/bot/v1/positions
+
+# 2. live prices: /price is KEYLESS, so it costs nothing against your 120/min
+curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
+  <p>O ETag cobre o estado estrutural - ids de posição, status, quantidade, stop, alvo, saída - e deliberadamente <b>não</b> o preço de marcação, que muda a cada tick e faria o ETag nunca bater. Então: consulte <code>/positions</code> para saber "meu stop disparou?" e consulte o <code>/price</code> sem chave para o PnL. Fique de olho em <code>X-RateLimit-Remaining</code> e reduza o ritmo conforme <code>Retry-After</code>.</p>
+</section>
+
+<section id="stream">
+  <h2>WebSocket - pare de fazer polling de vez</h2>
+  <p>Posições e preços são enviados a você, então você descobre que seu stop disparou em poucos segundos, em vez de na próxima consulta:</p>
+<pre><code>wss://marginpad.io/api/bot/v2/stream?api_key=mpb_…
+
+&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000},"ts":…}
+&lt;- {"type":"snapshot","data":{"positions":[…]},"ts":…}
+&lt;- {"type":"position","data":{"event":"closed","position":{…,"pnl_usd":-1.24}},"ts":…}
+&lt;- {"type":"prices","data":{"BTC":64770.1},"ts":…}
+
+-&gt; {"op":"subscribe","channels":["positions"]}     // prices off, events only
+-&gt; {"op":"ping"}                                    // &lt;- {"type":"pong"}</code></pre>
+  <p><b>Eventos:</b> <code>position</code> com <code>event: opened | updated | closed</code> dispara quando algo realmente muda - uma execução, um stop se movendo, um fechamento, uma liquidação. <code>prices</code> traz o preço de marcação dos seus símbolos abertos a cada tick. O movimento do preço de marcação sozinho nunca gera um evento <code>position</code>, então o canal fica quieto quando nada aconteceu.</p>
+  <p><b>Os stops são liquidados mais rápido enquanto você está conectado.</b> O stream aciona a mesma varredura de SL/TP/liquidação do lado do servidor que o caminho REST usa, na cadência de ~2s, em vez de deixar sua posição para a varredura periódica.</p>
+  <p>Até 3 sockets simultâneos por conta, compartilhados entre suas chaves. Os sockets são reciclados após 6 horas - reconecte e você recebe um <code>snapshot</code> novo. Se a conexão cair, trate o próximo <code>snapshot</code> como a verdade em vez de reprocessar eventos perdidos.</p>
+</section>
+
+<section id="webhooks">
+  <h2>Webhooks - eventos enviados ao seu servidor <span class="tag pro">API PRO</span></h2>
+  <p>Medido nos últimos 40 dias: <b>76.4% de todas as chamadas a esta API são polling</b> de <code>/positions</code> e <code>/account</code> atrás de eventos que ainda não aconteceram. Um webhook inverte isso - nós fazemos POST para você quando algo realmente acontece, com o mesmo formato <code>Position</code> que um polling teria retornado, e funciona enquanto seu bot está offline, reiniciando ou implantado num lugar que não consegue manter um socket.</p>
+<pre><code>POST /api/bot/v2/webhooks
+{"act":"add","url":"https://bot.example.com/marginpad","events":["position.closed","position.liquidated","order.filled"]}
+
+-&gt; {"ok":true,"data":{"webhook":{"id":"wh…","secret":"whs_…","events":[…],"active":true}}}
+
+# what arrives at your URL, seconds after the event:
+POST https://bot.example.com/marginpad
+X-MP-Event: position.closed        X-MP-Delivery: 1841
+X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
+{"event":"position.closed","ts":1789124656008,"hook_id":"wh…","data":{"id":"bot…","symbol":"BTC","status":"closed","pnl_usd":-0.08,"close_reason":"SL hit",…}}</code></pre>
+  <p><b>Eventos:</b> <code>position.opened</code> · <code>position.updated</code> (um stop ou alvo mudou) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (traz a posição que criou) · <code>order.expired</code> · <code>order.cancelled</code>. Omita <code>events</code> para receber todos. Trades feitos pelo site na mesma conta também os disparam.</p>
+  <p><b>Verifique cada entrega.</b> <code>X-MP-Signature</code> é <code>sha256=HMAC_SHA256(secret, raw body)</code> com o secret retornado quando você adicionou o hook. Compare antes de interpretar o body; os dois SDKs trazem <code>verify_webhook</code> / <code>verifyWebhook</code>. Responda <code>2xx</code> em até 6 segundos - qualquer outra coisa é tentada de novo 5 vezes com backoff (30 s, 1, 2, 4 min), e um hook é <b>pausado após 25 falhas consecutivas</b>; <code>GET /webhooks</code> mostra <code>active</code>, <code>consecutive_failures</code> e <code>last_error</code> para você ver o motivo. Três hooks por conta no Pro, quinze no Max, cinquenta no Business; as entregas são best-effort, o <code>snapshot</code> do WebSocket e <code>/positions</code> continuam sendo a fonte da verdade.</p>
+  <p><b>Teste antes de escrever um receptor:</b> registre <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> como URL e depois abra um <code>GET</code> nesse mesmo endereço - ele devolve as últimas 20 entregas (headers e body) por 15 minutos. Sem autenticação; o token é o segredo.</p>
+</section>
+
+<section id="books">
+  <h2>Books - uma estratégia, um resultado limpo <span class="tag ver">2.5</span></h2>
+  <p>Um <b>book</b> é um diário, saldo, relatório e curva de patrimônio separados dentro da sua conta. Crie uma chave com o nome de um book e toda chamada feita com essa chave opera nesse book; sua conta principal e seus outros books nunca o veem. Contas Free recebem um book além da conta principal, API Pro cinco, Max vinte e Business cinquenta.</p>
+<pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
+GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
+GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
+POST /api/bot/v1/reset  {"confirm":true}   // this book back to $10,000: closes archived, orders cancelled
+GET  /api/bot/v1/equity?days=30&amp;step_min=60   // equity curve + max_drawdown_pct</code></pre>
+  <p>O <b>reset</b> é recusado com <code>409 open_positions_exist</code> enquanto algo estiver aberto: feche primeiro e depois faça o reset. Os trades arquivados são mantidos (nunca apagados), mas o relatório, o ledger, o <code>/trades</code> e a curva de capital começam a partir do reset, e um navegador que ainda guarde o diário antigo não consegue enviá-lo de volta. Os webhooks disparam nos hooks da conta com <code>"account":"rsi"</code> no payload, então um único receptor atende todos os books.</p>
+</section>
+
+<section id="replay">
+  <h2>Replay - rode seu bot em um dia passado <span class="tag ver">2.6</span></h2>
+  <p>Faça o backtest com o código que você vai rodar ao vivo. Inicie um replay de um dia UTC passado e as mesmas rotas que seu bot já chama passam a atuar em um diário de replay separado, com preços vindos dos próprios candles de 1 minuto da MarginPad no cursor. Stops, alvos e liquidações são verificados em cada candle entre duas das suas chamadas, na máxima e na mínima, com a mesma conta de taxas e funding do ao vivo. Nada de um replay chega aos rankings, à arena ou ao seu relatório.</p>
+<pre><code>POST /api/bot/v1/replay  {"symbol":"BTC","day":"2026-09-11","speed":120}   // 120 market seconds per real second: a day in 12 minutes
+GET  /api/bot/v1/replay?interval=5&amp;bars=120       // cursor, price, progress, candles up to the cursor
+POST /api/bot/v1/open    {...}                        // acts on the replay book at the cursor price while the replay runs
+POST /api/bot/v1/replay  {"act":"stop"}               // close at the cursor, get the summary, empty the replay journal</code></pre>
+  <p>A velocidade vai de 1 (tempo real) a 600 (um dia em 2.4 minutos). Um replay por chave por vez, só cripto, só ordens a mercado por enquanto: leia o preço e os candles do replay em <code>GET /v1/replay</code>, já que <code>/v1/price</code> e <code>/v1/klines</code>, sem chave, continuam respondendo dados ao vivo.</p>
+</section>
+
+<section id="keys">
+  <h2>Gerenciando suas chaves</h2>
+  <p>Você pode ter várias chaves numa só conta - mantenha um bot de backtest e um bot ao vivo separados e revogue um sem tocar no outro. <b>O uso e os limites de requisição são contados por chave</b>, então cada uma tem seu próprio orçamento e sua própria linha nas suas estatísticas. Logado no site, pelo navegador:</p>
+<pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
+POST /api/bot/key  {"act":"create","name":"backtest-bot"}   // new key
+POST /api/bot/key  {"act":"rename","key":"mpb_...","name":"live-bot"}
+POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is kept</code></pre>
+  <p>Uma chave revogada retorna <code>401 revoked_key</code>. Chaves são segredos - quem tiver uma pode operar sua conta paper. <a href="#akb">Crie e revogue no topo desta página</a>.</p>
+</section>
+
+<section id="arena">
+  <h2>Arena de bots - um placar público para bots</h2>
+  <p>Toda conta ou book com pelo menos cinco fechamentos abertos pela API nesta temporada de 14 dias entra no ranking de <a href="/pt/arena/">/arena/</a> por PnL realizado líquido de taxas e funding, com taxa de acerto, retorno sobre o placar de $10,000, ROE médio e liquidações. Sem prêmios e sem nada para se inscrever: opere pela API e a tabela encontra você. JSON: <code>GET /api/arena</code>.</p>
+</section>
+
+<section id="mcp">
+  <h2>Use no Claude, ChatGPT ou Cursor</h2>
+  <p>A MarginPad mantém um servidor <b>MCP</b> remoto, então um assistente de IA pode ler os mercados e operar sua conta de paper trading diretamente - sem código de ligação:</p>
+<pre><code>https://marginpad.io/mcp</code></pre>
+  <p>Adicione como servidor MCP remoto no seu cliente e defina o header <code>X-API-Key: mpb_…</code> se quiser as ferramentas de paper trading. As ferramentas de dados de mercado não precisam de chave. <b>Vinte e oito ferramentas</b> estão expostas: preços, candles, mercados, screener, funding, interesse aberto, liquidações, medo e ganância, o calendário econômico, duas calculadoras, e paper open (com trailing stops e dry run) / ordens limite e stop / modify / cancel / close / sltp / positions / orders / balance / trades / report / fees / accounts / reset / equity / replay. <code>GET /mcp</code> no navegador retorna o descritor do servidor.</p>
+</section>
+
+<section id="v2">
+  <h2>Formato de resposta - v1 e v2</h2>
+  <p><code>/api/bot/v1/*</code> está <b>congelada</b>. Os corpos de resposta não vão mudar; bots escritos para ela continuam funcionando indefinidamente, e ela ainda recebe correções de bugs.</p>
+  <p><code>/api/bot/v2/*</code> é a mesma API com o envelope que nossos endpoints de dados já usam - um formato previsível para sucesso e falha, para você escrever o parsing uma vez só:</p>
+<pre><code>{ "ok": true,  "data": { ... }, "ts": 1787200000000 }
+{ "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
+  <p>Mesmos caminhos, mesmos parâmetros, mesma chave - troque <code>v1</code> por <code>v2</code> na URL. Os valores de <code>code</code> dos erros são identificadores estáveis; <code>message</code> é para humanos e pode ser reescrita.</p>
+</section>
+
+<section id="errors">
+  <h2>Códigos de erro</h2>
+  <p>Na <code>/v2</code>, as falhas são sempre <code>{"ok":false,"error":{"code","message"},"ts"}</code>. O <code>code</code> é um identificador estável em que você pode se basear; a <code>message</code> é texto livre e pode ser reescrita. Alguns erros trazem o valor de que você precisa para corrigir a chamada - <code>sl_wrong_side</code> e <code>tp_wrong_side</code> incluem o preço ao vivo.</p>
+  <div class="tw"><table class="vs">
+    <tr><th>Código</th><th class="hl">HTTP</th><th>O que fazer</th></tr>
+    <tr><td><code>missing_api_key</code> / <code>invalid_api_key</code></td><td class="hl">401</td><td>Envie uma chave válida em <code>X-API-Key</code>.</td></tr>
+    <tr><td><code>revoked_key</code></td><td class="hl">401</td><td>Crie uma nova chave; esta foi revogada.</td></tr>
+    <tr><td><code>rate_limit</code></td><td class="hl">429</td><td>Aguarde até <code>Retry-After</code>. Não repita a requisição na hora.</td></tr>
+    <tr><td><code>unknown_symbol</code></td><td class="hl">404</td><td>Consulte <code>/v1/markets</code>.</td></tr>
+    <tr><td><code>symbol_required</code>, <code>margin_usd_min_1</code>, <code>margin_usd_max_100000</code>, <code>id_required</code></td><td class="hl">400</td><td>Corrija o corpo da requisição.</td></tr>
+    <tr><td><code>sl_wrong_side</code> / <code>tp_wrong_side</code></td><td class="hl">400</td><td>A resposta traz <code>live</code> - coloque o nível do lado correto dele.</td></tr>
+    <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>Uma entrada stop espera do lado do rompimento (long acima, short abaixo). Use <code>type:"limit"</code> para uma entrada em pullback.</td></tr>
+    <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> é um percentual entre 0.05 e 50; é recusado, nunca ajustado em silêncio.</td></tr>
+    <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> precisa de pelo menos um campo.</td></tr>
+    <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks exigem um plano pago. Todo o resto desta página está no Free. O body traz <code>plan_needed</code>.</td></tr>
+    <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Código legado de <code>plan_required</code>, ainda enviado para que um bot 2.3 o reconheça.</td></tr>
+    <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Exclua um antes - três hooks no Pro, quinze no Max, cinquenta no Business.</td></tr>
+    <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>As URLs de webhook são https em host público; os nomes dos eventos estão listados em <code>GET /webhooks</code>.</td></tr>
+    <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>Você está no teto de posições abertas do seu plano. Feche alguma.</td></tr>
+    <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Inofensivo em uma nova tentativa - a posição já está encerrada.</td></tr>
+    <tr><td><code>no_price</code></td><td class="hl">400</td><td>Sem preço ao vivo neste instante; a posição continua aberta. Tente de novo.</td></tr>
+    <tr><td><code>unavailable</code></td><td class="hl">503</td><td>Transitório. Tente de novo com backoff.</td></tr>
+  </table></div>
+  <p data-supportline>Ainda travado? O corpo do erro é o primeiro lugar para olhar, e o <a href="/pt/status/">status</a> é o segundo. Se nenhum dos dois responder, escreva para <a href="mailto:support@marginpad.io">support@marginpad.io</a> com o endpoint e o corpo exato que devolvemos - <a href="/pt/support/">o que mais incluir</a> está na página de suporte. Uma pessoa lê.</p>
+</section>
+
+<section id="liq-api">
+  <h2>API grátis de dados de liquidação <span class="tag data">DADOS AO VIVO</span></h2>
+  <p>Liquidações em tempo real agregadas de <b>oito corretoras</b> pelo nosso próprio coletor - os dados por trás do nosso <a href="/pt/rekt/">feed Rekt</a> e do <a href="/pt/heatmap">mapa de calor de liquidações</a>, expostos como JSON grátis. Dados comparáveis normalmente ficam atrás de paywall a <b>$300+/mês</b> em outros lugares; aqui não precisam de <b>nenhuma chave de API</b>. Com cache na borda e limite de requisições, aguentam bem bots que fazem polling.</p>
+  <div class="epg">
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/feed</span><span class="d">As liquidações mais recentes em TODOS os símbolos monitorados - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Os eventos chegam aqui segundos depois de acontecerem (cache de edge de 3s). Consulte a cada 3-5s.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class="d">Eventos brutos de liquidação recentes de um símbolo (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> é <code>long_liquidated</code> ou <code>short_liquidated</code>, <code>notional</code> é o tamanho em USD.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/recent<em>?symbol=BTC&amp;minutes=1440</em></span><span class="d">Histograma por intervalos de tempo (long vs short em $ por intervalo) para gráficos - a fonte exata das estatísticas do nosso mapa de calor. <code>minutes</code>: até 43200 (30 dias).</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/clusters<em>?symbol=BTC</em></span><span class="d">Clusters de liquidação modelados: níveis de preço onde se estima que a liquidez de liquidação esteja agora - <code>{clusters:[{price, side, est_notional}]}</code>. Atualiza continuamente a partir do fluxo de ordens ao vivo.</span></div>
+  </div>
+  <p class="note">Atribuição é bem-vinda (link marginpad.io), mas não obrigatória. A cobertura é de ~70%+ do fluxo de liquidações do mercado - as corretoras que movem o preço. Uso educacional; sem SLA de uptime. Só quer dados de mercado? Toda a superfície sem chave está documentada na página da <a href="/pt/free-crypto-api/">API grátis de dados cripto</a>.</p>
+</section>
+
+<section id="workflow">
+  <h2>Backtest, paper, ao vivo - nessa ordem</h2>
+  <p>A maioria dos bots de trading cripto que parecem lucrativos num backtest <b>perde dinheiro na primeira semana em que vai para o ao vivo</b>. Backtests reproduzem candles históricos limpos - eles não pegam uma race condition na lógica das suas ordens, um bug de dimensionamento de posição que só aparece depois de uma sequência de perdas, ou uma alavancagem que cresce em silêncio além do que sua margem aguenta. O forward testing roda o mesmo bot, o mesmo caminho de código, contra preços reais ao vivo em tempo real. Se a estratégia tem uma falha, ela aparece aqui, onde um bug não custa nada.</p>
+  <div class="tw"><table class="vs">
+    <tr><th></th><th>Backtesting</th><th class="hl">Paper trading (esta API)</th><th>Trading ao vivo</th></tr>
+    <tr><td>Preços</td><td>Candles históricos</td><td class="hl">Preços reais ao vivo, em tempo real</td><td>Preços reais ao vivo</td></tr>
+    <tr><td>Risco</td><td class="y">Nenhum</td><td class="y">Nenhum - dólares simulados</td><td class="n">Dinheiro real em jogo</td></tr>
+    <tr><td>Pega bugs de lógica</td><td class="n">Raramente - dados reproduzidos os escondem</td><td class="y">Sim - mesmo caminho de código do ao vivo</td><td class="n">Sim, mas cada bug custa dinheiro</td></tr>
+    <tr><td>Checagem de overfitting</td><td class="n">Não - você ajustou nesses dados</td><td class="y">Sim - dados futuros inéditos</td><td class="y">Sim</td></tr>
+    <tr><td>Custo</td><td class="y">Grátis</td><td class="y hl">Uso grátis - taxas &amp; funding simulados</td><td class="n">Taxas + perdas + funding</td></tr>
+    <tr><td>Ideal para</td><td>Filtrando ideias rápido</td><td class="hl">Comprovando o bot antes de colocar dinheiro nele</td><td>Uma estratégia já provada duas vezes</td></tr>
+  </table></div>
+  <p class="note" style="margin-bottom:26px">A etapa do meio é a que a maioria das pessoas pula - e a que as teria salvado. <a href="/pt/crypto-backtester/">Faça o backtest de uma ideia aqui</a>, teste-a em tempo real nesta API e só depois deposite em uma conta.</p>
+
+  <div class="golive" id="golive">
+    <div class="gl-h">Passo três: onde rodar o bot de verdade</div>
+    <p>Tudo nesta página é liquidado em dólares simulados. Depois que o bot sobreviver a semanas de forward testing, o mesmo código precisa de uma API de corretora para colocar ordens reais. Duas corretoras para as quais indicamos quem cria bots, por motivos diferentes:</p>
+    <div class="gl-grid">
+      <div class="gl-card gl-hl" data-ex="Hyperliquid" id="glHl">
+        <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; API-first</span></div>
+        <p>Perps na própria chain, com API REST e WebSocket pública, <b>subcontas que recebem cada uma sua própria carteira de API</b> (o bot nunca guarda sua chave principal), funding por hora e um livro que qualquer um pode auditar on-chain. A coisa mais próxima de rodar esta API com dinheiro de verdade.</p>
+        <div class="gl-offer"><b>4%</b><span>de desconto nas taxas<br>com o código <i>MARGINPAD</i></span></div>
+        <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Entrar na Hyperliquid &rarr;</a>
+      </div>
+      <div class="gl-card" data-ex="Bybit" id="glBy">
+        <div class="gl-ch"><span class="gl-mark" style="background:#3a2a05;color:#f7a600">B</span><b id="glName">Bybit</b><span class="gl-pill">centralizada &middot; livros mais profundos</span></div>
+        <p id="glTxt">Formatos REST e WebSocket parecidos com o que você acabou de escrever, uma chave separada por subconta e um dos feeds de onde vêm os nossos preços. O padrão quando você quer um livro centralizado com entrada em moeda fiduciária.</p>
+        <a class="gl-cta gl-cta2" id="glLink" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Abrir uma conta na Bybit &rarr;</a>
+      </div>
+    </div>
+    <span class="gl-note">Links de indicação - a MarginPad pode ganhar uma comissão se você abrir uma conta, sem custo para você; o desconto da Hyperliquid é o desconto de indicação deles. A API paper continua grátis de qualquer forma, e nada aqui exige conta em corretora. A Hyperliquid não está disponível para pessoas dos EUA, conforme seus termos.</span>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>FAQ</h2>
+  <details><summary>Existe uma API grátis de dados de liquidação / mapa de calor?</summary><p>Sim - a MarginPad expõe liquidações em tempo real agregadas de 8 corretoras em JSON grátis, sem precisar de chave: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> e <code>/api/v1/clusters</code>. Feeds comparáveis costumam custar $300+/mês. Veja <a href="#liq-api">a seção de dados de liquidação</a>.</p></details>
+  <div class="faq"><b>A API de bot de trading é realmente grátis?</b><p>Sim. É um simulador de paper trading - as posições usam preços reais de mercado ao vivo, mas nenhum dinheiro real. Entre com um e-mail, gere uma chave de API e comece a testar na hora. Os planos pagos só elevam os limites.</p></div>
+  <div class="faq"><b>Quais linguagens de programação posso usar?</b><p>Qualquer linguagem que consiga fazer uma requisição HTTPS - Python, JavaScript/Node.js, Go, Rust, PHP ou curl puro. REST padrão, respostas JSON, um único header <code>X-API-Key</code>.</p></div>
+  <div class="faq"><b>Quais moedas meu bot pode operar?</b><p>Qualquer par USDT com preço ao vivo nas principais corretoras - BTC, ETH, SOL e centenas de altcoins, além de ações dos EUA, principais pares de forex, metais e índices como perps. Consulte um símbolo com <code>GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
+  <div class="faq"><b>Preciso de conta em corretora ou de depósito?</b><p>Não. Sem depósito, sem carteira, sem KYC. Você só entra com um e-mail para que sua chave de API e suas posições persistam entre as sessões.</p></div>
+  <div class="faq"><b>O MarginPad Premium inclui a API?</b><p>Não. A Bot API tem seus próprios planos e uma assinatura Premium não altera nenhum limite da API. O Premium libera recursos no site; os planos da API liberam limites da API. São comprados separadamente.</p></div>
+
+  <h2 style="margin-top:44px">Guias e tutoriais</h2>
+  <div class="links">
+    <div class="faq"><b><a href="/pt/blog/python-crypto-trading-bot-tutorial/">Tutorial de bot de trading cripto em Python</a></b><p>Monte um bot funcional em Python e aponte para esta API - código completo: feed de preços, estratégia de cruzamento de EMAs, ordens de abrir/fechar e o loop.</p></div>
+    <div class="faq"><b><a href="/pt/blog/nodejs-crypto-trading-bot-tutorial/">Tutorial de bot de trading cripto em Node.js</a></b><p>O mesmo bot em JavaScript - código Node.js completo, sem dependências, apontado para esta API.</p></div>
+    <div class="faq"><b><a href="/pt/blog/how-to-test-a-crypto-trading-bot/">Como testar um bot de trading cripto de graça</a></b><p>O fluxo de três etapas que separa bots que funcionam de contas estouradas: backtest, paper trade e depois o ao vivo.</p></div>
+    <div class="faq"><b><a href="/pt/blog/grid-trading-bot-explained/">Grid trading bots explicados</a></b><p>Como os grid bots funcionam, onde ganham e onde estouram, e como testar um em tempo real antes de colocar dinheiro nele.</p></div>
+    <div class="faq"><b><a href="/pt/blog/backtesting-vs-paper-trading-vs-live/">Backtesting vs Paper Trading vs Ao vivo</a></b><p>O que cada etapa de teste comprova e a ordem exata para usá-las.</p></div>
+    <div class="faq"><b><a href="/pt/blog/ai-crypto-trading-strategies-2026/">Estratégias de trading cripto com IA para 2026</a></b><p>As estratégias assistidas por IA que realmente se sustentam - e como testá-las sem risco antes de automatizar.</p></div>
+  </div>
+</section>
+
+  </div>
+</div>
+</div>
+</div>
+
+<div class="shell">
+  <footer>
+    <a href="/pt/">MarginPad</a> · <a href="/pt/tools/">Ferramentas de trading</a> · <a href="/pt/api-docs/">Referência da API</a> · <a href="/pt/crypto-backtester/">Backtester</a> · <a href="/pt/paper-trade">Paper Trade</a> · <a href="/pt/arena/">Arena de bots</a> · <a href="/pt/trading-journal/">Diário</a><br> <span>Somente trading simulado. Não é aconselhamento financeiro.</span>
+  </footer>
+</div>
+
+<script>
+/* Page shell: the hero's live price, the rail's active section, the quickstart tabs, and the plan bars.
+   Everything here is either WAAPI or a transition - the owner's machine has animation effects off, which
+   silences @keyframes entirely (CLAUDE.md), so nothing visible may depend on one. */
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 1. the hero demonstrates the API on itself: a real keyless call, printed into the response body. */
+  var px = document.getElementById('hpx'), ts = document.getElementById('hts');
+  var en = document.getElementById('hentry'), lq = document.getElementById('hliq');
+  var fmt = function(n){ return n >= 1000 ? n.toLocaleString('en-US',{maximumFractionDigits:1}) : n.toPrecision(6); };
+  fetch('/api/v1/price?symbol=BTC').then(function(r){return r.json();}).then(function(d){
+    var p = (d && d.data && d.data.price) || (d && d.price);
+    if(!(p > 0)) return;
+    px.textContent = fmt(p); ts.textContent = Date.now();
+    en.textContent = fmt(p);
+    /* the real formula, not a mock: long liq = entry x (1 - 1/leverage + maintenance), 10x at 0.5% */
+    lq.textContent = fmt(p * (1 - 1/10 + 0.005));
+    var dot = document.getElementById('liveDot');
+    if(dot && !rm && dot.firstElementChild && dot.firstElementChild.animate){
+      dot.firstElementChild.animate(
+        [{boxShadow:'0 0 0 0 rgba(194,246,74,.55)'},{boxShadow:'0 0 0 7px rgba(194,246,74,0)'}],
+        {duration:1800, iterations:Infinity, easing:'ease-out'});
+    }
+  }).catch(function(){ if(px) px.textContent = '64770.1'; if(ts) ts.textContent = Date.now(); if(en) en.textContent = '64770.1'; if(lq) lq.textContent = '58293.1'; });
+
+  /* 2. throughput bars at TRUE relative scale, drawn once when the plans come into view. */
+  var bars = [].slice.call(document.querySelectorAll('.thr-t i')); // the throughput bars were retired 2026-09-16; this stays harmless and empty
+  var drawBars = function(){
+    bars.forEach(function(b, i){
+      var w = (+b.getAttribute('data-w') || 0) + '%';
+      if(rm || !b.animate){ b.style.width = w; return; }
+      b.style.width = w;
+      b.animate([{width:'0%'},{width:w}], {duration:760, delay:i*110, easing:'cubic-bezier(.2,.7,.3,1)'});
+    });
+  };
+  if(bars.length){
+    if(!('IntersectionObserver' in window)) drawBars();
+    else {
+      var bo = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ drawBars(); bo.disconnect(); } });
+      }, {threshold:.35});
+      bo.observe(document.querySelector('.apgrid'));
+    }
+  }
+
+  /* 3. the rail follows the section you are reading. */
+  var links = [].slice.call(document.querySelectorAll('#rail a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if(secs.length && 'IntersectionObserver' in window){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        var id = '#' + e.target.id;
+        links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href') === id); });
+      });
+    }, {rootMargin:'-80px 0px -72% 0px'});
+    secs.forEach(function(s){ ro.observe(s); });
+  }
+
+  /* 4. quickstart tabs. */
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){
+        var on = x === t;
+        x.setAttribute('aria-selected', on ? 'true' : 'false');
+        var pane = document.getElementById(x.getAttribute('aria-controls'));
+        if(pane) pane.hidden = !on;
+      });
+    });
+  });
+
+  /* 5. the status strip. Uptime is the first thing a developer checks before building on you. The numbers
+        are the public /api/status ones and the note says how much history exists - four days of sampling is
+        not "99.9% uptime" and dressing it up as one would be the exact opposite of a trust signal. */
+  (function(){
+    var bar=document.getElementById('statusBar'); if(!bar) return;
+    var set=function(id,ok){ var e=document.getElementById(id); if(e) e.className='sb-i '+(ok?'ok':'bad'); };
+    fetch('/api/status').then(function(r){return r.json();}).then(function(j){
+      var o=(j&&j.data)||j; if(!o||!o.now) throw 0;
+      /* THE PROOF STRIP'S CALL COUNTER, off the fetch this bar already makes. It was a hardcoded 1.1M with
+         a dead id while the real figure passed 4.4M. Absent rather than zero when the sampler has not
+         written yet - the markup's own value then stands. */
+      try { var cs=o.api&&+o.api.calls_served, pe=document.getElementById('pvCalls');
+        if(pe&&cs>0){ pe.textContent = cs>=1e6 ? (Math.round(cs/1e5)/10)+'M' : cs>=1e3 ? Math.round(cs/1e3)+'k' : String(cs);
+          pe.title = cs.toLocaleString('en-US')+' API calls served'; } } catch(e){}
+      set('sbStore', !!o.now.store&&o.now.store.ok!==false);
+      set('sbColl', !!o.now.collector&&o.now.collector.ok!==false);
+      set('sbCron', !!o.now.cron&&o.now.cron.ok!==false);
+      var days=(o.days||[]).filter(function(d){return d.n>0;});
+      var full=days.filter(function(d){return d.n>=(o.expectedPerDay||144);});
+      var ms=o.now.store&&o.now.store.ms;
+      var venues=o.now.collector?(o.now.collector.connected+'/'+o.now.collector.total+(((document.documentElement.lang||'').slice(0,2)==='es')?' exchanges':' venues')):'';
+      var note=[];
+      var __esS=((document.documentElement.lang||'').slice(0,2)==='es');if(ms!=null) note.push(__esS?'el store respondió en '+ms+' ms':__esT_tradingapiindex("storeAnsweredIn",'store answered in ')+ms+' ms');
+      if(venues) note.push(venues);
+      /* n matters more than the percentage: say how many whole days have been sampled, never a bare 99.x% */
+      if(days.length) note.push(__esS?(days.length+' día'+(days.length===1?'':'s')+' de comprobaciones hasta ahora, '+full.length+' completo'+(full.length===1?'':'s')):(days.length+' day'+(days.length===1?'':'s')+__esT_tradingapiindex("ofChecksSoFar",' of checks so far, ')+full.length+' complete'));
+      var n=document.getElementById('sbNote'); if(n) n.textContent=note.join(' · ');
+    }).catch(function(){ var n=document.getElementById('sbNote'); if(n) n.textContent=((document.documentElement.lang||'').slice(0,2)==='es')?'el estado se mide cada 10 minutos':__esT_tradingapiindex("statusIsMeasuredEvery",'status is measured every 10 minutes'); });
+  })();
+
+  /* 5. live background: three drifting aurora blobs plus two faint price wireframes. Desktop only -
+        it is decoration, and a phone should spend its frames on the page. Lifted from the homepage
+        so both surfaces drift identically; WAAPI for the blobs, one rAF for the canvas. */
+  (function(){
+    if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
+    [['.au1',9,7,46000,0],['.au2',-8,-6,58000,-9000],['.au3',-7,6,70000,-21000]].forEach(function(b){
+      var el=document.querySelector('.bgfx '+b[0]); if(!el||!el.animate)return;
+      try{ el.animate([{transform:'translate(0,0)'},{transform:'translate('+b[1]+'vw,'+b[2]+'vh)'}],
+        {duration:b[3],iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:b[4]}); }catch(e){}
+    });
+    var cv=document.getElementById('bgline'); if(!cv)return;
+    var g=cv.getContext('2d'),W=0,H=0;
+    function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+    size(); var rs; addEventListener('resize',function(){clearTimeout(rs);rs=setTimeout(size,200);});
+    function mkLine(seed,amp){var pts=[],y=0;for(var i=0;i<260;i++){y+=(Math.sin(i*seed)+Math.random()-.5)*amp;pts.push(y);}return pts;}
+    var L=[{p:mkLine(.13,7),c:'rgba(194,246,74,.085)',o:.32,sp:.32},
+           {p:mkLine(.21,9),c:'rgba(46,189,133,.07)',o:.6,sp:.2}];
+    var off=0,run=true;
+    // only restart on a real hidden -> visible transition: an unconditional restart spawns a second
+    // concurrent loop and the lines then move at double speed (the homepage learned this one).
+    document.addEventListener('visibilitychange',function(){var was=run;run=!document.hidden;if(run&&!was)requestAnimationFrame(fr);});
+    function fr(){ if(!run)return;
+      off+=1; g.clearRect(0,0,W,H);
+      L.forEach(function(l){
+        var n=l.p.length,step=W/(n-22),sh=(off*l.sp)%step,idx=Math.floor(off*l.sp/step);
+        g.beginPath();
+        for(var i=0;i<n-20;i++){
+          var v=l.p[(i+idx)%n], x=i*step-sh, y=H*l.o+v*(H*0.012);
+          i?g.lineTo(x,y):g.moveTo(x,y);
+        }
+        g.strokeStyle=l.c; g.lineWidth=1.4; g.stroke();
+      });
+      requestAnimationFrame(fr);
+    }
+    requestAnimationFrame(fr);
+  })();
+})();
+</script>
+
+<script>
+/* API plans (2026-09-15). Reads /api/apiplan, prints where the reader stands and buys a month with either
+   the rewards balance or crypto. The free-month countdown is the whole point of the banner: an account that
+   was building on the API before plans existed must never discover the change from a 429. */
+(function(){
+  var box=document.getElementById('apPlanState'),msg=document.getElementById('apMsg');
+  if(!box)return;
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  /* This block is rendered by JS, so the /es/ catalog never sees it - the banner is the first line of the section
+     and must not greet a Spanish reader in English. Same inline-dictionary pattern as AUTH_T in mp-auth.js. */
+  var ES=(document.documentElement.lang||'').slice(0,2)==='es';
+  var T=function(en,es){return ES?es:en;};
+  var state=null;
+  function say(t,bad){ if(!msg)return; msg.hidden=!t; msg.innerHTML=t||''; msg.style.color=bad?'#ff8a80':''; }
+  function paint(){
+    if(!state){box.hidden=true;return;}
+    var c=state.current;
+    if(!state.signedIn){ box.hidden=false; box.innerHTML=T(__esT_tradingapiindex("notSignedInSign",'<b>Not signed in.</b> <a href="#akb">Sign in</a> to see your plan, generate a key, or pick a plan.'),'<b>No has iniciado sesión.</b> <a href="#akb">Inicia sesión</a> para ver tu plan, generar una clave o elegir un plan.'); return; }
+    box.hidden=false;
+    if(!c||c.plan==='free'){ var tr=state.my_trial, dl=tr&&tr.days_left, de=tr&&tr.ends?esc(String(tr.ends).slice(0,10)):'';
+      if(tr&&tr.active){ box.innerHTML=ES
+        ? ('Estás en la <b>prueba gratuita</b> del motor. <span class="apdays">'+(dl===1?'Te queda 1 día':'Te quedan '+esc(dl)+' días')+'</span>: termina el '+de+'. Después, el motor necesita un plan; los datos de mercado en <code>/api/v1/*</code> siguen siendo gratis y sin clave.')
+        : (__esT_tradingapiindex("youAreOnThe",'You are on the <b>free trial</b> of the engine. <span class="apdays">')+(dl===1?__esT_tradingapiindex("1DayLeft",'1 day left'):esc(dl)+__esT_tradingapiindex("daysLeft",' days left</span>'))+__esT_tradingapiindex("itEndsOn",' - it ends on ')+de+__esT_tradingapiindex("afterThatTheEngine",'. After that the engine needs a plan; market data on <code>/api/v1/*</code> stays free and keyless.')); }
+      else if(tr){ box.innerHTML=ES
+        ? ('Tu <b>prueba gratuita</b> del motor terminó el '+de+'. Los datos de mercado siguen siendo gratis y sin clave; el motor necesita un plan de abajo.')
+        : (__esT_tradingapiindex("yourFreeTrialOf",'Your <b>free trial</b> of the engine ended on ')+de+__esT_tradingapiindex("marketDataStaysFree",'. Market data stays free and keyless; the engine needs a plan below.')); }
+      else box.innerHTML=T(__esT_tradingapiindex("youAreOnFree",'You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.'),'Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
+    else if(c.free_month){ box.innerHTML=ES?('Estás en <b>Pro</b> gratis porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class="apdays">Te '+(c.days_left===1?'queda 1 día':'quedan '+esc(c.days_left)+' días')+'</span>: termina el '+esc(new Date(c.until).toISOString().slice(0,10))+' y la clave baja a Free (120 peticiones por minuto) salvo que elijas un plan.'):(__esT_tradingapiindex("youAreOnPro",'You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class="apdays">')+esc(c.days_left)+' day'+(c.days_left===1?'':'s')+__esT_tradingapiindex("leftItEndsOn",' left</span> - it ends on ')+esc(new Date(c.until).toISOString().slice(0,10))+', and the key drops to Free (120 requests a minute) unless you pick a plan.'); }
+    else { var nm=esc(c.plan==='max'?'Max':'Pro'), dd=esc(c.days_left), dt9=esc(new Date(c.until).toISOString().slice(0,10));
+      box.innerHTML=ES?('Estás en <b>'+nm+'</b> hasta el '+dt9+' (<span class="apdays">'+(c.days_left===1?'1 día':dd+' días')+'</span>)'+(c.source==='owner'||c.source==='founder'?', concedido por MarginPad.':'. Comprar otro mes se suma a este, no lo reemplaza.')):(__esT_tradingapiindex("youAreOn",'You are on <b>')+nm+'</b> until '+dt9+' (<span class="apdays">'+dd+' day'+(c.days_left===1?'':'s')+'</span>)'+(c.source==='owner'||c.source==='founder'?__esT_tradingapiindex("grantedByMarginpad",' - granted by MarginPad.'):'. Buying another month adds to this one, it does not replace it.')); }
+    /* Only REWRITE the label when the reader is already on that plan. Leaving the resting label alone is what
+       keeps the Spanish twin readable: its button text comes from the markup, which the catalog translates. */
+    Array.prototype.forEach.call(document.querySelectorAll('.apcard'),function(card){
+      var want=card.getAttribute('data-plan'),btn=card.querySelector('.apbtn[data-buy]');
+      if(!btn)return;
+      var on=c&&c.plan===want&&!c.free_month;
+      if(!on){ if(btn.dataset.rest)btn.textContent=btn.dataset.rest; return; }
+      if(!btn.dataset.rest)btn.dataset.rest=btn.textContent;
+      btn.textContent=T('Extend ','Renovar ')+(want==='max'?'Max':'Pro');
+    });
+  }
+  window.__apPlanPaint=paint;
+  function load(){ fetch('/api/apiplan',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){state=d;paint();}).catch(function(){}); }
+  function buy(plan,btn){if(!/(^|; )mp_li=/.test(document.cookie)){var _o=document.querySelector('[data-auth-open]');if(_o)_o.click();say(T(__esT_tradingapiindex("signInFirstThen",'Sign in first, then pick a plan.'),'Inicia sesión primero y luego elige un plan.'),1);return;} /* audit 2026-09-25: a guest click used to fire the buy request and log a 401 */
+    btn.classList.add('busy');btn.disabled=true;say('');
+    fetch('/api/apiplan/buy',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({plan:plan})})
+      .then(function(r){return r.json().then(function(j){return{s:r.status,j:j};});})
+      .then(function(x){
+        btn.classList.remove('busy');btn.disabled=false;
+        if(x.j&&x.j.ok){ var nm2=(plan==='max'?'Max':'Pro'), d2=new Date(x.j.until).toISOString().slice(0,10);
+          say(ES?('Listo: API '+nm2+' está activo hasta el '+d2+'. Tus claves subieron de inmediato.'):(__esT_tradingapiindex("doneApi",'Done - API ')+nm2+__esT_tradingapiindex("isActiveUntil",' is active until ')+d2+'. Your keys were raised immediately.'));
+          load(); if(window.mpToast)window.mpToast({msg:'API '+nm2+(ES?' activo':' active'),kind:'good'}); return; }
+        if(x.j&&x.j.error==='login_required'){ say(T(__esT_tradingapiindex("signInFirstThen",'Sign in first, then pick a plan.'),'Inicia sesión primero y luego elige un plan.'),1); return; }
+        if(x.j&&x.j.error==='insufficient'){ var b2=(x.j.balance!=null?(+x.j.balance).toFixed(2):'0.00'), p2=(+x.j.price_usd).toFixed(2);
+          crypto_(plan, ES?('Tu saldo de recompensas es $'+b2+' y el plan cuesta $'+p2+'. Abrimos una factura en cripto en su lugar…'):(__esT_tradingapiindex("yourRewardsBalanceIs",'Your rewards balance is $')+b2+__esT_tradingapiindex("andThePlanIs",' and the plan is $')+p2+'. Opening a crypto invoice instead…')); return; }
+        if(x.j&&x.j.error==='downgrade_blocked'){ say(ES?'Ya estás en un plan mayor. Déjalo terminar y luego elige el más pequeño.':esc(x.j.hint||__esT_tradingapiindex("youAreAlreadyOn",'You are already on a bigger plan.')),1); return; }
+        if(x.j&&x.j.error==='in_progress'){ say(T(__esT_tradingapiindex("thatIsAlreadyGoing",'That is already going through - give it a few seconds.'),'Eso ya se está procesando; dale unos segundos.'),1); return; }
+        crypto_(plan,T('Opening a crypto invoice…','Abriendo una factura en cripto…'));
+      }).catch(function(){ btn.classList.remove('busy');btn.disabled=false; crypto_(plan,T('Opening a crypto invoice…','Abriendo una factura en cripto…')); });
+  }
+  function crypto_(plan,note){
+    say(note||T('Opening a crypto invoice…','Abriendo una factura en cripto…'));
+    fetch('/api/apiplan/checkout',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({plan:plan})})
+      .then(function(r){return r.json();})
+      .then(function(j){ if(j&&j.invoice_url){ say(T(__esT_tradingapiindex("invoiceOpenInA",'Invoice open in a new tab. Your plan starts the moment the payment confirms.'),'Factura abierta en otra pestaña. Tu plan empieza en cuanto se confirme el pago.')); window.open(j.invoice_url,'_blank','noopener'); } else if(j&&j.error==='login_required'){ say(T(__esT_tradingapiindex("signInFirstThen",'Sign in first, then pick a plan.'),'Inicia sesión primero y luego elige un plan.'),1); } else { say(T(__esT_tradingapiindex("couldNotOpenAn",'Could not open an invoice. Try again in a minute, or write to support@marginpad.io.'),'No se pudo abrir la factura. Inténtalo de nuevo en un minuto o escribe a support@marginpad.io.'),1); } })
+      .catch(function(){ say(T(__esT_tradingapiindex("couldNotOpenAn2",'Could not open an invoice. Try again in a minute.'),'No se pudo abrir la factura. Inténtalo de nuevo en un minuto.'),1); });
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.apbtn[data-buy]'); if(!b)return;
+    e.preventDefault(); buy(b.getAttribute('data-buy'),b);
+  });
+  load();
+  if(/[?&]plan=ok/.test(location.search))say(T(__esT_tradingapiindex("paymentReceivedIfThe",'Payment received - if the plan is not showing yet, give the confirmation a minute and reload.'),'Pago recibido. Si el plan aún no aparece, dale un minuto a la confirmación y recarga.'));
+})();
+</script>
+
+<script>
+/* Bybit does not onboard the US or Canada. mp-auth.js is deferred, so poll for window.mpEx (documented
+   gotcha) and swap the venue for the best one that actually takes readers in that country. */
+(function () {
+  var n = 0, iv = setInterval(function () {
+    if (++n > 80) { clearInterval(iv); return; }
+    if (!window.mpEx || !window.mpEx.cc) return;
+    clearInterval(iv);
+    window.mpEx.cc(function (c) {
+      if (!c) return;
+      // Hyperliquid: dim + label where its terms exclude the reader (the same rule every partner card follows)
+      if (window.mpEx.blocked('Hyperliquid', c)) { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = __esT_tradingapiindex("notAvailableIn",'not available in ') + (window.mpEx.region(c) || __esT_tradingapiindex("yourCountry",'your country')); h.appendChild(s); } }
+      if (!window.mpEx.blocked('Bybit', c)) return;
+      // this page's reader wants an API, so prefer a venue with a documented trading API over the plain country order
+      var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
+      var a = document.getElementById('glLink'), t = document.getElementById('glTxt'), nm = document.getElementById('glName'), by = document.getElementById('glBy');
+      if (!v || !a || !t) return;
+      a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v);
+      a.textContent = 'Open a ' + v + ' account →'; if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
+      t.innerHTML = __esT_tradingapiindex("bybitDoesNotOnboard",'Bybit does not onboard traders in ') + (window.mpEx.region(c) || __esT_tradingapiindex("yourCountry",'your country')) + ', so this points at <b>' + v + __esT_tradingapiindex("insteadAVenueThat",'</b> instead - a venue that does, with a documented REST API.');
+    });
+  }, 100);
+})();
+</script>
+
+<script>
+/* API key manager: mint, name, revoke and inspect the keys on this account. Restored verbatim from the
+   pre-redesign page - it carries the per-key 7-day usage chart, the one-time full-key reveal and the
+   deferred-mp-auth handshake, none of which should be rewritten from memory. */
+(function(){
+  var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg'),mgr=document.getElementById('akbMgr'),tb=document.querySelector('#akbTable tbody'),plan=document.getElementById('akbPlan'),rev=document.getElementById('akbRev'),frm=document.getElementById('akbNew'),nameIn=document.getElementById('akbName');
+  var FULL={}; // k -> full key, only for keys created in this page session (the server never re-shows a key in the list)
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function ago(t){if(!t)return 'never';var s=Math.round((Date.now()-t)/1000);return s<60?__esT_tradingapiindex("justNow",'just now'):s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' d ago';}
+  function mask(k){return k.slice(0,8)+'…'+k.slice(-4);}
+  function api(body){return fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),credentials:'same-origin'}).then(function(r){return r.json();});}
+  function render(d){
+    var keys=(d&&d.keys)||[],p=(d&&d.plan)||{};var live=keys.filter(function(k){return !k.revoked;}),dead=keys.filter(function(k){return k.revoked;});
+    mgr.hidden=false;btn.hidden=true;var _e=document.getElementById('akbEmpty');if(_e)_e.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
+    var paid=p.tier==='pro'||p.tier==='max';
+    var tail='';
+    if(p.free_month&&p.days_left!=null)tail=__esT_tradingapiindex("freeMonth",' · <b style="color:#c2f64a">free month: ')+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+__esT_tradingapiindex("leftKeepProRarr",' left</b> <a href="#plans">keep Pro &rarr;</a>');
+    else if(paid&&p.days_left!=null)tail=__esT_tradingapiindex("renewsIn",' · renews in ')+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' · <a href="#plans">plans &rarr;</a>';
+    else if(!paid)tail=__esT_tradingapiindex("pro600Min10",' · <a href="#plans">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>');
+    plan.innerHTML='<b class="'+(paid?'prem':'')+'">'+esc(p.label||p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+__esT_tradingapiindex("openPositions",' open positions')+tail+'</span>';
+    try{if(window.__apPlanPaint)window.__apPlanPaint();}catch(e){}
+    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td>'+(k.book?'<b style="color:#c2f64a">'+esc(k.book)+'</b>':'<span style="color:var(--faint)">main</span>')+'</td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):__esT_tradingapiindex("noKeysYetCreate",'<tr><td colspan="6" style="color:var(--faint)">No keys yet - create one below.</td></tr>');
+    usage(live); /* 2.5: calls per key for the last 7 days, refused (429) in red */
+    rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+__esT_tradingapiindex("usageHistoryKeptThey",' (usage history kept, they no longer authenticate)'):'';
+    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent=__esT_tradingapiindex("youHoldTheMaximum",'You hold the maximum number of keys on this plan')+(paid?'.':__esT_tradingapiindex("revokeOneOrApi",' - revoke one, or API Pro raises it to 10.'));}else{frm.hidden=false;}
+  }
+  var useEl=document.getElementById('akbUse');
+  function usage(live){ if(!useEl||!live.length){if(useEl)useEl.hidden=true;return;}
+    api({act:'usage'}).then(function(d){ if(!d||!Array.isArray(d.usage)){useEl.hidden=true;return;}
+      var days=[];for(var i=6;i>=0;i--)days.push(new Date(Date.now()-i*864e5).toISOString().slice(0,10));
+      var by={};d.usage.forEach(function(r){var kk=by[r.k]=by[r.k]||{};var dd=kk[r.day]=kk[r.day]||{c:0,r:0};if(r.ep==='_429')dd.r+=r.n;else dd.c+=r.n;});
+      var max=1;live.forEach(function(k){days.forEach(function(dy){var v=(by[k.k]||{})[dy];if(v&&v.c+v.r>max)max=v.c+v.r;});});
+      var tot=0,ref=0;
+      var rows=live.map(function(k){var cells=days.map(function(dy,ix){var v=(by[k.k]||{})[dy]||{c:0,r:0};tot+=v.c;ref+=v.r;var h=Math.round((v.c+v.r)/max*26),hr=v.r?Math.max(2,Math.round(v.r/max*26)):0;return '<i title="'+dy+': '+v.c+' calls'+(v.r?', '+v.r+' refused':'')+'"><em style="height:'+h+'px;'+(h?'':'background:transparent')+'">'+(hr?'<s style="height:'+hr+'px"></s>':'')+'</em><small>'+(ix===6?'today':dy.slice(8))+'</small></i>';}).join('');return '<div class="u"><b title="'+esc(k.name)+(k.book?' · book '+esc(k.book):'')+'">'+esc(k.name||'key')+(k.book?' <span style="color:#c2f64a">/'+esc(k.book)+'</span>':'')+'</b>'+cells+'</div>';}).join('');
+      useEl.innerHTML=__esT_tradingapiindex("yourUsageLast7",'<h4>Your usage · last 7 days</h4>')+rows+'<div class="n">'+tot.toLocaleString('en-US')+' calls'+(ref?', <span style="color:#ff6258">'+ref.toLocaleString('en-US')+__esT_tradingapiindex("refused429ABot",' refused (429)</span> - a bot that hits the ceiling should use the WebSocket stream instead of polling'):'')+__esT_tradingapiindex("full30DaysPer",'. Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>');
+      useEl.hidden=false;
+    }).catch(function(){useEl.hidden=true;});
+  }
+  function load(){api({act:'list'}).then(function(d){
+    if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;var _e3=document.getElementById('akbEmpty');if(_e3)_e3.hidden=false;return;}
+    if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used - show it in full once */ render(d);return;}
+    msg.textContent=__esT_tradingapiindex("couldNotLoadYour",'Could not load your keys - try again shortly.');}).catch(function(){msg.textContent=__esT_tradingapiindex("networkErrorTryAgain",'Network error - try again.');});}
+  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+__esT_tradingapiindex("copyItNowAnd",'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>');out.classList.add('on');msg.textContent='';var gs=document.getElementById('akbGoSlot');if(gs&&gs.getAttribute('data-busy')!=='1'){gs.innerHTML=goHtml(k);wireGo(k);}}
+  /* MAKE THE FIRST CALL SUCCEED HERE, NOW. Two thirds of every key ever minted has never made a single
+     request - the gap is between holding a key and seeing something answer, not in the engine. So the
+     curl carries the key already, and the button makes the call from this page and prints the real body. */
+  function goHtml(k){return '<div class="akb-go" id="akbGo">'
+    +__esT_tradingapiindex("makeYourFirstCall",'<h3>Make your first call now</h3>')
+    +__esT_tradingapiindex("thisIsAReal",'<p>This is a real request against your real account. Run it here, or paste it into a terminal - it is the same call.</p>')
+    +'<pre><code>curl -s https://marginpad.io/api/bot/v2/account \\\n  -H "X-API-Key: '+esc(k)+'"</code></pre>'
+    +__esT_tradingapiindex("runIt",'<div class="agb"><button class="btn akb-sm" type="button" data-go="run">Run it</button>')
+    +__esT_tradingapiindex("copyTheCurl",'<button class="btn akb-sm" type="button" data-go="copy">Copy the curl</button></div>')
+    +'<div class="ago" id="akbOut" hidden></div><div class="agok" id="akbWin" hidden></div></div>';}
+  function wireGo(k){var box=document.getElementById('akbGo');if(!box||box._w)return;box._w=1;
+    box.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(!b)return;
+      var act=b.getAttribute('data-go');
+      if(act==='copy'){try{navigator.clipboard.writeText('curl -s https://marginpad.io/api/bot/v2/account -H "X-API-Key: '+k+'"');b.textContent='copied';setTimeout(function(){b.textContent=__esT_tradingapiindex("copyTheCurl2",'Copy the curl');},1500);}catch(x){}return;}
+      /* EVERY WRITE LOOKS THE ELEMENT UP AGAIN. Holding `o` across the fetch is what let a repaint
+         (the key manager's first-visit auto-reveal, resolving late) swallow the answer: the body landed
+         in a detached node and the page showed a fresh, silent button. */
+      var slot=document.getElementById('akbGoSlot');
+      var at=function(id){return document.getElementById(id);};
+      var say=function(bodyTxt,winTxt,btnTxt){var o2=at('akbOut'),w2=at('akbWin'),b2=document.querySelector('#akbGo [data-go="run"]');
+        if(o2){o2.hidden=false;o2.textContent=bodyTxt;}
+        if(w2&&winTxt!=null){w2.hidden=false;w2.textContent=winTxt;}
+        if(b2){b2.disabled=false;b2.textContent=btnTxt;}
+        if(slot)slot.setAttribute('data-busy','0');};
+      if(slot)slot.setAttribute('data-busy','1');
+      b.disabled=true;b.textContent='Calling...';var o0=at('akbOut');if(o0){o0.hidden=false;o0.textContent='';}
+      fetch('/api/bot/v2/account',{headers:{'X-API-Key':k}}).then(function(r){return r.text().then(function(t){return {s:r.status,t:t};});}).then(function(d){
+        say(d.t,d.s===200?__esT_tradingapiindex("thatWasYourFirst",'That was your first API call. The same key works on every endpoint on this page.'):'Status '+d.s+__esT_tradingapiindex("theBodyAboveSays",' - the body above says why. Every refusal here names what to do instead.'),__esT_tradingapiindex("runItAgain",'Run it again'));
+      }).catch(function(){say(__esT_tradingapiindex("theRequestCouldNot",'The request could not be made from this page. Copy the curl and run it in a terminal.'),null,'Run it');});
+    });}
+  var bookIn=document.getElementById('akbBook');
+  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';var bk=(bookIn&&bookIn.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);api({act:'create',name:nm,book:bk}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';if(bookIn)bookIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?__esT_tradingapiindex("keyLimitReachedOn",'Key limit reached on this plan.'):d&&d.error==='max_books'?(__esT_tradingapiindex("bookLimitReached",'Book limit reached: ')+(d.max===1?__esT_tradingapiindex("freeAccountsGetOne",'free accounts get one book besides the main account, Premium five.'):__esT_tradingapiindex("revokeTheKeysOf",'revoke the keys of a book you no longer use.'))):d&&d.error==='bad_book'?__esT_tradingapiindex("mainIsTheAccount",'"main" is the account itself - leave the book empty for it.'):(d&&d.error==='login_required'?__esT_tradingapiindex("signInFirst",'Sign in first.'):__esT_tradingapiindex("couldNotCreateA",'Could not create a key - try again.'));}).catch(function(){msg.textContent=__esT_tradingapiindex("networkErrorTryAgain",'Network error - try again.');});});
+  tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
+    if(act==='copy'){try{navigator.clipboard.writeText(k);b.textContent='copied';setTimeout(function(){b.textContent='copy';},1400);}catch(x){}return;}
+    if(act==='show'){var kv=tr.querySelector('.akb-kv');if(FULL[k]){delete FULL[k];kv.textContent=mask(k);b.textContent='show';}else{FULL[k]=1;kv.textContent=k;b.textContent='hide';}return;}
+    if(act==='rename'){var nm=prompt(__esT_tradingapiindex("newNameForThis",'New name for this key:'));if(nm==null)return;api({act:'rename',key:k,name:nm}).then(function(d){if(d&&d.keys)render(d);});return;}
+    if(act==='revoke'){if(!confirm(__esT_tradingapiindex("revokeThisKeyAny",'Revoke this key? Any bot using it stops working immediately.')))return;api({act:'revoke',key:k}).then(function(d){if(d&&d.keys)render(d);});}
+  });
+  btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent=__esT_tradingapiindex("signInFirstThe",'Sign in first - the modal is open.');window.mpAuth.open();}else msg.textContent=__esT_tradingapiindex("signInOnThe",'Sign in on the homepage first, then come back.');});
+  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';var _gs2=document.getElementById('akbGoSlot');if(_gs2)_gs2.innerHTML='';FULL={};var _e2=document.getElementById('akbEmpty');if(_e2)_e2.hidden=false;}});
+  var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
+})();
+</script>
+
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=34829f57"></script>
+</body>
+</html>

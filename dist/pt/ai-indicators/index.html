@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt" data-es-twin="/ai-indicators/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Os 5 Indicadores de IA da MarginPad, Explicados - Liquidações Reais e Quatro Modelos</title>
+<meta name="description" content="O que cada indicador Premium da MarginPad mede, o que desenha no gráfico e como lê-lo antes de abrir uma posição alavancada. Construído sobre nossos próprios dados de liquidação; cada seta avalia a própria taxa de acerto." />
+<link rel="canonical" href="https://marginpad.io/pt/ai-indicators/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/ai-indicators/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Os 5 indicadores de IA da MarginPad, explicados" />
+<meta property="og:description" content="Big Liquidations (24h), Cascade Radar, Liquidation Magnet, Market Brain e Market Memory: o que cada um mede e como lê-lo antes de uma posição." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/pt/ai-indicators/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;--violet:#b18cff;--cyan:#3fd8e6;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;}
+  a{color:var(--lime);}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 18px calc(56px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,6vw,50px);line-height:1.02;letter-spacing:-.035em;margin:12px 0 12px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:16px;margin:0 0 18px;max-width:62ch;}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0 34px;}
+  .fact{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:13px 14px;}
+  .fact b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1.05;}
+  .fact span{font-size:12px;color:var(--faint);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 30px;}
+  .toc a{font:700 12px 'Space Mono',monospace;color:var(--ink);text-decoration:none;border:1px solid var(--line2);border-radius:99px;padding:8px 13px;background:#0d1014;}
+  .toc a:hover{border-color:var(--lime);color:var(--lime);}
+  .ind{border:1px solid var(--line2);border-radius:20px;padding:24px;margin:0 0 20px;background:linear-gradient(180deg,var(--panel),#0c0f13);position:relative;overflow:hidden;scroll-margin-top:80px;}
+  .ind::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--ac,var(--lime));}
+  .ind-h{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .ind h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(23px,3.4vw,30px);letter-spacing:-.03em;margin:0;line-height:1.1;}
+  .ind h2 small{display:block;font:700 11px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac,var(--lime));margin-bottom:6px;}
+  .q{font-size:17px;font-weight:700;color:#fff;margin:14px 0 4px;}
+  .q em{font-style:normal;color:var(--ac,var(--lime));}
+  .ind p{margin:0 0 10px;color:var(--dim);font-size:14.5px;}
+  .ind p b,.ind li b{color:#fff;}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;margin-top:14px;align-items:start;}
+  @media(max-width:700px){.cols{grid-template-columns:1fr;}}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  .viz{background:#0a0d11;border:1px solid var(--line);border-radius:14px;padding:12px 12px 8px;}
+  .viz svg{width:100%;height:auto;display:block;}
+  .viz .cap{font-size:11.5px;color:var(--faint);margin:8px 2px 2px;line-height:1.45;}
+  .read{background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22);border-radius:14px;padding:14px 16px;margin-top:14px;}
+  .read .lbl{color:var(--lime);}
+  .read ul{margin:0;padding-left:18px;}
+  .read li{margin:0 0 7px;font-size:14px;color:var(--ink);}
+  .leg{margin-top:12px;font:600 12.5px 'Space Mono',monospace;color:#c7ccd4;background:#0a0d11;border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;line-height:1.5;overflow-wrap:anywhere;}
+  .leg i{font-style:normal;color:var(--faint);display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .lim{margin-top:12px;font-size:13px;color:var(--faint);}
+  .lim b{color:var(--dim);}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3vw,27px);letter-spacing:-.025em;margin:34px 0 10px;}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0 6px;}
+  .step{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:14px;position:relative;}
+  .step i{font:800 11px 'Space Mono',monospace;color:#0a0b0d;background:var(--lime);border-radius:6px;padding:2px 7px;font-style:normal;}
+  .step b{display:block;margin:8px 0 4px;color:#fff;}
+  .step span{font-size:12.5px;color:var(--dim);}
+  .hon{border:1px solid var(--line2);border-radius:16px;padding:18px 20px;background:#0d1014;margin-top:14px;}
+  .hon p{margin:0 0 8px;color:var(--dim);font-size:14px;}
+  .chip{display:inline-block;font:700 11.5px 'Space Mono',monospace;border-radius:7px;padding:3px 8px;margin-right:6px;}
+  .chip.g{color:var(--up);background:rgba(46,189,133,.14);} .chip.r{color:var(--red);background:rgba(255,98,88,.14);} .chip.n{color:#8fa3c4;background:rgba(143,163,196,.14);}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:8px;background:#0d1014;}
+  .faq summary{cursor:pointer;font-weight:700;padding:13px 0;color:#fff;}
+  .faq p{margin:0 0 14px;color:var(--dim);font-size:14px;}
+  .cta{margin:34px 0 10px;border:1px solid rgba(194,246,74,.3);border-radius:20px;padding:26px;text-align:center;background:linear-gradient(180deg,rgba(194,246,74,.07),transparent);}
+  .cta h3{margin:0 0 8px;}
+  .cta p{color:var(--dim);margin:0 0 16px;}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#0d1014;}
+  .btn.p{background:var(--lime);color:#0a0b0d;border-color:var(--lime);}
+  footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 0;border-top:1px solid var(--line);margin-top:30px;}
+  footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
+</style>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Os 5 indicadores de IA da MarginPad, explicados","description":"O que cada indicador Premium da MarginPad mede, o que desenha no gráfico e como lê-lo antes de abrir uma posição alavancada.","url":"https://marginpad.io/pt/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-10-13","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"},{"@type":"Thing","name":"Big Liquidations (24h)"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Os indicadores de IA da MarginPad são um sinal de compra ou venda?","acceptedAnswer":{"@type":"Answer","text":"Não. Cada um responde a uma pergunta que você deve fazer antes de uma posição: quão frágil está o mercado, para onde o preço está sendo puxado, para que lado a evidência pende e o que aconteceu nas últimas vezes em que ele esteve assim. As setas só aparecem nos extremos, e todo indicador com seta mostra a própria taxa de acerto no gráfico carregado, para você ver se ele tem vantagem nesse símbolo e tempo gráfico."}},{"@type":"Question","name":"Em quais dados eles se baseiam?","acceptedAnswer":{"@type":"Answer","text":"O feed de liquidações próprio da MarginPad (oito corretoras, coletado internamente), um modelo de escada de alavancagem de onde as posições são liquidadas (o mesmo modelo por trás do mapa de calor de liquidações), histórico de funding e posicionamento long/short da multidão, além do preço e do volume do próprio gráfico. Nada disso vem de um fornecedor terceirizado de indicadores."}},{"@type":"Question","name":"O que diferencia estes de outros indicadores de liquidação?","acceptedAnswer":{"@type":"Answer","text":"Um dos cinco não é um modelo. Big Liquidations (24h) marca liquidações que realmente aconteceram, cada uma no preço e no candle exatos em que foi registrada, a partir do feed próprio da MarginPad em oito corretoras. Isso não existe em nenhum outro lugar, porque as linguagens de script de outros sites de gráficos não alcançam um livro de ordens nem um feed de liquidações - todo script de liquidação publicado lá é inferido de picos de volume e de interesse aberto. Os outros quatro são modelos, construídos sobre nossos próprios dados de liquidação, e cada um avalia sua própria taxa de acerto ao vivo no gráfico em que você está."}},{"@type":"Question","name":"Preciso do Premium para usá-los?","acceptedAnswer":{"@type":"Answer","text":"Sim. Os cinco indicadores fazem parte do MarginPad Premium ($11.99 por mês) no espaço de trabalho multigráfico em marginpad.io/charts e nos gráficos mobile. Todos os outros indicadores do gráfico são grátis."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"Indicadores de IA","item":"https://marginpad.io/pt/ai-indicators/"}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/pt/">Margin<b>Pad</b></a>
+    <nav class="hnav">
+      <a href="/pt/charts">Gráficos</a> <a href="/pt/premium/">Premium</a>
+      <button class="hauth" type="button" data-auth-open>Entrar</button>
+    </nav>
+  </header>
+
+  <span class="eyebrow"><i></i>MarginPad Premium</span>
+  <h1>Os 5 indicadores de IA, <em>explicados</em></h1>
+  <p class="sub">Seis leituras construídas sobre dados que só a MarginPad tem, duas delas medidas e não modeladas. Cada uma responde a uma pergunta que você deve fazer antes de abrir uma posição alavancada, e cada uma é explicada aqui do jeito que deveria ter sido desde o começo: o que mede, o que desenha e o que fazer com o número.</p>
+
+  <div class="facts">
+    <div class="fact"><b>Nossos dados</b><span>Feed próprio de liquidações em oito corretoras, modelo próprio de escada de alavancagem, funding e posicionamento da multidão</span></div>
+    <div class="fact"><b>Autoavaliado</b><span>Cada seta é pontuada com alvo de 1.5x ATR contra stop no gráfico carregado; a taxa de acerto fica na legenda</span></div>
+    <div class="fact"><b>Qualquer símbolo, qualquer tempo gráfico</b><span>Calculados no seu navegador a partir dos candles carregados, então funcionam em qualquer par que o gráfico consiga carregar</span></div>
+    <div class="fact"><b>Premium</b><span>$11.99 por mês, em /charts e nos gráficos mobile</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Big Liquidations</a><a href="#honesty">O chip de taxa de acerto</a><a href="#workflow">Qual abrir primeiro</a>
+  </nav>
+
+  <section class="ind" id="cascade" style="--ac:#ffb020">
+    <div class="ind-h"><h2><small>1 · Fragilidade</small>Cascade Radar</h2></div>
+    <p class="q">Quão <em>frágil</em> está o mercado agora?</p>
+    <p>Uma cascata de liquidação é uma corrente: um fechamento forçado empurra o preço até o próximo stop, que força o próximo fechamento. Se essa corrente pode começar depende de duas coisas: quanta posição alavancada há perto do preço atual e quanto volume o mercado vem absorvendo. O Cascade Radar mede as duas.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">O que mede</p>
+        <p>A cada fechamento, ele abre uma escada de posições hipotéticas em <b>5x, 10x, 25x, 50x e 100x</b>, ponderadas pelo valor negociado daquele candle, e coloca seus preços de liquidação acima e abaixo. O preço passando por um nível o varre. O que sobra é um mapa ao vivo do <b>combustível de liquidação</b>; o radar soma o combustível a até 5% do preço (o mais próximo pesa mais), divide pelo valor médio negociado dos últimos 20 candles e posiciona isso contra os últimos 200 candles. O resultado é uma <b>pontuação de 0-100</b>: 70 é frágil, 90 significa que um empurrão pode iniciar a cadeia.</p>
+        <p class="lbl">O que você vê</p>
+        <p>Um painel de 0-100 sob os candles com uma linha em 90. A legenda mostra a pontuação, uma palavra para ela (calm / fragile / EXTREME) e, desde setembro de 2026, <b>de que lado está o combustível</b>. Uma seta <b>CASC</b> só dispara quando a pontuação é 90 ou mais e o combustível é claramente unilateral: vermelha acima do candle quando está abaixo do preço, verde abaixo do candle quando está acima.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Cascade Radar panel: a 0-100 fragility line crossing the 90 threshold, with the fuel sitting below price">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="34" x2="306" y2="34" stroke="rgba(255,215,90,.45)" stroke-dasharray="4 4"/><text x="16" y="29" fill="#8b95a1" font-size="9" font-family="Space Mono">90</text>
+          <polyline fill="none" stroke="#ffb020" stroke-width="2" points="14,118 40,104 62,110 84,92 106,96 128,78 150,84 172,66 194,58 216,44 238,30 258,22 280,28 306,24"/>
+          <circle cx="306" cy="24" r="3.5" fill="#ffb020"/>
+          <text x="196" y="130" fill="#ffb020" font-size="11" font-family="Space Mono" font-weight="700">Cascade 93/100</text>
+          <text x="196" y="143" fill="#8b95a1" font-size="9.5" font-family="Space Mono">fuel BELOW price (long liqs)</text>
+          <path d="M230 12 l8 0 l-4 6 z" fill="#ff6258"/><text x="242" y="18" fill="#ff6258" font-size="9" font-family="Space Mono" font-weight="700">CASC</text>
+        </svg>
+        <div class="cap">Extremo e unilateral: o combustível está abaixo do preço, então a seta aponta para baixo. Um long aqui tem uma cadeia de liquidações logo abaixo.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">Em palavras simples, antes de clicar</p><ul>
+      <li><b>A linha:</b> abaixo de 50 = calma, nada a fazer. Subindo além de 70 = frágil, um empurrão pode iniciar uma corrente de fechamentos forçados. Acima de 90 = extremo.</li>
+      <li><b>Antes de um long:</b> linha acima de 70 e a legenda diz combustível <b>abaixo</b> = você estaria comprando em cima de um alçapão. Espere a limpeza, ou entre com metade do tamanho e um stop mais largo. Combustível <b>acima</b> = um squeeze correria a seu favor.</li>
+      <li><b>Antes de um short:</b> o espelho. Combustível abaixo é a sua zona-alvo; combustível acima e 70+ significa que é você quem está parado sobre o alçapão.</li>
+      <li><b>A seta:</b> CASC vermelha sobre um candle = a corrente está armada para baixo; CASC verde sob um candle = armada para cima.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linha da legenda</i>Cascade 93/100 — fragilidade EXTREMA · combustível ABAIXO do preço (liquidações de long): uma queda pode se estender<br>CASC 61% (11W/7L)</div>
+    <p class="lim"><b>Limites.</b> A escada é um modelo de onde as posições <em>seriam</em> liquidadas, não um feed de ordens pendentes. Ela diz quão frágil está o mercado, não quando virá o empurrão.</p>
+  </section>
+
+  <section class="ind" id="magnet" style="--ac:#2ebd85">
+    <div class="ind-h"><h2><small>2 · Alvos</small>Liquidation Magnet</h2></div>
+    <p class="q">Para onde o preço será <em>puxado</em> em seguida?</p>
+    <p>O preço costuma visitar grandes pools de liquidações antes de reverter: o pool é onde ordens forçadas estão esperando, e ordens forçadas são o que move um mercado que ninguém mais quer mover. O Magnet encontra o pool dominante de cada lado e diz qual puxa com mais força.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">O que mede</p>
+        <p>A mesma escada de alavancagem do Cascade Radar, lida como uma lista de pools: nível de preço, tamanho em dólares e se são liquidações de long (abaixo do preço) ou de short (acima). A <b>atração</b> de cada pool é o seu tamanho vezes a sua proximidade; pools além de 9% são ignorados. A atração mais forte acima e a mais forte abaixo são os dois ímãs, e o maior dos dois é o <b>lado que o preço tem mais chance de visitar primeiro</b>.</p>
+        <p class="lbl">O que você vê</p>
+        <p>Duas linhas de preço sobre os candles: <b>vermelha</b> para o pool de liquidação de shorts acima, <b>verde</b> para o pool de liquidação de longs abaixo, cada uma com o seu tamanho. A linha <b>forte</b> é o ímã mais poderoso, a fina tracejada o mais fraco. A legenda mostra os dois pools com a distância até o preço.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Liquidation Magnet: a bold green pool line below price and a thin red pool line above">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <g stroke-width="1.5">
+            <line x1="40" y1="70" x2="40" y2="96" stroke="#2ebd85"/><rect x="36" y="76" width="8" height="14" fill="#2ebd85"/>
+            <line x1="62" y1="60" x2="62" y2="88" stroke="#ff6258"/><rect x="58" y="64" width="8" height="18" fill="#ff6258"/>
+            <line x1="84" y1="66" x2="84" y2="92" stroke="#2ebd85"/><rect x="80" y="70" width="8" height="16" fill="#2ebd85"/>
+            <line x1="106" y1="54" x2="106" y2="80" stroke="#2ebd85"/><rect x="102" y="58" width="8" height="18" fill="#2ebd85"/>
+            <line x1="128" y1="50" x2="128" y2="78" stroke="#ff6258"/><rect x="124" y="56" width="8" height="16" fill="#ff6258"/>
+            <line x1="150" y1="58" x2="150" y2="86" stroke="#ff6258"/><rect x="146" y="62" width="8" height="18" fill="#ff6258"/>
+            <line x1="172" y1="64" x2="172" y2="90" stroke="#2ebd85"/><rect x="168" y="70" width="8" height="14" fill="#2ebd85"/>
+            <line x1="194" y1="60" x2="194" y2="84" stroke="#2ebd85"/><rect x="190" y="64" width="8" height="14" fill="#2ebd85"/>
+          </g>
+          <line x1="14" y1="28" x2="306" y2="28" stroke="rgba(255,98,88,.6)" stroke-dasharray="5 4"/><text x="212" y="24" fill="#ff6258" font-size="9.5" font-family="Space Mono">SHORT $18.2M · +2.4%</text>
+          <line x1="14" y1="118" x2="306" y2="118" stroke="#2ebd85" stroke-width="2.4"/><text x="196" y="133" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">LONG $41.6M · −1.8%  ← pulled DOWN</text>
+          <line x1="14" y1="74" x2="306" y2="74" stroke="rgba(255,255,255,.25)" stroke-dasharray="2 3"/><text x="16" y="70" fill="#8b95a1" font-size="9" font-family="Space Mono">price</text>
+        </svg>
+        <div class="cap">O pool maior abaixo é o ímã forte: a próxima visita mais provável é 1.8% abaixo. O stop de um long deve ficar além dele, não apenas acima.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">Em palavras simples, antes de clicar</p><ul>
+      <li><b>As linhas:</b> vermelha acima = onde os shorts são liquidados, verde abaixo = onde os longs são liquidados. A forte é a atração mais intensa e a próxima visita mais provável.</li>
+      <li><b>Antes de um long:</b> linha forte acima de você = seu primeiro alvo, realize um pouco de lucro ali. Linha forte abaixo de você = espere uma queda até ela primeiro; coloque seu stop <b>abaixo</b> dessa linha, não apenas acima dela, ou a sua será a ordem caçada.</li>
+      <li><b>Antes de um short:</b> o espelho. Uma linha verde forte abaixo é o alvo; uma linha vermelha forte acima significa que o stop fica além dela.</li>
+      <li><b>Nenhuma linha em até 9%:</b> os dois lados já foram limpos. Nada está puxando o preço; espere um mercado mais lento.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linha da legenda</i>Magnet: puxado para BAIXO · acima de 76,410 (+2.4%, $18.2M em liquidações de short) · abaixo de 73,220 (−1.8%, $41.6M em liquidações de long)</div>
+    <p class="lim"><b>Limites.</b> Um ímã é uma probabilidade, não um cronograma. Uma grande notícia move o preço por cima dos dois pools sem parar em nenhum deles.</p>
+  </section>
+
+  <section class="ind" id="brain" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>3 · Adaptativo</small>Market Brain</h2></div>
+    <p class="q">Para que lado a evidência <em>pende</em>, e o que a move?</p>
+    <p>A maioria dos indicadores de "IA" é uma fórmula com um nome. O Market Brain são oito leituras e uma etapa de aprendizado: ele mede qual das oito realmente previu os próximos seis candles <b>nesta moeda, neste tempo gráfico</b> e pondera cada uma de acordo. Um fator que não funciona aqui reduz o próprio peso a zero.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">O que mede</p>
+        <p>Os oito fatores são <b>tendência</b> (EMA 21 vs 50 em unidades de ATR), <b>momentum</b> (histograma do MACD e RSI), <b>volume</b> (este candle contra os últimos 20, com sinal pela direção), <b>fragilidade</b> (o lado e a pontuação do Cascade Radar), <b>fluxo real de liquidações</b> (liquidações de long vs short por candle do nosso coletor, escaladas pelo quanto o candle foi incomum), <b>funding</b> (a taxa atual contra a sua mediana, lida de forma contrária), <b>posicionamento da multidão</b> (razão de contas long/short, lida de forma contrária) e <b>estrutura</b> (onde o fechamento está no range de 55 candles). A cada 10 candles o modelo reaprende um peso por fator a partir dos 280 candles anteriores - a correlação entre o fator e o que o preço fez nos seis candles seguintes - e nunca a partir de candles que ainda não viu. A mistura ponderada é a pontuação, de <b>-100 a +100</b>.</p>
+        <p class="lbl">O que você vê</p>
+        <p>Um painel com a pontuação e bandas em +55 e -55. Uma seta <b>BRAIN</b> dispara na primeira vez em que a pontuação cruza uma banda e rearma quando volta para dentro de 25. As setas ficam retidas por 2.5 horas em torno de um evento macro de alto impacto (FOMC, CPI), de propósito. A legenda mostra a pontuação, uma palavra para ela, os <b>dois fatores que a movem</b> agora e o chip de taxa de acerto.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Brain panel: a score line crossing the +55 band, with the two driving factors named">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="40" x2="306" y2="40" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="36" fill="#8b95a1" font-size="9" font-family="Space Mono">+55</text>
+          <line x1="14" y1="78" x2="306" y2="78" stroke="rgba(120,130,140,.4)" stroke-dasharray="2 3"/><text x="16" y="74" fill="#8b95a1" font-size="9" font-family="Space Mono">0</text>
+          <line x1="14" y1="116" x2="306" y2="116" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="112" fill="#8b95a1" font-size="9" font-family="Space Mono">−55</text>
+          <polyline fill="none" stroke="#c2f64a" stroke-width="2" points="14,96 36,102 58,90 80,84 102,70 124,76 146,62 168,52 190,44 212,34 234,30 256,36 278,26 306,30"/>
+          <path d="M208 22 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="220" y="22" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">BRAIN</text>
+          <text x="150" y="132" fill="#c2f64a" font-size="10.5" font-family="Space Mono" font-weight="700">Brain +62 · strong bullish lean</text>
+          <text x="150" y="144" fill="#8b95a1" font-size="9.5" font-family="Space Mono">driven by: liq flow + funding</text>
+        </svg>
+        <div class="cap">Um cruzamento de +55, movido por cobertura forçada de shorts e funding pago pelos shorts: a multidão está do lado errado e pagando por isso.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">Em palavras simples, antes de clicar</p><ul>
+      <li><b>A linha:</b> subindo = a evidência pende para alta, descendo = para baixa. Dentro das bandas +55 / -55 o modelo não tem uma opinião forte.</li>
+      <li><b>Antes de um long:</b> você quer a linha acima de +55, ou subindo através dela. Abaixo de -55 você está operando contra tudo o que o modelo aprendeu aqui - não faça isso.</li>
+      <li><b>Antes de um short:</b> o espelho, abaixo de -55. Dentro das bandas: sem vantagem, reduza o tamanho ou opere os níveis do Magnet.</li>
+      <li><b>"Driven by":</b> "funding + crowd" = a multidão está encurralada e pagando para continuar na posição (um cenário de squeeze); "liq flow" = venda ou cobertura forçada já está acontecendo; "trend + momentum" = simples continuação.</li>
+      <li><b>O chip:</b> a porcentagem é a frequência com que as setas dele funcionaram neste gráfico exato. Abaixo de 50% = sem vantagem nesta moeda e tempo gráfico; ignore as setas ali, faça a linha o que fizer.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linhas da legenda</i>Brain +62 — forte viés de alta<br>BRAIN driven by: liq flow + funding<br>BRAIN 58% (14W/10L)</div>
+    <p class="lim"><b>Limites.</b> Aprender com 280 candles significa que os pesos demoram algumas dezenas de candles para acompanhar uma mudança de regime. Os fatores de funding e de multidão dependem de a corretora publicá-los para o par; onde ela não publica, esses dois fatores valem zero e o modelo avisa isso não os citando.</p>
+  </section>
+
+  <section class="ind" id="memory" style="--ac:#b18cff">
+    <div class="ind-h"><h2><small>4 · Previsão</small>Market Memory</h2></div>
+    <p class="q">Quando já foi assim antes, <em>o que aconteceu depois</em>?</p>
+    <p>O Market Memory não modela o mercado. Ele consulta o mercado. Usando os mesmos oito fatores do Market Brain, encontra os candles passados cujo estado completo mais se parece com o de agora e mostra o que o preço fez depois deles. É a memória do próprio mercado: uma taxa-base, rotulada com honestidade.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">O que mede</p>
+        <p>Cada candle é um ponto em um espaço de oito fatores. Para o candle atual, ele encontra os <b>25 candles passados mais próximos</b> - apenas candles antigos o bastante para terem um resultado conhecido de seis candles, de modo que nenhuma resposta é lida do futuro - e tira a média do movimento seguinte deles em unidades de ATR. Também conta quantos dos 25 subiram. O painel de previsão mostra essa média ao longo do tempo; a atual é projetada no eixo de preço.</p>
+        <p class="lbl">O que você vê</p>
+        <p>Um painel de previsão, uma linha tracejada <b>MEM</b> no nível projetado (verde acima do preço, vermelha abaixo) e uma linha de legenda com a contagem de análogos, a taxa de alta e o movimento projetado. Uma seta <b>MEMO</b> só dispara quando os análogos concordam: um movimento esperado de pelo menos 0.85 ATR com 62% ou mais deles do mesmo lado.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Memory: price with a dashed projected level above it and the analog readout">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <polyline fill="none" stroke="#c7ccd4" stroke-width="1.6" points="14,104 40,98 66,108 92,90 118,94 144,80 170,86 196,72 222,78 238,70"/>
+          <circle cx="238" cy="70" r="3" fill="#fff"/>
+          <line x1="238" y1="70" x2="306" y2="46" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="14" y1="46" x2="306" y2="46" stroke="rgba(46,189,133,.7)" stroke-dasharray="5 4"/><text x="252" y="41" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">MEM</text>
+          <path d="M230 90 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="242" y="90" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">MEMO</text>
+          <text x="16" y="128" fill="#b18cff" font-size="10.5" font-family="Space Mono" font-weight="700">Memory: 25 analogs · 72% up</text>
+          <text x="16" y="141" fill="#8b95a1" font-size="9.5" font-family="Space Mono">proj +1.4% / 6 bars</text>
+        </svg>
+        <div class="cap">Vinte e cinco momentos parecidos, dezoito dos quais subiram, com média de +1.4% nos seis candles seguintes. Isso é um alvo e um horizonte, não uma promessa.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">Em palavras simples, antes de clicar</p><ul>
+      <li><b>A leitura:</b> "25 analogs · 72% up · proj +1.4%" = nas últimas 25 vezes em que o mercado esteve assim, 72% delas subiram, cerca de 1.4% nos seis candles seguintes. Uma taxa-base, não uma recomendação.</li>
+      <li><b>Antes de um long:</b> 65% de alta ou mais E um movimento projetado maior que suas taxas e seu stop = entre, com a linha tracejada MEM como alvo realista e seis candles como horizonte (seis horas em um gráfico de 1h).</li>
+      <li><b>Antes de um short:</b> o espelho, 35% para cima ou menos.</li>
+      <li><b>45-55%:</b> a história foi para os dois lados a partir daqui - cara ou coroa. Fique de fora, ou opere os níveis do Magnet em vez de uma direção. 72% de alta com um movimento de +0.3% é deriva, não rompimento: leia o tamanho do movimento, não só a porcentagem.</li>
+      <li><b>A seta:</b> MEMO só dispara quando os análogos concordam; é a forma mais forte desta leitura.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linha da legenda</i>Memory: 25 analogs · 72% up · proj +1.40% / 6 bars</div>
+    <p class="lim"><b>Limites.</b> A memória é tão longa quanto o histórico carregado (de algumas centenas a alguns milhares de candles). Em uma moeda listada no mês passado, ela tem pouco a lembrar e precisa de 160 candles antes de desenhar qualquer coisa.</p>
+  </section>
+
+  <section class="ind" id="whaleliq" style="--ac:#ff6258">
+    <div class="ind-h"><h2><small>5 &middot; Um registro, não uma previsão</small>Big Liquidations (24h)</h2></div>
+    <p class="q">Onde a alavancagem foi realmente fechada à força nas últimas 24 horas - e <em>o que acontece</em> quando o preço volta lá?</p>
+    <p>Este não é um modelo e não pode ser. Cada marca é uma liquidação que já aconteceu: nosso próprio coletor as registra em oito corretoras conforme elas as publicam, e o indicador coloca cada uma das grandes no gráfico no preço em que foi registrada e no candle em que ocorreu. Nada aqui é projetado para a frente. É o registro de onde a alavancagem morreu, lido do mesmo feed que alimenta o mapa de calor de liquidações e a página Rekt.</p>
+    <div class="box"><i>O que você vê</i><ul>
+      <li><b>Círculos nos candles.</b> <b style="color:#ff6258">Vermelho</b> = um LONG foi vendido à força ali. <b style="color:#2ebd85">Verde</b> = um SHORT foi comprado à força ali. Quanto maior o círculo, maior a posição que foi fechada.</li>
+      <li><b>Toque ou clique em um círculo</b> para ver um card com o tamanho, o lado em palavras, a corretora onde aconteceu e a distância entre aquele preço e o preço atual.</li>
+      <li><b>A legenda</b> mostra o total liquidado na janela, a maior liquidação individual e quantas marcas há no gráfico.</li>
+    </ul></div>
+    <div class="box"><i>Antes de um trade</i><ul>
+      <li><b>Antes de um long:</b> o preço voltando para BAIXO em uma faixa grossa de círculos vermelhos está chegando onde já houve venda forçada uma vez. Ou ele é absorvido e esse é o seu nível, ou rompe e a mesma coisa acontece de novo. Círculos verdes acima de você marcam onde shorts foram espremidos, então um movimento de volta por cima deles tem combustível por trás.</li>
+      <li><b>Antes de um short:</b> o espelho. Abrir short dentro de uma faixa de círculos verdes é abrir short onde shorts já foram fechados à força uma vez, e um muro de círculos vermelhos abaixo é onde a venda já foi feita.</li>
+      <li><b>O que evitar:</b> ler um gráfico vazio como sinal. Sem círculos significa apenas que o mercado ficou calmo por 24 horas - isso é informação, não um setup.</li>
+    </ul></div>
+    <div class="leg"><i>Exemplo de linha da legenda</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked</div>
+    <p class="lim"><b>Limites.</b> Cobre as dez moedas que o nosso feed registra - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX e LTC. Em qualquer outro mercado o indicador não pode ser ativado e avisa que não tem dados, em vez de desenhar um gráfico vazio que você poderia ler como calmaria. A janela são as últimas 24 horas e nada mais antigo fica no gráfico, então um nível que importou na semana passada não é marcado. E uma corretora só publica o que escolhe publicar: as marcas são um piso do que realmente foi liquidado, nunca um total.</p>
+  </section>
+
+  <h3 id="honesty">O chip de taxa de acerto: cada seta se avalia sozinha</h3>
+  <div class="hon">
+    <p>Qualquer indicador consegue desenhar setas no passado. Os indicadores com seta da MarginPad avaliam cada seta que desenharam no gráfico carregado: entrada no fechamento do candle do sinal, alvo e stop ambos a 1.5x o ATR de 14 candles de distância, verificados até 80 candles à frente, e um candle que toca nos dois conta como perda. O chip aparece quando cinco setas já foram resolvidas e é colorido conforme o que diz:</p>
+    <p><span class="chip g">CASC 61% (11W/7L)</span> uma vantagem neste gráfico &nbsp; <span class="chip n">BRAIN 50% (6W/6L)</span> cara ou coroa &nbsp; <span class="chip r">MEMO 38% (5W/8L)</span> sem vantagem aqui - não use</p>
+    <p>O chip é por símbolo e por tempo gráfico, porque é lá que uma vantagem existe ou não. Um indicador que marca 61% no BTC 1h e 38% no gráfico de 5m de uma altcoin pouco líquida está dizendo exatamente onde usá-lo.</p>
+  </div>
+
+  <h3 id="workflow">Qual abrir primeiro</h3>
+  <p style="color:var(--dim);margin:0 0 6px">Os quatro primeiros devem ser lidos em ordem, cada um estreitando o que o anterior disse. O quinto não faz parte dessa sequência - é um registro e não uma previsão: as liquidações que já aconteceram, nos preços e candles em que aconteceram.</p>
+  <div class="flow">
+    <div class="step"><i>1</i><b>Cascade Radar</b><span>O mercado está frágil, e de que lado? Decide o seu tamanho e a largura que o stop precisa ter.</span></div>
+    <div class="step"><i>2</i><b>Liquidation Magnet</b><span>Onde estão os pools? Define o primeiro alvo e mostra onde um stop não deve ficar.</span></div>
+    <div class="step"><i>3</i><b>Market Brain</b><span>Para que lado a evidência aprendida pende, e por quê? Decide a direção, ou diz que não há nenhuma.</span></div>
+    <div class="step"><i>4</i><b>Market Memory</b><span>O que aconteceu nas últimas 25 vezes? Define um alvo e um horizonte realistas, ou avisa que a história foi para os dois lados.</span></div>
+  </div>
+
+  <h3>Perguntas</h3>
+  <div class="faq">
+    <details><summary>Isso são sinais de compra ou venda?</summary><p>Não. Cada um responde a uma pergunta que você deve fazer antes de uma posição. As setas só aparecem nos extremos, e todo indicador com seta mostra a própria taxa de acerto no gráfico carregado, para você ver se ele tem vantagem nesse símbolo e tempo gráfico.</p></details>
+    <details><summary>Em quais dados eles se baseiam?</summary><p>O feed de liquidações próprio da MarginPad (oito corretoras, coletado internamente), o modelo de escada de alavancagem por trás do mapa de calor de liquidações, histórico de funding e posicionamento long/short da multidão, além do preço e do volume do próprio gráfico. Nada disso vem de um fornecedor de indicadores.</p></details>
+    <details><summary>O que diferencia estes de outros indicadores de liquidação?</summary><p>Um dos cinco não é um modelo. Big Liquidations (24h) marca liquidações que <b>realmente aconteceram</b>, cada uma no preço e no candle em que foi registrada, a partir do nosso próprio feed em oito corretoras. Nenhum script de outro site de gráficos consegue isso, porque essas linguagens de script não alcançam um livro de ordens nem um feed de liquidações - todo indicador de liquidação publicado lá é inferido de picos de volume e de interesse aberto. Os outros quatro são modelos construídos sobre nossos próprios dados de liquidação, e cada um avalia sua própria taxa de acerto ao vivo no gráfico que você está vendo. (Eram oito até setembro de 2026 e um sexto foi retirado em outubro; o que saiu era análise técnica genérica, disponível em qualquer gráfico, ou um número que respondia a uma pergunta mais estreita do que os leitores entendiam.)</p></details>
+    <details><summary>Preciso do Premium?</summary><p>Sim. Os cinco fazem parte do MarginPad Premium ($11.99 por mês) no espaço de trabalho multigráfico em <a href="/pt/charts">/charts</a> e nos gráficos mobile. Todos os outros indicadores do gráfico são grátis.</p></details>
+    <details><summary>Onde eu ativo?</summary><p>Em <a href="/pt/charts">/charts</a>, abra o menu Indicadores de uma janela de gráfico: os cinco ficam no topo, em lima. No celular, a folha de indicadores do gráfico lista os mesmos cinco. As leituras aparecem na legenda, no canto superior esquerdo do gráfico.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>Teste em um gráfico ao vivo</h3>
+    <p>O Premium custa $11.99 por mês. Todo o resto da MarginPad continua grátis.</p>
+    <div class="btns"><a class="btn p" href="/pt/premium/">Assinar o Premium</a><a class="btn" href="/pt/charts">Abrir os gráficos</a></div>
+  </div>
+
+  <footer>
+    <div><a href="/pt/">Início</a> · <a href="/pt/premium/">Premium</a> · <a href="/pt/charts">Gráficos</a> · <a href="/pt/liquidations/">Liquidações</a> · <a href="/pt/privacy/">Privacidade</a></div>
+    <div style="margin-top:8px">&copy; MarginPad &middot; Educacional, não é aconselhamento financeiro. Os indicadores analisam dados e vão errar às vezes.</div>
+  </footer>
+</div>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=34829f57"></script>
+</body>
+</html>

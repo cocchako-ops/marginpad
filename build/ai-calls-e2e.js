@@ -84,8 +84,12 @@ const series = (n, fn, step) => { const out = []; for (let i = 0; i < n; i++) { 
     'a plan missing a stop cannot be settled and is not guessed at');
   ok(aiCallSettle(null, [bar(1, 1)]) === null && aiCallSettle(LONG, []) === null,
     'no row or no candles settles nothing');
-  ok(aiCallSettle(LONG, [bar(104, 99)]).state === 'win' && aiCallSettle(LONG, [bar(103.99, 99)]) === null,
+  ok(aiCallSettle(LONG, [bar(101, 99), bar(104, 100.5)]).state === 'win' && aiCallSettle(LONG, [bar(101, 99), bar(103.99, 100.5)]) === null,
     'the target counts when it is touched exactly, not only when it is passed');
+  /* 2026-10-29: the fill candle cannot pay. The simulation found 40-57% of the "wins" of a 1R limit recipe were the fill
+     candle's own high reaching the target, which OHLC cannot order against the dip to the entry. */
+  ok(aiCallSettle(LONG, [bar(104, 99)]).state === 'unclear', 'a target touched inside the fill candle is UNCLEAR, never a win');
+  ok(aiCallSettle(LONG, [bar(101, 97.5)]).state === 'loss', 'a stop touched inside the fill candle is still a loss (the conservative side)');
   ok(aiCallSettle(LONG, [bar(110, 105), bar(112, 106)]) === null,
     'a long whose entry (100) price never came back to does NOT settle - it is a no-fill, not a loss');
   ok(aiCallSettle({ bias: 'long', entry: 100, stop: 98, tp1: 104 }, [bar(108, 101), bar(101, 99), bar(105, 100)]).state === 'win',

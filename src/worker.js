@@ -8729,7 +8729,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=cd4a2960" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=34829f57" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -17956,6 +17956,11 @@ function aiCallSettle(row, bars) {
     const tpHit = long ? hi >= tp : lo <= tp;
     const stHit = long ? lo <= st : hi >= st;
     if (tpHit && stHit) return { state: 'unclear', hitAt: +bars[i].time, bars: i + 1 };  // both inside one candle - the order is unknowable
+    /* THE FILL CANDLE CANNOT PAY (2026-10-29): the strategy simulation found 40-57% of every 1R limit recipe's "wins" were the
+       fill candle's own high reaching the target - and OHLC cannot say whether the high printed before or after the dip to the
+       entry. Same logic as "both in one candle": a target touched inside the fill candle is UNCLEAR. A stop touched there stays
+       a loss (the conservative side). This had been inflating the live book exactly the same way. */
+    if (tpHit && i === fill) return { state: 'unclear', hitAt: +bars[i].time, bars: i + 1 };
     if (tpHit) return { state: 'win', hitAt: +bars[i].time, bars: i + 1 };
     if (stHit) return { state: 'loss', hitAt: +bars[i].time, bars: i + 1 };
   }
@@ -23538,8 +23543,10 @@ export default {
     // below therefore reads the Spanish file) while `url.pathname` becomes the English path, so the SSR routes (liquidation
     // calculators and maps, hubs, the six coin pages, blog live boxes, compare pages) inject the same live data into the twin.
     // No twin on disk → 302 to the English page, never a 404 on a language prefix. The six tool routes serve dist/app-es.html.
-    let esSite = false;
-    if (url.pathname.startsWith('/es/') && url.pathname.length > 4) {
+    let esSite = false, twinLang = ''; // twinLang = 'es' | 'pt' (Portuguese twin of the top pages since 2026-10-29, build/data/pt)
+    const _twm = url.pathname.match(/^\/(es|pt)\/./);
+    if (_twm) {
+      twinLang = _twm[1];
       const enPath = url.pathname.slice(3);
       const isTool = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test(enPath);
       if (!isTool) {
@@ -23565,7 +23572,7 @@ export default {
       // signal twelvefold. Each 301s to its English original, which is an exact topical match.
       // The language HOMEPAGES (/de/, /es/ ...) are untouched - they are app entry points. Spanish left this list on
       // 2026-09-12: /es/ is a full site now (see esSite above), the other eleven still 301.
-      const _I18N_SUB = url.pathname.match(/^\/(ar|de|fr|id|ja|ko|nl|pt|ru|tr|zh)\/(.+)$/);
+      const _I18N_SUB = url.pathname.match(/^\/(ar|de|fr|id|ja|ko|nl|ru|tr|zh)\/(.+)$/); // pt left this list on 2026-10-29: /pt/ is a twin of the top pages now (twinLang above)
       if (_I18N_SUB && _I18N_SUB[2].replace(/\/$/, '')) return Response.redirect(url.origin + '/' + _I18N_SUB[2], 301);
       /* TWO LANGUAGES WE NEVER SHIPPED ARE IN GOOGLE'S INDEX AS 404s (2026-10-09, read off the Page indexing report the
          first time Search Console was opened: /it/ and /pl/, both http and https, crawled as recently as 3 Oct, among
@@ -24213,6 +24220,7 @@ export default {
     // a one-hour ceiling because a rule we change has to reach crawlers the same day; the rest are six hours.
     if (url.pathname === '/robots.txt') return condAsset(request, env, '/robots.txt', 'text/plain; charset=utf-8', 3600);
     if (url.pathname === '/sitemap-es.xml') return condAsset(request, env, '/sitemap-es.xml', 'application/xml; charset=utf-8', 21600);
+    if (url.pathname === '/sitemap-pt.xml') return condAsset(request, env, '/sitemap-pt.xml', 'application/xml; charset=utf-8', 21600);
     if (url.pathname === '/llms.txt' || url.pathname === '/llms-full.txt' || url.pathname === '/llms-changelog.txt') return condAsset(request, env, url.pathname, 'text/plain; charset=utf-8', 21600);
     if (url.pathname === '/openapi.json') return handleOpenApi();
     if (url.pathname === '/.well-known/ai-plugin.json' || url.pathname === '/.well-known/openapi.json' || url.pathname === '/.well-known/mcp.json') return handleAgentManifest(url);
@@ -28605,7 +28613,7 @@ export default {
       catch (e) { return new Response('chat reconnecting', { status: 503 }); }
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
-      const r = await env.ASSETS.fetch(new Request(url.origin + (esSite ? '/app-es' : '/app'), request)); // fetch the APP SHELL (Spanish twin dist/app-es.html on /es/<tool>, 2026-09-12) (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) - this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
+      const r = await env.ASSETS.fetch(new Request(url.origin + (esSite ? '/app-' + twinLang : '/app'), request)); // fetch the APP SHELL (Spanish twin dist/app-es.html on /es/<tool>, 2026-09-12) (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) - this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
       const base = new Response(r.body, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
       // Per-route <title>/description/canonical so each dedicated tool reads as its own keyword-matched page (Google Ads landing-page relevance + SEO). The page HTML is shared; only the head metadata is rewritten.
       const SPA_META = {
@@ -28625,9 +28633,19 @@ export default {
         '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Mapa de calor de liquidaciones cripto - Mapa de liquidez en vivo, gratis | MarginPad', desc: 'Mapa de calor de liquidaciones en vivo para BTC, ETH y las principales alts: mira dónde se concentran las posiciones apalancadas, dónde está la liquidez y dónde la caza el precio - liquidaciones reales de 8 exchanges, en tiempo real. Vista previa gratis, sin cuenta.', canon: 'https://marginpad.io/es/heatmap' },
         '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap de cripto - Más de 900 monedas, sin cuenta | MarginPad', desc: 'Intercambia más de 900 criptomonedas al instante, sin cuenta y sin registro. Swaps rápidos y sin custodia.', canon: 'https://marginpad.io/es/swap' },
       };
-      const m = (esSite ? SPA_META_ES : SPA_META)[url.pathname.replace(/\/$/, '') || '/'];
+      const SPA_META_PT = { // the Portuguese twin's tool routes (/pt/paper-trade ...), 2026-10-29
+        '/paper-trade': { og: 'https://marginpad.io/assets/og/paper-trade.jpg',  title: 'Paper Trading de Cripto - Simulador grátis, sem cadastro, recompensas reais | MarginPad', desc: 'A única plataforma social de paper trading: pratique futuros cripto a preço real com alavancagem de até 1000x, suba nos rankings de temporadas de 14 dias com prêmios, complete missões e ganhe USDT de verdade enquanto aprende. Grátis, sem cadastro, sem depósito: cripto, ações e forex em uma só conta.', canon: 'https://marginpad.io/pt/paper-trade' },
+        '/calculators': { og: 'https://marginpad.io/assets/og/calculators.jpg',  title: 'Calculadoras de futuros cripto - Liquidação, PnL e tamanho | MarginPad', desc: 'Calculadoras grátis de futuros cripto: preço de liquidação, lucro e prejuízo, tamanho da posição, take-profit e risco/retorno. Instantâneas, privadas, sem cadastro.', canon: 'https://marginpad.io/pt/calculators' },
+        '/charts': { og: 'https://marginpad.io/assets/og/charts.jpg',  title: 'Gráficos cripto com replay de candles, comparação e 27 indicadores | MarginPad', desc: 'Gráficos de futuros ao vivo, grátis, no computador e no celular: 27 indicadores com cartões que leem o próprio estado, replay de candles, comparação de duas moedas candle a candle, sessões, níveis diários, seis estilos de gráfico, ferramentas de desenho profissionais e trades simulados rápidos em um só painel.', canon: 'https://marginpad.io/pt/charts' },
+        '/screener': { og: 'https://marginpad.io/assets/og/screener.jpg',  title: 'Screener de futuros cripto - Setups pontuados, funding e OI | MarginPad', desc: 'Screener grátis de futuros cripto: pontuações técnicas de 0 a 100 com RSI, MACD, funding e interesse aberto nos principais perpétuos USDT, mais setups prontos para operar.', canon: 'https://marginpad.io/pt/screener' },
+        '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Mapa de calor de liquidações cripto - Mapa de liquidez ao vivo, grátis | MarginPad', desc: 'Mapa de calor de liquidações ao vivo para BTC, ETH e as principais alts: veja onde as posições alavancadas se concentram, onde está a liquidez e onde o preço a caça - liquidações reais de 8 corretoras, em tempo real. Prévia grátis, sem conta.', canon: 'https://marginpad.io/pt/heatmap' },
+        '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap de cripto - Mais de 900 moedas, sem conta | MarginPad', desc: 'Troque mais de 900 criptomoedas na hora, sem conta e sem cadastro. Swaps rápidos e sem custódia.', canon: 'https://marginpad.io/pt/swap' },
+      };
+      const m = (esSite ? (twinLang === 'pt' ? SPA_META_PT : SPA_META_ES) : SPA_META)[url.pathname.replace(/\/$/, '') || '/'];
       if (!m) return base;
-      const H1 = (esSite
+      const H1 = (esSite && twinLang === 'pt'
+        ? { '/paper-trade': 'Paper trading de cripto a preço real', '/calculators': 'Calculadoras de futuros cripto', '/charts': 'Espaço multigráfico de cripto', '/screener': 'Screener de futuros cripto', '/heatmap': 'Mapa de calor de liquidações ao vivo', '/swap': 'Swap de cripto' }
+        : esSite
         ? { '/paper-trade': 'Paper trading de cripto a precio en vivo', '/calculators': 'Calculadoras de futuros cripto', '/charts': 'Espacio multigráfico de cripto', '/screener': 'Screener de futuros cripto', '/heatmap': 'Mapa de calor de liquidaciones en vivo', '/swap': 'Swap de cripto' }
         : { '/paper-trade': 'Crypto paper trading at live prices', '/calculators': 'Crypto futures calculators', '/charts': 'Multi-chart crypto workspace', '/screener': 'Crypto futures screener', '/heatmap': 'Live crypto liquidation heatmap', '/swap': 'Swap crypto' })[url.pathname.replace(/\/$/, '')]; // the shared shell's h1 reads "Everything you need to trade futures." on every tool route (2026-09-07 UX pass); the hero is hidden on tool routes, so this is for crawlers and screen readers
       let h1done = false;
@@ -37642,7 +37660,7 @@ async function checkIndexNow(env, force) {
     // announcing nothing for however long. Keep smText around; the daily-cadence pass below reuses it.
     const smText = async (p) => { try { const r = await env.ASSETS.fetch(new Request('https://marginpad.io' + p)); return r.ok ? await r.text() : ''; } catch (e) { return ''; } };
     let smMain = '';
-    for (const p of ['/sitemap.xml', '/sitemap-es.xml', '/sitemap-recaps.xml']) {   // sitemap-i18n.xml was deleted 2026-09-20 - it had been an empty urlset since 2026-08-18 and Google reported it as an error on every read
+    for (const p of ['/sitemap.xml', '/sitemap-es.xml', '/sitemap-pt.xml', '/sitemap-recaps.xml']) {   // sitemap-i18n.xml was deleted 2026-09-20 - it had been an empty urlset since 2026-08-18 and Google reported it as an error on every read
       const t = await smText(p);
       if (p === '/sitemap.xml') smMain = t;
       if (t) urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()));
