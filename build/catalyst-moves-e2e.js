@@ -15,7 +15,7 @@
 const fs = require('fs'), path = require('path');
 const ARGS = process.argv.slice(2), has = k => ARGS.includes(k);
 const PURE = has('--pure'), BROWSER = has('--browser'), LOCAL = has('--local'), FALSIFY = has('--falsify');
-const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'unknown'];
+const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'tech', 'unknown'];
 const BASE = 'https://marginpad.io', DIST = path.join(__dirname, '..', 'dist'), A = path.join(DIST, 'assets');
 let pass = 0, fail = 0;
 const ok = (name, cond, note) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (note !== undefined ? '  -> ' + String(note).slice(0, 220) : '')); } };
@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -130,6 +130,29 @@ function pureLeg() {
   ok('liquidations at 3x the bucket but under the cascade bar are named as forced closes, not a cascade', a.cause === 'liqs' && !a.cascade && /forced closes/.test(a.note), a.cause + ' ' + a.note);
   const en = X.cxEnrich([cat({ id: 'abc', kind: 'news', tier: 'mediaB', score: 40 })], { m: { abc: { imp: 90, kind: 'hack', syms: ['ETH'], expect: -1, sum: 'A live protocol was drained', why: 'forced selling', ts: Date.now() } } });
   ok('a label lifts a rules-only news row: blended score, the real kind, the coins unioned, the direction', en[0].score > 40 && en[0].kind === 'hack' && en[0].kind0 === 'news' && /ETH/.test(en[0].syms) && en[0].expect === -1 && en[0].lbl.sum, JSON.stringify(en[0]));
+  // THE HYPE CASE (2026-10-29, owner): seven desks, seven wordings, the first at 10:32, the moves at 10:30 / 12:30 / 15:00, whales buying all day
+  const ice = [['tg:unfolded', 'NYSE owner ICE invests in trade[XYZ] and partners to launch regulated perps', ['HYPE']], ['tg:WatcherGuru', 'JUST IN: NYSE owner to bring Hyperliquid $HYPE perpetual futures to regulated US markets', ['HYPE']], ['tg:cointelegraph', 'JUST IN: NYSE parent ICE takes a stake in Trade.xyz and plans a US-regulated perps market', []], ['rss:defiant', 'ICE plans US-regulated Hyperliquid perpetuals via TradeXYZ', ['HYPE']], ['rss:unchained', 'NYSE owner ICE brings Hyperliquid perpetuals to US via Trade.xyz', ['HYPE']]];
+  const iceItems = ice.map((r, i) => cat({ id: 'ice' + i, source: r[0], tier: /^rss/.test(r[0]) ? 'mediaA' : 'mediaB', kind: 'regulation', expect: 0, syms: r[2].join(','), score: 35, conf: 1, title: r[1], ts_src: T0 - (150 - i * 4) * 60000 }));
+  const iceLbl = { m: {} }; ice.forEach((r, i) => { iceLbl.m['ice' + i] = { imp: 72, kind: 'regulation', syms: ['HYPE'], expect: 1, sum: 'NYSE parent ICE partners with Hyperliquid for US-regulated perpetual futures', why: 'institutional entry', ts: Date.now() }; });
+  const iceEn = X.cxEnrich(iceItems, iceLbl);
+  ok('five desks with five wordings become ONE story: conf 5, the coins unioned onto the desk that named none, a velocity bonus, major', iceEn.every(c => c.story && c.story.n === 5 && c.conf === 5 && /HYPE/.test(c.syms) && c.major) && iceEn[2].score > iceEn[2].score0 + 20, JSON.stringify(iceEn.map(c => [c.conf, c.syms, c.score, c.major])));
+  const hypeMv = { t0: T0, t1: T0 + 15 * 60000, pct: 4.4, dir: 1 };
+  a = X.cxAttribute(hypeMv, iceEn, null, { sym: 'HYPE', liqFloor: 50000, btcMoves: [], whales: [{ ts: T0, act: 'open', long: 1, usd: 6000000 }] });
+  ok('the story, two and a half hours old, still explains the HYPE leg and outranks the whales buying into it', a.cause === 'news' && a.catalyst && a.catalyst.story && a.catalyst.story.n === 5 && a.factors.some(f => f.k === 'whale'), a.cause + ' ' + JSON.stringify(a.catalyst && [a.catalyst.leadMin, a.catalyst.major]));
+  ok('and the note says how many desks carried it', /5 desks reported this story/.test(a.note), a.note);
+  const lone = X.cxEnrich([cat({ id: 'lone', source: 'rss:cryptopotato', tier: 'mediaB', kind: 'news', expect: 1, syms: 'HYPE', score: 30, title: 'HYPE could rally, analyst says', ts_src: T0 - 150 * 60000 })], { m: { lone: { imp: 40, kind: 'news', syms: ['HYPE'], expect: 1, sum: 'Analyst expects HYPE rally', why: 'opinion', ts: Date.now() } } });
+  a = X.cxAttribute(hypeMv, lone, null, { sym: 'HYPE', liqFloor: 50000, btcMoves: [], whales: [{ ts: T0, act: 'open', long: 1, usd: 6000000 }] });
+  ok('an ordinary desk item two and a half hours old gets no such reach: the whales keep the move', a.cause === 'whale', a.cause);
+  // Bitcoin's own reason rides into the alt's explanation
+  a = X.cxAttribute({ t0: T0, t1: T0 + 15 * 60000, pct: -1.8, dir: -1 }, [], null, { sym: 'SOL', btcMoves: [{ t0: T0, t1: T0 + 15 * 60000, pct: -2.1, dir: -1, cause: 'tech', label: 'Support break', note: 'Fell through 79,900, a support that held 3 times over the last 12 days' }] });
+  ok('an alt that followed Bitcoin is told why Bitcoin moved', a.cause === 'btc' && /\(Bitcoin: Support break - Fell through 79,900/.test(a.factors.filter(f => f.k === 'btc')[0].text), JSON.stringify(a.factors.filter(f => f.k === 'btc')));
+  // the chart's own structure: a support touched three times, then broken
+  const tb = []; let tpx = 100; for (let i = 0; i < 400; i++) { const t = T0 / 1000 - (400 - i) * 900; let lo = tpx - 0.3, hi = tpx + 0.3, c = tpx + ((i % 7) - 3) * 0.05; if (i === 120 || i === 220 || i === 320) { lo = 95.0; c = 96; } if (i >= 390) { c = 93 - (i - 390) * 0.3; lo = c - 0.2; hi = tpx; } tb.push({ time: t, open: tpx, high: Math.max(hi, c), low: Math.min(lo, c), close: c, vol: i >= 390 ? 500 : 100 }); tpx = c; }
+  const tmv = { t0: (T0 / 1000 - 10 * 900) * 1000, t1: T0, pct: -5.3, dir: -1, p0: tb[389].close, p1: tb[399].close, lo: tb[399].low, hi: tb[390].high };
+  const te = X.cxTech(tb, tmv);
+  ok('a drop through a support touched three times is a support break with heavy volume', te && te.kind === 'break' && /support that held 3 times/.test(te.text) && te.vol >= 3, JSON.stringify(te));
+  a = X.cxAttribute(tmv, [], null, { sym: 'BTC', bars: tb });
+  ok('with nothing dated the broken level is the cause and the note says so', a.cause === 'tech' && a.label === 'Support break' && /Fell through/.test(a.note), a.cause + ' ' + a.note);
 }
 
 // ---------- production ----------
@@ -145,7 +168,7 @@ async function prodLeg() {
   const mv = j.moves || [];
   ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => CAUSES.includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
   const s = j.summary || {};
-  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + s.unknown === s.n, JSON.stringify(s));
+  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + (s.tech || 0) + s.unknown === s.n, JSON.stringify(s));
   ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0) || (m.factors || []).some(f => f.k === m.cause)));
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
