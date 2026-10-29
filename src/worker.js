@@ -1646,7 +1646,7 @@ async function handleCgBoard(url, env) {
 // Spanish reader off by three and six orders of magnitude. Measured 2026-09-14 on the live /es/ coin pages: Bitcoin's
 // market cap read '$1.54 trillion', i.e. 1.54 quintillion dollars to anyone reading it as Spanish. Pass lang where the
 // text is localised; the bare call is unchanged everywhere else.
-const _SUSD_W = { en: [' trillion', ' billion', ' million'], es: [' billones', ' mil millones', ' millones'] };
+const _SUSD_W = { en: [' trillion', ' billion', ' million'], es: [' billones', ' mil millones', ' millones'], pt: [' trilhões', ' bilhões', ' milhões'] }; // pt-BR: bilhão = 10^9, like English
 function _susd(x, lang) { x = +x; if (!isFinite(x)) return null; const a = Math.abs(x); const w = _SUSD_W[lang] || _SUSD_W.en; if (a >= 1e12) return '$' + (x / 1e12).toFixed(2) + w[0]; if (a >= 1e9) return '$' + (x / 1e9).toFixed(2) + w[1]; if (a >= 1e6) return '$' + (x / 1e6).toFixed(1) + w[2]; if (a >= 1e3) return '$' + (x / 1e3).toFixed(0) + 'K'; return '$' + x.toFixed(0); }
 function _spx(x) { x = +x; if (!isFinite(x)) return null; if (x > 0 && x < 0.01) return '$' + x.toLocaleString('en-US', { maximumSignificantDigits: 4 }); /* sub-cent coins keep four significant digits - BONK printed as $0.000004 was 6% off (audit 2026-09-25) */ return '$' + x.toLocaleString('en-US', { maximumFractionDigits: x >= 100 ? 0 : x >= 1 ? 2 : 6 }); }
 function _pick(sym, arr) { let h = 0; const s = String(sym); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return arr[h % arr.length]; }
@@ -1660,6 +1660,9 @@ function _hhmm() { const t = new Date(); return t.toISOString().slice(0, 10) + '
 // one place that reads it, and esT() is a value table for the handful of whole sentences the worker writes into
 // a page. Anything not in the table falls through to English, which is the right failure.
 function esLang(request) { try { return /^\/es(\/|$)/.test(new URL(request.url).pathname) ? 'es' : 'en'; } catch (e) { return 'en'; } }
+// twinLangOf: 'es' | 'pt' | 'en' - the Portuguese twin (2026-10-29) shares every SSR site with the Spanish one; the tables are
+// SSR_ES / SSR_PT etc., picked through SSR_L[lang]. esLang() stays the Spanish-only answer for the branches that have no pt copy.
+function twinLangOf(request) { try { const m = new URL(request.url).pathname.match(/^\/(es|pt)(\/|$)/); return m ? m[1] : 'en'; } catch (e) { return 'en'; } }
 const SSR_ES = {
   liqTotal: 'Las liquidaciones de futuros cripto suman {t} en las últimas 24 horas: {l} de largos y {s} de cortos en {n} monedas monitorizadas.',
   whaleHold: 'Las ballenas de Hyperliquid mantienen ahora {t} en posiciones abiertas repartidas en {n} carteras monitorizadas - {l} en largos frente a {s} en cortos, {net} en conjunto.',
@@ -1674,6 +1677,29 @@ const SSR_ES = {
   fngRange: 'En los últimos {n} días el índice se ha movido entre {lo} y {hi}.',
   fngCls: { 'Extreme Fear': 'Miedo extremo', 'Fear': 'Miedo', 'Neutral': 'Neutral', 'Greed': 'Codicia', 'Extreme Greed': 'Codicia extrema' },
 };
+// PORTUGUESE (2026-10-29): the same sentences for the /pt/ twin. Generated from build/data/pt/ssr-pt.json - edit there, re-run the wiring.
+const SSR_PT = {"liqTotal":"As liquidações de futuros de cripto somam {t} nas últimas 24 horas: {l} de longs e {s} de shorts em {n} moedas monitoradas.","whaleHold":"As baleias da Hyperliquid mantêm agora {t} em posições abertas, distribuídas em {n} carteiras monitoradas - {l} em longs contra {s} em shorts, {net} no total.","netLong":"net long","netShort":"net short","netFlat":"praticamente equilibrado","fngNow":"O índice Crypto Fear & Greed está em {v} ({c}) agora","fngYday":", contra {v} ({c}) ontem","fngWeek":" e {v} há uma semana","fngRange":"Nos últimos {n} dias, o índice oscilou entre {lo} e {hi}.","fngCls":{"Extreme Fear":"Medo extremo","Fear":"Medo","Neutral":"Neutro","Greed":"Ganância","Extreme Greed":"Ganância extrema"}};
+const SSR_L = { es: SSR_ES, pt: SSR_PT };
+const SSR_TBL_PT = {"MARKET STATE":"ESTADO DO MERCADO","Price":"Preço","Market cap":"Valor de mercado","rank #":"posição #","in 24h":"em 24 h","24h spot volume":"Volume spot 24 h","7-day change":"Variação em 7 dias","30-day change":"Variação em 30 dias","All-time high":"Máxima histórica","from here":"a partir daqui","Funding rate":"Taxa de funding","longs pay shorts":"longs pagam shorts","shorts pay longs":"shorts pagam longs","flat":"neutra","Open interest":"Interesse aberto","Open interest / market cap":"Interesse aberto / valor de mercado","Liquidated in 24h":"Liquidado em 24 h","MarginPad collector, 8 exchanges":"coletor da MarginPad, 8 exchanges","- longs liquidated":"- longs liquidados","- shorts liquidated":"- shorts liquidados","Accounts long / short":"Contas long / short","our own daily records":"nossos próprios registros diários","Heaviest of those days":"O mais pesado desses dias","-day average":" dias de média","Liquidations, ":"Liquidações, "," / day":" / dia"};
+const SSR_TBL_L = { es: null /* set below SSR_TBL_ES */, pt: SSR_TBL_PT };
+const SSR_MAP_PT = [[" LIQUIDATION MAP &middot; UPDATED "," MAPA DE LIQUIDAÇÕES &middot; ATUALIZADO "],[">Price<",">Preço<"],[">Liquidated 24h<",">Liquidado 24h<"],[">Long vs short<",">Longs vs shorts<"],["Above &mdash; where shorts get liquidated","Acima &mdash; onde os shorts são liquidados"],["Below &mdash; where longs get liquidated","Abaixo &mdash; onde os longs são liquidados"],[">trading now<",">negociando agora<"],["Zoom, hover a band, read the clusters","Dê zoom, passe o mouse sobre uma faixa, leia os clusters"],["Deep perpetual liquidity","Liquidez profunda em perpétuos"],["3.5% of your trading fees back","3.5% das suas taxas de trading de volta"],[" A $250,000 buy would really cost "," Uma compra de $250,000 custaria de verdade "],[" in slippage"," de slippage"],["This is <strong","Isto é <strong"],["measured</strong>, not modelled: real limit orders standing on ","medido</strong>, não modelado: ordens limite reais nos livros de ordens de "],[" exchange order books a second ago. "," exchanges, de um segundo atrás. "],[" exchange order books "," exchanges, de "],[" seconds ago. "," segundos atrás. "],["The real book right now &middot; measured","O livro real agora &middot; medido"],["Bids resting","Compras pendentes"],["Offers resting","Vendas pendentes"],["within 0.25% of the price, summed across","a menos de 0.25% do preço, somado entre"],[" venues"," exchanges"],["A $250,000 buy would really cost","Uma compra de $250,000 custaria de verdade"],["in slippage","de slippage"],[" a $250,000 sell, "," uma venda de $250,000, "],["&middot; UPDATED ","&middot; ATUALIZADO "],["· UPDATED ","· ATUALIZADO "],["See it live:","Veja ao vivo:"],["Practice risk-free with paper trading","Pratique sem risco com paper trading"],["Practice risk-free","Pratique sem risco"],["Full liquidation calculator","Calculadora de liquidação completa"],["24h liquidation totals","Totais de liquidações 24h"],["Live liquidation feed","Feed de liquidações ao vivo"],["LIVE MARKET DATA","DADOS DE MERCADO AO VIVO"],["It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ","Ele responde a uma pergunta diferente da das zonas acima, e vale guardar a diferença: um livro mostra ordens que alguém <em>escolheu</em> colocar e pode retirar a qualquer momento, enquanto uma zona de liquidação é onde a alavancagem é encerrada, quer o dono queira ou não &mdash; e nenhum livro de ordens mostra isso, a distância nenhuma. "],["On top of which the deepest book we can read only reaches ","Além disso, o livro mais profundo que conseguimos ler só chega a "],[" from the price"," do preço"],[", while the nearest zone above sits ",", enquanto a zona mais próxima acima fica a "],["% away","% de distância"],[": past that, even the resting orders are out of sight.",": além disso, nem as ordens pendentes ficam visíveis."],["Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ","O comprimento da barra é o peso de uma zona ativa em relação às demais desta lista; o número ao lado indica quantas vezes ela carrega a faixa ativa média perto do preço. Estas são zonas "],["modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.","modeladas</strong>, não dinheiro que trocou de mãos &mdash; os únicos valores em dólar aqui são os totais de 24h acima, que nosso coletor viu acontecer."],[">measured<",">medido<"],[">modelled<",">modelado<"],[" from longs and "," de longs e "],[" from shorts"," de shorts"],[", so the recent damage came on the way down",", então o estrago recente veio na queda"],[", so shorts were squeezed on a move up",", então os shorts foram esmagados numa alta"],[", a fairly even two-sided battle",", uma batalha bem equilibrada entre os dois lados"],["There is currently ","Atualmente há "],[" of open "," de interesse aberto em "],[" interest that the market can test"," que o mercado pode testar"],[" (roughly steady over 24 hours)"," (praticamente estável em 24 horas)"],[" (up "," (alta de "],[" (down "," (queda de "],["% in a day)","% em um dia)"],["Funding is flat right now - no crowded side for the market to hunt.","O funding está neutro agora: não há um lado lotado para o mercado caçar."],["Funding is positive (","O funding está positivo ("],[") - the crowd is long, and long clusters below the price are usually the first this map fills.","): a maioria está em long, e os clusters de longs abaixo do preço costumam ser os primeiros que este mapa preenche."],["Funding is negative (","O funding está negativo ("],[") - the crowd is short, and short clusters above the price are the first targets.","): a maioria está em short, e os clusters de shorts acima do preço são os primeiros alvos."],[" trades at "," é negociado a "],[", up ",", alta de "],[", down ",", queda de "],["% in 24 hours","% em 24 horas"],["Live liquidation feed","Feed de liquidações ao vivo"],["24h totals by coin","Totais de 24h por moeda"],[" billion"," bilhões"],[" million"," milhões"]];
+const MAP_FRAG_PT = {"openHeatmap":"Abra o mapa de calor de {c} ao vivo","tradeOn":"Opere {c} na Bybit","hitMap":"{t} em posições de {c} foram liquidados neste mapa nas últimas 24 horas: ","quiet":"O mapa de {c} ficou calmo: menos de $50K liquidados nas últimas 24 horas."};
+const SSR_COMP_PT = [[">Day of season<",">Dia da temporada<"],["Right now it is <b>day ","Agora é o <b>dia "],["</b>. This season ends <b>","</b>. Esta temporada termina em <b>"],["</b>, in ","</b>, em "],[" days, and the next one starts the same day - you can join on any day and still place."," dias, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],[" hours, and the next one starts the same day - you can join on any day and still place."," horas, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],["<span>Entry <b>","<span>Entrada <b>"],["<span>Deposit <b>none</b></span>","<span>Depósito <b>nenhum</b></span>"],["</b> person is competing</span>","</b> pessoa está competindo</span>"],["</b> people are competing</span>","</b> pessoas estão competindo</span>"],["</b> placements</span>","</b> colocações</span>"],["<h2>The nine boards</h2>","<h2>As nove tabelas</h2>"],["Free - daily call","Grátis - palpite diário"],["Free - Demo Spot","Grátis - Demo Spot"],["<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>","<p>Cada tabela pontua algo diferente, então um único estilo de trading não leva todas. Cada uma paga seus primeiros colocados, e você pode se classificar em mais de uma.</p>"],[">Leading<",">Líder<"],[">Open board<",">Tabela aberta<"],[">nobody has scored yet<",">ninguém pontuou ainda<"],[">one qualifying trade puts you first<",">um trade válido coloca você em primeiro<"],[" entered</div>"," inscritos</div>"],["% win rate","% de taxa de acerto"],[" green days"," dias verdes"],[" green day"," dia verde"],[" wagered"," apostados"],[">Real money<",">Dinheiro real<"],[">Free - paper<",">Grátis - paper<"],[">Measured ",">Medido "],[" UTC by MarginPad, from the same data that pays the prizes."," UTC pela MarginPad, com os mesmos dados que pagam os prêmios."],[">Highest ROE<",">Maior ROE<"],[">Green Days<",">Dias verdes<"],[">Best Win Rate<",">Melhor taxa de acerto<"],[">Season XP<",">XP da temporada<"],[">Bybit Volume<",">Volume na Bybit<"],[">the best return on a single closed trade.<",">o melhor retorno em um único trade encerrado.<"],[">the most days closed in profit.<",">mais dias encerrados no lucro.<"],[">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",">a maior taxa de acerto, ordenada pela pontuação de Wilson para que uma sequência de sorte não a vença.<"],[">the most XP earned this season.<",">mais XP ganho nesta temporada.<"],[">the best points score across wins and losses.<",">a melhor pontuação somando ganhos e perdas.<"],[">the most REAL futures volume on a Bybit account opened through MarginPad.<",">mais volume REAL de futuros em uma conta Bybit aberta pela MarginPad.<"],[">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"],[">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"]];
+const COMP_FRAG_PT = {"dayOf":"dia {x} de {y}","onTheLine":"em jogo nesta temporada, entrada grátis"};
+const COMM_CATS_PT = {"ideas":"Ideias de trading","analysis":"Análise técnica","news":"Notícias do mercado","education":"Educação","crypto":"Crypto","forex":"Forex","stocks":"Ações","futures":"Futuros","strategies":"Estratégias","psychology":"Psicologia","risk":"Gestão de risco","indicators":"Indicadores","platform":"Novidades da plataforma","thesis":"Teses"};
+const ASK_PT = {"too few":"poucas","over 100x ":"acima de 100x "," closes":" encerramentos","thin - no rate printed":"amostra pequena - sem taxa exibida","Here, free - under the same rules a paid challenge uses":"Aqui, grátis - com as mesmas regras de um desafio pago","Ten times or less - and here is the count behind that":"Dez vezes ou menos - e aqui está a contagem por trás disso","Positive on Bitcoin: ":"Positivo no Bitcoin: ","Negative on Bitcoin: ":"Negativo no Bitcoin: ","Flat on Bitcoin":"Neutro no Bitcoin","Positive across most of the market":"Positivo na maior parte do mercado","Negative across most of the market":"Negativo na maior parte do mercado","<strong>longs are paying shorts</strong>":"<strong>os longs estão pagando os shorts</strong>","<strong>shorts are paying longs</strong>":"<strong>os shorts estão pagando os longs</strong>","neither side is paying a meaningful premium":"nenhum dos lados paga um prêmio relevante","Bitcoin funding is {f}, so {who}. ":"O funding do Bitcoin está em {f}, então {who}. ","longs pay":"longs pagam","shorts pay":"shorts pagam","flat":"neutro","read from each exchange&#39;s own public funding endpoint":"lido do endpoint público de funding de cada exchange","free JSON at":"JSON gratuito em","and":"e","MarginPad&#39;s own collector, {ex} exchange websockets":"coletor próprio da MarginPad, {ex} websockets de exchanges","Longs, {lp}% of the damage":"Longs, {lp}% do estrago","Shorts, {sp}% of the damage":"Shorts, {sp}% do estrago","Close to even, {lp}% long":"Quase empatado, {lp}% long","% long":"% long","% short":"% short","long":"long","short":"short"," - {s} {side} on {ven}":" - {s}, posição {side} na {ven}"};
+function ptMapFrag(s) {
+  s = String(s || '');
+  s = s.replace(/Open the live ([A-Z0-9]+) heatmap/g, (m, c) => MAP_FRAG_PT.openHeatmap.split('{c}').join(c));
+  s = s.replace(/Trade ([A-Z0-9]+) on Bybit/g, (m, c) => MAP_FRAG_PT.tradeOn.split('{c}').join(c));
+  s = s.replace(/^(.+?) of ([A-Z0-9]+) positions hit this map in the past 24 hours - /, (m, t, c) => MAP_FRAG_PT.hitMap.split('{t}').join(t).split('{c}').join(c));
+  s = s.replace(/^The ([A-Z0-9]+) map has been quiet - under \$50K liquidated in the past 24 hours\./, (m, c) => MAP_FRAG_PT.quiet.split('{c}').join(c));
+  for (const [a, b] of SSR_MAP_PT) s = s.split(a).join(b);
+  return s;
+}
+function ptCompFrag(s) { s = String(s || ''); for (const [a, b] of SSR_COMP_PT) s = s.split(a).join(b); s = s.replace(/(<b>)dia (\d+) of (\d+)(<\/b>)/g, (m, o, x, y, c) => o + COMP_FRAG_PT.dayOf.split('{x}').join(x).split('{y}').join(y) + c); /* the pairs above already turned day into dia */ s = s.split('on the line this season, free to enter').join(COMP_FRAG_PT.onTheLine); return s; }
+const MAP_FRAG_L = { es: null /* esMapFrag, set below */, pt: ptMapFrag };
+const COMP_FRAG_L = { es: null /* esCompFrag, set below */, pt: ptCompFrag };
 const SSR_L10N = {
   de: { px: '{name} ({sym}) notiert aktuell bei {px}{ch}.', chFlat: ', kaum verändert in den letzten 24 Stunden', chUp: ', plus {v}% in den letzten 24 Stunden', chDn: ', minus {v}% in den letzten 24 Stunden',
     rank: 'Nach Marktkapitalisierung liegt der Coin auf Platz #{rank} mit {mcap}', rankVol: ', bei {vol} Handelsvolumen über alle Märkte am vergangenen Tag',
@@ -1992,9 +2018,11 @@ const SSR_TBL_ES = {
   'Accounts long / short': 'Cuentas largas / cortas', 'our own daily records': 'nuestros propios registros diarios',
   'Heaviest of those days': 'El más fuerte de esos días', '-day average': ' días de media', 'Liquidations, ': 'Liquidaciones, ', ' / day': ' / día',
 };
-function ssrCoinTable(sym, cg, gk, hist, es) {
-  const T = es ? (s => SSR_TBL_ES[s] || s) : (s => s);
-  const U = (v) => _susd(v, es ? 'es' : 'en');   // 'billion' means 10^12 in Spanish - never print the English word there
+function ssrCoinTable(sym, cg, gk, hist, lang) {
+  const es = lang === 'es' || lang === true; lang = lang === true ? 'es' : (lang || 'en'); // the old boolean caller shape is still honoured
+  const TBL = lang === 'pt' ? SSR_TBL_PT : lang === 'es' ? SSR_TBL_ES : null;
+  const T = TBL ? (s => TBL[s] || s) : (s => s);
+  const U = (v) => _susd(v, lang);   // 'billion' means 10^12 in Spanish - never print the English word there
   const R = [];                                                    // [label, value, note]
   const add = (label, val, note) => { if (val != null && val !== '') R.push([label, val, note || '']); };
   if (cg && cg.price != null) add(T('Price'), _spx(cg.price), isFinite(+cg.chg24h) ? _sPct(cg.chg24h) + ' ' + T('in 24h') : '');
@@ -2097,7 +2125,7 @@ async function handleSsrCoin(request, url, env) {
     try { const cs = ssrLiqClusterProse(sym, cg, cl, _lm && _lm[1]); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
     try { const hs = ssrLiqHistoryProse(sym, hist, _lm && _lm[1]); if (hs.length) sentences = sentences.concat(hs); } catch (e) {}
   if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
-  let table = ''; try { table = ssrCoinTable(sym, cg, gk, hist, _lm && _lm[1] === 'es'); } catch (e) {}
+  let table = ''; try { table = ssrCoinTable(sym, cg, gk, hist, _lm && _lm[1]); } catch (e) {}
   const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10, table) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -2253,11 +2281,11 @@ async function handleSsrCalendar(request, url, env) {
   } catch (e) {}
   if (!evs.length) return pass();
   const esc2 = t => String(t == null ? '' : t).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
-  const es = esLang(request) === 'es'; // the /es/ twin's SSR block used to be the English one, chrome included (audit 2026-09-25)
-  const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-  const fmt = ts => { const d = new Date(+ts); if (es) { const p = n => String(n).padStart(2, '0'); return d.getUTCDate() + ' ' + MES[d.getUTCMonth()] + ' ' + d.getUTCFullYear() + ' ' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ' UTC'; } return d.toUTCString().replace(/:\d\d GMT$/, ' UTC').replace(/^\w+, /, ''); };
+  const es = esLang(request) === 'es', pt = twinLangOf(request) === 'pt'; // the /es/ twin's SSR block used to be the English one, chrome included (audit 2026-09-25)
+  const MES = pt ? ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'] : ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const fmt = ts => { const d = new Date(+ts); if (es || pt) { const p = n => String(n).padStart(2, '0'); return d.getUTCDate() + ' ' + MES[d.getUTCMonth()] + ' ' + d.getUTCFullYear() + ' ' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ' UTC'; } return d.toUTCString().replace(/:\d\d GMT$/, ' UTC').replace(/^\w+, /, ''); };
   const li = evs.map(e => '<li><time datetime="' + new Date(+e.ts).toISOString() + '">' + fmt(e.ts) + '</time>'
-    + '<div><b>' + esc2(e.title) + '</b>' + (+e.impact >= 3 ? '<span class="imp">' + (es ? 'ALTO IMPACTO' : 'HIGH IMPACT') + '</span>' : '')
+    + '<div><b>' + esc2(e.title) + '</b>' + (+e.impact >= 3 ? '<span class="imp">' + (es || pt ? 'ALTO IMPACTO' : 'HIGH IMPACT') + '</span>' : '')
     + (e.desc ? '<span>' + esc2(e.desc) + '</span>' : '') + '</div></li>').join('');
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
   const block = '<section class="cssr"><h2>' + (es ? 'Lo que viene' : 'What is coming up') + '</h2>'
@@ -2311,14 +2339,18 @@ function _askBox(big, prose, rows, cols, src) {
       + rows.map(r => '<tr>' + r.map((c, i) => '<td' + (i ? ' class="n"' : '') + '>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '');
 }
 async function askRender(kind, env, ctx, es) {
+  const lang = es === 'pt' ? 'pt' : es ? 'es' : 'en'; es = lang === 'es'; // 'pt' rides in through the same parameter (2026-10-29)
   // Four of these five pages had NO Spanish branch: the handler detected /es/ correctly (the response even said
   // x-mp-ssr: ask-count-es) and then rendered the English answer under the Spanish headline. Same class of bug as
   // the coin pages on 2026-09-14. T() picks the string; money() picks the FORMATTER, because the magnitude words
   // are false friends - Spanish billon is 10^12, so _aUsd's ' billion' would tell a Spanish reader a thousand
   // times the truth. _susd(x,'es') says 'mil millones'.
-  const T = (en, sp) => (es ? sp : en);
-  const money = v => (es ? _susd(v, 'es') : _aUsd(v));
-  const stamp = t => (es ? 'Medido ' : 'Measured ') + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  // pt: a literal English key hits the table; a concatenated one ("Bitcoin funding is +0.0023%, so ...") is matched against the
+  // table's {placeholder} templates, each placeholder capturing the runtime value, and falls back to English only when none fits.
+  const _ptT = (en) => { if (ASK_PT[en]) return ASK_PT[en]; for (const k of Object.keys(ASK_PT)) { if (k.indexOf('{') < 0) continue; const names = []; const re = new RegExp('^' + k.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\w+)\}/g, (m, nm) => { names.push(nm); return '([\\s\\S]+?)'; }) + '$'); const m = en.match(re); if (m) { let out = ASK_PT[k]; names.forEach((nm, i) => { out = out.split('{' + nm + '}').join(m[i + 1]); }); return out; } } return en; };
+  const T = (en, sp) => (lang === 'pt' ? _ptT(String(en)) : es ? sp : en);
+  const money = v => (lang === 'en' ? _aUsd(v) : _susd(v, lang));
+  const stamp = t => (lang === 'pt' ? 'Medido ' : es ? 'Medido ' : 'Measured ') + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   if (kind === 'bot') {
     // Every other question page answers with market data. This one answers a commercial question, so the
     // honest number is OUR OWN usage: how many bots are really running on the paper API this season and how
@@ -2617,11 +2649,11 @@ async function handleSsrAsk(request, url, env, kind, ctx) {
       i = cl + 6;
     } }
   if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
-  const _esAsk = /^\/es\//.test(new URL(request.url).pathname);
+  const _esAsk = twinLangOf(request) === 'pt' ? 'pt' : /^\/es\//.test(new URL(request.url).pathname);
   let res = null; try { res = await askRender(kind, env, ctx, _esAsk); } catch (e) {}
   if (!res) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   const out = ssrStampDate(html.slice(0, open) + '<div id="askdata" data-ssr="ask">' + res.html + html.slice(close), res.ts);
-  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind + (_esAsk ? '-es' : '') } });
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind + (_esAsk === 'pt' ? '-pt' : _esAsk ? '-es' : '') } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -2747,6 +2779,7 @@ async function handleSsrComp(request, url, env, ctx) {
   H += '</div>';
 
   if (esLang(request) === 'es') H = esCompFrag(H); // the /es/ twin gets the same numbers in Spanish words
+  else if (twinLangOf(request) === 'pt') H = ptCompFrag(H);
   const out = ssrStampDate(html.slice(0, open) + '<div id="compdata" data-ssr="comp">' + H + html.slice(close), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'competition' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -3370,14 +3403,17 @@ async function handleSsrLiq(request, url, env, mode, param) {
   if (!res || !res.S || res.S.length < 2) return pass();
   const kick = esLang(request) === 'es'
     ? (mode === 'lev' ? 'EN VIVO - ' + param + 'X AHORA MISMO' : mode === 'excalc' ? 'DATOS DE MERCADO EN VIVO' : 'DATOS DE ' + String(param).toUpperCase() + ' EN VIVO')
+    : twinLangOf(request) === 'pt'
+    ? (mode === 'lev' ? 'AO VIVO - ' + param + 'X AGORA' : mode === 'excalc' ? 'DADOS DE MERCADO AO VIVO' : 'DADOS DE ' + String(param).toUpperCase() + ' AO VIVO')
     : (mode === 'lev' ? 'LIVE - ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA');
   // The map pages lead with the market drawn, then the sentences. Prose-only was the complaint, and a page that takes
   // thousands of crawls a month should not open on a paragraph. A panel that cannot be built falls through silently.
   let panel = '';
   if (mode === 'map' && res.c) { try { panel = await ssrLiqMapPanel(param, env, res.c); } catch (e) { panel = ''; } }
-  const esBox = (esLang(request) === 'es') ? esMapFrag : (x => x); // the sentence box carries its own "UPDATED" / "See it live" chrome - every mode (the hub box on /es/hyperliquid-whales/ printed "See it live: Practice risk-free" in English, audit 2026-09-25)
-  if (mode === 'map' && esLang(request) === 'es') { // the /es/ twin: same live data, Spanish words (fragment table above)
-    try { panel = esMapFrag(panel); res.S = (res.S || []).map(esMapFrag); if (Array.isArray(res.links)) res.links = res.links.map(l => [l[0], esMapFrag(l[1])]); } catch (e) {}
+  const esBox = (esLang(request) === 'es') ? esMapFrag : twinLangOf(request) === 'pt' ? ptMapFrag : (x => x); // the sentence box carries its own "UPDATED" / "See it live" chrome - every mode (the hub box on /es/hyperliquid-whales/ printed "See it live: Practice risk-free" in English, audit 2026-09-25)
+  if (mode === 'map' && (esLang(request) === 'es' || twinLangOf(request) === 'pt')) { // the twins: same live data, their own words (fragment tables above)
+    const FR = esLang(request) === 'es' ? esMapFrag : ptMapFrag;
+    try { panel = FR(panel); res.S = (res.S || []).map(FR); if (Array.isArray(res.links)) res.links = res.links.map(l => [l[0], FR(l[1])]); } catch (e) {}
   }
   // WHERE the panel goes decided whether it was seen at all. Injected at the first <h2> like the sentence box, it
   // landed BELOW the "What this is" paragraph and started at y=860 on a 390x844 phone - one pixel past the fold, so
@@ -3420,8 +3456,9 @@ async function ssrHubSentences(page, sym, env, request) {
       S.push('Market-wide, crypto futures liquidations total ' + _susd(m.total) + ' over 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' coins.');
       return { S, links: [['/rekt/', 'Live liquidation feed'], [sym ? '/' + sym.toLowerCase() + '-liquidation-map/' : '/btc-liquidation-map/', sym + ' liquidation map']] };
     }
-    S.push(esLang(request) === 'es'
-      ? SSR_ES.liqTotal.split('{t}').join(_susd(m.total, 'es')).split('{l}').join(_susd(m.long, 'es')).split('{s}').join(_susd(m.short, 'es')).split('{n}').join(m.count)
+    const _tl = twinLangOf(request), _TL = SSR_L[_tl];
+    S.push(_TL
+      ? _TL.liqTotal.split('{t}').join(_susd(m.total, _tl)).split('{l}').join(_susd(m.long, _tl)).split('{s}').join(_susd(m.short, _tl)).split('{n}').join(m.count)
       : 'Crypto futures liquidations total ' + _susd(m.total) + ' over the past 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' tracked coins.');
     const top = (j.coins || []).slice(0, 3).filter(c => c.liq > 0);
     if (top.length) S.push('Most liquidated right now: ' + top.map(c => c.s + ' (' + _susd(c.liq) + ')').join(', ') + '.');
@@ -3469,14 +3506,14 @@ async function ssrHubSentences(page, sym, env, request) {
     const j = await jget(() => handleFng(env));
     const d = (j && j.data) || []; if (!d.length || !d[0] || !isFinite(+d[0].v)) return { S };
     const now = d[0], y = d[1], w = d[7];
-    const _es = esLang(request) === 'es', _cl = c => (_es && SSR_ES.fngCls[String(c)]) || c;
-    let s1 = _es ? SSR_ES.fngNow.split('{v}').join(now.v).split('{c}').join(_cl(now.c))
+    const _fl = twinLangOf(request), _FL = SSR_L[_fl], _es = !!_FL, _cl = c => (_FL && _FL.fngCls[String(c)]) || c; // es or pt: the same five class words, their own table
+    let s1 = _es ? _FL.fngNow.split('{v}').join(now.v).split('{c}').join(_cl(now.c))
       : 'The Crypto Fear & Greed Index reads ' + now.v + ' (' + now.c + ') right now';
-    if (y && isFinite(+y.v)) s1 += _es ? SSR_ES.fngYday.split('{v}').join(y.v).split('{c}').join(_cl(y.c)) : ', versus ' + y.v + ' (' + y.c + ') yesterday';
-    if (w && isFinite(+w.v)) s1 += _es ? SSR_ES.fngWeek.split('{v}').join(w.v) : ' and ' + w.v + ' a week ago';
+    if (y && isFinite(+y.v)) s1 += _es ? _FL.fngYday.split('{v}').join(y.v).split('{c}').join(_cl(y.c)) : ', versus ' + y.v + ' (' + y.c + ') yesterday';
+    if (w && isFinite(+w.v)) s1 += _es ? _FL.fngWeek.split('{v}').join(w.v) : ' and ' + w.v + ' a week ago';
     S.push(s1 + '.');
     const yr = d.slice(0, 365).map(x => +x.v).filter(isFinite);
-    if (yr.length > 30) S.push(_es ? SSR_ES.fngRange.split('{n}').join(yr.length).split('{lo}').join(Math.min.apply(null, yr)).split('{hi}').join(Math.max.apply(null, yr))
+    if (yr.length > 30) S.push(_es ? _FL.fngRange.split('{n}').join(yr.length).split('{lo}').join(Math.min.apply(null, yr)).split('{hi}').join(Math.max.apply(null, yr))
       : 'Over the past ' + yr.length + ' days the index has ranged from ' + Math.min.apply(null, yr) + ' to ' + Math.max.apply(null, yr) + '.');
     return { S, links: [['/bitcoin-cycle/', 'Cycle indicators'], ['/screener', 'Live market screener']] };
   }
@@ -3539,8 +3576,9 @@ async function ssrHubSentences(page, sym, env, request) {
     const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
     if (!j || !j.active || !j.agg) return { S };
     const a = j.agg, net = a.longUsd >= a.shortUsd ? 'net long' : 'net short';
-    S.push(esLang(request) === 'es'
-      ? SSR_ES.whaleHold.split('{t}').join(_susd(a.longUsd + a.shortUsd, 'es')).split('{n}').join(a.count).split('{l}').join(_susd(a.longUsd, 'es')).split('{s}').join(_susd(a.shortUsd, 'es')).split('{net}').join(/long/i.test(net) ? SSR_ES.netLong : /short/i.test(net) ? SSR_ES.netShort : SSR_ES.netFlat)
+    const _wl = twinLangOf(request), _WL = SSR_L[_wl];
+    S.push(_WL
+      ? _WL.whaleHold.split('{t}').join(_susd(a.longUsd + a.shortUsd, _wl)).split('{n}').join(a.count).split('{l}').join(_susd(a.longUsd, _wl)).split('{s}').join(_susd(a.shortUsd, _wl)).split('{net}').join(/long/i.test(net) ? _WL.netLong : /short/i.test(net) ? _WL.netShort : _WL.netFlat)
       : 'Hyperliquid whales currently hold ' + _susd(a.longUsd + a.shortUsd) + ' in open positions across ' + a.count + ' tracked wallets - ' + _susd(a.longUsd) + ' long vs ' + _susd(a.shortUsd) + ' short, ' + net + ' overall.');
     if (isFinite(+a.upnl) && Math.abs(+a.upnl) > 0) S.push('Their combined unrealized PnL is ' + (a.upnl >= 0 ? '+' : '-') + _susd(Math.abs(a.upnl)) + '.');
     const p = j.positions && j.positions[0];
@@ -3569,7 +3607,7 @@ async function handleSsrHub(request, url, env, page, sym) {
   const hubBox = ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links);
   // the twin is served with url.pathname already rewritten, so the language is read off request.url (SSR_L10N rule);
   // the box chrome ("See it live", link labels) goes through the same fragment table as the map pages (2026-09-26)
-  const out = ssrStampDate(html.slice(0, anchor) + (esLang(request) === 'es' ? esMapFrag(hubBox) : hubBox) + html.slice(anchor), Date.now());
+  const out = ssrStampDate(html.slice(0, anchor) + (esLang(request) === 'es' ? esMapFrag(hubBox) : twinLangOf(request) === 'pt' ? ptMapFrag(hubBox) : hubBox) + html.slice(anchor), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -37307,7 +37345,7 @@ const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news
 // Category names for the /es/community/ twin (audit 2026-09-25: the SSR crumb and the category page title were English there).
 const COMM_CATS_ES = { ideas: 'Ideas de trading', analysis: 'Análisis técnico', news: 'Noticias del mercado', education: 'Educación', crypto: 'Crypto', forex: 'Forex', stocks: 'Acciones', futures: 'Futuros', strategies: 'Estrategias', psychology: 'Psicología', risk: 'Gestión del riesgo', indicators: 'Indicadores', platform: 'Novedades de la plataforma', thesis: 'Tesis' };
 const THESIS_XP = 50, THESIS_TICKS = 5; // what publishing a thesis pays (2026-10-26, owner: "da ovde moze stvarno da se zaradi lepo xp" - 20 -> 50, two a day; the real money is THESIS_BUY_XP per member a thesis moves, up to THESIS_BUY_CAP a day); Ticks are day-capped by TICK_CAP.thesis
-function commCatName(k, request) { return ((request && esLang(request) === 'es') ? COMM_CATS_ES[k] : null) || COMM_CATS[k] || k; }
+function commCatName(k, request) { const l = request ? twinLangOf(request) : 'en'; return (l === 'es' ? COMM_CATS_ES[k] : l === 'pt' ? COMM_CATS_PT[k] : null) || COMM_CATS[k] || k; }
 function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
 // Anti-gibberish gate (2026-08-13, owner: reward-farm posts like "wweegrdddd…" + 500 dots beat the pure
 // length floor). A post must be made of plausible WORDS, not padding. Script-agnostic: any Unicode letter
