@@ -2899,12 +2899,15 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
        drop - carrying the size and the cause in one word. A known cause is framed in the move's colour, an unknown one
        in grey, because a reader must be able to tell at a glance which flags we can vouch for. The flag's rectangle is
        the hit area the click handler tests. */
-    function drawCxMarks(){var mk=w._cxMarks;w._cxHit=[];if(!mk||!mk.length)return;
+    function drawCxNote(){if(!(w.inds&&w.inds.catalyst&&w._cx&&w._cx.moves)||w._cxInView>0)return;var W=w.dr.W||0;if(!ctx||W<220)return;var s=w._cx.summary||{},n=+s.sure||0,all=(w._cxMarks||[]).length;
+      var txt=__esT_mpcharts("whatMovedItShort",'WHAT MOVED IT')+' \u00b7 '+(all?all+' '+__esT_mpcharts("flaggedOutsideView",'flagged outside this view'):n?__esT_mpcharts("noSureMoveHere",'no move we are sure about in these candles')+' \u00b7 '+n+' '+__esT_mpcharts("in30d",'in 30 d'):__esT_mpcharts("noSureMove30d",'nothing we are sure about in 30 days'));
+      ctx.save();ctx.font='700 10px "Space Mono",monospace';var tw=ctx.measureText(txt).width,bw=tw+14,bh=18,bx=Math.max(2,W-bw-8),by=8;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,5);else ctx.rect(bx,by,bw,bh);ctx.fillStyle='rgba(12,14,18,.9)';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#3a4352';ctx.stroke();ctx.fillStyle='#aab5c4';ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText(txt,bx+7,by+bh/2+.5);ctx.restore();}
+    function drawCxMarks(){var mk=w._cxMarks;w._cxHit=[];w._cxInView=0;if(!mk||!mk.length)return;
       var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th),W=w.dr.W||0,bs=6;try{bs=w.chart.timeScale().options().barSpacing||6;}catch(e){}
       var lastI=(w.bars||[]).length-1,lvKey=w._cxLive&&w._cxLive.on?w._cxLive.t0:0;
       var Lc=w._cxLive;
       for(var i=0;i<mk.length;i++){var k=mk[i],m=k.m,x0=xOf(k.i0),x1=xOf(i===0&&Lc&&Lc.on&&Lc.cont&&lastI>=0?lastI:k.i1);if(x0==null||x1==null)continue;
-        var xa=Math.min(x0,x1)-bs/2,xb=Math.max(x0,x1)+bs/2;if(xb<-10||xa>W+10)continue;
+        var xa=Math.min(x0,x1)-bs/2,xb=Math.max(x0,x1)+bs/2;if(xb<-10||xa>W+10)continue;w._cxInView++;
         var up=m.dir>0,col=up?'#2ebd85':'#ff6258',known=m.cause!=='unknown';
         ctx.save();
         ctx.fillStyle=up?'rgba(46,189,133,.10)':'rgba(255,98,88,.10)';ctx.fillRect(xa,0,Math.max(2,xb-xa),plotH);
@@ -2967,7 +2970,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.restore();
         inkTxt(x-(buy?12:14),buy?ty+1:ty-13,buy?'BUY':'SELL',col,11);
       }}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawCxMarks();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);try{drawAlBadges();}catch(e){}if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawCxMarks();}catch(e){}try{drawCxNote();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);try{drawAlBadges();}catch(e){}if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
 
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
