@@ -4927,14 +4927,14 @@ const COMP_BOARDS = [
   { id: 'xp', ent: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
   { id: 'gold', ent: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
   { id: 'bybit', ent: 'bybit', key: 'topBybit', prize: null, name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad; the pool is a rebate - a share of the affiliate commission the traders on the board generated this season', unit: 'USD volume', f: 'vol' }, // prize null = read from lb.bybitPool (2026-09-28)
-  { id: 'bingx', ent: 'bingx', key: 'topBingx', prize: null, name: 'BingX Volume', asks: 'the most REAL trading volume on a BingX account opened through MarginPad; the pool is a ladder by the season\'s volume - $70 at $1M, $200 at $3M, $300 at $4.5M, $500 at $8M - capped at a share of the affiliate commission the traders on the board generated', unit: 'USD volume', f: 'vol' }, // 2026-10-30 (owner): the tenth board, from the season of 2026-11-09
+  { id: 'bingx', ent: 'bingx', key: 'topBingx', prize: null, name: 'BingX Volume', asks: 'the most REAL trading volume on a BingX account opened through MarginPad over a 28-day contest; $70 from MarginPad over ten places, and only accounts over $3,000 of volume are listed', unit: 'USD volume', f: 'vol', days: 28 }, // 2026-10-30 (owner): the tenth board, from 2026-11-09; fixed prizes since the same afternoon
   { id: 'moon', ent: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
   { id: 'call', ent: 'call', key: 'topCall', prize: 'lbCall', name: 'Daily BTC Call', asks: 'the most points from daily calls on where BTC closes - a closer call scores more, one call a day', unit: 'points', f: 'pts' }, // 2026-09-28 (owner): the daily call became a paid board; it used to pay Ticks on the season page
   { id: 'meme', ent: 'meme', key: 'topMeme', prize: 'lbMeme', name: 'Meme Spot', asks: 'the most season profit in Demo Spot - buy and hold meme coins and majors with $10,000 of demo cash plus $100 a day; profit counts, the daily claim does not', unit: 'USD profit', f: 'pnlUsd' }, // 2026-10-16 (owner): Demo Spot rebuilt as buy & hold with one board, $30 to the top three
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v9'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
+  const ck = new Request('https://marginpad.io/__competition_v10'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -4944,14 +4944,14 @@ async function handleCompetition(url, request, env, ctx) {
 
   const boards = COMP_BOARDS.map(b => {
     const rows = ((lb && lb[b.key]) || []).filter(r => !(r && r.reg)); // a registered-only Bybit row (vol 0, rank 0) is not a standing
-    const bp = b.id === 'bybit' ? (lb && lb.bybitPool) || null : b.id === 'bingx' ? (lb && lb.bingxPool) || (lb && lb.bingxStarts && cfg ? bingxPoolCalc(0, 0, cfg) : null) : null; // before the BingX board's first season the ladder is still published (with `starts`), so a tile can say when
+    const bp = b.id === 'bybit' ? (lb && lb.bybitPool) || null : b.id === 'bingx' ? (lb && lb.bingxPool) || bingxPoolCalc(0, 0, cfg || {}) : null; // the BingX pool is fixed, so it is published before the first contest too (with `starts`), and a tile can say when
     const prizes = bp ? bp.prizes : ((cfg && b.prize && cfg[b.prize]) || []);
     const pool = bp ? bp.usd : prizes.reduce((a, x) => a + (+x || 0), 0);
     return {
       id: b.id, name: b.name, scored_on: b.asks, unit: b.unit,
       prize_usd_top5: prizes.slice(0, 5).map(x => +x || 0), prize_pool_usd: pool,
-      ...(bp && bp.ladder ? { prize_usd_ranks: prizes, pool: { rebate: true, ladder: true, base_usd: 0, from_volume_usd: bp.usd, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, cap_usd: bp.capUsd, tier_usd: bp.tierUsd, capped: !!bp.capped, tiers: BINGX_POOL_TIERS, tier: bp.tier, starts: (lb && lb.bingxStarts) ? new Date(lb.bingxStarts).toISOString() : null, how: 'a ladder by the season\'s volume on the board - $' + BINGX_POOL_TIERS.map(t => t.usd + ' at $' + Math.round(t.at / 1e6 * 10) / 10 + 'M').slice(1).join(', $') + ' - capped at ' + Math.round(bp.share * 100) + '% of the affiliate commission those traders generated (the weekly BingX bonus takes the rest)' } } : {}),
-      ...(bp && !bp.ladder ? { prize_usd_ranks: prizes, pool: { rebate: true, base_usd: bp.base, from_volume_usd: bp.fromVolume, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, per_100k_volume_usd: bp.perHundredK, cap_usd: bp.cap, tier: bp.tier, how: 'the pool starts at $' + bp.base + ' and adds ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generate this season (about $' + bp.perHundredK + ' per $100k traded), read from the affiliate API; it grows with every sync and is paid at season end over ten ranks' } } : {}),
+      ...(bp && bp.fixed ? { prize_usd_ranks: prizes, pool: { rebate: false, fixed: true, period_days: 28, floor_usd: VOL_BOARD_MIN_USD, starts: (lb && lb.bingxStarts) ? new Date(lb.bingxStarts).toISOString() : null, contest: (lb && lb.bingxContest) ? { starts: new Date(lb.bingxContest.start).toISOString(), ends: new Date(lb.bingxContest.end).toISOString() } : null, how: '$' + pool + ' from MarginPad over ' + bp.paid + ' places every 28 days (' + prizes.filter(x => x > 0).map((x, i) => '#' + (i + 1) + ' $' + x).join(', ') + '); only accounts with more than $' + VOL_BOARD_MIN_USD.toLocaleString('en-US') + ' of volume in the contest are listed; the weekly BingX bonus returns a share of the fee commission on top' } } : {}),
+      ...(bp && !bp.ladder && !bp.fixed ? { prize_usd_ranks: prizes, pool: { rebate: true, base_usd: bp.base, from_volume_usd: bp.fromVolume, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, per_100k_volume_usd: bp.perHundredK, cap_usd: bp.cap, tier: bp.tier, how: 'the pool starts at $' + bp.base + ' and adds ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generate this season (about $' + bp.perHundredK + ' per $100k traded), read from the affiliate API; it grows with every sync and is paid at season end over ten ranks' } } : {}),
       entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
@@ -9659,7 +9659,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4d2debae" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=80b14188" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15869,8 +15869,9 @@ async function lbSeasonArchive(env, ws) {
     }
     if (out.moonContest) { out.scores.moon = moonRows; out.kept.moon = true; }
   } catch (e) {}
-  try { // BingX volume (2026-10-30): the KV snapshot the season was paid from (lb:bingx:<ws>)
-    if (ws >= BINGX_LB_START) { const bx = JSON.parse((await env.STATS.get('lb:bingx:' + ws)) || 'null'); if (bx && Array.isArray(bx.rows)) { out.scores.bingx = bx.rows.filter(r => !r.reg && (+r.vol || 0) > 0).map((r, i) => ({ rank: i + 1, who: r.who, vol: +r.vol || 0 })); out.kept.bingx = true; } }
+  try { // BingX volume (2026-10-30): a 28-day contest, filed under the season it ENDED in (the Moon rule) - lb:bingx:<contest start>
+    const cs = ws + LB_PERIOD - BINGX_PERIOD;
+    if (cs >= BINGX_LB_START && bingxPeriodStart(cs) === cs) { const bx = JSON.parse((await env.STATS.get('lb:bingx:' + cs)) || 'null'); if (bx && Array.isArray(bx.rows)) { out.scores.bingx = bx.rows.filter(r => !r.reg && (+r.vol || 0) > 0).map((r, i) => ({ rank: i + 1, who: r.who, vol: +r.vol || 0 })); out.kept.bingx = true; out.bingxContest = { start: cs, end: cs + BINGX_PERIOD }; } }
   } catch (e) {}
   try { // Meme Spot: the final snapshot the payer wrote (lb:meme:<ws>), season profit per member
     if (ws >= MEME_LB_START) { const ms = await memeSnapshot(env, ws); if (ms && ms.ts) { out.scores.meme = (ms.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades })); out.kept.meme = true; } }
@@ -16745,9 +16746,10 @@ async function rewardCfg(env) {
   const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [12, 5, 3, 0, 0]), lbMeme = arr5(m.lbMeme, [15, 10, 5, 0, 0]); // lbMeme = the Meme Spot board (2026-10-16, owner: "$30, samo prva 3")
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
-  const bingxShare = Math.max(0, Math.min(3, num(m.bingxShare, 0.67))); // BingX board (2026-10-30): the ladder pool is capped at this share of the season's commission; 0.67 + the weekly bonus's 0.33 = the owner's "100% komisije"; above 1 the owner is knowingly paying the ladder past the commission
+  const arr10 = (v, d) => { const a = Array.isArray(v) && v.length === 10 ? v : d; return a.map((x, i) => Math.max(0, num(x, d[i]))); };
+  const lbBingx = arr10(m.lbBingx, BINGX_PRIZES_DEF); // BingX board (2026-10-30): $30/15/10/5/5 then $1 x5 = $70 from MarginPad, ten places, every contest (28 days)
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { autoApprove: m.autoApprove !== false, autoReject: m.autoReject !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled === true, /* 2026-10-24: the Bitget $1 is RETIRED (owner) - opt-in only, like Fomo, so a stale KV row cannot reopen it */ bybitC: c(num(m.bybitUsd, 1)), bybitEnabled: m.bybitEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, bingxShare, raw: m };
+  return { autoApprove: m.autoApprove !== false, autoReject: m.autoReject !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled === true, /* 2026-10-24: the Bitget $1 is RETIRED (owner) - opt-in only, like Fomo, so a stale KV row cannot reopen it */ bybitC: c(num(m.bybitUsd, 1)), bybitEnabled: m.bybitEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, lbBingx, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -17301,7 +17303,11 @@ async function mexcAffLookup(env, uid) {
   if (!row) return { ok: true, found: false, why: 'not_our_referral' };
   const code = String(row.inviteCode || '');
   if (MEXC_INVITE && code && code.toLowerCase() !== MEXC_INVITE.toLowerCase()) return { ok: true, found: false, why: 'other_invite_code', code };
-  return { ok: true, found: true, code, uid: u, registerTime: row.registerTime || null,
+  // KYC: MEXC's referral row is not documented to carry a verification flag; if one appears under any usual name it is
+  // read, otherwise `kyc` stays undefined and the sweep does not pretend to know. `fields` names what the row really carries.
+  const kycRaw = row.isKyc != null ? row.isKyc : row.kyc != null ? row.kyc : row.kycStatus != null ? row.kycStatus : row.kycLevel != null ? row.kycLevel : row.kycResult != null ? row.kycResult : undefined;
+  const kyc = kycRaw === undefined ? undefined : (typeof kycRaw === 'boolean' ? kycRaw : (/^(1|true|pass|passed|verified|done|yes)$/i.test(String(kycRaw)) || (+kycRaw > 0)));
+  return { ok: true, found: true, code, uid: u, registerTime: row.registerTime || null, kyc, fields: Object.keys(row).join(','),
     tradingAmount: +row.tradingAmount || 0, commission: +row.commission || 0, depositAmount: +row.depositAmount || 0 };
 }
 /* BINGX AFFILIATE (2026-10-24, the owner handed over a key on the same day he changed the link). BingX signs
@@ -17411,15 +17417,39 @@ async function signVerifySweep(env, venue, opts) {
   if (whyG) { out.error = whyG; return out; }   // the REASON, not a blanket "no_key" (see signGateWhy)
   let pending = [];
   try {
-    const lr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/list'), new Request('https://marginpad.io/api/reward/' + v + 'sign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
+    const e2eIn = !!(opts && opts.e2e && !(opts && opts.apply)); // a DRY RUN may look at test rows (signup-kyc-e2e) - a paying pass never does
+    const lr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/list' + (e2eIn ? '?e2e=1' : '')), new Request('https://marginpad.io/api/reward/' + v + 'sign/list' + (e2eIn ? '?e2e=1' : ''), { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
     const lj = await lr.json();
-    pending = (lj.pending || []).filter(x => x.exchange === v && !String(x.uid || '').startsWith('e2e') && !/^e2e/i.test(String(x.address || '').replace(/^u:/, '')));
+    pending = (lj.pending || []).filter(x => x.exchange === v && (e2eIn || (!String(x.uid || '').startsWith('e2e') && !/^e2e/i.test(String(x.address || '').replace(/^u:/, '')))));
   } catch (e) { out.error = 'list_failed'; return out; }
   for (const row of pending.slice(0, cap)) {
     out.checked++;
     const r = await affVenueLookup(env, v, row.uid);
-    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: r.found ? 'ours' : (r.ok ? r.why : ('error:' + r.why)) };
+    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: r.found ? (r.kyc === false ? 'ours_unverified' : 'ours') : (r.ok ? r.why : ('error:' + r.why)) };
     if (r.found && r.tradingAmount != null) { rec.traded = r.tradingAmount; rec.commission = r.commission; }
+    if (r.found && r.kyc !== undefined) rec.kyc = !!r.kyc;
+    /* NO BONUS TO AN UNVERIFIED ACCOUNT (owner 2026-10-30: "nemoj da isplacujemo ljude koji se nisu verifikovali na
+       menjacnici ... odbijaces ih sa porukom da treba da se verifikuju"). The venue's own flag decides (Bybit isKyc,
+       BingX kycResult; MEXC publishes none, so there `kyc` is undefined and nothing is refused on a guess). The claim
+       gets the same day of grace a fresh registration gets, then it is REJECTED with a note that says exactly what to
+       do - and a KYC rejection does not spend the account's retry (the ledger reads the [kyc] prefix), so the member
+       who verifies and files again is not met with limit_reached. */
+    const noKyc = r.found && r.kyc === false;
+    if (noKyc) {
+      const kycGraceOk = (+row.ts || 0) > 0 && (Date.now() - (+row.ts || 0)) > AUTO_REJECT_GRACE_MS;
+      if (apply && opts && opts.reject && kycGraceOk) {
+        const knote = '[kyc] Your ' + label + ' account is one of our referrals, but it has not completed identity verification (KYC) on ' + label + ' yet. The sign-up bonus is paid to verified accounts only: finish the verification in your ' + label + ' account, then submit the UID here once more.';
+        try {
+          const rrK = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/review'),
+            new Request('https://marginpad.io/api/reward/' + v + 'sign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'reject', note: knote, notify: true }) }), env);
+          const rjK = await rrK.json();
+          rec.rejected = !!(rjK && rjK.status === 'rejected'); if (!rec.rejected) rec.payError = (rjK && rjK.error) || 'failed';
+        } catch (e) { rec.rejected = false; rec.payError = 'threw'; }
+        if (rec.rejected) out.rejected = (out.rejected || 0) + 1; else out.held++;
+      } else { out.held++; out.unverified = (out.unverified || 0) + 1; }
+      out.rows.push(rec);
+      continue;
+    }
     /* A DEFINITIVE NEGATIVE IS SOMETHING THE VENUE SAID, NEVER SOMETHING WE FAILED TO ASK. */
     const no = r.ok && !r.found && (r.why === 'not_our_referral' || r.why === 'other_invite_code' || r.why === 'not_a_uid');
     /* only "not found under our referral" waits out the grace (a fresh sign-up may not be indexed yet); a non-UID or a
@@ -17660,14 +17690,21 @@ let _byAffMemo = null;
 async function bybitAffLookup(env, uid) {
   const u = String(uid || '').replace(/[^0-9]/g, '');
   if (!u) return { ok: true, found: false, why: 'bad_uid' };
-  try { const set = await bybitUidSet(env); if (set.has(u)) return { ok: true, found: true, via: 'allowlist' }; } catch (e) {}
+  // the affiliate list goes first since 2026-10-30: it is the only reading that carries isKyc; the allowlist falls back with none
   try {
     if (!_byAffMemo || Date.now() - _byAffMemo.t > 60000) {
       const l = await bybitAffList(env, 0);
       if (l && l.error) return { ok: false, found: false, why: l.error };
-      _byAffMemo = { t: Date.now(), ids: new Set(((l && l.list) || []).map(r => String((r && (r.userId != null ? r.userId : r.uid)) || ''))) };
+      const rows = ((l && l.list) || []); const kyc = new Map();
+      for (const r of rows) { const id = String((r && (r.userId != null ? r.userId : r.uid)) || ''); if (id) kyc.set(id, (r && r.isKyc != null) ? !!r.isKyc : undefined); } // isKyc = Bybit's own verification flag (measured 2026-10-30: 39 of 74 referrals)
+      _byAffMemo = { t: Date.now(), ids: new Set(kyc.keys()), kyc };
     }
-    return _byAffMemo.ids.has(u) ? { ok: true, found: true, via: 'aff-user-list' } : { ok: true, found: false, why: 'not_referred' };
+    if (_byAffMemo.ids.has(u)) return { ok: true, found: true, via: 'aff-user-list', kyc: _byAffMemo.kyc.get(u) };
+  } catch (e) {}
+  try { const set = await bybitUidSet(env); if (set.has(u)) return { ok: true, found: true, via: 'allowlist' }; } catch (e) {}
+  try {
+    if (!_byAffMemo) return { ok: false, found: false, why: 'unreachable' };
+    return { ok: true, found: false, why: 'not_referred' };
   } catch (e) { return { ok: false, found: false, why: 'unreachable' }; }
 }
 async function affVenueLookup(env, venue, uid) {
@@ -17691,9 +17728,9 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
 async function payMoonPrizes(env) { // */10 cron: the active contest, once its 28 days are over AND the END paste is marked FINAL; paid once (flag lbpaid:moon:<id>)
@@ -18299,12 +18336,16 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
     matched.push(row); if (!row.e2e && row.listed && !row.banned && row.vol > 0) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
+  /* THE $3,000 FLOOR (owner 2026-10-30, from the season of 2026-11-09): the pool is still the commission of every
+     eligible trader (poolRows), but only accounts over the floor are LISTED and PAID. Before that date the floor is 0. */
+  const minV = volBoardMin(ws), poolRows = rows.slice();
+  if (minV > 0) { for (let i = rows.length - 1; i >= 0; i--) if (!(rows[i].vol >= minV)) rows.splice(i, 1); }
   const ranked = rows.length; // ranks are for volume only; what follows carries rank 0
   // EVERY REGISTERED MEMBER IS ON THE BOARD (owner 2026-10-05: "ubaci sve na leaderboard, nije bitan iznos") - reversing the
   // 2026-09-14 rule that a $0 row stays off the public board. A member who registered a UID but has no volume yet is appended
   // AFTER the ranked rows with vol 0 and `reg:true`: the pages print them grey under the open places, with no prize, and the
   // payer still pays vol > 0 only. Current season only - a past (paid) season must not grow today's registrations.
-  if (ws === lbPeriodStart(Date.now())) {
+  if (ws === lbPeriodStart(Date.now()) && !minV) { // under the floor nobody is listed, registered or not - the registration box says how far they are
     const seen = new Set(rows.map(r => String(r.uid)));
     for (const [buid, w] of reg.entries()) {
       if (!w || seen.has(String(w.uid)) || w.e2e || !allow.has(String(buid)) || banned[String(w.uid)]) continue;
@@ -18314,7 +18355,7 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
   // THE POOL IS THE COMMISSION OF THE ROWS ON THE BOARD, and only those: what the competitors made this season (a banned or
   // unregistered UID's commission is not returned to anyone). The payer and every page read this same object.
   const cfg = await rewardCfg(env);
-  const pool = bybitPoolCalc(rows.reduce((s, r) => s + r.com, 0), rows.reduce((s, r) => s + r.vol, 0), cfg);
+  const pool = bybitPoolCalc(poolRows.reduce((s, r) => s + r.com, 0), poolRows.reduce((s, r) => s + r.vol, 0), cfg);
   const poolAll = bybitPoolCalc(matched.reduce((s, r) => s + r.com, 0), matched.reduce((s, r) => s + r.vol, 0), cfg); // e2e/unlisted included - for the E2E, never public
   // regs = every UID a member holds, whether or not it is in this report. The desk needs it to NAME a UID the owner
   // has only just typed (2026-09-19): a pending row that cannot say who it belongs to is the same blank he complained
@@ -18326,9 +18367,9 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {} // the competition feed carries the pool too
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
 async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0, pool: null }; }
@@ -18362,52 +18403,52 @@ async function payBybitPrizes(env) { // */10 cron: every ENDED season from BYBIT
 }
 /* ===================================================================================================================
    BINGX VOLUME BOARD + WEEKLY BINGX BONUS (2026-10-30, owner: "zelim isti setup za BingX bonus kanal kao sto imamo za
-   Bybit. Zelim leaderboard koji ce da krene od sledece sezone ... princip je isti kao i za Bybit leaderboard, samo cemo da
-   dajemo 100% komisije za progres i telegram bonuse. Progres za volumen: 1M 70 / 3M 200 / 4.5M 300 / 8M+ 500 ... po istom
-   principu kao i na bybit leaderboardu").
-   The Bybit stack above is the template and the shape is deliberately the same: a season table (KV lb:bingxup:<ws>, rows
-   {uid, vol, com}) synced every ten minutes from the affiliate API, a public snapshot (lb:bingx:<ws>), a seal 36 h after the
-   season ends, a payer that pays an ended FINAL season once, and a weekly bonus announced to a channel the owner binds by
-   posting /bind bingx inside it. What differs, and why:
+   Bybit. Zelim leaderboard koji ce da krene od sledece sezone ... princip je isti kao i za Bybit leaderboard").
+   The Bybit stack above is the template: a contest table (KV lb:bingxup:<ws>, rows {uid, vol, com}) synced every ten
+   minutes from the affiliate API, a public snapshot (lb:bingx:<ws>), a seal 36 h after the contest ends, a payer that
+   pays an ended FINAL contest once, and a weekly bonus announced to a channel the owner binds by posting /bind bingx
+   inside it. What differs, and why:
      - THE FEED is BingX's agent API, `commissionDataList`: one row per referred UID per DAY carrying tradingVolume and
        commissionVolume (measured 2026-10-30: $393.85 traded on one UID over 30 days = 5.3 bps of commission). It is paged
        (100 a page) and SUMMED over the window here - there is no per-window total endpoint.
-     - THE POOL IS A LADDER BY VOLUME, NOT base + share: $0 under $1M of season volume, then $70 / $200 / $300 / $500 at
-       1M / 3M / 4.5M / 8M+ (BINGX_POOL_TIERS). "moze da postoji bez nagrada" is the $0 rung.
-     - "100% KOMISIJE": the owner returns the WHOLE commission, split between the season pool and the weekly bonus. So the
-       pool is CAPPED at bingxShare (default 0.67) x the season's commission of the traders on the board, and the weekly
-       bonus takes BINGX_BONUS_SHARE (0.33) - 100% between them, never more (the 2026-09-28 rule: "tacna matematika, ne na
-       nasu stetu"). At the measured 5.3 bps, $1M of volume earns about $53, so the $70 rung is capped to $35.5 unless the
-       owner raises bingxShare; the page prints the ladder AND the cap, so nobody is promised a figure the commission does
-       not cover.
-     - NO ALLOWLIST: a UID is verified at registration time against BingX's own `inviteRelationCheck` (bingxAffLookup), the
-       same verdict the sign-up bonus sweep trusts. Registrations are also read off approved BingX sign-up claims and off
-       payouts sent to `bingx:<uid>`, so a member who already proved the account once is on the board without a second form.
-   The split over ten ranks is the Bybit split (cfg.bybitSplit) - "po istom principu". Pays from BINGX_LB_START.
+     - THE POOL IS FIXED (owner, the same afternoon: "prvo mesto $30, drugo $15, trece $10, cetvrto i peto $5 i ostala
+       mesta po $1. To je od nas, a ovo za volumen ce dalje da daje BingX"): $70 from MarginPad over ten places,
+       `cfg.lbBingx` (ops Settings > Reward config). The first cut was a ladder by volume ($70 / $200 / $300 / $500 at
+       1M / 3M / 4.5M / 8M) capped at a share of the commission; that is gone - volume-based rewards are BingX's own
+       campaigns, and the weekly BingX bonus (BINGX_BONUS_SHARE of the commission) stays as it was.
+     - THE CONTEST IS 28 DAYS - two seasons, aligned to the season grid from BINGX_LB_START (owner: "ovaj leaderboard
+       ce da traje mesec dana za razliku od Bybit leaderboard-a koji traje jednu sezonu"). bingxPeriodStart(ts) is the
+       ONE reading of the window; nothing on this board may read lbPeriodStart for it (the Moon rule).
+     - THE FLOOR: from the season of 2026-11-09 BOTH volume boards list only accounts over VOL_BOARD_MIN_USD ($3,000)
+       of volume in the window (owner: "oba leaderboards ne treba da prikazuju ljude koji nisu napravili volumen veci
+       od $3000"). Under it a member is neither shown nor paid; the registration box tells them how far they are.
+     - NO ALLOWLIST: a UID is verified at registration time against BingX's own `inviteRelationCheck` (bingxAffLookup),
+       the same verdict the sign-up bonus sweep trusts. Registrations are also read off approved BingX sign-up claims and
+       off payouts sent to `bingx:<uid>`, so a member who already proved the account once is on the board without a
+       second form.
    =================================================================================================================== */
 const BINGX_LB_START = Date.UTC(2026, 10, 9);     // 2026-11-09, the first season boundary after the build (LB_ANCHOR grid, a Monday)
+const BINGX_PERIOD = 2 * LB_PERIOD;                // 28 days: a contest spans two seasons (owner: "mesec dana")
+const bingxPeriodStart = ts => ts < BINGX_LB_START ? lbPeriodStart(ts) : BINGX_LB_START + Math.floor((ts - BINGX_LB_START) / BINGX_PERIOD) * BINGX_PERIOD;
 const BINGX_BONUS_START = BINGX_LB_START;          // the weekly bonus walks the same calendar as the Bybit one (Monday weeks)
 const BINGX_REF_URL = 'https://bingx.com/partner/Marginpad';
-const BINGX_POOL_TIERS = [{ at: 0, usd: 0, name: 'Warming up' }, { at: 1000000, usd: 70, name: 'Heating up' }, { at: 3000000, usd: 200, name: 'Hot' }, { at: 4500000, usd: 300, name: 'On fire' }, { at: 8000000, usd: 500, name: 'Inferno' }];
+const BINGX_PRIZES_DEF = [30, 15, 10, 5, 5, 1, 1, 1, 1, 1]; // $70 over ten places, from MarginPad (owner 2026-10-30)
 const BINGX_BONUS_SHARE = 0.33;      // the weekly bonus: a third of what that trader earned us that week (Bybit's rule)
 const BINGX_BONUS_MIN_C = 25;        // under 25c nothing is announced
 const BINGX_BONUS_MAX_C = 5000;      // $50 a week to one person needs a human look
-function bingxPoolCalc(comUsd, volUsd, cfg) { // pure: the ladder by season volume, capped by the share of commission -> the ONE place the BingX money is decided
-  const share = Math.max(0, +cfg.bingxShare || 0), split = cfg.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1];
+/* THE $3,000 FLOOR ON BOTH VOLUME BOARDS (owner 2026-10-30, from the season of 2026-11-09): a registered account under
+   it is not listed and not paid. The Bybit pool still counts every eligible trader's commission (the "52% of fees back"
+   promise is about what the traders earned us, not about who is tall enough to be printed). */
+const VOL_BOARD_MIN_USD = 3000;
+const VOL_BOARD_MIN_FROM = Date.UTC(2026, 10, 9);
+const volBoardMin = ws => ws >= VOL_BOARD_MIN_FROM ? VOL_BOARD_MIN_USD : 0;
+function bingxPoolCalc(comUsd, volUsd, cfg) { // pure: the fixed $70 split (cfg.lbBingx) -> the ONE place the BingX money is decided
+  const raw = (cfg && Array.isArray(cfg.lbBingx) && cfg.lbBingx.length === 10) ? cfg.lbBingx : BINGX_PRIZES_DEF;
+  const prizes = raw.map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
+  const usd = Math.round(prizes.reduce((a, x) => a + x, 0) * 100) / 100, paid = prizes.filter(x => x > 0).length;
   const com = Math.max(0, +comUsd || 0), vol = Math.max(0, +volUsd || 0);
-  let ti = 0; for (let i = 0; i < BINGX_POOL_TIERS.length; i++) if (vol >= BINGX_POOL_TIERS[i].at) ti = i;
-  const tier = BINGX_POOL_TIERS[ti], next = BINGX_POOL_TIERS[ti + 1] || null;
-  const tierUsd = +tier.usd || 0, capUsd = Math.round(com * share * 100) / 100;
-  const usd = Math.round(Math.min(tierUsd, capUsd) * 100) / 100;
-  const paid = usd > 0 ? split.length : 0;
-  const w = split.slice(0, paid), sum = w.reduce((a, x) => a + (+x || 0), 0) || 1;
-  const cents = w.map(x => Math.floor(usd * 100 * (+x || 0) / sum));
-  let rem = Math.round(usd * 100) - cents.reduce((a, x) => a + x, 0); for (let i = 0; rem > 0 && i < cents.length; i++, rem--) cents[i]++;
-  const prizes = split.map((x, i) => i < paid ? cents[i] / 100 : 0);
-  return { usd, base: 0, tierUsd, capUsd, capped: usd < tierUsd, fromVolume: usd, comUsd: Math.round(com * 100) / 100, volUsd: Math.round(vol * 100) / 100, share, cap: 0, maxed: false,
-    bps: (com > 0 && vol > 0) ? Math.round(com / vol * 1000000) / 100 : null, perHundredK: 0, ladder: true,
-    tier: { n: ti + 1, name: tier.name, at: tier.at, usd: tierUsd, paid, next: next ? { at: next.at, name: next.name, usd: next.usd, paid: split.length, volToGo: Math.round(Math.max(0, next.at - vol) * 100) / 100 } : null },
-    prizes };
+  return { usd, fixed: true, ladder: false, prizes, paid, comUsd: Math.round(com * 100) / 100, volUsd: Math.round(vol * 100) / 100,
+    bps: (com > 0 && vol > 0) ? Math.round(com / vol * 1000000) / 100 : null, base: usd, fromVolume: 0, share: 0, capUsd: usd, capped: false, tierUsd: usd };
 }
 /* Every referred UID's volume and commission inside [fromMs, toMs), summed over BingX's per-day rows. Paged - the
    endpoint caps a page at 100 rows and a busy fortnight is several hundred. A page that fails ends the read with an
@@ -18465,7 +18506,7 @@ async function bingxRegistrations(env) {
 }
 async function bingxAffSyncSeason(env, ws) {
   if (!env.STATS || !env.BINGX_API_KEY) return null;
-  const we = ws + LB_PERIOD;
+  const we = ws + BINGX_PERIOD;
   const prev = await bingxUpload(env, ws);
   if (prev && prev.final) return { skipped: 'final' };
   const r = await bingxAffRows(env, ws, Math.min(Date.now(), we));
@@ -18478,7 +18519,7 @@ async function bingxAffSyncSeason(env, ws) {
   return { ok: true, n: rows.length, feedRows: r.rows, ws };
 }
 async function bingxSeasonSeal(env, ws, force) {
-  const now = Date.now(), we = ws + LB_PERIOD, day = t => new Date(t).toISOString().slice(0, 10);
+  const now = Date.now(), we = ws + BINGX_PERIOD, day = t => new Date(t).toISOString().slice(0, 10);
   const up0 = await bingxUpload(env, ws);
   if (up0 && up0.final) return { skipped: 'final', ws };
   const synced = await bingxAffSyncSeason(env, ws);
@@ -18495,16 +18536,16 @@ async function bingxSeasonSeal(env, ws, force) {
   up.final = true; up.sealedTs = now; up.by = 'bingx-api-auto'; up.sealWhy = why;
   try { await env.STATS.put('lb:bingxup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv', ws }; }
   await bingxSnapshotRebuild(env, ws);
-  let poolLine = ''; try { const bb = await bingxVolBoard(env, ws); poolLine = ' Pool $' + bb.pool.usd.toFixed(2) + ' (ladder $' + bb.pool.tierUsd + ' at ' + bb.pool.tier.name + ', ' + Math.round(bb.pool.share * 100) + '% of $' + bb.pool.comUsd.toFixed(2) + ' commission = $' + bb.pool.capUsd.toFixed(2) + ' cap, $' + Math.round(bb.pool.volUsd).toLocaleString('en-US') + ' traded).'; } catch (e) {}
-  try { await tgAdmin(env, '<b>BingX board sealed</b> for the season that ended ' + day(we) + ' (' + why + '): ' + up.rows.length + ' UIDs with volume.' + poolLine + ' Prizes go out on the next payout pass.', { kind: 'bingx board', sev: 'info' }); } catch (e) {}
+  let poolLine = ''; try { const bb = await bingxVolBoard(env, ws); poolLine = ' Pool $' + bb.pool.usd.toFixed(2) + ' fixed over ' + bb.pool.paid + ' places; ' + bb.ranked + ' over the $' + bb.minVol.toLocaleString('en-US') + ' floor; $' + Math.round(bb.pool.volUsd).toLocaleString('en-US') + ' traded, $' + bb.pool.comUsd.toFixed(2) + ' commission.'; } catch (e) {}
+  try { await tgAdmin(env, '<b>BingX board sealed</b> for the contest that ended ' + day(we) + ' (' + why + '): ' + up.rows.length + ' UIDs with volume.' + poolLine + ' Prizes go out on the next payout pass.', { kind: 'bingx board', sev: 'info' }); } catch (e) {}
   return { sealed: true, ws, why };
 }
 async function bingxAffSync(env, opts) {
   if (!env.STATS || !env.BINGX_API_KEY) return null;
-  const now = Date.now(), ws = lbPeriodStart(now), prevWs = ws - LB_PERIOD;
+  const now = Date.now(), ws = bingxPeriodStart(now), prevWs = ws - BINGX_PERIOD;
   if (ws < BINGX_LB_START && !(opts && opts.force)) return { skipped: 'before_start', startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10) };
   const out = { current: await bingxAffSyncSeason(env, ws) };
-  if (prevWs >= BINGX_LB_START && now - (prevWs + LB_PERIOD) < 4 * 86400000) out.previous = await bingxSeasonSeal(env, prevWs, !!(opts && opts.force));
+  if (prevWs >= BINGX_LB_START && now - (prevWs + BINGX_PERIOD) < 4 * 86400000) out.previous = await bingxSeasonSeal(env, prevWs, !!(opts && opts.force));
   return out;
 }
 async function bingxVolBoard(env, ws) { // {rows: public-ready (no test accounts, no banned), matched, unmatched, regs, pool, poolAll, upload, registered}
@@ -18517,8 +18558,10 @@ async function bingxVolBoard(env, ws) { // {rows: public-ready (no test accounts
     matched.push(row); if (!row.e2e && !row.banned && row.vol > 0) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
+  const minV = volBoardMin(ws), poolRows = rows.slice(); // the $3,000 floor (VOL_BOARD_MIN_USD) - listed and paid above it only
+  if (minV > 0) { for (let i = rows.length - 1; i >= 0; i--) if (!(rows[i].vol >= minV)) rows.splice(i, 1); }
   const ranked = rows.length;
-  if (ws === lbPeriodStart(Date.now())) { // every registered member is on the board (the 2026-10-05 Bybit rule), current season only
+  if (ws === bingxPeriodStart(Date.now()) && !minV) { // every registered member is on the board (the 2026-10-05 Bybit rule) - only while there is no floor, i.e. never on this board
     const seen = new Set(rows.map(r => String(r.uid)));
     for (const [buid, w] of reg.entries()) {
       if (!w || seen.has(String(w.uid)) || w.e2e || banned[String(w.uid)]) continue;
@@ -18526,30 +18569,30 @@ async function bingxVolBoard(env, ws) { // {rows: public-ready (no test accounts
     }
   }
   const cfg = await rewardCfg(env);
-  const pool = bingxPoolCalc(rows.reduce((s, r) => s + r.com, 0), rows.reduce((s, r) => s + r.vol, 0), cfg);
+  const pool = bingxPoolCalc(poolRows.reduce((s, r) => s + r.com, 0), poolRows.reduce((s, r) => s + r.vol, 0), cfg);
   const poolAll = bingxPoolCalc(matched.reduce((s, r) => s + r.com, 0), matched.reduce((s, r) => s + r.vol, 0), cfg);
   const regs = [...reg.entries()].map(([buid, w]) => ({ buid: String(buid), uid: w.uid, name: w.name, src: w.src, e2e: !!w.e2e }));
-  return { rows: rows.map((r, i) => ({ rank: i < ranked ? i + 1 : 0, ...r })), ranked, matched, unmatched, regs, pool, poolAll, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: reg.size };
+  return { rows: rows.map((r, i) => ({ rank: i < ranked ? i + 1 : 0, ...r })), ranked, matched, unmatched, regs, pool, poolAll, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: reg.size, minVol: minV, ws, we: ws + BINGX_PERIOD };
 }
 async function bingxSnapshotRebuild(env, ws) {
   const b = await bingxVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed, pool: b.pool };
   try { await env.STATS.put('lb:bingx:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {}
   return snap;
 }
 async function bingxSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bingx:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0, pool: null }; }
-async function payBingxPrizes(env) { // */10 cron: every ENDED season from BINGX_LB_START whose table is FINAL and not yet paid
+async function payBingxPrizes(env) { // */10 cron: every ENDED 28-day contest from BINGX_LB_START whose table is FINAL and not yet paid
   if (!env.STATS || !env.REWARDS || !env.USERS) return;
-  const now = Date.now(), thisWs = lbPeriodStart(now);
-  for (let ws = BINGX_LB_START; ws < thisWs; ws += LB_PERIOD) {
+  const now = Date.now(), thisWs = bingxPeriodStart(now);
+  for (let ws = BINGX_LB_START; ws < thisWs; ws += BINGX_PERIOD) {
     const flag = 'lbpaid:bingx:' + ws; let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {} if (done) continue;
     const up = await bingxUpload(env, ws);
     if (!up || !up.final) {
       const nk = 'lbpaid:bingx:nag:' + ws; let nag = false; try { nag = !!(await env.STATS.get(nk)); } catch (e) {}
-      if (!nag && now - (ws + LB_PERIOD) > 2 * 86400000) { try { await tgAdmin(env, '<b>BingX board:</b> the season that ended ' + new Date(ws + LB_PERIOD).toISOString().slice(0, 10) + ' is not sealed yet (' + (up ? 'table present, not final' : 'no table') + ') - /api/admin/bingxboard?seal=1 seals it by hand.', { kind: 'lbbingx', sev: 'amber' }); await env.STATS.put(nk, '1', { expirationTtl: 60 * 86400 }); } catch (e) {} }
+      if (!nag && now - (ws + BINGX_PERIOD) > 2 * 86400000) { try { await tgAdmin(env, '<b>BingX board:</b> the contest that ended ' + new Date(ws + BINGX_PERIOD).toISOString().slice(0, 10) + ' is not sealed yet (' + (up ? 'table present, not final' : 'no table') + ') - /api/admin/bingxboard?seal=1 seals it by hand.', { kind: 'lbbingx', sev: 'amber' }); await env.STATS.put(nk, '1', { expirationTtl: 60 * 86400 }); } catch (e) {} }
       continue;
     }
     const board = await bingxVolBoard(env, ws);
@@ -18564,7 +18607,7 @@ async function payBingxPrizes(env) { // */10 cron: every ENDED season from BINGX
         try { await evPush(env, null, 'lbpaid', (u.username || x.name || '') + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' bingx)', ''); } catch (e) {}
         if (u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, username: u.username || x.name || '', board: 'bingx', vol: x.vol || 0, n: 0 }); } catch (e) {} } }
     }
-    try { await tgAdmin(env, '<b>BingX board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' (ladder $' + board.pool.tierUsd + ' at ' + board.pool.tier.name + ', cap $' + board.pool.capUsd.toFixed(2) + ' = ' + Math.round(board.pool.share * 100) + '% of $' + board.pool.comUsd.toFixed(2) + ' commission on $' + Math.round(board.pool.volUsd).toLocaleString('en-US') + ' traded): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(', ') : 'nothing to pay (pool $0)'), { kind: 'lbbingx', sev: paid.length ? 'green' : 'info' }); } catch (e) {}
+    try { await tgAdmin(env, '<b>BingX board paid</b> for the contest of ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' fixed over ' + board.pool.paid + ' places (' + board.ranked + ' over the $' + board.minVol.toLocaleString('en-US') + ' floor; $' + Math.round(board.pool.volUsd).toLocaleString('en-US') + ' traded, $' + board.pool.comUsd.toFixed(2) + ' commission): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(', ') : 'nobody over the floor - nothing paid'), { kind: 'lbbingx', sev: paid.length ? 'green' : 'info' }); } catch (e) {}
   }
 }
 /* ---- the weekly BingX bonus: the Bybit one, on BingX's feed and its own keys (bxbonus:*) ---- */
@@ -21877,7 +21920,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '0a6a5555';
+const ASSET_V = 'f694d5a9';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -24064,7 +24107,7 @@ async function handleReward(url, request, env) {
       const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       // the Bybit rebate knobs apply at once (they price a pool that is recomputed on every sync, never parked)
       if ('bybitShare' in b) next.bybitShare = Math.max(0, Math.min(1, +b.bybitShare || 0));
-      if ('bingxShare' in b) next.bingxShare = Math.max(0, Math.min(3, +b.bingxShare || 0));
+      if (Array.isArray(b.lbBingx) && b.lbBingx.length === 10) next.lbBingx = b.lbBingx.map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // the BingX board's fixed ten prizes (2026-10-30) - applies at once, like the Bybit knobs
       if ('bybitCap' in b) next.bybitCap = Math.max(0, Math.round((+b.bybitCap || 0) * 100) / 100);
       if ('bybitBase' in b) next.bybitBase = Math.max(0, Math.round((+b.bybitBase || 0) * 100) / 100);
       if (Array.isArray(b.bybitSplit) && b.bybitSplit.length === 10) next.bybitSplit = b.bybitSplit.map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
@@ -24093,9 +24136,9 @@ async function handleReward(url, request, env) {
           var NL9 = String.fromCharCode(10); await tgAdmin(env, '<b>Reward config changed</b> (' + diffs.length + ' key' + (diffs.length > 1 ? 's' : '') + ')' + NL9 + '<code>' + diffs.join(NL9).slice(0, 1500) + '</code>' + NL9 + 'If this was not you, restore it in ops Settings NOW.');
         }
       } catch (e) {}
-      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall), lbMeme: (next.lbMeme || full.lbMeme) } });
+      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall), lbMeme: (next.lbMeme || full.lbMeme), lbBingx: (next.lbBingx || full.lbBingx) } });
     }
-    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitBase: full.bybitBase, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
+    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme, lbBingx: full.lbBingx, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitBase: full.bybitBase, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS, volBoardMin: { usd: VOL_BOARD_MIN_USD, from: VOL_BOARD_MIN_FROM } }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -24226,7 +24269,7 @@ async function handleReward(url, request, env) {
       const rX = await usersDO(env, '/bybitlink', { uid: uidX, buid, venue: 'bingx' });
       if (!rX || rX.error) return jr({ error: (rX && rX.error) || 'unavailable' }, rX && rX.error === 'uid_taken' ? 409 : 503);
       try { await evPush(env, request, 'bingxlink', buid ? 'linked BingX UID for the volume board' : 'unlinked BingX UID', '/leaderboards/#bingx'); } catch (e) {}
-      try { if (lbPeriodStart(Date.now()) >= BINGX_LB_START) await bingxSnapshotRebuild(env, lbPeriodStart(Date.now())); } catch (e) {}
+      try { if (bingxPeriodStart(Date.now()) >= BINGX_LB_START) await bingxSnapshotRebuild(env, bingxPeriodStart(Date.now())); } catch (e) {}
       return jr({ ok: true, uid: buid, eligible: !!buid });
     }
     let curX = ''; try { const pg = await usersDO(env, '/prefsget', { uid: uidX, keys: ['bingx_uid'] }); curX = String((pg && pg.prefs && pg.prefs.bingx_uid && pg.prefs.bingx_uid.v) || ''); } catch (e) {}
@@ -24234,7 +24277,9 @@ async function handleReward(url, request, env) {
     if (!curX) { // an approved BingX sign-up claim or a payout to bingx:<uid> already proved the account - the board resolves it the same way (bingxRegistrations)
       try { const reg = await bingxRegistrations(env); for (const [buid, w] of reg.entries()) { if (String(w.uid) === uidX) { curX = String(buid); srcX = w.src || 'signup'; break; } } } catch (e) {}
     }
-    return jr({ ok: true, uid: curX, eligible: !!curX, source: srcX, ref: BINGX_REF_URL, startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: lbPeriodStart(Date.now()) >= BINGX_LB_START });
+    // the member's own volume this contest and the floor, so the box can say how far they are from being listed (2026-10-30)
+    const wsX = bingxPeriodStart(Date.now()); let volX = 0; if (curX) { try { const upX = await bingxUpload(env, wsX); const rX = ((upX && upX.rows) || []).filter(r => String(r.uid) === curX)[0]; volX = rX ? (+rX.vol || 0) : 0; } catch (e) {} }
+    return jr({ ok: true, uid: curX, eligible: !!curX, source: srcX, ref: BINGX_REF_URL, startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: wsX >= BINGX_LB_START, seasonVol: Math.round(volX * 100) / 100, minVol: volBoardMin(wsX), contest: { start: wsX, end: wsX + BINGX_PERIOD, days: Math.round(BINGX_PERIOD / 86400000) } });
   }
   if (path === '/bybitlink') { // BYBIT VOLUME BOARD (2026-09-13): link the Bybit UID of the account opened through our link; GET = status
     if (!acct) return jr({ error: 'login_required' }, 401);
@@ -24285,7 +24330,8 @@ async function handleReward(url, request, env) {
         }
       } catch (e) {}
     }
-    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL });
+    const ws9 = lbPeriodStart(Date.now()); let vol9 = 0; if (cur9) { try { const up9 = await bybitUpload(env, ws9); const r9 = ((up9 && up9.rows) || []).filter(r => String(r.uid) === cur9)[0]; vol9 = r9 ? (+r9.vol || 0) : 0; } catch (e) {} } // the member's own volume this season + the floor (2026-10-30)
+    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL, seasonVol: Math.round(vol9 * 100) / 100, minVol: volBoardMin(ws9) });
   }
   // PAST SEASONS, PUBLIC (2026-10-12, owner: "da biraju sezonu i da vide ishode ... ko je tad pobedio i koja je
   // bila nagrada"). Built from the ledger's `lbpay` (+ the legacy ROE-only `lbpayouts`), which is the PAYMENT
@@ -24376,7 +24422,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
-    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v13' : 'v13')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v14' : 'v14')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -24393,8 +24439,9 @@ async function handleReward(url, request, env) {
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h - a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
         // BINGX VOLUME BOARD (2026-10-30): the same shape off its own snapshot (lb:bingx:<ws>), from BINGX_LB_START
-        let bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0, pool: null }; try { bingx = await bingxSnapshot(env, weekStart) || bingx; } catch (e) {}
-        if (weekStart < BINGX_LB_START) bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: bingx.registered || 0, pool: null }; // nothing is ranked before the board's first season - the page says when it starts (bingxStarts)
+        const bxWs = bingxPeriodStart(nowMs); // a 28-day contest on its own clock (2026-10-30) - never the 14-day season's
+        let bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0, pool: null }; try { bingx = await bingxSnapshot(env, bxWs) || bingx; } catch (e) {}
+        if (bxWs < BINGX_LB_START) bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: bingx.registered || 0, pool: null }; // nothing is ranked before the board's first contest - the page says when it starts (bingxStarts)
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
         let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
         // DAILY BTC CALL (2026-09-28): points from settled calls inside the season window, ranked in the DO by points
@@ -24434,7 +24481,7 @@ async function handleReward(url, request, env) {
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMeme: memeRows, memePaidFrom: MEME_LB_START, memeUpdated: meme.ts || 0,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
-          topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || null, bingxTiers: BINGX_POOL_TIERS, bingxStarts: weekStart < BINGX_LB_START ? BINGX_LB_START : 0,
+          topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || bingxPoolCalc(0, 0, full), bingxStarts: bxWs < BINGX_LB_START ? BINGX_LB_START : 0, bingxContest: { start: bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs, end: (bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs) + BINGX_PERIOD, days: Math.round(BINGX_PERIOD / 86400000) }, volBoardMin: { usd: VOL_BOARD_MIN_USD, from: VOL_BOARD_MIN_FROM, bybit: volBoardMin(weekStart), bingx: volBoardMin(bxWs) },
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       // fail soft, never a 500 - but SAY WHY (2026-10-12). This catch wraps the UserStore board, the ledger bans,
@@ -24515,7 +24562,16 @@ async function handleReward(url, request, env) {
       if (op === 'submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: venue }); }
       else if (op === 'mine') doPath = '/exsign/mine';
       else if (op === 'list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
-      else doPath = '/exsign/review';
+      else {
+        doPath = '/exsign/review';
+        // A REJECTION ALWAYS CARRIES A REASON THE MEMBER CAN READ (owner 2026-10-30): the desk used to send an empty note
+        // when the owner skipped the prompt, and the member saw a bare REJECTED chip and a bell row saying "tap for details".
+        if (String(b && b.action) === 'reject' && !String((b && b.note) || '').trim()) {
+          const lblR = (SIGN_VENUES[venue] && SIGN_VENUES[venue].label) || venue.toUpperCase();
+          b.note = 'The ' + lblR + ' sign-up bonus could not be approved: we could not confirm the account was opened through MarginPad and verified. If you think that is a mistake, write to support@marginpad.io with your ' + lblR + ' UID.';
+          fwdBody = JSON.stringify(b);
+        }
+      }
     }
   }
   const fwd = new Request('https://do' + doPath + (request.method === 'GET' ? url.search : ''), {
@@ -24580,7 +24636,7 @@ async function handleReward(url, request, env) {
   if (r.status === 200 && /sign\/review$/.test(path) && SIGN_RE.test(path) && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17); a rejection is read as a plain notice (2026-10-23)
     try { const data = JSON.parse(txt); const vlbl = (SIGN_VENUES[(SIGN_RE.exec(path) || [])[1]] || {}).label || 'exchange';
       if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + vlbl + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' });
-      else if (data && data.ok && data.status === 'rejected' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'reward', body: String(b.note || ('Your ' + vlbl + ' sign-up bonus could not be approved. Tap for details.')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
+      else if (data && data.ok && data.status === 'rejected' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'reward', body: String(b.note || ('Your ' + vlbl + ' sign-up bonus could not be approved. Tap for details.')).replace(/^\[kyc\]\s*/, '').slice(0, 200), link: '/rewards/' }); } catch (e) {}
   }
   if (r.status === 200 && path === '/moonsign/list') { // only moon rows belong to this surface
     try { const data = JSON.parse(txt); data.pending = (data.pending || []).filter(x => x.exchange === 'moon'); data.decided = (data.decided || []).filter(x => x.exchange === 'moon'); data.moonUsd = full.moonC / 100; txt = JSON.stringify(data); } catch (e) {}
@@ -25154,7 +25210,7 @@ export default {
         return J({ roster: seen, n: seen.length, pages });
       }
       let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
-      const res = await signVerifySweep(env, 'mexc', { apply: body.run === true, reject: body.reject === true, limit: body.limit, max: body.max, by: 'owner' });
+      const res = await signVerifySweep(env, 'mexc', { apply: body.run === true, reject: body.reject === true, limit: body.limit, max: body.max, by: 'owner', e2e: url.searchParams.get('e2e') === '1' });
       let last = null; try { last = JSON.parse((await env.STATS.get('mexcverify:last')) || 'null'); } catch (e) {}
       let keyErr = null; try { keyErr = JSON.parse((await env.STATS.get('mexckey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...res, lastRun: last, keyLastError: keyErr, note: res.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
@@ -25170,7 +25226,7 @@ export default {
       if (url.searchParams.get('list') === '1') { const rB = await bitgetAffAll(env, 6); return J({ roster: rB.list, n: rB.list.length, error: rB.error || null, msg: rB.msg || '', body: rB.body || '' }); }
       if (url.searchParams.get('sync') === '1') return J({ sync: await bitgetRefSync(env) });
       let bodyB = {}; if (request.method === 'POST') { try { bodyB = await request.json(); } catch (e) {} }
-      const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max, by: 'owner' });
+      const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max, by: 'owner', e2e: url.searchParams.get('e2e') === '1' });
       let lastB = null; try { lastB = JSON.parse((await env.STATS.get('bitgetverify:last')) || 'null'); } catch (e) {}
       let keyErrB = null; try { keyErrB = JSON.parse((await env.STATS.get('bitgetkey:lasterr')) || 'null'); } catch (e) {}
       /* Say the state out loud. Opening a desk that answers "no_key" when three secrets are set is how an owner
@@ -25189,7 +25245,7 @@ export default {
       const oneY = url.searchParams.get('uid');
       if (oneY) return J({ uid: oneY, result: await bybitAffLookup(env, oneY) });
       let bodyY = {}; if (request.method === 'POST') { try { bodyY = await request.json(); } catch (e) {} }
-      const resY = await signVerifySweep(env, 'bybit', { apply: bodyY.run === true, reject: bodyY.reject === true, limit: bodyY.limit, max: bodyY.max, by: 'owner' });
+      const resY = await signVerifySweep(env, 'bybit', { apply: bodyY.run === true, reject: bodyY.reject === true, limit: bodyY.limit, max: bodyY.max, by: 'owner', e2e: url.searchParams.get('e2e') === '1' });
       let lastY = null; try { lastY = JSON.parse((await env.STATS.get('bybitverify:last')) || 'null'); } catch (e) {}
       return J({ ok: true, dry: !resY.apply, ...resY, last: lastY });
     }
@@ -25211,7 +25267,7 @@ export default {
         return J({ roster: seenX, n: seenX.length, deposited: seenX.filter(x => x.deposited).length, traded: seenX.filter(x => x.traded).length, kyc: seenX.filter(x => x.kyc).length, pages: pagesX });
       }
       let bodyX = {}; if (request.method === 'POST') { try { bodyX = await request.json(); } catch (e) {} }
-      const resX = await signVerifySweep(env, 'bingx', { apply: bodyX.run === true, reject: bodyX.reject === true, limit: bodyX.limit, max: bodyX.max, by: 'owner' });
+      const resX = await signVerifySweep(env, 'bingx', { apply: bodyX.run === true, reject: bodyX.reject === true, limit: bodyX.limit, max: bodyX.max, by: 'owner', e2e: url.searchParams.get('e2e') === '1' });
       let lastX = null; try { lastX = JSON.parse((await env.STATS.get('bingxverify:last')) || 'null'); } catch (e) {}
       let keyErrX = null; try { keyErrX = JSON.parse((await env.STATS.get('bingxkey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...resX, lastRun: lastX, keyLastError: keyErrX, note: resX.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
@@ -27953,6 +28009,7 @@ export default {
       const g = async k => { try { return (await env.STATS.get(k)) || ''; } catch (e) { return ''; } };
       const bindTo = String(url.searchParams.get('bind') || '').trim();
       if (bindTo) { try { await env.STATS.put('cfg:bybitchan', bindTo); } catch (e) {} }
+      const bindBx = String(url.searchParams.get('bindbingx') || '').trim(); if (bindBx) { try { await env.STATS.put('cfg:bingxchan', bindBx); } catch (e) {} } // ?bindbingx=<chat_id> - the BingX bonus channel by hand (2026-10-30)
       let chan = await g('cfg:bybitchan');
       let seen = []; try { seen = JSON.parse(await g('tg:seenchans') || '[]') || []; } catch (e) {}
       const out = {
@@ -28383,12 +28440,12 @@ export default {
         let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
         return J7({ ...b1, rows: rows1, capOk: sane1.ok, capWhy: sane1.why || '', capMaxCents: sane1.maxC || 0, claimedCents: claimedC, unclaimedCents: Math.max(0, b1.payoutCents - claimedC), announced: !!b1.announcedTs, channel: chan || null, history: hist, ...extra });
       }
-      const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
+      const ws = +url.searchParams.get('ws') || bingxPeriodStart(Date.now());
       const b = await bingxVolBoard(env, ws); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:bingx:' + ws)); } catch (e) {}
       let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
       const e2eOn = url.searchParams.get('e2e') === '1';
-      return J7({ ws, season: new Date(ws).toISOString().slice(0, 10), startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: ws >= BINGX_LB_START, paid: paidFlag, channel: chan || null,
-        rows: b.rows.filter(r => e2eOn || !r.e2e), matched: b.matched.filter(r => e2eOn || !r.e2e), unmatched: b.unmatched, regs: b.regs.filter(r => e2eOn || !r.e2e), pool: b.pool, poolAll: e2eOn ? b.poolAll : undefined, upload: b.upload, registered: b.registered, tiers: BINGX_POOL_TIERS, ...extra });
+      return J7({ ws, contest: new Date(ws).toISOString().slice(0, 10), ends: new Date(ws + BINGX_PERIOD).toISOString().slice(0, 10), days: Math.round(BINGX_PERIOD / 86400000), startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: ws >= BINGX_LB_START, paid: paidFlag, channel: chan || null, minVol: b.minVol,
+        rows: b.rows.filter(r => e2eOn || !r.e2e), matched: b.matched.filter(r => e2eOn || !r.e2e), unmatched: b.unmatched, regs: b.regs.filter(r => e2eOn || !r.e2e), pool: b.pool, poolAll: e2eOn ? b.poolAll : undefined, upload: b.upload, registered: b.registered, ...extra });
     }
     if (url.pathname === '/api/admin/bingxaff' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const J8 = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -32311,7 +32368,7 @@ export class RewardLedger {
       // 2026-09-13 (owner: "ladyp03 submits the Moon bonus far too often"): a rejection used to reopen the form without limit, so one
       // account could keep asking after being told no. ONE retry per account per exchange (a mistyped username deserves a second go),
       // then the door closes for good - support can still be asked.
-      if (this.rows('SELECT id FROM exsign WHERE acct=? AND exchange=?', acct, exchange).length >= 2) return this.j({ error: 'limit_reached', hint: 'This account has used both of its submissions for this bonus. If you believe a rejection was a mistake, write to support.' }, 409);
+      if (this.rows("SELECT id FROM exsign WHERE acct=? AND exchange=? AND NOT (status='rejected' AND note LIKE '[kyc]%')", acct, exchange).length >= 2) return this.j({ error: 'limit_reached', hint: 'This account has used both of its submissions for this bonus. If you believe a rejection was a mistake, write to support.' }, 409);
       if (this.rows("SELECT id FROM exsign WHERE exchange=? AND lower(uid)=lower(?) AND status!='rejected'", exchange, uid).length) return this.j({ error: 'uid_taken' }, 409); // each exchange UID pays once, across ALL accounts
       const id = 'xs' + now.toString(36) + Math.floor(Math.random() * 1679616).toString(36);
       sql.exec('INSERT INTO exsign(id,acct,exchange,uid,ts,status,ip,cc) VALUES(?,?,?,?,?,?,?,?)', id, acct, exchange, uid, now, 'pending', ip, cc);
@@ -32321,13 +32378,14 @@ export class RewardLedger {
     if (path === '/exsign/mine') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
       const rows = this.rows('SELECT id,exchange,uid,ts,status,note,amount,decided_ts FROM exsign WHERE acct=? ORDER BY ts DESC LIMIT 12', acct);
-      return this.j({ signups: rows.map(r => ({ ...r, amount: (r.amount || 0) / 100 })) });
+      // a KYC rejection is marked with a [kyc] prefix in the note (it does not spend the retry); the member reads it without the mark
+      return this.j({ signups: rows.map(r => ({ ...r, amount: (r.amount || 0) / 100, kyc: /^\[kyc\]/.test(String(r.note || '')), note: String(r.note || '').replace(/^\[kyc\]\s*/, '') })) });
     }
     if (path === '/exsign/list') { // admin: review queue + recent decisions (who opened an account where)
       const pending = this.rows("SELECT id,acct AS address,exchange,uid,ts,ip,cc FROM exsign WHERE status='pending' ORDER BY ts ASC LIMIT 100");
       const decLim = url.searchParams.get('all') === '1' ? 5000 : 30; // ?all=1 = the whole history (owner export, 2026-09-17); the dashboard keeps the recent 30
       const decided = this.rows("SELECT id,acct AS address,exchange,uid,ts,status,note,amount,decided_ts FROM exsign WHERE status!='pending' ORDER BY decided_ts DESC LIMIT " + decLim);
-      return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100) });
+      return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100, kyc: /^\[kyc\]/.test(String(r.note || '')), note: String(r.note || '').replace(/^\[kyc\]\s*/, '') })), exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100) });
     }
     if (path === '/exsign/setuid') { // support: correct the exchange username on an existing row. Credits NOTHING.
       // Re-filing cannot do this - an approved row is never paid twice, and reject-then-force-approve pays again.
@@ -32350,7 +32408,7 @@ export class RewardLedger {
       const p = this.rows('SELECT * FROM exsign WHERE id=?', id)[0];
       if (!p) return this.j({ error: 'not_found' }, 404);
       if (p.status !== 'pending' && !(action === 'approve' && body.force === true && p.status === 'rejected')) return this.j({ error: 'already_decided' }, 409); // force = the owner re-approves a row rejected by mistake (2026-09-17, Ladyp03); an approved row is never paid twice
-      if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected', acct: p.acct, exchange: p.exchange }); } // acct so the worker can send the member the rejection notice to read
+      if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 400), now, id); /* 400 since 2026-10-30: the sweep's own sentences are 300+ and a reason cut mid-word is no reason */ return this.j({ ok: true, status: 'rejected', acct: p.acct, exchange: p.exchange }); } // acct so the worker can send the member the rejection notice to read
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
       // one lookup per venue (2026-10-21): a ternary chain had to be edited for every new sign-up bonus
       const _vc = cfg[String(p.exchange || '') + 'C'];

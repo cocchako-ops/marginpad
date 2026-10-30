@@ -197,7 +197,7 @@ function sourceGuards() {
     const mineMoon = await j('/api/reward/moonsign/mine', { headers: a.H });
     ok(((mineMoon.b && mineMoon.b.signups) || []).every(x => x.uid !== name), 'and neither does Moon');
 
-    const list = await j('/api/reward/' + v + 'sign/list', { headers: A });
+    const list = await j('/api/reward/' + v + 'sign/list?e2e=1', { headers: A }); // ?e2e=1: the desk hides test rows by default (2026-10-27), and this row IS one
     const qrows = [...((list.b && list.b.pending) || []), ...((list.b && list.b.decided) || [])];
     ok(qrows.length > 0 && qrows.every(x => x.exchange === v), 'the admin queue for ' + label + ' contains only ' + v + ' rows (' + qrows.length + ')');
     const row = ((list.b && list.b.pending) || []).find(x => String(x.address || '').indexOf(a.uid) >= 0);
