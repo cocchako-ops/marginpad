@@ -17728,8 +17728,8 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
@@ -18367,8 +18367,8 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
@@ -18433,6 +18433,12 @@ const bingxPeriodStart = ts => ts < BINGX_LB_START ? lbPeriodStart(ts) : BINGX_L
 const BINGX_BONUS_START = BINGX_LB_START;          // the weekly bonus walks the same calendar as the Bybit one (Monday weeks)
 const BINGX_REF_URL = 'https://bingx.com/partner/Marginpad';
 const BINGX_PRIZES_DEF = [30, 15, 10, 5, 5, 1, 1, 1, 1, 1]; // $70 over ten places, from MarginPad (owner 2026-10-30)
+/* VOLUME REWARDS, SHOWN ON BOTH VOLUME BOARDS (owner 2026-10-30 evening: "progress bar koji ce da se dopunjuje kako raste volumen
+   i da pise koliko otkljucava u nagradama ... isto to za Bybit na iste novcane cifre"): the rungs the morning's ladder had, as what the
+   board's volume UNLOCKS on top of the pool, split over ten places by the same shares as the fee rebate (cfg.bybitSplit). Published
+   as `volRewards` on /api/reward/lb and DRAWN by the pages; nothing in payBybitPrizes / payBingxPrizes pays a rung - whose money a
+   reached rung is ("ovo za volumen ce dalje da daje BingX") is the owner's, and the bar says "unlocks", never "paid by MarginPad". */
+const VOL_REWARD_TIERS = [{ at: 1000000, usd: 70 }, { at: 3000000, usd: 200 }, { at: 4500000, usd: 300 }, { at: 8000000, usd: 500 }];
 const BINGX_BONUS_SHARE = 0.33;      // the weekly bonus: a third of what that trader earned us that week (Bybit's rule)
 const BINGX_BONUS_MIN_C = 25;        // under 25c nothing is announced
 const BINGX_BONUS_MAX_C = 5000;      // $50 a week to one person needs a human look
@@ -18578,8 +18584,8 @@ async function bingxSnapshotRebuild(env, ws) {
   const b = await bingxVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed, pool: b.pool };
   try { await env.STATS.put('lb:bingx:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v14')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v14')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {}
   return snap;
 }
@@ -24422,7 +24428,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
-    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v14' : 'v14')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v15' : 'v15')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -24482,6 +24488,7 @@ async function handleReward(url, request, env) {
           topMeme: memeRows, memePaidFrom: MEME_LB_START, memeUpdated: meme.ts || 0,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || bingxPoolCalc(0, 0, full), bingxStarts: bxWs < BINGX_LB_START ? BINGX_LB_START : 0, bingxContest: { start: bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs, end: (bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs) + BINGX_PERIOD, days: Math.round(BINGX_PERIOD / 86400000) }, volBoardMin: { usd: VOL_BOARD_MIN_USD, from: VOL_BOARD_MIN_FROM, bybit: volBoardMin(weekStart), bingx: volBoardMin(bxWs) },
+          volRewards: { tiers: VOL_REWARD_TIERS, split: full.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1] },
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       // fail soft, never a 500 - but SAY WHY (2026-10-12). This catch wraps the UserStore board, the ledger bans,
@@ -28093,6 +28100,20 @@ export default {
         else {
           const fd = new FormData(); fd.append('chat_id', String(chan)); fd.append('photo', new Blob([buf], { type: 'image/jpeg' }), 'channel.jpg');
           try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); out.photo = { ok: !!j.ok, desc: j.description || '', bytes: buf.byteLength }; } catch (e) { out.photo = { error: String(e).slice(0, 80) }; }
+        }
+      }
+      const photoBx = String(url.searchParams.get('photobingx') || '').replace(/[^a-zA-Z0-9._\/-]/g, ''); // the BingX bonus channel's picture (2026-10-30)
+      if (photoBx && env.TELEGRAM_TOKEN) {
+        const chanBx = out.bingxChannel;
+        if (!chanBx) out.photoBingx = { error: 'not_bound', hint: 'post /bind bingx inside the channel first, or ?bindbingx=<chat_id>' };
+        else {
+          let bufX = null;
+          try { const irX = await env.ASSETS.fetch(new Request(url.origin + photoBx)); if (irX.ok) bufX = await irX.arrayBuffer(); } catch (e) {}
+          if (!bufX || bufX.byteLength < 500) out.photoBingx = { error: 'no_image', bytes: bufX ? bufX.byteLength : 0 };
+          else {
+            const fdX = new FormData(); fdX.append('chat_id', String(chanBx)); fdX.append('photo', new Blob([bufX], { type: 'image/jpeg' }), 'channel.jpg');
+            try { const rX = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fdX }); const jX = await rX.json(); out.photoBingx = { ok: !!jX.ok, desc: jX.description || '', bytes: bufX.byteLength }; } catch (e) { out.photoBingx = { error: String(e).slice(0, 80) }; }
+          }
         }
       }
       /* ?invite=1 mints a PLAIN invite link - Join means in, with nothing to wait for.

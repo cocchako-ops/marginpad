@@ -95,13 +95,48 @@
      beside them - "BEST WIN RA...", "DAILY BTC C...", "THE GOLD RO..." and "BIN..." ellipsised, half of every free card empty,
      and a blank quadrant under BingX. Now a 12-column grid: the six free tabs on the first row (2 columns each), Gold (3) and
      the three real-account tabs (3 each) on the second - every name whole, no hole, the BingX logo with room to spare. */
+  /* SECOND CUT, the same evening (owner: "bas su asimetricne i nisu jednake ... gold+ ne treba da se uvrsta u menjacnice"): the
+     Gold Room sits on the FIRST row beside the six free tabs (14 columns: free 12, Gold 2 - the same width as a free tab), and the
+     second row is the three real-account tabs alone, three equal thirds. Nothing on a row differs in size from its neighbours. */
   @media(min-width:901px){
-    .tabs{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;}
-    .tg.free{grid-column:1/-1;}.tg.gold{grid-column:1/4;}.tg.real{grid-column:4/-1;}
+    .tabs{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:10px;}
+    .tg.free{grid-column:1/13;}.tg.gold{grid-column:13/-1;}.tg.real{grid-column:1/-1;}
     .tabs .tg.free .tgt{grid-template-columns:repeat(6,minmax(0,1fr));}
     .tabs .tg.real .tgt{grid-template-columns:repeat(3,minmax(0,1fr));} /* (0,3,0) - the base two-column rule below ties on specificity and comes later */
     .tg .tgt{align-items:stretch;}
+    .tg.gold .tgh em{display:none;} /* 157px of header: "12,000 XP and up" does not fit beside GOLD LEVEL; the card's ribbon says it */
   }
+  /* VOLUME REWARDS (2026-10-30 evening): the meter between the board title and the you-box on the two volume boards */
+  .vm{margin:12px 0 0;padding:10px 12px 9px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));cursor:pointer;position:relative;transition:border-color .15s;}
+  .vm:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line2));}
+  .vm .vt{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;font:700 10.5px 'Space Mono',monospace;letter-spacing:.04em;color:var(--dim);margin-bottom:8px;}
+  .vm .vt b{color:#fff;}.vm .vt .nx{color:var(--c);}.vm .vt .q{font-size:9.5px;color:var(--faint);text-decoration:underline;text-underline-offset:3px;}
+  .vm .bar{position:relative;height:8px;border-radius:5px;background:rgba(255,255,255,.08);}
+  .vm .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,#000),var(--c));box-shadow:0 0 12px -2px var(--c);min-width:0;}
+  .vm .bar b{position:absolute;top:-4px;width:2px;height:16px;border-radius:1px;background:rgba(255,255,255,.3);transform:translateX(-1px);}
+  .vm .bar b.on{background:var(--c);box-shadow:0 0 8px var(--c);}
+  .vm .rg{position:relative;height:13px;margin-top:6px;}
+  .vm .rg span{position:absolute;top:0;transform:translateX(-50%);font:700 9px 'Space Mono',monospace;letter-spacing:.02em;color:var(--faint);white-space:nowrap;}
+  .vm .rg span.on{color:var(--c);}.vm .rg span.end{transform:translateX(-100%);}.vm .rg em{font-style:normal;}
+  .vmp{margin:8px 0 0;padding:12px 14px;border-radius:12px;border:1px solid color-mix(in srgb,var(--c) 40%,var(--line2));background:#0c0f14;}
+  .vmp[hidden]{display:none;}
+  .vmp h4{margin:0 0 4px;font:800 13px 'Bricolage Grotesque',sans-serif;color:#fff;letter-spacing:-.01em;}
+  .vmp .vd{font-size:12px;color:var(--dim);line-height:1.5;margin:0 0 10px;max-width:72ch;}
+  .vmp .rl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px;}
+  .vmp .rl div{padding:8px 9px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.03);font:700 10px 'Space Mono',monospace;color:var(--faint);letter-spacing:.03em;}
+  .vmp .rl div b{display:block;font:800 16px 'Bricolage Grotesque',sans-serif;color:#fff;letter-spacing:-.02em;margin-top:2px;}
+  .vmp .rl div.on{border-color:var(--c);color:var(--c);}.vmp .rl div.on b{color:var(--c);}
+  .vmp .rl div.got{border-color:color-mix(in srgb,var(--c) 45%,var(--line));}
+  .vmp .sp{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;}
+  .vmp .sp div{display:flex;flex-direction:column;align-items:center;padding:6px 4px;border-radius:8px;background:rgba(255,255,255,.035);border:1px solid var(--line);}
+  .vmp .sp i{font:800 9px 'Space Mono',monospace;color:var(--faint);font-style:normal;}
+  .vmp .sp em{font:700 9px 'Space Mono',monospace;color:var(--dim);font-style:normal;margin-top:1px;}
+  .vmp .sp b{font:800 13px 'Bricolage Grotesque',sans-serif;color:#fff;margin-top:2px;}
+  .vmp .sp div:first-child b{color:var(--amber);}
+  .vmp .sh{font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 6px;}
+  @media(max-width:620px){.vmp .rl{grid-template-columns:repeat(2,minmax(0,1fr));}.vmp .sp{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;}.vmp .sp b{font-size:12px;}}
+  @media(max-width:620px){.vm .rg span .v{display:none;}} /* 310px of bar: the volume words collided at $3M / $4.5M - the amount alone stands under each rung, the volume is in the popover */
+  #board[data-pre="bybit"] .prizes,#board[data-pre="bingx"] .prizes{min-height:0;}#board.g-real .prizes:empty{display:none;} /* no prize chips on the two volume boards (the table carries the places) - the 44px CLS reservation left a hole over the meter on a phone */
   .tg.gold .tab .n{padding-right:44px;} /* room for the GOLD+ ribbon */
   .tgh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:4px;border-bottom:1px solid var(--line);min-width:0;}
   .tgh span{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap;}
@@ -467,6 +502,7 @@
 
   <section class="board" id="board">
     <div class="bh"><h2 id="bT">ROE más alto<small id="bS">el mejor retorno en una sola operación cerrada esta temporada</small></h2><div class="prizes" id="bPz"></div></div>
+    <div id="bVolM" hidden></div><div id="bVolP" class="vmp" hidden></div>
     <div class="you" id="bYou"><span class="yg"><a href="#" data-auth-open>Inicia sesión</a> para ver tu posición - tus operaciones ya cuentan.</span><span class="ym">Comprobando tu posición…</span></div>
     <div class="sbar" id="sBar">
       <div class="sdd" id="sDd">
@@ -615,7 +651,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     var P=LB.boardPrizes||{}, pool=0, moonPool=(P.moon||[]).reduce(function(a,c){return a+(+c||0);},0); Object.keys(P).forEach(function(k){if(k!=='moon')pool+=(P[k]||[]).reduce(function(a,c){return a+(+c||0);},0);});
     if(pool>0){$('sPool').textContent='$'+int(pool+moonPool); /* every board, the homepage figure (2026-10-09) - the per-season sum left King of the Moon out and put a different total on three pages; the breakdown stays in the line below */$('sPoolS').textContent=(LB.bybitPool?T("inclBybitPool",__esT_leaderboardsindex("inclTheBybitPool",'incl. the Bybit pool as it stands · ')):'')+(moonPool>0?'+ $'+int(moonPool)+T("kingOfTheMoon2",__esT_leaderboardsindex("kingOfTheMoon2",' King of the Moon every two seasons · ')):'$'+int(Math.round(pool*30/14/10)*10)+' a month · ')+T("paidInUsdWithdrawable",__esT_leaderboardsindex("paidInUsdWithdrawable",'paid in USD, withdrawable'));}
     Object.keys(B).forEach(function(k){var rows=LB[B[k].key]||[],pz=(P[PK[k]]||[]).reduce(function(a,c){return a+(+c||0);},0);
-      var t=document.querySelector('.tab[data-b="'+k+'"]'); if(t&&pz>0)t.querySelector('.p').innerHTML=(k==='bybit'&&LB.bybitPool)?'$'+(+LB.bybitPool.usd).toFixed(2)+'<small>'+T("poolL",'POOL')+' · '+esc(String(tierName(LB.bybitPool.tier.name)).toUpperCase())+'</small>'+meterHtml(LB):'$'+int(pz)+'<small>'+T("poolL",'POOL')+'</small>';
+      var t=document.querySelector('.tab[data-b="'+k+'"]'); if(t&&pz>0)t.querySelector('.p').innerHTML=(k==='bybit'&&LB.bybitPool)?'$'+(+LB.bybitPool.usd).toFixed(2)+'<small>'+T("poolL",'POOL')+' · '+esc(String(tierName(LB.bybitPool.tier.name)).toUpperCase())+'</small>':'$'+int(pz)+'<small>'+T("poolL",'POOL')+'</small>';
       if(k==='bybit'&&t)t.setAttribute('data-tier',String(poolTier(LB))); /* the card glows harder as the pool climbs the tiers */
       if(k==='bingx'&&t){var BXP=bxPool(LB),bxe=t.querySelector('.p');t.setAttribute('data-tier','1');bxe.innerHTML='$'+int(BXP.usd)+'<small>'+T("poolL",'POOL')+' · '+(LB.bingxStarts?T("fromL",'FROM ')+esc(dayS(LB.bingxStarts).slice(0,6).toUpperCase()):T("days28L",'28 DAYS'))+'</small>';}
       var l=$('tl-'+k); if(l)l.innerHTML=rows.length?'<b>'+esc(rows[0].who)+'</b>'+T("leads"," leads"):(k==='moon'&&LB.moonContest?T("dayL","day ")+Math.min(LB.moonContest.days||28,Math.max(1,Math.floor((Date.now()-LB.moonContest.start)/86400000)+1))+T("ofSp"," of ")+(LB.moonContest.days||28)+' · open':(k==='bingx'?(LB.bingxStarts?T("startsL",'starts ')+dayS(LB.bingxStarts):(LB.bingxContest?T("endsL",'ends ')+dayS(LB.bingxContest.end):'open')):'open'));
@@ -808,7 +844,42 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
       fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){dcBusy=false;if(d&&d.ok){box.removeAttribute('data-edit');toast(T("callLocked",__esT_leaderboardsindex("callLocked",'Call locked: <b>$'))+px(d.guess)+'</b>');track('call');loadPred();load();}else{var g=$('dcGo');if(g)g.disabled=false;sub.innerHTML='<b class="err">'+(d&&d.error==='range'?T("thatIsMoreThan",__esT_leaderboardsindex("thatIsMoreThan",'That is more than 30% from the price right now.')):d&&d.error==='closed'?T("callsClosedForToday",__esT_leaderboardsindex("callsClosedForToday",'Calls closed for today.')):d&&d.error==='not_signed_in'?T("signInFirst",__esT_leaderboardsindex("signInFirst",'Sign in first.')):T("couldNotSaveYour",__esT_leaderboardsindex("couldNotSaveYour",'Could not save your call.')))+'</b>';}}).catch(function(){dcBusy=false;var g=$('dcGo');if(g)g.disabled=false;});});}
   function loadPred(){return J('/api/predict').then(function(d){if(d&&d.day){PRED=d;if(!SEL)paintCallbox();if(CUR==='call'&&LB&&!SEL)$('bBanner').innerHTML=bannerHtml(((LB.boardPrizes||{})[PK[CUR]])||[]);}});}
   /* everything under and above the table that is not the table: the banner, the note, the three boxes */
-  function paintExtras(pz){var bn=$('bBanner');if(bn)bn.innerHTML=SEL?'':bannerHtml(pz);paintNote(pz);paintBybox();paintBingxbox();paintMoonbox();paintCallbox();}
+  /* VOLUME REWARDS (2026-10-30 evening, owner: "progress bar koji ce da se dopunjuje kako raste volumen i da pise koliko otkljucava u
+     nagradama ... na klik ... kako ce da se distribuira ... isto za Bybit na iste novcane cifre"). The rungs come from /api/reward/lb
+     (volRewards.tiers, the worker's VOL_REWARD_TIERS) and the split from the same place the rebate split comes from (volRewards.split),
+     so the page never carries a second copy of either. The bar is linear to the last rung; the fill moves through WAAPI (the owner's
+     Windows renders no @keyframes). A rung the board has passed is "unlocked"; the next one says how far. */
+  var VM_DEF={tiers:[{at:1000000,usd:70},{at:3000000,usd:200},{at:4500000,usd:300},{at:8000000,usd:500}],split:[50,25,10,5,5,1,1,1,1,1]};
+  var vmOpen=false;
+  function vmData(){var D=LB||{},VR=D.volRewards||VM_DEF,tiers=(VR.tiers||VM_DEF.tiers).filter(function(t){return t.at>0&&t.usd>0;}),split=VR.split||VM_DEF.split;
+    var P=CUR==='bybit'?bybPool(D):bxPool(D),vol=+P.volUsd||0,top=tiers.length?tiers[tiers.length-1].at:8000000;
+    var got=null,next=null;tiers.forEach(function(t){if(vol>=t.at)got=t;else if(!next)next=t;});
+    return {tiers:tiers,split:split,vol:vol,top:top,got:got,next:next,pct:Math.min(100,vol/top*100)};}
+  function vmSplit(usd,split){var sum=split.reduce(function(a,x){return a+(+x||0);},0)||1;var cents=split.map(function(x){return Math.floor(usd*100*(+x||0)/sum);});var rem=Math.round(usd*100)-cents.reduce(function(a,x){return a+x;},0);for(var i=0;rem>0&&i<cents.length;i++,rem--)cents[i]++;return cents.map(function(c){return c/100;});}
+  function paintVolMeter(){var el=$('bVolM'),pp=$('bVolP');if(!el||!pp)return;
+    if(SEL||!(CUR==='bybit'||CUR==='bingx')||!LB){el.hidden=true;pp.hidden=true;vmOpen=false;return;}
+    var d=vmData(),col=CUR==='bybit'?'#f7a600':'#2b54fc',win=CUR==='bybit'?T("vmThisSeason",'this season'):T("vmThisContest",'in this contest');
+    var right=d.next?'<span class="nx">'+T("vmUnlocks",'unlocks ')+'$'+int(d.next.usd)+T("vmAt",' at ')+kUsd(d.next.at)+'</span> · '+kUsd(Math.max(0,d.next.at-d.vol))+T("vmToGo",' to go'):'<span class="nx">$'+int(d.got?d.got.usd:0)+T("vmUnlockedTop",' unlocked - the top rung')+'</span>';
+    var left='<b>'+kUsd(d.vol)+'</b>'+T("vmTraded",' traded ')+win+(d.got?' · <span class="nx">$'+int(d.got.usd)+T("vmUnlockedL",' unlocked')+'</span>':'');
+    var ticks=d.tiers.map(function(t){return '<b class="'+(d.vol>=t.at?'on':'')+'" style="left:'+(t.at/d.top*100).toFixed(2)+'%"></b>';}).join('');
+    var rg=d.tiers.map(function(t,i){var last=i===d.tiers.length-1;return '<span class="'+(d.vol>=t.at?'on':'')+(last?' end':'')+'" style="left:'+(t.at/d.top*100).toFixed(2)+'%"><em class="v">'+kUsd(t.at)+' · </em>$'+int(t.usd)+'</span>';}).join('');
+    el.hidden=false;el.className='vm';el.style.setProperty('--c',col);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-expanded',vmOpen?'true':'false');
+    var prev=el.querySelector('.bar i'),prevW=prev?prev.style.width:'0%';
+    el.innerHTML='<div class="vt"><span>'+left+'</span><span>'+right+' · <span class="q">'+T("vmHow",'how it splits')+'</span></span></div><div class="bar"><i style="width:'+prevW+'"></i>'+ticks+'</div><div class="rg">'+rg+'</div>';
+    var fill=el.querySelector('.bar i');try{var a=fill.animate([{width:prevW||'0%'},{width:d.pct.toFixed(2)+'%'}],{duration:700,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});a.onfinish=function(){fill.style.width=d.pct.toFixed(2)+'%';};}catch(e){fill.style.width=d.pct.toFixed(2)+'%';}
+    if(!el._wired){el._wired=true;el.addEventListener('click',function(){vmOpen=!vmOpen;paintVolPop();});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vmOpen=!vmOpen;paintVolPop();}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&vmOpen){vmOpen=false;paintVolPop();}});}
+    paintVolPop();}
+  function paintVolPop(){var pp=$('bVolP'),el=$('bVolM');if(!pp)return;if(!vmOpen||!LB||SEL||!(CUR==='bybit'||CUR==='bingx')){pp.hidden=true;if(el)el.setAttribute('aria-expanded','false');return;}
+    var d=vmData(),col=CUR==='bybit'?'#f7a600':'#2b54fc',show=d.next||d.got,amt=show?show.usd:0,sp=vmSplit(amt,d.split),sum=d.split.reduce(function(a,x){return a+(+x||0);},0)||1;
+    var base=CUR==='bybit'?T("vmBaseBybit",'on top of the rebate pool ($100 start + 52% of the fees the board\'s traders generate)'):T("vmBaseBingx",'on top of the fixed $70 MarginPad pool');
+    var rl=d.tiers.map(function(t){var cls=d.got&&t.at===d.got.at?'on':(d.vol>=t.at?'got':'');return '<div class="'+cls+'">'+kUsd(t.at)+T("vmTradedS",' traded')+'<b>$'+int(t.usd)+'</b></div>';}).join('');
+    var spH=d.split.map(function(w,i){return '<div><i>#'+(i+1)+'</i><em>'+(Math.round(w/sum*1000)/10)+'%</em><b>$'+(sp[i]%1?sp[i].toFixed(2):int(sp[i]))+'</b></div>';}).join('');
+    pp.style.setProperty('--c',col);
+    pp.innerHTML='<h4>'+T("vmTitle",'Volume rewards')+'</h4><p class="vd">'+T("vmDesc1",'The board\'s total volume unlocks a reward rung ')+base+T("vmDesc2",'. A reached rung is split over the ten places by the same shares the fee rebate uses - every cent is paid, the rounding cents go to the top.')+'</p>'
+      +'<div class="rl">'+rl+'</div><div class="sh">'+(show?(d.next&&show===d.next?T("vmNextSplit",'how $')+int(amt)+T("vmNextSplit2",' splits once ')+kUsd(show.at)+T("vmIsTraded",' is traded'):T("vmThisSplit",'how the unlocked $')+int(amt)+T("vmSplits",' splits')):'')+'</div><div class="sp">'+spH+'</div>';
+    pp.hidden=false;if(el)el.setAttribute('aria-expanded','true');
+    try{pp.animate([{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],{duration:220,easing:'ease-out'});}catch(e){}}
+  function paintExtras(pz){var bn=$('bBanner');if(bn)bn.innerHTML=SEL?'':bannerHtml(pz);paintVolMeter();paintNote(pz);paintBybox();paintBingxbox();paintMoonbox();paintCallbox();}
   setInterval(function(){if(document.hidden||!PRED||CUR!=='call'||SEL)return;var ds=document.querySelector('#callbox .st');if(ds&&PRED.open&&Date.now()<PRED.cutoff)ds.textContent=callState(PRED);},1000);
   setInterval(function(){if(!document.hidden)loadPred();},300000);
   document.addEventListener('click',function(e){if(!(e.target.closest&&e.target.closest('#bMore [data-bmore]')))return;tblOpen=true;paintBoard({keep:true});track('morereg');});
