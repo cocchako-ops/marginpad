@@ -15,7 +15,7 @@ const VP = [['desk', 1366, 800], ['phone', 390, 844]];
       await p.setViewport({ width: w, height: h });
       await p.setCacheEnabled(false);
       p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-      await p.goto(BASE + '/hyperliquid-whales/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 45000 });
+      await p.goto(BASE + '/hyperliquid-whales/?nc=1&cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 45000 });
       const wait = (fn, ms) => p.waitForFunction(fn, { timeout: ms || 12000 }).then(() => true).catch(() => false);
       const size = () => p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
       const shot = (n) => p.screenshot({ path: path.join(OUT, tag + '-' + n + '.png') });

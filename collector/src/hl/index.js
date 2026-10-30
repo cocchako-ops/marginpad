@@ -261,7 +261,8 @@ async function coverage() {
     const A = cohortCache.ALL; if (!A) return;
     const ex = A.excluded.reduce((a, r) => a + Math.max(r.long, r.short), 0), seen = Math.max(A.all.long, A.all.short);
     cohortCache.oi = oi;
-    cohortCache.coverage = { oi: total, tracked: seen, excluded: ex, pct: +(seen / Math.max(1, total - ex) * 100).toFixed(1) };
+    let read = 0; for (const w of W.values()) if (w.last_snap) read++;
+    cohortCache.coverage = { oi: total, tracked: seen, excluded: ex, pct: +(seen / Math.max(1, total - ex) * 100).toFixed(1), read, wallets: W.size, readPct: +(read / Math.max(1, W.size) * 100).toFixed(1) };
   } catch (e) {}
 }
 

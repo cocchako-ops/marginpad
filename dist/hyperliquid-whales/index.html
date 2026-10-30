@@ -183,7 +183,7 @@ svg.ln{display:block;width:100%;height:120px}
     PN.forEach(function(p){s+=a('#cohort/'+p[0],p[1],'','sub')});
     hs.innerHTML=s;
   }
-  var COV_MIN=50,early=true;
+  var READ_MIN=80,early=true; // Hyperdash's own groups add up to ~41% of open interest, so the bar is wallets read, not a share of OI
   function pill(b){return early?'<span class="bp none">Early read</span>':'<span class="bp '+b+'">'+BIAS[b]+'</span>'}
   function card(c,meta){
     var l=c?c.long:0,sh=c?c.short:0;
@@ -191,13 +191,13 @@ svg.ln{display:block;width:100%;height:120px}
   }
   function covLine(j){
     var c=j.coverage,a=j.all;
-    return '<div class="cov">'+(c?'<span>Tracking <b>'+c.pct+'%</b> of market positions'+(early?'. Too early to say which way a group leans.':'')+'</span><span>Open interest <b class="num">'+usd(c.oi)+'</b></span>':'<span>Reading wallets</span>')+(j.ts?'<span>Updated <b>'+ago(j.ts)+' ago</b></span>':'')+'</div>';
+    return '<div class="cov">'+(c?'<span>Read <b>'+(c.read||0).toLocaleString('en-US')+'</b> of '+(c.wallets||0).toLocaleString('en-US')+' wallets'+(early?'. Too early to say which way a group leans.':'')+'</span><span>Positions seen <b class="num">'+usd(c.tracked)+'</b></span><span>Open interest <b class="num">'+usd(c.oi)+'</b></span>':'<span>Reading wallets</span>')+(j.ts?'<span>Updated <b>'+ago(j.ts)+' ago</b></span>':'')+'</div>';
   }
   function vCohorts(my){
     return get('cohorts').then(function(j){
       if(my!==seq)return;
       if(!j.ts){hm.innerHTML='<div class="empty">The first reading lands within a couple of minutes</div>';return}
-      early=!(j.coverage&&j.coverage.pct>=COV_MIN);
+      early=!(j.coverage&&j.coverage.readPct>=READ_MIN);
       var f=function(a,id){return a.filter(function(x){return x.id===id})[0]};
       var ex=(j.excluded||[]).filter(function(x){return x.long+x.short>0});
       hm.innerHTML='<div class="hh"><div><h1>Hyperliquid cohorts</h1><p>Every wallet we read, grouped by what it has earned and what it holds</p></div>'+srch()+'</div>'+covLine(j)
