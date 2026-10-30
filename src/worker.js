@@ -1390,7 +1390,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v7_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v8_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -1818,6 +1818,38 @@ function cxOneStory(moves) {
   }
   return moves;
 }
+// A NEWS MOVE IS ONE ZONE, MEASURED WHOLE (2026-10-30, owner: the hack dip was one 6% fall and the indicator printed a 3.5%
+// piece, a 1.9% piece and a blip between them - 'ko ce to da sabira'). From a sure story's first candle the zone runs forward
+// while the story is live: inside its window (8 h major / 3 h else), until price gives back 80% of the move from the extreme.
+// Its size is start to EXTREME, every smaller move inside it is absorbed, and while the window is open and the last bar is
+// inside it the zone is `live` - the chart extends it to the newest candle and prints the move so far.
+function cxStoryZones(moves, bars, now) {
+  if (!bars || bars.length < 10 || !moves || !moves.length) return moves;
+  const tOf = b => { const t = +b.time || 0; return t > 2e10 ? t : t * 1000; };
+  const barMs = Math.max(60000, tOf(bars[1]) - tOf(bars[0]));
+  const asc = moves.slice().sort((a, b) => a.t0 - b.t0), absorbed = new Set(), out = [];
+  for (const m of asc) {
+    if (absorbed.has(m)) continue;
+    if (!(m.sure && (m.cause === 'news' || m.cause === 'news+cascade') && m.catalyst && +m.p0 > 0)) { out.push(m); continue; }
+    const dir = m.dir, p0 = +m.p0, t0 = m.t0, winMs = (m.catalyst.major ? 8 : 3) * 3600000, tEnd = t0 + winMs;
+    let ext = p0, extT = t0, open = true, lastT = 0, closedBy = 'window'; const minMove = Math.abs((+m.p1 || p0) - p0) * 0.5;
+    for (const b of bars) { const t = tOf(b); if (t < t0) continue; if (t > tEnd) break; lastT = t;
+      const lo = +b.low, hi = +b.high; if (!(lo > 0 && hi > 0)) continue;
+      if (dir < 0 ? lo < ext : hi > ext) { ext = dir < 0 ? lo : hi; extT = t; }
+      const move = Math.abs(ext - p0), cl = +b.close, back = dir < 0 ? cl - ext : ext - cl; // recovery is read off the CLOSE, after the move is at least half of what was detected
+      if (move >= minMove && move > 0 && back / move > 0.8) { open = false; closedBy = 'recovered'; break; }
+    }
+    if (open && (!lastT || (now != null && now - lastT > 3 * barMs) || lastT >= tEnd - barMs)) open = false;
+    const pct = +(((ext - p0) / p0) * 100).toFixed(2), t1 = Math.max(m.t1, extT + barMs);
+    const z = Object.assign({}, m, { zone: true, live: open, closedBy: open ? null : closedBy, p1: ext, t1, pct, lo: dir < 0 ? ext : m.lo, hi: dir > 0 ? ext : m.hi, extT });
+    let inside = 0; for (const o of asc) { if (o === m || absorbed.has(o)) continue; if (o.t0 >= t0 && o.t0 <= t1) { absorbed.add(o); inside++; z.legs = (z.legs || 1) + (o.legs || 1); if (o.cascade) z.cascadeInside = true; } }
+    z.inside = inside;
+    const hh = n => (n < 10 ? '0' : '') + n, cl = d => { const x = new Date(d); return hh(x.getUTCHours()) + ':' + hh(x.getUTCMinutes()); };
+    z.note = 'One move of ' + (pct > 0 ? '+' : '') + pct + '% from ' + cl(t0) + ' to ' + cl(extT) + ' UTC' + (open ? ', still running' : closedBy === 'recovered' ? ', then price recovered' : '') + (inside ? ', ' + inside + ' smaller move' + (inside > 1 ? 's' : '') + ' inside it' + (z.cascadeInside ? ' including a liquidation cascade' : '') : '') + '. ' + String(m.note || '').replace(/\s*\(\d+ legs over [^)]*\)$/, '');
+    out.push(z);
+  }
+  return out.filter(m => !absorbed.has(m)).sort((a, b) => b.t0 - a.t0);
+}
 function cxNote(mv, a, ctx, sym) {
   const parts = [];
   if (a.cause === 'unknown') {
@@ -1885,7 +1917,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v10_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v11_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -1913,7 +1945,7 @@ async function handleCatalystMoves(url, env) {
   ]);
   // the tape ring reaches back hours, not the month: the flow factor applies to the newest moves and the live verdict
   const tape = tapeJ ? [].concat(Array.isArray(tapeJ.big) ? tapeJ.big : [], Array.isArray(tapeJ.trades) ? tapeJ.trades : []) : null;
-  const moves = cxOneStory(cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars, oi: oiS, fund: fundS, now }) }))));
+  const moves = cxStoryZones(cxOneStory(cxEpisodes(det.moves.map(m => ({ ...m, ...cxAttribute(m, cats, liq, { sym, liqFloor, btcMoves, whales, spx, tape, bars, oi: oiS, fund: fundS, now }) })))), bars, now);
   const sum = { n: moves.length, news: 0, cascade: 0, both: 0, unknown: 0 };
   sum.btc = 0; sum.whale = 0; sum.stocks = 0; sum.flow = 0; sum.liqs = 0; sum.tech = 0; sum.oi = 0; sum.book = 0; sum.multi = 0;
   for (const m of moves) { if (m.cause === 'news') sum.news++; else if (m.cause === 'cascade') sum.cascade++; else if (m.cause === 'news+cascade') sum.both++; else if (m.cause === 'btc') sum.btc++; else if (m.cause === 'whale') sum.whale++; else if (m.cause === 'stocks') sum.stocks++; else if (m.cause === 'flow') sum.flow++; else if (m.cause === 'liqs') sum.liqs++; else if (m.cause === 'tech') sum.tech++; else if (m.cause === 'oi') sum.oi++; else if (m.cause === 'book') sum.book++; else sum.unknown++; }

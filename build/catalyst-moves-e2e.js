@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE, cxOneStory };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE, cxOneStory, cxStoryZones };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -220,6 +220,17 @@ function pureLeg() {
   const oneS = X.cxOneStory([{ t0: T0, t1: T0 + 3600000, pct: -4.2, dir: -1, cause: 'news', label: 'Exchange Hack', sure: true, confidence: 0.9, catalyst: { story: st1, title: 'x' }, factors: [], note: 'a' }, { t0: T0 + 5 * 3600000, t1: T0 + 5.25 * 3600000, pct: -0.8, dir: -1, cause: 'news', label: 'Exchange Hack', sure: true, confidence: 0.8, catalyst: { story: st1, title: 'x' }, factors: [{ k: 'tech', label: 'Support break', w: 0.55, text: 'fell through 100' }], note: 'b' }]);
   const smallS = oneS.find(m => m.pct === -0.8), bigS = oneS.find(m => m.pct === -4.2);
   ok('one story explains ONE move: the larger keeps it, the smaller later dip falls back to what else was measured and is not sure', bigS.cause === 'news' && bigS.sure === true && smallS.cause === 'tech' && smallS.sure === false && !smallS.catalyst && smallS.storyDemoted && /already explains the larger -4.2%/.test(smallS.note), JSON.stringify([smallS.cause, smallS.sure, smallS.note]));
+  // A NEWS MOVE IS ONE ZONE (owner, 2026-10-30): start to extreme, blips absorbed, live while the window is open
+  const zb = []; const zp = [100, 99.1, 97.5, 96.9, 97.9, 97.3, 96.1, 94.5, 94.2, 95.0, 95.6, 95.9];
+  for (let i = 0; i < zp.length; i++) zb.push({ time: (T0 / 1000) + i * 900, open: zp[Math.max(0, i - 1)], close: zp[i], high: Math.max(zp[Math.max(0, i - 1)], zp[i]) + 0.1, low: Math.min(zp[Math.max(0, i - 1)], zp[i]) - 0.1 });
+  const zmoves = [{ t0: T0, t1: T0 + 2 * 900000, pct: -2.5, dir: -1, p0: 100, p1: 97.5, lo: 97.4, hi: 100.1, cause: 'news', sure: true, confidence: 0.9, label: 'Exchange Hack', catalyst: { story: { k: 'hk' }, major: true, title: 'x' }, factors: [], note: 'a' }, { t0: T0 + 4 * 900000, t1: T0 + 5 * 900000, pct: 1.0, dir: 1, p0: 96.9, p1: 97.9, cause: 'whale', sure: false, label: 'Whale', factors: [], note: 'b' }, { t0: T0 + 6 * 900000, t1: T0 + 8 * 900000, pct: -2.3, dir: -1, p0: 97.3, p1: 94.5, lo: 94.1, cause: 'cascade', sure: true, label: 'Long liquidations', cascade: true, factors: [], note: 'c' }];
+  const zo = X.cxStoryZones(zmoves, zb, T0 + 12 * 900000);
+  const zz = zo.find(m => m.zone);
+  ok('the story move is one zone from its start to the extreme, the blip and the cascade inside it absorbed', zo.length === 1 && zz && Math.abs(zz.pct - (-5.9)) < 0.15 && zz.inside === 2 && zz.cascadeInside === true && /One move of -5\.9% from/.test(zz.note), JSON.stringify(zo.map(m => [m.pct, m.zone, m.inside, m.note && m.note.slice(0, 60)])));
+  ok('with the window still open and price not recovered the zone is LIVE', zz && zz.live === true, JSON.stringify([zz && zz.live, zz && zz.closedBy]));
+  const zr = zp.concat([99.2, 99.6]); const zb2 = zr.map((p, i) => ({ time: (T0 / 1000) + i * 900, open: zr[Math.max(0, i - 1)], close: p, high: Math.max(zr[Math.max(0, i - 1)], p) + 0.1, low: Math.min(zr[Math.max(0, i - 1)], p) - 0.1 }));
+  const zc = X.cxStoryZones(zmoves.map(m => Object.assign({}, m)), zb2, T0 + 14 * 900000).find(m => m.zone);
+  ok('once price gives back 80% of the move the zone closes at the extreme it reached', zc && zc.live === false && zc.closedBy === 'recovered' && Math.abs(zc.pct - (-5.9)) < 0.15, JSON.stringify([zc && zc.live, zc && zc.closedBy, zc && zc.pct]));
   ok('a -0.9% blip between two legs of one story does not split the episode', !!big && Math.abs(big.pct - 21.7) < 0.2 && bl.length === 2 && bl.some(m => m.blip), JSON.stringify(bl.map(m => [m.pct, m.legs, !!m.blip])));
 }
 

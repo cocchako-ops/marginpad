@@ -188,7 +188,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* the month's moves onto THIS chart's bars: a move is flagged on the bar it started on and shaded to the bar it ended on;
      on a timeframe coarser than the move both land on one candle, which is still the right candle */
   function cxBuildMarks(bars,cx){var out=[];if(!cx||!cx.moves||!bars||!bars.length)return out;
-    cx.moves.forEach(function(m){if(!m.sure)return;var i0=barAtTs(bars,m.t0),i1=barAtTs(bars,Math.max(m.t0,m.t1-1));if(i0<0&&i1<0)return;if(i0<0)i0=0;if(i1<i0)i1=i0;out.push({i0:i0,i1:i1,m:m});});
+    cx.moves.forEach(function(m){if(!m.sure)return;var i0=barAtTs(bars,m.t0),i1=barAtTs(bars,Math.max(m.t0,m.t1-1));if(i0<0&&i1<0)return;if(i0<0)i0=0;if(i1<i0)i1=i0;
+      if(m.live&&m.zone&&+m.p0>0){i1=bars.length-1;var ext=m.dir<0?Infinity:-Infinity;for(var q=Math.max(0,i0);q<bars.length;q++){var b=bars[q];if(m.dir<0){if(+b.low<ext)ext=+b.low;}else if(+b.high>ext)ext=+b.high;}if(isFinite(ext)){m.pct=+(((ext-m.p0)/m.p0)*100).toFixed(2);if(m.dir<0)m.lo=ext;else m.hi=ext;}}
+      out.push({i0:i0,i1:i1,m:m});});
     return out;}
   /* LIVE: the same threshold the route used for the month (its own measured scale x mult, floored), applied to the bars of
      the last 15 minutes - on a coarser chart the last bar alone. The chart only MEASURES the move; the cause is asked for. */
@@ -227,7 +229,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var liqHtml='';if(m.liq&&m.liq.usd>0)liqHtml='<dt>'+__esT_mpcharts("liquidatedDuring",'Liquidated during')+'</dt><dd>'+money(m.liq.usd)+(m.liq.x!=null?' <small>'+m.liq.x+'x</small>':'')+'</dd>';
     var el=document.createElement('div');el.className='cwin-liqc cwin-cxc';
     el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
-      +'<div class="lqc-h" style="color:'+col+'">'+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+(mins>=120?Math.round(mins/6)/10+' h':mins+' min')+(m.legs>1?' · '+m.legs+' '+__esT_mpcharts("legsWord",'legs'):'')+'</small></div>'
+      +'<div class="lqc-h" style="color:'+col+'">'+(m.live?'<small style="color:#c2f64a">LIVE</small> ':'')+(up?'+':'')+(+m.pct).toFixed(2)+'% <small>'+__esT_mpcharts("inWord",'in')+' '+(mins>=120?Math.round(mins/6)/10+' h':mins+' min')+(m.legs>1?' · '+m.legs+' '+__esT_mpcharts("legsWord",'legs'):'')+'</small></div>'
       +'<div class="lqc-s cxc-cause" style="color:'+(m.cause==='unknown'?'#aab5c4':col)+'">'+causeLine+(m.confidence>0?' <small>'+__esT_mpcharts("confidenceWord",'confidence')+' '+Math.round(m.confidence*100)+'%</small>':'')+'</div>'
       +catHtml
       +shHtml
@@ -808,7 +810,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _tc=[[__esT_mpcharts("newsLc",'news'),(_s.news||0)+(_s.both||0)],[__esT_mpcharts("cascadeLc",'cascade'),(_s.cascade||0)+(_s.both||0)+(_s.liqs||0)],['BTC',_s.btc||0],[__esT_mpcharts("whaleLc",'whale'),(_s.whale||0)+(_s.flow||0)],[__esT_mpcharts("structureLc",'structure'),_s.tech||0],[__esT_mpcharts("stocksLc",'stocks'),_s.stocks||0],['OI',(_s.oi||0)+(_s.book||0)]].filter(function(x){return x[1]>0;}).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
         var _lab2=__esT_mpcharts("whatMovedItLeg",'WHAT MOVED IT 30d')+' · '+(_s.sure||0)+' '+__esT_mpcharts("flaggedOf",'flagged of')+' '+(_s.n||0)+' '+__esT_mpcharts("movesWord",'moves')+(_s.explainedPct!=null?' · '+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained'):'')+(_s.multi?' · '+_s.multi+' '+__esT_mpcharts("withTwoCauses",'with 2+ causes'):'')+(_tc.length?' · '+_tc.map(function(x){return x[1]+' '+x[0];}).join(' · '):'')+(_s.unknown?' · '+_s.unknown+' '+__esT_mpcharts("unknownLc",'unknown'):'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab2,title:__esT_mpcharts("whatMovedItTitle",'Every abnormal move of the last 30 days on 15-minute candles, each with its most likely cause. A flag on the candle the move started on; tap it for the evidence. Scale: ')+_cx.scale+'% '+__esT_mpcharts("medianBarMove",'median 15m move, a move is at least ')+(+_cx.mult||4)+'x '+__esT_mpcharts("thatOrFloor",'that or ')+(+_cx.floorPct||0.6)+'%.'});
-        var _lv=cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);
+        var _zl=(_cx.moves||[]).some(function(m){return m.live&&m.sure;});var _lv=_zl?null:cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);else if(_zl)w._cxLive=null;
         var _L=w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a,_col=_L.pct>=0?'#2ebd85':'#ff6258';
           if(_L.cont){var _nm=(w._cx&&w._cx.moves||[])[0];w.legItems.push({raw:true,color:_col,label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% · '+__esT_mpcharts("stillTheStory",'still the')+' '+_la.label+' '+__esT_mpcharts("storyWord",'story')+(_nm&&_nm.legs>1?' ('+_nm.legs+' '+__esT_mpcharts("legsWord",'legs')+')':''),title:cxCauseText(_la)});}else
           w.legItems.push({raw:true,color:_col,label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% '+__esT_mpcharts("inTheLast",'in the last')+' '+Math.max(1,Math.round((Date.now()-_L.t0)/60000))+' min · '+(_la.cause==='unknown'?__esT_mpcharts("noKnownCauseShort",'No known cause'):_la.label+(_la.catalyst?' ('+(_la.catalyst.after?__esT_mpcharts("newsAfterWord",'news after'):_la.catalyst.leadMin+' min '+__esT_mpcharts("beforeWord",'before'))+', '+__esT_mpcharts("scoreWord",'score')+' '+_la.catalyst.score+')':'')+(_la.cascade&&_la.liq?' · '+money(_la.liq.usd)+' '+__esT_mpcharts("liquidatedLc",'liquidated'):'')),title:cxCauseText(_la)});}
@@ -2913,7 +2915,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.save();
         ctx.fillStyle=up?'rgba(46,189,133,.10)':'rgba(255,98,88,.10)';ctx.fillRect(xa,0,Math.max(2,xb-xa),plotH);
         var yE=yOf(up?m.hi:m.lo);if(yE==null){ctx.restore();continue;}
-        var txt=(up?'+':'')+(+m.pct).toFixed(1)+'% '+(known?m.label:'?');ctx.font='700 10.5px "Space Mono",monospace';
+        var txt=(m.live?'LIVE ':'')+(up?'+':'')+(+m.pct).toFixed(1)+'% '+(known?m.label:'?');ctx.font='700 10.5px "Space Mono",monospace';
         var tw=ctx.measureText(txt).width,bw=tw+12,bh=17,cx=(xa+xb)/2,bx=Math.max(2,Math.min(W-bw-2,cx-bw/2));
         var by=up?Math.max(2,yE-14-bh):Math.min(plotH-bh-2,yE+14);
         ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,up?by+bh:by);ctx.lineTo(cx,yE);ctx.stroke();
