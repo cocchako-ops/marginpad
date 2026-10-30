@@ -66,13 +66,13 @@
   .sub{color:var(--dim);font-size:14.5px;margin:0;max-width:560px;line-height:21px;} /* px, not ch: a ch minimum re-wrapped the line when the web font replaced the fallback */
   /* season strip: one line, three facts */
   .season{display:flex;gap:8px;margin:0 0 12px;}
-  .sc{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px 12px;background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:10px 14px;}
+  .sc{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:10px 14px;}
   .sc:first-child{flex:1.5 1 0;}
   .sc .k{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);flex:none;}
   #sEye{display:inline-block;min-width:176px;} /* CLS: wide enough for the Spanish static eyebrow too ("Temporada · 14 días" = 174px) */
   .sc .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:#fff;margin:0;line-height:1.05;white-space:nowrap;flex:none;}
   .sc .v b{color:var(--amber);}
-  .sc .s{font:600 10px/1.35 'Space Mono',monospace;color:var(--faint);margin:0;min-width:0;flex:1 1 auto;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  .sc .s{font:600 10px/1.35 'Space Mono',monospace;color:var(--faint);margin:0;min-width:0;flex:1 1 auto;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:1 1 100%;}
   .days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;width:112px;flex:none;margin:0;}
   .days i{display:block;height:6px;border-radius:3px;background:#1a1f27;}.days i.on{background:var(--amber);}.days i.now{background:#fff;box-shadow:0 0 8px var(--amber);}
   @media(max-width:760px){
@@ -106,10 +106,14 @@
     .tg .tgt{align-items:stretch;}
     .tg.gold .tgh em{display:none;} /* 157px of header: "12,000 XP and up" does not fit beside GOLD LEVEL; the card's ribbon says it */
   }
+  /* NO WORD LEFT ALONE ON A LINE (2026-10-30, owner: "splits je presla u nov red"): short lines that really need two break evenly */
+  .you,.bd-note,.bybox2 .bd,.bh h2 small{text-wrap:pretty;}
+  .bh h2 small.cx,.bybanner .r,.bybox2 .bt{text-wrap:balance;}
   /* VOLUME REWARDS (2026-10-30 evening): the meter between the board title and the you-box on the two volume boards */
   .vm{margin:12px 0 0;padding:10px 12px 9px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));cursor:pointer;position:relative;transition:border-color .15s;}
   .vm:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line2));}
-  .vm .vt{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;font:700 10.5px 'Space Mono',monospace;letter-spacing:.04em;color:var(--dim);margin-bottom:8px;}
+  .vm .vt{display:flex;align-items:baseline;gap:4px 14px;font:700 10.5px 'Space Mono',monospace;letter-spacing:.04em;color:var(--dim);margin-bottom:8px;}
+  .vm .vt>span{white-space:nowrap;}.vm .vt .vl{flex:1 1 auto;min-width:0;}
   .vm .vt b{color:#fff;}.vm .vt .nx{color:var(--c);}.vm .vt .q{font-size:9.5px;color:var(--faint);text-decoration:underline;text-underline-offset:3px;}
   .vm .bar{position:relative;height:8px;border-radius:5px;background:rgba(255,255,255,.08);}
   .vm .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,#000),var(--c));box-shadow:0 0 12px -2px var(--c);min-width:0;}
@@ -135,7 +139,8 @@
   .vmp .sp div:first-child b{color:var(--amber);}
   .vmp .sh{font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 6px;}
   @media(max-width:620px){.vmp .rl{grid-template-columns:repeat(2,minmax(0,1fr));}.vmp .sp{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;}.vmp .sp b{font-size:12px;}}
-  @media(max-width:620px){.vm .rg span .v{display:none;}} /* 310px of bar: the volume words collided at $3M / $4.5M - the amount alone stands under each rung, the volume is in the popover */
+  @media(max-width:620px){.btools .bcount{letter-spacing:.04em;white-space:nowrap;min-height:15px;}}
+  @media(max-width:620px){.vm .vt{flex-wrap:wrap;font-size:10px;letter-spacing:0;}.vm .vt .vl{flex:1 1 0;order:1;}.vm .vt .q{order:2;}.vm .vt .vr{order:3;flex:0 0 100%;}.vm .rg span .v{display:none;}} /* 310px of bar: the volume words collided at $3M / $4.5M - the amount alone stands under each rung, the volume is in the popover */
   #board[data-pre="bybit"] .prizes,#board[data-pre="bingx"] .prizes{min-height:0;}#board.g-real .prizes:empty{display:none;} /* no prize chips on the two volume boards (the table carries the places) - the 44px CLS reservation left a hole over the meter on a phone */
   .tg.gold .tab .n{padding-right:44px;} /* room for the GOLD+ ribbon */
   .tgh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:4px;border-bottom:1px solid var(--line);min-width:0;}
@@ -174,6 +179,7 @@
     .tabs::-webkit-scrollbar{display:none;}
     .tg,.tg.free,.tg.gold,.tg.real{flex:0 0 auto;}
     .tgh em{display:none;}
+    .tg.gold .tab{width:186px;} /* the GOLD+ ribbon takes 38px of the name's line: 150 cut it to THE GOLD RO... */
     .tab{width:150px;padding:7px 9px 6px;} /* 124 cut "The Gold Room", "King of the Moon" and the BingX logo (measured 2026-10-30: .n needs 131 / 112 / 113px) */
     .tgt{display:flex;gap:6px;} /* one row of six, never a second line on a phone */
     .tab .p{font-size:15px;}
@@ -344,7 +350,7 @@
   @media(min-width:901px){.tg.free{flex:6.1 1 0}.tg.gold{flex:1.3 1 0}} /* an icon in front of each name: tighter type, more room for the Gold Room's ribbon, so no name is cut on a 1366 desktop; under 900px the groups keep their natural width in the scrolling row */
   .tab .p{line-height:16px;height:16px}.tab .p small{line-height:10px;height:10px}.tab.bybit .p{height:auto}.tab .l{line-height:13px;height:13px}.tab .y{line-height:12px;height:12px}.tgh{height:19px;align-items:center}.tgh span,.tgh em{line-height:14px}
   .sc .v{line-height:20px;height:20px}.sc .k{line-height:13px}.sc .s{height:27px;line-height:13.5px}.eyebrow{line-height:14px;height:14px}
-  @media(max-width:620px){.sc .s{height:14px}}
+  .sc .s{height:14px}
   .tab .n .ic{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:4px;margin-right:4px;vertical-align:-3px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 35%,transparent);flex:none}
   .tab .n .ic svg{width:9px;height:9px}
   .tab .n .pb{font:800 8px 'Space Mono',monospace;letter-spacing:.16em;color:var(--orange);margin-right:5px}
@@ -429,7 +435,7 @@
   .dc-mine{margin-top:9px;max-width:420px;display:flex;align-items:center;justify-content:space-between;gap:8px;font:600 12px 'Space Mono',monospace;color:#c7ccd4}.dc-mine b{color:#fff}.dc-mine button{color:var(--lime);background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
   .dc-y{margin-top:9px;max-width:560px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font:600 11.5px 'Space Mono',monospace;color:#b9c2cc;line-height:1.5}.dc-y b{color:#fff}.dc-y .win{color:var(--lime)}.dc-y .mid{color:var(--amber)}
   .err{color:#ff8a80}
-  @media(max-width:560px){.byfull{padding:10px 12px;font-size:12px}.byfull .lg{display:none}.byfull .sm{display:inline}.byfull span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bybanner .l{white-space:normal}.pzl{gap:5px;padding:0 2px}.pzc{padding:7px 4px 8px;border-radius:10px}.pzc b{font-size:15px}.pzc.r1 b{font-size:17px}.bybox2 .bh{align-items:flex-start}}
+  @media(max-width:560px){.byfull{padding:10px 12px;font-size:12px}.byfull .lg{display:none}.byfull .sm{display:inline}.byfull span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bybanner .l{white-space:nowrap;font-size:12.5px}.bybanner .r{flex:1 1 100%;text-align:left}.bybanner .r b{display:block;margin:0 0 1px}.pzl{gap:5px;padding:0 2px}.pzc{padding:7px 4px 8px;border-radius:10px}.pzc b{font-size:15px}.pzc.r1 b{font-size:17px}.bybox2 .bh{align-items:flex-start}}
   .board.arch #bBanner,.board.arch #bNote,.board.arch #bMore,.board.arch #bybox,.board.arch #moonbox,.board.arch #callbox{display:none}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -468,8 +474,8 @@
 
   <section class="season" aria-label="Temporada">
     <div class="sc"><div class="k">Temporada</div><div class="v" id="sEye">Temporada · 14 dias</div><div class="days" id="sDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="s" id="sLeft">termina a cada duas segundas-feiras às 00:00 UTC</div></div>
-    <div class="sc"><div class="k">Prêmio total</div><div class="v"><b id="sPool">$640+</b> across 10 boards</div><div class="s" id="sPoolS">$100 of it is the Bybit pool's start, which grows with volume · $70 BingX every 28 days · plus $300 King of the Moon every two seasons · paid in USD, withdrawable</div></div>
-    <div class="sc ent"><div class="k">Entrada</div><div class="v">Grátis</div><div class="s">quatro tabelas de paper não exigem nada, a tabela da previsão de BTC exige uma previsão por dia, a Gold Room exige Ouro; duas exigem uma conta real aberta pela MarginPad</div></div>
+    <div class="sc"><div class="k">Prêmio total</div><div class="v"><b id="sPool">$640+</b> across 10 boards</div><div class="s" id="sPoolS">incl. $300 King of the Moon · paid in USD</div></div>
+    <div class="sc ent"><div class="k">Entrada</div><div class="v">Grátis</div><div class="s">no deposit; three boards need a real account</div></div>
   </section>
 
   <div class="tabs" id="tabs" role="tablist" aria-label="Tabelas">
@@ -641,6 +647,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   var PK={roe:'roe',green:'green',winrate:'wr',xp:'xp',gold:'gold',bybit:'bybit',bingx:'bingx',moon:'moon',call:'call',meme:'meme'};
   var EK={roe:'top',green:'green',winrate:'wr',xp:'xp',gold:'gold',bybit:'bybit',bingx:'bingx',moon:'moon',call:'call',meme:'meme'};
   function dayS(t){return new Date(t).toUTCString().slice(5,16);}
+  function dayN(t){return innerWidth<=620?dayS(t).slice(0,6):dayS(t);}
   function me(){try{var m=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();return m&&m.username?String(m.username).toLowerCase():null;}catch(e){return null;}}
   function paintSeason(){
     if(!LB)return; var ws=+LB.weekStart, we=+LB.weekEnd, now=Date.now();
@@ -649,7 +656,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     $('sDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?T("onNow",__esT_leaderboardsindex("onNow",'on now')):'')+'"></i>';}).join('');
     $('sLeft').textContent=T("endsIn",__esT_leaderboardsindex("endsIn",'ends in '))+left(we-now)+' · '+new Date(we).toUTCString().slice(0,16)+' 00:00 UTC';
     var P=LB.boardPrizes||{}, pool=0, moonPool=(P.moon||[]).reduce(function(a,c){return a+(+c||0);},0); Object.keys(P).forEach(function(k){if(k!=='moon')pool+=(P[k]||[]).reduce(function(a,c){return a+(+c||0);},0);});
-    if(pool>0){$('sPool').textContent='$'+int(pool+moonPool); /* every board, the homepage figure (2026-10-09) - the per-season sum left King of the Moon out and put a different total on three pages; the breakdown stays in the line below */$('sPoolS').textContent=(LB.bybitPool?T("inclBybitPool",__esT_leaderboardsindex("inclTheBybitPool",'incl. the Bybit pool as it stands · ')):'')+(moonPool>0?'+ $'+int(moonPool)+T("kingOfTheMoon2",__esT_leaderboardsindex("kingOfTheMoon2",' King of the Moon every two seasons · ')):'$'+int(Math.round(pool*30/14/10)*10)+' a month · ')+T("paidInUsdWithdrawable",__esT_leaderboardsindex("paidInUsdWithdrawable",'paid in USD, withdrawable'));}
+    if(pool>0){$('sPool').textContent='$'+int(pool+moonPool); /* every board, the homepage figure (2026-10-09) - the per-season sum left King of the Moon out and put a different total on three pages; the breakdown stays in the line below */$('sPoolS').textContent=(moonPool>0?T("inclMoonL",'incl. $')+int(moonPool)+T("kingOfTheMoon4",' King of the Moon · '):'$'+int(Math.round(pool*30/14/10)*10)+' a month · ')+T("paidInUsd",'paid in USD');}
     Object.keys(B).forEach(function(k){var rows=LB[B[k].key]||[],pz=(P[PK[k]]||[]).reduce(function(a,c){return a+(+c||0);},0);
       var t=document.querySelector('.tab[data-b="'+k+'"]'); if(t&&pz>0)t.querySelector('.p').innerHTML=(k==='bybit'&&LB.bybitPool)?'$'+(+LB.bybitPool.usd).toFixed(2)+'<small>'+T("poolL",'POOL')+' · '+esc(String(tierName(LB.bybitPool.tier.name)).toUpperCase())+'</small>':'$'+int(pz)+'<small>'+T("poolL",'POOL')+'</small>';
       if(k==='bybit'&&t)t.setAttribute('data-tier',String(poolTier(LB))); /* the card glows harder as the pool climbs the tiers */
@@ -689,8 +696,8 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     $('board').className='board g-'+b.grp;
     var MC=LB&&LB.moonContest, cx='';
     if(CUR==='bybit'&&LB&&LB.bybitPool){var BP=LB.bybitPool;cx=T("poolSoFar",'<small class="cx">pool <b>$')+(+BP.usd).toFixed(2)+'</b> · $'+BP.base+T("startPlusL",' start + ')+Math.round(BP.share*100)+T("ofFeesL",__esT_leaderboardsindex("ofFees",'% of fees · '))+T("aboutPer100k",'about $')+(+BP.perHundredK).toFixed(2)+T("per100kTraded",' per $100k traded · ')+esc(BP.tier.name)+'</small>';}
-    if(CUR==='bingx'&&LB&&LB.bingxContest){var BX2=bxPool(LB),BC=LB.bingxContest;cx='<small class="cx">'+T("poolL3",'pool ')+'<b>$'+int(BX2.usd)+'</b> · '+(BC.days||28)+T("daysL",' days')+' · '+dayS(BC.start)+T("toSp",' to ')+dayS(BC.end)+'</small>';}
-    if(CUR==='moon'&&MC){var md=Math.min(MC.days||28,Math.max(1,Math.floor((Date.now()-MC.start)/86400000)+1));cx=T("contestDay",__esT_leaderboardsindex("contestDay",'<small class="cx">contest day '))+md+T("ofSp"," of ")+(MC.days||28)+' · '+dayS(MC.start)+' to '+dayS(MC.end)+' · '+(MC.updated&&MC.updated>MC.start?T("lastMoonReport",__esT_leaderboardsindex("lastMoonReport",'last Moon report '))+dayS(MC.updated):T("noMoonReportSince",__esT_leaderboardsindex("noMoonReportSince",'no Moon report since the start yet')))+(MC.final?' · final':'')+'</small>';}
+    if(CUR==='bingx'&&LB&&LB.bingxContest){var BX2=bxPool(LB),BC=LB.bingxContest;cx='<small class="cx">'+T("poolL3",'pool ')+'<b>$'+int(BX2.usd)+'</b> · '+(BC.days||28)+T("daysL",' days')+' · '+dayN(BC.start)+T("toSp",' to ')+dayN(BC.end)+'</small>';}
+    if(CUR==='moon'&&MC){var md=Math.min(MC.days||28,Math.max(1,Math.floor((Date.now()-MC.start)/86400000)+1));cx=T("contestDay",__esT_leaderboardsindex("contestDay",'<small class="cx">contest day '))+md+T("ofSp"," of ")+(MC.days||28)+' · '+dayN(MC.start)+' to '+dayN(MC.end)+' · '+(MC.updated&&MC.updated>MC.start?T("lastMoonReport",__esT_leaderboardsindex("lastMoonReport",'last Moon report '))+dayN(MC.updated):T("noMoonReportSince",__esT_leaderboardsindex("noMoonReportSince",'no Moon report since the start yet')))+(MC.final?' · final':'')+'</small>';}
     $('bT').innerHTML=esc(b.name)+'<small id="bS">'+esc(b.sub)+'</small>'+cx;
     $('bPz').innerHTML=(CUR==='bybit'||CUR==='bingx')?'':pz.map(function(v,i){return v>0?'<span class="pz p'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+int(v)+'</b></span>':'';}).join('');
     var opt=b.head.map(function(h){return /\|o$/.test(h);}), hd=b.head.map(function(h){return h.replace(/\|o$/,'');});
@@ -715,7 +722,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     (function(){var tb=$('bTbl');if(opts.keep){tb.classList.add('in');return;}[].forEach.call($('bBody').querySelectorAll('tr'),function(tr,i){tr.style.setProperty('--i',String(Math.min(i,14)));});tb.classList.remove('in');requestAnimationFrame(function(){requestAnimationFrame(function(){tb.classList.add('in');});});})();
     paintExtras(pz);
     var n=(LB&&LB.entrants&&LB.entrants[EK[CUR]]!=null)?LB.entrants[EK[CUR]]:rows.length;
-    $('bCount').innerHTML=q?('<b>'+shown.length+'</b>'+T("ofSp"," of ")+'<b>'+n+'</b>'+T("matchL",' match')):(n?('<b>'+n+T("rankedOnThisBoard",__esT_leaderboardsindex("rankedOnThisBoard",'</b> ranked on this board'))+((LB&&LB.people)?(' · <b>'+LB.people+T("peopleCompetingThisSeason",__esT_leaderboardsindex("peopleCompetingThisSeason",'</b> people competing this season'))):'')):'');
+    $('bCount').innerHTML=q?('<b>'+shown.length+'</b>'+T("ofSp"," of ")+'<b>'+n+'</b>'+T("matchL",' match')):(n?(innerWidth<=620?('<b>'+n+T("rankedShort",'</b> ranked')+((LB&&LB.people)?(' · <b>'+LB.people+T("competingShort",'</b> competing')):'')):('<b>'+n+T("rankedOnThisBoard",__esT_leaderboardsindex("rankedOnThisBoard",'</b> ranked on this board'))+((LB&&LB.people)?(' · <b>'+LB.people+T("peopleCompetingThisSeason",__esT_leaderboardsindex("peopleCompetingThisSeason",'</b> people competing this season'))):''))):'');
     var meBtn=$('bMe'); if(meBtn)meBtn.hidden=!(myRow&&!q);
     // a member ranked #87 should not have to hunt for themselves in a scroll box
     try{if(tw){if(keepTop!=null)tw.scrollTop=keepTop;else{tw.scrollTop=0;if(myRow&&myRow.rank>12&&!q){var mr=$('bBody').querySelector('tr.me');if(mr)tw.scrollTop=Math.max(0,mr.offsetTop-tw.clientHeight/2);}}}}catch(e){}
@@ -859,13 +866,14 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   function paintVolMeter(){var el=$('bVolM'),pp=$('bVolP');if(!el||!pp)return;
     if(SEL||!(CUR==='bybit'||CUR==='bingx')||!LB){el.hidden=true;pp.hidden=true;vmOpen=false;return;}
     var d=vmData(),col=CUR==='bybit'?'#f7a600':'#2b54fc',win=CUR==='bybit'?T("vmThisSeason",'this season'):T("vmThisContest",'in this contest');
-    var right=d.next?'<span class="nx">'+T("vmUnlocks",'unlocks ')+'$'+int(d.next.usd)+T("vmAt",' at ')+kUsd(d.next.at)+'</span> · '+kUsd(Math.max(0,d.next.at-d.vol))+T("vmToGo",' to go'):'<span class="nx">$'+int(d.got?d.got.usd:0)+T("vmUnlockedTop",' unlocked - the top rung')+'</span>';
-    var left='<b>'+kUsd(d.vol)+'</b>'+T("vmTraded",' traded ')+win+(d.got?' · <span class="nx">$'+int(d.got.usd)+T("vmUnlockedL",' unlocked')+'</span>':'');
+    var nar=innerWidth<=620,gotT=d.got?'<span class="nx">$'+int(d.got.usd)+T("vmUnlockedL",' unlocked')+'</span>':'';
+    var right=d.next?(nar&&d.got?gotT+' · ':'')+'<span class="nx">'+(nar&&d.got?T("vmNext",'next '):T("vmUnlocks",'unlocks '))+'$'+int(d.next.usd)+T("vmAt",' at ')+kUsd(d.next.at)+'</span>'+(nar&&d.got?'':' · '+kUsd(Math.max(0,d.next.at-d.vol))+T("vmToGo",' to go')):'<span class="nx">$'+int(d.got?d.got.usd:0)+T("vmUnlockedTop",' unlocked - the top rung')+'</span>';
+    var left='<b>'+kUsd(d.vol)+'</b>'+T("vmTraded",' traded ')+(nar?'':win+(d.got?' · '+gotT:''));
     var ticks=d.tiers.map(function(t){return '<b class="'+(d.vol>=t.at?'on':'')+'" style="left:'+(t.at/d.top*100).toFixed(2)+'%"></b>';}).join('');
     var rg=d.tiers.map(function(t,i){var last=i===d.tiers.length-1;return '<span class="'+(d.vol>=t.at?'on':'')+(last?' end':'')+'" style="left:'+(t.at/d.top*100).toFixed(2)+'%"><em class="v">'+kUsd(t.at)+' · </em>$'+int(t.usd)+'</span>';}).join('');
     el.hidden=false;el.className='vm';el.style.setProperty('--c',col);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-expanded',vmOpen?'true':'false');
     var prev=el.querySelector('.bar i'),prevW=prev?prev.style.width:'0%';
-    el.innerHTML='<div class="vt"><span>'+left+'</span><span>'+right+' · <span class="q">'+T("vmHow",'how it splits')+'</span></span></div><div class="bar"><i style="width:'+prevW+'"></i>'+ticks+'</div><div class="rg">'+rg+'</div>';
+    el.innerHTML='<div class="vt"><span class="vl">'+left+'</span><span class="vr">'+right+'</span><span class="q">'+T("vmHow",'how it splits')+'</span></div><div class="bar"><i style="width:'+prevW+'"></i>'+ticks+'</div><div class="rg">'+rg+'</div>';
     var fill=el.querySelector('.bar i');try{var a=fill.animate([{width:prevW||'0%'},{width:d.pct.toFixed(2)+'%'}],{duration:700,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});a.onfinish=function(){fill.style.width=d.pct.toFixed(2)+'%';};}catch(e){fill.style.width=d.pct.toFixed(2)+'%';}
     if(!el._wired){el._wired=true;el.addEventListener('click',function(){vmOpen=!vmOpen;paintVolPop();});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vmOpen=!vmOpen;paintVolPop();}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&vmOpen){vmOpen=false;paintVolPop();}});}
     paintVolPop();}

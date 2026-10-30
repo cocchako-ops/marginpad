@@ -16281,8 +16281,25 @@ async function handleTelegram(request, env) {
     if (bm) {
       const tier = bm[1].toLowerCase();
       try { if (tier === 'bybit') await env.STATS.put('cfg:bybitchan', String(chChat.id)); else if (tier === 'bingx') await env.STATS.put('cfg:bingxchan', String(chChat.id)); else await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
+      if (tier === 'bingx') { try { await bingxChanPhoto(env, chChat.id); } catch (e) {} }
       try { await tgApi(token, 'sendMessage', { chat_id: chChat.id, parse_mode: 'HTML', text: 'Bound <b>' + tier + '</b> signals to this channel (<code>' + chChat.id + '</code>). Signals will post here.' }); } catch (e) {}
       return new Response('ok');
+    }
+    /* THE BINGX CHANNEL BINDS ITSELF (2026-10-30, owner: "ubacio sam bota u taj kanal"). A private channel has no id anybody can read off an
+       invite link, so the first update the bot gets from a channel named BingX does the job, and sets the picture in the same breath. The
+       title alone is not proof - anybody can add a bot to a channel and call it BingX - so the owner must be one of its admins. */
+    if (/bingx/i.test(String(chChat.title || ''))) {
+      try {
+        if (!(await env.STATS.get('cfg:bingxchan'))) {
+          const adm = await tgApi(token, 'getChatAdministrators', { chat_id: chChat.id });
+          const owner = String(env.TG_ADMIN_CHAT || '');
+          if (adm && adm.ok && (adm.result || []).some(a => a && a.user && String(a.user.id) === owner)) {
+            await env.STATS.put('cfg:bingxchan', String(chChat.id));
+            const ph = await bingxChanPhoto(env, chChat.id);
+            await tgAdmin(env, '<b>BingX bonus channel bound</b> - ' + String(chChat.title || '').replace(/</g, '') + ' (<code>' + chChat.id + '</code>). Picture: ' + (ph && ph.ok ? 'set' : 'NOT set (' + ((ph && (ph.desc || ph.error)) || '?') + ')') + '.', { kind: 'bingx channel', sev: 'green' });
+          }
+        }
+      } catch (e) {}
     }
     try {
       /* FIRST CHANNEL WINS. This used to overwrite tg:channel with whatever channel the bot last saw,
@@ -18706,7 +18723,35 @@ async function checkBingxBonus(env) {
   try { await tgBroadcastBingx(env, head); } catch (e) {}
   try { await tgAdmin(env, '<b>BingX weekly bonus announced</b> - ' + bingxWeekLabel(b.ws) + ' (' + b.week + ')\nvolume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) + '\n' + payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID', { kind: 'bingx rebate', sev: 'green' }); } catch (e) {}
 }
-// The BingX channel is bound by posting /bind bingx inside it (cfg:bingxchan); until then the post goes to the admin chat.
+// The BingX channel's picture (dist/assets, build/gen-channel-pfp.js): used by the self-bind, /bind bingx and tgchans?photobingx=
+const BINGX_CHAN_PFP = '/assets/tg-mp-x-bingx-v1.jpg';
+async function bingxChanPhoto(env, chat) {
+  if (!env.TELEGRAM_TOKEN || !chat) return { error: 'no_bot' };
+  let buf = null; try { const ir = await env.ASSETS.fetch(new Request('https://marginpad.io' + BINGX_CHAN_PFP)); if (ir.ok) buf = await ir.arrayBuffer(); } catch (e) {}
+  if (!buf || buf.byteLength < 500) return { error: 'no_image' };
+  const fd = new FormData(); fd.append('chat_id', String(chat)); fd.append('photo', new Blob([buf], { type: 'image/jpeg' }), 'channel.jpg');
+  try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); return { ok: !!j.ok, desc: j.description || '', bytes: buf.byteLength }; } catch (e) { return { error: String(e).slice(0, 80) }; }
+}
+/* THE WEBHOOK IS OURS, AND THIS KEEPS IT THAT WAY (2026-10-30). Bybit's Group Bot service holds @MarginPadBot's token (the portal has no way to
+   take it back: Stop only stops the verification) and it put ITS webhook back on the bot after we had re-registered ours, in Stopped state,
+   within the same day. While it holds the webhook every update - commands, /bind, a channel adding the bot - goes to Bybit and is gone for
+   good, with nothing on our side to say so. Measured once a minute, repaired at once, the owner told once per 6 h. The end of this is a new
+   token in BotFather (which cuts Bybit off for ever) - TELEGRAM_TOKEN + `npm run deploy` + tgsetwebhook. */
+const TG_ALLOWED_UPDATES = ['message', 'channel_post', 'inline_query', 'callback_query', 'my_chat_member', 'chat_member', 'chat_join_request'];
+async function checkTgWebhook(env) {
+  if (!env.TELEGRAM_TOKEN || !env.STATS) return;
+  const want = 'https://marginpad.io/telegram/webhook';
+  let cur = ''; try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/getWebhookInfo', { signal: AbortSignal.timeout(4000) }); const j = await r.json(); if (!j.ok) return; cur = String((j.result && j.result.url) || ''); } catch (e) { return; }
+  if (cur === want) return;
+  let ok = false; try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url: want, secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: TG_ALLOWED_UPDATES }) }); const j = await r.json(); ok = !!j.ok; } catch (e) {}
+  let st = {}; try { st = JSON.parse((await env.STATS.get('tgwh:stolen')) || '{}') || {}; } catch (e) {}
+  st.n = (+st.n || 0) + 1; st.last = Date.now(); st.url = cur; st.fixed = ok;
+  try { await env.STATS.put('tgwh:stolen', JSON.stringify(st), { expirationTtl: 90 * 86400 }); } catch (e) {}
+  try { await evPush(env, null, 'tgwebhook', 'taken by ' + cur.replace(/^https?:\/\//, '').split('/')[0] + (ok ? ', put back' : ', COULD NOT put back'), ''); } catch (e) {}
+  let muted = false; try { muted = !!(await env.STATS.get('alrt:tgwh')); } catch (e) {}
+  if (!muted || !ok) { try { await env.STATS.put('alrt:tgwh', '1', { expirationTtl: 6 * 3600 }); await tgAdmin(env, '<b>Telegram webhook was taken</b> by ' + cur.replace(/^https?:\/\//, '').split('/')[0] + (ok ? ' - put back automatically.' : ' - and could NOT be put back. The bot is deaf.') + ' Count ' + st.n + '. A new BotFather token ends this for good.', { kind: 'tg webhook', sev: ok ? 'amber' : 'red' }); } catch (e) {} }
+}
+// The BingX channel binds itself on the first update the bot gets from it (see handleTelegram); /bind bingx inside it does the same. Until then the post goes to the admin chat.
 async function tgBroadcastBingx(env, text) {
   if (!env.TELEGRAM_TOKEN) return false;
   let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
@@ -28015,12 +28060,13 @@ export default {
     if (url.pathname === '/api/admin/tgchans' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const g = async k => { try { return (await env.STATS.get(k)) || ''; } catch (e) { return ''; } };
       const bindTo = String(url.searchParams.get('bind') || '').trim();
+      let whStolen = null; try { whStolen = JSON.parse((await env.STATS.get('tgwh:stolen')) || 'null'); } catch (e) {}
       if (bindTo) { try { await env.STATS.put('cfg:bybitchan', bindTo); } catch (e) {} }
       const bindBx = String(url.searchParams.get('bindbingx') || '').trim(); if (bindBx) { try { await env.STATS.put('cfg:bingxchan', bindBx); } catch (e) {} } // ?bindbingx=<chat_id> - the BingX bonus channel by hand (2026-10-30)
       let chan = await g('cfg:bybitchan');
       let seen = []; try { seen = JSON.parse(await g('tg:seenchans') || '[]') || []; } catch (e) {}
       const out = {
-        rebateChannel: chan || null, bingxChannel: (await g('cfg:bingxchan')) || null, signalsChannel: await g('tg:channel'), signalsName: await g('tg:channel_name'),
+        webhookTaken: whStolen, rebateChannel: chan || null, bingxChannel: (await g('cfg:bingxchan')) || null, signalsChannel: await g('tg:channel'), signalsName: await g('tg:channel_name'),
         tiers: { fast: await g('csig:chat:fast'), balanced: await g('csig:chat:balanced'), premium: await g('csig:chat:premium'), free: await g('csig:chat:free') },
         seen
       };
@@ -30439,6 +30485,7 @@ export default {
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
       ctx.waitUntil(mpadTick(env).catch(() => {}));
+      ctx.waitUntil(checkTgWebhook(env).catch(() => {})); // Bybit's Group Bot service puts its own webhook back on our bot - measured and repaired every minute
       ctx.waitUntil(cxLabelTick(env).catch(() => {})); // the catalysts' reader: one Haiku call over the newest unlabelled items, self-gated to every two minutes
       ctx.waitUntil(checkCatalystAlerts(env).catch(() => {})); // a major story naming a coin a Premium member holds, within the minute // the house coin's minute: read the inputs, price one step, append it - the recorded series is the only copy
       ctx.waitUntil(pushDrain(env).catch(() => {})); // the 1-min trigger does almost no work - drain the notification push outbox here so a DM / mention / duel / new-follower reaches the phone within a minute (follow-trade already drains on the trade path)
