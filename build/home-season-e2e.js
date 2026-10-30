@@ -58,7 +58,12 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
         const card = document.getElementById('cpCard'); const tiles = [...document.querySelectorAll('#trade .bento > .tile')];
         card.scrollIntoView({ block: 'center' });
         const r = card.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-        const pt = tiles[0].getBoundingClientRect(), scr = (document.querySelector('#trade .bento > .tile[href="/screener"]') || {}).getBoundingClientRect ? document.querySelector('#trade .bento > .tile[href="/screener"]').getBoundingClientRect() : { top: -1 };
+        // HOMEPAGE v3 (2026-10-30): the tile beside the hero is Charts + Ask AI, not the Screener - the invariant is "a tile shares the
+        // hero's row and the hero does not span the whole grid" (dense grid, no hole), whichever product earns the slot.
+        const pt = tiles[0].getBoundingClientRect(), bentoR = document.querySelector('#trade .bento').getBoundingClientRect();
+        const besideT = tiles.slice(1).find(t => Math.abs(t.getBoundingClientRect().top - pt.top) < 4);
+        const scr = besideT ? besideT.getBoundingClientRect() : { top: -1 };
+        const noHole = !!besideT && pt.right < bentoR.right - 120 && scr.left >= pt.right - 2;
         return {
           h: document.documentElement.scrollHeight, sx: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
           old: !!(document.getElementById('season') || document.getElementById('ssBoard') || document.querySelector('.ss-grid')),
@@ -67,7 +72,7 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
           pool: (document.getElementById('cpPool') || {}).textContent, eye: (document.getElementById('cpEye') || {}).textContent, left: (document.getElementById('cpLeft') || {}).textContent,
           days: document.querySelectorAll('#cpDays i').length, dayOn: document.querySelectorAll('#cpDays i.on').length, dayNow: document.querySelectorAll('#cpDays i.now').length,
           boards: [...document.querySelectorAll('#cpBoards .cp-b')].map(b => ({ id: b.dataset.b, pool: b.querySelector('.cp-bp').textContent.replace(/\s+/g, ' ').trim(), who: b.querySelector('.cp-bl b').textContent.trim(), v: b.querySelector('.cp-bl em').textContent.trim(), w: Math.round(b.getBoundingClientRect().width) })),
-          sameRow: Math.abs(pt.top - scr.top) < 4, ptTop: Math.round(pt.top), scrTop: Math.round(scr.top),
+          sameRow: Math.abs(pt.top - scr.top) < 4 && noHole, beside: besideT ? besideT.getAttribute('href') : null, ptTop: Math.round(pt.top), scrTop: Math.round(scr.top),
           dash: !!document.getElementById('dash') && !document.getElementById('dash').hidden,
           hero: (function () { const h = document.querySelector('section.hero'); return !!h && getComputedStyle(h).display !== 'none' && h.getBoundingClientRect().height > 100; })(),
           bandIdx: [...document.querySelectorAll('.band-idx')].map(x => x.textContent),
@@ -85,7 +90,7 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       const named = g.boards.filter(b => b.who && b.who !== '-' && !/nobody/.test(b.who));
       chk(vp.t + ' guest: nine board tiles, each with a pool and the live leader from the API', g.boards.length === 9 && named.length === liveBoards.length && g.boards.every(b => /^\$\d+\s*pool · \$\d+ first$/.test(b.pool) || (b.id === 'bybit' && /^\$\d+\.\d\d\s*pool · \$\d+ start, grows with volume$/.test(b.pool))) && liveBoards.every(b => named.some(n => n.id === b.id && n.who === b.leader.name)), g.boards.map(b => b.id + ':' + b.who + ' ' + b.v));
       chk(vp.t + ' guest: strip hidden, hero shown on desktop, band numbering closed up (01-04)', !g.dash && (vp.w > 500 ? g.hero : true) && g.bandIdx.join(',') === '01,02,03,04', { dash: g.dash, hero: g.hero, bands: g.bandIdx });
-      if (vp.w > 500) chk('desktop: Screener sits on the same row as Paper Trade (dense grid, no hole)', g.sameRow, { pt: g.ptTop, scr: g.scrTop });
+      if (vp.w > 500) chk('desktop: a product tile sits on the same row as Paper Trade (dense grid, no hole)', g.sameRow, { pt: g.ptTop, scr: g.scrTop, beside: g.beside });
       else chk('phone: every board tile at least 150 px wide (two columns)', g.boards.every(b => b.w >= 150), g.boards.map(b => b.w));
       // /api/pass, /api/goals, /api/predict, /api/happyhour and /api/reward/lb are ALSO read by the older band blocks
       // (daily call, goals, pass, Happy Hour, leaderboard), so a guest still fetches them once; what this card must
