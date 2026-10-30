@@ -367,7 +367,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // the wallet engine is its own process (src/hl); it listens on localhost and this is its only door
   app.get('/api/v1/hl/:route', async (req, res) => {
     const route = String(req.params.route);
-    if (!/^(status|cohorts|cohort|market|traders|changes|wallet)$/.test(route)) return res.status(404).json({ error: 'not_found' });
+    if (!/^(status|cohorts|cohort|market|traders|changes|wallet|leaderboard)$/.test(route)) return res.status(404).json({ error: 'not_found' });
     try {
       const q = new URLSearchParams(req.query).toString();
       const r = await fetch('http://127.0.0.1:' + (process.env.HL_PORT || 8788) + '/' + route + (q ? '?' + q : ''), { signal: AbortSignal.timeout(4000) });

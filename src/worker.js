@@ -5012,7 +5012,7 @@ async function handleCompetition(url, request, env, ctx) {
 // engine must never open the collector breaker the money paths share. A failure is answered and never cached.
 async function handleHlProxy(url, env) {
   const route = url.pathname.slice('/api/hl/'.length);
-  if (!/^(status|cohorts|cohort|market|traders|changes|wallet)$/.test(route)) return new Response('{"error":"not_found"}', { status: 404, headers: { 'content-type': 'application/json' } });
+  if (!/^(status|cohorts|cohort|market|traders|changes|wallet|leaderboard)$/.test(route)) return new Response('{"error":"not_found"}', { status: 404, headers: { 'content-type': 'application/json' } });
   const key = new Request('https://marginpad.io/__hl_v1/' + route + url.search), cache = caches.default;
   const hit = await cache.match(key); if (hit) return hit;
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
@@ -25146,6 +25146,7 @@ export default {
         note: "nothing is blocked while the policy is report-only. Turn it into content-security-policy once byOrigin holds nothing we do not recognise." });
     }
     if (url.pathname.startsWith('/api/hl/')) return handleHlProxy(url, env);
+    if (/^\/hyperliquid\/?$/.test(url.pathname)) return Response.redirect('https://marginpad.io/hyperliquid-whales/' + url.hash, 301);
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);

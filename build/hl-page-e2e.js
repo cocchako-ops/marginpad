@@ -15,7 +15,7 @@ const VP = [['desk', 1366, 800], ['phone', 390, 844]];
       await p.setViewport({ width: w, height: h });
       await p.setCacheEnabled(false);
       p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-      await p.goto(BASE + '/hyperliquid/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 45000 });
+      await p.goto(BASE + '/hyperliquid-whales/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 45000 });
       const wait = (fn, ms) => p.waitForFunction(fn, { timeout: ms || 12000 }).then(() => true).catch(() => false);
       const size = () => p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
       const shot = (n) => p.screenshot({ path: path.join(OUT, tag + '-' + n + '.png') });
@@ -37,6 +37,12 @@ const VP = [['desk', 1366, 800], ['phone', 390, 844]];
       await p.evaluate(() => { location.hash = '#market/BTC'; });
       ok(await wait(() => document.querySelectorAll('.sbar').length >= 3 && document.querySelectorAll('a.tr[href*="#wallet/"]').length >= 3), 'BTC: groups and top positions');
       s = await size(); ok(s.sw <= s.iw, 'market fits', s); await shot('market');
+      await p.evaluate(() => { location.hash = '#leaderboard'; });
+      ok(await wait(() => document.querySelectorAll('a.tr[href*="#wallet/"]').length >= 20), 'leaderboard'); await shot('leaderboard');
+      await p.evaluate(() => { location.hash = '#traders'; });
+      ok(await wait(() => document.querySelectorAll('a.tr[href*="#wallet/"]').length >= 20), 'top positions'); await shot('traders');
+      await p.evaluate(() => { location.hash = '#market/BTC'; });
+      await wait(() => document.querySelectorAll('.sbar').length >= 3 && document.querySelectorAll('a.tr[href*="#wallet/"]').length >= 3);
       const addr = await p.evaluate(() => { const a = document.querySelector('a.tr[href*="#wallet/"]'); return a && a.getAttribute('href'); });
 
       await p.evaluate(() => { location.hash = '#changes'; });
@@ -45,6 +51,7 @@ const VP = [['desk', 1366, 800], ['phone', 390, 844]];
 
       await p.evaluate((a) => { location.hash = a; }, addr);
       ok(await wait(() => document.querySelectorAll('.tile').length >= 4), 'wallet page');
+      ok(await wait(() => !!document.querySelector('#pc svg') && !!document.querySelector('#wb')), 'wallet: PnL curve from the chain and the alert bell');
       s = await size(); ok(s.sw <= s.iw, 'wallet fits', s); await shot('wallet');
 
       const cut = await p.evaluate(() => [...document.querySelectorAll('.tr .num, .tile b')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent).slice(0, 5));

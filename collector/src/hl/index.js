@@ -273,7 +273,9 @@ function api() {
   app.get('/market', (req, res) => { const c = String(req.query.coin || ''), m = cohortCache.byCoin && cohortCache.byCoin[c]; if (!m) return res.status(404).json({ error: 'no_market' }); res.json({ ts: cohortCache.ts, coin: c, ...m }); });
   app.get('/traders', (req, res) => {
     const c = String(req.query.coin || ''), lim = Math.min(200, +req.query.limit || 50), side = req.query.side;
-    const rows = db.prepare('SELECT * FROM hl_pos WHERE coin=?' + (side === 'long' ? ' AND szi>0' : side === 'short' ? ' AND szi<0' : '') + ' ORDER BY ntl DESC LIMIT ?').all(c, lim);
+    const wh = (c ? 'coin=?' : '1=1') + (side === 'long' ? ' AND szi>0' : side === 'short' ? ' AND szi<0' : '');
+    const stmt = db.prepare('SELECT * FROM hl_pos WHERE ' + wh + ' ORDER BY ntl DESC LIMIT ?');
+    const rows = c ? stmt.all(c, lim) : stmt.all(lim);
     res.json({ ts: Date.now(), coin: c, rows: rows.map(posRow) });
   });
   const WIN = { '15m': 15 * MIN, '1h': HOUR, '4h': 4 * HOUR, '24h': 24 * HOUR, '3d': 72 * HOUR, '7d': 168 * HOUR };
@@ -307,6 +309,11 @@ function api() {
       rows.push({ user: w.addr, acct: { eq: Math.round(w.av || 0), book: Math.round(w.ntl), used: Math.round(pos.reduce((a, p) => a + (p.margin || 0), 0)), free: 0, n: w.n }, positions: pos.map((p) => ({ user: w.addr, sym: p.coin, long: p.szi > 0, lev: p.lev, val: Math.round(p.ntl), liq: p.liq, mark: p.ntl / Math.abs(p.szi), pnl: Math.round(p.upnl), ent: p.entry, x: p.cross, roe: p.margin ? Math.round(p.upnl / p.margin * 1e4) / 1e4 : null, sz: Math.abs(p.szi) })) });
     }
     res.json({ ts: Date.now(), rows });
+  });
+  app.get('/leaderboard', (req, res) => {
+    const f = { d: 'pnl_d', w: 'pnl_w', m: 'pnl_m', a: 'pnl_all' }[req.query.w] || 'pnl_m';
+    const rows = [...W.values()].filter((x) => x[f] != null && isFinite(x[f]) && (x.kind || 'user') === 'user').sort((x, y) => y[f] - x[f]).slice(0, 100);
+    res.json({ ts: Date.now(), rows: rows.map((x) => ({ a: x.addr, label: x.label || undefined, av: x.av == null ? null : Math.round(x.av), pnl: Math.round(x[f]), vlm: x.vlm_m == null ? null : Math.round(x.vlm_m) })) });
   });
   app.get('/wallet', (req, res) => {
     const a = String(req.query.a || '').toLowerCase(), w = W.get(a);

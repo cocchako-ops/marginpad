@@ -47,7 +47,7 @@ run('Open-interest data page', 'node build/gen-openinterest-page.js');
 run('DeFi dashboard', 'node build/gen-defi-page.js');
 run('Bitcoin cycle', 'node build/gen-cycle-page.js');
 run('ETF flows', 'node build/gen-etf-page.js');
-run('Hyperliquid whales', 'node build/gen-whales-page.js');
+run('Hyperliquid whales', 'node build/gen-hl-page.js');
 run('Exchange comparison', 'node build/gen-exchanges-page.js');
 run('Markets hub', 'node build/gen-markets-hub.js');
 run('How-to guides', 'node build/gen-guides-pages.js');

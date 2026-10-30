@@ -6,7 +6,7 @@
 //
 // TWO HALVES, AND THE FIRST ONE IS LOAD-BEARING FOR A REASON THAT IS NOT OBVIOUS. A wallet is presented to
 // the reader as a PERSON - a callsign derived from the address - and the Telegram line the cron sends has
-// to name the same person. The page's rule lives in build/gen-whales-page.js and the server's mirror lives
+// to name the same person. The page's rule lives in build/hl-page.src.html and the server's mirror lives
 // in src/worker.js, two files that cannot import from each other, so this lifts BOTH out of the shipped
 // sources and requires them to agree over a few hundred addresses. A drift here does not break anything
 // that a browser could show: it simply tells a member that "Iron Otter 44" moved when the board in front
@@ -42,7 +42,7 @@ function sliceFn(src, needle) {
   return null;
 }
 const W = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
-const G = fs.readFileSync(path.join(__dirname, 'gen-whales-page.js'), 'utf8');
+const G = fs.readFileSync(path.join(__dirname, 'hl-page.src.html'), 'utf8');
 
 console.log('whale-alert-e2e' + (PURE_ONLY ? ' (pure only)' : '') + '\n');
 
@@ -74,7 +74,7 @@ const cliName = sliceFn(G, 'function whoName(');
 const cliA = (G.match(/var WH_A=\[[^\]]*\];/) || [])[0];
 const cliN = (G.match(/var WH_N=\[[^\]]*\];/) || [])[0];
 ok('the server rule was found in src/worker.js', !!srvHash && !!srvName && !!srvA && !!srvN);
-ok("the page's own rule was found in build/gen-whales-page.js", !!cliHash && !!cliName && !!cliA && !!cliN);
+ok("the page's own rule was found in build/hl-page.src.html", !!cliHash && !!cliName && !!cliA && !!cliN);
 if (srvHash && srvName && srvA && srvN && cliHash && cliName && cliA && cliN) {
   const srv = new Function([srvA, srvN, srvHash, srvName, 'return { name: whaleName, A: WH_A_S, N: WH_N_S };'].join('\n'))();
   const cli = new Function([cliA, cliN, cliHash, cliName, 'return { name: whoName, A: WH_A, N: WH_N };'].join('\n'))();

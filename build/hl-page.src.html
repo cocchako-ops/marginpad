@@ -17,6 +17,9 @@ a{color:inherit;text-decoration:none}
 .ni.sub{padding:6px 10px 6px 18px}.ni.sub b{font-size:12.5px;font-weight:500}
 .hm{padding:18px clamp(14px,2.2vw,28px) 60px;min-width:0}
 .hh{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.hseo{max-width:760px;margin:0 auto;padding:30px clamp(14px,2.2vw,28px) 40px;color:var(--m);line-height:1.6;font-size:14px;border-top:1px solid var(--ln)}.hseo h2{color:var(--t);font:600 18px 'Bricolage Grotesque',sans-serif;margin:18px 0 8px}
+.bell{background:var(--p);border:1px solid var(--ln);color:var(--t);border-radius:8px;padding:8px 12px;font:600 12.5px 'Familjen Grotesk',sans-serif;cursor:pointer}.bell.on{color:var(--l);border-color:rgba(194,246,74,.45)}
+.cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:4px}.cal i{display:block;font-style:normal;height:34px;border-radius:5px;background:rgba(255,255,255,.05);font-size:9.5px;color:var(--m);padding:3px 4px}
 .hh h1{margin:0;font:700 clamp(21px,2.4vw,27px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
 .hh p{margin:5px 0 0;color:var(--m);font-size:13px}
 .srch{display:flex;gap:6px}
@@ -82,7 +85,7 @@ svg.ln{display:block;width:100%;height:120px}
 </style>
 <div class="hl">
   <aside class="hs" id="hs"></aside>
-  <main class="hm" id="hm"><div class="empty">Loading</div></main>
+  <main class="hm" id="hm"><h1 style="font:700 24px 'Bricolage Grotesque',sans-serif;margin:0 0 8px">Hyperliquid whale tracker</h1><div class="empty">Loading</div></main>
 </div>
 <script>
 (function(){
@@ -90,7 +93,29 @@ svg.ln{display:block;width:100%;height:120px}
   var SZ=[['titan','Titan','$5M+ equity'],['whale','Whale','$1M to $5M'],['shark','Shark','$100K to $1M'],['fish','Fish','$10K to $100K'],['shrimp','Shrimp','under $10K']];
   var BIAS={very_bullish:'Very bullish',bullish:'Bullish',neutral:'Neutral',bearish:'Bearish',very_bearish:'Very bearish',none:'No positions'};
   var hm=document.getElementById('hm'),hs=document.getElementById('hs'),timer=0,seq=0,chg={w:'1h',side:'',coin:''},mkt={tab:'traders',w:'1h'},coh={tab:'wallets'};
-  /*@WHO*/
+    var WH_A=['Quiet','Patient','Iron','Silver','Midnight','Cold','Lucky','Steady','Hidden','Golden','Restless','Narrow','Deep','Swift','Blunt','Crimson','Pale','Hungry','Calm','Sharp','Distant','Early','Heavy','Light','Wild','Stubborn','Gentle','Rough','Sober','Clever','Silent','Bright','Dark','Fast','Slow','Lone','Bold','Grim','Keen','Rusty','Clean','Loose','Tight','Odd','Brave','Polar','Amber','Velvet'];
+  var WH_N=['Marlin','Heron','Otter','Falcon','Badger','Lynx','Raven','Perch','Mantis','Jackal','Osprey','Walrus','Pelican','Ferret','Condor','Gannet','Tapir','Civet','Vulture','Caiman','Grouper','Kestrel','Weasel','Narwhal','Bison','Hornet','Ibis','Shrike','Cobra','Pike','Puffin','Stoat','Tern','Gazelle','Wombat','Dingo','Lemur','Mako','Krill','Manta','Orca','Seal','Crane','Gull','Hawk','Heron','Egret','Ray'];
+  var _wSeq=0;
+  function wHash(a,salt){ var h=2166136261>>>0; a=String(salt||'')+String(a||'').toLowerCase();
+    for(var i=0;i<a.length;i++){ h^=a.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
+  function whoName(a){ return WH_A[wHash(a)%WH_A.length]+' '+WH_N[wHash(a,'n')%WH_N.length]+' '+(10+(wHash(a,'x')%90)); }
+  function whoAv(a,s){
+    var h=wHash(a), hue=h%360, hue2=(hue+40+(h>>>9)%70)%360, seed=wHash(a,'p');
+    var cells='';
+    for(var y=0;y<5;y++)for(var x=0;x<3;x++){
+      if(!((seed>>>((y*3+x)%29))&1))continue;
+      cells+='<rect x="'+(x*20)+'" y="'+(y*20)+'" width="20" height="20"/>';
+      if(x<2)cells+='<rect x="'+((4-x)*20)+'" y="'+(y*20)+'" width="20" height="20"/>';
+    }
+    /* the gradient id is unique per RENDER - two marks sharing one id both take whichever was parsed first,
+       and the moment that one leaves the DOM the rest render empty (the medal lesson, 2026-10-17) */
+    var gid='wa'+(++_wSeq);
+    return '<svg class="wh-av" width="'+s+'" height="'+s+'" viewBox="0 0 100 100" aria-hidden="true">'+
+      '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1">'+
+      '<stop offset="0" stop-color="hsl('+hue+',64%,58%)"/><stop offset="1" stop-color="hsl('+hue2+',56%,36%)"/></linearGradient></defs>'+
+      '<rect width="100" height="100" rx="20" fill="#0c1016"/>'+
+      '<g fill="url(#'+gid+')" opacity=".93">'+cells+'</g></svg>';
+  }
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function usd(v){if(v==null||!isFinite(v))return '-';var a=Math.abs(v),s=v<0?'-':'';if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(a>=1e8?0:1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(a>=1e5?0:1)+'K';return s+'$'+a.toFixed(0)}
   function sgn(v){return v==null?'-':(v>0?'+':'')+usd(v)}
@@ -103,7 +128,7 @@ svg.ln{display:block;width:100%;height:120px}
   function bar(l,s){return '<div class="bar"><i style="width:'+pct(l,s)+'%"></i></div>'}
   function nav(){
     var h=location.hash||'#cohorts',a=function(k,t,sub,c){return '<a class="ni '+(c||'')+(h.indexOf(k)===0?' on':'')+'" href="'+k+'"><span><b>'+t+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></a>'};
-    var s='<h6>Discover</h6>'+a('#cohorts','Cohorts','Who is long, who is short')+a('#markets','Markets','Every coin, by positioning')+a('#changes','Position changes','Who just moved');
+    var s='<h6>Discover</h6>'+a('#cohorts','Cohorts','Who is long, who is short')+a('#markets','Markets','Every coin, by positioning')+a('#changes','Position changes','Who just moved')+a('#traders','Top positions','The biggest bets anywhere')+a('#leaderboard','Leaderboard','Who is making the money');
     PN.forEach(function(p){s+=a('#cohort/'+p[0],p[1],'','sub')});
     hs.innerHTML=s;
   }
@@ -199,18 +224,79 @@ svg.ln{display:block;width:100%;height:120px}
     });
   }
   function vWallet(a,my){
-    return get('wallet?a='+a).then(function(w){
-      if(my!==seq)return;
-      var pn=(PN.filter(function(x){return x[0]===w.pnl_c})[0]||[0,'Unknown'])[1],sz=(SZ.filter(function(x){return x[0]===w.size_c})[0]||[0,'Unknown'])[1];
-      hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="hh"><div style="display:flex;gap:12px;align-items:center">'+whoAv(a,46)+'<div><h1>'+esc(w.label||whoName(a))+'</h1><p class="num" style="font-size:11.5px">'+esc(a)+'</p></div></div></div>'
+    return Promise.all([get('wallet?a='+a).catch(function(){return {a:a,positions:[],unread:1}}),wvExtra(a,my),watchLoad()]).then(function(r){
+      if(my!==seq)return;var w=r[0];
+      var pn=(PN.filter(function(x){return x[0]===w.pnl_c})[0]||[0,'Unknown'])[1],sz=(SZ.filter(function(x){return x[0]===w.size_c})[0]||[0,'Unknown'])[1],on=watch.indexOf(a)>=0;
+      hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="hh"><div style="display:flex;gap:12px;align-items:center">'+whoAv(a,46)+'<div><h1>'+esc(w.label||whoName(a))+'</h1><p class="num" style="font-size:11.5px">'+esc(a)+'</p></div></div><button class="bell'+(on?' on':'')+'" id="wb">'+(on?'Alerts on':'Alert me')+'</button></div>'
        +'<div class="tiles"><div class="tile"><small>Equity</small><b class="num">'+usd(w.av)+'</b></div><div class="tile"><small>All-time PnL</small><b class="num '+((w.pnl_all||0)>=0?'g':'rd')+'">'+(w.pnl_all==null?'-':sgn(w.pnl_all))+'</b></div><div class="tile"><small>30d PnL</small><b class="num '+((w.pnl_m||0)>=0?'g':'rd')+'">'+(w.pnl_m==null?'-':sgn(w.pnl_m))+'</b></div><div class="tile"><small>Group</small><b>'+pn+' · '+sz+'</b></div><div class="tile"><small>Last read</small><b class="num">'+(w.last_snap?ago(w.last_snap)+' ago':'-')+'</b></div></div>'
-       +'<h2 class="sec">Open positions</h2>'+walletPos(w.positions);
-    }).catch(function(){if(my===seq)hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="empty">We have not read this wallet yet</div>'});
+       +'<h2 class="sec">PnL</h2>'+chips([['day','24H'],['week','7D'],['month','30D'],['allTime','All time']],wv.w,'pw')+'<div class="tb" style="padding:10px 12px" id="pc">'+pnlCurve(wv.w)+'</div>'+pnlCal()
+       +'<h2 class="sec">Open positions</h2>'+walletPos(w.positions)+'<h2 class="sec">Recent trades</h2>'+fillsTable();
+      document.getElementById('wb').onclick=function(){bellClick(this,a)};
+      hm.querySelectorAll('[data-pw]').forEach(function(b){b.onclick=function(){wv.w=b.getAttribute('data-pw');hm.querySelectorAll('[data-pw]').forEach(function(x){x.classList.toggle('on',x===b)});document.getElementById('pc').innerHTML=pnlCurve(wv.w)}});
+    });
   }
   function walletPos(rows){
     if(!rows.length)return '<div class="tb"><div class="empty">No open positions</div></div>';
     var c='grid-template-columns:minmax(70px,1fr) 70px 86px minmax(70px,1fr) minmax(70px,1fr) minmax(76px,1fr)';
     return '<div class="tb"><div class="tr h" style="'+c+'"><span>Coin</span><span>Side</span><span class="r">Size</span><span class="r pho">Entry</span><span class="r pho">Liq</span><span class="r">uPnL</span></div>'+rows.map(function(r){return '<a class="tr" style="'+c+'" href="#market/'+encodeURIComponent(r.coin)+'"><span>'+esc(cn(r.coin))+'</span><span class="'+(r.long?'g':'rd')+'">'+(r.long?'Long':'Short')+(r.lev?' '+Math.round(r.lev)+'x':'')+'</span><span class="r num">'+usd(r.ntl)+'</span><span class="r num pho">'+px(r.entry)+'</span><span class="r num pho">'+(r.liq?px(r.liq):'-')+'</span><span class="r num '+(r.upnl>=0?'g':'rd')+'">'+sgn(r.upnl)+'</span></a>'}).join('')+'</div>';
+  }
+  function vTraders(my){
+    return get('traders?limit=100').then(function(j){
+      if(my!==seq)return;
+      var c='grid-template-columns:minmax(120px,1.5fr) 64px 62px 86px minmax(70px,1fr) minmax(76px,1fr)';
+      hm.innerHTML='<div class="hh"><div><h1>Top positions</h1><p>The largest open bets on Hyperliquid right now</p></div>'+srch()+'</div><div class="tb"><div class="tr h" style="'+c+'"><span>Trader</span><span>Coin</span><span>Side</span><span class="r">Size</span><span class="r pho">Liq</span><span class="r">uPnL</span></div>'+j.rows.map(function(r){return '<a class="tr" style="'+c+'" href="#wallet/'+r.a+'">'+who(r.a,r.label)+'<span>'+esc(cn(r.coin))+'</span><span class="'+(r.long?'g':'rd')+'">'+(r.long?'Long':'Short')+(r.lev?' '+Math.round(r.lev)+'x':'')+'</span><span class="r num">'+usd(r.ntl)+'</span><span class="r num pho">'+(r.liq?px(r.liq):'-')+'</span><span class="r num '+(r.upnl>=0?'g':'rd')+'">'+sgn(r.upnl)+'</span></a>'}).join('')+'</div>';
+      wire();
+    });
+  }
+  var lb={w:'m'};
+  function vLeaderboard(my){
+    return get('leaderboard?w='+lb.w).then(function(j){
+      if(my!==seq)return;
+      var c='grid-template-columns:34px minmax(120px,1.6fr) minmax(70px,1fr) 96px';
+      hm.innerHTML='<div class="hh"><div><h1>Leaderboard</h1><p>Hyperliquid traders ranked by profit</p></div></div>'+chips([['d','24H'],['w','7D'],['m','30D'],['a','All time']],lb.w,'lw')+'<div class="tb"><div class="tr h" style="'+c+'"><span>#</span><span>Trader</span><span class="r pho">Equity</span><span class="r">PnL</span></div>'+j.rows.map(function(r,i){return '<a class="tr" style="'+c+'" href="#wallet/'+r.a+'"><span class="num mu">'+(i+1)+'</span>'+who(r.a,r.label)+'<span class="r num pho">'+usd(r.av)+'</span><span class="r num '+(r.pnl>=0?'g':'rd')+'">'+sgn(r.pnl)+'</span></a>'}).join('')+'</div>';
+      hm.querySelectorAll('[data-lw]').forEach(function(b){b.onclick=function(){lb.w=b.getAttribute('data-lw');go()}});
+    });
+  }
+  function hlInfo(b){return fetch('https://api.hyperliquid.xyz/info',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+  var wv={a:'',pf:null,fills:null,w:'month'},watch=null,prem=false;
+  function watchLoad(){if(watch)return Promise.resolve();return fetch('/api/alerts/whale',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.ok?r.json():null}).then(function(j){watch=(j&&j.addrs)||[];prem=!!(j&&j.premium)}).catch(function(){watch=[]})}
+  function toast(o){try{if(window.mpToast)window.mpToast(o)}catch(e){}}
+  function bellClick(b,a){
+    var on=watch.indexOf(a)<0;b.disabled=true;
+    fetch('/api/alerts/whale',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({addr:a,on:on})}).then(function(r){return r.json()}).then(function(j){
+      b.disabled=false;
+      if(j&&j.ok){if(on)watch.push(a);else watch=watch.filter(function(x){return x!==a});b.classList.toggle('on',on);b.textContent=on?'Alerts on':'Alert me';toast({msg:on?'Alerts on for '+whoName(a):'Alerts off for '+whoName(a),kind:on?'good':'info',key:'wa'+a});return}
+      var w=(j&&j.error)||'';
+      if(w==='login_required'){try{if(window.mpAuth&&window.mpAuth.open)return window.mpAuth.open('buy')}catch(e){}location.href='/rewards/';return}
+      if(w==='premium_required'){toast({html:'Whale alerts are a <b>Premium</b> feature.',kind:'warn',key:'whaleprem',action:{label:'See Premium',href:'/premium/'}});return}
+      if(w==='too_many'){toast({msg:'You are already watching '+(j.max||10)+' whales - turn one off first.',kind:'warn',key:'whalemax'});return}
+      toast({msg:'Could not save that just now - try again in a moment.',kind:'warn',key:'whaleerr'});
+    }).catch(function(){b.disabled=false});
+  }
+  function pnlCurve(k){
+    var e=(wv.pf||[]).filter(function(x){return x[0]===k})[0],h=e&&e[1]&&e[1].pnlHistory;
+    if(!h||h.length<3)return '<div class="empty">Not enough history for this window</div>';
+    var v=h.map(function(p){return +p[1]}),b=v[0],d=v.map(function(x){return x-b}),n=Math.min.apply(0,d.concat(0)),x=Math.max.apply(0,d.concat(0)),W=800,H=140,S=(x-n)||1;
+    var pts=d.map(function(y,i){return (i/(d.length-1)*W).toFixed(1)+','+(H-(y-n)/S*H).toFixed(1)}).join(' '),z=(H-(0-n)/S*H).toFixed(1),last=d[d.length-1];
+    return '<svg class="ln" style="height:140px" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+z+'" y2="'+z+'" stroke="rgba(255,255,255,.14)" stroke-width="1" vector-effect="non-scaling-stroke"/><polyline points="'+pts+'" fill="none" stroke="'+(last>=0?'#2ebd85':'#ff5a4d')+'" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="cs">'+sgn(last)+' over this window</div>';
+  }
+  function pnlCal(){
+    var e=(wv.pf||[]).filter(function(x){return x[0]==='month'})[0],h=e&&e[1]&&e[1].pnlHistory;
+    if(!h||h.length<3)return '';
+    var days={};h.forEach(function(p){days[new Date(p[0]).toISOString().slice(0,10)]=+p[1]});
+    var ks=Object.keys(days).sort(),prev=+h[0][1],max=1,cells=ks.map(function(k){var d=days[k]-prev;prev=days[k];if(Math.abs(d)>max)max=Math.abs(d);return [k,d]});
+    return '<h2 class="sec">Daily PnL, last 30 days</h2><div class="tb" style="padding:10px"><div class="cal">'+cells.map(function(c){var a=(.14+.6*Math.abs(c[1])/max).toFixed(2);return '<i title="'+c[0]+' '+sgn(Math.round(c[1]))+'" style="background:rgba('+(c[1]>=0?'46,189,133':'255,90,77')+','+a+')">'+c[0].slice(8)+'</i>'}).join('')+'</div></div>';
+  }
+  function fillsTable(){
+    var f=(wv.fills||[]).filter(function(x){return String(x.coin).charAt(0)!=='@'}).slice(-30).reverse();
+    if(!f.length)return '<div class="tb"><div class="empty">No trades in the last week</div></div>';
+    var c='grid-template-columns:minmax(64px,1fr) minmax(90px,1.3fr) 84px minmax(70px,1fr) 70px';
+    return '<div class="tb"><div class="tr h" style="'+c+'"><span>Coin</span><span>Action</span><span class="r">Size</span><span class="r pho">Price</span><span class="r">When</span></div>'+f.map(function(x){var p=+x.closedPnl||0;return '<div class="tr" style="'+c+'"><span>'+esc(cn(x.coin))+'</span><span class="'+(p>0?'g':p<0?'rd':'mu')+'">'+esc(x.dir||'')+(x.liquidation?' (liquidated)':'')+'</span><span class="r num">'+usd(+x.px*+x.sz)+'</span><span class="r num pho">'+px(+x.px)+'</span><span class="r num mu">'+ago(+x.time)+'</span></div>'}).join('')+'</div>';
+  }
+  function wvExtra(a,my){
+    if(wv.a===a&&wv.pf)return Promise.resolve();
+    wv={a:a,pf:null,fills:null,w:'month'};
+    return Promise.all([hlInfo({type:'portfolio',user:a}).catch(function(){return null}),hlInfo({type:'userFillsByTime',user:a,startTime:Date.now()-7*864e5,aggregateByTime:true}).catch(function(){return null})]).then(function(r){if(my===seq){wv.pf=r[0];wv.fills=r[1]}});
   }
   function go(){
     clearTimeout(timer);var my=++seq,h=(location.hash||'#cohorts').slice(1),p=h.split('/'),job;
@@ -219,6 +305,8 @@ svg.ln{display:block;width:100%;height:120px}
     else if(p[0]==='market'&&p[1])job=vMarket(decodeURIComponent(p[1]),my);
     else if(p[0]==='markets')job=vMarkets(my);
     else if(p[0]==='changes')job=vChanges(my);
+    else if(p[0]==='traders')job=vTraders(my);
+    else if(p[0]==='leaderboard')job=vLeaderboard(my);
     else if(p[0]==='wallet'&&p[1])job=vWallet(p[1],my);
     else job=vCohorts(my);
     Promise.resolve(job).catch(function(){if(my===seq)hm.innerHTML='<div class="empty">Could not reach the data just now. Trying again.</div>'}).then(function(){
