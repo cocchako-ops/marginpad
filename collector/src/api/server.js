@@ -364,6 +364,16 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // ONE WALLET'S OWN TRADES (2026-10-28). The ring above is the whole market's last couple of hours, so
   // filtering it by address answers "nothing" for a wallet that traded this morning - a retention gap,
   // not a polling one. This is per-wallet history, asked for only by the profile route.
+  // the wallet engine is its own process (src/hl); it listens on localhost and this is its only door
+  app.get('/api/v1/hl/:route', async (req, res) => {
+    const route = String(req.params.route);
+    if (!/^(status|cohorts|cohort|market|traders|changes|wallet)$/.test(route)) return res.status(404).json({ error: 'not_found' });
+    try {
+      const q = new URLSearchParams(req.query).toString();
+      const r = await fetch('http://127.0.0.1:' + (process.env.HL_PORT || 8788) + '/' + route + (q ? '?' + q : ''), { signal: AbortSignal.timeout(4000) });
+      res.status(r.status).set('Cache-Control', 'public, max-age=15').type('application/json').send(await r.text());
+    } catch (e) { res.status(503).json({ error: 'hl_engine_down' }); }
+  });
   app.get('/api/v1/whale', (req, res) => {
     const a = String(req.query.a || '').toLowerCase();
     if (!/^0x[0-9a-f]{40}$/.test(a)) return res.status(400).json({ error: 'bad_address' });
