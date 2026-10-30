@@ -1044,7 +1044,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
        on, it appends its own <style> after those sheets, and a second copy of a rule is a second thing to forget. */
     + '.mpac{position:absolute;left:6px;right:6px;bottom:100%;margin-bottom:7px;z-index:2147483000;background:#101318;border:1px solid #2a323d;border-radius:13px;box-shadow:0 -10px 34px rgba(0,0,0,.6);overflow:hidden;display:none}'
     + '.mpac.on{display:block}'
-    + '.mpac-l{max-height:214px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:5px}'
+    + '.mpac-l{position:relative;max-height:214px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:5px;-webkit-overflow-scrolling:touch}'
     + '.mpac-l::-webkit-scrollbar{width:0;height:0}'
     + '.mpac-r{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;color:#e9e7df}'
     + '.mpac-r.on{background:#1b2230}'
@@ -4312,7 +4312,16 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var was = shown();
       pal.classList.add('on');
       if (!was) hap('tick');
-      var r = listEl.children[sel]; if (r && r.scrollIntoView) { try { r.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+      /* THE LIST TAKES THE ROOM THAT EXISTS (2026-10-30): with the keyboard up the box above the composer can be shorter than the 214px this
+         list is allowed, and the box clips. Only the list's own scrollTop moves: scrollIntoView also scrolls every ancestor, which on iOS is
+         the page under the keyboard. */
+      try {
+        var box = host.closest ? (host.closest('#chatBox') || host) : host, vv = window.visualViewport;
+        var room = host.getBoundingClientRect().top - Math.max(box === host ? 0 : box.getBoundingClientRect().top, vv ? vv.offsetTop : 0) - 18;
+        listEl.style.maxHeight = Math.max(92, Math.min(214, Math.round(room))) + 'px';
+      } catch (e) {}
+      var r = listEl.children[sel];
+      if (r) { if (r.offsetTop < listEl.scrollTop) listEl.scrollTop = r.offsetTop; else if (r.offsetTop + r.offsetHeight > listEl.scrollTop + listEl.clientHeight) listEl.scrollTop = r.offsetTop + r.offsetHeight - listEl.clientHeight; }
     }
     function accept() {
       var it = items[sel];
@@ -4390,6 +4399,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function iosTick() {
     try {
       if (!/iPhone|iPad|iPod/.test(navigator.userAgent)) return false;
+      /* NEVER WHILE SOMEBODY IS TYPING (2026-10-30, owner: "gasi mi tastaturu cim otkucam @"). The click below moves focus to the switch, and
+         on iOS a text field that loses focus takes the keyboard with it - handing focus back from code does not bring it up again outside a
+         tap. The @ panel's "opened" tick did exactly that on the first character, and so would a Send tap or a toast's buzz in mid-sentence.
+         It is checked HERE, the one door every haptic on iOS goes through, so no caller can forget it. No buzz is the only thing lost. */
+      var ae = document.activeElement, tag = ae && ae.tagName;
+      if (ae && (tag === 'TEXTAREA' || tag === 'SELECT' || ae.isContentEditable || (tag === 'INPUT' && !/^(checkbox|radio|button|submit|range|color|file|reset)$/i.test(ae.type || 'text')))) return false;
       // THE SWITCH SITS INSIDE THE VIEWPORT, NEVER AT -9999px (2026-10-27): clicking the label focuses the checkbox, and WebKit
       // scrolls a focused element into view - parked off-screen that focus moved the page under every buzz (and closed the
       // socials menu that had just opened). At 0,0 at 1px and opacity 0 there is nothing to scroll to; focus is handed back.
