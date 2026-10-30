@@ -201,9 +201,9 @@ svg.ln{display:block;width:100%;height:120px}
       var f=function(a,id){return a.filter(function(x){return x.id===id})[0]};
       var ex=(j.excluded||[]).filter(function(x){return x.long+x.short>0});
       hm.innerHTML='<div class="hh"><div><h1>Hyperliquid cohorts</h1><p>Every wallet we read, grouped by what it has earned and what it holds</p></div>'+srch()+'</div>'+covLine(j)
-       +'<h2 class="sec">By all-time profit</h2><div class="cg">'+PN.map(function(p){return card(f(j.pnl,p[0]),p)}).join('')+'</div>'
-       +'<h2 class="sec">By account size</h2><div class="cg">'+SZ.map(function(p){return card(f(j.size,p[0]),p)}).join('')+'</div>'
-       +(ex.length?'<h2 class="sec">Left out of the groups above</h2><div class="tb">'+ex.map(function(x){return '<div class="tr" style="grid-template-columns:1fr auto auto"><span>'+x.name+'</span><span class="num g">'+usd(x.long)+'</span><span class="num rd">'+usd(x.short)+'</span></div>'}).join('')+'</div>':'');
+       +'<'+'h2 class="sec">By all-time profit</h2><div class="cg">'+PN.map(function(p){return card(f(j.pnl,p[0]),p)}).join('')+'</div>'
+       +'<'+'h2 class="sec">By account size</h2><div class="cg">'+SZ.map(function(p){return card(f(j.size,p[0]),p)}).join('')+'</div>'
+       +(ex.length?'<'+'h2 class="sec">Left out of the groups above</h2><div class="tb">'+ex.map(function(x){return '<div class="tr" style="grid-template-columns:1fr auto auto"><span>'+x.name+'</span><span class="num g">'+usd(x.long)+'</span><span class="num rd">'+usd(x.short)+'</span></div>'}).join('')+'</div>':'');
       wire();
     });
   }
@@ -248,8 +248,8 @@ svg.ln{display:block;width:100%;height:120px}
       if(my!==seq)return;var m=r[0],t=r[1];
       if(!m){hm.innerHTML='<a class="bk" href="#markets">Markets</a><div class="empty">No positions read on '+esc(coin)+' yet</div>';return}
       hm.innerHTML='<a class="bk" href="#markets">Markets</a><div class="hh"><div><h1>'+esc(cn(coin))+'</h1><p>'+(m.all.long_n+m.all.short_n).toLocaleString('en-US')+' traders · '+usd(m.all.long)+' long · '+usd(m.all.short)+' short</p></div></div>'
-       +'<h2 class="sec">By all-time profit</h2>'+cohRows(m.pnl)+'<h2 class="sec">By account size</h2>'+cohRows(m.size)
-       +'<h2 class="sec">Traders</h2>'+chips([['traders','Top positions'],['changes','Position changes']],mkt.tab,'mt')+(mkt.tab==='changes'?chips(WINS,mkt.w,'mw'):'')+(mkt.tab==='traders'?posTable(t.rows):chgTable(t.rows,true));
+       +'<'+'h2 class="sec">By all-time profit</h2>'+cohRows(m.pnl)+'<'+'h2 class="sec">By account size</h2>'+cohRows(m.size)
+       +'<'+'h2 class="sec">Traders</h2>'+chips([['traders','Top positions'],['changes','Position changes']],mkt.tab,'mt')+(mkt.tab==='changes'?chips(WINS,mkt.w,'mw'):'')+(mkt.tab==='traders'?posTable(t.rows):chgTable(t.rows,true));
       hm.querySelectorAll('[data-mt]').forEach(function(b){b.onclick=function(){mkt.tab=b.getAttribute('data-mt');go()}});
       hm.querySelectorAll('[data-mw]').forEach(function(b){b.onclick=function(){mkt.w=b.getAttribute('data-mw');go()}});
     });
@@ -258,7 +258,7 @@ svg.ln{display:block;width:100%;height:120px}
     if(!h||h.length<3)return '';
     var v=h.map(function(p){return p.l/((p.l+p.s)||1)*100}),n=Math.min.apply(0,v)-2,x=Math.max.apply(0,v)+2,W=800,H=120;
     var pts=v.map(function(y,i){return (i/(v.length-1)*W).toFixed(1)+','+(H-(y-n)/(x-n)*H).toFixed(1)}).join(' ');
-    return '<h2 class="sec">Long share, last 48 hours</h2><div class="tb" style="padding:10px 12px"><svg class="ln" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="#c2f64a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="cs">'+v[0].toFixed(1)+'% to '+v[v.length-1].toFixed(1)+'% long</div></div>';
+    return '<'+'h2 class="sec">Long share, last 48 hours</h2><div class="tb" style="padding:10px 12px"><svg class="ln" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="#c2f64a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="cs">'+v[0].toFixed(1)+'% to '+v[v.length-1].toFixed(1)+'% long</div></div>';
   }
   function vCohort(id,my){
     return get('cohort?id='+id).then(function(j){
@@ -280,8 +280,8 @@ svg.ln{display:block;width:100%;height:120px}
       var pn=(PN.filter(function(x){return x[0]===w.pnl_c})[0]||[0,'Unknown'])[1],sz=(SZ.filter(function(x){return x[0]===w.size_c})[0]||[0,'Unknown'])[1],on=watch.indexOf(a)>=0;
       hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="hh"><div style="display:flex;gap:12px;align-items:center">'+whoAv(a,46)+'<div><h1>'+esc(w.label||whoName(a))+'</h1><p class="num" style="font-size:11.5px">'+esc(a)+'</p></div></div><button class="bell'+(on?' on':'')+'" id="wb">'+(on?'Alerts on':'Alert me')+'</button></div>'
        +'<div class="tiles"><div class="tile"><small>Equity</small><b class="num">'+usd(w.av)+'</b></div><div class="tile"><small>All-time PnL</small><b class="num '+((w.pnl_all||0)>=0?'g':'rd')+'">'+(w.pnl_all==null?'-':sgn(w.pnl_all))+'</b></div><div class="tile"><small>30d PnL</small><b class="num '+((w.pnl_m||0)>=0?'g':'rd')+'">'+(w.pnl_m==null?'-':sgn(w.pnl_m))+'</b></div><div class="tile"><small>Group</small><b>'+pn+' · '+sz+'</b></div><div class="tile"><small>Last read</small><b class="num">'+(w.last_snap?ago(w.last_snap)+' ago':'-')+'</b></div></div>'
-       +'<h2 class="sec">PnL</h2>'+chips([['day','24H'],['week','7D'],['month','30D'],['allTime','All time']],wv.w,'pw')+'<div class="tb" style="padding:10px 12px" id="pc">'+pnlCurve(wv.w)+'</div>'+pnlCal()
-       +'<h2 class="sec">Open positions</h2>'+walletPos(w.positions)+'<h2 class="sec">Recent trades</h2>'+fillsTable();
+       +'<'+'h2 class="sec">PnL</h2>'+chips([['day','24H'],['week','7D'],['month','30D'],['allTime','All time']],wv.w,'pw')+'<div class="tb" style="padding:10px 12px" id="pc">'+pnlCurve(wv.w)+'</div>'+pnlCal()
+       +'<'+'h2 class="sec">Open positions</h2>'+walletPos(w.positions)+'<'+'h2 class="sec">Recent trades</h2>'+fillsTable();
       document.getElementById('wb').onclick=function(){bellClick(this,a)};
       hm.querySelectorAll('[data-pw]').forEach(function(b){b.onclick=function(){wv.w=b.getAttribute('data-pw');hm.querySelectorAll('[data-pw]').forEach(function(x){x.classList.toggle('on',x===b)});document.getElementById('pc').innerHTML=pnlCurve(wv.w)}});
     });
@@ -336,7 +336,7 @@ svg.ln{display:block;width:100%;height:120px}
     if(!h||h.length<3)return '';
     var days={};h.forEach(function(p){days[new Date(p[0]).toISOString().slice(0,10)]=+p[1]});
     var ks=Object.keys(days).sort(),prev=+h[0][1],max=1,cells=ks.map(function(k){var d=days[k]-prev;prev=days[k];if(Math.abs(d)>max)max=Math.abs(d);return [k,d]});
-    return '<h2 class="sec">Daily PnL, last 30 days</h2><div class="tb" style="padding:10px"><div class="cal">'+cells.map(function(c){var a=(.14+.6*Math.abs(c[1])/max).toFixed(2);return '<i title="'+c[0]+' '+sgn(Math.round(c[1]))+'" style="background:rgba('+(c[1]>=0?'46,189,133':'255,90,77')+','+a+')">'+c[0].slice(8)+'</i>'}).join('')+'</div></div>';
+    return '<'+'h2 class="sec">Daily PnL, last 30 days</h2><div class="tb" style="padding:10px"><div class="cal">'+cells.map(function(c){var a=(.14+.6*Math.abs(c[1])/max).toFixed(2);return '<i title="'+c[0]+' '+sgn(Math.round(c[1]))+'" style="background:rgba('+(c[1]>=0?'46,189,133':'255,90,77')+','+a+')">'+c[0].slice(8)+'</i>'}).join('')+'</div></div>';
   }
   function fillsTable(){
     var f=(wv.fills||[]).filter(function(x){return String(x.coin).charAt(0)!=='@'}).slice(-30).reverse();
