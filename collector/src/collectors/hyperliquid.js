@@ -14,7 +14,7 @@ import { log } from '../logger.js';
 import { hlPost } from '../hlapi.js';
 
 const MIN_NOTIONAL = 1000;    // candidate threshold ($) - the 15-min fills window amortizes one check across ALL the user's recent liqs
-const CHECK_MS = 1400;        // one userFillsByTime per 1.4s ≈ 43/min (HL weight ceiling is ~60/min)
+const CHECK_MS = 2000;        // one userFillsByTime per 1.4s ≈ 43/min (HL weight ceiling is ~60/min)
 const RECHECK_USER_MS = 600000; // a checked user is silent for 10 min - their window already covered it
 const FILLS_WINDOW_MS = 900000; // look at the user's last 15 min of fills (proven in the 8-min diagnostic: 210 liqs found)
 const MAX_SUBS = 900;         // HL allows 1000 WS subscriptions/IP - keep headroom

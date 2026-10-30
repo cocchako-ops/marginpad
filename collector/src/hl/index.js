@@ -52,7 +52,7 @@ function get(addr) {
 }
 // how long a reading of this wallet stays good enough
 function periodOf(w) {
-  if (w.ntl >= 1e6) return 4 * MIN;
+  if (w.ntl >= 1e6) return 6 * MIN;
   if (w.ntl >= 1e5) return 15 * MIN;
   if (w.ntl >= 1e4) return 30 * MIN;
   if (w.ntl > 0) return HOUR;
@@ -72,7 +72,7 @@ function rebuildReady() {
 let turn = 0;
 function next() {
   const now = Date.now();
-  const fromHot = () => { for (const [a] of hot) { hot.delete(a); const w = W.get(a); if (w && now - w.last_snap >= 60e3) return w; } return null; };
+  const fromHot = () => { for (const [a] of hot) { hot.delete(a); const w = W.get(a); if (w && now - w.last_snap >= (w.ntl >= 1e5 ? 60e3 : 600e3)) return w; } return null; };
   const fromReady = () => { while (ready.length) { const w = ready.shift(); if (w.due <= now) return w; } return null; };
   return (++turn % 3 === 0) ? (fromHot() || fromReady()) : (fromReady() || fromHot());
 }
@@ -296,6 +296,17 @@ function api() {
     const hist = db.prepare("SELECT win,long_ntl l,short_ntl s FROM hl_cohort WHERE fam=? AND cohort=? AND coin='ALL' AND win>=? ORDER BY win").all(fam, id, Date.now() - 48 * HOUR);
     const row = cohortCache.ALL[fam].find((x) => x.id === id);
     res.json({ ts: cohortCache.ts, fam, cohort: row, hist, markets: markets.slice(0, 40), wallets: wallets.slice(0, 100).map((w) => ({ a: w.addr, label: w.label || undefined, av: w.av == null ? null : Math.round(w.av), ntl: Math.round(w.ntl), n: w.n, pnl_all: w.pnl_all == null ? null : Math.round(w.pnl_all), pnl_m: w.pnl_m == null ? null : Math.round(w.pnl_m), size_c: sizeTier(w.av), pnl_c: pnlTier(w.pnl_all) })), total: wallets.length });
+  });
+  // every wallet holding $1M+, in the shape the published whale feed has always had
+  app.get('/board', (req, res) => {
+    const big = db.prepare('SELECT coin,szi,ntl,entry,lev,cross,liq,margin,upnl,ts FROM hl_pos WHERE addr=? AND ntl>=1000000');
+    const rows = [];
+    for (const w of W.values()) {
+      if (w.ntl < 1e6) continue;
+      const pos = big.all(w.addr); if (!pos.length) continue;
+      rows.push({ user: w.addr, acct: { eq: Math.round(w.av || 0), book: Math.round(w.ntl), used: Math.round(pos.reduce((a, p) => a + (p.margin || 0), 0)), free: 0, n: w.n }, positions: pos.map((p) => ({ user: w.addr, sym: p.coin, long: p.szi > 0, lev: p.lev, val: Math.round(p.ntl), liq: p.liq, mark: p.ntl / Math.abs(p.szi), pnl: Math.round(p.upnl), ent: p.entry, x: p.cross, roe: p.margin ? Math.round(p.upnl / p.margin * 1e4) / 1e4 : null, sz: Math.abs(p.szi) })) });
+    }
+    res.json({ ts: Date.now(), rows });
   });
   app.get('/wallet', (req, res) => {
     const a = String(req.query.a || '').toLowerCase(), w = W.get(a);

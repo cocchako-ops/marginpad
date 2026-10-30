@@ -28,7 +28,7 @@ module.exports = {
     restart_delay: 5000,
     max_memory_restart: '350M',
     kill_timeout: 4000,
-    env: { NODE_ENV: 'production', HL_PORT: 8788, HL_WEIGHT_MIN: 200 },
+    env: { NODE_ENV: 'production', HL_PORT: 8788, HL_WEIGHT_MIN: 450 },
     out_file: 'logs/hl-out.log',
     error_file: 'logs/hl-err.log',
     time: true,
