@@ -1073,6 +1073,60 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 .exbig .exbig-tag{display:none;}
 @media(max-width:720px){.band:not(#trade) .bento>.tile.s3[href="/fear-greed/"],.band:not(#trade) .bento>.tile.s3[href="/defi/"]{grid-column:span 12;}}
 </style>
+<style id="dashv2">
+/* MOON (2026-10-30, owner: title beside the logo, RNG in the list, 1000x shown "na cool nacin") */
+.exbig-head{display:flex;align-items:center;gap:14px;min-width:0;}
+.exbig-head .exbig-logo{flex:none;}
+.exbig-head .exbig-t{min-width:0;margin:0;}
+.exbig-act{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.exbig-lev{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 11px;border-radius:999px;border:1px solid rgba(179,154,255,.55);background:linear-gradient(135deg,rgba(138,92,255,.22),rgba(138,92,255,.05));box-shadow:0 0 24px -8px rgba(138,92,255,.85);position:relative;z-index:2;}
+.exbig-lev i{display:flex;align-items:flex-end;gap:2px;height:17px;}
+.exbig-lev i b{display:block;width:4px;border-radius:2px;background:#b39aff;opacity:.45;}
+.exbig-lev i b:nth-child(1){height:5px;}.exbig-lev i b:nth-child(2){height:8px;}.exbig-lev i b:nth-child(3){height:11px;}.exbig-lev i b:nth-child(4){height:14px;}.exbig-lev i b:nth-child(5){height:17px;background:#fff;opacity:1;box-shadow:0 0 10px rgba(179,154,255,.9);}
+.exbig-lev>span{display:flex;flex-direction:column;line-height:1;}
+.exbig-lev>span b{font:800 17px/1 'Space Mono',monospace;color:#fff;letter-spacing:-.02em;text-shadow:0 0 14px rgba(138,92,255,.75);}
+.exbig-lev>span small{font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#aeb2f4;margin-top:3px;}
+@media(max-width:720px){.exbig-head{gap:11px;}.exbig-head .exbig-logo{width:40px;height:40px;}.exbig-head .exbig-t{font-size:17px;line-height:1.18;}.exbig-act{gap:9px;}.exbig-lev{padding:5px 11px 5px 9px;}}
+/* MEMBER CARD v2 (2026-10-30, owner: "duze ime ne moze da stane", "4 box-a mnogo prostora", "kartica manja"): the hero on the left,
+   the four figures as pills and the three next-up actions as chips stacked on the right - 158 -> ~100px desktop, 460 -> ~270 phone. */
+.dash{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);grid-template-areas:"hero stats" "hero next";grid-auto-rows:min-content;align-items:center;gap:8px 22px;padding:14px 20px;margin-top:12px;margin-bottom:14px;}
+.dash-hero{grid-area:hero;gap:12px;min-height:0;}
+.dash-av{width:48px;height:48px;flex:0 0 48px;border-radius:14px;font-size:20px;}
+.dash-l{gap:2px;}
+.dash-k{font-size:9.5px;letter-spacing:.12em;}
+.dash-t{font-size:20px;line-height:1.08;}
+.dash-lvl{margin-top:3px;font-size:10.5px;}
+.dash-bar{height:5px;}
+.dash-days{margin-top:5px;gap:2px;}
+.dash-days i{height:4px;}
+.dash-stats{grid-area:stats;display:flex;flex-wrap:wrap;gap:6px;align-self:end;}
+.dash-stats .dst,.dst{flex:0 1 auto;flex-direction:row;align-items:center;gap:7px;padding:6px 11px 6px 9px;border-radius:999px;min-width:0;max-width:100%;}
+.dash-stats .dst b,.dst b{font-size:15px;}
+.dash-stats .dst b small,.dst b small{font-size:10px;}
+.dash-stats .dst em,.dst em{font-size:8.5px;letter-spacing:.1em;}
+.dash-stats .dst i,.dst i{font-size:10.5px;}
+.dash-stats .dst i::before,.dst i::before{content:"\00b7";margin-right:6px;color:#3a424c;}
+.dash-next{grid-area:next;flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px;padding:0;border-left:0;align-self:start;}
+.dash-next>.dash-k{display:none;}
+.dash-todo{flex-direction:row;flex-wrap:wrap;gap:6px;min-width:0;}
+.dash-todo span{display:inline-grid;grid-template-columns:16px minmax(0,1fr);gap:6px;font-size:12px;padding:5px 10px 5px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);max-width:100%;}
+.dash-todo span i{width:16px;height:16px;border-radius:5px;font-size:10px;}
+.dash-go{margin:0 0 0 auto;font-size:13px;padding-left:6px;}
+@media(max-width:1000px){.dash{grid-template-columns:1fr;grid-template-areas:"hero" "stats" "next";gap:10px;}.dash-stats{align-self:auto;}.dash-next{border-top:0;padding-top:0;}}
+@media(max-width:720px){.dash{padding:14px 16px;gap:10px;}.dash-hero{min-height:0;}.dash-av{width:44px;height:44px;flex-basis:44px;}.dash-t{font-size:18px;}.dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;}.dash-stats .dst{border-radius:12px;padding:7px 10px;}.dash-stats .dst i::before{display:none;}.dash-stats .dst i{display:none;}.dash-todo span{font-size:11.5px;}.dash-go{margin-left:0;flex-basis:100%;}}
+</style>
+<script>
+/* the member's name is identity, so it is SHRUNK to fit before it is cut (the profile-card rule of 2026-10-18); the 1000x bars
+   on the Moon card breathe through WAAPI - the owner's machine renders no @keyframes */
+(function(){
+  function fit(){var t=document.getElementById('dashT');if(!t)return;t.style.fontSize='';var fs=parseFloat(getComputedStyle(t).fontSize)||20,min=13;while(fs>min&&t.scrollWidth>t.clientWidth+1){fs-=1;t.style.fontSize=fs+'px';}}
+  function arm(){var t=document.getElementById('dashT');if(!t||t.__fit)return;t.__fit=1;fit();try{new MutationObserver(fit).observe(t,{childList:true,characterData:true,subtree:true});}catch(e){}var to=null;window.addEventListener('resize',function(){clearTimeout(to);to=setTimeout(fit,120);});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',arm);else arm();
+  window.addEventListener('mp-auth-change',function(){setTimeout(fit,50);});
+  function bars(){var bs=document.querySelectorAll('.exbig-lev i b');if(!bs.length||!bs[0].animate)return;Array.prototype.forEach.call(bs,function(b,i){if(i===4)return;b.animate([{opacity:.25},{opacity:1},{opacity:.25}],{duration:1800,delay:i*180,iterations:Infinity,easing:'ease-in-out'});});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bars);else bars();
+})();
+</script>
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 </head>
@@ -1355,10 +1409,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <a class="exbig" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored" data-ex="Moon">
       <span class="exbig-tag"><i></i>신규 파트너 &middot; 라이브</span>
       <div class="exbig-main">
-        <img class="exbig-logo" src="/assets/moon.png" alt="Moon" width="44" height="44" loading="lazy">
-        <div class="exbig-t">Moon - 암호화폐, 주식, 선물,<br>원자재, 외환까지 24/7 거래하세요.</div>
-        <div class="exbig-s">새로운 파트너 소개: 암호화폐, 주식, 선물, 원자재, 외환 시장의 상승과 하락에 - 레버리지를 활용해 하나의 계정으로 24시간 베팅하세요. 여기서 연습했다면? 이제 실전에 도전해보세요. MarginPad 회원은 리워드를 Moon 계정으로 바로 출금할 수도 있습니다.</div>
-        <span class="exbig-cta">Moon 계정 만들기 &rarr;</span>
+        <div class="exbig-head"><img class="exbig-logo" src="/assets/moon.png" alt="Moon" width="44" height="44" loading="lazy"><div class="exbig-t">Moon - trade crypto, stocks, futures, commodities, forex and RNG. 24/7.</div></div>
+        <div class="exbig-s">Our newest partner: call the market up or down on crypto, stocks, futures, commodities, forex and RNG games - with leverage up to 1000x, around the clock, on one account. Practiced here? Go try it for real. MarginPad members can even cash out their rewards straight to a Moon account.</div>
+        <div class="exbig-act"><span class="exbig-cta">Moon 계정 만들기 &rarr;</span><span class="exbig-lev" title="Leverage up to 1000x on Moon"><i aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></i><span><b>1000&times;</b><small>max leverage</small></span></span></div>
       </div>
       <div class="exbig-side" aria-hidden="true">
         <div class="moon-feats">

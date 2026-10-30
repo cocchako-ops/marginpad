@@ -27955,6 +27955,23 @@ export default {
     }
     // Position alerts: what the last run watched, and (?selftest=1) the distance maths exercised against the SAME
     // functions the cron calls - so the test can never pass while the live path is broken.
+    /* THE BOT'S OWN FACE (2026-10-30, owner: "bot zahteva Bybit UID verifikaciju" - nothing in this code does, so the text has to live
+       in BotFather: description, short description, commands). GET reads all three; POST {description, short, commands:[{command,description}]} sets
+       whichever keys the body carries. Admin key or cookie. */
+    if (url.pathname === '/api/admin/botface' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const J9 = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      if (!env.TELEGRAM_TOKEN) return J9({ error: 'no_token' }, 503);
+      if (request.method === 'POST') {
+        let b9 = {}; try { b9 = await request.json(); } catch (e) {}
+        const out = {};
+        if (b9.description !== undefined) out.description = await tgApi(env.TELEGRAM_TOKEN, 'setMyDescription', { description: String(b9.description).slice(0, 512) });
+        if (b9.short !== undefined) out.short = await tgApi(env.TELEGRAM_TOKEN, 'setMyShortDescription', { short_description: String(b9.short).slice(0, 120) });
+        if (Array.isArray(b9.commands)) out.commands = await tgApi(env.TELEGRAM_TOKEN, 'setMyCommands', { commands: b9.commands.slice(0, 100) });
+        return J9({ ok: true, out });
+      }
+      const [d9, s9, c9, m9] = await Promise.all([tgApi(env.TELEGRAM_TOKEN, 'getMyDescription', {}), tgApi(env.TELEGRAM_TOKEN, 'getMyShortDescription', {}), tgApi(env.TELEGRAM_TOKEN, 'getMyCommands', {}), tgApi(env.TELEGRAM_TOKEN, 'getMe', {})]);
+      return J9({ description: d9 && d9.result, short: s9 && s9.result, commands: c9 && c9.result, me: m9 && m9.result });
+    }
     if (url.pathname === '/api/admin/posalerts' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let last = null; try { last = JSON.parse(await env.STATS.get('posalert:last') || 'null'); } catch (e) {}
       if (url.searchParams.get('selftest') !== '1') return J({ last });
