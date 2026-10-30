@@ -23,6 +23,7 @@
 // when it happened.
 import { log } from './logger.js';
 import { scanLeaderboard } from './lbscan.js';
+import { hlPost } from './hlapi.js';
 
 const LEADERBOARD_URL = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 const INFO_URL = 'https://api.hyperliquid.xyz/info';
@@ -88,12 +89,7 @@ let pos429 = 0;       // rate-limited position calls in the last cycle
 let rotN = ROTATE_N;  // the rotating slice, shrunk by the back-off below and walked back up when clean
 
 async function post(body, timeoutMs = 12000) {
-  const r = await fetch(INFO_URL, {
-    method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs),
-  });
-  if (!r.ok) throw new Error('info ' + r.status);
-  return r.json();
+  return hlPost(body, { who: body.type === 'userFillsByTime' ? 'whale-fills' : 'whale-pos', timeoutMs });
 }
 
 async function refreshLeaderboard() {
@@ -466,13 +462,26 @@ function fillUniverse() {
   for (const u of state.tracked) { if (!seen.has(u)) { seen.add(u); out.push(u); if (out.length >= FILL_TRACK_N) break; } }
   return out;
 }
+const FILL_IDLE = 2;          // idle wallets read per tick regardless of the stream, the safety net
+const dirty = new Set();      // watched wallets the stream has seen trade since we last read them
+let watchSet = new Set();
+export function noteWhaleFill(user) { if (watchSet.has(user)) dirty.add(user); }
 async function pollFills() {
+  fill429 = 0; // fillErr speaks for this pass, not a lifetime counter (it read x20 after twenty hours and looked like an outage)
   const universe = fillUniverse();
   if (!universe.length) return;
   const now = Date.now();
   try {
-    for (let i = 0; i < FILL_SLICE; i++) {
-      const user = universe[(fillCursor + i) % universe.length];
+    /* THE FREE TRADE STREAM SAYS WHO TRADED, SO ONLY THOSE ARE ASKED (2026-10-30). Every wallet on the watch list
+       used to cost a userFillsByTime (weight 20+) whether it had done anything or not. `noteWhaleFill` marks a
+       watched wallet the moment it prints; a couple of idle ones are still read each tick, so a stream gap
+       or a wallet's first sighting costs minutes of delay and never a missed trade. */
+    watchSet = new Set(universe.map((u) => String(u).toLowerCase()));
+    const picks = [];
+    for (const u of universe) { if (picks.length >= FILL_SLICE) break; if (dirty.has(String(u).toLowerCase())) picks.push(u); }
+    for (let i = 0; i < FILL_IDLE && picks.length < FILL_SLICE; i++) { const u = universe[(fillCursor + i) % universe.length]; if (!picks.includes(u)) picks.push(u); }
+    for (const user of picks) {
+      dirty.delete(String(user).toLowerCase());
       try {
         const since = fillSeen.has(user) ? fillSeen.get(user) + 1 : now - FILL_LOOKBACK_MS;
         const rows = await post({ type: 'userFillsByTime', user, startTime: since, aggregateByTime: true });
@@ -483,7 +492,7 @@ async function pollFills() {
       }
       await new Promise(res => setTimeout(res, 40));
     }
-    fillCursor = (fillCursor + FILL_SLICE) % universe.length;
+    fillCursor = (fillCursor + FILL_IDLE) % universe.length;
     flushGroups(now);
     await drainPending();
     state.fillTs = now;

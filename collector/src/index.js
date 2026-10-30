@@ -24,7 +24,8 @@ import { BookCollector } from './collectors/book.js';   // order book state (202
 import { TapeCollector } from './collectors/tape.js';   // trade tape - memory only, phase 00
 import { BookMap } from './collectors/bookmap.js';
 import { startPhase2 } from './phase2.js';
-import { startWhales } from './whales.js';
+import { startWhales, noteWhaleFill } from './whales.js';
+import { hlMeter } from './hlapi.js';
 import { startCatalyst, catalystStatus } from './catalyst/index.js'; // Catalyst Engine phase 1 (2026-10-29): announcements, filings, media -> scored events
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
@@ -72,7 +73,7 @@ const collectors = [
   new GateLiqCollector({ symbols: config.symbols, onEvent }),
   new HtxLiqCollector({ symbols: config.symbols, onEvent }),
   new DydxLiqCollector({ symbols: config.symbols, onEvent }),
-  new HyperliquidLiqCollector({ symbols: config.symbols, onEvent }),
+  new HyperliquidLiqCollector({ symbols: config.symbols, onEvent, onUser: noteWhaleFill }),
 ];
 
 // ORDER BOOK AND TRADE TAPE - PHASE 00: they live entirely in memory and touch neither storage nor the
@@ -232,6 +233,7 @@ function getStatus() {
     // beside it is what tells a leak (objects held) from the allocator keeping freed pages (which settles).
     mem: (() => { const m = process.memoryUsage(); const mb = (v) => Math.round(v / 1048576);
       return { rssMb: mb(m.rss), heapUsedMb: mb(m.heapUsed), heapTotalMb: mb(m.heapTotal), externalMb: mb(m.external) }; })(),
+    hl: hlMeter(), // what we really spend of Hyperliquid's 1200 weight a minute, per caller
     disk: diskInfo(), // see diskInfo: free space, the database and its write-ahead log - the two figures that would have predicted 2026-09-30
     symbols: config.symbols, inserted, deduped,
     // What the plausibility ceiling refused, and what it was. `rejected` staying at 0 is the normal state;
@@ -273,6 +275,8 @@ async function main() {
     ringTimer = setInterval(() => { persistRings('timer').catch((e) => log.warn('ring persist failed', { e: String((e && e.message) || e) })); }, STATE_EVERY_MS);
     ringTimer.unref?.();
   } else log.info('book + tape disabled (MP_BOOK=0)');
+// RSS every ten minutes: a memory question should be answerable from the log, not from one reading (2026-10-30)
+setInterval(() => { const m = process.memoryUsage(), mb = (v) => Math.round(v / 1048576); log.info('mem', { rss: mb(m.rss), heap: mb(m.heapUsed), heapTotal: mb(m.heapTotal), ext: mb(m.external) }); }, 600000).unref?.();
 startWhales(storage); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/); writes what it publishes into whale_fill / whale_pos (008)
 if (process.env.MP_CATALYST !== '0') startCatalyst(storage); // Catalyst Engine phase 1 (009): announcements, filings, media, official channels -> /api/v1/catalysts
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model

@@ -11,8 +11,8 @@
 // vntl, ...; coin names arrive prefixed "xyz:CL" → emitted uppercased "XYZ:CL", same display as Coinglass).
 // Coverage stays notional-weighted: whales and cascades are caught; dust may slip under HL's API weight limits.
 import { log } from '../logger.js';
+import { hlPost } from '../hlapi.js';
 
-const INFO = 'https://api.hyperliquid.xyz/info';
 const MIN_NOTIONAL = 1000;    // candidate threshold ($) - the 15-min fills window amortizes one check across ALL the user's recent liqs
 const CHECK_MS = 1400;        // one userFillsByTime per 1.4s ≈ 43/min (HL weight ceiling is ~60/min)
 const RECHECK_USER_MS = 600000; // a checked user is silent for 10 min - their window already covered it
@@ -21,7 +21,8 @@ const MAX_SUBS = 900;         // HL allows 1000 WS subscriptions/IP - keep headr
 const REFRESH_COINS_MS = 6 * 3600000; // re-pull the universe every 6h (new listings join automatically)
 
 export class HyperliquidLiqCollector {
-  constructor({ symbols, onEvent } = {}) {
+  constructor({ symbols, onEvent, onUser } = {}) {
+    this.onUser = onUser || null;    // every participant of every print, for the whale watch (2026-10-30)
     this.name = 'hyperliquid';
     this.symbols = symbols || [];
     this.onEvent = onEvent || (() => {});
@@ -34,9 +35,7 @@ export class HyperliquidLiqCollector {
     this.ws = null; this.workerT = null; this.reT = null; this.coinT = null; this.pingT = null; this.wdT = null; this.connStartedAt = null;
   }
   async info(body) {
-    const r = await fetch(INFO, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(10000), body: JSON.stringify(body) });
-    if (!r.ok) throw new Error('info ' + r.status);
-    return r.json();
+    return hlPost(body, { who: 'hl-meta' });
   }
   async loadCoins() {
     const coins = [];
@@ -105,6 +104,7 @@ export class HyperliquidLiqCollector {
         const d = JSON.parse(ev.data);
         if (d.channel !== 'trades' || !Array.isArray(d.data)) return;
         for (const t of d.data) {
+          if (this.onUser) for (const u of (t.users || [])) this.onUser(u);
           const px = +t.px, sz = +t.sz; if (!(px > 0) || !(sz > 0)) continue;
           const notional = px * sz; if (notional < MIN_NOTIONAL) continue;
           // BOTH participants become candidates - a liquidation shows up in EITHER side's fills (the liquidated
@@ -133,9 +133,7 @@ export class HyperliquidLiqCollector {
     if (this.checked.size > 6000) this.checked.clear();
     let fills;
     try {
-      const r = await fetch(INFO, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(8000), body: JSON.stringify({ type: 'userFillsByTime', user: c.user, startTime: Date.now() - FILLS_WINDOW_MS }) });
-      if (!r.ok) return;
-      fills = await r.json();
+      fills = await hlPost({ type: 'userFillsByTime', user: c.user, startTime: Date.now() - FILLS_WINDOW_MS }, { who: 'liq-harvest', timeoutMs: 8000 });
     } catch (e) { return; }
     if (!Array.isArray(fills)) return;
     for (const f of fills) {

@@ -1,5 +1,6 @@
 // SQLite storage driver (the "start simple" backend). Uses Node's built-in node:sqlite (Node >=22).
 // Everything DB-specific lives behind this module so swapping to Postgres is a one-file change.
+import { gzipSync } from 'node:zlib';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -11,6 +12,7 @@ import { log } from '../logger.js';
 // dayEndMs), `ret` names the config retention class that decides when a day is pruned here - the export
 // answers 410 for a day older than that, so the archive can record "gone before it was archived" instead
 // of asking for ever. `tsCol` is the column the worker uses for hour coverage and the inside-the-day check.
+const csvCell = (v) => { if (v == null) return ''; const s = String(v); return /[,\n\r"]/.test(s) ? s.replace(/[,\n\r"]/g, ' ') : s; };
 export const EXPORTS = {
   liquidations: { cols: 'ts,exchange,symbol,side,price,qty,notional', sql: 'SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts', ret: 'raw', tsCol: 'ts' },
   agg5m:        { cols: 'symbol,win_start,price_bucket,side,notional,cnt', sql: 'SELECT symbol,win_start,price_bucket,side,notional,cnt FROM agg_5m WHERE win_start>=? AND win_start<? ORDER BY win_start,symbol,price_bucket,side', ret: 'agg', tsCol: 'win_start' },
@@ -341,6 +343,22 @@ export function createSqliteStorage(path, opts = {}) {
   // table of what can be archived: the column list is the CSV header the worker verifies against, and the
   // retention class says which config figure decides when a day is gone. Add a dataset here and in
   // MARKET_DS in the worker - nowhere else.
+  /* THE NIGHTLY EXPORT TOOK THE COLLECTOR PAST ITS MEMORY CEILING (2026-10-30 01:11 UTC, 835 MB). exportDs loads a whole
+     day of objects on the reader, clones them to the main thread, builds the CSV and gzips it THERE: seven datasets
+     back to back from 01:05, on the thread that reads the sockets. This walks the rows with iterate(), so no day
+     is ever held as objects, and everything happens on the reader. The bytes are the same as before. */
+  function exportGz(ds, d0, d1) { ensure();
+    const spec = EXPORTS[ds]; if (!spec) throw new Error('unknown dataset: ' + ds);
+    const cols = spec.cols.split(','), n = cols.length, parts = []; let csv = spec.cols + '\n', rows = 0;
+    for (const r of db.prepare(spec.sql).iterate(d0, d1)) {
+      let line = '';
+      for (let i = 0; i < n; i++) line += (i ? ',' : '') + csvCell(r[cols[i]]);
+      csv += line + '\n'; rows++;
+      if (csv.length > 1 << 20) { parts.push(Buffer.from(csv)); csv = ''; }
+    }
+    parts.push(Buffer.from(csv));
+    return { rows, gz: gzipSync(Buffer.concat(parts)) };
+  }
   function exportDs(ds, d0, d1) { ensure();
     const spec = EXPORTS[ds]; if (!spec) throw new Error('unknown dataset: ' + ds);
     return db.prepare(spec.sql).all(d0, d1);
@@ -379,7 +397,7 @@ export function createSqliteStorage(path, opts = {}) {
 
   return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
-    saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
+    saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs, exportGz,
     insertWhaleFills, insertWhalePos, pruneWhale,
     insertCatalyst, pruneCatalyst, catalystRange, catalystCount, catalystTop, oiSeries, fundSeries, whaleFillsRange,
     saveState, loadState,

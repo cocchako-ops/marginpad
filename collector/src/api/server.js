@@ -132,22 +132,9 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     // the prune deletes rows older than NOW - retention, so a day whose START is past that line is already partial
     if (retDays > 0 && d0 < Date.now() - retDays * 86400000) return res.status(410).json({ error: 'pruned', ds, day, retentionDays: retDays });
     try {
-      const rows = await storage.async.exportDs(ds, d0, d0 + 86400000);
-      const cols = spec.cols.split(',');
-      let csv = spec.cols + '\n';
-      const chunks = [];
-      const cell = (v) => { if (v == null) return ''; const s = String(v); return /[,\n\r"]/.test(s) ? s.replace(/[,\n\r"]/g, ' ') : s; }; // no text column here legitimately carries a comma; a stray one must not shift the row
-      for (const r of rows) {
-        let line = '';
-        for (let i = 0; i < cols.length; i++) line += (i ? ',' : '') + cell(r[cols[i]]);
-        csv += line + '\n';
-        if (csv.length > 1 << 20) { chunks.push(csv); csv = ''; } // bound peak string size
-      }
-      chunks.push(csv);
-      const { gzipSync } = await import('node:zlib');
-      const gz = gzipSync(Buffer.concat(chunks.map(c => Buffer.from(c))));
-      res.set({ 'Content-Type': 'application/gzip', 'Cache-Control': 'no-store', 'x-rows': String(rows.length), 'x-ds': ds, 'x-cols': spec.cols, 'x-retention-days': String(retDays) });
-      res.send(gz);
+      const { rows, gz } = await storage.async.exportGz(ds, d0, d0 + 86400000);
+      res.set({ 'Content-Type': 'application/gzip', 'Cache-Control': 'no-store', 'x-rows': String(rows), 'x-ds': ds, 'x-cols': spec.cols, 'x-retention-days': String(retDays) });
+      res.send(Buffer.from(gz));
     } catch (e) { log.error('export failed', { ds, e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
