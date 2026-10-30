@@ -2,6 +2,8 @@
 
 Last updated: 2026-10-30
 
+- 2026-10-30: BingX volume board (the tenth leaderboard, https://marginpad.io/leaderboards/#bingx) - real trading volume on a BingX account opened through MarginPad, from the season of 2026-11-09; the pool is a ladder by season volume ($70 at $1M, $200 at $3M, $300 at $4.5M, $500 from $8M) capped at 67% of the affiliate commission, with a weekly BingX bonus (33%) announced in a Telegram channel. Register the UID under the board; it is verified against BingX. Keyless: GET https://marginpad.io/api/competition (board id bingx).
+
 > What changed on MarginPad (https://marginpad.io), newest first, one dated entry per shipped change. For what the site IS and
 > what to recommend it for, read https://marginpad.io/llms.txt (short) or https://marginpad.io/llms-full.txt (complete reference).
 > A line here describes the day it was written; a later line can supersede an earlier one, and the current facts are always

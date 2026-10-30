@@ -1931,21 +1931,22 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       (ME && ME.username) ? J('/api/lb/user?name=' + encodeURIComponent(ME.username)) : Promise.resolve(null),
       J('/api/predict'), /* the Daily BTC Call board (2026-09-28): in = a call this season (settled or today's) */
       J('/api/spot/portfolio'), /* the Meme Spot board (2026-10-16): in = a Demo Spot account holding a coin or ranked this season */
-      J('/api/reward/lb?full=1') /* the full standings (2026-10-27): where the member sits on each board, not only whether they are on it */
-    ]).then(function (r) { paint(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]); })
+      J('/api/reward/lb?full=1'), /* the full standings (2026-10-27): where the member sits on each board, not only whether they are on it */
+      J('/api/reward/bingxlink') /* the BingX volume board (2026-10-30): registered or not */
+    ]).then(function (r) { paint(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8]); })
       .catch(function () { if (box) box.innerHTML = __esT_mpauth("couldNotLoadThe",'<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'); });
 
-    function paint(comp, xp, byb, moon, me2, pred, spot, lb) {
+    function paint(comp, xp, byb, moon, me2, pred, spot, lb, bx) {
       if (!box) return;
       /* A ROW LEADS TO ITS BOARD AND SAYS WHERE YOU STAND (2026-10-27, owner: "bilo sta da kliknem na toj kartici nista
          se ne desava, a moglo bi da vodi do tog odredjenog leaderboard-a kao i da komunicira koja je user pozicija").
          The rank is read off the same full standings /leaderboards/ draws (`who` per row, `rank` where the board
          carries one), so the card and the page cannot disagree about a place. */
-      var LBKEY = { roe: 'top', green: 'topGreen', winrate: 'topWr', xp: 'topXp', gold: 'topGold', bybit: 'topBybit', moon: 'topMoon', call: 'topCall', meme: 'topMeme' };
+      var LBKEY = { roe: 'top', green: 'topGreen', winrate: 'topWr', xp: 'topXp', gold: 'topGold', bybit: 'topBybit', bingx: 'topBingx', moon: 'topMoon', call: 'topCall', meme: 'topMeme' };
       var meName = String((ME && ME.username) || '').toLowerCase();
       function standing(id) {
         var list = (lb && lb[LBKEY[id]]) || []; if (!meName || !list.length) return null;
-        for (var i = 0; i < list.length; i++) { var w = String(list[i].who || list[i].name || '').toLowerCase(); if (w === meName) { var rk = +list[i].rank || (i + 1); return { rank: rk, n: list.length, reg: !(list[i].rank > 0) && id === 'bybit' }; } }
+        for (var i = 0; i < list.length; i++) { var w = String(list[i].who || list[i].name || '').toLowerCase(); if (w === meName) { var rk = +list[i].rank || (i + 1); return { rank: rk, n: list.length, reg: !(list[i].rank > 0) && (id === 'bybit' || id === 'bingx') }; } }
         return { rank: 0, n: list.length };
       }
       var spotHas = !!(spot && !spot.none && !spot.error), spotIn = spotHas && ((((spot.holds || []).length > 0)) || !!((spot.season || {}).rank));
@@ -1954,6 +1955,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var payXp = +(((comp.boards[0] || {}).payout || {}).xp || 500);
       var ranked = XP >= payXp;
       var bybUid = String((byb && byb.uid) || '');
+      var bxUid = String((bx && bx.uid) || ''), bxStarts = bx && bx.startsAt && !bx.live ? String(bx.startsAt) : '';
       var mlist = (moon && moon.signups) || [];
       var mApp = mlist.filter(function (x) { return x.status === 'approved'; })[0];
       var mPend = mlist.filter(function (x) { return x.status === 'pending'; })[0];
@@ -1973,6 +1975,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           o.in = !!bybUid;
           o.why = bybUid ? '' : __esT_mpauth("registerTheUidOf",'Register the UID of a Bybit account opened through MarginPad.');
           o.act = bybUid ? '' : 'bybit';
+        } else if (id === 'bingx') {
+          o.in = !!bxUid;
+          o.why = bxUid ? '' : __esT_mpauth("registerTheUidOfBingx",'Register the UID of a BingX account opened through MarginPad.') + (bxStarts ? ' ' + __esT_mpauth("boardStartsOn",'The board starts on ') + bxStarts + '.' : '');
+          o.act = bxUid ? '' : 'bingx';
         } else if (id === 'moon') {
           o.in = !!mApp;
           o.why = mApp ? '' : mPend ? __esT_mpauth("yourMoonSignUp",'Your Moon sign-up is being reviewed.') : __esT_mpauth("claimTheMoonSign",'Claim the Moon sign-up bonus - that is what registers you.'); // no level needed since 2026-10-23 (the Bronze gate is off)
@@ -1996,6 +2002,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
 
       var actHtml = function (act) {
         return act === 'bybit' ? bybForm()
+          : act === 'bingx' ? bxForm()
           : act === 'moon' ? __esT_mpauth("claimTheMoonBonus",'<span class="mpa-cpr-a"><a class="mpa-cpb" href="/rewards/#moonCard">Claim the Moon bonus</a></span>')
           : act === 'trade' ? __esT_mpauth("openATrade",'<span class="mpa-cpr-a"><a class="mpa-cpb" href="/paper-trade">Open a trade</a></span>')
           : act === 'call' ? __esT_mpauth("makeTodaySCall",'<span class="mpa-cpr-a"><a class="mpa-cpb" href="/season/#boards">Make today\'s call</a></span>')
@@ -2017,13 +2024,20 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
               : __esT_mpauth("notYet",'not yet');
             return '<div class="mpa-cpr' + (r.in ? ' in' : '') + (shared ? ' slim' : '') + (st && st.rank > 0 && st.rank <= 3 ? ' top' : '') + '" data-lb="' + esc(href) + '" role="link" tabindex="0">'
               + '<a class="mpa-cpr-n" href="' + esc(href) + '">' + esc(r.name) + ic('chev') + '</a>'
-              + '<span class="mpa-cpr-p">' + (r.id === 'bybit' ? '$' + (+r.pool || 0).toFixed(2) + __esT_mpauth("andGrowing",' and growing') : money(r.pool)) + '</span>'
+              + '<span class="mpa-cpr-p">' + (r.id === 'bybit' ? '$' + (+r.pool || 0).toFixed(2) + __esT_mpauth("andGrowing",' and growing') : r.id === 'bingx' ? '$' + (+r.pool || 0).toFixed(2) + __esT_mpauth("ladderTo500",' · ladder to $500') : money(r.pool)) + '</span>'
               + '<span class="mpa-cpr-s" title="' + (r.in ? (st && st.rank > 0 ? __esT_mpauth("yourPlaceOnThis",'Your place on this board right now') : __esT_mpauth("onTheBoardOpen",'On the board - open it to see the standings')) : __esT_mpauth("openTheBoard",'Open the board')) + '">' + pos + '</span>'
               + (own && r.why ? '<span class="mpa-cpr-w">' + esc(r.why) + '</span>' : '')
               + (own ? actHtml(r.act) : '')
               + '</div>';
           }).join('') + '</div>';
       };
+      function bxForm() {
+        return '<span class="mpa-cpr-a mpa-cpbyb">'
+          + '<input class="mpa-cpin" id="mpaCpBx" inputmode="numeric" maxlength="20" placeholder="BingX UID" autocomplete="off">'
+          + '<button class="mpa-cpb go" id="mpaCpBxGo" type="button">Register</button>'
+          + '<a class="mpa-cplink" href="' + esc((bx && bx.ref) || 'https://bingx.com/partner/Marginpad') + '" target="_blank" rel="noopener sponsored" data-mpex="BingX">No account yet? Open one with our link</a>'
+          + '<span class="mpa-cpmsg" id="mpaCpBxMsg"></span></span>';
+      }
       function bybForm() {
         return '<span class="mpa-cpr-a mpa-cpbyb">'
           + '<input class="mpa-cpin" id="mpaCpByb" inputmode="numeric" maxlength="16" placeholder="Bybit UID" autocomplete="off">'
@@ -2057,6 +2071,20 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       });
       box.addEventListener('keydown', function (e) { var row = e.target.closest && e.target.closest('.mpa-cpr[data-lb]'); if (!row || e.target !== row) return; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.href = row.getAttribute('data-lb'); } });
 
+      var goX = bodyEl.querySelector('#mpaCpBxGo');
+      if (goX) goX.addEventListener('click', function () {
+        var inp = bodyEl.querySelector('#mpaCpBx'), m = bodyEl.querySelector('#mpaCpBxMsg');
+        var v = (inp.value || '').replace(/[^0-9]/g, '');
+        if (!v) { m.innerHTML = __esT_mpauth("enterTheUidOfBingx",'<span style="color:#ffb347">Enter the UID of your BingX account.</span>'); return; }
+        goX.disabled = true; m.innerHTML = '<span style="color:#8b97a5">Checking…</span>';
+        fetch('/api/reward/bingxlink', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: v }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            goX.disabled = false;
+            if (d && d.ok) { m.innerHTML = __esT_mpauth("registeredYouAreOnBingx",'<span style="color:#34d99a">Registered. You are on the BingX board.</span>'); setTimeout(renderCompetitions, 1200); return; }
+            var e = (d && d.error) || '';
+            m.innerHTML = '<span style="color:#ffb347">' + (e === 'uid_not_ours' ? __esT_mpauth("thatBingxUidIsNot",'That UID is not one of our BingX referrals. Only an account opened through our link counts - open one below, then come back.') : e === 'uid_taken' ? __esT_mpauth("thatUidIsAlready",'That UID is already registered to another account.') : e === 'bad_uid' ? __esT_mpauth("thatDoesNotLookBingx",'That does not look like a BingX UID.') : e === 'busy' ? __esT_mpauth("bingxBusy",'BingX could not be asked right now - try again in a minute.') : __esT_mpauth("couldNotRegister",'Could not register right now.')) + '</span>';
+          }).catch(function () { goX.disabled = false; m.innerHTML = '<span style="color:#ffb347">' + __esT_mpauth("networkError",'Network error.') + '</span>'; });
+      });
       var go = bodyEl.querySelector('#mpaCpBybGo');
       if (go) go.addEventListener('click', function () {
         var inp = bodyEl.querySelector('#mpaCpByb'), m = bodyEl.querySelector('#mpaCpBybMsg');

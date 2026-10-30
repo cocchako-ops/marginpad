@@ -1171,6 +1171,34 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     }).catch(function(){});
   })();
 
+  /* The BingX weekly bonus (2026-10-30): the same window as the Bybit one, fired by ?bxw= from the BingX channel's link. */
+  (function(){
+    var want=new URLSearchParams(location.search).get("bxw");
+    if(want===null) return;
+    try{ history.replaceState(null,"",location.pathname+location.hash); }catch(e){}
+    var show=window.mpBybWin; if(!show) return;
+    fetch("/api/bingx/bonus",{credentials:"include"}).then(function(r){return r.json();}).then(function(j){
+      if(j && j.error==="login_required"){ show(__esT_rewardsindex("bingxWeeklyBonus","BingX weekly bonus"),"",__esT_rewardsindex("signInToClaim","Sign in to claim it - email only, no password."),__esT_rewardsindex("yourBonusIsHeld","Your bonus is held on your MarginPad account until you do."),__esT_rewardsindex("signIn","Sign in"),1); return; }
+      var weeks=(j&&j.weeks)||[];
+      var t=want?weeks.filter(function(x){return x.week===want;})[0]:null;
+      if(!t) t=weeks.filter(function(x){return x.cents>0&&!x.claimed;})[0]||weeks[0];
+      if(!t){ show(__esT_rewardsindex("bingxWeeklyBonus","BingX weekly bonus"),"$0.00",__esT_rewardsindex("noBingxTradingRecorded","No BingX trading recorded on your account."),__esT_rewardsindex("aBingxBonusIsWorked","A bonus is worked out from what you trade on BingX through MarginPad. Trade this week and yours appears here.")); return; }
+      if(t.claimed){ show(t.label||"BingX weekly bonus","$"+(t.cents/100).toFixed(2),__esT_rewardsindex("alreadyClaimedItIs","Already claimed - it is on your MarginPad balance."),""); return; }
+      if(!(t.cents>0)){
+        var why=t.why==="under_floor"?__esT_rewardsindex("yourBonusForThat","Your bonus for that week was under the minimum, so it was not paid out.")
+          :t.why==="not_registered"?__esT_rewardsindex("noBingxUidIs","No BingX UID is registered on this account yet. Register it on the leaderboards page, under the BingX board, and every week from then on counts.")
+          :__esT_rewardsindex("noBingxTradingWas","No BingX trading was recorded on your account for that week.");
+        show(t.label||"BingX weekly bonus","$0.00",__esT_rewardsindex("nothingToClaimFor","Nothing to claim for ")+(t.label||__esT_rewardsindex("thatWeek","that week"))+".",why); return;
+      }
+      fetch("/api/bingx/bonus",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({week:t.week})})
+        .then(function(r){return r.json();}).then(function(c){
+          if(c && c.ok){ show(c.label||t.label||"BingX weekly bonus","$"+(+c.usd).toFixed(2),__esT_rewardsindex("addedToYourMarginpad","Added to your MarginPad balance."),__esT_rewardsindex("cashOutAnyTime","Cash out any time from $5.00 on this page.")); if(window.refreshBal)window.refreshBal(); }
+          else if(c && c.error==="already_claimed"){ show(t.label||"BingX weekly bonus","$"+(t.cents/100).toFixed(2),__esT_rewardsindex("alreadyClaimedItIs","Already claimed - it is on your MarginPad balance."),""); }
+          else { show(t.label||"BingX weekly bonus","",__esT_rewardsindex("couldNotClaimIt","Could not claim it just now."),__esT_rewardsindex("nothingWasLostTry","Nothing was lost - try the link again in a minute.")); }
+        }).catch(function(){ show(t.label||"BingX weekly bonus","",__esT_rewardsindex("couldNotClaimIt","Could not claim it just now."),__esT_rewardsindex("nothingWasLostTry","Nothing was lost - try the link again in a minute.")); });
+    }).catch(function(){});
+  })();
+
   var wdMethod='bybit';
   function valid(a){ var m=wdM(); return m.re.test(a); }
   /* ONE TABLE, NOT ONE BRANCH PER VENUE (2026-10-22). Bybit and Moon were written out twice over here and in
@@ -1495,9 +1523,9 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 })();
 </script>
 <script src="/assets/mp-trade.js?v=adc2d94d" defer></script>
-<script defer src="/assets/mp-auth.js?v=e2f4ced5"></script>
+<script defer src="/assets/mp-auth.js?v=0a6a5555"></script>
 <script defer src="/assets/mp-profile.js?v=55c3eac0"></script>
-<script defer src="/assets/mp-nav.js?v=0be97f5d"></script>
+<script defer src="/assets/mp-nav.js?v=4d2debae"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;

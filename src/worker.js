@@ -2500,7 +2500,7 @@ const SSR_TBL_PT = {"MARKET STATE":"ESTADO DO MERCADO","Price":"Preço","Market 
 const SSR_TBL_L = { es: null /* set below SSR_TBL_ES */, pt: SSR_TBL_PT };
 const SSR_MAP_PT = [[" LIQUIDATION MAP &middot; UPDATED "," MAPA DE LIQUIDAÇÕES &middot; ATUALIZADO "],[">Price<",">Preço<"],[">Liquidated 24h<",">Liquidado 24h<"],[">Long vs short<",">Longs vs shorts<"],["Above &mdash; where shorts get liquidated","Acima &mdash; onde os shorts são liquidados"],["Below &mdash; where longs get liquidated","Abaixo &mdash; onde os longs são liquidados"],[">trading now<",">negociando agora<"],["Zoom, hover a band, read the clusters","Dê zoom, passe o mouse sobre uma faixa, leia os clusters"],["Deep perpetual liquidity","Liquidez profunda em perpétuos"],["3.5% of your trading fees back","3.5% das suas taxas de trading de volta"],[" A $250,000 buy would really cost "," Uma compra de $250,000 custaria de verdade "],[" in slippage"," de slippage"],["This is <strong","Isto é <strong"],["measured</strong>, not modelled: real limit orders standing on ","medido</strong>, não modelado: ordens limite reais nos livros de ordens de "],[" exchange order books a second ago. "," exchanges, de um segundo atrás. "],[" exchange order books "," exchanges, de "],[" seconds ago. "," segundos atrás. "],["The real book right now &middot; measured","O livro real agora &middot; medido"],["Bids resting","Compras pendentes"],["Offers resting","Vendas pendentes"],["within 0.25% of the price, summed across","a menos de 0.25% do preço, somado entre"],[" venues"," exchanges"],["A $250,000 buy would really cost","Uma compra de $250,000 custaria de verdade"],["in slippage","de slippage"],[" a $250,000 sell, "," uma venda de $250,000, "],["&middot; UPDATED ","&middot; ATUALIZADO "],["· UPDATED ","· ATUALIZADO "],["See it live:","Veja ao vivo:"],["Practice risk-free with paper trading","Pratique sem risco com paper trading"],["Practice risk-free","Pratique sem risco"],["Full liquidation calculator","Calculadora de liquidação completa"],["24h liquidation totals","Totais de liquidações 24h"],["Live liquidation feed","Feed de liquidações ao vivo"],["LIVE MARKET DATA","DADOS DE MERCADO AO VIVO"],["It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ","Ele responde a uma pergunta diferente da das zonas acima, e vale guardar a diferença: um livro mostra ordens que alguém <em>escolheu</em> colocar e pode retirar a qualquer momento, enquanto uma zona de liquidação é onde a alavancagem é encerrada, quer o dono queira ou não &mdash; e nenhum livro de ordens mostra isso, a distância nenhuma. "],["On top of which the deepest book we can read only reaches ","Além disso, o livro mais profundo que conseguimos ler só chega a "],[" from the price"," do preço"],[", while the nearest zone above sits ",", enquanto a zona mais próxima acima fica a "],["% away","% de distância"],[": past that, even the resting orders are out of sight.",": além disso, nem as ordens pendentes ficam visíveis."],["Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ","O comprimento da barra é o peso de uma zona ativa em relação às demais desta lista; o número ao lado indica quantas vezes ela carrega a faixa ativa média perto do preço. Estas são zonas "],["modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.","modeladas</strong>, não dinheiro que trocou de mãos &mdash; os únicos valores em dólar aqui são os totais de 24h acima, que nosso coletor viu acontecer."],[">measured<",">medido<"],[">modelled<",">modelado<"],[" from longs and "," de longs e "],[" from shorts"," de shorts"],[", so the recent damage came on the way down",", então o estrago recente veio na queda"],[", so shorts were squeezed on a move up",", então os shorts foram esmagados numa alta"],[", a fairly even two-sided battle",", uma batalha bem equilibrada entre os dois lados"],["There is currently ","Atualmente há "],[" of open "," de interesse aberto em "],[" interest that the market can test"," que o mercado pode testar"],[" (roughly steady over 24 hours)"," (praticamente estável em 24 horas)"],[" (up "," (alta de "],[" (down "," (queda de "],["% in a day)","% em um dia)"],["Funding is flat right now - no crowded side for the market to hunt.","O funding está neutro agora: não há um lado lotado para o mercado caçar."],["Funding is positive (","O funding está positivo ("],[") - the crowd is long, and long clusters below the price are usually the first this map fills.","): a maioria está em long, e os clusters de longs abaixo do preço costumam ser os primeiros que este mapa preenche."],["Funding is negative (","O funding está negativo ("],[") - the crowd is short, and short clusters above the price are the first targets.","): a maioria está em short, e os clusters de shorts acima do preço são os primeiros alvos."],[" trades at "," é negociado a "],[", up ",", alta de "],[", down ",", queda de "],["% in 24 hours","% em 24 horas"],["Live liquidation feed","Feed de liquidações ao vivo"],["24h totals by coin","Totais de 24h por moeda"],[" billion"," bilhões"],[" million"," milhões"]];
 const MAP_FRAG_PT = {"openHeatmap":"Abra o mapa de calor de {c} ao vivo","tradeOn":"Opere {c} na Bybit","hitMap":"{t} em posições de {c} foram liquidados neste mapa nas últimas 24 horas: ","quiet":"O mapa de {c} ficou calmo: menos de $50K liquidados nas últimas 24 horas."};
-const SSR_COMP_PT = [[">Day of season<",">Dia da temporada<"],["Right now it is <b>day ","Agora é o <b>dia "],["</b>. This season ends <b>","</b>. Esta temporada termina em <b>"],["</b>, in ","</b>, em "],[" days, and the next one starts the same day - you can join on any day and still place."," dias, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],[" hours, and the next one starts the same day - you can join on any day and still place."," horas, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],["<span>Entry <b>","<span>Entrada <b>"],["<span>Deposit <b>none</b></span>","<span>Depósito <b>nenhum</b></span>"],["</b> person is competing</span>","</b> pessoa está competindo</span>"],["</b> people are competing</span>","</b> pessoas estão competindo</span>"],["</b> placements</span>","</b> colocações</span>"],["<h2>The nine boards</h2>","<h2>As nove tabelas</h2>"],["Free - daily call","Grátis - palpite diário"],["Free - Demo Spot","Grátis - Demo Spot"],["<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>","<p>Cada tabela pontua algo diferente, então um único estilo de trading não leva todas. Cada uma paga seus primeiros colocados, e você pode se classificar em mais de uma.</p>"],[">Leading<",">Líder<"],[">Open board<",">Tabela aberta<"],[">nobody has scored yet<",">ninguém pontuou ainda<"],[">one qualifying trade puts you first<",">um trade válido coloca você em primeiro<"],[" entered</div>"," inscritos</div>"],["% win rate","% de taxa de acerto"],[" green days"," dias verdes"],[" green day"," dia verde"],[" wagered"," apostados"],[">Real money<",">Dinheiro real<"],[">Free - paper<",">Grátis - paper<"],[">Measured ",">Medido "],[" UTC by MarginPad, from the same data that pays the prizes."," UTC pela MarginPad, com os mesmos dados que pagam os prêmios."],[">Highest ROE<",">Maior ROE<"],[">Green Days<",">Dias verdes<"],[">Best Win Rate<",">Melhor taxa de acerto<"],[">Season XP<",">XP da temporada<"],[">Bybit Volume<",">Volume na Bybit<"],[">the best return on a single closed trade.<",">o melhor retorno em um único trade encerrado.<"],[">the most days closed in profit.<",">mais dias encerrados no lucro.<"],[">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",">a maior taxa de acerto, ordenada pela pontuação de Wilson para que uma sequência de sorte não a vença.<"],[">the most XP earned this season.<",">mais XP ganho nesta temporada.<"],[">the best points score across wins and losses.<",">a melhor pontuação somando ganhos e perdas.<"],[">the most REAL futures volume on a Bybit account opened through MarginPad.<",">mais volume REAL de futuros em uma conta Bybit aberta pela MarginPad.<"],[">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"],[">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"]];
+const SSR_COMP_PT = [[">Day of season<",">Dia da temporada<"],["Right now it is <b>day ","Agora é o <b>dia "],["</b>. This season ends <b>","</b>. Esta temporada termina em <b>"],["</b>, in ","</b>, em "],[" days, and the next one starts the same day - you can join on any day and still place."," dias, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],[" hours, and the next one starts the same day - you can join on any day and still place."," horas, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar."],["<span>Entry <b>","<span>Entrada <b>"],["<span>Deposit <b>none</b></span>","<span>Depósito <b>nenhum</b></span>"],["</b> person is competing</span>","</b> pessoa está competindo</span>"],["</b> people are competing</span>","</b> pessoas estão competindo</span>"],["</b> placements</span>","</b> colocações</span>"],["<h2>The ten boards</h2>","<h2>As nove tabelas</h2>"],["Free - daily call","Grátis - palpite diário"],["Free - Demo Spot","Grátis - Demo Spot"],["<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>","<p>Cada tabela pontua algo diferente, então um único estilo de trading não leva todas. Cada uma paga seus primeiros colocados, e você pode se classificar em mais de uma.</p>"],[">Leading<",">Líder<"],[">Open board<",">Tabela aberta<"],[">nobody has scored yet<",">ninguém pontuou ainda<"],[">one qualifying trade puts you first<",">um trade válido coloca você em primeiro<"],[" entered</div>"," inscritos</div>"],["% win rate","% de taxa de acerto"],[" green days"," dias verdes"],[" green day"," dia verde"],[" wagered"," apostados"],[">Real money<",">Dinheiro real<"],[">Free - paper<",">Grátis - paper<"],[">Measured ",">Medido "],[" UTC by MarginPad, from the same data that pays the prizes."," UTC pela MarginPad, com os mesmos dados que pagam os prêmios."],[">Highest ROE<",">Maior ROE<"],[">Green Days<",">Dias verdes<"],[">Best Win Rate<",">Melhor taxa de acerto<"],[">Season XP<",">XP da temporada<"],[">Bybit Volume<",">Volume na Bybit<"],[">the best return on a single closed trade.<",">o melhor retorno em um único trade encerrado.<"],[">the most days closed in profit.<",">mais dias encerrados no lucro.<"],[">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",">a maior taxa de acerto, ordenada pela pontuação de Wilson para que uma sequência de sorte não a vença.<"],[">the most XP earned this season.<",">mais XP ganho nesta temporada.<"],[">the best points score across wins and losses.<",">a melhor pontuação somando ganhos e perdas.<"],[">the most REAL futures volume on a Bybit account opened through MarginPad.<",">mais volume REAL de futuros em uma conta Bybit aberta pela MarginPad.<"],[">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"],[">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<"]];
 const COMP_FRAG_PT = {"dayOf":"dia {x} de {y}","onTheLine":"em jogo nesta temporada, entrada grátis"};
 const COMM_CATS_PT = {"ideas":"Ideias de trading","analysis":"Análise técnica","news":"Notícias do mercado","education":"Educação","crypto":"Crypto","forex":"Forex","stocks":"Ações","futures":"Futuros","strategies":"Estratégias","psychology":"Psicologia","risk":"Gestão de risco","indicators":"Indicadores","platform":"Novidades da plataforma","thesis":"Teses"};
 const ASK_PT = {"too few":"poucas","over 100x ":"acima de 100x "," closes":" encerramentos","thin - no rate printed":"amostra pequena - sem taxa exibida","Here, free - under the same rules a paid challenge uses":"Aqui, grátis - com as mesmas regras de um desafio pago","Ten times or less - and here is the count behind that":"Dez vezes ou menos - e aqui está a contagem por trás disso","Positive on Bitcoin: ":"Positivo no Bitcoin: ","Negative on Bitcoin: ":"Negativo no Bitcoin: ","Flat on Bitcoin":"Neutro no Bitcoin","Positive across most of the market":"Positivo na maior parte do mercado","Negative across most of the market":"Negativo na maior parte do mercado","<strong>longs are paying shorts</strong>":"<strong>os longs estão pagando os shorts</strong>","<strong>shorts are paying longs</strong>":"<strong>os shorts estão pagando os longs</strong>","neither side is paying a meaningful premium":"nenhum dos lados paga um prêmio relevante","Bitcoin funding is {f}, so {who}. ":"O funding do Bitcoin está em {f}, então {who}. ","longs pay":"longs pagam","shorts pay":"shorts pagam","flat":"neutro","read from each exchange&#39;s own public funding endpoint":"lido do endpoint público de funding de cada exchange","free JSON at":"JSON gratuito em","and":"e","MarginPad&#39;s own collector, {ex} exchange websockets":"coletor próprio da MarginPad, {ex} websockets de exchanges","Longs, {lp}% of the damage":"Longs, {lp}% do estrago","Shorts, {sp}% of the damage":"Shorts, {sp}% do estrago","Close to even, {lp}% long":"Quase empatado, {lp}% long","% long":"% long","% short":"% short","long":"long","short":"short"," - {s} {side} on {ven}":" - {s}, posição {side} na {ven}","{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}":"{a1}: acima de 100x, {a2} dos trades terminaram em liquidação - com 1-2x, {a3}","{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month":"{a1} fechamentos &middot; ROE mediano de {a2}% &middot; {a3}% do mês","{a1} of {a2} finished runs passed - {a3}%":"{a1} de {a2} execuções concluídas aprovadas - {a3}%","+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book":"meta de +{a1}%, perda diária de {a2}%, drawdown máximo de {a3}%, mínimo de {a4} dias de trading, em uma conta de ${a5}","{a1} closes &middot; median {a2}% ROE":"{a1} fechamentos &middot; ROE mediano de {a2}%","Bitcoin funding is {a1}, so {a2}. ":"O funding do Bitcoin está {a1}, então {a2}. ","Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative":"Entre os {a1} contratos perpétuos que acompanhamos, {a2} estão positivos e {a3} estão negativos",", with the widest spread running from {a1} on {a2} down to {a3} on {a4}":", com a maior diferença indo de {a1} em {a2} até {a3} em {a4}","{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.":"{a1} posições alavancadas foram fechadas à força em {a2} exchanges nas últimas 24 horas, somando {a3} e distribuídas em {a4} moedas. Isso dá uma média de {a5} por liquidação - o tamanho da posição típica que morreu, o que descreve quem opera com alavancagem melhor do que o valor total em dólares.","{a1} in the last 24 hours":"{a1} nas últimas 24 horas","MarginPad&#39;s own collector, {a1} exchange websockets":"Coletor próprio da MarginPad, {a1} websockets de exchanges","Longs, {a1}% of the damage":"Longs, {a1}% do prejuízo","Shorts, {a1}% of the damage":"Shorts, {a1}% do prejuízo","Close to even, {a1}% long":"Quase empatado, {a1}% long","Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}":"Dos {a1} liquidados em {a2} exchanges nas últimas 24 horas, {a3} ({a4}%) eram posições long e {a5} ({a6}%) eram shorts. {a7}","The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).":"O maior fechamento forçado individual que nosso coletor viu nas últimas 24 horas foi uma posição <strong>{a1}</strong> em {a2} em {a3}, no valor de {a4} ao preço em que foi fechada. Isso representa {a5} de tudo o que foi liquidado no mercado inteiro na mesma janela ({a6} em {a7} posições)."," - {a1} {a2} on {a3}":" - {a1} {a2} em {a3}"};
@@ -2519,7 +2519,7 @@ const SSR_DE = {"liqTotal":"Krypto-Futures-Liquidationen summieren sich in den l
 const SSR_TBL_DE = {"MARKET STATE":"MARKTSTATUS","Price":"Preis","Market cap":"Marktkapitalisierung","rank #":"Rang #","in 24h":"in 24 Std.","24h spot volume":"Spot-Volumen 24 Std.","7-day change":"Veränderung 7 Tage","30-day change":"Veränderung 30 Tage","All-time high":"Allzeithoch","from here":"von hier","Funding rate":"Funding-Rate","longs pay shorts":"Longs zahlen an Shorts","shorts pay longs":"Shorts zahlen an Longs","flat":"neutral","Open interest":"Open Interest","Open interest / market cap":"Open Interest / Marktkapitalisierung","Liquidated in 24h":"Liquidiert in 24 Std.","MarginPad collector, 8 exchanges":"MarginPad-Collector, 8 Exchanges","- longs liquidated":"- Longs liquidiert","- shorts liquidated":"- Shorts liquidiert","Accounts long / short":"Konten Long / Short","our own daily records":"unsere eigenen Tagesdaten","Heaviest of those days":"Der schwerste dieser Tage","-day average":"-Tage-Durchschnitt","Liquidations, ":"Liquidationen, "," / day":" / Tag"};
 const SSR_MAP_DE = [[" LIQUIDATION MAP &middot; UPDATED "," LIQUIDATIONSKARTE &middot; AKTUALISIERT "],[">Price<",">Preis<"],[">Liquidated 24h<",">Liquidiert 24h<"],[">Long vs short<",">Long vs. Short<"],["Above &mdash; where shorts get liquidated","Darüber &mdash; wo Shorts liquidiert werden"],["Below &mdash; where longs get liquidated","Darunter &mdash; wo Longs liquidiert werden"],[">trading now<",">wird jetzt gehandelt<"],["Zoom, hover a band, read the clusters","Zoomen, ein Band anfahren, die Cluster lesen"],["Deep perpetual liquidity","Tiefe Perpetual-Liquidität"],["3.5% of your trading fees back","3.5% deiner Trading-Gebühren zurück"],[" A $250,000 buy would really cost "," Ein Kauf über $250,000 würde dich real "],[" in slippage"," Slippage kosten"],["This is <strong","Das ist <strong"],["measured</strong>, not modelled: real limit orders standing on ","gemessen</strong>, nicht modelliert: echte Limit-Orders in den Orderbüchern von "],[" exchange order books a second ago. "," Exchanges vor einer Sekunde. "],[" exchange order books "," Exchanges vor "],[" seconds ago. "," Sekunden. "],["The real book right now &middot; measured","Das echte Orderbuch jetzt &middot; gemessen"],["Bids resting","Offene Kaufgebote"],["Offers resting","Offene Verkaufsangebote"],["within 0.25% of the price, summed across","innerhalb von 0.25% des Preises, summiert über"],[" venues"," Exchanges"],["A $250,000 buy would really cost","Ein Kauf über $250,000 würde dich real"],["in slippage","Slippage kosten"],[" a $250,000 sell, "," ein Verkauf über $250,000 "],["&middot; UPDATED ","&middot; AKTUALISIERT "],["· UPDATED ","· AKTUALISIERT "],["See it live:","Live ansehen:"],["Practice risk-free with paper trading","Übe risikofrei mit Paper Trading"],["Practice risk-free","Übe risikofrei"],["Full liquidation calculator","Vollständiger Liquidationsrechner"],["24h liquidation totals","Liquidationen gesamt (24h)"],["Live liquidation feed","Live-Liquidations-Feed"],["LIVE MARKET DATA","LIVE-MARKTDATEN"],["It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ","Es beantwortet eine andere Frage als die Zonen oben, und der Unterschied ist wichtig: Ein Orderbuch zeigt Orders, die jemand <em>freiwillig</em> platziert hat und jederzeit zurückziehen kann, während eine Liquidationszone dort liegt, wo Hebel geschlossen wird, ob der Besitzer will oder nicht &mdash; und das zeigt kein Orderbuch der Welt, in keiner Entfernung. "],["On top of which the deepest book we can read only reaches ","Hinzu kommt: Das tiefste Orderbuch, das wir lesen können, reicht nur bis "],[" from the price"," vom Preis"],[", while the nearest zone above sits ",", während die nächste Zone darüber "],["% away","% entfernt liegt"],[": past that, even the resting orders are out of sight.",": dahinter sind selbst die offenen Orders nicht mehr sichtbar."],["Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ","Die Balkenlänge ist das Gewicht einer bestehenden Zone im Vergleich zu den anderen in dieser Liste; die Zahl daneben zeigt, wie oft sie das durchschnittliche bestehende Band nahe am Preis enthält. Das sind "],["modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.","modellierte</strong> Zonen, kein Geld, das den Besitzer gewechselt hat &mdash; die einzigen Dollar-Zahlen hier sind die 24h-Summen oben, die unser Collector live miterlebt hat."],[">measured<",">gemessen<"],[">modelled<",">modelliert<"],[" from longs and "," aus Longs und "],[" from shorts"," aus Shorts"],[", so the recent damage came on the way down",", der jüngste Schaden kam also beim Rückgang"],[", so shorts were squeezed on a move up",", Shorts wurden also bei einem Anstieg ausgequetscht"],[", a fairly even two-sided battle",", ein recht ausgeglichener Kampf auf beiden Seiten"],["There is currently ","Aktuell gibt es "],[" of open "," an Open Interest in "],[" interest that the market can test",", den der Markt testen kann"],[" (roughly steady over 24 hours)"," (über 24 Stunden ungefähr stabil)"],[" (up "," (plus "],[" (down "," (minus "],["% in a day)","% an einem Tag)"],["Funding is flat right now - no crowded side for the market to hunt.","Das Funding ist gerade neutral - keine überfüllte Seite, die der Markt jagen könnte."],["Funding is positive (","Das Funding ist positiv ("],[") - the crowd is long, and long clusters below the price are usually the first this map fills.",") - die Masse ist Long, und Long-Cluster unter dem Preis sind meist die ersten, die diese Karte füllt."],["Funding is negative (","Das Funding ist negativ ("],[") - the crowd is short, and short clusters above the price are the first targets.",") - die Masse ist Short, und Short-Cluster über dem Preis sind die ersten Ziele."],[" trades at "," notiert bei "],[", up ",", plus "],[", down ",", minus "],["% in 24 hours","% in 24 Stunden"],["Live liquidation feed","Live-Liquidations-Feed"],["24h totals by coin","24h-Summen je Coin"],[" billion"," Milliarden"],[" million"," Millionen"]];
 const MAP_FRAG_DE = {"openHeatmap":"Öffne die Live-{c}-Heatmap","tradeOn":"{c} auf Bybit traden","hitMap":"{t} an {c}-Positionen wurden in den letzten 24 Stunden auf dieser Karte liquidiert - ","quiet":"Die {c}-Karte war ruhig - unter $50K in den letzten 24 Stunden liquidiert."};
-const SSR_COMP_DE = [[">Day of season<",">Tag der Season<"],["Right now it is <b>day ","Gerade ist <b>Tag "],["</b>. This season ends <b>","</b>. Diese Season endet am <b>"],["</b>, in ","</b>, in "],[" days, and the next one starts the same day - you can join on any day and still place."," Tagen, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."],[" hours, and the next one starts the same day - you can join on any day and still place."," Stunden, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."],["<span>Entry <b>","<span>Teilnahme <b>"],["<span>Deposit <b>none</b></span>","<span>Einzahlung <b>keine</b></span>"],["</b> person is competing</span>","</b> Person tritt an</span>"],["</b> people are competing</span>","</b> Personen treten an</span>"],["</b> placements</span>","</b> Plätze</span>"],["<h2>The nine boards</h2>","<h2>Die neun Boards</h2>"],["Free - daily call","Gratis - Tagestipp"],["Free - Demo Spot","Gratis - Demo Spot"],["<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>","<p>Jedes Board bewertet etwas anderes, daher gewinnt ein einziger Trading-Stil nicht alle. Jedes zahlt seine Top-Plätze aus, und du kannst auf mehreren platziert sein.</p>"],[">Leading<",">Führt<"],[">Open board<",">Offenes Board<"],[">nobody has scored yet<",">noch niemand hat gepunktet<"],[">one qualifying trade puts you first<",">ein gültiger Trade bringt dich auf Platz 1<"],[" entered</div>"," angemeldet</div>"],["% win rate","% Trefferquote"],[" green days"," grüne Tage"],[" green day"," grüner Tag"],[" wagered"," eingesetzt"],[">Real money<",">Echtgeld<"],[">Free - paper<",">Gratis - Paper<"],[">Measured ",">Gemessen "],[" UTC by MarginPad, from the same data that pays the prizes."," UTC von MarginPad, aus denselben Daten, die die Preise auszahlen."],[">Highest ROE<",">Höchster ROE<"],[">Green Days<",">Grüne Tage<"],[">Best Win Rate<",">Beste Trefferquote<"],[">Season XP<",">Season XP<"],[">Bybit Volume<",">Bybit-Volumen<"],[">the best return on a single closed trade.<",">die beste Rendite auf einen einzelnen geschlossenen Trade.<"],[">the most days closed in profit.<",">die meisten im Gewinn geschlossenen Tage.<"],[">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",">die höchste Trefferquote, gereiht nach Wilson-Score, damit eine Glückssträhne sie nicht gewinnen kann.<"],[">the most XP earned this season.<",">die meisten in dieser Season verdienten XP.<"],[">the best points score across wins and losses.<",">die beste Punktzahl über Gewinne und Verluste.<"],[">the most REAL futures volume on a Bybit account opened through MarginPad.<",">das meiste ECHTE Futures-Volumen auf einem über MarginPad eröffneten Bybit-Konto.<"],[">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"],[">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"],[">the most REAL amount eingesetzt on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"]];
+const SSR_COMP_DE = [[">Day of season<",">Tag der Season<"],["Right now it is <b>day ","Gerade ist <b>Tag "],["</b>. This season ends <b>","</b>. Diese Season endet am <b>"],["</b>, in ","</b>, in "],[" days, and the next one starts the same day - you can join on any day and still place."," Tagen, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."],[" hours, and the next one starts the same day - you can join on any day and still place."," Stunden, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."],["<span>Entry <b>","<span>Teilnahme <b>"],["<span>Deposit <b>none</b></span>","<span>Einzahlung <b>keine</b></span>"],["</b> person is competing</span>","</b> Person tritt an</span>"],["</b> people are competing</span>","</b> Personen treten an</span>"],["</b> placements</span>","</b> Plätze</span>"],["<h2>The ten boards</h2>","<h2>Die neun Boards</h2>"],["Free - daily call","Gratis - Tagestipp"],["Free - Demo Spot","Gratis - Demo Spot"],["<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>","<p>Jedes Board bewertet etwas anderes, daher gewinnt ein einziger Trading-Stil nicht alle. Jedes zahlt seine Top-Plätze aus, und du kannst auf mehreren platziert sein.</p>"],[">Leading<",">Führt<"],[">Open board<",">Offenes Board<"],[">nobody has scored yet<",">noch niemand hat gepunktet<"],[">one qualifying trade puts you first<",">ein gültiger Trade bringt dich auf Platz 1<"],[" entered</div>"," angemeldet</div>"],["% win rate","% Trefferquote"],[" green days"," grüne Tage"],[" green day"," grüner Tag"],[" wagered"," eingesetzt"],[">Real money<",">Echtgeld<"],[">Free - paper<",">Gratis - Paper<"],[">Measured ",">Gemessen "],[" UTC by MarginPad, from the same data that pays the prizes."," UTC von MarginPad, aus denselben Daten, die die Preise auszahlen."],[">Highest ROE<",">Höchster ROE<"],[">Green Days<",">Grüne Tage<"],[">Best Win Rate<",">Beste Trefferquote<"],[">Season XP<",">Season XP<"],[">Bybit Volume<",">Bybit-Volumen<"],[">the best return on a single closed trade.<",">die beste Rendite auf einen einzelnen geschlossenen Trade.<"],[">the most days closed in profit.<",">die meisten im Gewinn geschlossenen Tage.<"],[">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",">die höchste Trefferquote, gereiht nach Wilson-Score, damit eine Glückssträhne sie nicht gewinnen kann.<"],[">the most XP earned this season.<",">die meisten in dieser Season verdienten XP.<"],[">the best points score across wins and losses.<",">die beste Punktzahl über Gewinne und Verluste.<"],[">the most REAL futures volume on a Bybit account opened through MarginPad.<",">das meiste ECHTE Futures-Volumen auf einem über MarginPad eröffneten Bybit-Konto.<"],[">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"],[">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"],[">the most REAL amount eingesetzt on a Moon account opened through MarginPad, over a two-season contest.<",">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"]];
 const COMP_FRAG_DE = {"dayOf":"Tag {x} von {y}","onTheLine":"in dieser Season im Spiel, kostenlose Teilnahme"};
 const COMM_CATS_DE = {"ideas":"Trading-Ideen","analysis":"Technische Analyse","news":"Marktnachrichten","education":"Bildung","crypto":"Krypto","forex":"Forex","stocks":"Aktien","futures":"Futures","strategies":"Strategien","psychology":"Psychologie","risk":"Risikomanagement","indicators":"Indikatoren","platform":"Plattform-Updates","thesis":"Thesen"};
 const ASK_DE = {"too few":"zu wenige","over 100x ":"über 100x "," closes":" Closes","thin - no rate printed":"dünne Datenbasis - keine Quote angezeigt","Here, free - under the same rules a paid challenge uses":"Hier kostenlos - mit denselben Regeln wie bei einer kostenpflichtigen Challenge","Ten times or less - and here is the count behind that":"Zehnfach oder weniger - und hier die Zahlen dahinter","Positive on Bitcoin: ":"Positiv bei Bitcoin: ","Negative on Bitcoin: ":"Negativ bei Bitcoin: ","Flat on Bitcoin":"Neutral bei Bitcoin","Positive across most of the market":"Positiv im Großteil des Marktes","Negative across most of the market":"Negativ im Großteil des Marktes","<strong>longs are paying shorts</strong>":"<strong>Longs zahlen an Shorts</strong>","<strong>shorts are paying longs</strong>":"<strong>Shorts zahlen an Longs</strong>","neither side is paying a meaningful premium":"keine Seite zahlt eine nennenswerte Prämie","longs pay":"Longs zahlen","shorts pay":"Shorts zahlen","flat":"neutral","read from each exchange&#39;s own public funding endpoint":"direkt aus dem öffentlichen Funding-Endpoint jeder Börse gelesen","free JSON at":"kostenloses JSON unter","and":"und","% long":"% Long","% short":"% Short","long":"Long","short":"Short","{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}":"{a1}: Über 100x endeten {a2} der Trades in der Liquidation - bei 1-2x waren es {a3}","{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month":"{a1} Closes &middot; Median {a2}% ROE &middot; {a3}% des Monats","{a1} of {a2} finished runs passed - {a3}%":"{a1} von {a2} abgeschlossenen Durchläufen bestanden - {a3}%","+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book":"+{a1}% Ziel, {a2}% Tagesverlust, {a3}% maximaler Drawdown, mindestens {a4} Handelstage, auf einem Konto von ${a5}","{a1} closes &middot; median {a2}% ROE":"{a1} Closes &middot; Median {a2}% ROE","Bitcoin funding is {a1}, so {a2}. ":"Das Bitcoin-Funding liegt bei {a1}, daher gilt: {a2}. ","Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative":"Von den {a1} Perpetual-Kontrakten, die wir beobachten, sind {a2} positiv und {a3} negativ",", with the widest spread running from {a1} on {a2} down to {a3} on {a4}":", mit der größten Spanne von {a1} bei {a2} bis hinunter zu {a3} bei {a4}","{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.":"{a1} gehebelte Positionen wurden in den letzten 24 Stunden auf {a2} Exchanges zwangsgeschlossen, im Gesamtwert von {a3} und verteilt auf {a4} Coins. Das ergibt durchschnittlich {a5} pro Liquidation - die Größe der typischen Position, die es erwischt hat. Sie sagt besser als die Schlagzeilen-Dollarzahl, wer mit Hebel handelt.","{a1} in the last 24 hours":"{a1} in den letzten 24 Stunden","MarginPad&#39;s own collector, {a1} exchange websockets":"Eigener Collector von MarginPad, {a1} Exchange-Websockets","Longs, {a1}% of the damage":"Longs, {a1}% des Schadens","Shorts, {a1}% of the damage":"Shorts, {a1}% des Schadens","Close to even, {a1}% long":"Nahezu ausgeglichen, {a1}% Long","Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}":"Von den {a1}, die in den letzten 24 Stunden auf {a2} Exchanges liquidiert wurden, entfielen {a3} ({a4}%) auf Long-Positionen und {a5} ({a6}%) auf Shorts. {a7}","The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).":"Die größte einzelne Zwangsschließung, die unser Collector in den letzten 24 Stunden gesehen hat, war eine <strong>{a1}</strong>-Position in {a2} auf {a3}, im Wert von {a4} zum Schlusskurs. Das sind {a5} von allem, was im selben Zeitraum marktweit liquidiert wurde ({a6} über {a7} Positionen)."," - {a1} {a2} on {a3}":" - {a1} {a2} auf {a3}"};
@@ -3581,7 +3581,7 @@ async function handleSsrComp(request, url, env, ctx) {
   // ONE ROW PER BOARD, SAID ONCE. The page used to carry two tables of the same seven boards - one for the live
   // leader, one for the description - with Board and Pool in both. The pot is drawn at TRUE relative scale
   // against the biggest one, because $300 is ten times $30 and a table column hid that completely.
-  H += '<h2>The nine boards</h2>';
+  H += '<h2>The ten boards</h2>';
   H += '<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>';
   H += '<div class="cp-brds">';
   for (const b of c.boards) {
@@ -3593,7 +3593,7 @@ async function handleSsrComp(request, url, env, ctx) {
       else if (b.id === 'green') v = Math.round(+lv) + ' green day' + (Math.round(+lv) === 1 ? '' : 's');
       else if (b.id === 'gold') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
       else if (b.id === 'xp') v = Math.round(+lv).toLocaleString('en-US') + ' XP';
-      else if (b.id === 'bybit' || b.id === 'moon') v = '$' + Math.round(+lv).toLocaleString('en-US') + ' wagered';
+      else if (b.id === 'bybit' || b.id === 'bingx' || b.id === 'moon') v = '$' + Math.round(+lv).toLocaleString('en-US') + (b.id === 'moon' ? ' wagered' : ' traded');
       else if (b.id === 'call') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
       else v = Math.round(+lv).toLocaleString('en-US');
     }
@@ -3609,7 +3609,7 @@ async function handleSsrComp(request, url, env, ctx) {
        + '</div>'
        + '<div class="cp-bp' + (real ? ' real' : '') + '"><span class="amt">$' + (rebate ? pot.toFixed(2) : pot) + '</span>'
        + '<div class="cp-bbar"><i style="width:' + Math.max(4, Math.round(pot / maxPot * 100)) + '%"></i></div>'
-       + '<span class="cp-bpe">' + (rebate ? 'Real money - $' + rebate.base_usd + ' start + ' + Math.round(rebate.share_of_commission * 100) + '% of fees' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : b.id === 'meme' ? 'Free - Demo Spot' : 'Free - paper') + '</span></div>'
+       + '<span class="cp-bpe">' + (rebate && rebate.ladder ? 'Real money - ladder by volume, $70 at $1M to $500 from $8M' + (rebate.starts ? ', from ' + String(rebate.starts).slice(0, 10) : '') : rebate ? 'Real money - $' + rebate.base_usd + ' start + ' + Math.round(rebate.share_of_commission * 100) + '% of fees' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : b.id === 'meme' ? 'Free - Demo Spot' : 'Free - paper') + '</span></div>'
        + '</div>';
   }
   H += '</div>';
@@ -4205,7 +4205,7 @@ const SSR_COMP_ES = [
   [' hours, and the next one starts the same day - you can join on any day and still place.', ' horas, y la siguiente empieza el mismo día - puedes entrar cualquier día y aun así clasificar.'],
   ['<span>Entry <b>', '<span>Entrada <b>'], ['<span>Deposit <b>none</b></span>', '<span>Depósito <b>ninguno</b></span>'],
   ['</b> person is competing</span>', '</b> persona está compitiendo</span>'], ['</b> people are competing</span>', '</b> personas están compitiendo</span>'], ['</b> placements</span>', '</b> plazas</span>'],
-  ['<h2>The nine boards</h2>', '<h2>Las nueve tablas</h2>'], ['Free - daily call', 'Gratis - predicción diaria'], ['Free - Demo Spot', 'Gratis - Demo Spot'],
+  ['<h2>The ten boards</h2>', '<h2>Las diez tablas</h2>'], ['Free - daily call', 'Gratis - predicción diaria'], ['Free - Demo Spot', 'Gratis - Demo Spot'],
   ['<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>', '<p>Cada tabla puntúa algo distinto, así que un solo estilo de trading no las barre todas. Cada una paga a sus primeros puestos, y puedes clasificar en más de una.</p>'],
   ['>Leading<', '>Lidera<'], ['>Open board<', '>Tabla abierta<'], ['>nobody has scored yet<', '>nadie ha puntuado todavía<'], ['>one qualifying trade puts you first<', '>una operación válida te pone primero<'],
   [' entered</div>', ' inscritos</div>'], ['% win rate', '% de acierto'], [' green days', ' días verdes'], [' green day', ' día verde'], [' wagered', ' apostados'],
@@ -4927,13 +4927,14 @@ const COMP_BOARDS = [
   { id: 'xp', ent: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
   { id: 'gold', ent: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
   { id: 'bybit', ent: 'bybit', key: 'topBybit', prize: null, name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad; the pool is a rebate - a share of the affiliate commission the traders on the board generated this season', unit: 'USD volume', f: 'vol' }, // prize null = read from lb.bybitPool (2026-09-28)
+  { id: 'bingx', ent: 'bingx', key: 'topBingx', prize: null, name: 'BingX Volume', asks: 'the most REAL trading volume on a BingX account opened through MarginPad; the pool is a ladder by the season\'s volume - $70 at $1M, $200 at $3M, $300 at $4.5M, $500 at $8M - capped at a share of the affiliate commission the traders on the board generated', unit: 'USD volume', f: 'vol' }, // 2026-10-30 (owner): the tenth board, from the season of 2026-11-09
   { id: 'moon', ent: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
   { id: 'call', ent: 'call', key: 'topCall', prize: 'lbCall', name: 'Daily BTC Call', asks: 'the most points from daily calls on where BTC closes - a closer call scores more, one call a day', unit: 'points', f: 'pts' }, // 2026-09-28 (owner): the daily call became a paid board; it used to pay Ticks on the season page
   { id: 'meme', ent: 'meme', key: 'topMeme', prize: 'lbMeme', name: 'Meme Spot', asks: 'the most season profit in Demo Spot - buy and hold meme coins and majors with $10,000 of demo cash plus $100 a day; profit counts, the daily claim does not', unit: 'USD profit', f: 'pnlUsd' }, // 2026-10-16 (owner): Demo Spot rebuilt as buy & hold with one board, $30 to the top three
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v8'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
+  const ck = new Request('https://marginpad.io/__competition_v9'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -4943,17 +4944,18 @@ async function handleCompetition(url, request, env, ctx) {
 
   const boards = COMP_BOARDS.map(b => {
     const rows = ((lb && lb[b.key]) || []).filter(r => !(r && r.reg)); // a registered-only Bybit row (vol 0, rank 0) is not a standing
-    const bp = b.id === 'bybit' ? (lb && lb.bybitPool) || null : null;
+    const bp = b.id === 'bybit' ? (lb && lb.bybitPool) || null : b.id === 'bingx' ? (lb && lb.bingxPool) || (lb && lb.bingxStarts && cfg ? bingxPoolCalc(0, 0, cfg) : null) : null; // before the BingX board's first season the ladder is still published (with `starts`), so a tile can say when
     const prizes = bp ? bp.prizes : ((cfg && b.prize && cfg[b.prize]) || []);
     const pool = bp ? bp.usd : prizes.reduce((a, x) => a + (+x || 0), 0);
     return {
       id: b.id, name: b.name, scored_on: b.asks, unit: b.unit,
       prize_usd_top5: prizes.slice(0, 5).map(x => +x || 0), prize_pool_usd: pool,
-      ...(bp ? { prize_usd_ranks: prizes, pool: { rebate: true, base_usd: bp.base, from_volume_usd: bp.fromVolume, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, per_100k_volume_usd: bp.perHundredK, cap_usd: bp.cap, tier: bp.tier, how: 'the pool starts at $' + bp.base + ' and adds ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generate this season (about $' + bp.perHundredK + ' per $100k traded), read from the affiliate API; it grows with every sync and is paid at season end over ten ranks' } } : {}),
+      ...(bp && bp.ladder ? { prize_usd_ranks: prizes, pool: { rebate: true, ladder: true, base_usd: 0, from_volume_usd: bp.usd, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, cap_usd: bp.capUsd, tier_usd: bp.tierUsd, capped: !!bp.capped, tiers: BINGX_POOL_TIERS, tier: bp.tier, starts: (lb && lb.bingxStarts) ? new Date(lb.bingxStarts).toISOString() : null, how: 'a ladder by the season\'s volume on the board - $' + BINGX_POOL_TIERS.map(t => t.usd + ' at $' + Math.round(t.at / 1e6 * 10) / 10 + 'M').slice(1).join(', $') + ' - capped at ' + Math.round(bp.share * 100) + '% of the affiliate commission those traders generated (the weekly BingX bonus takes the rest)' } } : {}),
+      ...(bp && !bp.ladder ? { prize_usd_ranks: prizes, pool: { rebate: true, base_usd: bp.base, from_volume_usd: bp.fromVolume, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, per_100k_volume_usd: bp.perHundredK, cap_usd: bp.cap, tier: bp.tier, how: 'the pool starts at $' + bp.base + ' and adds ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generate this season (about $' + bp.perHundredK + ' per $100k traded), read from the affiliate API; it grows with every sync and is paid at season end over ten ranks' } } : {}),
       entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
-      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : b.id === 'call' ? 'free_call' : b.id === 'meme' ? 'free_spot' : 'free_paper',
+      entry: (b.id === 'bybit' || b.id === 'bingx' || b.id === 'moon') ? 'real_money' : b.id === 'call' ? 'free_call' : b.id === 'meme' ? 'free_spot' : 'free_paper',
       /* FREE IS NOT THE SAME AS OPEN (2026-09-20), AND NEITHER IS "OPEN" THE SAME AS "PAID" (2026-09-21).
          `requires` was on the Gold Room alone; the other six read as asking nothing, which is how a
          member comes to believe a board is open to them when it is not. And the opposite error was live
@@ -4962,6 +4964,7 @@ async function handleCompetition(url, request, env, ctx) {
          are two fields - `requires` to rank, `payout` to take the money off the site. */
       requires: b.id === 'gold' ? { level: 'gold', xp: 12000, what: 'Gold - 12,000 XP' }
         : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
+        : b.id === 'bingx' ? { link: 'bingx_uid', what: 'a BingX account opened through MarginPad, its UID registered here (verified against BingX)' }
         : b.id === 'moon' ? { link: 'moon_signup', what: 'an approved Moon sign-up bonus claim - that is how we know which Moon account is yours' }
         : b.id === 'call' ? { what: 'a username and at least one settled daily BTC call this season (calls close at ' + PRED_CUTOFF_H + ':00 UTC, the 00:00 UTC close settles them)' }
         : b.id === 'meme' ? { what: 'a username and a Demo Spot account holding a coin or with a trade this season (https://marginpad.io/spot/)' }
@@ -9656,7 +9659,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0be97f5d" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4d2debae" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15866,6 +15869,9 @@ async function lbSeasonArchive(env, ws) {
     }
     if (out.moonContest) { out.scores.moon = moonRows; out.kept.moon = true; }
   } catch (e) {}
+  try { // BingX volume (2026-10-30): the KV snapshot the season was paid from (lb:bingx:<ws>)
+    if (ws >= BINGX_LB_START) { const bx = JSON.parse((await env.STATS.get('lb:bingx:' + ws)) || 'null'); if (bx && Array.isArray(bx.rows)) { out.scores.bingx = bx.rows.filter(r => !r.reg && (+r.vol || 0) > 0).map((r, i) => ({ rank: i + 1, who: r.who, vol: +r.vol || 0 })); out.kept.bingx = true; } }
+  } catch (e) {}
   try { // Meme Spot: the final snapshot the payer wrote (lb:meme:<ws>), season profit per member
     if (ws >= MEME_LB_START) { const ms = await memeSnapshot(env, ws); if (ms && ms.ts) { out.scores.meme = (ms.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades })); out.kept.meme = true; } }
   } catch (e) {}
@@ -16270,10 +16276,10 @@ async function handleTelegram(request, env) {
     // "bybit" joins the signal tiers here so the owner never has to find a numeric chat id: a private
     // channel has no @username, and t.me/+HASH is an invite link, not an id. Only channel admins can
     // post, which is what makes binding from inside the channel safe.
-    const bm = /^\/bind(?:@\w+)?\s+(fast|balanced|premium|free|bybit)\b/i.exec(cpText);
+    const bm = /^\/bind(?:@\w+)?\s+(fast|balanced|premium|free|bybit|bingx)\b/i.exec(cpText);
     if (bm) {
       const tier = bm[1].toLowerCase();
-      try { if (tier === 'bybit') await env.STATS.put('cfg:bybitchan', String(chChat.id)); else await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
+      try { if (tier === 'bybit') await env.STATS.put('cfg:bybitchan', String(chChat.id)); else if (tier === 'bingx') await env.STATS.put('cfg:bingxchan', String(chChat.id)); else await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
       try { await tgApi(token, 'sendMessage', { chat_id: chChat.id, parse_mode: 'HTML', text: 'Bound <b>' + tier + '</b> signals to this channel (<code>' + chChat.id + '</code>). Signals will post here.' }); } catch (e) {}
       return new Response('ok');
     }
@@ -16739,8 +16745,9 @@ async function rewardCfg(env) {
   const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [12, 5, 3, 0, 0]), lbMeme = arr5(m.lbMeme, [15, 10, 5, 0, 0]); // lbMeme = the Meme Spot board (2026-10-16, owner: "$30, samo prva 3")
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
+  const bingxShare = Math.max(0, Math.min(3, num(m.bingxShare, 0.67))); // BingX board (2026-10-30): the ladder pool is capped at this share of the season's commission; 0.67 + the weekly bonus's 0.33 = the owner's "100% komisije"; above 1 the owner is knowingly paying the ladder past the commission
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { autoApprove: m.autoApprove !== false, autoReject: m.autoReject !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled === true, /* 2026-10-24: the Bitget $1 is RETIRED (owner) - opt-in only, like Fomo, so a stale KV row cannot reopen it */ bybitC: c(num(m.bybitUsd, 1)), bybitEnabled: m.bybitEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
+  return { autoApprove: m.autoApprove !== false, autoReject: m.autoReject !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled === true, /* 2026-10-24: the Bitget $1 is RETIRED (owner) - opt-in only, like Fomo, so a stale KV row cannot reopen it */ bybitC: c(num(m.bybitUsd, 1)), bybitEnabled: m.bybitEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, bingxShare, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -16963,11 +16970,11 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
- const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : board === 'call' ? 'Daily BTC Call' : board === 'meme' ? 'Meme Spot' : 'Highest ROE'; // every paid board (the Demo-Spot bank board was retired 2026-08-17; Daily BTC Call added 2026-09-28; Meme Spot 2026-10-16)
+ const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'bingx' ? 'BingX Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : board === 'call' ? 'Daily BTC Call' : board === 'meme' ? 'Meme Spot' : 'Highest ROE'; // every paid board (the Demo-Spot bank board was retired 2026-08-17; Daily BTC Call added 2026-09-28; Meme Spot 2026-10-16)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'call' ? ('<b>' + Math.round(info.pts || 0) + ' points</b> from ' + (info.n || 0) + ' daily BTC call' + ((info.n === 1) ? '' : 's') + ' this season') : board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
-  const achieveTxt = board === 'moon' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered on Moon during the contest') : board === 'bybit' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
+  const achieve = board === 'call' ? ('<b>' + Math.round(info.pts || 0) + ' points</b> from ' + (info.n || 0) + ' daily BTC call' + ((info.n === 1) ? '' : 's') + ' this season') : board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : (board === 'bybit' || board === 'bingx') ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'moon' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered on Moon during the contest') : (board === 'bybit' || board === 'bingx') ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -17684,9 +17691,9 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v12')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v12')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
 async function payMoonPrizes(env) { // */10 cron: the active contest, once its 28 days are over AND the END paste is marked FINAL; paid once (flag lbpaid:moon:<id>)
@@ -18319,9 +18326,9 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v12')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v12')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the competition feed carries the pool too
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
 async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0, pool: null }; }
@@ -18352,6 +18359,311 @@ async function payBybitPrizes(env) { // */10 cron: every ENDED season from BYBIT
     }
     try { await tgAdmin(env, '<b>Bybit board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' = $' + board.pool.base + ' base + ' + Math.round(board.pool.share * 100) + '% of $' + board.pool.comUsd.toFixed(2) + ' commission on $' + Math.round(board.pool.volUsd).toLocaleString('en-US') + ' traded (' + board.pool.tier.name + '): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(' · ') : 'nobody eligible'), { kind: 'lbbybit', sev: 'green' }); } catch (e) {}
   }
+}
+/* ===================================================================================================================
+   BINGX VOLUME BOARD + WEEKLY BINGX BONUS (2026-10-30, owner: "zelim isti setup za BingX bonus kanal kao sto imamo za
+   Bybit. Zelim leaderboard koji ce da krene od sledece sezone ... princip je isti kao i za Bybit leaderboard, samo cemo da
+   dajemo 100% komisije za progres i telegram bonuse. Progres za volumen: 1M 70 / 3M 200 / 4.5M 300 / 8M+ 500 ... po istom
+   principu kao i na bybit leaderboardu").
+   The Bybit stack above is the template and the shape is deliberately the same: a season table (KV lb:bingxup:<ws>, rows
+   {uid, vol, com}) synced every ten minutes from the affiliate API, a public snapshot (lb:bingx:<ws>), a seal 36 h after the
+   season ends, a payer that pays an ended FINAL season once, and a weekly bonus announced to a channel the owner binds by
+   posting /bind bingx inside it. What differs, and why:
+     - THE FEED is BingX's agent API, `commissionDataList`: one row per referred UID per DAY carrying tradingVolume and
+       commissionVolume (measured 2026-10-30: $393.85 traded on one UID over 30 days = 5.3 bps of commission). It is paged
+       (100 a page) and SUMMED over the window here - there is no per-window total endpoint.
+     - THE POOL IS A LADDER BY VOLUME, NOT base + share: $0 under $1M of season volume, then $70 / $200 / $300 / $500 at
+       1M / 3M / 4.5M / 8M+ (BINGX_POOL_TIERS). "moze da postoji bez nagrada" is the $0 rung.
+     - "100% KOMISIJE": the owner returns the WHOLE commission, split between the season pool and the weekly bonus. So the
+       pool is CAPPED at bingxShare (default 0.67) x the season's commission of the traders on the board, and the weekly
+       bonus takes BINGX_BONUS_SHARE (0.33) - 100% between them, never more (the 2026-09-28 rule: "tacna matematika, ne na
+       nasu stetu"). At the measured 5.3 bps, $1M of volume earns about $53, so the $70 rung is capped to $35.5 unless the
+       owner raises bingxShare; the page prints the ladder AND the cap, so nobody is promised a figure the commission does
+       not cover.
+     - NO ALLOWLIST: a UID is verified at registration time against BingX's own `inviteRelationCheck` (bingxAffLookup), the
+       same verdict the sign-up bonus sweep trusts. Registrations are also read off approved BingX sign-up claims and off
+       payouts sent to `bingx:<uid>`, so a member who already proved the account once is on the board without a second form.
+   The split over ten ranks is the Bybit split (cfg.bybitSplit) - "po istom principu". Pays from BINGX_LB_START.
+   =================================================================================================================== */
+const BINGX_LB_START = Date.UTC(2026, 10, 9);     // 2026-11-09, the first season boundary after the build (LB_ANCHOR grid, a Monday)
+const BINGX_BONUS_START = BINGX_LB_START;          // the weekly bonus walks the same calendar as the Bybit one (Monday weeks)
+const BINGX_REF_URL = 'https://bingx.com/partner/Marginpad';
+const BINGX_POOL_TIERS = [{ at: 0, usd: 0, name: 'Warming up' }, { at: 1000000, usd: 70, name: 'Heating up' }, { at: 3000000, usd: 200, name: 'Hot' }, { at: 4500000, usd: 300, name: 'On fire' }, { at: 8000000, usd: 500, name: 'Inferno' }];
+const BINGX_BONUS_SHARE = 0.33;      // the weekly bonus: a third of what that trader earned us that week (Bybit's rule)
+const BINGX_BONUS_MIN_C = 25;        // under 25c nothing is announced
+const BINGX_BONUS_MAX_C = 5000;      // $50 a week to one person needs a human look
+function bingxPoolCalc(comUsd, volUsd, cfg) { // pure: the ladder by season volume, capped by the share of commission -> the ONE place the BingX money is decided
+  const share = Math.max(0, +cfg.bingxShare || 0), split = cfg.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1];
+  const com = Math.max(0, +comUsd || 0), vol = Math.max(0, +volUsd || 0);
+  let ti = 0; for (let i = 0; i < BINGX_POOL_TIERS.length; i++) if (vol >= BINGX_POOL_TIERS[i].at) ti = i;
+  const tier = BINGX_POOL_TIERS[ti], next = BINGX_POOL_TIERS[ti + 1] || null;
+  const tierUsd = +tier.usd || 0, capUsd = Math.round(com * share * 100) / 100;
+  const usd = Math.round(Math.min(tierUsd, capUsd) * 100) / 100;
+  const paid = usd > 0 ? split.length : 0;
+  const w = split.slice(0, paid), sum = w.reduce((a, x) => a + (+x || 0), 0) || 1;
+  const cents = w.map(x => Math.floor(usd * 100 * (+x || 0) / sum));
+  let rem = Math.round(usd * 100) - cents.reduce((a, x) => a + x, 0); for (let i = 0; rem > 0 && i < cents.length; i++, rem--) cents[i]++;
+  const prizes = split.map((x, i) => i < paid ? cents[i] / 100 : 0);
+  return { usd, base: 0, tierUsd, capUsd, capped: usd < tierUsd, fromVolume: usd, comUsd: Math.round(com * 100) / 100, volUsd: Math.round(vol * 100) / 100, share, cap: 0, maxed: false,
+    bps: (com > 0 && vol > 0) ? Math.round(com / vol * 1000000) / 100 : null, perHundredK: 0, ladder: true,
+    tier: { n: ti + 1, name: tier.name, at: tier.at, usd: tierUsd, paid, next: next ? { at: next.at, name: next.name, usd: next.usd, paid: split.length, volToGo: Math.round(Math.max(0, next.at - vol) * 100) / 100 } : null },
+    prizes };
+}
+/* Every referred UID's volume and commission inside [fromMs, toMs), summed over BingX's per-day rows. Paged - the
+   endpoint caps a page at 100 rows and a busy fortnight is several hundred. A page that fails ends the read with an
+   error rather than a short answer: a partial sum would silently shrink somebody's volume. */
+async function bingxAffRows(env, fromMs, toMs) {
+  if (!env.BINGX_API_KEY || !env.BINGX_API_SECRET) return { error: 'no_key' };
+  const by = new Map(); let total = 0, pages = 0;
+  for (let page = 1; page <= 40; page++) {
+    const r = await bingxSigned(env, '/openApi/agent/v1/reward/commissionDataList', { startTime: Math.floor(fromMs), endTime: Math.floor(toMs), pageIndex: page, pageSize: 100 });
+    if (!r.ok) return { error: r.why || 'refused', detail: String(r.body || '').slice(0, 120), code: r.code };
+    const list = (r.data && (r.data.list || r.data.rows)) || []; pages++;
+    for (const x of list) {
+      const uid = String(x.uid || '').trim(); if (!/^[0-9]{4,20}$/.test(uid)) continue;
+      const vol = +x.tradingVolume || 0, com = +x.commissionVolume || 0, swap = +x.swapTradingVolume || 0;
+      const cur = by.get(uid) || { vol: 0, com: 0, swap: 0, days: 0 };
+      cur.vol += vol; cur.com += com; cur.swap += swap; cur.days++; by.set(uid, cur); total++;
+    }
+    const tot = +(r.data && r.data.total) || 0;
+    if (list.length < 100 || (tot && page * 100 >= tot)) break;
+  }
+  for (const [k, v] of by) { v.vol = Math.round(v.vol * 100) / 100; v.com = Math.round(v.com * 10000) / 10000; v.swap = Math.round(v.swap * 100) / 100; }
+  return { ok: true, by, rows: total, pages };
+}
+async function bingxUpload(env, ws) { try { return JSON.parse((await env.STATS.get('lb:bingxup:' + ws)) || 'null'); } catch (e) { return null; } }
+/* BingX UID -> {uid, name, ts, e2e, src}. Three sources, in order of authority: the explicit registration (uprefs
+   bingx_uid, verified against inviteRelationCheck when it was made), an APPROVED BingX sign-up bonus claim (the sweep
+   verified that UID the same way before paying a dollar on it), and a payout already sent to `bingx:<uid>`. A banned
+   account never holds a UID; two live accounts on one UID are settled by the Bybit rule (a name beats no name, then the
+   older account). */
+async function bingxRegistrations(env) {
+  const map = new Map();
+  try { const r = await usersDO(env, '/bybitlinks', { venue: 'bingx' }); for (const x of (r && r.rows) || []) if (x.buid) map.set(String(x.buid), { uid: String(x.uid), name: x.name || '', ts: +x.ts || 0, e2e: /^e2e_/i.test(x.name || ''), src: 'registered' }); } catch (e) {}
+  let ban = {}; try { const bd = await bybitLedger(env, '/lbbans', {}); ((bd && bd.banned) || []).forEach(a => { ban[String(a)] = 1; }); } catch (e) {}
+  const late = []; // {buid, acct, ts, src}
+  try {
+    const ex = await bybitLedger(env, '/exsign/list?all=1', {});
+    for (const r of (ex && ex.decided) || []) { if (String(r.exchange) !== 'bingx' || String(r.status) !== 'approved') continue; const buid = String(r.uid || '').trim(); if (!/^[0-9]{4,20}$/.test(buid)) continue; late.push({ buid, acct: String(r.address || ''), ts: +r.decided_ts || +r.ts || 0, src: 'signup' }); }
+  } catch (e) {}
+  try {
+    const pm = await bybitLedger(env, '/payoutmap', { prefix: 'bingx:' }); const m = (pm && pm.map) || {}; const bn = (pm && pm.ban) || {}; const cre = (pm && pm.cre) || {};
+    for (const a of Object.keys(m)) { const buid = String(m[a]); if (!/^[0-9]{4,20}$/.test(buid) || bn[a]) continue; late.push({ buid, acct: a, ts: +cre[a] || 0, src: 'payout' }); }
+  } catch (e) {}
+  const accts = [...new Set(late.map(x => x.acct).filter(a => a && !ban[a]))];
+  if (accts.length) {
+    let prof = {}; try { prof = await resolveProfiles(env, accts); } catch (e) {}
+    for (const x of late.sort((a, b) => (a.ts || 0) - (b.ts || 0))) {
+      if (ban[x.acct]) continue;
+      const u = prof[String(x.acct).replace(/^u:/, '')] || {}, name = u.username || '';
+      const prev = map.get(x.buid);
+      if (prev) { if (prev.src === 'registered') continue; const better = (name && !prev.name); if (!better) continue; }
+      map.set(x.buid, { uid: String(x.acct).replace(/^u:/, ''), name, ts: 0, e2e: /^e2e_/i.test(name), src: x.src });
+    }
+  }
+  return map;
+}
+async function bingxAffSyncSeason(env, ws) {
+  if (!env.STATS || !env.BINGX_API_KEY) return null;
+  const we = ws + LB_PERIOD;
+  const prev = await bingxUpload(env, ws);
+  if (prev && prev.final) return { skipped: 'final' };
+  const r = await bingxAffRows(env, ws, Math.min(Date.now(), we));
+  if (r.error) return { error: r.error, detail: r.detail || '' };
+  const rows = [];
+  for (const [uid, x] of r.by) if (x.vol > 0 || x.com > 0) rows.push({ uid, vol: x.vol, com: x.com, swap: x.swap, days: x.days });
+  const up = { ts: Date.now(), rows, final: !!(prev && prev.final), by: 'bingx-api', feedRows: r.rows };
+  try { await env.STATS.put('lb:bingxup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv' }; }
+  await bingxSnapshotRebuild(env, ws);
+  return { ok: true, n: rows.length, feedRows: r.rows, ws };
+}
+async function bingxSeasonSeal(env, ws, force) {
+  const now = Date.now(), we = ws + LB_PERIOD, day = t => new Date(t).toISOString().slice(0, 10);
+  const up0 = await bingxUpload(env, ws);
+  if (up0 && up0.final) return { skipped: 'final', ws };
+  const synced = await bingxAffSyncSeason(env, ws);
+  if (!synced || synced.error) return { error: (synced && synced.error) || 'sync', ws };
+  let ready = force, why = force ? 'forced by the owner' : '';
+  if (!ready && now - we >= 36 * 3600000) { ready = true; why = '36 hours after the end'; }
+  if (!ready && now - we >= 3 * 3600000) {
+    let r = null; try { r = await bingxAffRows(env, we - 86400000, we); } catch (e) {}
+    const anyCom = !!(r && r.ok && [...r.by.values()].some(x => x.com > 0));
+    if (anyCom) { ready = true; why = 'BingX reports commission for the last day (' + day(we - 86400000) + ')'; }
+  }
+  if (!ready) return { waiting: true, ws, endedHoursAgo: Math.round((now - we) / 3600000) };
+  const up = await bingxUpload(env, ws); if (!up) return { error: 'no_report', ws };
+  up.final = true; up.sealedTs = now; up.by = 'bingx-api-auto'; up.sealWhy = why;
+  try { await env.STATS.put('lb:bingxup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv', ws }; }
+  await bingxSnapshotRebuild(env, ws);
+  let poolLine = ''; try { const bb = await bingxVolBoard(env, ws); poolLine = ' Pool $' + bb.pool.usd.toFixed(2) + ' (ladder $' + bb.pool.tierUsd + ' at ' + bb.pool.tier.name + ', ' + Math.round(bb.pool.share * 100) + '% of $' + bb.pool.comUsd.toFixed(2) + ' commission = $' + bb.pool.capUsd.toFixed(2) + ' cap, $' + Math.round(bb.pool.volUsd).toLocaleString('en-US') + ' traded).'; } catch (e) {}
+  try { await tgAdmin(env, '<b>BingX board sealed</b> for the season that ended ' + day(we) + ' (' + why + '): ' + up.rows.length + ' UIDs with volume.' + poolLine + ' Prizes go out on the next payout pass.', { kind: 'bingx board', sev: 'info' }); } catch (e) {}
+  return { sealed: true, ws, why };
+}
+async function bingxAffSync(env, opts) {
+  if (!env.STATS || !env.BINGX_API_KEY) return null;
+  const now = Date.now(), ws = lbPeriodStart(now), prevWs = ws - LB_PERIOD;
+  if (ws < BINGX_LB_START && !(opts && opts.force)) return { skipped: 'before_start', startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10) };
+  const out = { current: await bingxAffSyncSeason(env, ws) };
+  if (prevWs >= BINGX_LB_START && now - (prevWs + LB_PERIOD) < 4 * 86400000) out.previous = await bingxSeasonSeal(env, prevWs, !!(opts && opts.force));
+  return out;
+}
+async function bingxVolBoard(env, ws) { // {rows: public-ready (no test accounts, no banned), matched, unmatched, regs, pool, poolAll, upload, registered}
+  const up = await bingxUpload(env, ws); const reg = await bingxRegistrations(env);
+  const banned = {}; try { const bd = await bybitLedger(env, '/lbbans', {}); ((bd && bd.banned) || []).forEach(a => { banned[String(a).replace(/^u:/, '')] = 1; }); } catch (e) {}
+  const rows = [], matched = [], unmatched = [];
+  for (const r of (up && up.rows) || []) {
+    const who = reg.get(String(r.uid)); if (!who) { unmatched.push({ uid: String(r.uid), vol: +r.vol || 0, com: +r.com || 0 }); continue; }
+    const row = { uid: who.uid, name: who.name, buid: String(r.uid), vol: +r.vol || 0, com: +r.com || 0, listed: true, e2e: !!who.e2e, banned: !!banned[String(who.uid)] };
+    matched.push(row); if (!row.e2e && !row.banned && row.vol > 0) rows.push(row);
+  }
+  rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
+  const ranked = rows.length;
+  if (ws === lbPeriodStart(Date.now())) { // every registered member is on the board (the 2026-10-05 Bybit rule), current season only
+    const seen = new Set(rows.map(r => String(r.uid)));
+    for (const [buid, w] of reg.entries()) {
+      if (!w || seen.has(String(w.uid)) || w.e2e || banned[String(w.uid)]) continue;
+      seen.add(String(w.uid)); rows.push({ uid: w.uid, name: w.name, buid: String(buid), vol: 0, com: 0, listed: true, e2e: false, banned: false, reg: true });
+    }
+  }
+  const cfg = await rewardCfg(env);
+  const pool = bingxPoolCalc(rows.reduce((s, r) => s + r.com, 0), rows.reduce((s, r) => s + r.vol, 0), cfg);
+  const poolAll = bingxPoolCalc(matched.reduce((s, r) => s + r.com, 0), matched.reduce((s, r) => s + r.vol, 0), cfg);
+  const regs = [...reg.entries()].map(([buid, w]) => ({ buid: String(buid), uid: w.uid, name: w.name, src: w.src, e2e: !!w.e2e }));
+  return { rows: rows.map((r, i) => ({ rank: i < ranked ? i + 1 : 0, ...r })), ranked, matched, unmatched, regs, pool, poolAll, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: reg.size };
+}
+async function bingxSnapshotRebuild(env, ws) {
+  const b = await bingxVolBoard(env, ws);
+  const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed, pool: b.pool };
+  try { await env.STATS.put('lb:bingx:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v13')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v13')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v9')); } catch (e) {}
+  return snap;
+}
+async function bingxSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bingx:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0, pool: null }; }
+async function payBingxPrizes(env) { // */10 cron: every ENDED season from BINGX_LB_START whose table is FINAL and not yet paid
+  if (!env.STATS || !env.REWARDS || !env.USERS) return;
+  const now = Date.now(), thisWs = lbPeriodStart(now);
+  for (let ws = BINGX_LB_START; ws < thisWs; ws += LB_PERIOD) {
+    const flag = 'lbpaid:bingx:' + ws; let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {} if (done) continue;
+    const up = await bingxUpload(env, ws);
+    if (!up || !up.final) {
+      const nk = 'lbpaid:bingx:nag:' + ws; let nag = false; try { nag = !!(await env.STATS.get(nk)); } catch (e) {}
+      if (!nag && now - (ws + LB_PERIOD) > 2 * 86400000) { try { await tgAdmin(env, '<b>BingX board:</b> the season that ended ' + new Date(ws + LB_PERIOD).toISOString().slice(0, 10) + ' is not sealed yet (' + (up ? 'table present, not final' : 'no table') + ') - /api/admin/bingxboard?seal=1 seals it by hand.', { kind: 'lbbingx', sev: 'amber' }); await env.STATS.put(nk, '1', { expirationTtl: 60 * 86400 }); } catch (e) {} }
+      continue;
+    }
+    const board = await bingxVolBoard(env, ws);
+    const top = board.rows.filter(x => x.vol > 0).slice(0, 10);
+    const winners = top.map((x, i) => ({ acct: 'u:' + x.uid, cents: Math.round((board.pool.prizes[i] || 0) * 100), rank: i + 1, board: 'bingx' })).filter(w => w.cents > 0);
+    let paid = [];
+    if (winners.length) { const pj = await bybitLedger(env, '/paywinners', { week: ws, winners }); if (!pj || !pj.ok) { try { await tgAdmin(env, '<b>BingX board payout FAILED</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - ledger unreachable, will retry next cron', { kind: 'lbbingx', sev: 'red' }); } catch (e) {} continue; } paid = pj.payouts || []; }
+    try { await env.STATS.put(flag, '1', { expirationTtl: 400 * 86400 }); } catch (e) {}
+    if (paid.length) {
+      const prof = await resolveProfiles(env, paid.map(p => p.acct));
+      for (const p of paid) { const x = top[p.rank - 1] || {}; const u = prof[String(p.acct).replace(/^u:/, '')] || {};
+        try { await evPush(env, null, 'lbpaid', (u.username || x.name || '') + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' bingx)', ''); } catch (e) {}
+        if (u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, username: u.username || x.name || '', board: 'bingx', vol: x.vol || 0, n: 0 }); } catch (e) {} } }
+    }
+    try { await tgAdmin(env, '<b>BingX board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' (ladder $' + board.pool.tierUsd + ' at ' + board.pool.tier.name + ', cap $' + board.pool.capUsd.toFixed(2) + ' = ' + Math.round(board.pool.share * 100) + '% of $' + board.pool.comUsd.toFixed(2) + ' commission on $' + Math.round(board.pool.volUsd).toLocaleString('en-US') + ' traded): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(', ') : 'nothing to pay (pool $0)'), { kind: 'lbbingx', sev: paid.length ? 'green' : 'info' }); } catch (e) {}
+  }
+}
+/* ---- the weekly BingX bonus: the Bybit one, on BingX's feed and its own keys (bxbonus:*) ---- */
+async function bingxBonusBuild(env, ws) {
+  const we = ws + 7 * 86400000;
+  const r = await bingxAffRows(env, ws, we);
+  if (r.error) return { error: r.error, detail: r.detail || '', ws, we };
+  const reg = await bingxRegistrations(env);
+  const rows = []; let comTotal = 0, volTotal = 0;
+  for (const [buid, x] of r.by) {
+    if (!(x.vol > 0) && !(x.com > 0)) continue;
+    comTotal += x.com; volTotal += x.vol;
+    const who = reg.get(buid);
+    const cents = Math.min(BINGX_BONUS_MAX_C, Math.floor(x.com * BINGX_BONUS_SHARE * 100));
+    rows.push({ buid, uid: who ? who.uid : '', name: who ? who.name : '', e2e: !!(who && who.e2e), vol: x.vol, com: x.com, cents,
+      skip: !who ? 'not_registered' : (who.e2e ? 'test_account' : (cents < BINGX_BONUS_MIN_C ? 'under_floor' : '')) });
+  }
+  rows.sort((a, b) => b.com - a.com);
+  const payable = rows.filter(x => !x.skip);
+  return { ws, we, week: bybitWeekKey(ws), builtTs: Date.now(), share: BINGX_BONUS_SHARE, minCents: BINGX_BONUS_MIN_C,
+    volumeUsd: Math.round(volTotal * 100) / 100, commissionUsd: Math.round(comTotal * 10000) / 10000,
+    bpsOfVolume: volTotal > 0 ? Math.round(comTotal / volTotal * 1000000) / 100 : null,
+    payoutCents: payable.reduce((s, x) => s + x.cents, 0), payableN: payable.length, rows };
+}
+const bingxWeekNo = ws => Math.round((ws - bybitWeekStart(BINGX_BONUS_START)) / (7 * 86400000)) + 1;
+const bingxWeekLabel = ws => { const n = bingxWeekNo(ws); return n >= 1 ? 'Week ' + n : 'Week of ' + bybitWeekKey(ws); };
+async function bingxWeekToken(env, ws) {
+  const sec = adminKeyOf(env) || env.TG_WEBHOOK_SECRET || 'mp';
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(sec), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode('bxbonus:' + bybitWeekKey(ws)));
+  return Array.from(new Uint8Array(sig)).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 10);
+}
+async function bingxWeekFromToken(env, tok) {
+  const t = String(tok || '').toLowerCase().replace(/[^a-f0-9]/g, '');
+  if (t.length !== 10) return 0;
+  const nw = bybitWeekStart(Date.now());
+  for (let i = 0; i <= 26; i++) { const ws = nw - i * 7 * 86400000; if ((await bingxWeekToken(env, ws)) === t) return ws; }
+  return 0;
+}
+async function bingxBonusGet(env, ws) { try { return JSON.parse((await env.STATS.get('bxbonus:' + bybitWeekKey(ws))) || 'null'); } catch (e) { return null; } }
+async function bingxBonusPut(env, b) { try { await env.STATS.put('bxbonus:' + b.week, JSON.stringify(b), { expirationTtl: 400 * 86400 }); return true; } catch (e) { return false; } }
+async function bingxBonusWipe(env, wk, rec) {
+  try { await env.STATS.delete('bxbonus:paid:' + wk); } catch (e) {}
+  for (const r of ((rec && rec.rows) || [])) { try { await env.STATS.delete('bxbonus:claim:' + wk + ':' + r.buid); } catch (e) {} try { await env.STATS.delete('bxbonus:log:' + wk + ':' + r.buid); } catch (e) {} }
+}
+async function bingxPaidCents(env, week) { try { return +(await env.STATS.get('bxbonus:paid:' + week)) || 0; } catch (e) { return 0; } }
+function bingxBonusSane(b) {
+  if (!b || b.error) return { ok: false, why: 'no data' };
+  const maxC = Math.floor((+b.commissionUsd || 0) * BINGX_BONUS_SHARE * 100);
+  if (b.payoutCents > maxC) return { ok: false, why: 'payout ' + b.payoutCents + 'c exceeds the ' + Math.round(BINGX_BONUS_SHARE * 100) + '% cap of ' + maxC + 'c' };
+  return { ok: true, maxC };
+}
+async function bingxWeekReady(env, ws) {
+  const last = ws + 6 * 86400000;
+  const r = await bingxAffRows(env, last, last + 86400000);
+  if (r.error) return { ready: false, why: r.error };
+  let vol = 0, com = 0; for (const x of r.by.values()) { vol += x.vol; com += x.com; }
+  if (!(vol > 0)) return { ready: true, why: 'no trading on the last day', lastDay: new Date(last).toISOString().slice(0, 10), vol: 0, com: 0 };
+  return { ready: com > 0, why: com > 0 ? '' : 'the last day has volume but no commission yet', lastDay: new Date(last).toISOString().slice(0, 10), vol: Math.round(vol * 100) / 100, com: Math.round(com * 10000) / 10000 };
+}
+async function checkBingxBonus(env) {
+  if (!env.STATS || !env.BINGX_API_KEY) return;
+  const now = Date.now(), thisWeek = bybitWeekStart(now), ws = thisWeek - 7 * 86400000;
+  if (ws < BINGX_BONUS_START) return;
+  if (now - thisWeek < 2 * 3600000) return;
+  const done0 = await bingxBonusGet(env, ws);
+  if (done0 && done0.announcedTs && !done0.testOnly) return;
+  const rdy = await bingxWeekReady(env, ws);
+  const waited = now - thisWeek;
+  if (!rdy.ready && waited < 5 * 86400000) {
+    const nk = 'bxbonus:wait:' + bybitWeekKey(ws) + ':' + new Date(now).toISOString().slice(0, 10);
+    let told = false; try { told = !!(await env.STATS.get(nk)); } catch (e) {}
+    if (!told) { try { await tgAdmin(env, '<b>BingX bonus waiting</b> - ' + bingxWeekLabel(ws) + ' is not final yet: ' + (rdy.why || '') + ' (last day ' + (rdy.lastDay || '') + ', volume $' + Math.round(rdy.vol || 0).toLocaleString('en-US') + ', commission $' + (rdy.com || 0) + '). It goes out by itself the moment BingX reports it.', { kind: 'bingx rebate', sev: 'info' }); await env.STATS.put(nk, '1', { expirationTtl: 3 * 86400 }); } catch (e) {} }
+    return;
+  }
+  if (done0 && done0.testOnly) await bingxBonusWipe(env, bybitWeekKey(ws), done0);
+  const b = (done0 && !done0.error && !done0.testOnly) ? done0 : await bingxBonusBuild(env, ws);
+  if (b.error) { try { await tgAdmin(env, '<b>BingX rebate:</b> could not read the agent feed for the week of ' + bybitWeekKey(ws) + ' (' + b.error + '). Will retry.', { kind: 'bingx rebate', sev: 'amber' }); } catch (e) {} return; }
+  const sane = bingxBonusSane(b);
+  if (!sane.ok) { try { await tgAdmin(env, '<b>BingX rebate HELD</b> for ' + b.week + ': ' + sane.why + '. Nothing announced.', { kind: 'bingx rebate', sev: 'red' }); } catch (e) {} return; }
+  b.announcedTs = now; b.capCents = b.payoutCents; b.token = await bingxWeekToken(env, ws);
+  await bingxBonusPut(env, b);
+  const payable = b.rows.filter(x => !x.skip);
+  const link = 'https://marginpad.io/bingx-bonus/' + b.token;
+  const head = '<b>MARGINPAD WEEKLY BINGX BONUS</b>\n<i>' + bingxWeekLabel(b.ws) + '</i>\n\n' +
+    'Trade on BingX with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b> - worked out for you every week, bigger the more you trade.\n\n' +
+    'This week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting to be claimed.\n\n' +
+    '<a href="' + link + '">Claim your bonus</a>\n\n' +
+    '<i>Not getting one yet? Register your BingX UID once on the MarginPad leaderboards page and every week from then on counts. New here: open BingX through marginpad.io first.</i>';
+  try { await tgBroadcastBingx(env, head); } catch (e) {}
+  try { await tgAdmin(env, '<b>BingX weekly bonus announced</b> - ' + bingxWeekLabel(b.ws) + ' (' + b.week + ')\nvolume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) + '\n' + payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID', { kind: 'bingx rebate', sev: 'green' }); } catch (e) {}
+}
+// The BingX channel is bound by posting /bind bingx inside it (cfg:bingxchan); until then the post goes to the admin chat.
+async function tgBroadcastBingx(env, text) {
+  if (!env.TELEGRAM_TOKEN) return false;
+  let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
+  const to = chan || env.TG_ADMIN_CHAT; if (!to) return false;
+  try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: to, parse_mode: 'HTML', disable_web_page_preview: false, text: String(text).slice(0, 3800) }); return !!(r && r.ok); } catch (e) {}
+  return false;
 }
 // Promote board prizes that were scheduled for the next season (ops Settings, "apply from the next season"). Runs at the
 // TOP of the prize cron, before anything is paid, so the season that just ended still pays the numbers that were in
@@ -21565,7 +21877,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'e2f4ced5';
+const ASSET_V = '0a6a5555';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -23685,7 +23997,7 @@ async function handleReward(url, request, env) {
   // owner got a ticket from "9070579908" that resolved to nobody - and worse, since both the reply path
   // (`sreply WHERE email=?`) and the member's own history (`/support/mine`) are keyed on that column, we
   // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
-  if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
+  if (path === '/bybitlink' || path === '/bingxlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
     if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
@@ -23752,6 +24064,7 @@ async function handleReward(url, request, env) {
       const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       // the Bybit rebate knobs apply at once (they price a pool that is recomputed on every sync, never parked)
       if ('bybitShare' in b) next.bybitShare = Math.max(0, Math.min(1, +b.bybitShare || 0));
+      if ('bingxShare' in b) next.bingxShare = Math.max(0, Math.min(3, +b.bingxShare || 0));
       if ('bybitCap' in b) next.bybitCap = Math.max(0, Math.round((+b.bybitCap || 0) * 100) / 100);
       if ('bybitBase' in b) next.bybitBase = Math.max(0, Math.round((+b.bybitBase || 0) * 100) / 100);
       if (Array.isArray(b.bybitSplit) && b.bybitSplit.length === 10) next.bybitSplit = b.bybitSplit.map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
@@ -23897,6 +24210,32 @@ async function handleReward(url, request, env) {
     return jr({ ok: true, refundedUsd: rj.amountUsd, emailed });
   }
   // The leaderboard board (GET /lb) is polled by EVERY homepage visitor and only changes on a new submission - edge-cache it 20s so the flood collapses to ~one hit per colo per window. This is what was overloading the single `ledger` DO (all reward traffic shares it) and tripping the "storage operation exceeded timeout" reset.
+  if (path === '/bingxlink') { // BINGX VOLUME BOARD (2026-10-30): link the BingX UID of the account opened through our link; GET = status. Verified against BingX itself (inviteRelationCheck), no allowlist.
+    if (!acct) return jr({ error: 'login_required' }, 401);
+    const uidX = String(acct).replace(/^u:/, '');
+    if (request.method === 'POST') {
+      const buid = String(b.uid == null ? b.buid : b.uid || '').trim();
+      if (!buid) { if (!isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'unlink_blocked', message: 'A registered BingX UID stays with the account for the season. If it is wrong, contact support and we will correct it.' }, 403); }
+      if (buid && !/^[0-9]{4,20}$/.test(buid)) return jr({ error: 'bad_uid' }, 400);
+      if (buid && !(/^e2e/i.test(uidX) && /^9999/.test(buid))) {
+        const v = await bingxAffLookup(env, buid);
+        if (!v.ok) return jr({ error: 'busy', hint: 'BingX could not be asked right now (' + (v.why || '') + '). Try again in a minute.' }, 503);
+        if (!v.found) return jr({ error: 'uid_not_ours', ref: BINGX_REF_URL, hint: 'This BingX UID was not opened through MarginPad. Open a BingX account with our link, then register that one.' }, 400);
+      }
+      if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: ['bingx:' + buid] }); const bn = (own && own.ban) || {}; const others = ((own && own.owners && own.owners['bingx:' + buid]) || []).filter(a => a !== acct && !bn[a]); if (others.length) return jr({ error: 'uid_taken' }, 409); } catch (e) {} }
+      const rX = await usersDO(env, '/bybitlink', { uid: uidX, buid, venue: 'bingx' });
+      if (!rX || rX.error) return jr({ error: (rX && rX.error) || 'unavailable' }, rX && rX.error === 'uid_taken' ? 409 : 503);
+      try { await evPush(env, request, 'bingxlink', buid ? 'linked BingX UID for the volume board' : 'unlinked BingX UID', '/leaderboards/#bingx'); } catch (e) {}
+      try { if (lbPeriodStart(Date.now()) >= BINGX_LB_START) await bingxSnapshotRebuild(env, lbPeriodStart(Date.now())); } catch (e) {}
+      return jr({ ok: true, uid: buid, eligible: !!buid });
+    }
+    let curX = ''; try { const pg = await usersDO(env, '/prefsget', { uid: uidX, keys: ['bingx_uid'] }); curX = String((pg && pg.prefs && pg.prefs.bingx_uid && pg.prefs.bingx_uid.v) || ''); } catch (e) {}
+    let srcX = curX ? 'linked' : '';
+    if (!curX) { // an approved BingX sign-up claim or a payout to bingx:<uid> already proved the account - the board resolves it the same way (bingxRegistrations)
+      try { const reg = await bingxRegistrations(env); for (const [buid, w] of reg.entries()) { if (String(w.uid) === uidX) { curX = String(buid); srcX = w.src || 'signup'; break; } } } catch (e) {}
+    }
+    return jr({ ok: true, uid: curX, eligible: !!curX, source: srcX, ref: BINGX_REF_URL, startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: lbPeriodStart(Date.now()) >= BINGX_LB_START });
+  }
   if (path === '/bybitlink') { // BYBIT VOLUME BOARD (2026-09-13): link the Bybit UID of the account opened through our link; GET = status
     if (!acct) return jr({ error: 'login_required' }, 401);
     const uid9 = String(acct).replace(/^u:/, ''); const allow9 = await bybitUidSet(env);
@@ -23970,7 +24309,7 @@ async function handleReward(url, request, env) {
     // from which season each board EXISTS - the picker offers a board only the seasons it could have paid (owner,
     // 2026-10-16: "neki nude sezone za taj liderboard kad nije ni postojao"). `early` = the pre-format bucket counts
     // too (only the ROE board was paid then); null = only seasons with a payout row (the Moon contest).
-    const boardSince = { roe: LB_ANCHOR, wr: LB_ANCHOR, xp: LB_ANCHOR, green: SEASON_STATS_EPOCH, gold: GOLD_LB_START, bybit: BYBIT_LB_START, call: CALL_LB_START, meme: MEME_LB_START, moon: null };
+    const boardSince = { roe: LB_ANCHOR, wr: LB_ANCHOR, xp: LB_ANCHOR, green: SEASON_STATS_EPOCH, gold: GOLD_LB_START, bybit: BYBIT_LB_START, bingx: BINGX_LB_START, call: CALL_LB_START, meme: MEME_LB_START, moon: null };
     let out = { seasons: [], periodDays: LB_PERIOD / 86400000, boardSince, earlyBoards: ['roe'] };
     try {
       const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/seasonwins'));
@@ -24037,7 +24376,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
-    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v12' : 'v12')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v13' : 'v13')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -24053,6 +24392,9 @@ async function handleReward(url, request, env) {
         const CUT = lbFull ? 1e6 : 15;
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h - a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
+        // BINGX VOLUME BOARD (2026-10-30): the same shape off its own snapshot (lb:bingx:<ws>), from BINGX_LB_START
+        let bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0, pool: null }; try { bingx = await bingxSnapshot(env, weekStart) || bingx; } catch (e) {}
+        if (weekStart < BINGX_LB_START) bingx = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: bingx.registered || 0, pool: null }; // nothing is ranked before the board's first season - the page says when it starts (bingxStarts)
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
         let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
         // DAILY BTC CALL (2026-09-28): points from settled calls inside the season window, ranked in the DO by points
@@ -24083,14 +24425,16 @@ async function handleReward(url, request, env) {
         const who = {};
         [qTop, qWr, qXp, qGreen, qGold, qCall].forEach(a => a.forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; }));
         (bybit.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
+        (bingx.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         if (moon) (moon.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         (meme.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
-          bybit: (bybit.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length, meme: (meme.rows || []).length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
+          bybit: (bybit.rows || []).filter(r => !r.reg).length, bingx: (bingx.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length, meme: (meme.rows || []).length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
         const people = Object.keys(who).length;
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMeme: memeRows, memePaidFrom: MEME_LB_START, memeUpdated: meme.ts || 0,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
+          topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || null, bingxTiers: BINGX_POOL_TIERS, bingxStarts: weekStart < BINGX_LB_START ? BINGX_LB_START : 0,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       // fail soft, never a 500 - but SAY WHY (2026-10-12). This catch wraps the UserStore board, the ledger bans,
@@ -24099,7 +24443,7 @@ async function handleReward(url, request, env) {
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true,"why":' + JSON.stringify(String((e && e.message) || e).slice(0, 180)) + '}'; }
     }
     let out = bodyText;
- try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: (o.bybitPool && o.bybitPool.prizes) || [], moon: cfg.lbMoon, call: cfg.lbCall, meme: cfg.lbMeme }; out = JSON.stringify(o); } catch (e) {} // bybit = the rebate pool's split, computed with the board (never a config array) // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
+ try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: (o.bybitPool && o.bybitPool.prizes) || [], bingx: (o.bingxPool && o.bingxPool.prizes) || [], moon: cfg.lbMoon, call: cfg.lbCall, meme: cfg.lbMeme }; out = JSON.stringify(o); } catch (e) {} // bybit = the rebate pool's split, computed with the board (never a config array) // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board - DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel - same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -24530,6 +24874,14 @@ export default {
     }
     // the bare link (an old post, or somebody typing it): still claims, just without a known week
     if (/^\/bybit-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/?byw=', 302);
+    // the BingX twin (2026-10-30): /bingx-bonus/<token> -> /rewards/?bxw=<week>
+    if (/^\/bingx-bonus\/([a-f0-9]{10})\/?$/.test(url.pathname)) {
+      const tk = url.pathname.replace(/\/$/, '').split('/').pop();
+      const wsTok = await bingxWeekFromToken(env, tk);
+      try { await evPush(env, request, 'bingxclick', wsTok ? bybitWeekKey(wsTok) : 'unknown', '/bingx-bonus/'); } catch (e) {}
+      return Response.redirect(url.origin + '/rewards/?bxw=' + (wsTok ? bybitWeekKey(wsTok) : ''), 302);
+    }
+    if (/^\/bingx-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/?bxw=', 302);
     if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
     // /api/ was a hub listing the three API surfaces. Measured 2026-09-15 over 30 days: ZERO crawls, zero
     // assistant visits and zero US pageviews, while /trading-api/ took 35 and /free-crypto-api/ 13 - the hub
@@ -27356,6 +27708,55 @@ export default {
        key and nothing else. And a week is only claimable once - the ledger's own `once` window is a
        retry guard measured in seconds, not an idempotency key for something paid weekly, so the
        claim is marked in KV BEFORE the credit and rolled back only if the ledger refuses. */
+    /* THE BINGX WEEKLY BONUS (2026-10-30): the Bybit route above, on the BingX feed and its own keys (bxbonus:*). */
+    if (url.pathname === '/api/bingx/bonus') {
+      const tok0 = getCookie(request, SESS_COOKIE);
+      const su0 = tok0 ? await sessionUser(env, tok0) : null;
+      if (!su0 || !su0.id) return J({ error: 'login_required' }, 401);
+      const uid0 = String(su0.id);
+      let buid0 = '';
+      try { const pg = await usersDO(env, '/prefsget', { uid: uid0, keys: ['bingx_uid'] }); buid0 = String((pg && pg.prefs && pg.prefs.bingx_uid && pg.prefs.bingx_uid.v) || ''); } catch (e) {}
+      const wks = [];
+      for (let i = 0; i <= 2; i++) { const ws0 = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (ws0 >= BINGX_BONUS_START) wks.push(ws0); }
+      const weeks = [];
+      for (const ws0 of wks) {
+        const b0 = await bingxBonusGet(env, ws0);
+        if (!b0 || b0.error || !b0.announcedTs) continue;
+        const row = (b0.rows || []).find(r => (r.uid && String(r.uid) === uid0) || (buid0 && String(r.buid) === buid0)) || null;
+        const rowKey = row ? String(row.buid) : buid0;
+        let claimed = false; try { claimed = rowKey ? !!(await env.STATS.get('bxbonus:claim:' + b0.week + ':' + rowKey)) : false; } catch (e) {}
+        weeks.push({ week: b0.week, label: bingxWeekLabel(b0.ws), n: bingxWeekNo(b0.ws), from: b0.ws, to: b0.we, key: rowKey, vol: row ? row.vol : 0, cents: row && !row.skip ? row.cents : 0, why: row ? (row.skip || '') : 'no_trades', claimed });
+      }
+      if (request.method !== 'POST') return J({ ok: true, registered: !!buid0, buid: buid0 ? ('***' + buid0.slice(-3)) : '', share: BINGX_BONUS_SHARE, minUsd: BINGX_BONUS_MIN_C / 100, weeks });
+      if (!buid0 && !weeks.some(x => x.cents > 0)) return J({ error: 'no_uid', hint: 'Register the BingX UID you opened through MarginPad first' }, 400);
+      let bb0 = {}; try { bb0 = await request.json(); } catch (e) {}
+      const wantWeek = String((bb0 && bb0.week) || (weeks[0] && weeks[0].week) || '');
+      const target = weeks.find(x => x.week === wantWeek);
+      if (!target) return J({ error: 'no_week' }, 400);
+      if (target.claimed) return J({ error: 'already_claimed' }, 409);
+      if (!(target.cents > 0)) return J({ error: 'nothing_to_claim', why: target.why || '', usd: 0 }, 400);
+      const wkRec0 = await bingxBonusGet(env, Date.parse(target.week + 'T00:00:00Z'));
+      const srcRow = (wkRec0 && (wkRec0.rows || []).find(r => String(r.buid) === String(target.key || buid0))) || null;
+      if (!srcRow || srcRow.skip || !(srcRow.cents > 0) || !((+srcRow.vol > 0) || (+srcRow.com > 0))) return J({ error: 'nothing_to_claim', why: 'no BingX trading recorded for that week', usd: 0 }, 400);
+      if (srcRow.cents !== target.cents) return J({ error: 'resettled', hint: 'That week was recalculated - open the link again', usd: 0 }, 409);
+      const capC = (wkRec0 && +wkRec0.capCents) || 0;
+      const paidC = await bingxPaidCents(env, target.week);
+      if (capC && paidC + target.cents > capC) return J({ error: 'week_cap', hint: 'This week is fully claimed' }, 409);
+      const ck = 'bxbonus:claim:' + target.week + ':' + (target.key || buid0);
+      try { await env.STATS.put(ck, String(Date.now()), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+      let out0 = null;
+      try {
+        const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+        const r0 = await led0.fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid0, cents: target.cents, big: true, from: 'bxb-' + target.week, once: 600 }) }));
+        out0 = await r0.json();
+      } catch (e) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: 'ledger_unavailable' }, 503); }
+      if (!out0 || out0.error) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: (out0 && out0.error) || 'ledger' }, 400); }
+      try { await env.STATS.put('bxbonus:paid:' + target.week, String(paidC + target.cents), { expirationTtl: 400 * 86400 }); } catch (e) {}
+      try { await env.STATS.put('bxbonus:log:' + target.week + ':' + (target.key || buid0), JSON.stringify({ ts: Date.now(), uid: uid0, un: su0.username || '', buid: target.key || buid0, cents: target.cents, vol: target.vol }), { expirationTtl: 400 * 86400 }); } catch (e) {}
+      try { await evPush(env, request, 'bingxrebate', '$' + (target.cents / 100).toFixed(2) + ' week ' + target.week, '/rewards/'); } catch (e) {}
+      try { await tgAdmin(env, '<b>BingX bonus claimed</b>' + (srcRow.test ? ' <i>(rehearsal row)</i>' : '') + ' @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for ' + bingxWeekLabel(Date.parse(target.week + 'T00:00:00Z')), { kind: 'bingx rebate', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, week: target.week, label: target.label || '', usd: target.cents / 100, ranked: true, balance: (out0 && out0.balance != null) ? out0.balance : undefined });
+    }
     if (url.pathname === '/api/bybit/bonus') {
       const tok0 = getCookie(request, SESS_COOKIE);
       const su0 = tok0 ? await sessionUser(env, tok0) : null;
@@ -27555,7 +27956,7 @@ export default {
       let chan = await g('cfg:bybitchan');
       let seen = []; try { seen = JSON.parse(await g('tg:seenchans') || '[]') || []; } catch (e) {}
       const out = {
-        rebateChannel: chan || null, signalsChannel: await g('tg:channel'), signalsName: await g('tg:channel_name'),
+        rebateChannel: chan || null, bingxChannel: (await g('cfg:bingxchan')) || null, signalsChannel: await g('tg:channel'), signalsName: await g('tg:channel_name'),
         tiers: { fast: await g('csig:chat:fast'), balanced: await g('csig:chat:balanced'), premium: await g('csig:chat:premium'), free: await g('csig:chat:free') },
         seen
       };
@@ -27958,6 +28359,46 @@ export default {
     /* THE BOT'S OWN FACE (2026-10-30, owner: "bot zahteva Bybit UID verifikaciju" - nothing in this code does, so the text has to live
        in BotFather: description, short description, commands). GET reads all three; POST {description, short, commands:[{command,description}]} sets
        whichever keys the body carries. Admin key or cookie. */
+    // BingX affiliate feed, RAW (2026-10-30, measuring before the BingX board is built): ?ep=commission|roster, ?days=N, ?uid=
+    /* THE BINGX BOARD DESK (2026-10-30): ?ws= a season (default the running one), ?sync=1 reads the feed now, ?seal=1 seals
+       the season that just ended, ?pay=1 runs the payer, ?bonus=1 (+ ?week=, ?build=1, ?run=1, ?ready=1) the weekly bonus. */
+    if (url.pathname === '/api/admin/bingxboard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const J7 = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      const extra = {};
+      if (url.searchParams.get('sync') === '1') extra.sync = await bingxAffSync(env, { force: url.searchParams.get('force') === '1' });
+      if (url.searchParams.get('seal') === '1') extra.seal = await bingxAffSync(env, { force: true });
+      if (url.searchParams.get('pay') === '1') { await payBingxPrizes(env); extra.pay = 'ran'; }
+      if (url.searchParams.get('bonus') === '1') {
+        if (url.searchParams.get('run') === '1') { await checkBingxBonus(env); extra.ran = true; }
+        const qw = String(url.searchParams.get('week') || '');
+        const ws1 = qw ? Date.parse(qw + 'T00:00:00Z') : bybitWeekStart(Date.now());
+        if (url.searchParams.get('ready') === '1') return J7({ week: bybitWeekKey(ws1), label: bingxWeekLabel(ws1), ...(await bingxWeekReady(env, ws1)) });
+        let b1 = await bingxBonusGet(env, ws1);
+        if (!b1 || url.searchParams.get('build') === '1') { const fresh = await bingxBonusBuild(env, ws1); if (!fresh.error) { fresh.announcedTs = (b1 && b1.announcedTs) || 0; fresh.capCents = (b1 && b1.capCents) || 0; fresh.token = (b1 && b1.token) || ''; b1 = fresh; } else if (!b1) b1 = fresh; }
+        if (!b1) return J7({ error: 'no_week', week: bybitWeekKey(ws1) }, 404);
+        if (b1.error) return J7({ ...b1, ...extra });
+        const rows1 = []; for (const r of b1.rows || []) { let claimedTs = 0; try { claimedTs = +(await env.STATS.get('bxbonus:claim:' + b1.week + ':' + r.buid)) || 0; } catch (e) {} rows1.push({ ...r, claimed: !!claimedTs, claimedTs }); }
+        const sane1 = bingxBonusSane(b1), claimedC = rows1.filter(r => r.claimed).reduce((s, r) => s + r.cents, 0);
+        const hist = []; for (let i = 0; i <= 12; i++) { const wsX = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (wsX < BINGX_BONUS_START) break; const bX = await bingxBonusGet(env, wsX); if (!bX || bX.error) continue; hist.push({ week: bX.week, volumeUsd: bX.volumeUsd, commissionUsd: bX.commissionUsd, payoutCents: bX.payoutCents, payableN: bX.payableN, announced: !!bX.announcedTs }); }
+        let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
+        return J7({ ...b1, rows: rows1, capOk: sane1.ok, capWhy: sane1.why || '', capMaxCents: sane1.maxC || 0, claimedCents: claimedC, unclaimedCents: Math.max(0, b1.payoutCents - claimedC), announced: !!b1.announcedTs, channel: chan || null, history: hist, ...extra });
+      }
+      const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
+      const b = await bingxVolBoard(env, ws); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:bingx:' + ws)); } catch (e) {}
+      let chan = ''; try { chan = (await env.STATS.get('cfg:bingxchan')) || ''; } catch (e) {}
+      const e2eOn = url.searchParams.get('e2e') === '1';
+      return J7({ ws, season: new Date(ws).toISOString().slice(0, 10), startsAt: new Date(BINGX_LB_START).toISOString().slice(0, 10), live: ws >= BINGX_LB_START, paid: paidFlag, channel: chan || null,
+        rows: b.rows.filter(r => e2eOn || !r.e2e), matched: b.matched.filter(r => e2eOn || !r.e2e), unmatched: b.unmatched, regs: b.regs.filter(r => e2eOn || !r.e2e), pool: b.pool, poolAll: e2eOn ? b.poolAll : undefined, upload: b.upload, registered: b.registered, tiers: BINGX_POOL_TIERS, ...extra });
+    }
+    if (url.pathname === '/api/admin/bingxaff' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const J8 = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      const ep = url.searchParams.get('ep') || 'commission', days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 7)), uidQ = url.searchParams.get('uid') || '';
+      const now = Date.now(), st0 = now - days * 86400000;
+      if (ep === 'roster') return J8(await bingxSigned(env, '/openApi/agent/v1/account/inviteAccountList', { pageIndex: 1, pageSize: 100 }));
+      if (ep === 'check' && uidQ) return J8(await bingxAffLookup(env, uidQ));
+      const prm = { startTime: st0, endTime: now, pageIndex: 1, pageSize: 100 }; if (uidQ) prm.uid = uidQ;
+      return J8({ days, from: new Date(st0).toISOString(), r: await bingxSigned(env, '/openApi/agent/v1/reward/commissionDataList', prm) });
+    }
     if (url.pathname === '/api/admin/botface' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const J9 = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
       if (!env.TELEGRAM_TOKEN) return J9({ error: 'no_token' }, 503);
@@ -29900,7 +30341,7 @@ export default {
         let _affOk = null;
         // checkMexcKey rides this same pass: the MEXC key expires every 90 days by their own rule (a Worker has no
         // fixed egress IP, so no whitelist is possible) and it returns {skipped:'no_key'} until one is set.
-        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBingxKey, 'bingxkey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs'], [autoApproveSweep, 'autoapprove']]) {
+        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [bingxAffSync, 'bingxaff'], [checkBingxBonus, 'bingxbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBingxKey, 'bingxkey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs'], [autoApproveSweep, 'autoapprove']]) {
           const t0 = Date.now();
           try {
             const r = await fn(env, label === 'bybitkey' ? _affOk : undefined);
@@ -30031,6 +30472,7 @@ export default {
     bg(checkLineAlerts, 'linealerts'); // a hand-drawn trend line crossed (2026-10-29) - free, one-shot, Telegram else email
     bg(payWeeklyPrizes, 'prizes');
     bg(payBybitPrizes, 'bybitprizes');
+    bg(payBingxPrizes, 'bingxprizes'); // BingX volume board (2026-10-30): pays an ended sealed season once, from BINGX_LB_START
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
@@ -32170,6 +32612,8 @@ export class RewardLedger {
       const map = {}, owners = {}, ban = {}, cre = {};
       const note = r => { if (r.banned) ban[r.address] = 1; if (r.created) cre[r.address] = +r.created || 0; };
       if (body.all) { try { this.rows("SELECT address, payout_addr, banned, created FROM accounts WHERE payout_addr GLOB '[0-9]*' LIMIT 5000").forEach(r => { if (/^[0-9]{5,15}$/.test(String(r.payout_addr))) { map[r.address] = String(r.payout_addr); note(r); } }); } catch (e) {} }
+      // {prefix:'bingx:'} -> every account whose payout target is that venue, the UID with the prefix stripped (the BingX board, 2026-10-30)
+      const pfx = String(body.prefix || ''); if (/^[a-z]{3,8}:$/.test(pfx)) { try { this.rows("SELECT address, payout_addr, banned, created FROM accounts WHERE payout_addr LIKE ? LIMIT 5000", pfx + '%').forEach(r => { const u = String(r.payout_addr).slice(pfx.length); if (/^[0-9]{4,20}$/.test(u)) { map[r.address] = u; note(r); } }); } catch (e) {} }
       for (let i = 0; i < accts.length; i += 40) { const part = accts.slice(i, i + 40); try { this.rows('SELECT address, payout_addr, banned, created FROM accounts WHERE address IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(r => { if (r.payout_addr) { map[r.address] = String(r.payout_addr); note(r); } }); } catch (e) {} } // chunked: a large IN() silently returns nothing
       for (const u of uids) { try { const rs = this.rows('SELECT address, banned, created FROM accounts WHERE payout_addr=?', u); rs.forEach(note); owners[u] = rs.map(r => r.address); } catch (e) { owners[u] = []; } }
       return this.j({ map, owners, ban, cre });
@@ -36191,18 +36635,20 @@ export class UserStore {
       } catch (e) {}
       return this.j({ positions, traders: rows.length + anonTraders, guests: anonTraders, signedIn: rows.length });
     }
-    if (path === '/bybitlinks') { // BYBIT VOLUME BOARD: every registered Bybit UID (uid, name, buid, ts) - the worker joins the owner's report to it
-      let rows = []; try { rows = this.rows("SELECT p.user_id uid, u.username name, p.v buid, p.ts ts FROM uprefs p LEFT JOIN users u ON u.id=p.user_id WHERE p.k='bybit_uid' AND p.v<>'' AND (u.status IS NULL OR u.status='active') ORDER BY p.ts ASC LIMIT 5000"); } catch (e) {}
+    if (path === '/bybitlinks') { // BYBIT VOLUME BOARD: every registered Bybit UID (uid, name, buid, ts) - the worker joins the owner's report to it. {venue:'bingx'} reads the BingX key (2026-10-30)
+      const lk = b.venue === 'bingx' ? 'bingx_uid' : 'bybit_uid';
+      let rows = []; try { rows = this.rows("SELECT p.user_id uid, u.username name, p.v buid, p.ts ts FROM uprefs p LEFT JOIN users u ON u.id=p.user_id WHERE p.k=? AND p.v<>'' AND (u.status IS NULL OR u.status='active') ORDER BY p.ts ASC LIMIT 5000", lk); } catch (e) {}
       return this.j({ rows: rows.map(r => ({ uid: String(r.uid), name: r.name || '', buid: String(r.buid), ts: +r.ts || 0 })) });
     }
     if (path === '/bybitlink') { // {uid, buid}: link a Bybit UID to this account - one account per UID (the earliest link keeps it); '' unlinks
       const uid = String(b.uid || ''), buid = String(b.buid || '').trim(); const sql = this.state.storage.sql;
+      const lk = b.venue === 'bingx' ? 'bingx_uid' : 'bybit_uid'; // the BingX board (2026-10-30) keeps its own key - one account may hold both
       if (!uid) return this.j({ error: 'no_uid' }, 400);
-      if (!buid) { try { sql.exec("DELETE FROM uprefs WHERE user_id=? AND k='bybit_uid'", uid); } catch (e) {} return this.j({ ok: true, buid: '' }); }
-      if (!/^[0-9]{5,15}$/.test(buid)) return this.j({ error: 'bad_buid' }, 400);
-      const other = this.rows("SELECT user_id FROM uprefs WHERE k='bybit_uid' AND v=? AND user_id<>?", buid, uid)[0];
+      if (!buid) { try { sql.exec("DELETE FROM uprefs WHERE user_id=? AND k=?", uid, lk); } catch (e) {} return this.j({ ok: true, buid: '' }); }
+      if (!(lk === 'bingx_uid' ? /^[0-9]{4,20}$/ : /^[0-9]{5,15}$/).test(buid)) return this.j({ error: 'bad_buid' }, 400);
+      const other = this.rows("SELECT user_id FROM uprefs WHERE k=? AND v=? AND user_id<>?", lk, buid, uid)[0];
       if (other) return this.j({ error: 'uid_taken' }, 409);
-      sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, 'bybit_uid', buid, Date.now());
+      sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, lk, buid, Date.now());
       return this.j({ ok: true, buid });
     }
     if (path === '/leaderboard') { // authoritative weekly Trade League - best CLOSED-trade ROE per signed-in user in [ws,we), straight from the synced journal
