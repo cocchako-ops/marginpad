@@ -5008,6 +5008,22 @@ async function handleCompetition(url, request, env, ctx) {
 }
 
 // Hyperliquid whale tracker - biggest current whale positions + recent whale actions (Coinglass /api/hyperliquid/*).
+// The wallet engine (collector/src/hl). An optional layer, so it reads through __realFetch with its own ceiling: a slow
+// engine must never open the collector breaker the money paths share. A failure is answered and never cached.
+async function handleHlProxy(url, env) {
+  const route = url.pathname.slice('/api/hl/'.length);
+  if (!/^(status|cohorts|cohort|market|traders|changes|wallet)$/.test(route)) return new Response('{"error":"not_found"}', { status: 404, headers: { 'content-type': 'application/json' } });
+  const key = new Request('https://marginpad.io/__hl_v1/' + route + url.search), cache = caches.default;
+  const hit = await cache.match(key); if (hit) return hit;
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  try {
+    const r = await __realFetch(base + '/api/v1/hl/' + route + url.search, { signal: AbortSignal.timeout(3500) });
+    const body = await r.text();
+    const res = new Response(body, { status: r.status, headers: { 'content-type': 'application/json', 'cache-control': r.ok ? 'public, max-age=20' : 'no-store' } });
+    if (r.ok) await cache.put(key, res.clone());
+    return res;
+  } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); }
+}
 async function handleCgHyper(url, env) {
  // 2026-08-22 Coinglass independence, phase D: whale positions + change alerts now come from OUR
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
@@ -25129,6 +25145,7 @@ export default {
       return J({ days: dN, mode: "report-only", byDay: total, byDirective: srt(byDirective), byOrigin: srt(byOrigin),
         note: "nothing is blocked while the policy is report-only. Turn it into content-security-policy once byOrigin holds nothing we do not recognise." });
     }
+    if (url.pathname.startsWith('/api/hl/')) return handleHlProxy(url, env);
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);

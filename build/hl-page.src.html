@@ -1,0 +1,231 @@
+<style>
+:root{--bg:#0a0b0d;--p:#101216;--p2:#14171c;--ln:rgba(255,255,255,.075);--t:#eef1f4;--m:#8b94a0;--d:#5c6570;--l:#c2f64a;--g:#2ebd85;--r:#ff5a4d;--a:#f0b64a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--t);font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:14px}
+[hidden]{display:none !important}
+a{color:inherit;text-decoration:none}
+.num{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums}
+.hl{display:grid;grid-template-columns:216px minmax(0,1fr);min-height:calc(100vh - 56px)}
+.hs{border-right:1px solid var(--ln);padding:16px 10px;position:sticky;top:0;align-self:start;height:calc(100vh - 56px);overflow:auto}
+.hs h6{margin:14px 10px 6px;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;color:var(--d);text-transform:uppercase}
+.hs h6:first-child{margin-top:0}
+.ni{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:8px 10px;border-radius:8px;color:var(--m);line-height:1.2;transition:background .14s,color .14s}
+.ni b{display:block;font-size:13.5px;font-weight:600;color:var(--t)}
+.ni small{display:block;font-size:11px;color:var(--d);margin-top:2px}
+.ni:hover{background:rgba(255,255,255,.04)}
+.ni.on{background:rgba(194,246,74,.09)}.ni.on b{color:var(--l)}
+.ni.sub{padding:6px 10px 6px 18px}.ni.sub b{font-size:12.5px;font-weight:500}
+.hm{padding:18px clamp(14px,2.2vw,28px) 60px;min-width:0}
+.hh{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.hh h1{margin:0;font:700 clamp(21px,2.4vw,27px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.hh p{margin:5px 0 0;color:var(--m);font-size:13px}
+.srch{display:flex;gap:6px}
+.srch input{width:300px;max-width:62vw;background:var(--p);border:1px solid var(--ln);color:var(--t);border-radius:8px;padding:8px 11px;font:13px 'Space Mono',monospace;outline:none}
+.srch input:focus{border-color:rgba(194,246,74,.45)}
+.cov{display:flex;flex-wrap:wrap;gap:6px 22px;padding:9px 13px;background:var(--p);border:1px solid var(--ln);border-radius:10px;color:var(--m);font-size:12.5px;margin-bottom:16px}
+.cov b{color:var(--t);font-weight:600}
+h2.sec{font:600 15px 'Bricolage Grotesque',sans-serif;margin:20px 0 9px}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:10px}
+.cc{display:block;background:var(--p);border:1px solid var(--ln);border-radius:12px;padding:13px 14px;transition:border-color .14s,background .14s}
+.cc:hover{border-color:rgba(194,246,74,.32);background:var(--p2)}
+.ct{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ct b{font-size:15px;font-weight:700}
+.bp{font:700 10px 'Space Mono',monospace;padding:3px 6px;border-radius:5px;white-space:nowrap}
+.bp.very_bullish,.bp.bullish{background:rgba(46,189,133,.14);color:var(--g)}
+.bp.very_bearish,.bp.bearish{background:rgba(255,90,77,.14);color:var(--r)}
+.bp.neutral,.bp.none{background:rgba(255,255,255,.07);color:var(--m)}
+.cs{color:var(--d);font-size:11.5px;margin-top:3px}
+.bar{height:5px;border-radius:3px;background:var(--r);overflow:hidden;margin:11px 0 7px}
+.bar i{display:block;height:100%;background:var(--g)}
+.cn{display:flex;justify-content:space-between;font-size:12.5px}
+.cn .L{color:var(--g)}.cn .S{color:var(--r)}
+.cn small{display:block;color:var(--d);font-size:10.5px;margin-top:2px}
+.cn div:last-child{text-align:right}
+.tb{background:var(--p);border:1px solid var(--ln);border-radius:12px;overflow:hidden}
+.tr{display:grid;gap:10px;align-items:center;padding:8px 13px;border-top:1px solid var(--ln);font-size:13px;min-width:0;transition:background .12s}
+a.tr:hover{background:rgba(255,255,255,.03)}
+.tr.h{border-top:0;padding:8px 13px;color:var(--d);font:700 10px 'Space Mono',monospace;letter-spacing:.05em;text-transform:uppercase}
+.tr>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r{text-align:right}
+.g{color:var(--g)}.rd{color:var(--r)}.mu{color:var(--m)}
+.who{display:flex;align-items:center;gap:8px;min-width:0}
+.who span{overflow:hidden;text-overflow:ellipsis}
+.who small{color:var(--d);font-family:'Space Mono',monospace;font-size:10.5px;display:block}
+.wh-av{flex:0 0 auto;border-radius:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{background:var(--p);border:1px solid var(--ln);color:var(--m);padding:5px 10px;border-radius:7px;font:700 11px 'Space Mono',monospace;cursor:pointer}
+.chip.on{color:var(--l);border-color:rgba(194,246,74,.4)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}
+.tile{background:var(--p);border:1px solid var(--ln);border-radius:10px;padding:10px 12px}
+.tile small{display:block;color:var(--d);font:700 10px 'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em}
+.tile b{display:block;margin-top:5px;font-size:17px}
+.sbar{display:flex;align-items:center;gap:7px}
+.sbar>span{flex:0 0 auto}
+.sbar .bar{flex:1 1 auto;margin:0;min-width:14px}
+.empty{padding:26px 14px;color:var(--m);text-align:center}
+.bk{color:var(--m);font-size:12.5px;display:inline-block;margin-bottom:8px}
+.bk:hover{color:var(--t)}
+svg.ln{display:block;width:100%;height:120px}
+@media(max-width:860px){
+  .hl{display:block}
+  .hs{position:static;height:auto;border-right:0;border-bottom:1px solid var(--ln);display:flex;gap:6px;overflow-x:auto;padding:9px 12px}
+  .hs h6,.ni.sub,.ni small{display:none}
+  .ni{width:auto;flex:0 0 auto;padding:7px 11px;background:var(--p);border:1px solid var(--ln)}
+  .hm{padding:13px 12px 96px}
+  .srch,.srch input{width:100%;max-width:none}
+  .cg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .cc{padding:10px 11px}
+  .cn{font-size:11.5px}
+  .tr.h .pho,.tr .pho{display:none}
+  .tr{padding:8px 10px;gap:7px}
+}
+</style>
+<div class="hl">
+  <aside class="hs" id="hs"></aside>
+  <main class="hm" id="hm"><div class="empty">Loading</div></main>
+</div>
+<script>
+(function(){
+  var PN=[['elite','Elite','+$1M and up'],['sharp','Sharp','+$100K to +$1M'],['green','Green','$0 to +$100K'],['red','Red','$0 to -$100K'],['burned','Burned','-$100K to -$1M'],['rekt','Rekt','-$1M and worse']];
+  var SZ=[['titan','Titan','$5M+ equity'],['whale','Whale','$1M to $5M'],['shark','Shark','$100K to $1M'],['fish','Fish','$10K to $100K'],['shrimp','Shrimp','under $10K']];
+  var BIAS={very_bullish:'Very bullish',bullish:'Bullish',neutral:'Neutral',bearish:'Bearish',very_bearish:'Very bearish',none:'No positions'};
+  var hm=document.getElementById('hm'),hs=document.getElementById('hs'),timer=0,seq=0,chg={w:'1h',side:'',coin:''},mkt={tab:'traders',w:'1h'},coh={tab:'wallets'};
+  /*@WHO*/
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function usd(v){if(v==null||!isFinite(v))return '-';var a=Math.abs(v),s=v<0?'-':'';if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(a>=1e8?0:1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(a>=1e5?0:1)+'K';return s+'$'+a.toFixed(0)}
+  function sgn(v){return v==null?'-':(v>0?'+':'')+usd(v)}
+  function px(v){if(v==null||!v)return '-';return '$'+(v>=1000?Math.round(v).toLocaleString('en-US'):v>=1?v.toFixed(2):v.toPrecision(4))}
+  function pct(l,s){var t=l+s;return t?Math.round(l/t*100):0}
+  function ago(ts){var d=Math.max(0,Date.now()-ts)/1000;if(d<60)return Math.round(d)+'s';if(d<3600)return Math.round(d/60)+'m';if(d<86400)return Math.round(d/3600)+'h';return Math.round(d/86400)+'d'}
+  function cn(c){return String(c).replace(/^xyz:/,'')}
+  function who(a,label,s){return '<span class="who">'+whoAv(a,s||24)+'<span>'+esc(label||whoName(a))+'<small>'+esc(a.slice(0,6)+'...'+a.slice(-4))+'</small></span></span>'}
+  function get(r){return fetch('/api/hl/'+r).then(function(x){if(!x.ok)throw 0;return x.json()})}
+  function bar(l,s){return '<div class="bar"><i style="width:'+pct(l,s)+'%"></i></div>'}
+  function nav(){
+    var h=location.hash||'#cohorts',a=function(k,t,sub,c){return '<a class="ni '+(c||'')+(h.indexOf(k)===0?' on':'')+'" href="'+k+'"><span><b>'+t+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></a>'};
+    var s='<h6>Discover</h6>'+a('#cohorts','Cohorts','Who is long, who is short')+a('#markets','Markets','Every coin, by positioning')+a('#changes','Position changes','Who just moved');
+    PN.forEach(function(p){s+=a('#cohort/'+p[0],p[1],'','sub')});
+    hs.innerHTML=s;
+  }
+  var COV_MIN=50,early=true;
+  function pill(b){return early?'<span class="bp none">Early read</span>':'<span class="bp '+b+'">'+BIAS[b]+'</span>'}
+  function card(c,meta){
+    var l=c?c.long:0,sh=c?c.short:0;
+    return '<a class="cc" href="#cohort/'+meta[0]+'"><div class="ct"><b>'+meta[1]+'</b>'+pill(c?c.bias:'none')+'</div><div class="cs">'+meta[2]+' · '+(c?c.wallets.toLocaleString('en-US'):0)+' wallets</div>'+bar(l,sh)+'<div class="cn"><div class="L num">'+usd(l)+'<small>'+pct(l,sh)+'% long</small></div><div class="S num">'+usd(sh)+'<small>'+(l+sh?100-pct(l,sh):0)+'% short</small></div></div></a>';
+  }
+  function covLine(j){
+    var c=j.coverage,a=j.all;
+    return '<div class="cov">'+(c?'<span>Tracking <b>'+c.pct+'%</b> of market positions'+(early?'. Too early to say which way a group leans.':'')+'</span><span>Open interest <b class="num">'+usd(c.oi)+'</b></span>':'<span>Reading wallets</span>')+(j.ts?'<span>Updated <b>'+ago(j.ts)+' ago</b></span>':'')+'</div>';
+  }
+  function vCohorts(my){
+    return get('cohorts').then(function(j){
+      if(my!==seq)return;
+      if(!j.ts){hm.innerHTML='<div class="empty">The first reading lands within a couple of minutes</div>';return}
+      early=!(j.coverage&&j.coverage.pct>=COV_MIN);
+      var f=function(a,id){return a.filter(function(x){return x.id===id})[0]};
+      var ex=(j.excluded||[]).filter(function(x){return x.long+x.short>0});
+      hm.innerHTML='<div class="hh"><div><h1>Hyperliquid cohorts</h1><p>Every wallet we read, grouped by what it has earned and what it holds</p></div>'+srch()+'</div>'+covLine(j)
+       +'<h2 class="sec">By all-time profit</h2><div class="cg">'+PN.map(function(p){return card(f(j.pnl,p[0]),p)}).join('')+'</div>'
+       +'<h2 class="sec">By account size</h2><div class="cg">'+SZ.map(function(p){return card(f(j.size,p[0]),p)}).join('')+'</div>'
+       +(ex.length?'<h2 class="sec">Left out of the groups above</h2><div class="tb">'+ex.map(function(x){return '<div class="tr" style="grid-template-columns:1fr auto auto"><span>'+x.name+'</span><span class="num g">'+usd(x.long)+'</span><span class="num rd">'+usd(x.short)+'</span></div>'}).join('')+'</div>':'');
+      wire();
+    });
+  }
+  function srch(){return '<form class="srch" id="sf"><input id="si" placeholder="Paste a wallet 0x..." autocomplete="off" spellcheck="false" /></form>'}
+  function wire(){var f=document.getElementById('sf');if(f)f.onsubmit=function(e){e.preventDefault();var v=document.getElementById('si').value.trim().toLowerCase();if(/^0x[0-9a-f]{40}$/.test(v))location.hash='#wallet/'+v;else if(v)location.hash='#market/'+v.toUpperCase()}}
+  function posTable(rows){
+    if(!rows.length)return '<div class="tb"><div class="empty">No open positions</div></div>';
+    var c='grid-template-columns:minmax(120px,1.5fr) 62px 86px minmax(70px,1fr) minmax(70px,1fr) minmax(76px,1fr)';
+    return '<div class="tb"><div class="tr h" style="'+c+'"><span>Trader</span><span>Side</span><span class="r">Size</span><span class="r pho">Entry</span><span class="r pho">Liq</span><span class="r">uPnL</span></div>'+rows.map(function(r){
+      return '<a class="tr" style="'+c+'" href="#wallet/'+r.a+'">'+who(r.a,r.label)+'<span class="'+(r.long?'g':'rd')+'">'+(r.long?'Long':'Short')+(r.lev?' '+Math.round(r.lev)+'x':'')+'</span><span class="r num">'+usd(r.ntl)+'</span><span class="r num pho">'+px(r.entry)+'</span><span class="r num pho">'+(r.liq?px(r.liq):'-')+'</span><span class="r num '+(r.upnl>=0?'g':'rd')+'">'+sgn(r.upnl)+'</span></a>'}).join('')+'</div>';
+  }
+  function chgTable(rows,noCoin){
+    if(!rows.length)return '<div class="tb"><div class="empty">Nothing above the floor in this window yet</div></div>';
+    var c='grid-template-columns:minmax(120px,1.5fr) '+(noCoin?'':'70px ')+'70px 92px 54px';
+    return '<div class="tb"><div class="tr h" style="'+c+'"><span>Trader</span>'+(noCoin?'':'<span>Coin</span>')+'<span>Did</span><span class="r">Change</span><span class="r">When</span></div>'+rows.map(function(r){
+      return '<a class="tr" style="'+c+'" href="#wallet/'+r.a+'">'+who(r.a,r.label)+(noCoin?'':'<span>'+esc(cn(r.coin))+'</span>')+'<span class="mu">'+r.kind+'</span><span class="r num '+(r.usd>=0?'g':'rd')+'">'+sgn(r.usd)+'</span><span class="r num mu">'+ago(r.t1)+'</span></a>'}).join('')+'</div>';
+  }
+  function chips(list,cur,attr){return '<div class="chips">'+list.map(function(x){return '<button class="chip'+(x[0]===cur?' on':'')+'" data-'+attr+'="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>'}
+  var WINS=[['15m','15M'],['1h','1H'],['4h','4H'],['24h','24H'],['3d','3D'],['7d','7D']];
+  function vChanges(my){
+    return get('changes?w='+chg.w+'&limit=60&min=25000').then(function(j){
+      if(my!==seq)return;
+      hm.innerHTML='<div class="hh"><div><h1>Position changes</h1><p>The biggest moves in wallets, by dollars added or taken off</p></div></div>'+chips(WINS,chg.w,'cw')+chgTable(j.rows);
+      hm.querySelectorAll('[data-cw]').forEach(function(b){b.onclick=function(){chg.w=b.getAttribute('data-cw');go()}});
+    });
+  }
+  function vMarkets(my){
+    return get('cohorts').then(function(j){
+      if(my!==seq)return;
+      var c='grid-template-columns:minmax(90px,1fr) 100px';
+      hm.innerHTML='<div class="hh"><div><h1>Markets</h1><p>Positions we can see on each coin. Open one for who holds what.</p></div>'+srch()+'</div><div class="tb"><div class="tr h" style="'+c+'"><span>Coin</span><span class="r">Positions</span></div>'+(j.coins||[]).map(function(x){return '<a class="tr" style="'+c+'" href="#market/'+encodeURIComponent(x.coin)+'"><span>'+esc(cn(x.coin))+'</span><span class="r num">'+usd(x.ntl)+'</span></a>'}).join('')+'</div>';
+      wire();
+    });
+  }
+  function cohRows(a){
+    var c='grid-template-columns:minmax(66px,1fr) minmax(136px,2.4fr) 44px 54px';
+    return '<div class="tb"><div class="tr h" style="'+c+'"><span>Group</span><span>Long vs short</span><span class="r">Long</span><span class="r pho">Traders</span></div>'+a.filter(function(r){return r.long+r.short>0}).map(function(r){
+      return '<a class="tr" style="'+c+'" href="#cohort/'+r.id+'"><span>'+r.name+'</span><span class="sbar"><span class="num g" style="font-size:11.5px">'+usd(r.long)+'</span>'+bar(r.long,r.short)+'<span class="num rd" style="font-size:11.5px">'+usd(r.short)+'</span></span><span class="r num">'+pct(r.long,r.short)+'%</span><span class="r num mu pho">'+(r.long_n+r.short_n)+'</span></a>'}).join('')+'</div>';
+  }
+  function vMarket(coin,my){
+    return Promise.all([get('market?coin='+encodeURIComponent(coin)).catch(function(){return null}),mkt.tab==='traders'?get('traders?limit=25&coin='+encodeURIComponent(coin)):get('changes?limit=25&min=5000&w='+mkt.w+'&coin='+encodeURIComponent(coin))]).then(function(r){
+      if(my!==seq)return;var m=r[0],t=r[1];
+      if(!m){hm.innerHTML='<a class="bk" href="#markets">Markets</a><div class="empty">No positions read on '+esc(coin)+' yet</div>';return}
+      hm.innerHTML='<a class="bk" href="#markets">Markets</a><div class="hh"><div><h1>'+esc(cn(coin))+'</h1><p>'+(m.all.long_n+m.all.short_n).toLocaleString('en-US')+' traders · '+usd(m.all.long)+' long · '+usd(m.all.short)+' short</p></div></div>'
+       +'<h2 class="sec">By all-time profit</h2>'+cohRows(m.pnl)+'<h2 class="sec">By account size</h2>'+cohRows(m.size)
+       +'<h2 class="sec">Traders</h2>'+chips([['traders','Top positions'],['changes','Position changes']],mkt.tab,'mt')+(mkt.tab==='changes'?chips(WINS,mkt.w,'mw'):'')+(mkt.tab==='traders'?posTable(t.rows):chgTable(t.rows,true));
+      hm.querySelectorAll('[data-mt]').forEach(function(b){b.onclick=function(){mkt.tab=b.getAttribute('data-mt');go()}});
+      hm.querySelectorAll('[data-mw]').forEach(function(b){b.onclick=function(){mkt.w=b.getAttribute('data-mw');go()}});
+    });
+  }
+  function spark(h){
+    if(!h||h.length<3)return '';
+    var v=h.map(function(p){return p.l/((p.l+p.s)||1)*100}),n=Math.min.apply(0,v)-2,x=Math.max.apply(0,v)+2,W=800,H=120;
+    var pts=v.map(function(y,i){return (i/(v.length-1)*W).toFixed(1)+','+(H-(y-n)/(x-n)*H).toFixed(1)}).join(' ');
+    return '<h2 class="sec">Long share, last 48 hours</h2><div class="tb" style="padding:10px 12px"><svg class="ln" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="#c2f64a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><div class="cs">'+v[0].toFixed(1)+'% to '+v[v.length-1].toFixed(1)+'% long</div></div>';
+  }
+  function vCohort(id,my){
+    return get('cohort?id='+id).then(function(j){
+      if(my!==seq)return;var c=j.cohort,meta=PN.concat(SZ).filter(function(x){return x[0]===id})[0];
+      var body;
+      if(coh.tab==='wallets'){var g='grid-template-columns:minmax(120px,1.5fr) 84px minmax(70px,1fr) 88px';
+        body='<div class="tb"><div class="tr h" style="'+g+'"><span>Trader</span><span class="r">Positions</span><span class="r pho">Equity</span><span class="r">30d PnL</span></div>'+j.wallets.map(function(w){return '<a class="tr" style="'+g+'" href="#wallet/'+w.a+'">'+who(w.a,w.label)+'<span class="r num">'+usd(w.ntl)+'</span><span class="r num pho">'+usd(w.av)+'</span><span class="r num '+((w.pnl_m||0)>=0?'g':'rd')+'">'+(w.pnl_m==null?'-':sgn(w.pnl_m))+'</span></a>'}).join('')+'</div>'}
+      else{var g2='grid-template-columns:minmax(60px,1fr) minmax(136px,2.4fr) 44px';
+        body='<div class="tb"><div class="tr h" style="'+g2+'"><span>Coin</span><span>Long vs short</span><span class="r">Long</span></div>'+j.markets.map(function(x){return '<a class="tr" style="'+g2+'" href="#market/'+encodeURIComponent(x.coin)+'"><span>'+esc(cn(x.coin))+'</span><span class="sbar"><span class="num g" style="font-size:11.5px">'+usd(x.long)+'</span>'+bar(x.long,x.short)+'<span class="num rd" style="font-size:11.5px">'+usd(x.short)+'</span></span><span class="r num">'+pct(x.long,x.short)+'%</span></a>'}).join('')+'</div>'}
+      hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="hh"><div><h1>'+meta[1]+' '+pill(c.bias)+'</h1><p>'+meta[2]+' · '+c.wallets.toLocaleString('en-US')+' wallets with a position</p></div></div>'
+       +'<div class="tiles"><div class="tile"><small>Long</small><b class="num g">'+usd(c.long)+'</b></div><div class="tile"><small>Short</small><b class="num rd">'+usd(c.short)+'</b></div><div class="tile"><small>Long share</small><b class="num">'+pct(c.long,c.short)+'%</b></div><div class="tile"><small>In profit</small><b class="num">'+pct(c.prof_n,c.loss_n)+'%</b></div><div class="tile"><small>Unrealized</small><b class="num '+(c.upnl>=0?'g':'rd')+'">'+sgn(c.upnl)+'</b></div></div>'
+       +spark(j.hist)+chips([['wallets','Wallets ('+j.total+')'],['markets','Markets ('+j.markets.length+')']],coh.tab,'ct')+body;
+      hm.querySelectorAll('[data-ct]').forEach(function(b){b.onclick=function(){coh.tab=b.getAttribute('data-ct');go()}});
+    });
+  }
+  function vWallet(a,my){
+    return get('wallet?a='+a).then(function(w){
+      if(my!==seq)return;
+      var pn=(PN.filter(function(x){return x[0]===w.pnl_c})[0]||[0,'Unknown'])[1],sz=(SZ.filter(function(x){return x[0]===w.size_c})[0]||[0,'Unknown'])[1];
+      hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="hh"><div style="display:flex;gap:12px;align-items:center">'+whoAv(a,46)+'<div><h1>'+esc(w.label||whoName(a))+'</h1><p class="num" style="font-size:11.5px">'+esc(a)+'</p></div></div></div>'
+       +'<div class="tiles"><div class="tile"><small>Equity</small><b class="num">'+usd(w.av)+'</b></div><div class="tile"><small>All-time PnL</small><b class="num '+((w.pnl_all||0)>=0?'g':'rd')+'">'+(w.pnl_all==null?'-':sgn(w.pnl_all))+'</b></div><div class="tile"><small>30d PnL</small><b class="num '+((w.pnl_m||0)>=0?'g':'rd')+'">'+(w.pnl_m==null?'-':sgn(w.pnl_m))+'</b></div><div class="tile"><small>Group</small><b>'+pn+' · '+sz+'</b></div><div class="tile"><small>Last read</small><b class="num">'+(w.last_snap?ago(w.last_snap)+' ago':'-')+'</b></div></div>'
+       +'<h2 class="sec">Open positions</h2>'+walletPos(w.positions);
+    }).catch(function(){if(my===seq)hm.innerHTML='<a class="bk" href="#cohorts">Cohorts</a><div class="empty">We have not read this wallet yet</div>'});
+  }
+  function walletPos(rows){
+    if(!rows.length)return '<div class="tb"><div class="empty">No open positions</div></div>';
+    var c='grid-template-columns:minmax(70px,1fr) 70px 86px minmax(70px,1fr) minmax(70px,1fr) minmax(76px,1fr)';
+    return '<div class="tb"><div class="tr h" style="'+c+'"><span>Coin</span><span>Side</span><span class="r">Size</span><span class="r pho">Entry</span><span class="r pho">Liq</span><span class="r">uPnL</span></div>'+rows.map(function(r){return '<a class="tr" style="'+c+'" href="#market/'+encodeURIComponent(r.coin)+'"><span>'+esc(cn(r.coin))+'</span><span class="'+(r.long?'g':'rd')+'">'+(r.long?'Long':'Short')+(r.lev?' '+Math.round(r.lev)+'x':'')+'</span><span class="r num">'+usd(r.ntl)+'</span><span class="r num pho">'+px(r.entry)+'</span><span class="r num pho">'+(r.liq?px(r.liq):'-')+'</span><span class="r num '+(r.upnl>=0?'g':'rd')+'">'+sgn(r.upnl)+'</span></a>'}).join('')+'</div>';
+  }
+  function go(){
+    clearTimeout(timer);var my=++seq,h=(location.hash||'#cohorts').slice(1),p=h.split('/'),job;
+    nav();
+    if(p[0]==='cohort'&&p[1])job=vCohort(p[1],my);
+    else if(p[0]==='market'&&p[1])job=vMarket(decodeURIComponent(p[1]),my);
+    else if(p[0]==='markets')job=vMarkets(my);
+    else if(p[0]==='changes')job=vChanges(my);
+    else if(p[0]==='wallet'&&p[1])job=vWallet(p[1],my);
+    else job=vCohorts(my);
+    Promise.resolve(job).catch(function(){if(my===seq)hm.innerHTML='<div class="empty">Could not reach the data just now. Trying again.</div>'}).then(function(){
+      if(my===seq)timer=setTimeout(function(){var ae=document.activeElement;if(ae&&ae.id==='si')return go2();go()},30000)});
+  }
+  function go2(){timer=setTimeout(go,30000)}
+  window.addEventListener('hashchange',function(){window.scrollTo(0,0);go()});
+  go();
+})();
+</script>
