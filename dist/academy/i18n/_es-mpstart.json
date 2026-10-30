@@ -56,15 +56,19 @@
    "cards": [
     {
      "h": "El XP es solo lo que hiciste, contado",
-     "p": "Cada lección que terminas son 25 XP, cada día que te conectas son 20, una operación son 3 y una ganadora 15. Nada se compra y nada es aleatorio - el XP es un registro de haber usado el sitio. El número aparece junto a tu nombre en el menú de tu cuenta y arriba de tu página de temporada."
+     "p": "Cada lección que terminas son 25 XP, cada día que apareces son 20, una operación son 3 y una ganadora 15. Nada se compra y nada es aleatorio - el XP es un registro de haber usado el sitio. El número aparece junto a tu nombre en el menú de tu cuenta y en la parte superior de tu página de temporada."
     },
     {
-     "h": "Bronze son 500 XP, y es la única puerta",
-     "p": "Por debajo de 500 XP eres Sin rango, y todo el lado de recompensas de MarginPad está cerrado: el faucet, las misiones diarias, las referencias y los retiros. Al llegar a Bronze los cuatro se abren a la vez y quedan abiertos. Nada de esto cuesta dinero, y es lo único que separa a una cuenta nueva de todo lo que paga este sitio."
+     "h": "Bronze es el primer nivel, no una puerta",
+     "p": "Por debajo de 500 XP eres Unranked; a los 500 eres Bronze, y luego Silver, Gold, Platinum, Diamond, Master y Legendary a medida que el número sube. Nada en este sitio espera ya a un nivel: el faucet, las misiones diarias, los referidos, los retiros y todos los tableros gratuitos están abiertos desde el día en que te registras. Un nivel es una insignia y un bonus, nunca un candado."
     },
     {
-     "h": "Este curso te deja a mitad de camino",
-     "p": "Estás leyendo la lección dos de siete. Terminar las siete, con las dos bonificaciones del camino a Bronze que activan, te deja un poco por encima de 400 XP - así que después de esto, una operación en simulado con un stop-loss puesto, o simplemente volver mañana, es Bronze."
+     "h": "Qué cambia realmente un nivel",
+     "p": "Desde Silver, cada reclamo del faucet paga un poco más - el multiplicador sube con el nivel. Cada nivel desbloquea un marco para tu tarjeta de perfil, y el tablero Gold Room - uno de los nueve - solo clasifica cuentas en Gold, que son 12.000 XP. Esa es toda la lista. El terminal de práctica, los gráficos y las alertas son los mismos en todos los niveles."
+    },
+    {
+     "h": "Este curso te lleva casi hasta ahí",
+     "p": "Estás leyendo la lección dos de siete. Terminar las siete, con los dos bonus de Road to Bronze que activan, te deja un poco por encima de 400 XP - así que después de esto, una operación en papel con un stop-loss, o simplemente volver mañana, es Bronze. La tarjeta Road to Bronze de tu página de temporada lista las nueve tareas iniciales y lo que paga cada una."
     }
    ],
    "quiz": [
@@ -72,25 +76,25 @@
      "q": "¿Qué es Bronze?",
      "o": [
       "Un nivel de membresía de pago",
-      "El nivel que alcanzas a los 500 XP",
-      "El primer premio de la clasificación",
+      "El nivel que alcanzas con 500 XP",
+      "El primer premio de un tablero",
       "Un marco cosmético para tu tarjeta de perfil"
      ]
     },
     {
      "q": "¿Qué desbloquea llegar a Bronze?",
      "o": [
-      "Comisiones de trading más bajas",
-      "El faucet, las misiones diarias, las referencias y los retiros",
-      "Un saldo de práctica más grande",
-      "Los gráficos y el mapa de calor"
+      "El faucet y las misiones",
+      "Los retiros",
+      "Nada - las recompensas estaban abiertas desde el día en que te registraste; un nivel es una insignia y un bonus",
+      "Los gráficos y el heatmap"
      ]
     },
     {
      "q": "¿Cuál es la forma gratuita más rápida de ganar XP?",
      "o": [
       "Abrir tantas operaciones como sea posible",
-      "Las lecciones de la Academia - 25 cada una, más 50 por curso terminado",
+      "Las lecciones de la Academy - 25 cada una, más 50 por un curso terminado",
       "Dejar el sitio abierto en una pestaña",
       "Invitar amigos"
      ]
@@ -102,16 +106,20 @@
    "t": "El dinero real de este sitio",
    "cards": [
     {
-     "h": "De dónde sale",
-     "p": "MarginPad es gratis y no tiene publicidad. Gana dinero cuando un lector abre una cuenta en un exchange a través de uno de nuestros enlaces, y el exchange comparte parte de su comisión. Ese es todo el negocio, y por eso las recompensas son pequeñas, reales y con límite, en vez de grandes e imaginarias."
+     "h": "De dónde viene",
+     "p": "MarginPad es gratis y no tiene publicidad. Gana cuando un lector abre una cuenta en un exchange a través de uno de nuestros enlaces, y el exchange comparte parte de su comisión. Ese es todo el negocio, y por eso las recompensas son pequeñas, reales y con tope, en lugar de grandes e imaginarias."
     },
     {
      "h": "Qué hay sobre la mesa",
-     "p": "Un bono de bienvenida de $0.50. $0.02 del faucet cada pocos minutos, hasta $0.20 al día. Misiones diarias además. $1.00 por abrir una cuenta en Moon o en Fomo a través de nosotros. $0.50 cuando un amigo que invitaste realmente opera. Todo excepto el bono de bienvenida y los bonos de registro espera a Bronze."
+     "p": "Un bonus de bienvenida de $0.50. $0.01 del faucet cada pocos minutos, hasta $0.10 al día. Misiones diarias encima, de uno o dos centavos cada una. $1.00 por abrir una cuenta en Moon, MEXC, BingX o Bybit a través de nosotros - tres de las cuatro se verifican automáticamente contra la lista de afiliados. $0.50 cuando un amigo que invitaste de verdad opera. Nada de esto espera a un nivel."
     },
     {
-     "h": "Cómo sacarlo",
-     "p": "El saldo se paga en USDT y puedes retirar desde $5.00 a una cuenta de Bybit o de Moon. Cada retiro se revisa y se paga a mano, así que no es instantáneo. Es un agradecimiento por usar el sitio, no un ingreso - trátalo como lo que es y nunca te decepcionará."
+     "h": "Sacarlo",
+     "p": "El saldo se paga en USDT y puedes retirar desde $5.00 a una cuenta de Bybit, Moon o MEXC que se abrió a través de MarginPad. Cada retiro se revisa y se paga a mano, así que no es instantáneo. Es un agradecimiento por usar el sitio, no un ingreso - tómalo como lo que es y nunca te decepcionará."
+    },
+    {
+     "h": "Cómo es realmente un retiro",
+     "p": "Escribes el monto, desde $5 hasta tu saldo, y la cuenta a la que pagarlo. Una solicitud a la vez: la segunda espera hasta que la primera se pague. El equipo ve si esa cuenta del exchange realmente se abrió a través de nosotros, si otro miembro ya retiró a la misma, y cómo se ganó el saldo - así se paga a una cuenta real y no a una granja. Recibes una notificación cuando llega."
     }
    ],
    "quiz": [
@@ -119,13 +127,13 @@
      "q": "¿Cómo gana dinero MarginPad?",
      "o": [
       "Vendiendo tus datos",
-      "Enlaces de afiliado a exchanges - una parte de la comisión cuando alguien se registra a través de nosotros",
-      "Cobrando por la Academia",
-      "Quedándose con parte de las ganancias del paper trading"
+      "Enlaces de afiliado de exchanges - una parte de la comisión cuando alguien se registra a través de nosotros",
+      "Cobrando por la Academy",
+      "Quedándose con una parte de las ganancias del paper trading"
      ]
     },
     {
-     "q": "¿Cuál es la cantidad mínima que puedes retirar?",
+     "q": "¿Cuál es el monto mínimo que puedes retirar?",
      "o": [
       "$1.00",
       "$5.00",
@@ -134,41 +142,40 @@
      ]
     },
     {
-     "q": "¿Cuál de estos NO espera a Bronze?",
+     "q": "¿Cuál de estas espera a un nivel?",
      "o": [
       "El faucet",
       "Las misiones diarias",
-      "El bono de bienvenida de $0.50",
-      "Las referencias"
+      "Los referidos",
+      "Ninguna - toda recompensa está abierta desde el primer día"
      ]
     }
-   ],
-   "try": {
-    "p": "Todo lo mencionado arriba vive en una sola página. Ábrela y mira dónde están tu saldo, el faucet y los bonos de registro - tendrá más sentido en cuanto veas el diseño.",
-    "label": "Abrir Recompensas",
-    "href": "/rewards/"
-   }
+   ]
   },
   {
    "id": "mp4",
-   "t": "Long, short y qué hace realmente el apalancamiento",
+   "t": "Long, short y lo que realmente hace el apalancamiento",
    "cards": [
     {
      "h": "Dos direcciones, no una",
-     "p": "Un long gana cuando el precio sube. Un short gana cuando el precio baja. Esa es toda la diferencia, y por eso un trader de futuros nunca está obligado a quedarse fuera de un mercado que cae. En MarginPad ambos son un toque: los botones Long y Short en el ticket de la operación."
+     "p": "Un long gana cuando el precio sube. Un short gana cuando el precio baja. Esa es toda la diferencia, y por eso un trader de futuros nunca está obligado a quedarse fuera de un mercado a la baja. En MarginPad ambos están a un toque: los botones Long y Short del ticket de operación."
     },
     {
      "h": "El apalancamiento es tamaño, no magia",
-     "p": "Pones $100 a 10x y estás moviendo una posición de $1,000. Cada 1% que se mueve el mercado ahora es el 10% de tu dinero, en cualquier dirección que se mueva. El apalancamiento no mejora una operación - multiplica lo que sea que esa operación te iba a hacer de todos modos."
+     "p": "Pon $100 a 10x y estás moviendo una posición de $1,000. Cada 1% que se mueve el mercado es ahora el 10% de tu dinero, en la dirección que sea. El apalancamiento no mejora una operación - multiplica lo que la operación te iba a hacer de todos modos."
+    },
+    {
+     "h": "La escalera del ticket",
+     "p": "El control de apalancamiento salta por una escalera: pasos enteros hasta 10x, luego de diez en diez - 20, 30, 50, 100 y así. Escribe 107 y se confirma como 110. La escalera existe para que el número que elegiste sea uno que puedas decir en voz alta, y para que la línea de liquidación que el gráfico dibuja a partir de él sea una que puedas leer antes de abrir."
     },
     {
      "h": "Por qué te dejamos llegar a 1000x",
-     "p": "Las principales monedas aquí llegan hasta 1000x, muy por encima de lo que usaría una persona en su sano juicio. Eso es deliberado. A 1000x, más o menos una décima parte de un uno por ciento en tu contra acaba con la posición - y deberías descubrirlo en una cuenta de práctica, esta noche, y no en un exchange con tu propio dinero."
+     "p": "Los principales aquí llegan hasta 1000x, mucho más allá de lo que usaría una persona sensata. Es deliberado. A 1000x, menos de una décima de un por ciento en tu contra termina la posición - y conviene que lo descubras en una cuenta de práctica, esta noche, y no en un exchange con tu propio dinero."
     }
    ],
    "quiz": [
     {
-     "q": "Comprometes $100 a 10x de apalancamiento. ¿De qué tamaño es la posición?",
+     "q": "Pones $100 a 10x de apalancamiento. ¿Qué tan grande es la posición?",
      "o": [
       "$100",
       "$110",
@@ -181,7 +188,7 @@
      "o": [
       "El precio sube",
       "El precio baja",
-      "El precio se mantiene plano",
+      "El precio se queda plano",
       "El volumen sube"
      ]
     },
@@ -249,15 +256,19 @@
    "cards": [
     {
      "h": "Decide la salida antes de necesitarla",
-     "p": "Un stop-loss cierra la operación a un precio que eliges si sale mal. Un take-profit hace lo mismo si sale bien. Ambos se fijan una vez y luego se respetan sin ti, que es justo el punto: el momento en que una posición está perdiendo es el peor momento posible para decidir qué hacer al respecto."
+     "p": "Un stop-loss cierra la operación a un precio que eliges si sale mal. Un take-profit hace lo mismo si sale bien. Ambos se fijan una vez y luego se cumplen sin ti, que es el punto: el momento en que una posición está perdiendo es el peor momento posible para decidir qué hacer con ella."
     },
     {
      "h": "Dónde los fijas aquí",
-     "p": "En el ticket, antes de abrir - o después, desde el botón para fijarlos en la tarjeta de la operación y desde Mis operaciones. Puedes moverlos tantas veces como quieras mientras la operación está abierta. Una operación sin ninguno de los dos es una operación cuya salida la va a elegir lo que sea que sientas en ese momento."
+     "p": "En el ticket, antes de abrir - o después, desde el botón Set de la tarjeta de la operación y desde My Trades. Puedes moverlos tantas veces como quieras mientras la operación esté abierta. Una operación sin ninguno es una operación cuya salida la decidirá lo que sea que sientas en ese momento."
+    },
+    {
+     "h": "En el ticket, paso a paso",
+     "p": "Abre Advanced bajo el formulario de la operación. El stop y el objetivo aceptan cada uno un precio, o un porcentaje de tu margen - escribe uno y el otro se reescribe, así que nunca pueden discrepar. El panel rellena un stop al 2% y un objetivo al 3% como punto de partida; cambia de lado y los niveles autorrellenados cambian con él. Lo que el panel oculta no se aplica: cierra Advanced y la operación se abre sin ellos."
     },
     {
      "h": "Este es el hábito que vale la pena construir",
-     "p": "Nada más en este curso va a cambiar tus resultados tanto como esto. En las tablas que pagan USDT real, las cuentas que duran no son las que eligen mejores entradas - son las que ya habían decidido dónde se equivocarían. Fijar uno también es una tarea del camino a Bronze, que vale 40 XP."
+     "p": "Nada más en este curso cambiará tus resultados tanto. En los tableros que pagan USDT reales, las cuentas que duran no son las que eligen mejores entradas - son las que ya habían decidido dónde estarían equivocadas. Fijar uno también es una tarea de Road to Bronze, que vale 40 XP."
     }
    ],
    "quiz": [
@@ -265,7 +276,7 @@
      "q": "¿Qué hace un stop-loss?",
      "o": [
       "Te impide abrir más operaciones",
-      "Cierra la operación al precio que elegiste, si sale en tu contra",
+      "Cierra la operación a un precio que elegiste, si va en tu contra",
       "Pausa la posición",
       "Garantiza que no puedes perder"
      ]
@@ -274,37 +285,41 @@
      "q": "¿Cuándo puedes fijar o mover un stop-loss en MarginPad?",
      "o": [
       "Solo al abrir la operación",
-      "Solo cuando ya está en ganancia",
+      "Solo cuando está en ganancia",
       "Antes de abrir, y en cualquier momento mientras la operación está abierta",
       "Una vez al día"
      ]
     },
     {
-     "q": "¿Por qué fijar la salida de antemano?",
+     "q": "Escribes un stop como porcentaje del margen. ¿Qué pasa con el campo de precio?",
      "o": [
-      "Baja la comisión",
-      "Sube el límite de apalancamiento",
-      "Porque el momento en que una operación está perdiendo es el peor momento para decidir qué hacer",
-      "Es obligatorio antes de poder abrir una posición"
+      "Nada - son independientes",
+      "Se reescribe para coincidir, así que los dos nunca discrepan",
+      "Se borra",
+      "Se bloquea"
      ]
     }
    ]
   },
   {
    "id": "mp7",
-   "t": "Temporadas, tablas y el pase",
+   "t": "Temporadas, tableros y el pass",
    "cards": [
     {
-     "h": "El sitio corre en temporadas de catorce días",
-     "p": "Todo lo competitivo se reinicia con un reloj de catorce días. Tu XP de temporada, tu posición en las tablas y el pase empiezan de nuevo, así que una quincena mala nunca es permanente y un recién llegado nunca está un año atrás. El día de la temporada se muestra arriba en la página de temporada."
+     "h": "El sitio funciona en temporadas de catorce días",
+     "p": "Todo lo competitivo se reinicia en un reloj de catorce días. Tu XP de temporada, tu posición en los tableros y el pass empiezan de nuevo, así que una mala quincena nunca es permanente y un recién llegado nunca está un año atrás. El día de la temporada aparece en la parte superior de la página de temporada."
     },
     {
-     "h": "Siete tablas, y cuatro de ellas no cuestan nada",
-     "p": "Siete clasificaciones pagan a sus cinco primeros al final de una temporada. Cuatro - Highest ROE, Green Days, Best Win Rate y Season XP - solo necesitan Bronze y operaciones en simulado. The Gold Room necesita Gold, que son 12,000 XP. Dos son para lectores que operan con dinero real en Bybit o Moon."
+     "h": "Nueve tableros, siete gratuitos",
+     "p": "Nueve tableros pagan USDT reales cuando termina una temporada, y todos viven en una sola página, /leaderboards/. Siete no cuestan nada: Highest ROE, Green Days, Best Win Rate, Season XP, el Daily BTC Call, Meme Spot y el Gold Room - el único con una condición, nivel Gold. Dos son para lectores que operan con dinero real en Bybit o Moon a través de MarginPad. Los pools y el reparto de premios están impresos en la página."
     },
     {
-     "h": "Y el pase corre por debajo de todo esto",
-     "p": "Cada 100 XP de temporada es un nivel del pase, cuarenta en total, y la ruta gratis paga en Ticks y cosméticos a medida que subes. Ya lo estás ganando: el XP de este curso contó para el pase mientras lo leías."
+     "h": "Y el pass corre por debajo de todo",
+     "p": "Cada 100 de XP de temporada es un nivel del pass, cuarenta en total, y la ruta gratuita paga en Ticks y cosméticos a medida que subes. Ya lo estás ganando - el XP de este curso contó para él mientras leías. La ruta de pago añade piezas que nadie puede comprar en la tienda."
+    },
+    {
+     "h": "Más allá de los tableros",
+     "p": "Un duelo te enfrenta a un trader durante una hora, un día, tres días o una semana, en una métrica que ambos acuerdan, con Ticks en juego. Un squad son hasta cinco de ustedes con una sala privada, raids sobre los principales y un logo. Demo Spot es comprar y mantener con $10,000 y un tablero propio. Nada de esto es obligatorio - el terminal es el producto; lo demás es lo que evita que la práctica se sienta como tarea."
     }
    ],
    "quiz": [
@@ -314,33 +329,28 @@
       "Siete días",
       "Catorce días",
       "Un mes",
-      "Hasta que alguien gana"
+      "Hasta que alguien gane"
      ]
     },
     {
-     "q": "¿Qué requieren las cuatro tablas gratuitas?",
+     "q": "¿Cuántos de los nueve tableros son gratis de entrar?",
      "o": [
-      "Un depósito en un exchange",
-      "Premium",
-      "Bronze, y operaciones en simulado",
-      "Una invitación"
+      "Dos",
+      "Cuatro",
+      "Siete",
+      "Los nueve"
      ]
     },
     {
-     "q": "¿Qué avanza un nivel del pase?",
+     "q": "¿Dónde viven las posiciones de todos los tableros?",
      "o": [
-      "Comprarlo",
-      "Cada 100 XP de temporada",
-      "Ganar una tabla",
-      "Iniciar sesión siete días seguidos"
+      "/season/",
+      "/leaderboards/",
+      "El canal de Telegram",
+      "Dentro del terminal"
      ]
     }
-   ],
-   "try": {
-    "p": "Ese es todo el recorrido. Lo único que queda es aquello para lo que existe el sitio: abre el terminal, elige una moneda, pon una posición pequeña con un stop-loss, y observa qué pasa. Esa única operación es el último paso hacia Bronze.",
-    "label": "Abrir Paper Trade",
-    "href": "/paper-trade"
-   }
+   ]
   }
  ]
 }

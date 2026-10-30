@@ -460,7 +460,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + row('brPivT', 'brPivS', '/pivot-point-calculator/', '#6aa3ff', 'pivot', 'pivot pivot points support resistance levels floor trader camarilla fibonacci')
     + row('brRorT', 'brRorS', '/risk-of-ruin-calculator/', '#ff6258', 'ruin', __esT_mpnav("riskOfRuinBankroll",'risk of ruin bankroll blow up survival probability kelly bust account'))
     + row('brCorrT', 'brCorrS', '/crypto-correlation-matrix/', '#c792ff', 'corr', 'correlation matrix correlated diversify pairs move together beta')
-    + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert', __esT_mpnav("alertAlertsAlarmNotify",'alert alerts alarm notify notification price alert telegram email ping when price'))
+    + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert', __esT_mpnav("alertAlertsAlarmNotify",'alert alerts alarm notify notification price alert telegram email push ping when price position liquidation stop target zone whale wallet catalyst daily brief wrap reminder settings channels'))
     + row('brCalT', 'brCalS', '/calendar/', '#ffd75a', 'cal', 'calendar events dates fomc cpi fed nfp unlocks economic schedule countdown')
 
     + '</div><div class="mpnav-sec">' + TR('secLearn') + '</div><div class="mpnav-grp">'
@@ -987,8 +987,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=308825ef', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=308825ef"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=e2f4ced5', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=e2f4ced5"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }

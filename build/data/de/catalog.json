@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "de",
-  "generated": "2026-10-29T17:20:04.382Z",
+  "generated": "2026-10-30T09:23:53.507Z",
   "pages": 387,
-  "unique": 14591,
-  "words": 274636,
-  "untranslated": 1,
-  "untranslatedWords": 20,
-  "merged": "2026-10-29T17:22:40.093Z"
+  "unique": 14595,
+  "words": 274593,
+  "untranslated": 3,
+  "untranslatedWords": 25,
+  "merged": "2026-10-30T09:27:36.624Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1927,
+   "n": 1931,
    "w": 1,
    "de": "MarginPad"
   },
@@ -3645,8 +3645,8 @@
    "w": 4,
    "de": "Von null zum <span class=\"g\">Trader</span>"
   },
-  "tJsvhQG1pH": {
-   "en": "<span>147 lessons</span><i></i><span>17 courses</span><i></i><span>XP rewards</span><i></i><span>free</span>",
+  "HyOTLB7e14": {
+   "en": "<span>148 lessons</span><i></i><span>17 courses</span><i></i><span>XP rewards</span><i></i><span>free</span>",
    "kind": [
     "html"
    ],
@@ -3655,7 +3655,7 @@
    ],
    "n": 1,
    "w": 7,
-   "de": "<span>147 Lektionen</span><i></i><span>17 Kurse</span><i></i><span>XP-Belohnungen</span><i></i><span>kostenlos</span>"
+   "de": "<span>148 Lektionen</span><i></i><span>17 Kurse</span><i></i><span>XP-Belohnungen</span><i></i><span>kostenlos</span>"
   },
   "iE5yLgeR9i": {
    "en": "▶&nbsp; Start learning",
@@ -3777,8 +3777,8 @@
    "w": 1,
    "de": "<span>Indonesia</span>"
   },
-  "EbcDkh2C-A": {
-   "en": "<span class=\"prog-n\" id=\"pgN\">0/147</span><span class=\"prog-l\">lessons complete</span><span class=\"prog-xp\" id=\"pgXp\"></span>",
+  "xFRxQ_iX8g": {
+   "en": "<span class=\"prog-n\" id=\"pgN\">0/148</span><span class=\"prog-l\">lessons complete</span><span class=\"prog-xp\" id=\"pgXp\"></span>",
    "kind": [
     "html"
    ],
@@ -3787,7 +3787,7 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "<span class=\"prog-n\" id=\"pgN\">0/147</span><span class=\"prog-l\">Lektionen abgeschlossen</span><span class=\"prog-xp\" id=\"pgXp\"></span>"
+   "de": "<span class=\"prog-n\" id=\"pgN\">0/148</span><span class=\"prog-l\">Lektionen abgeschlossen</span><span class=\"prog-xp\" id=\"pgXp\"></span>"
   },
   "_jn2sVhvXy": {
    "en": "No account needed to start.",
@@ -3862,8 +3862,8 @@
    "w": 3,
    "de": "Der komplette Lehrplan"
   },
-  "Xli75rVwtT": {
-   "en": "Every lesson in the Academy, in order. 147 lessons across 17 courses, all free, no account needed to read and a free email-code sign-in only if you want your progress and XP saved across devices.",
+  "8-uSOCc3O7": {
+   "en": "Every lesson in the Academy, in order. 148 lessons across 17 courses, all free, no account needed to read and a free email-code sign-in only if you want your progress and XP saved across devices.",
    "kind": [
     "html"
    ],
@@ -3872,7 +3872,7 @@
    ],
    "n": 1,
    "w": 34,
-   "de": "Jede Lektion der Akademie, der Reihe nach. 147 Lektionen in 17 Kursen, alle kostenlos, zum Lesen brauchst du kein Konto - nur wenn du deinen Fortschritt und deine XP geräteübergreifend speichern willst, meldest du dich kostenlos mit einem E-Mail-Code an."
+   "de": "Jede Lektion der Akademie, der Reihe nach. 148 Lektionen in 17 Kursen, alle kostenlos, zum Lesen ist kein Konto nötig, und die kostenlose Anmeldung per E-Mail-Code brauchst du nur, wenn du Fortschritt und XP geräteübergreifend speichern willst."
   },
   "VNTyRSg0mc": {
    "en": "Start Here: MarginPad <span>7 lessons</span>",
@@ -4498,8 +4498,8 @@
    "w": 3,
    "de": "Die Mechanik der Perpetual Futures"
   },
-  "E5PLHXMr9p": {
-   "en": "Your first $10,000: bank, exchange, wallet",
+  "bWIjf8XN8Z": {
+   "en": "Demo Spot: $10,000, buy and hold, one board",
    "kind": [
     "html"
    ],
@@ -4507,8 +4507,8 @@
     "/academy/"
    ],
    "n": 1,
-   "w": 6,
-   "de": "Deine ersten $10,000: Bank, Exchange, Wallet"
+   "w": 8,
+   "de": "Demo Spot: $10,000, kaufen und halten, ein Board"
   },
   "ZW-w2dhxan": {
    "en": "Candlestick Patterns <span>8 lessons</span>",
@@ -5938,8 +5938,8 @@
    "w": 3,
    "de": "Prozess vor Ergebnis"
   },
-  "atW178YP6O": {
-   "en": "MarginPad Mastery <span>7 lessons</span>",
+  "zBPfqI06_P": {
+   "en": "MarginPad Mastery <span>8 lessons</span>",
    "kind": [
     "html"
    ],
@@ -5948,7 +5948,7 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "MarginPad Mastery <span>7 Lektionen</span>"
+   "de": "MarginPad Mastery <span>8 Lektionen</span>"
   },
   "CI9mKiuuF8": {
    "en": "Turn the toolkit into a workflow",
@@ -6046,6 +6046,18 @@
    "w": 6,
    "de": "Der XP-Loop: Üben, das sich auszahlt"
   },
+  "wSRr4cgdSg": {
+   "en": "What Moved the Price",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/academy/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Was den Preis bewegte"
+  },
   "6z-DuA8ZI5": {
    "en": "<span>© 2026 MarginPad · Educational only - not financial advice</span> <span><a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/levels/\">Levels</a> · <a href=\"/blog/\">Blog</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a></span>",
    "kind": [
@@ -6098,8 +6110,8 @@
    "w": 1,
    "de": "Schließen"
   },
-  "6jTRUxYsFL": {
-   "en": "A free, interactive crypto trading course: 147 bite-size lessons across 17 courses - crypto basics, leverage &amp; liquidation, risk management and reading the market. Animated visuals, hands-on exercises, quizzes, XP rewards and real practice in a paper-trading terminal. No signup needed to start.",
+  "OkY8Iz0R2T": {
+   "en": "A free, interactive crypto trading course: 148 bite-size lessons across 17 courses - crypto basics, leverage &amp; liquidation, risk management and reading the market. Animated visuals, hands-on exercises, quizzes, XP rewards and real practice in a paper-trading terminal. No signup needed to start.",
    "kind": [
     "attr:content"
    ],
@@ -6108,7 +6120,7 @@
    ],
    "n": 1,
    "w": 39,
-   "de": "Ein kostenloser, interaktiver Crypto-Trading-Kurs: 147 kompakte Lektionen in 17 Kursen - Krypto-Grundlagen, Hebel &amp; Liquidation, Risikomanagement und Marktanalyse. Animierte Visuals, praktische Übungen, Quizze, XP-Belohnungen und echtes Üben in einem Paper-Trading-Terminal. Zum Start keine Anmeldung nötig."
+   "de": "Ein kostenloser, interaktiver Krypto-Trading-Kurs: 148 kompakte Lektionen in 17 Kursen - Krypto-Grundlagen, Hebel &amp; Liquidation, Risikomanagement und Marktanalyse. Animierte Grafiken, praktische Übungen, Quizze, XP-Belohnungen und echte Praxis in einem Paper-Trading-Terminal. Zum Start ist keine Registrierung nötig."
   },
   "K13ZuSIYvL": {
    "en": "MarginPad Academy - Learn Crypto Trading Free",
@@ -6122,8 +6134,8 @@
    "w": 6,
    "de": "MarginPad Akademie - Krypto-Trading kostenlos lernen"
   },
-  "_bnXav9b6q": {
-   "en": "147 bite-size interactive lessons: basics, leverage, risk management and market reading. Animated visuals + hands-on exercises + XP + real practice on live prices.",
+  "FtWdxwtIYH": {
+   "en": "148 bite-size interactive lessons: basics, leverage, risk management and market reading. Animated visuals + hands-on exercises + XP + real practice on live prices.",
    "kind": [
     "attr:content"
    ],
@@ -6132,7 +6144,7 @@
    ],
    "n": 1,
    "w": 21,
-   "de": "147 kompakte interaktive Lektionen: Grundlagen, Hebel, Risikomanagement und Marktanalyse. Animierte Visuals + praktische Übungen + XP + echtes Üben mit Live-Preisen."
+   "de": "148 kompakte interaktive Lektionen: Grundlagen, Hebel, Risikomanagement und Marktanalyse. Animierte Grafiken + praktische Übungen + XP + echte Praxis mit Live-Kursen."
   },
   "RYNcoyaext": {
    "en": "MarginPad Academy - Crypto Trading from Zero",
@@ -6146,8 +6158,8 @@
    "w": 6,
    "de": "MarginPad Akademie - Krypto-Trading von null an"
   },
-  "8Wi-WW-0aA": {
-   "en": "A free interactive crypto trading course: 147 lessons across crypto basics, leverage and liquidation, risk management and reading the market, with animated visuals, hands-on exercises, quizzes and paper-trading practice.",
+  "unZZoUfjZv": {
+   "en": "A free interactive crypto trading course: 148 lessons across crypto basics, leverage and liquidation, risk management and reading the market, with animated visuals, hands-on exercises, quizzes and paper-trading practice.",
    "kind": [
     "ld"
    ],
@@ -6156,7 +6168,7 @@
    ],
    "n": 1,
    "w": 28,
-   "de": "Ein kostenloser interaktiver Crypto-Trading-Kurs: 147 Lektionen zu Krypto-Grundlagen, Hebel und Liquidation, Risikomanagement und Marktanalyse, mit animierten Visuals, praktischen Übungen, Quizzen und Paper-Trading-Training."
+   "de": "Ein kostenloser interaktiver Krypto-Trading-Kurs: 148 Lektionen zu Krypto-Grundlagen, Hebel und Liquidation, Risikomanagement und Marktanalyse, mit animierten Grafiken, praktischen Übungen, Quizzen und Paper-Trading-Praxis."
   },
   "TqWEt_dcsn": {
    "en": "Academy",
@@ -6184,8 +6196,8 @@
    "w": 5,
    "de": "Ist die MarginPad Akademie kostenlos?"
   },
-  "_YU8RVPmvf": {
-   "en": "Yes - all 147 lessons, quizzes and the paper-trading practice are completely free, with no payment and no deposit. You can start without an account; signing in (free, email only) saves your progress across devices and earns you XP toward your MarginPad level.",
+  "bFFUtVSISt": {
+   "en": "Yes - all 148 lessons, quizzes and the paper-trading practice are completely free, with no payment and no deposit. You can start without an account; signing in (free, email only) saves your progress across devices and earns you XP toward your MarginPad level.",
    "kind": [
     "ld"
    ],
@@ -6194,7 +6206,7 @@
    ],
    "n": 1,
    "w": 42,
-   "de": "Ja - alle 147 Lektionen, Quizze und das Paper-Trading-Training sind komplett kostenlos, ohne Zahlung und ohne Einzahlung. Du kannst ohne Konto starten; mit der Anmeldung (kostenlos, nur E-Mail) wird dein Fortschritt geräteübergreifend gespeichert und du sammelst XP für dein MarginPad-Level."
+   "de": "Ja - alle 148 Lektionen, Quizze und die Paper-Trading-Übung sind komplett kostenlos, ohne Zahlung und ohne Einzahlung. Du kannst ohne Konto starten; mit der Anmeldung (kostenlos, nur E-Mail) wird dein Fortschritt geräteübergreifend gespeichert und du sammelst XP für dein MarginPad-Level."
   },
   "edoiSnotUD": {
    "en": "Do I need any trading experience?",
@@ -7057,7 +7069,7 @@
     "/app.html",
     "/bitcoin-cycle/"
    ],
-   "n": 24,
+   "n": 23,
    "w": 2,
    "de": "Anmelden"
   },
@@ -8631,8 +8643,8 @@
    "w": 2,
    "de": "KI-Indikatoren"
   },
-  "jr9TOKNm4I": {
-   "en": "Crypto Price Alerts - Free Email & Telegram Notifications | MarginPad",
+  "lkiqjPYlDq": {
+   "en": "Crypto Alerts - Price, Positions, Liquidation Zones, Whales | MarginPad",
    "kind": [
     "title"
    ],
@@ -8641,7 +8653,7 @@
    ],
    "n": 1,
    "w": 8,
-   "de": "Krypto-Preisalarme - kostenlose E-Mail- & Telegram-Benachrichtigungen | MarginPad"
+   "de": "Krypto-Alarme - Preis, Positionen, Liquidationszonen | MarginPad"
   },
   "bmq8GPVswe": {
    "en": "<a href=\"/screener\">Screener</a>",
@@ -8655,80 +8667,8 @@
    "w": 1,
    "de": "<a href=\"/screener\">Screener</a>"
   },
-  "HXzQ3bYvlG": {
-   "en": "<i></i>Price alerts · checked every few minutes",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 6,
-   "de": "<i></i>Preisalarme · alle paar Minuten geprüft"
-  },
-  "2NvSFCIhu6": {
-   "en": "<br> <span class=\"pill\">● Free · Email & Telegram</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 3,
-   "de": "<br> <span class=\"pill\">● Kostenlos · E-Mail & Telegram</span>"
-  },
-  "D8jwRWwo8v": {
-   "en": "Get notified when a coin <span>hits your price</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "Werde benachrichtigt, wenn ein Coin <span>deinen Preis erreicht</span>."
-  },
-  "PkHyQaiCvh": {
-   "en": "Set a target, walk away. We watch the market and notify you the moment it crosses - by email or Telegram, no app. Just sign in with your email.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 27,
-   "de": "Setze ein Ziel und geh weg. Wir beobachten den Markt und benachrichtigen dich, sobald er es kreuzt - per E-Mail oder Telegram, keine App. Melde dich einfach mit deiner E-Mail an."
-  },
-  "Yvttv77gPH": {
-   "en": "Price alerts",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 2,
-   "de": "Preisalarme"
-  },
-  "I7blSfY0n3": {
-   "en": "Alerts are tied to your account so they follow you across devices and we know where to email you. Signing in is free - just your email, no password.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 28,
-   "de": "Alarme sind an dein Konto gebunden, damit sie dir auf allen Geräten folgen und wir wissen, wohin wir mailen. Die Anmeldung ist kostenlos - nur deine E-Mail, kein Passwort."
-  },
-  "A9ON0-hiX_": {
-   "en": "Sign in to set alerts",
+  "Up0Ug7dhN4": {
+   "en": "<i></i>Alerts · checked every few minutes",
    "kind": [
     "html"
    ],
@@ -8737,10 +8677,10 @@
    ],
    "n": 1,
    "w": 5,
-   "de": "Anmelden, um Alarme zu setzen"
+   "de": "<i></i>Alarme · alle paar Minuten geprüft"
   },
-  "ZN8YXhMJoW": {
-   "en": "New price alert",
+  "D9zU_G3TBm": {
+   "en": "Every alert, <span>where you want it</span>.",
    "kind": [
     "html"
    ],
@@ -8748,11 +8688,11 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 3,
-   "de": "Neuer Preisalarm"
+   "w": 6,
+   "de": "Jeder Alarm, <span>wo du ihn willst</span>."
   },
-  "l_RvvUItgK": {
-   "en": "Rises to / above",
+  "9Kb_K-Yd_p": {
+   "en": "Price levels, your own positions, liquidation zones, whale wallets, catalysts, the daily brief - set each one here and choose whether it reaches you as a push notification, on Telegram or by email.",
    "kind": [
     "html"
    ],
@@ -8760,11 +8700,11 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 3,
-   "de": "Steigt auf / über"
+   "w": 31,
+   "de": "Preislevel, deine eigenen Positionen, Liquidationszonen, Wal-Wallets, Katalysatoren, der Daily Brief - stell jeden hier ein und wähle, ob er dich per Push-Benachrichtigung, Telegram oder E-Mail erreicht."
   },
-  "3MyCRBd1T3": {
-   "en": "Falls to / below",
+  "KQnVpq5AkV": {
+   "en": "<span>Alerts follow your account, so sign in first - just your email, no password.</span><a href=\"#\" data-auth-open>Sign in</a>",
    "kind": [
     "html"
    ],
@@ -8772,11 +8712,11 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 3,
-   "de": "Fällt auf / unter"
+   "w": 15,
+   "de": "<span>Alarme gehören zu deinem Konto, melde dich also zuerst an - nur mit deiner E-Mail, ohne Passwort.</span><a href=\"#\" data-auth-open>Anmelden</a>"
   },
-  "e5DXPTndVc": {
-   "en": "Notify me via",
+  "fxEKk-dpgx": {
+   "en": "Where it reaches you",
    "kind": [
     "html"
    ],
@@ -8784,21 +8724,56 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 3,
-   "de": "Benachrichtige mich per"
+   "w": 4,
+   "de": "Wo er dich erreicht"
   },
-  "hK3VspUnh1": {
-   "en": "Email",
+  "NyLvl6minA": {
+   "en": "<small>three channels, pick any</small>",
    "kind": [
     "html"
    ],
    "ctx": [
-    "/alerts/",
-    "/contact/"
+    "/alerts/"
    ],
-   "n": 2,
+   "n": 1,
+   "w": 4,
+   "de": "<small>drei Kanäle, such dir aus</small>"
+  },
+  "j39XtRn8m8": {
+   "en": "Push",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
    "w": 1,
-   "de": "E-Mail"
+   "de": "Push"
+  },
+  "--WZmFM7oW": {
+   "en": "On your phone or desktop, even with the site closed.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "Auf dem Handy oder Desktop, auch bei geschlossener Seite."
+  },
+  "JlY-_CoEf_": {
+   "en": "Turn on",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Aktivieren"
   },
   "7b6p_xp4eB": {
    "en": "Telegram",
@@ -8815,92 +8790,8 @@
    "w": 1,
    "de": "Telegram"
   },
-  "iskDw8N-IY": {
-   "en": "Create alert",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 2,
-   "de": "Alarm erstellen"
-  },
-  "REuqSkPfPW": {
-   "en": "Position alerts <span class=\"pbadge\">PREMIUM</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 3,
-   "de": "Positionsalarme <span class=\"pbadge\">PREMIUM</span>"
-  },
-  "X3N5EChBj6": {
-   "en": "A price alert tells you a coin hit a number. This tells you what only we can see, because we hold your positions: your liquidation closing in, your stop about to trigger, your target nearly there, your limit order about to fill. Delivered by browser push and, if you connected the bot, Telegram.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 50,
-   "de": "Ein Preisalarm sagt dir, dass ein Coin eine Marke erreicht hat. Das hier sagt dir, was nur wir sehen können, weil wir deine Positionen kennen: deine Liquidation rückt näher, dein Stop löst gleich aus, dein Ziel ist fast erreicht, deine Limit-Order wird gleich ausgeführt. Zugestellt per Browser-Push und, wenn du den Bot verbunden hast, per Telegram."
-  },
-  "EsN1pW7pxY": {
-   "en": "<a class=\"pgo\" href=\"/premium/\">Unlock with Premium &rarr;</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 3,
-   "de": "<a class=\"pgo\" href=\"/premium/\">Mit Premium freischalten &rarr;</a>"
-  },
-  "iZ1v0GynZu": {
-   "en": "<span>Watch my positions</span><input type=\"checkbox\" id=\"paOn\">",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 3,
-   "de": "<span>Meine Positionen beobachten</span><input type=\"checkbox\" id=\"paOn\">"
-  },
-  "z_mf-fTY6h": {
-   "en": "<span>Warn me when liquidation is within</span><span class=\"pin\"><input type=\"number\" id=\"paLiq\" min=\"0.5\" max=\"50\" step=\"0.5\">%</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 6,
-   "de": "<span>Warne mich, wenn die Liquidation näher ist als</span><span class=\"pin\"><input type=\"number\" id=\"paLiq\" min=\"0.5\" max=\"50\" step=\"0.5\">%</span>"
-  },
-  "AKequI7uNT": {
-   "en": "<span>Warn me when a stop or target is within</span><span class=\"pin\"><input type=\"number\" id=\"paSl\" min=\"0.1\" max=\"20\" step=\"0.1\">%</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 8,
-   "de": "<span>Warne mich, wenn ein Stop oder Ziel innerhalb von</span><span class=\"pin\"><input type=\"number\" id=\"paSl\" min=\"0.1\" max=\"20\" step=\"0.1\">%</span>"
-  },
-  "iT83Yg3MyB": {
-   "en": "<span>Warn me when a limit order is within</span><span class=\"pin\"><input type=\"number\" id=\"paOrd\" min=\"0.1\" max=\"20\" step=\"0.1\">%</span>",
+  "VmemO7TYnx": {
+   "en": "A message from @MarginPadBot in your own chat.",
    "kind": [
     "html"
    ],
@@ -8909,10 +8800,10 @@
    ],
    "n": 1,
    "w": 7,
-   "de": "<span>Warne mich, wenn eine Limit-Order innerhalb von</span><span class=\"pin\"><input type=\"number\" id=\"paOrd\" min=\"0.1\" max=\"20\" step=\"0.1\">%</span>"
+   "de": "Eine Nachricht von @MarginPadBot in deinem eigenen Chat."
   },
-  "78AHo5P2bN": {
-   "en": "Save",
+  "tlRjy2pCoX": {
+   "en": "Connect",
    "kind": [
     "html"
    ],
@@ -8921,61 +8812,23 @@
    ],
    "n": 1,
    "w": 1,
-   "de": "Speichern"
+   "de": "Verbinden"
   },
-  "x9X5-tZetW": {
-   "en": "Checked every few minutes. Each level is announced once every 6 hours, so a price hovering on your stop cannot turn into a siren.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 21,
-   "de": "Wird alle paar Minuten geprüft. Jede Marke wird nur einmal alle 6 Stunden gemeldet, damit ein Preis, der auf deinem Stop herumhängt, nicht zur Sirene wird."
-  },
-  "NJHSR8PZXw": {
-   "en": "Your alerts <span id=\"aCount\" style=\"color:var(--faint)\"></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 2,
-   "de": "Deine Alarme <span id=\"aCount\" style=\"color:var(--faint)\"></span>"
-  },
-  "yrzYOxai7t": {
-   "en": "No alerts yet - set one above.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 6,
-   "de": "Noch keine Alarme - setz oben einen."
-  },
-  "HdahfLQDP0": {
-   "en": "How it works",
+  "hK3VspUnh1": {
+   "en": "Email",
    "kind": [
     "html"
    ],
    "ctx": [
     "/alerts/",
-    "/blog/crypto-tax-loss-harvesting/",
-    "/blog/paper-trade-crypto-futures/",
-    "/crypto-trading-simulator-no-sign-up/"
+    "/contact/"
    ],
-   "n": 9,
-   "w": 3,
-   "de": "So funktioniert es"
+   "n": 3,
+   "w": 1,
+   "de": "E-Mail"
   },
-  "5AJoJLqBpj": {
-   "en": "Just your email - free, no password.",
+  "Yv5rHSynZZ": {
+   "en": "The address you sign in with.",
    "kind": [
     "html"
    ],
@@ -8984,10 +8837,10 @@
    ],
    "n": 1,
    "w": 6,
-   "de": "Nur deine E-Mail - kostenlos, ohne Passwort."
+   "de": "Die Adresse, mit der du dich anmeldest."
   },
-  "uy6-5sl_It": {
-   "en": "Set a target",
+  "j9dtjcDIZE": {
+   "en": "<a class=\"ch-b\" href=\"#secEmail\" id=\"chEmB\">Email settings</a>",
    "kind": [
     "html"
    ],
@@ -8996,22 +8849,10 @@
    ],
    "n": 1,
    "w": 2,
-   "de": "Ziel setzen"
+   "de": "<a class=\"ch-b\" href=\"#secEmail\" id=\"chEmB\">E-Mail-Einstellungen</a>"
   },
-  "FZGP0-75-q": {
-   "en": "Pick a coin and a price, above or below.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "Wähle einen Coin und einen Preis, darüber oder darunter."
-  },
-  "tUdV1Bgag7": {
-   "en": "Get notified",
+  "oeI3E1nwfX": {
+   "en": "Market alerts",
    "kind": [
     "html"
    ],
@@ -9020,94 +8861,143 @@
    ],
    "n": 1,
    "w": 2,
-   "de": "Benachrichtigt werden"
+   "de": "Marktalarme"
   },
-  "fixe6F4T2z": {
-   "en": "We email or message you on Telegram within minutes of it crossing - prices are checked every 10 minutes.",
+  "7l4gwsL-HK": {
+   "en": "<small>a level, a line, a print</small>",
    "kind": [
     "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 18,
-   "de": "Wir mailen dir oder schreiben dir auf Telegram wenige Minuten nach dem Kreuzen - Preise werden alle 10 Minuten geprüft."
-  },
-  "1nuunlVAwm": {
-   "en": "<a href=\"/\">← Back to MarginPad</a> · <a href=\"/screener\">Screener</a> · <a href=\"/paper-trade\">Paper Trade</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a><br> <span style=\"color:var(--faint)\">Alerts are checked every few minutes. Not financial advice.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 17,
-   "de": "<a href=\"/\">← Zurück zu MarginPad</a> · <a href=\"/screener\">Screener</a> · <a href=\"/paper-trade\">Paper Trade</a> &middot; <a href=\"/terms/\">AGB</a> &middot; <a href=\"/privacy/\">Datenschutz</a><br> <span style=\"color:var(--faint)\">Alarme werden alle paar Minuten geprüft. Keine Finanzberatung.</span>"
-  },
-  "TBkqW77QQu": {
-   "en": "Search coin (e.g. BTC)",
-   "kind": [
-    "attr:placeholder"
-   ],
-   "ctx": [
-    "/alerts/"
-   ],
-   "n": 1,
-   "w": 4,
-   "de": "Coin suchen (z. B. BTC)"
-  },
-  "xEuHCDTOT5": {
-   "en": "Target price (USD)",
-   "kind": [
-    "attr:placeholder"
    ],
    "ctx": [
     "/alerts/"
    ],
    "n": 1,
    "w": 3,
-   "de": "Zielpreis (USD)"
+   "de": "<small>ein Level, eine Linie, ein Print</small>"
   },
-  "vqqLWNR2lr": {
-   "en": "Note (optional) - e.g. take profit",
+  "61mO1MYXg_": {
+   "en": "Your positions",
    "kind": [
-    "attr:placeholder"
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Deine Positionen"
+  },
+  "QDTvgZ4hhD": {
+   "en": "<small>what only MarginPad can see</small>",
+   "kind": [
+    "html"
    ],
    "ctx": [
     "/alerts/"
    ],
    "n": 1,
    "w": 5,
-   "de": "Notiz (optional) - z. B. Take-Profit"
+   "de": "<small>was nur MarginPad sieht</small>"
   },
-  "gunn7pRWW_": {
-   "en": "Set free crypto price alerts and get a notification the moment a coin crosses your target - by email or Telegram. No app, no deposit.",
+  "9cvoXOPniV": {
+   "en": "Market structure",
    "kind": [
-    "attr:content"
+    "html"
    ],
    "ctx": [
     "/alerts/"
    ],
    "n": 1,
-   "w": 22,
-   "de": "Setze kostenlose Krypto-Preisalarme und erhalte eine Benachrichtigung, sobald ein Coin dein Ziel kreuzt - per E-Mail oder Telegram. Keine App, keine Einzahlung."
+   "w": 2,
+   "de": "Marktstruktur"
   },
-  "3eYwQZv8Pm": {
-   "en": "Crypto Price Alerts - MarginPad",
+  "RW0nnOS7oB": {
+   "en": "<small>zones, whales</small>",
    "kind": [
-    "attr:content"
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<small>Zonen, Wale</small>"
+  },
+  "Oy61ExBVrQ": {
+   "en": "Every day",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/",
+    "/rewards/"
+   ],
+   "n": 2,
+   "w": 2,
+   "de": "Jeden Tag"
+  },
+  "8HfSYF6QOe": {
+   "en": "<small>a brief, a wrap, a reminder</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<small>ein Brief, ein Wrap, eine Erinnerung</small>"
+  },
+  "dToisuthcg": {
+   "en": "Notifications",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Benachrichtigungen"
+  },
+  "bJHDlgtwx6": {
+   "en": "<small>what reaches your phone</small>",
+   "kind": [
+    "html"
    ],
    "ctx": [
     "/alerts/"
    ],
    "n": 1,
    "w": 4,
-   "de": "Krypto-Preisalarme - MarginPad"
+   "de": "<small>was auf dein Handy kommt</small>"
   },
-  "9e7vw9MxN1": {
-   "en": "Get notified the instant a coin hits your target price - by email or Telegram. Free, no app.",
+  "jnTwj5Vijt": {
+   "en": "<small>what we send to your inbox</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "<small>was wir in dein Postfach schicken</small>"
+  },
+  "dtAfw9w5W-": {
+   "en": "<a href=\"/\">← MarginPad</a> · <a href=\"/charts\">Charts</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/premium/\">Premium</a> · <a href=\"/terms/\">Terms</a> · <a href=\"/privacy/\">Privacy</a><br> <span style=\"color:var(--faint)\">Alerts are checked every few minutes. Not financial advice.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 16,
+   "de": "<a href=\"/\">← MarginPad</a> · <a href=\"/charts\">Charts</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/premium/\">Premium</a> · <a href=\"/terms/\">AGB</a> · <a href=\"/privacy/\">Datenschutz</a><br> <span style=\"color:var(--faint)\">Alarme werden alle paar Minuten geprüft. Keine Anlageberatung.</span>"
+  },
+  "xQIb3_9FmR": {
+   "en": "Every crypto alert in one place: price levels, trend lines, your own liquidation and stops, liquidation zones, whale wallets, catalysts and a daily brief - by push, Telegram or email. Free, no app.",
    "kind": [
     "attr:content"
    ],
@@ -9115,11 +9005,35 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 16,
-   "de": "Werde benachrichtigt, sobald ein Coin dein Zielpreis erreicht - per E-Mail oder Telegram. Kostenlos, keine App."
+   "w": 31,
+   "de": "Jeder Krypto-Alarm an einem Ort: Preislevel, Trendlinien, deine eigene Liquidation und Stops, Liquidationszonen, Wal-Wallets, Katalysatoren und ein Daily Brief - per Push, Telegram oder E-Mail. Kostenlos, ohne App."
   },
-  "YvETGtK1zl": {
-   "en": "Crypto Price Alerts - Free Email & Telegram Notifications",
+  "fJgmTYIbkT": {
+   "en": "Crypto Alerts - MarginPad",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Krypto-Alarme - MarginPad"
+  },
+  "k2okmj1lkj": {
+   "en": "Price levels, your own positions, liquidation zones, whales, catalysts, the daily brief - by push, Telegram or email. Free, no app.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 20,
+   "de": "Preislevel, deine eigenen Positionen, Liquidationszonen, Wale, Katalysatoren, der Daily Brief - per Push, Telegram oder E-Mail. Kostenlos, ohne App."
+  },
+  "9g6366p8vq": {
+   "en": "Crypto Alerts - Price, Positions, Liquidation Zones, Whales",
    "kind": [
     "ld"
    ],
@@ -9128,7 +9042,7 @@
    ],
    "n": 1,
    "w": 7,
-   "de": "Krypto-Preisalarme - kostenlose E-Mail- & Telegram-Benachrichtigungen"
+   "de": "Krypto-Alarme - Preis, Positionen, Liquidationszonen, Wale"
   },
   "F9StTy2A3f": {
    "en": "ALGO Liquidation Calculator - Algorand Futures (Long & Short) | MarginPad",
@@ -49654,6 +49568,21 @@
    "w": 47,
    "de": "Jedes Portfolio hat Verlierer. Das Steuerrecht erlaubt dir, daraus etwas Nützliches zu machen: einen realisierten Verlust, der die Steuer auf deine Gewinner senkt. Das nennt sich <b>Tax-Loss-Harvesting</b>, ist völlig legal, und die meisten Privatanleger lassen es liegen. Hier die Mechanik - <b>allgemeine Informationen, keine Steuerberatung</b>."
   },
+  "HdahfLQDP0": {
+   "en": "How it works",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/crypto-tax-loss-harvesting/",
+    "/blog/paper-trade-crypto-futures/",
+    "/crypto-trading-simulator-no-sign-up/",
+    "/forex-trading-simulator/"
+   ],
+   "n": 8,
+   "w": 3,
+   "de": "So funktioniert es"
+  },
   "g6hLPPWOvA": {
    "en": "When you sell crypto at a loss, you realize a <b>capital loss</b>. That loss first offsets your capital <a href=\"/blog/crypto-futures-us-taxes/\">gains</a>, dollar for dollar. If your losses exceed your gains, in the US up to <b>$3,000</b> can offset ordinary income each year, and anything beyond that <b>carries forward</b> to future years. So a painful position can still do work: it shrinks the tax on the trades that went right.",
    "kind": [
@@ -80061,8 +79990,8 @@
    "w": 31,
    "de": "Jede Zahl auf dieser Seite ist als kostenloses JSON verfügbar, und mit demselben Account kannst du einen Paper-Trading-Bot dagegen laufen lassen - ohne Einzahlung, ohne KYC, dazu ein MCP-Server für KI-Agenten."
   },
-  "WooltuC-Cx": {
-   "en": "<a href=\"/trading-api/\">Paper-trading Bot API - REST, WebSocket, webhooks</a><a href=\"/free-crypto-api/\">Free keyless market-data API</a><a href=\"/api-docs/\">Live API reference (try the calls)</a><a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a><a href=\"/mcp-server-for-crypto-trading/\">MCP server for AI agents - 29 tools, no key for market data</a><a href=\"/arena/\">Bot leaderboard - what other bots are doing</a>",
+  "EGFDVbDMzS": {
+   "en": "<a href=\"/trading-api/\">Paper-trading Bot API - REST, WebSocket, webhooks</a><a href=\"/free-crypto-api/\">Free keyless market-data API</a><a href=\"/api-docs/\">Live API reference (try the calls)</a><a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a><a href=\"/mcp-server-for-crypto-trading/\">MCP server for AI agents - 31 tools, no key for market data</a><a href=\"/arena/\">Bot leaderboard - what other bots are doing</a>",
    "kind": [
     "html"
    ],
@@ -80074,7 +80003,7 @@
    ],
    "n": 8,
    "w": 42,
-   "de": "<a href=\"/trading-api/\">Paper-Trading Bot API - REST, WebSocket, Webhooks</a><a href=\"/free-crypto-api/\">Kostenlose Marktdaten-API ohne Key</a><a href=\"/api-docs/\">Live-API-Referenz (Aufrufe ausprobieren)</a><a href=\"/where-can-i-test-a-trading-bot/\">Wo kann ich einen Trading-Bot kostenlos testen?</a><a href=\"/mcp-server-for-crypto-trading/\">MCP-Server für KI-Agenten - 29 Tools, kein Key für Marktdaten</a><a href=\"/arena/\">Bot-Rangliste - was andere Bots gerade tun</a>"
+   "de": "<a href=\"/trading-api/\">Paper-Trading Bot API - REST, WebSocket, Webhooks</a><a href=\"/free-crypto-api/\">Kostenlose Marktdaten-API ohne Key</a><a href=\"/api-docs/\">Live-API-Referenz (Calls ausprobieren)</a><a href=\"/where-can-i-test-a-trading-bot/\">Wo kann ich einen Trading-Bot kostenlos testen?</a><a href=\"/mcp-server-for-crypto-trading/\">MCP-Server für KI-Agenten - 31 Tools, kein Key für Marktdaten</a><a href=\"/arena/\">Bot-Rangliste - was andere Bots tun</a>"
   },
   "QTT-RdoNlT": {
    "en": "Practice with it",
@@ -120678,8 +120607,8 @@
    "w": 8,
    "de": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>Pool · $150 für Platz 1</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>"
   },
-  "QnIsgtzEqS": {
-   "en": "<span class=\"dot\"></span> Top movers · 24h · live",
+  "O6uWLpbBAm": {
+   "en": "<span class=\"dot\"></span> Pro workspace · AI",
    "kind": [
     "html"
    ],
@@ -120687,8 +120616,164 @@
     "/"
    ],
    "n": 1,
-   "w": 4,
-   "de": "<span class=\"dot\"></span> Top-Mover · 24h · live"
+   "w": 3,
+   "de": "<span class=\"dot\"></span> Pro-Workspace · KI"
+  },
+  "Nfd9P2JTdl": {
+   "en": "Charts + Ask AI",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": ""
+  },
+  "rcq7NX0cEi": {
+   "en": "Up to 8 windows, 19+ indicators, drawing - and an AI that reads the chart, draws the setup and says <b>what moved the price</b>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 22,
+   "de": "Bis zu 8 Fenster, 19+ Indikatoren, Zeichnen - und eine KI, die den Chart liest, das Setup einzeichnet und sagt, <b>was den Preis bewegte</b>."
+  },
+  "k60la16FNP": {
+   "en": "<span class=\"new\">New</span><span>What moved it</span><span>Ask AI</span><span>Bar replay</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "<span class=\"new\">Neu</span><span>What moved it</span><span>Ask AI</span><span>Bar Replay</span>"
+  },
+  "tZkMrykUxA": {
+   "en": "Build your desk <i>→</i>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Bau dir deinen Desk <i>→</i>"
+  },
+  "KhUednvEfP": {
+   "en": "<span class=\"dot\"></span> Live · scored",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span class=\"dot\"></span> Live · bewertet"
+  },
+  "BHnSgExO7A": {
+   "en": "Catalysts",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Katalysatoren"
+  },
+  "DQp978agYg": {
+   "en": "Every listing, delisting, macro print, hack and headline as it lands - scored, with the move it caused.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 17,
+   "de": "Jedes Listing, Delisting, Makro-Datum, jeder Hack und jede Schlagzeile, sobald sie eintrifft - bewertet, mit der Bewegung, die sie ausgelöst hat."
+  },
+  "uMLInnA6TQ": {
+   "en": "What is moving the market <i>→</i>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Was den Markt bewegt <i>→</i>"
+  },
+  "NaaLPoxsIS": {
+   "en": "Liquidation map",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Liquidationskarte"
+  },
+  "7oFi1HYmqL": {
+   "en": "Heatmap",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Heatmap"
+  },
+  "FmT--Wjdsm": {
+   "en": "Where the leveraged positions sit on ten majors, with the live order book and the tape under it.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 18,
+   "de": "Wo die gehebelten Positionen bei zehn Majors liegen, mit dem Live-Orderbuch und dem Tape darunter."
+  },
+  "xnftjQ06Ay": {
+   "en": "Open the map <i>→</i>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Karte öffnen <i>→</i>"
+  },
+  "Dm_0PK0aq0": {
+   "en": "<span class=\"dot\"></span> Top movers · 24h",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<span class=\"dot\"></span> Top Mover · 24h"
   },
   "VGNkmNZRKZ": {
    "en": "Screen 130+ pairs <i>→</i>",
@@ -120725,18 +120810,6 @@
    "n": 1,
    "w": 1,
    "de": "Rekt"
-  },
-  "Te6CSf184L": {
-   "en": "Liquidations, live, exchange by exchange.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 5,
-   "de": "Liquidationen live, Börse für Börse."
   },
   "n-ExWuQKMW": {
    "en": "<b>BTC LONG</b> 50× <span class=\"amt\">−$234,500</span>",
@@ -120786,8 +120859,8 @@
    "w": 3,
    "de": "Sieh dir das Gemetzel an <i>→</i>"
   },
-  "fxD4_uACcB": {
-   "en": "<span class=\"dot\"></span> Buy and hold · demo cash",
+  "jvsWNmyZpt": {
+   "en": "<span class=\"dot\"></span> Buy and hold",
    "kind": [
     "html"
    ],
@@ -120795,8 +120868,8 @@
     "/"
    ],
    "n": 1,
-   "w": 5,
-   "de": "<span class=\"dot\"></span> Kaufen und halten · Demo-Guthaben"
+   "w": 3,
+   "de": "<span class=\"dot\"></span> Kaufen und halten"
   },
   "meXm54kyCo": {
    "en": "Demo Spot",
@@ -120812,8 +120885,8 @@
    "w": 2,
    "de": "Demo Spot"
   },
-  "gTDbZWBgoG": {
-   "en": "$10,000 to start and $100 a day to claim. Meme coins on 4 chains, the top 250 majors, any contract address. No fees, no leverage - one board pays $30 a season.",
+  "ouEGAbi-WP": {
+   "en": "$10,000 to start, $100 a day to claim. Memes on 4 chains and the top 250 - one board pays $30 a season.",
    "kind": [
     "html"
    ],
@@ -120821,8 +120894,8 @@
     "/"
    ],
    "n": 1,
-   "w": 28,
-   "de": "$10,000 zum Start und $100 pro Tag zum Abholen. Meme-Coins auf 4 Chains, die Top-250-Majors, jede Contract-Adresse. Keine Gebühren, kein Hebel - ein Board zahlt $30 pro Season."
+   "w": 19,
+   "de": "$10,000 zum Start, $100 am Tag zum Abholen. Memecoins auf 4 Chains und die Top 250 - ein Board zahlt $30 pro Season."
   },
   "eoZExVUqAF": {
    "en": "Start with $10,000 <i>→</i>",
@@ -120836,8 +120909,8 @@
    "w": 3,
    "de": "Starte mit $10,000 <i>→</i>"
   },
-  "PPN_FtF15O": {
-   "en": "Pro workspace",
+  "N45niCdkZV": {
+   "en": "<span class=\"dot\"></span> Hyperliquid · live",
    "kind": [
     "html"
    ],
@@ -120846,10 +120919,10 @@
    ],
    "n": 1,
    "w": 2,
-   "de": "Pro-Workspace"
+   "de": ""
   },
-  "HkZE3VbaCC": {
-   "en": "Multi-chart",
+  "QG7N0ecCZe": {
+   "en": "Whale tracker",
    "kind": [
     "html"
    ],
@@ -120857,11 +120930,11 @@
     "/"
    ],
    "n": 1,
-   "w": 1,
-   "de": "Multi-Chart"
+   "w": 2,
+   "de": "Wal-Tracker"
   },
-  "SjZdzI8tnd": {
-   "en": "Up to 8 windows, 19+ indicators, drawing, AI chart analyst.",
+  "paWmskBSOU": {
+   "en": "Every position over $1M, its liquidation price and the trades as they print.",
    "kind": [
     "html"
    ],
@@ -120869,11 +120942,11 @@
     "/"
    ],
    "n": 1,
-   "w": 9,
-   "de": "Bis zu 8 Fenster, 19+ Indikatoren, Zeichnen, KI-Chartanalyst."
+   "w": 13,
+   "de": "Jede Position über $1M, ihr Liquidationspreis und die Trades, sobald sie gedruckt werden."
   },
-  "tZkMrykUxA": {
-   "en": "Build your desk <i>→</i>",
+  "gb_F-pQYJ3": {
+   "en": "Watch the whales <i>→</i>",
    "kind": [
     "html"
    ],
@@ -120882,7 +120955,7 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "Bau dir deinen Desk <i>→</i>"
+   "de": "Wale beobachten <i>→</i>"
   },
   "jCpV3aec9C": {
    "en": "<span class=\"dot\"></span> Live markets",
@@ -120931,18 +121004,6 @@
    "n": 1,
    "w": 2,
    "de": "Preisalarme"
-  },
-  "-zEXTWSrBy": {
-   "en": "Set a target, walk away. We ping you the second it crosses.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 11,
-   "de": "Setz ein Ziel und geh. Wir melden uns in der Sekunde, in der es erreicht wird."
   },
   "qZASnuDDyA": {
    "en": "<span class=\"bell\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"#ffd75a\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\"/><path d=\"M13.7 21a2 2 0 0 1-3.4 0\"/></svg></span><span>BTC above <b id=\"alTarget\">…</b></span>",
@@ -134775,8 +134836,8 @@
    "w": 19,
    "de": "Ungefähr 1/Hebel minus die Maintenance Margin. Eine MATIC-Position mit 10x wird nach einer Bewegung von etwa 9-10% liquidiert; mit 100x nach etwa 1%."
   },
-  "u5hsDRqCLx": {
-   "en": "Is There an MCP Server for Crypto Trading? - Free, 28 Tools | MarginPad",
+  "ke-UuIkJ94": {
+   "en": "Is There an MCP Server for Crypto Trading? - Free, 31 Tools | MarginPad",
    "kind": [
     "title",
     "attr:content"
@@ -134786,7 +134847,7 @@
    ],
    "n": 2,
    "w": 12,
-   "de": "Gibt es einen MCP-Server fürs Krypto-Trading? - Kostenlos, 28 Tools | MarginPad"
+   "de": "Gibt es einen MCP-Server für Krypto-Trading? - Kostenlos, 31 Tools | MarginPad"
   },
   "4tH5wZXDRN": {
    "en": "Is there an MCP server for crypto trading?",
@@ -135029,8 +135090,8 @@
    "w": 46,
    "de": "Der kostenlose Plan enthält alles: 120 Anfragen pro Minute und Key, drei Keys, fünfzig offene Positionen, den WebSocket-Stream, den Replay eines vergangenen Tages und jeden Marktdaten-Endpoint ohne Key. Bezahlte Pläne erhöhen die Limits und bringen Webhooks und AI-Marktanalysen dazu - sie schalten das Produkt nicht erst frei."
   },
-  "b-TFeXdHzP": {
-   "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp over Streamable HTTP, with 28 tools. The market-data tools - price, klines, funding, open interest, liquidations, the screener, the economic calendar - need no API key at all. The paper-trading tools operate a simulated futures account and take a free key in an X-API-Key header. Nothing there can touch real money.",
+  "HjCEUydA7c": {
+   "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp over Streamable HTTP, with 31 tools. The market-data tools - price, klines, funding, open interest, liquidations, the screener, the economic calendar - need no API key at all. The paper-trading tools operate a simulated futures account and take a free key in an X-API-Key header. Nothing there can touch real money.",
    "kind": [
     "html",
     "ld"
@@ -135040,7 +135101,7 @@
    ],
    "n": 2,
    "w": 55,
-   "de": "Ja. MarginPad betreibt einen Remote-MCP-Server unter https://marginpad.io/mcp über Streamable HTTP, mit 28 Tools. Die Marktdaten-Tools - Preis, Klines, Funding, Open Interest, Liquidationen, der Screener, der Wirtschaftskalender - brauchen keinen API-Key. Die Paper-Trading-Tools bedienen ein simuliertes Futures-Konto und nehmen einen kostenlosen Key im Header X-API-Key. Nichts davon kann echtes Geld berühren."
+   "de": "Ja. MarginPad betreibt einen Remote-MCP-Server unter https://marginpad.io/mcp über Streamable HTTP, mit 31 Tools. Die Marktdaten-Tools - Preis, Klines, Funding, Open Interest, Liquidationen, der Screener, der Wirtschaftskalender - brauchen überhaupt keinen API-Key. Die Paper-Trading-Tools steuern ein simuliertes Futures-Konto und nehmen einen kostenlosen Key im X-API-Key-Header. Echtes Geld kann dort nicht berührt werden."
   },
   "nuLgDjpdhS": {
    "en": "How do I add it to Claude, ChatGPT or Cursor?",
@@ -148442,18 +148503,6 @@
    "n": 1,
    "w": 26,
    "de": "<b id=\"eaWel\">$0.50</b> Willkommensbonus, wenn dich ein Freund einlädt, plus <b id=\"eaMoon\">$1.00</b> für das Eröffnen eines Moon-Kontos über uns und je <b id=\"eaMexc\">$1.00</b> für ein MEXC-, <b id=\"eaBingx\">$1.00</b> für ein BingX- oder <b id=\"eaBitget\">$1.00</b> für ein Bitget-Konto."
-  },
-  "Oy61ExBVrQ": {
-   "en": "Every day",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 2,
-   "de": "Jeden Tag"
   },
   "V8xtr4n-l4": {
    "en": "<span class=\"eamt\" id=\"eaDay\">$0.10</span><i>a day</i>",
@@ -173455,8 +173504,8 @@
    "w": 7,
    "de": "Kann ein KI-Agent darauf traden?"
   },
-  "tws0laRA_p": {
-   "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 28 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.",
+  "ybP7r87S5A": {
+   "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 31 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.",
    "kind": [
     "html",
     "ld"
@@ -173466,7 +173515,7 @@
    ],
    "n": 2,
    "w": 55,
-   "de": "Ja. MarginPad betreibt einen Remote-MCP-Server unter https://marginpad.io/mcp mit 28 Tools, sodass ein Assistent wie Claude, ChatGPT oder Cursor Märkte lesen und ein Paper-Konto direkt handeln kann, ganz ohne Glue-Code. Marktdaten-Tools brauchen überhaupt keinen Key; die Paper-Trading-Tools nehmen einen kostenlosen API-Key im X-API-Key-Header. Echtes Geld kann dort nichts berühren."
+   "de": "Ja. MarginPad betreibt einen Remote-MCP-Server unter https://marginpad.io/mcp mit 31 Tools, sodass ein Assistent wie Claude, ChatGPT oder Cursor Märkte lesen und ein Paper-Konto direkt handeln kann, ohne Zwischencode. Marktdaten-Tools brauchen überhaupt keinen Key; die Paper-Trading-Tools nehmen einen kostenlosen API-Key im X-API-Key-Header. Echtes Geld kann dort nicht berührt werden."
   },
   "7ZC8ra2Zbo": {
    "en": "What does it cost?",

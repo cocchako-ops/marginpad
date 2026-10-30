@@ -8637,11 +8637,11 @@ async function handleWhSink(url, request, env) {
 // order is about to fill. It is the one alert a chart site cannot copy.
 // Deliberately ADDITIVE: ordinary price alerts keep their 25-per-account cap and their Telegram delivery for
 // everyone. Nothing a free user has today is taken away to make room for this.
-const POSALERT_DEF = { on: 0, liq: 5, sltp: 1, ord: 1 }; // percent distances that count as "close"
+const POSALERT_DEF = { on: 0, liq: 5, sltp: 1, ord: 1, cx: 1 }; // percent distances that count as "close"; cx = also a catalyst on a coin you hold (2026-10-30, the /alerts/ hub)
 function posAlertCfg(v) {
   let c = {}; try { c = (typeof v === 'string') ? JSON.parse(v || '{}') : (v || {}); } catch (e) { c = {}; }
   const num = (x, d, lo, hi) => { const n = +x; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
-  return { on: c.on ? 1 : 0, liq: num(c.liq, POSALERT_DEF.liq, 0.5, 50), sltp: num(c.sltp, POSALERT_DEF.sltp, 0.1, 20), ord: num(c.ord, POSALERT_DEF.ord, 0.1, 20) };
+  return { on: c.on ? 1 : 0, liq: num(c.liq, POSALERT_DEF.liq, 0.5, 50), sltp: num(c.sltp, POSALERT_DEF.sltp, 0.1, 20), ord: num(c.ord, POSALERT_DEF.ord, 0.1, 20), cx: (c.cx === undefined || c.cx === null) ? 1 : (c.cx ? 1 : 0) };
 }
 // ─── TRADING REPORT: the findings ─────────────────────────────────────────────────────────────────────────────
 // The part a trader actually pays for is not the table, it is the sentence. Every finding here is a MEASUREMENT of
@@ -9124,6 +9124,7 @@ async function checkCatalystAlerts(env) {
     try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
     const fired = [];
     for (const w of watch) {
+      if (w.cfg && w.cfg.cx === 0) continue; // the member switched the catalyst half off on /alerts/ (2026-10-30)
       const held = new Set(); (w.pos || []).forEach(p => held.add(String(p.sym || '').toUpperCase())); (w.ord || []).forEach(o => held.add(String(o.sym || '').toUpperCase()));
       if (!held.size) continue;
       const hits = en.filter(c => String(c.syms || '').split(',').some(s => held.has(s)));
@@ -9655,7 +9656,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=2c853e09" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0be97f5d" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -21564,7 +21565,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '308825ef';
+const ASSET_V = 'e2f4ced5';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -21594,6 +21595,74 @@ async function handleAlerts(url, env, request) {
   if (!tok) return jr({ error: 'not_signed_in' }, 401);
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   const sub = url.pathname.slice('/api/alerts'.length) || '/';
+  /* THE ALERTS HUB (2026-10-30, owner: "alerts dobije svoj prostor ... da podesavaju razlicite alerts, da vide koje su premium i kako
+     mogu da ih dobiju, notifikacija / tg / email ... notification settings jos detaljniji"). ONE read for the whole page: every
+     alert the site can send, the member's setting for each, which channel it reaches, what is Premium, and the last time each
+     cron ran. Writes stay on the routes that already validate them - this composes, it never decides. */
+  if (sub === '/hub') {
+    const su = await sessionUser(env, tok); if (!su || !su.id) return jr({ error: 'not_signed_in' }, 401);
+    const uid = su.id;
+    const pf = await premiumFor(env, request);
+    const keys = ['posalert', 'zonealert', 'whalewatch', 'linealert', 'tapealert', 'brief', 'notifpush'];
+    let P = {}; try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, keys }) })); const d = await r.json(); P = (d && d.prefs) || {}; } catch (e) {}
+    const pj = (k) => { try { return P[k] && P[k].v ? JSON.parse(P[k].v) : null; } catch (e) { return null; } };
+    let tgChat = null; try { const pr = await resolveProfiles(env, ['u:' + uid]); tgChat = (pr[uid] && pr[uid].tg) || null; } catch (e) {}
+    let pushHas = false, pushN = 0; try { const r = await stub.fetch(new Request('https://do/push/subsof', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); pushN = ((d && d.subs) || []).length; pushHas = pushN > 0; } catch (e) {}
+    let price = { alerts: [] }; try { const r = await stub.fetch(new Request('https://do/alerts/list?token=' + encodeURIComponent(tok))); price = await r.json(); } catch (e) {}
+    let digest = 1; try { const r = await stub.fetch(new Request('https://do/digest/get', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.digest !== undefined) digest = d.digest ? 1 : 0; } catch (e) {}
+    let wrap = null; if (tgChat) { try { wrap = wrapPrefsOf(await env.STATS.get('wrap:sub:' + tgChat)); } catch (e) {} }
+    let cal = []; try { const l = await env.STATS.list({ prefix: 'calrem:' + uid + ':', limit: 50 }); for (const k of (l.keys || [])) { try { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v && v.ts) cal.push({ ts: +v.ts, title: String(v.title || '') }); } catch (e) {} } } catch (e) {}
+    cal.sort((a, b) => a.ts - b.ts);
+    const stamps = {}; for (const k of ['posalert', 'zonealert', 'whalealert', 'linealert', 'tapealert', 'cxalert']) { try { const v = JSON.parse(await env.STATS.get(k + ':last') || 'null'); stamps[k] = v && v.ts ? v.ts : null; } catch (e) { stamps[k] = null; } }
+    const np = pj('notifpush') || {}; const kinds = {}; for (const k of PUSH_PREF_KINDS) kinds[k] = (np[k] === undefined ? true : !!np[k]);
+    const line = pj('linealert'); const lineItems = (line && Array.isArray(line.items)) ? line.items : [];
+    const wh = pj('whalewatch'); const whAddrs = (wh && Array.isArray(wh.addrs)) ? wh.addrs : [];
+    const br = pj('brief') || {};
+    return jr({
+      ok: true, uid, username: su.username || '', email: su.email || '', premium: !!pf.premium, premiumUntil: pf.until || null,
+      channels: { push: { on: pushHas, devices: pushN }, telegram: { linked: !!tgChat }, email: { address: su.email || '', digest } },
+      kinds, kindList: PUSH_PREF_KINDS,
+      price: { alerts: (price && price.alerts) || [], max: 25 },
+      line: { items: lineItems, max: LINE_ALERT_MAX },
+      tape: { cfg: tapeAlertCfg(pj('tapealert') || {}), min: TAPE_ALERT_MIN, coins: TAPE_ALERT_COINS },
+      zone: { cfg: zoneAlertCfg(pj('zonealert')), defaults: ZONEALERT_DEF, coins: ZONE_ALERT_COINS, maxCoins: ZONE_ALERT_MAX_COINS },
+      whale: { addrs: whAddrs, max: WHALE_WATCH_MAX },
+      pos: { cfg: posAlertCfg(pj('posalert')), defaults: POSALERT_DEF },
+      brief: { push: !!br.push, tg: !!br.tg, h: (+br.h === 16 ? 16 : 8) },
+      wrap: wrap ? { on: !!wrap.on, h: wrap.h, s: wrap.s } : { on: false, h: 16, s: null },
+      calendar: { reminders: cal },
+      lastRun: stamps
+    });
+  }
+  if (sub === '/email') { // the weekly recap + campaign mail switch (users.digest). One bit, so one route.
+    const su = await sessionUser(env, tok); if (!su || !su.id) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method === 'GET') { let digest = 1; try { const r = await stub.fetch(new Request('https://do/digest/get', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id }) })); const d = await r.json(); digest = d && d.digest ? 1 : 0; } catch (e) {} return jr({ ok: true, digest, email: su.email || '' }); }
+    let eb = {}; try { eb = await request.json(); } catch (e) {}
+    const want = eb.digest ? 1 : 0;
+    try { const r = await stub.fetch(new Request('https://do/digest/set', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, digest: want }) })); const d = await r.json(); if (!d || !d.ok) return jr({ error: 'unavailable' }, 503); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, digest: want });
+  }
+  if (sub === '/wrap') { // the personal Daily Wrap the bot delivers (KV wrap:sub:<chat>) - settable from the site once Telegram is linked
+    const su = await sessionUser(env, tok); if (!su || !su.id) return jr({ error: 'not_signed_in' }, 401);
+    let tgChat = null; try { const pr = await resolveProfiles(env, ['u:' + su.id]); tgChat = (pr[su.id] && pr[su.id].tg) || null; } catch (e) {}
+    if (request.method === 'GET') { const p = tgChat ? wrapPrefsOf(await env.STATS.get('wrap:sub:' + tgChat)) : null; return jr({ ok: true, linked: !!tgChat, on: !!(p && p.on), h: p ? p.h : 16, s: p ? p.s : null, sections: WRAP_SECTIONS.map(x => ({ k: x[0], name: x[1] })) }); }
+    if (!tgChat) return jr({ error: 'telegram_required', message: 'Link Telegram first - the wrap is delivered by the bot.' }, 400);
+    let wb = {}; try { wb = await request.json(); } catch (e) {}
+    const key = 'wrap:sub:' + tgChat; const p = wrapPrefsOf(await env.STATS.get(key));
+    if (wb.on !== undefined) p.on = !!wb.on;
+    if (wb.h !== undefined) p.h = (+wb.h === 8 ? 8 : 16);
+    if (wb.s && typeof wb.s === 'object') { for (const k in wb.s) { if (Object.prototype.hasOwnProperty.call(WRAP_DEFAULT, k)) p.s[k] = wb.s[k] ? 1 : 0; } }
+    p.ts = Date.now();
+    try { await env.STATS.put(key, JSON.stringify(p)); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, on: p.on, h: p.h, s: p.s });
+  }
+  if (sub === '/calrem') { // the member's own pending calendar reminders (KV calrem:<uid>:<tsSec>), listable and removable
+    const su = await sessionUser(env, tok); if (!su || !su.id) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method === 'GET') { const out = []; try { const l = await env.STATS.list({ prefix: 'calrem:' + su.id + ':', limit: 50 }); for (const k of (l.keys || [])) { try { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v && v.ts) out.push({ ts: +v.ts, title: String(v.title || '') }); } catch (e) {} } } catch (e) {} out.sort((a, b) => a.ts - b.ts); return jr({ ok: true, reminders: out }); }
+    let cb = {}; try { cb = await request.json(); } catch (e) {}
+    if (cb.op === 'rm' && +cb.ts > 0) { try { await env.STATS.delete('calrem:' + su.id + ':' + Math.floor(+cb.ts / 1000)); } catch (e) {} return jr({ ok: true }); }
+    return jr({ error: 'bad' }, 400);
+  }
   if (sub === '/tglink') { // GET: a one-time Telegram connect link (t.me/MarginPadBot?start=<token>) so alerts can be delivered to their chat
     const ir = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok)));
     const info = await ir.json(); if (!info || !info.uid) return jr({ error: 'not_signed_in' }, 401);
@@ -35666,6 +35735,8 @@ export class UserStore {
         no_tg: one("(tg_chat IS NULL OR tg_chat='')"),
       }, optedOut: (this.rows("SELECT COUNT(*) n FROM users WHERE COALESCE(digest,1)=0")[0] || {}).n || 0 });
     }
+    if (path === '/digest/get') { const uid = String((b && b.uid) || ''); const r = uid ? this.rows('SELECT COALESCE(digest,1) digest FROM users WHERE id=?', uid)[0] : null; return this.j({ ok: !!r, digest: r ? (+r.digest ? 1 : 0) : 1 }); }
+    if (path === '/digest/set') { const uid = String((b && b.uid) || ''); if (!uid) return this.j({ error: 'bad' }, 400); sql.exec('UPDATE users SET digest=? WHERE id=?', (b && b.digest) ? 1 : 0, uid); return this.j({ ok: true, digest: (b && b.digest) ? 1 : 0 }); }
     if (path === '/digest/optout') { const uid = String((b && b.uid) || url.searchParams.get('u') || ''); if (uid) sql.exec('UPDATE users SET digest=0 WHERE id=?', uid); return this.j({ ok: true }); }
     if (path === '/digest/set') { const tok = String((b && b.token) || ''); const ss = tok ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', tok, now)[0] : null; if (!ss) return this.j({ error: 'not_signed_in' }, 401); sql.exec('UPDATE users SET digest=? WHERE id=?', b.on ? 1 : 0, ss.user_id); return this.j({ ok: true }); }
     // ---- price alerts (account-based) ----
@@ -38416,7 +38487,7 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
   return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram, once per account + 5 (or 6 once it is done) = 7/day
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
-const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
+const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7','mm8'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
 const ACAD_TOTAL_LESSONS = Object.values(ACAD_COURSES).reduce((t, a) => t + a.length, 0); // "finished the Academy" = every lesson; derived from the list above so it can never lag it again (it sat at 96 after the expansion to 139)
 async function handleAcademy(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };

@@ -1,0 +1,262 @@
+{
+ "id": "mpstart",
+ "name": "Start Here: MarginPad",
+ "sub": "The site itself, in seven short lessons",
+ "lessons": [
+  {
+   "id": "mp2",
+   "t": "XP, seu nível e Bronze",
+   "cards": [
+    {
+     "h": "XP é só o que você fez, contado",
+     "p": "Cada lição que você termina vale 25 XP, cada dia em que você aparece vale 20, um trade vale 3 e um trade vencedor 15. Nada é comprado e nada é aleatório - XP é o registro de que você usou o site. O número fica ao lado do seu nome no menu da conta e no topo da sua página de temporada."
+    },
+    {
+     "h": "Bronze é o primeiro nível, não uma barreira",
+     "p": "Abaixo de 500 XP você é Unranked; com 500 você é Bronze, depois Silver, Gold, Platinum, Diamond, Master e Legendary conforme o número sobe. Nada neste site espera mais por um nível: o faucet, as missões diárias, as indicações, os saques e todos os rankings gratuitos estão abertos desde o dia em que você se cadastra. Um nível é um emblema e um bônus, nunca um bloqueio."
+    },
+    {
+     "h": "O que um nível realmente muda",
+     "p": "A partir de Silver, cada resgate do faucet paga um pouco mais - o multiplicador sobe com o nível. Cada nível libera uma moldura para o seu cartão de perfil, e o ranking Gold Room - um dos nove - só classifica contas no nível Gold, que são 12.000 XP. Essa é a lista inteira. O terminal de prática, os gráficos e os alertas são os mesmos em todos os níveis."
+    },
+    {
+     "h": "Este curso já é quase todo o caminho",
+     "p": "Você está lendo a lição dois de sete. Terminar as sete, com os dois bônus do Road to Bronze que elas disparam, leva você a um pouco mais de 400 XP - então, depois disto, um trade de papel com stop-loss, ou simplesmente voltar amanhã, é Bronze. O cartão Road to Bronze na sua página de temporada lista as nove tarefas iniciais e quanto cada uma paga."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "O que é Bronze?",
+     "o": [
+      "Um nível de assinatura paga",
+      "O nível que você alcança com 500 XP",
+      "O primeiro prêmio do ranking",
+      "Uma moldura cosmética para o seu cartão de perfil"
+     ]
+    },
+    {
+     "q": "O que alcançar Bronze libera?",
+     "o": [
+      "O faucet e as missões",
+      "Saques",
+      "Nada - as recompensas estavam abertas desde o dia do cadastro; um nível é um emblema e um bônus",
+      "Os gráficos e o heatmap"
+     ]
+    },
+    {
+     "q": "Qual é a forma gratuita mais rápida de ganhar XP?",
+     "o": [
+      "Abrir o máximo de trades possível",
+      "Lições da Academia - 25 cada, mais 50 por um curso concluído",
+      "Deixar o site aberto em uma aba",
+      "Convidar amigos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "O dinheiro real neste site",
+   "cards": [
+    {
+     "h": "De onde ele vem",
+     "p": "MarginPad é gratuito e não tem publicidade. Ele ganha quando um leitor abre uma conta em uma exchange por meio de um dos nossos links, e a exchange divide parte da sua taxa. Esse é o negócio inteiro, e é por isso que as recompensas são pequenas, reais e limitadas, em vez de grandes e imaginárias."
+    },
+    {
+     "h": "O que está na mesa",
+     "p": "Um bônus de boas-vindas de $0.50. $0.01 do faucet a cada poucos minutos, até $0.10 por dia. Missões diárias por cima, um ou dois centavos cada. $1.00 por abrir uma conta Moon, MEXC, BingX ou Bybit por nosso intermédio - três das quatro são verificadas automaticamente contra a lista de afiliados. $0.50 quando um amigo que você convidou realmente negocia. Nada disso espera por um nível."
+    },
+    {
+     "h": "Como sacar",
+     "p": "O saldo é pago em USDT e você pode sacar de $5.00 para uma conta Bybit, Moon ou MEXC que foi aberta por meio do MarginPad. Todo saque é verificado e pago manualmente, então não é instantâneo. Isto é um agradecimento por usar o site, não uma renda - trate como o que é e nunca vai te decepcionar."
+    },
+    {
+     "h": "Como um saque realmente acontece",
+     "p": "Você digita o valor, de $5 até o seu saldo, e a conta para onde pagar. Um pedido por vez: um segundo espera até o primeiro ser pago. A equipe vê se aquela conta da exchange foi realmente aberta por nós, se outro membro já sacou para a mesma, e como o saldo foi ganho - assim uma conta real é paga e uma fazenda de contas não. Você recebe uma notificação quando o valor chega."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Como o MarginPad ganha dinheiro?",
+     "o": [
+      "Vendendo seus dados",
+      "Links de afiliado de exchanges - uma parte da taxa quando alguém se cadastra por nosso intermédio",
+      "Cobrando pela Academia",
+      "Ficando com uma parte dos lucros do paper trading"
+     ]
+    },
+    {
+     "q": "Qual é o menor valor que você pode sacar?",
+     "o": [
+      "$1.00",
+      "$5.00",
+      "$20.00",
+      "Não há mínimo"
+     ]
+    },
+    {
+     "q": "Qual destes espera por um nível?",
+     "o": [
+      "O faucet",
+      "As missões diárias",
+      "As indicações",
+      "Nenhum deles - toda recompensa está aberta desde o primeiro dia"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short e o que a alavancagem realmente faz",
+   "cards": [
+    {
+     "h": "Duas direções, não uma",
+     "p": "Um long ganha quando o preço sobe. Um short ganha quando o preço cai. Essa é a diferença inteira, e é por isso que um trader de futuros nunca é obrigado a ficar de fora de um mercado em queda. No MarginPad os dois estão a um toque: os botões Long e Short no ticket de trade."
+    },
+    {
+     "h": "Alavancagem é tamanho, não mágica",
+     "p": "Coloque $100 a 10x e você está movimentando uma posição de $1.000. Cada 1% que o mercado percorre agora é 10% do seu dinheiro, seja em que direção for. A alavancagem não melhora um trade - ela multiplica o que o trade já ia fazer com você de qualquer jeito."
+    },
+    {
+     "h": "A escada no ticket",
+     "p": "O controle de alavancagem se ajusta a uma escada: passos inteiros até 10x, depois de dez em dez - 20, 30, 50, 100 e assim por diante. Digite 107 e ele é registrado como 110. A escada existe para que o número que você escolheu seja um que você consegue dizer em voz alta, e para que a linha de liquidação que o gráfico desenha a partir dele seja uma que você consegue ler antes de abrir."
+    },
+    {
+     "h": "Por que deixamos você ir até 1000x",
+     "p": "Os principais ativos aqui vão até 1000x, muito além de qualquer coisa que uma pessoa sensata usaria. Isso é deliberado. Com 1000x, menos de um décimo de um por cento contra você encerra a posição - e você deve descobrir isso em uma conta de prática, esta noite, em vez de em uma exchange com o seu próprio dinheiro."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Você coloca $100 com alavancagem de 10x. Qual é o tamanho da posição?",
+     "o": [
+      "$100",
+      "$110",
+      "$1.000",
+      "$10.000"
+     ]
+    },
+    {
+     "q": "Uma posição short ganha dinheiro quando:",
+     "o": [
+      "O preço sobe",
+      "O preço cai",
+      "O preço fica estável",
+      "O volume sobe"
+     ]
+    },
+    {
+     "q": "O que aumentar a alavancagem realmente muda?",
+     "o": [
+      "As chances de estar certo",
+      "O tamanho da posição, então cada movimento conta mais",
+      "A taxa que você paga",
+      "Por quanto tempo você pode manter o trade"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Suas duas saídas: stop-loss e take-profit",
+   "cards": [
+    {
+     "h": "Decida a saída antes de precisar dela",
+     "p": "Um stop-loss fecha o trade em um preço que você escolhe se ele der errado. Um take-profit faz o mesmo se der certo. Os dois são definidos uma vez e depois cumpridos sem você, e esse é o ponto: o momento em que uma posição está perdendo é o pior momento possível para decidir o que fazer a respeito."
+    },
+    {
+     "h": "Onde defini-los aqui",
+     "p": "No ticket, antes de abrir - ou depois, pelo botão Set no cartão do trade e em My Trades. Você pode movê-los quantas vezes quiser enquanto o trade estiver aberto. Um trade sem nenhum dos dois é um trade cuja saída será escolhida pelo que você estiver sentindo naquele momento."
+    },
+    {
+     "h": "No ticket, passo a passo",
+     "p": "Abra Advanced abaixo do formulário de trade. O stop e o alvo aceitam cada um um preço, ou uma porcentagem da sua margem - digite um e o outro é reescrito, então eles nunca podem discordar. O painel preenche de início um stop a 2% de distância e um alvo a 3% como ponto de partida; inverta o lado e os níveis preenchidos automaticamente se invertem junto. O que o painel esconde não vale: feche Advanced e o trade abre sem eles."
+    },
+    {
+     "h": "Este é o hábito que vale construir",
+     "p": "Nada mais neste curso vai mudar tanto os seus resultados. Nos rankings que pagam USDT real, as contas que duram não são as que escolhem melhores entradas - são as que já tinham decidido onde estariam erradas. Definir um também é uma tarefa do Road to Bronze, que vale 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "O que faz um stop-loss?",
+     "o": [
+      "Impede você de abrir mais trades",
+      "Fecha o trade em um preço que você escolheu, se ele for contra você",
+      "Pausa a posição",
+      "Garante que você não pode perder"
+     ]
+    },
+    {
+     "q": "Quando você pode definir ou mover um stop-loss no MarginPad?",
+     "o": [
+      "Somente ao abrir o trade",
+      "Somente depois que ele estiver no lucro",
+      "Antes de abrir, e a qualquer momento enquanto o trade estiver aberto",
+      "Uma vez por dia"
+     ]
+    },
+    {
+     "q": "Você digita um stop como porcentagem da margem. O que acontece com o campo de preço?",
+     "o": [
+      "Nada - são separados",
+      "Ele é reescrito para corresponder, então os dois nunca discordam",
+      "Ele é apagado",
+      "Ele é bloqueado"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Temporadas, rankings e o pass",
+   "cards": [
+    {
+     "h": "O site funciona em temporadas de catorze dias",
+     "p": "Tudo que é competitivo reinicia em um relógio de catorze dias. Seu XP da temporada, sua posição nos rankings e o pass começam de novo, então uma quinzena ruim nunca é permanente e um novato nunca está um ano atrasado. O dia da temporada aparece no topo da página de temporada."
+    },
+    {
+     "h": "Nove rankings, sete deles gratuitos",
+     "p": "Nove rankings pagam USDT real quando uma temporada termina, e todos ficam em uma única página, /leaderboards/. Sete não custam nada: Highest ROE, Green Days, Best Win Rate, Season XP, o Daily BTC Call, Meme Spot e o Gold Room - o único com uma condição, o nível Gold. Dois são para leitores que negociam dinheiro real na Bybit ou na Moon por meio do MarginPad. Os prêmios e as divisões estão impressos na página."
+    },
+    {
+     "h": "E o pass roda por baixo de tudo isso",
+     "p": "Cada 100 de XP da temporada é um nível do pass, quarenta deles, e a trilha gratuita paga em Ticks e itens cosméticos conforme você sobe. Você já está ganhando - o XP deste curso contou para ele enquanto você lia. A trilha paga acrescenta peças que ninguém pode comprar na loja."
+    },
+    {
+     "h": "Além dos rankings",
+     "p": "Um duelo coloca você contra um trader por uma hora, um dia, três dias ou uma semana, em uma métrica que os dois combinam, com Ticks em jogo. Um squad reúne até cinco de vocês com uma sala privada, raids nos principais ativos e um logo. Demo Spot é buy-and-hold com $10.000 e um ranking próprio. Nada disso é obrigatório - o terminal é o produto; o resto é o que impede a prática de parecer lição de casa."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quanto dura uma temporada do MarginPad?",
+     "o": [
+      "Sete dias",
+      "Catorze dias",
+      "Um mês",
+      "Até alguém vencer"
+     ]
+    },
+    {
+     "q": "Quantos dos nove rankings não custam nada para participar?",
+     "o": [
+      "Dois",
+      "Quatro",
+      "Sete",
+      "Todos os nove"
+     ]
+    },
+    {
+     "q": "Onde ficam as classificações de todos os rankings?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "O canal do Telegram",
+      "Dentro do terminal"
+     ]
+    }
+   ]
+  }
+ ]
+}

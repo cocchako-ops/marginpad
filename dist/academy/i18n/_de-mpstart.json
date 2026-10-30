@@ -1,0 +1,262 @@
+{
+ "id": "mpstart",
+ "name": "Start Here: MarginPad",
+ "sub": "The site itself, in seven short lessons",
+ "lessons": [
+  {
+   "id": "mp2",
+   "t": "XP, dein Level und Bronze",
+   "cards": [
+    {
+     "h": "XP ist einfach das, was du getan hast, gezählt",
+     "p": "Jede abgeschlossene Lektion bringt 25 XP, jeder Tag, an dem du vorbeischaust, 20, ein Trade 3 und ein gewonnener 15. Nichts wird gekauft und nichts ist zufällig - XP ist der Nachweis, dass du die Seite genutzt hast. Die Zahl steht neben deinem Namen im Account-Menü und oben auf deiner Season-Seite."
+    },
+    {
+     "h": "Bronze ist das erste Level, keine Schranke",
+     "p": "Unter 500 XP bist du Unranked; bei 500 bist du Bronze, danach Silver, Gold, Platinum, Diamond, Master und Legendary, je höher die Zahl steigt. Nichts auf dieser Seite wartet mehr auf ein Level: der Faucet, die täglichen Missionen, Empfehlungen, Auszahlungen und jedes kostenlose Board stehen dir ab dem Tag der Anmeldung offen. Ein Level ist ein Abzeichen und ein Bonus, nie ein Schloss."
+    },
+    {
+     "h": "Was ein Level wirklich ändert",
+     "p": "Ab Silver zahlt jeder Faucet-Claim etwas mehr - der Multiplikator steigt mit dem Level. Jedes Level schaltet einen Rahmen für deine Profilkarte frei, und das Board Gold Room - eines der neun - listet nur Accounts ab Gold, das sind 12.000 XP. Das ist die ganze Liste. Das Übungs-Terminal, die Charts und die Alerts sind auf jedem Level gleich."
+    },
+    {
+     "h": "Dieser Kurs bringt dich fast ans Ziel",
+     "p": "Du liest gerade Lektion zwei von sieben. Alle sieben abzuschließen bringt dich, mit den zwei Road to Bronze-Boni, die sie auslösen, auf etwas über 400 XP - danach ist ein Paper-Trade mit Stop-Loss oder einfach morgen wiederzukommen schon Bronze. Die Karte Road to Bronze auf deiner Season-Seite listet die neun Starter-Aufgaben und was jede einbringt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was ist Bronze?",
+     "o": [
+      "Eine bezahlte Mitgliedsstufe",
+      "Das Level, das du bei 500 XP erreichst",
+      "Der erste Leaderboard-Preis",
+      "Ein kosmetischer Rahmen für deine Profilkarte"
+     ]
+    },
+    {
+     "q": "Was schaltet das Erreichen von Bronze frei?",
+     "o": [
+      "Den Faucet und die Missionen",
+      "Auszahlungen",
+      "Nichts - die Belohnungen standen ab der Anmeldung offen; ein Level ist ein Abzeichen und ein Bonus",
+      "Die Charts und die Heatmap"
+     ]
+    },
+    {
+     "q": "Was ist der schnellste kostenlose Weg, XP zu verdienen?",
+     "o": [
+      "So viele Trades wie möglich eröffnen",
+      "Academy-Lektionen - je 25, dazu 50 für einen abgeschlossenen Kurs",
+      "Die Seite in einem Tab offen lassen",
+      "Freunde einladen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "Das echte Geld auf dieser Seite",
+   "cards": [
+    {
+     "h": "Woher es kommt",
+     "p": "MarginPad ist kostenlos und zeigt keine Werbung. Wir verdienen, wenn ein Leser über einen unserer Links ein Konto bei einer Börse eröffnet und die Börse einen Teil ihrer Gebühr teilt. Das ist das ganze Geschäft, und deshalb sind die Belohnungen klein, echt und gedeckelt statt groß und erfunden."
+    },
+    {
+     "h": "Was auf dem Tisch liegt",
+     "p": "Ein Willkommensbonus von $0.50. $0.01 vom Faucet alle paar Minuten, bis zu $0.10 am Tag. Obendrauf tägliche Missionen, je ein oder zwei Cent. $1.00 dafür, ein Konto bei Moon, MEXC, BingX oder Bybit über uns zu eröffnen - drei der vier werden automatisch mit der Affiliate-Liste abgeglichen. $0.50, wenn ein eingeladener Freund wirklich tradet. Nichts davon wartet auf ein Level."
+    },
+    {
+     "h": "Es auszahlen",
+     "p": "Das Guthaben wird in USDT ausgezahlt, und du kannst ab $5.00 auf ein Bybit-, Moon- oder MEXC-Konto auszahlen, das über MarginPad eröffnet wurde. Jede Auszahlung wird von Hand geprüft und bezahlt, also nicht sofort. Das ist ein Dankeschön fürs Nutzen der Seite, kein Einkommen - nimm es als das, was es ist, und es wird dich nie enttäuschen."
+    },
+    {
+     "h": "Wie eine Auszahlung wirklich abläuft",
+     "p": "Du gibst den Betrag ein, von $5 bis zu deinem Guthaben, und das Konto, auf das gezahlt werden soll. Immer nur eine Anfrage gleichzeitig: eine zweite wartet, bis die erste bezahlt ist. Das Team sieht, ob dieses Börsenkonto wirklich über uns eröffnet wurde, ob ein anderes Mitglied schon auf dasselbe ausgezahlt hat und wie das Guthaben verdient wurde - so wird ein echtes Konto bezahlt und eine Farm nicht. Du bekommst eine Benachrichtigung, sobald es ankommt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wie verdient MarginPad Geld?",
+     "o": [
+      "Durch den Verkauf deiner Daten",
+      "Börsen-Affiliate-Links - ein Anteil der Gebühr, wenn sich jemand über uns anmeldet",
+      "Durch Gebühren für die Academy",
+      "Durch einen Anteil an Paper-Trading-Gewinnen"
+     ]
+    },
+    {
+     "q": "Was ist der kleinste Betrag, den du auszahlen kannst?",
+     "o": [
+      "$1.00",
+      "$5.00",
+      "$20.00",
+      "Es gibt kein Minimum"
+     ]
+    },
+    {
+     "q": "Was davon wartet auf ein Level?",
+     "o": [
+      "Der Faucet",
+      "Tägliche Missionen",
+      "Empfehlungen",
+      "Nichts davon - jede Belohnung steht ab Tag eins offen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp4",
+   "t": "Long, Short und was Leverage wirklich bewirkt",
+   "cards": [
+    {
+     "h": "Zwei Richtungen, nicht eine",
+     "p": "Ein Long gewinnt, wenn der Kurs steigt. Ein Short gewinnt, wenn der Kurs fällt. Das ist der ganze Unterschied, und deshalb muss ein Futures-Trader einen fallenden Markt nie aussitzen. Auf MarginPad sind beide ein Tipp: die Buttons Long und Short auf dem Trade-Ticket."
+    },
+    {
+     "h": "Leverage ist Größe, keine Magie",
+     "p": "Setzt du $100 mit 10x ein, bewegst du eine Position von $1,000. Jedes 1%, das der Markt läuft, sind jetzt 10% deines Geldes, in welche Richtung auch immer. Leverage macht einen Trade nicht besser - es vervielfacht, was der Trade dir sowieso angetan hätte."
+    },
+    {
+     "h": "Die Leiter auf dem Ticket",
+     "p": "Der Leverage-Regler rastet auf einer Leiter ein: ganze Schritte bis 10x, dann Zehnerschritte - 20, 30, 50, 100 und weiter. Tippst du 107 ein, wird daraus 110. Die Leiter gibt es, damit die gewählte Zahl eine ist, die du laut aussprechen kannst, und damit die Liquidationslinie, die der Chart daraus zeichnet, eine ist, die du vor dem Öffnen lesen kannst."
+    },
+    {
+     "h": "Warum wir dich bis 1000x gehen lassen",
+     "p": "Die Majors gehen hier bis zu 1000x, weit über alles hinaus, was ein vernünftiger Mensch nutzen würde. Das ist Absicht. Bei 1000x beendet weniger als ein Zehntel Prozent gegen dich die Position - und das solltest du auf einem Übungskonto herausfinden, heute Abend, statt auf einer Börse mit deinem eigenen Geld."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du setzt $100 mit 10x Leverage ein. Wie groß ist die Position?",
+     "o": [
+      "$100",
+      "$110",
+      "$1,000",
+      "$10,000"
+     ]
+    },
+    {
+     "q": "Eine Short-Position verdient Geld, wenn:",
+     "o": [
+      "der Kurs steigt",
+      "der Kurs fällt",
+      "der Kurs seitwärts bleibt",
+      "das Volumen steigt"
+     ]
+    },
+    {
+     "q": "Was ändert sich wirklich, wenn du den Leverage erhöhst?",
+     "o": [
+      "Die Chance, recht zu haben",
+      "Die Größe der Position, sodass jede Bewegung mehr zählt",
+      "Die Gebühr, die du zahlst",
+      "Wie lange du den Trade halten darfst"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Deine zwei Ausstiege: Stop-Loss und Take-Profit",
+   "cards": [
+    {
+     "h": "Entscheide den Ausstieg, bevor du ihn brauchst",
+     "p": "Ein Stop-Loss schließt den Trade zu einem Kurs deiner Wahl, wenn es schiefgeht. Ein Take-Profit tut dasselbe, wenn es gut läuft. Beide werden einmal gesetzt und dann ohne dich eingehalten, und genau das ist der Punkt: Der Moment, in dem eine Position verliert, ist der schlechteste Moment, um zu entscheiden, was man damit tut."
+    },
+    {
+     "h": "Wo du sie hier setzt",
+     "p": "Auf dem Ticket, vor dem Öffnen - oder danach, über den Button Set auf der Trade-Karte und über My Trades. Du kannst sie beliebig oft verschieben, solange der Trade offen ist. Ein Trade mit keinem von beiden ist ein Trade, dessen Ausstieg davon bestimmt wird, wie du dich gerade fühlst."
+    },
+    {
+     "h": "Auf dem Ticket, Schritt für Schritt",
+     "p": "Öffne Advanced unter dem Trade-Formular. Stop und Ziel nehmen jeweils einen Kurs oder einen Prozentsatz deiner Margin - gib das eine ein, und das andere wird umgeschrieben, sodass sie nie voneinander abweichen. Das Panel füllt als Startpunkt einen Stop 2% entfernt und ein Ziel 3% entfernt vor; wechselst du die Seite, wechseln die automatisch gefüllten Level mit. Was das Panel ausblendet, gilt nicht: Schließt du Advanced, öffnet der Trade ohne sie."
+    },
+    {
+     "h": "Das ist die Gewohnheit, die sich lohnt",
+     "p": "Nichts anderes in diesem Kurs verändert deine Ergebnisse so stark. Auf den Boards, die echte USDT zahlen, bleiben nicht die Accounts mit den besseren Einstiegen übrig - sondern die, die schon entschieden hatten, wo sie falsch liegen würden. Einen zu setzen ist außerdem eine Road to Bronze-Aufgabe, die 40 XP wert ist."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was macht ein Stop-Loss?",
+     "o": [
+      "Er hindert dich daran, weitere Trades zu öffnen",
+      "Er schließt den Trade zu einem von dir gewählten Kurs, wenn er gegen dich läuft",
+      "Er pausiert die Position",
+      "Er garantiert, dass du nicht verlieren kannst"
+     ]
+    },
+    {
+     "q": "Wann kannst du auf MarginPad einen Stop-Loss setzen oder verschieben?",
+     "o": [
+      "Nur beim Öffnen des Trades",
+      "Nur, wenn er im Gewinn ist",
+      "Vor dem Öffnen und jederzeit, solange der Trade offen ist",
+      "Einmal pro Tag"
+     ]
+    },
+    {
+     "q": "Du gibst einen Stop als Prozent der Margin ein. Was passiert mit dem Kursfeld?",
+     "o": [
+      "Nichts - sie sind getrennt",
+      "Es wird passend umgeschrieben, sodass beide nie voneinander abweichen",
+      "Es wird geleert",
+      "Es wird gesperrt"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Seasons, Boards und der Pass",
+   "cards": [
+    {
+     "h": "Die Seite läuft in Seasons von vierzehn Tagen",
+     "p": "Alles Kompetitive wird im Vierzehn-Tage-Takt zurückgesetzt. Deine Season-XP, deine Platzierung auf den Boards und der Pass beginnen von vorn, sodass eine schlechte Zeit nie dauerhaft ist und ein Neuling nie ein Jahr zurückliegt. Der Tag der Season steht oben auf der Season-Seite."
+    },
+    {
+     "h": "Neun Boards, sieben davon kostenlos",
+     "p": "Neun Leaderboards zahlen am Ende einer Season echte USDT aus, und alle leben auf einer Seite, /leaderboards/. Sieben kosten nichts: Highest ROE, Green Days, Best Win Rate, Season XP, der Daily BTC Call, Meme Spot und der Gold Room - das einzige mit einer Bedingung, dem Level Gold. Zwei sind für Leser, die über MarginPad mit echtem Geld bei Bybit oder Moon traden. Die Pools und die Preisverteilung stehen auf der Seite."
+    },
+    {
+     "h": "Und der Pass läuft unter allem mit",
+     "p": "Je 100 Season-XP ist eine Pass-Stufe, vierzig insgesamt, und die kostenlose Spur zahlt beim Aufsteigen in Ticks und Kosmetik aus. Du verdienst ihn schon - die XP aus diesem Kurs zählten dafür, während du gelesen hast. Die bezahlte Spur ergänzt Stücke, die niemand im Shop kaufen kann."
+    },
+    {
+     "h": "Jenseits der Boards",
+     "p": "Ein Duel stellt dich für eine Stunde, einen Tag, drei Tage oder eine Woche gegen einen Trader, mit einer Kennzahl, auf die ihr euch einigt, und mit Ticks im Einsatz. Ein Squad sind bis zu fünf von euch mit privatem Raum, Raids auf die Majors und einem Logo. Demo Spot ist Buy-and-Hold mit $10,000 und einem eigenen Board. Nichts davon ist Pflicht - das Terminal ist das Produkt; der Rest sorgt dafür, dass sich Üben nicht wie Hausaufgaben anfühlt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wie lang ist eine MarginPad-Season?",
+     "o": [
+      "Sieben Tage",
+      "Vierzehn Tage",
+      "Ein Monat",
+      "Bis jemand gewinnt"
+     ]
+    },
+    {
+     "q": "Wie viele der neun Boards kosten nichts zur Teilnahme?",
+     "o": [
+      "Zwei",
+      "Vier",
+      "Sieben",
+      "Alle neun"
+     ]
+    },
+    {
+     "q": "Wo stehen die Platzierungen aller Boards?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Im Telegram-Kanal",
+      "Im Terminal"
+     ]
+    }
+   ]
+  }
+ ]
+}

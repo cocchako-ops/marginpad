@@ -1,1 +1,476 @@
-{"id":"mastery","name":"MarginPad Mastery","sub":"Mach aus dem Toolkit einen Workflow","lessons":[{"id":"mm1","t":"Paper-Trading, als wäre es echt","cards":[{"h":"Spielgeld, echte Gewohnheiten","p":"Das Paper-Konto gibt dir $100, die nicht wirklich verschwinden können. Genau das ist der Sinn - und die Falle. Behandle es wie ein Videospiel, und du lernst nichts außer Knöpfe hämmern. Behandle es wie deine echte Miete, und du lernst Positionsgrößen, Geduld und wie sich eine Liquidation anfühlt - die einzigen drei Dinge, die du wissen musst, bevor du je eine echte Börse anfasst."},{"h":"Dieselbe Mathematik wie eine echte Börse","p":"Das ist kein Spielzeug-Simulator mit ausgedachten Regeln. Paper Trade läuft auf Live-Kursen und exakt der Liquidationsformel, die echte Börsen verwenden - Margin, Leverage, Maintenance-Rate, alles. Ein 50×-Long, der hier liquidiert wird, wäre auf einer echten Börse genauso liquidiert worden. Wenn eine Strategie die Übungs-Mathematik nicht überlebt, überlebt sie die echte auch nicht."},{"h":"Behandle das Konto wie deine Miete","p":"Bevor du irgendetwas öffnest, entscheide, wie ein schlechter Tag aussieht. Wer 1–2% der $100 pro Trade riskiert, hält acht Verlust-Trades in Folge aus, bevor Schluss ist - das Polster eines echten Traders. Wer 20% pro Trade riskiert, beendet das Konto mit drei schlechten Trades. Der Demo ist egal, wie du dich entscheidest. Deinem zukünftigen Ich nicht."},{"h":"Erst der Ausstieg, dann der Einstieg","p":"Jede Position bekommt Stop-Loss und Take-Profit im Moment des Öffnens - nicht danach, wenn die Kerze schon gegen dich läuft und dein Urteilsvermögen beeinträchtigt ist. Wenn du vor dem Einstieg nicht entscheiden kannst, wo du falsch liegst, bist du nicht bereit einzusteigen. Der Plan kommt zuerst; der Trade führt ihn nur aus."},{"h":"Steig auf mit Gewohnheiten, nicht mit Glück","p":"Du bist bereit, größer zu traden - auch in der Demo -, wenn deine Gewinne daraus entstehen, dass du einem Plan folgst, und nicht aus einem 500×-Zufallstreffer, der einmal aufging. Schau dir eine Woche Trades in My Trades ehrlich an: Hast du richtig dimensioniert, Stops benutzt und schlechte Setups liegen gelassen? Diese Gewohnheit ist hier das eigentliche Produkt."}],"quiz":[{"q":"Was unterscheidet MarginPads Paper Trade von einem ausgedachten Simulator?","o":["Er gibt mehr Startgeld als echte Börsen","Er nutzt Live-Kurse und echte Liquidations-Mathematik","Er kann dich nicht liquidieren","Er ist nur für Anfänger unter $1000"]},{"q":"Warum solltest du nur 1–2% der Demo-Balance pro Trade riskieren?","o":["Die Plattform verlangt es","Es entspricht echter Risikodisziplin, die sich ins Live-Trading überträgt","Größere Positionen sind gegen die Regeln","Es garantiert einen Gewinn"]},{"q":"Wann solltest du Stop-Loss und Take-Profit setzen?","o":["Nachdem der Trade beginnt, gegen dich zu laufen","Nur bei Trades über 100× Leverage","In dem Moment, in dem du die Position öffnest","Nie - manuelles Schließen ist sicherer"]}]},{"id":"mm2","t":"Lass den Screener die Jagd übernehmen","cards":[{"h":"Schluss mit dem Chart-Doomscrolling","p":"Durch vierzig Coins zu blättern, in der Hoffnung, dass einer „gleich losläuft“, ist keine Analyse - das ist Prokrastination mit Extraschritten. Wenn du lange genug starrst, findest du immer ein Chart, das bullisch aussieht - das ist Bestätigungsfehler, kein Setup. Der Screener existiert, damit du aufhörst, nach Gefühl zu jagen, und anfängst, nach Zahlen zu jagen."},{"h":"200+ Paare, für dich bewertet","p":"Der Screener unter /screener scannt über 200 USDT-Paare und bewertet jedes von 0–100 anhand von RSI, MACD, Trendstärke und Volumen - dieselben Inputs, die ein disziplinierter technischer Trader von Hand prüft, nur sofort über den ganzen Markt statt über die fünf Coins, die du zufällig offen hattest. Er liefert dir eine Shortlist, kein Urteil."},{"h":"Ein Score ist eine Spur, kein Befehl","p":"Ein Paar mit Score 85 und vorgeschlagenem Setup ist kein Signal zum blinden Feuern - es ist ein Kandidat, der fünf weitere Minuten deiner Aufmerksamkeit wert ist. Öffne das Chart, prüfe den Kalender auf News-Risiko, prüfe Funding auf Überfüllung. Der Screener verengt einen Markt aus Tausenden auf eine Handvoll, die sich wirklich anzusehen lohnt."},{"h":"Hohe und niedrige Scores zählen beide","p":"Ein Paar nahe 0 ist nicht kaputt - es sagt dir, dass das Setup die Short-Seite begünstigt, oder dass es gerade schlicht nicht handelnswert ist. Die Liste in beide Richtungen zu sortieren macht aus dem Screener zwei Werkzeuge: eins, um Longs zu finden, eins, um Shorts zu finden - und ein drittes, um zu finden, was man ganz in Ruhe lassen sollte."},{"h":"Die Abkürzung - aber nicht am Denken vorbei","p":"Trader, die den Screener überspringen, verbrauchen ihren Edge mit Suchen. Trader, die den Check nach dem Screener überspringen, verbrauchen ihn mit blindem Vertrauen. Der Workflow ist: Der Screener findet Kandidaten, du verifizierst mit Chart und Kalender-Check, und dann - erst dann - dimensionierst du eine Position. Lass eine Hälfte weg, und du hast den Sinn weggelassen."}],"quiz":[{"q":"Was macht der MarginPad-Screener tatsächlich?","o":["Er platziert Trades automatisch für dich","Er bewertet 200+ Paare anhand von RSI, MACD, Trend und Volumen und baut eine Shortlist","Er verfolgt nur die Top-10-Coins nach Marktkapitalisierung","Er sagt exakte zukünftige Kurse voraus"]},{"q":"Was solltest du mit einem Paar tun, das 85 Punkte erreicht?","o":["Sofort mit maximalem Leverage einsteigen","Es ignorieren - hohe Scores sind Fallen","Es weiter untersuchen, bevor du irgendetwas entscheidest","Es shorten, weil hohe Scores überkauft bedeuten"]},{"q":"Was deutet ein sehr niedriger Score bei einem Paar normalerweise an?","o":["Die Börse ist für diesen Coin kaputt","Das Setup könnte die Short-Seite begünstigen, oder es lohnt sich gerade nicht","Du solltest ihn kaufen, weil er billig ist","Der Screener hat einen Fehler gemacht"]}]},{"id":"mm3","t":"Ein Chart-Workspace, der funktioniert","cards":[{"h":"Dreißig Tabs sind keine Analyse","p":"Fünfzehn Browser-Tabs, sechs Timeframes, vier Indikatoren, die um deine Aufmerksamkeit kämpfen - das ist kein Workspace, das ist Lärm im Workspace-Kostüm. Jedes zusätzliche offene Chart ist eine weitere Sache, die dich in einen schlechten Einstieg quatschen kann. Die Lösung sind nicht mehr Charts. Sondern weniger, bessere - so angeordnet, dass du sie tatsächlich lesen kannst."},{"h":"Zehn Fenster, ein Board","p":"/charts gibt dir bis zu zehn frei bewegliche Chart-Fenster auf einem Board - genug, um deine Setups über Symbole und Timeframes hinweg zu beobachten, ohne dich durch einen Browser-Friedhof zu tabben. Ziehen, skalieren, Layout speichern. Die meisten Trader brauchen nur zwei oder drei Fenster gleichzeitig; die anderen sieben Plätze sind für den Moment da, in dem ein echter Grund auftaucht - nicht als Standard."},{"h":"Indikatoren sind eine zweite Meinung","p":"Neunzehn Indikatoren stehen bereit. Alle neunzehn zu laden macht dich nicht neunzehnmal treffsicherer - es macht das Chart unlesbar und liefert dir neunzehn Ausreden, dir einen Trade schönzureden, den du sowieso schon wolltest. Wähle zwei oder drei, die eine echte Frage beantworten (Trend, Momentum, Volatilität), und lass den Rest ungenutzt, bis du ihn brauchst."},{"h":"Layout speichern, langweilig halten","p":"Ein gespeichertes Layout heißt: Du öffnest /charts und siehst jedes Mal dasselbe aufgeräumte Board - statt jedes Mal neu zu entscheiden, welche fünfzehn Indikatoren heute draufkommen. Langweilig ist das Ziel. Der Workspace sollte an deinem besten Trading-Tag genauso aussehen wie an deinem schlechtesten, denn die Setups, die du jagst, ändern sich nicht, nur weil du ungeduldig bist."},{"h":"Lass einen zweiten Leser deine Lesart prüfen","p":"Angemeldete Nutzer bekommen einen KI-Chart-Analysten pro Fenster - nicht, um dir einen Trade zu reichen, sondern um deine eigene Überlegung gegen das zu prüfen, was tatsächlich auf dem Bildschirm ist. Wenn er etwas markiert, das deine Lesart übersehen hat, ist das nützlich. Wenn er dir nur zustimmt, ist das keine Bestätigung - das bist du, der mit sich selbst in schönerer Schrift redet."}],"quiz":[{"q":"Was ist das eigentliche Problem daran, neunzehn Indikatoren auf ein Chart zu laden?","o":["Das Chart stürzt ab","Es vervielfacht die Genauigkeit","Es erzeugt Lärm und Ausreden, um einen Trade zu rechtfertigen, den du sowieso wolltest","Es ist technisch nicht möglich"]},{"q":"Warum ein Chart-Layout speichern, statt es jedes Mal neu zu bauen?","o":["Es ist Pflicht, um /charts zu nutzen","Es hält deinen Workspace konsistent, statt jede Session eine neue, überladene Entscheidung zu treffen","Es findet automatisch bessere Trades","Es deaktiviert Indikatoren, die du nicht brauchst"]},{"q":"Wofür ist der KI-Chart-Analyst da?","o":["Um Trades automatisch zu platzieren","Um deine eigene Analyse komplett zu ersetzen","Um deine Lesart gegen das zu prüfen, was auf dem Chart zu sehen ist","Um exakte Liquidationspreise vorherzusagen"]}]},{"id":"mm4","t":"Lass dich nie von News überfallen","cards":[{"h":"Die Kerze, die aus dem Nichts kam","p":"Du hattest kein Pech. FOMC war seit drei Wochen für 18:00 UTC angesetzt, und jeder Wirtschaftskalender der Welt hatte den Termin gelistet. Der Markt hat dich nicht überfallen - du bist mit einer gehebelten Position in ein geplantes Ereignis gelaufen, ohne zu wissen, dass es kommt. Das ist kein Pech. Das ist Nicht-in-den-Kalender-Schauen."},{"h":"Rote-Flaggen-Events, im Voraus markiert","p":"/calendar verfolgt jede FOMC-Entscheidung, jede CPI-Veröffentlichung und jeden NFP-Report mit Live-Countdown - zurück bis 2023 und nach vorn, so weit die Daten reichen. Das sind keine kleinen Ausschläge - es sind genau die Ereignisse, die eine 50×-Position in Sekunden in die Liquidation schicken, weil sich alle gleichzeitig um dieselbe Schlagzeile herum neu positionieren."},{"h":"Vor dem Einstieg prüfen, nicht nach dem Docht","p":"Die Gewohnheit ist simpel: Vor jeder gehebelten Position ein Blick in den Kalender. Steht in den nächsten Stunden ein Rote-Flaggen-Event an? Wenn ja: den Trade auslassen, die Größe deutlich reduzieren oder den Stop weit genug setzen, um das Rauschen zu überleben. Erst nachzuschauen, wenn du schon im Trade bist, ist keine Gewohnheit - das ist eine Obduktion."},{"h":"Erinnerung setzen statt sich erinnern","p":"Das Gedächtnis ist ein schlechtes Risiko-Tool - du vergisst die genaue Uhrzeit, verwechselst die Zeitzone oder schläfst schlicht. Jedes Event im Kalender hat eine eingebaute E-Mail- und Telegram-Erinnerung. Stell sie einmal für die Events ein, die deine Paare betreffen, und lass die Plattform das Erinnern übernehmen. Das kostet nichts und beseitigt eine ganze Kategorie dummer Verluste."},{"h":"Nicht jedes Event braucht eine Reaktion","p":"Es geht nicht darum, News für immer zu meiden - einige der besten Bewegungen kommen direkt nach einem Print. Es geht darum, nie in einer gehebelten Position zu stecken, die du nicht bewusst gewählt hast, wenn die Schlagzeile einschlägt. Trade das Event mit Absicht und Plan - oder tritt mit Absicht zur Seite. Beides ist in Ordnung. Überrascht zu werden nicht."}],"quiz":[{"q":"Welche Art von Events verfolgt /calendar mit Countdowns?","o":["Nur Wartungsfenster von Krypto-Börsen","FOMC-Entscheidungen, CPI-Veröffentlichungen und NFP-Reports","Zufällige Social-Media-Trends","Nur Events speziell für Bitcoin"]},{"q":"Warum lohnt es sich, die E-Mail-/Telegram-Erinnerungen des Kalenders einzurichten?","o":["Sie garantieren einen Gewinn-Trade","Sie nehmen dir das Merken der Event-Zeiten ab","Sie schließen deine Positionen automatisch","Sie sind Pflicht, um den Kalender überhaupt zu nutzen"]},{"q":"Was ist die eigentliche Lektion zum Trading rund um News-Events?","o":["Nie in der Nähe eines Wirtschaftsereignisses traden","Immer die News traden - für garantierten Gewinn","Wenn die Schlagzeile einschlägt, bewusst in einer gehebelten Position sein - nicht aus Versehen","Der Kalender ist nur für Aktien-Trader nützlich"]}]},{"id":"mm5","t":"Lies die Menge, bevor du dich ihr anschließt","cards":[{"h":"Alle haben dieselbe Wette schon platziert","p":"Wenn ein Trade für dich offensichtlich aussieht, sah er vor etwa sechs Stunden für hunderttausend andere gehebelte Trader genauso offensichtlich aus. Sobald ein Setup sich sicher anfühlt und alle einig sind, ist die Menge längst positioniert - und ein überfüllter Trade braucht keine schlechten Nachrichten, um sich aufzulösen. Er braucht nur, dass die Menge einmal falsch liegt."},{"h":"Funding Rate: der Preis fürs Dabeisein","p":"/funding zeigt live und börsenübergreifend, was Longs an Shorts zahlen - oder umgekehrt. Stark positives Funding heißt: Longs zahlen kräftig, um long zu bleiben - das Boot ist voll, und alle sind schon drin. Das heißt nicht, dass der Kurs sofort drehen muss. Aber es heißt, dass eine Menge gehebeltes Geld nur einen Schubs davon entfernt ist, hinausgedrängt zu werden."},{"h":"Open Interest verrät, wie groß das Boot ist","p":"/open-interest zeigt die gesamte gehebelte Positionierung im Markt. Steigendes Open Interest während einer Rally bedeutet: Neues gehebeltes Geld strömt herein - nicht nur bestehende Halter, die mutiger werden. Das ist Treibstoff für eine schärfere Bewegung, falls es dreht. Fallendes Open Interest in eine Bewegung hinein heißt oft: Positionen werden geschlossen, nicht eröffnet - und das liest sich ganz anders."},{"h":"Long/Short-Ratio: wer wirklich positioniert ist","p":"/long-short aggregiert das Long-gegen-Short-Verhältnis über Börsen hinweg. Eine extreme Schieflage - sagen wir 80% long - ist keine Vorhersage, sondern ein Warnetikett: Sehr viele Leute haben dieselbe Wette platziert, die du gerade platzieren willst. Extreme Schieflagen schnappen irgendwann zurück, und wenn sie es tun, wird meistens die Menge liquidiert - nicht die Minderheit."},{"h":"Sechzig Sekunden vor jedem gehebelten Einstieg","p":"Bevor du eine Position aufbaust, verbring eine Minute mit Funding, Open Interest und Long/Short - nicht um einen Trade zu finden, sondern um zu prüfen, ob du gerade einer Menge beitrittst oder eine findest. Neutrale Werte heißen: Die Luft ist relativ rein. Extreme Werte heißen: Dein Stop muss weiter, deine Größe kleiner oder dein Einstieg später."}],"quiz":[{"q":"Was zeigt eine stark positive Funding Rate normalerweise an?","o":["Die Börse hat einen Fehler","Longs sind überfüllt und zahlen kräftig, um long zu bleiben","Shorts werden mit Sicherheit gleich liquidiert","Der Coin wird gleich delistet"]},{"q":"Steigendes Open Interest während einer Kursrally bedeutet am ehesten:","o":["Bestehende Halter sind nur zuversichtlicher, nichts Neues","Neues gehebeltes Geld strömt in den Markt","Die Börse reduziert die verfügbare Margin","Das Volumen ist komplett zum Erliegen gekommen"]},{"q":"Was solltest du mit einer extremen Long/Short-Schieflage tun, etwa 80% long?","o":["Sofort der Mehrheitsseite beitreten","Sie ignorieren, sie hat keine Relevanz","Sie als Warnung behandeln und Größe oder Stop entsprechend anpassen","Annehmen, dass die Daten falsch sind, und den Check überspringen"]}]},{"id":"mm6","t":"Alerts statt Chart-Babysitting","cards":[{"h":"Aufs Chart starren ist keine Strategie","p":"Du legst ein Level fest, dann sitzt du fünfundvierzig Minuten da und siehst der Kerze beim Näherkommen zu - und irgendwo in Minute dreißig reißt deine Geduld, und du steigst drei Dollar zu früh ein, „nur zur Sicherheit“. Das ist keine Disziplin, das ist Langeweile, die sich als Überzeugung verkleidet. Das Chart brauchte dich nicht als Zuschauer. Dein Plan brauchte dein Warten."},{"h":"Der Alert übernimmt das Beobachten","p":"Mit /alerts legst du ein Kurslevel fest - darüber oder darunter - und wirst per E-Mail oder Telegram benachrichtigt, sobald es erreicht wird. Kein Bildschirm-Starren nötig. Setz ihn auf dein tatsächliches Einstiegslevel, das aus deinem Plan - nicht auf ein Level, das du ständig nachziehst, weil der Kurs das alte noch nicht erreicht hat. Dann schließ den Tab und mach etwas anderes."},{"h":"Mehr hinsehen heißt nicht besser reagieren","p":"Trader, die stundenlang auf ein Chart schauen, reden sich ein, sie sammelten Informationen. Meistens sammeln sie Anspannung - und die produziert zu frühe Einstiege, zu frühe Ausstiege und verschobene Stops. Ein Alert feuert genau einmal, auf genau dem Level, das du in Ruhe gewählt hast. Das ist ein besserer Entscheider, als du es fünfundvierzig Minuten in einem Anstarr-Wettbewerb bist."},{"h":"Die Watchlist ist eine Shortlist, kein Schrein","p":"Paare auf der Startseite zu markieren baut eine Watchlist auf - aber eine Watchlist, die nie ausgemistet wird, verkommt zu vierzig Coins, bei denen du „so ein Gefühl hast“ - das ist nur das Screener-Problem mit Extraschritten. Markiere, was du wirklich mit Plan verfolgst, entferne, was dich letzten Monat nur neugierig gemacht hat, und kombiniere jeden Stern mit einem Alert."},{"h":"Geh mit Absicht weg","p":"Der ganze Sinn von Alerts plus Watchlist ist die Erlaubnis, nicht mehr hinzuschauen. Level setzen, Alert setzen, App schließen. Wird das Level erreicht, erfährst du es. Wenn nicht, hast du keinen Nachmittag damit verschwendet, es herauszufinden. Die Trader, die durchhalten, sind nicht die, die am Bildschirm kleben - sondern die, die ein System gebaut haben, das sie nicht am Bildschirm braucht."}],"quiz":[{"q":"Was ist das eigentliche Problem daran, wartend auf dein Level aufs Chart zu starren?","o":["Es verbraucht zu viele Daten","Es führt aus Ungeduld zu verfrühten Einstiegen und umgeworfenen Plänen","Das Chart aktualisiert zu langsam, um live zuzusehen","Es ist auf dem Handy technisch unmöglich"]},{"q":"Worauf solltest du einen Kurs-Alert setzen?","o":["Dorthin, wo der Kurs gerade steht","Auf das exakte Einstiegslevel aus deinem Plan","Auf eine zufällige runde Zahl","Auf das Level, das sich am aufregendsten anfühlt"]},{"q":"Was hält eine Watchlist nützlich statt überladen?","o":["Jeden Coin markieren, von dem du je gehört hast","Niemals irgendetwas entfernen","Sie regelmäßig ausmisten und Einträge mit echtem Plan oder Alert verknüpfen","Sie nur für Coins nutzen, die schon im Gewinn sind"]}]},{"id":"mm7","t":"Der XP-Loop: Übung, die sich auszahlt","cards":[{"h":"Wiederholungen, nicht Glück","p":"Ein glücklicher 200×-Trade lehrt dich nichts, außer dass Glück existiert. XP, Missionen und Leaderboards auf MarginPad sind ums Gegenteil gebaut: Sie belohnen die langweiligen Wiederholungen - Trades sauber planen, Lektionen abschließen, täglich auftauchen - denn Wiederholungen sind das, was einen Trader wirklich formt. Die Gamification lenkt nicht von der Disziplin ab. Sie IST die Disziplin, mit einer Anzeigetafel dran."},{"h":"Missionen belohnen die richtigen Verhaltensweisen","p":"Tägliche Missionen zahlen kleine Beträge echtes USDT für Dinge wie: einen geplanten Trade mit gesetztem Stop-Loss schließen, eine Academy-Lektion abschließen oder die Tools nutzen, die dich besser machen - nicht für Volumen, nicht für Größe, nicht für Glück. Schau jeden Tag rein, hak die ab, die zu dem passen, was du sowieso vorhattest, und lass den Rest liegen."},{"h":"Streaks sind nur Gewohnheit mit einer Zahl dran","p":"Ein Streak-Zähler ist ein billiger Trick - und er funktioniert trotzdem: Menschen hassen es, eine steigende Zahl zu brechen. Nutze das. Tauch täglich auf, prüfe die Missionen, wirf einen Blick auf den Kalender, geh einen offenen Trade durch. Der Streak ist nicht das Ziel; er ist das Gerüst für das eigentliche Ziel - die Checkliste so oft zu machen, dass sie aufhört, eine Checkliste zu sein."},{"h":"Leaderboards, die du ernst nehmen kannst","p":"Die Saison-Boards - Green Days, ROE, Trefferquote und XP - laufen 14 Tage und werten jede Sache getrennt, ein rücksichtsloser 1000×-Zocker, der diese Saison das ROE-Board anführt, ist also nicht automatisch „besser“ als ein Trader mit einer langweiligen 65%-Trefferquote. Schau auf die Green-Days-, Winrate- und XP-Boards, wenn du ein Signal willst, das Können widerspiegelt statt einen einzigen Glückstreffer. Echte USDT-Preise gehen jede 14-Tage-Saison raus; der Punkt gilt trotzdem."},{"h":"Duelle: Disziplin mit Anzeigetafel","p":"Ein 7-Tage-Duell stellt dich gegen einen anderen Trader auf einer gewählten Metrik - ROE, Trefferquote, was du willst. Es ist dieselbe Übung, die du sowieso machen würdest, nur mit einem Rivalen dran - was sich als überraschend wirksame Methode erweist, eine Woche lang wirklich an einem Plan festzuhalten. Fordere jemanden heraus, dessen Statistiken du respektierst - nicht einfach die Person ganz oben auf dem Board."}],"quiz":[{"q":"Welche Art von Verhalten belohnen tägliche Missionen typischerweise?","o":["Nur das Eröffnen des Trades mit dem höchstmöglichen Leverage","Trades sauber planen, Lektionen abschließen und regelmäßig dabei sein","Handelsvolumen, egal mit welchem Ergebnis","Jeden einzelnen Trade gewinnen"]},{"q":"Warum auf das Winrate- oder XP-Board schauen statt nur aufs ROE-Board?","o":["ROE-Boards sind Fake","Eine Top-ROE-Woche kann aus einem einzigen rücksichtslosen Glückstreffer stammen - nicht unbedingt aus Können","Winrate-Boards zahlen größere Preise","XP ist das einzige Board mit echtem Geld"]},{"q":"Was ist ein 7-Tage-Duell?","o":["Ein privater Trade, bei dem die Paper-Balance des Verlierers an den Gewinner übergeht","Ein direkter Wettkampf gegen einen anderen Trader auf einer gewählten Metrik wie ROE oder Trefferquote","Ein Turnier, das deine Paper-Balance zurücksetzt, wenn du verlierst","Ein Feature nur für Top-100-Leaderboard-Trader"]}]}]}
+{
+ "id": "mastery",
+ "name": "MarginPad Mastery",
+ "sub": "Mach aus dem Toolkit einen Workflow",
+ "lessons": [
+  {
+   "id": "mm1",
+   "t": "Paper-Trading, als wäre es echt",
+   "cards": [
+    {
+     "h": "Spielgeld, echte Gewohnheiten",
+     "p": "Das Paper-Konto gibt dir $10,000, die nicht wirklich verschwinden können. Genau das ist der Sinn - und die Falle. Behandle es wie ein Videospiel, und du lernst nichts außer Knöpfe hämmern. Behandle es wie deine echte Miete, und du lernst Positionsgrößen, Geduld und wie sich eine Liquidation anfühlt - die einzigen drei Dinge, die du wissen musst, bevor du je eine echte Börse anfasst."
+    },
+    {
+     "h": "Dieselbe Mathematik wie eine echte Börse",
+     "p": "Das ist kein Spielzeug-Simulator mit ausgedachten Regeln. Paper Trade läuft auf Live-Kursen und exakt der Liquidationsformel, die echte Börsen verwenden - Margin, Leverage, Maintenance-Rate, alles. Ein 50×-Long, der hier liquidiert wird, wäre auf einer echten Börse genauso liquidiert worden. Wenn eine Strategie die Übungs-Mathematik nicht überlebt, überlebt sie die echte auch nicht."
+    },
+    {
+     "h": "Deine Position lebt auf dem Server",
+     "p": "Öffnest du einen Trade, wird er auf unserer Seite gehalten, nicht in deinem Browser-Tab. Laptop zuklappen, Handy wechseln, Empfang verlieren - Stop, Ziel und Liquidation werden trotzdem jede Minute gegen geschlossene Kerzen geprüft. Deshalb beendet dich hier auch ein Docht durch deinen Stop nicht, außer die Kerze schloss dort, und deshalb ist der P&L auf dem Ticket immer die Zahl des Servers, nie eine, die dein Bildschirm erfunden hat."
+    },
+    {
+     "h": "Dimensioniere das Konto wie deine Miete",
+     "p": "Bevor du irgendetwas öffnest, entscheide, wie ein schlechter Tag aussieht. Wer 1–2% der $10,000 pro Trade riskiert, hält acht Verlust-Trades in Folge aus, bevor Schluss ist - das Polster eines echten Traders. Wer 20% pro Trade riskiert, beendet das Konto mit drei schlechten Trades. Der Demo ist egal, wie du dich entscheidest. Deinem zukünftigen Ich nicht."
+    },
+    {
+     "h": "Erst der Ausstieg, dann der Einstieg",
+     "p": "Jede Position bekommt Stop-Loss und Take-Profit im Moment des Öffnens - nicht danach, wenn die Kerze schon gegen dich läuft und dein Urteilsvermögen beeinträchtigt ist. Wenn du vor dem Einstieg nicht entscheiden kannst, wo du falsch liegst, bist du nicht bereit einzusteigen. Der Plan kommt zuerst; der Trade führt ihn nur aus."
+    },
+    {
+     "h": "Steig auf mit Gewohnheiten, nicht mit Glück",
+     "p": "Du bist bereit, größer zu traden - auch in der Demo -, wenn deine Gewinne daraus entstehen, dass du einem Plan folgst, und nicht aus einem 500×-Zufallstreffer, der einmal aufging. Schau dir eine Woche Trades in My Trades ehrlich an: Hast du richtig dimensioniert, Stops benutzt und schlechte Setups liegen gelassen? Diese Gewohnheit ist hier das eigentliche Produkt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was unterscheidet MarginPads Paper Trade von einem ausgedachten Simulator?",
+     "o": [
+      "Er gibt mehr Startgeld als echte Börsen",
+      "Er nutzt Live-Kurse und echte Liquidations-Mathematik",
+      "Er kann dich nicht liquidieren",
+      "Er ist nur für Anfänger unter $1000"
+     ]
+    },
+    {
+     "q": "Warum solltest du nur 1–2% des Demo-Guthabens pro Trade riskieren?",
+     "o": [
+      "Die Plattform verlangt es",
+      "Es entspricht echter Risikodisziplin, die ins Live-Trading mitwandert",
+      "Größere Positionen verstoßen gegen die Regeln",
+      "Es garantiert einen Gewinn"
+     ]
+    },
+    {
+     "q": "Wann solltest du Stop-Loss und Take-Profit setzen?",
+     "o": [
+      "Nachdem der Trade gegen dich zu laufen beginnt",
+      "Nur bei Trades über 100× Leverage",
+      "Im Moment, in dem du die Position öffnest",
+      "Nie - manuell zu schließen ist sicherer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm2",
+   "t": "Lass den Screener die Jagd erledigen",
+   "cards": [
+    {
+     "h": "Schluss mit Doomscrolling durch Charts",
+     "p": "Vierzig Coins durchzublättern in der Hoffnung, dass eine „gleich losgeht“, ist keine Analyse, sondern Aufschieberei mit Extraschritten. Du findest immer einen Chart, der bullisch aussieht, wenn du lange genug hinstarrst - das ist Confirmation Bias, kein Setup. Der Screener existiert, damit du nicht mehr nach Gefühl jagst, sondern nach Zahlen."
+    },
+    {
+     "h": "130+ Paare, für dich bewertet",
+     "p": "Der Screener unter /screener scannt 130+ USDT-Paare und bewertet jedes von 0–100 aus RSI, MACD, Trendstärke und Volumen - dieselben Eingaben, die ein disziplinierter technischer Trader von Hand prüft, nur sofort über den ganzen Markt statt über die fünf Coins, die du zufällig geöffnet hast. Es ist eine dichte Tabelle: Sortiere jede Spalte, markiere die Paare, die du verfolgst, und das Sheet an jeder Zeile öffnet Chart, Terminal, einen Alert oder Rekt für diese Coin."
+    },
+    {
+     "h": "Ein Score ist ein Hinweis, kein Befehl",
+     "p": "Ein Paar mit 85 und einem vorgeschlagenen Setup ist kein Signal zum blinden Abfeuern - es ist ein Kandidat, der fünf Minuten mehr Aufmerksamkeit wert ist. Öffne den Chart, prüfe den Kalender auf Nachrichtenrisiko, prüfe das Funding auf Überfüllung. Der Screener macht aus einem Markt von Tausenden eine Handvoll, die einen Blick wirklich lohnt."
+    },
+    {
+     "h": "Hohe und niedrige Scores zählen beide",
+     "p": "Ein Paar nahe 0 ist nicht kaputt - es sagt dir, dass das Setup die Short-Seite begünstigt oder dass es gerade nicht handelnswert ist. Beidseitiges Sortieren macht den Screener zu zwei Werkzeugen: eines für Longs, eines für Shorts, und ein drittes, um zu finden, was du ganz in Ruhe lässt."
+    },
+    {
+     "h": "Das Setup sagt, was der Stop kostet",
+     "p": "Jedes vorgeschlagene Setup zeigt den Stop in Prozent der Margin, nicht nur als Kurs - „44% der Margin verlieren“ ist eine Zahl, die du ablehnen kannst. Ein Setup mit dünnem Chance-Risiko-Verhältnis ist ausgegraut, das Funding steht mit vier Dezimalstellen da, damit eine überfüllte Seite sichtbar wird, und die Telegram-Zeile unter der Tabelle ist für Leser, die einmal am Tag die Spitze der Liste im Chat wollen."
+    },
+    {
+     "h": "Die Abkürzung, keine Abkürzung am Denken vorbei",
+     "p": "Trader, die den Screener überspringen, verbrauchen ihren Vorteil beim Suchen. Trader, die den Check nach dem Screener überspringen, verbrauchen ihren Vorteil durch blindes Vertrauen. Der Ablauf: Der Screener findet Kandidaten, du prüfst mit Chart und Kalender, und erst dann dimensionierst du eine Position. Lässt du eine Hälfte aus, hast du den Sinn ausgelassen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was macht der MarginPad-Screener wirklich?",
+     "o": [
+      "Er platziert automatisch Trades für dich",
+      "Er bewertet 130+ Paare aus RSI, MACD, Trend und Volumen, um eine Shortlist zu bauen",
+      "Er verfolgt nur die Top 10 Coins nach Marktkapitalisierung",
+      "Er sagt exakte zukünftige Kurse voraus"
+     ]
+    },
+    {
+     "q": "Was solltest du mit einem Paar tun, das 85 erzielt?",
+     "o": [
+      "Den Trade sofort mit maximalem Leverage eingehen",
+      "Es ignorieren - hohe Scores sind Fallen",
+      "Es weiter prüfen, bevor du irgendetwas entscheidest",
+      "Es shorten, da hohe Scores überkauft bedeuten"
+     ]
+    },
+    {
+     "q": "Was deutet ein sehr niedriger Score bei einem Paar meist an?",
+     "o": [
+      "Die Börse ist für diese Coin kaputt",
+      "Das Setup begünstigt womöglich die Short-Seite oder ist nicht handelnswert",
+      "Du solltest sie kaufen, weil sie billig ist",
+      "Der Screener hat sich geirrt"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm3",
+   "t": "Ein Chart-Workspace, der funktioniert",
+   "cards": [
+    {
+     "h": "Dreißig Tabs sind keine Analyse",
+     "p": "Fünfzehn Browser-Tabs, sechs Zeitrahmen, vier Indikatoren, die um deine Aufmerksamkeit kämpfen - das ist kein Workspace, das ist Lärm im Workspace-Kostüm. Jeder zusätzlich geöffnete Chart ist eine Sache mehr, die dich zu einem schlechten Einstieg überreden kann. Die Lösung sind nicht mehr Charts. Es sind weniger, bessere, so angeordnet, dass du sie wirklich lesen kannst."
+    },
+    {
+     "h": "Acht Fenster, ein Board",
+     "p": "/charts gibt dir bis zu acht Chart-Fenster auf einem Board - genug, um deine Setups über Symbole und Zeitrahmen hinweg zu beobachten, ohne durch einen Browser-Friedhof zu alt-tabben. Ziehen, Größe ändern, Layout speichern. Die meisten Trader brauchen nur zwei oder drei Fenster gleichzeitig; die übrigen Plätze gibt es für den Tag, an dem ein echter Grund auftaucht, nicht als Standard. Auf dem Handy läuft dieselbe Engine randlos mit einem Dock unten."
+    },
+    {
+     "h": "Indikatoren sind eine zweite Meinung",
+     "p": "Neunzehn Standard-Indikatoren stehen bereit, dazu sechs MarginPad-Messwerte, die sonst niemand hat - Liquidation Cascade, Market Brain, Market Memory, Magnet, Big Liquidations und What Moved It. Alle zu laden macht dich nicht richtiger - es macht den Chart unlesbar und liefert dir mehr Ausreden, dich zu einem Trade zu überreden, den du ohnehin wolltest. Wähle zwei oder drei, die eine echte Frage beantworten, und lass den Rest ungenutzt, bis du ihn brauchst."
+    },
+    {
+     "h": "Layout speichern, langweilig halten",
+     "p": "Ein gespeichertes Layout heißt: Du öffnest /charts und siehst jedes Mal dasselbe saubere Board - keine neue Entscheidung, welche fünfzehn Indikatoren du heute hinzufügst. Langweilig ist das Ziel. Der Workspace sollte an deinem besten und an deinem schlechtesten Tag gleich aussehen, denn die Setups, die du jagst, ändern sich nicht, nur weil du ungeduldig bist."
+    },
+    {
+     "h": "Lass einen zweiten Leser deine Sicht prüfen",
+     "p": "Ask AI, ein Premium-Feature, liest dieselben Kerzen, Level, Funding- und Liquidationspools, die du siehst, zeichnet das Setup in den Chart und antwortet mit einem Plan mit Einstieg, Stop und Zielen - oder sagt, dass es jetzt keinen Trade gibt. Es soll dir keinen Trade in die Hand drücken; es soll deine Überlegung gegen das prüfen, was auf dem Bildschirm steht. Stimmt es dir bloß zu, ist das keine Bestätigung, sondern du sprichst mit dir selbst in einer schöneren Schrift."
+    },
+    {
+     "h": "Seine Calls werden bewertet, und deine auch",
+     "p": "Jeder gerichtete Plan des Assistenten wird mit seinen Leveln erfasst und danach gegen die echten Kerzen abgerechnet: Kam das erste Ziel vor dem Stop? Die Bilanz ist öffentlich, sobald genug Calls abgerechnet sind, und unter der Karte siehst du deine eigene: wie viele der angefragten Pläne gewannen, verloren oder nie ausgeführt wurden. Eine Einschätzung, die keine Bilanz führt, ist ein Horoskop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was ist das eigentliche Problem, neunzehn Indikatoren auf einen Chart zu laden?",
+     "o": [
+      "Der Chart stürzt ab",
+      "Es vervielfacht die Genauigkeit",
+      "Es erzeugt Lärm und Ausreden, einen Trade zu rechtfertigen, den du ohnehin wolltest",
+      "Es ist technisch nicht möglich"
+     ]
+    },
+    {
+     "q": "Warum ein Chart-Layout speichern, statt es jedes Mal neu zu bauen?",
+     "o": [
+      "Es ist Pflicht, um /charts zu nutzen",
+      "Es hält deinen Workspace konsistent, statt jede Session eine neue überladene Entscheidung zu treffen",
+      "Es findet automatisch bessere Trades",
+      "Es deaktiviert Indikatoren, die du nicht brauchst"
+     ]
+    },
+    {
+     "q": "Wofür ist Ask AI da?",
+     "o": [
+      "Um automatisch Trades zu platzieren",
+      "Um deine eigene Analyse komplett zu ersetzen",
+      "Um deine Sicht gegen das zu prüfen, was im Chart steht, mit einer bewerteten Bilanz",
+      "Um exakte Liquidationskurse vorherzusagen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm4",
+   "t": "Lass dich nie von News überfallen",
+   "cards": [
+    {
+     "h": "Die Kerze, die aus dem Nichts kam",
+     "p": "Du hattest kein Pech. FOMC war seit drei Wochen für 18:00 UTC angesetzt, und jeder Wirtschaftskalender der Welt hatte den Termin gelistet. Der Markt hat dich nicht überfallen - du bist mit einer gehebelten Position in ein geplantes Ereignis gelaufen, ohne zu wissen, dass es kommt. Das ist kein Pech. Das ist Nicht-in-den-Kalender-Schauen."
+    },
+    {
+     "h": "Rote-Flaggen-Events, im Voraus markiert",
+     "p": "/calendar verfolgt jede FOMC-Entscheidung, jede CPI-Veröffentlichung und jeden NFP-Report mit Live-Countdown - zurück bis 2023 und nach vorn, so weit die Daten reichen. Das sind keine kleinen Ausschläge - es sind genau die Ereignisse, die eine 50×-Position in Sekunden in die Liquidation schicken, weil sich alle gleichzeitig um dieselbe Schlagzeile herum neu positionieren."
+    },
+    {
+     "h": "Vor dem Einstieg prüfen, nicht nach dem Docht",
+     "p": "Die Gewohnheit ist simpel: Vor jeder gehebelten Position ein Blick in den Kalender. Steht in den nächsten Stunden ein Rote-Flaggen-Event an? Wenn ja: den Trade auslassen, die Größe deutlich reduzieren oder den Stop weit genug setzen, um das Rauschen zu überleben. Erst nachzuschauen, wenn du schon im Trade bist, ist keine Gewohnheit - das ist eine Obduktion."
+    },
+    {
+     "h": "Erinnerung setzen statt sich erinnern",
+     "p": "Das Gedächtnis ist ein schlechtes Risiko-Tool - du vergisst die genaue Uhrzeit, verwechselst die Zeitzone oder schläfst schlicht. Jedes Event im Kalender hat eine eingebaute E-Mail- und Telegram-Erinnerung. Stell sie einmal für die Events ein, die deine Paare betreffen, und lass die Plattform das Erinnern übernehmen. Das kostet nichts und beseitigt eine ganze Kategorie dummer Verluste."
+    },
+    {
+     "h": "Nicht jedes Event braucht eine Reaktion",
+     "p": "Es geht nicht darum, News für immer zu meiden - einige der besten Bewegungen kommen direkt nach einem Print. Es geht darum, nie in einer gehebelten Position zu stecken, die du nicht bewusst gewählt hast, wenn die Schlagzeile einschlägt. Trade das Event mit Absicht und Plan - oder tritt mit Absicht zur Seite. Beides ist in Ordnung. Überrascht zu werden nicht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welche Art von Events verfolgt /calendar mit Countdowns?",
+     "o": [
+      "Nur Wartungsfenster von Krypto-Börsen",
+      "FOMC-Entscheidungen, CPI-Veröffentlichungen und NFP-Reports",
+      "Zufällige Social-Media-Trends",
+      "Nur Events speziell für Bitcoin"
+     ]
+    },
+    {
+     "q": "Warum lohnt es sich, die E-Mail-/Telegram-Erinnerungen des Kalenders einzurichten?",
+     "o": [
+      "Sie garantieren einen Gewinn-Trade",
+      "Sie nehmen dir das Merken der Event-Zeiten ab",
+      "Sie schließen deine Positionen automatisch",
+      "Sie sind Pflicht, um den Kalender überhaupt zu nutzen"
+     ]
+    },
+    {
+     "q": "Was ist die eigentliche Lektion zum Trading rund um News-Events?",
+     "o": [
+      "Nie in der Nähe eines Wirtschaftsereignisses traden",
+      "Immer die News traden - für garantierten Gewinn",
+      "Wenn die Schlagzeile einschlägt, bewusst in einer gehebelten Position sein - nicht aus Versehen",
+      "Der Kalender ist nur für Aktien-Trader nützlich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm5",
+   "t": "Lies die Menge, bevor du dich ihr anschließt",
+   "cards": [
+    {
+     "h": "Alle haben dieselbe Wette schon platziert",
+     "p": "Wenn ein Trade für dich offensichtlich aussieht, sah er vor etwa sechs Stunden für hunderttausend andere gehebelte Trader genauso offensichtlich aus. Sobald ein Setup sich sicher anfühlt und alle einig sind, ist die Menge längst positioniert - und ein überfüllter Trade braucht keine schlechten Nachrichten, um sich aufzulösen. Er braucht nur, dass die Menge einmal falsch liegt."
+    },
+    {
+     "h": "Funding Rate: der Preis fürs Dabeisein",
+     "p": "/funding zeigt live und börsenübergreifend, was Longs an Shorts zahlen - oder umgekehrt. Stark positives Funding heißt: Longs zahlen kräftig, um long zu bleiben - das Boot ist voll, und alle sind schon drin. Das heißt nicht, dass der Kurs sofort drehen muss. Aber es heißt, dass eine Menge gehebeltes Geld nur einen Schubs davon entfernt ist, hinausgedrängt zu werden."
+    },
+    {
+     "h": "Open Interest verrät, wie groß das Boot ist",
+     "p": "/open-interest zeigt die gesamte gehebelte Positionierung im Markt. Steigendes Open Interest während einer Rally bedeutet: Neues gehebeltes Geld strömt herein - nicht nur bestehende Halter, die mutiger werden. Das ist Treibstoff für eine schärfere Bewegung, falls es dreht. Fallendes Open Interest in eine Bewegung hinein heißt oft: Positionen werden geschlossen, nicht eröffnet - und das liest sich ganz anders."
+    },
+    {
+     "h": "Long/Short-Ratio: wer wirklich positioniert ist",
+     "p": "/long-short aggregiert das Long-gegen-Short-Verhältnis über Börsen hinweg. Eine extreme Schieflage - sagen wir 80% long - ist keine Vorhersage, sondern ein Warnetikett: Sehr viele Leute haben dieselbe Wette platziert, die du gerade platzieren willst. Extreme Schieflagen schnappen irgendwann zurück, und wenn sie es tun, wird meistens die Menge liquidiert - nicht die Minderheit."
+    },
+    {
+     "h": "Sechzig Sekunden vor jedem gehebelten Einstieg",
+     "p": "Bevor du eine Position aufbaust, verbring eine Minute mit Funding, Open Interest und Long/Short - nicht um einen Trade zu finden, sondern um zu prüfen, ob du gerade einer Menge beitrittst oder eine findest. Neutrale Werte heißen: Die Luft ist relativ rein. Extreme Werte heißen: Dein Stop muss weiter, deine Größe kleiner oder dein Einstieg später."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was zeigt eine stark positive Funding Rate normalerweise an?",
+     "o": [
+      "Die Börse hat einen Fehler",
+      "Longs sind überfüllt und zahlen kräftig, um long zu bleiben",
+      "Shorts werden mit Sicherheit gleich liquidiert",
+      "Der Coin wird gleich delistet"
+     ]
+    },
+    {
+     "q": "Steigendes Open Interest während einer Kursrally bedeutet am ehesten:",
+     "o": [
+      "Bestehende Halter sind nur zuversichtlicher, nichts Neues",
+      "Neues gehebeltes Geld strömt in den Markt",
+      "Die Börse reduziert die verfügbare Margin",
+      "Das Volumen ist komplett zum Erliegen gekommen"
+     ]
+    },
+    {
+     "q": "Was solltest du mit einer extremen Long/Short-Schieflage tun, etwa 80% long?",
+     "o": [
+      "Sofort der Mehrheitsseite beitreten",
+      "Sie ignorieren, sie hat keine Relevanz",
+      "Sie als Warnung behandeln und Größe oder Stop entsprechend anpassen",
+      "Annehmen, dass die Daten falsch sind, und den Check überspringen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm6",
+   "t": "Alerts statt Chart-Babysitting",
+   "cards": [
+    {
+     "h": "Auf den Chart zu starren ist keine Strategie",
+     "p": "Du setzt ein Level, dann sitzt du fünfundvierzig Minuten da und siehst die Kerze näher kommen, und irgendwo in Minute dreißig reißt deine Geduld und du steigst drei Dollar zu früh ein, „nur für den Fall“. Das ist keine Disziplin, das ist Langeweile, die sich als Überzeugung ausgibt. Der Chart brauchte dich nicht als Zuschauer. Dein Plan brauchte, dass du wartest."
+    },
+    {
+     "h": "Eine Seite für jeden Alert",
+     "p": "/alerts/ ist der Ort, an dem jeder Alert der Seite lebt und an dem du wählst, wie er dich erreicht: als Push-Benachrichtigung aufs Handy, als Nachricht vom Telegram-Bot oder als E-Mail. Ein Preis-Alert ist kostenlos - eine Coin über oder unter einem Level. Ein Trendlinien-Alert ist auch kostenlos: Zeichne die Linie in einen Chart, tippe auf die Glocke, und er klingelt, wenn der Kurs eine Linie kreuzt, die sich bewegt. Setze sie auf das Level aus deinem Plan, dann schließ den Tab."
+    },
+    {
+     "h": "Die Alerts, die nur wir senden können",
+     "p": "Positions-Alerts sind Premium, und keine Chart-Seite kann sie kopieren, weil wir deine Positionen halten: deine Liquidation rückt näher, dein Stop löst gleich aus, dein Ziel ist fast erreicht, eine ruhende Order füllt gleich. Derselbe Schalter bringt dir einen Katalysator auf einer Coin, die du hältst - ein Listing, einen Hack, eine Makro-Zahl - in der Minute, in der er eintrifft. Zonen-Alerts klingeln, wenn ein schweres Liquidationsband gleich getroffen wird; Whale-Alerts folgen einem Wallet deiner Wahl."
+    },
+    {
+     "h": "Mehr zu beobachten heißt nicht, besser zu reagieren",
+     "p": "Trader, die stundenlang einen Chart beobachten, reden sich ein, Informationen zu sammeln. Meist sammeln sie Angst, und die erzeugt frühe Einstiege, frühe Ausstiege und verschobene Stops. Ein Alert löst genau einmal aus, genau auf dem Level, das du gewählt hast, als du ruhig warst. Das ist ein besserer Entscheider als du es fünfundvierzig Minuten in einem Starrwettbewerb bist."
+    },
+    {
+     "h": "Die Watchlist ist eine Shortlist, kein Schrein",
+     "p": "Paare im Screener zu markieren baut eine Watchlist - aber eine, die nie ausgedünnt wird, wird zu vierzig Coins, bei denen du „ein Gefühl hast“, und das ist das Screener-Problem wieder mit Extraschritten. Markiere, was du wirklich mit einem Plan verfolgst, entmarkiere, was dich letzten Monat nur neugierig machte, und verbinde jeden Stern mit einem Alert."
+    },
+    {
+     "h": "Geh mit Absicht weg",
+     "p": "Der ganze Sinn von Alerts plus Watchlist ist die Erlaubnis, aufzuhören hinzusehen. Level setzen, Alert setzen, App schließen. Wird das Level erreicht, wirst du informiert. Wenn nicht, hast du keinen Nachmittag damit verschwendet, es herauszufinden. Die Trader, die bleiben, sind nicht die, die am Bildschirm kleben - sondern die, die ein System gebaut haben, das sie nicht am Bildschirm braucht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was ist das eigentliche Problem daran, auf einen Chart zu starren und auf dein Level zu warten?",
+     "o": [
+      "Es verbraucht zu viele Daten",
+      "Es führt aus Ungeduld oft zu frühen Einstiegen und verschobenen Plänen",
+      "Der Chart aktualisiert zu langsam, um ihn live zu beobachten",
+      "Auf dem Handy ist es technisch unmöglich"
+     ]
+    },
+    {
+     "q": "Auf welches Level solltest du einen Preis-Alert setzen?",
+     "o": [
+      "Wo der Kurs gerade steht",
+      "Genau das Einstiegslevel aus deinem Plan",
+      "Eine zufällige runde Zahl",
+      "Das Level, das sich aufregend anfühlt"
+     ]
+    },
+    {
+     "q": "Welchen Alert kann nur MarginPad dir senden?",
+     "o": [
+      "Eine Coin, die einen Kurs kreuzt",
+      "Deine eigene Liquidation rückt näher",
+      "Eine Nachrichten-Schlagzeile",
+      "Eine Änderung der Funding-Rate"
+     ]
+    },
+    {
+     "q": "Was hält eine Watchlist nützlich statt überladen?",
+     "o": [
+      "Jede Coin zu markieren, von der du je gehört hast",
+      "Nie etwas zu entfernen",
+      "Sie regelmäßig auszudünnen und Einträge mit einem echten Plan oder Alert zu verbinden",
+      "Sie nur für Coins zu nutzen, die schon im Gewinn sind"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm7",
+   "t": "Der XP-Kreislauf: Üben, das sich auszahlt",
+   "cards": [
+    {
+     "h": "Wiederholungen, nicht Glück",
+     "p": "Ein glücklicher 200×-Trade lehrt dich nichts außer dass es Glück gibt. XP, Missionen und Leaderboards auf MarginPad sind auf das Gegenteil gebaut: die langweiligen Wiederholungen zu belohnen - Trades ordentlich planen, Lektionen abschließen, täglich erscheinen -, weil Wiederholungen einen Trader wirklich formen. Die Gamification lenkt nicht von der Disziplin ab. Sie ist die Disziplin, mit einer Anzeigetafel dran."
+    },
+    {
+     "h": "Missionen belohnen das richtige Verhalten",
+     "p": "Tägliche Missionen zahlen kleine Beträge echter USDT für Dinge wie einen geplanten Trade mit Stop-Loss zu schließen, eine Academy-Lektion abzuschließen oder die Werkzeuge zu nutzen, die dich besser machen - nicht für Volumen, nicht für Größe, nicht für Glück. Sieben am Tag; schließe fünf ab, und der Set-Bonus zahlt XP. Schau jeden Tag rein, hake die ab, die zu dem passen, was du ohnehin vorhattest, und lass den Rest."
+    },
+    {
+     "h": "Streaks sind Gewohnheit mit einer Zahl dran",
+     "p": "Ein Streak-Zähler ist ein billiger Trick und funktioniert trotzdem - Menschen hassen es, eine steigende Zahl zu brechen. Nutze das. Komm täglich, schau die Missionen an, wirf einen Blick auf den Kalender, prüfe einen offenen Trade. Der Streak ist nicht das Ziel; er ist das Gerüst für das eigentliche Ziel, nämlich die Checkliste so oft abzuarbeiten, dass sie aufhört, eine Checkliste zu sein."
+    },
+    {
+     "h": "Leaderboards, die du respektieren kannst",
+     "p": "Die neun Season-Boards laufen 14 Tage und messen je eine Sache - ROE, Green Days, Win Rate, XP, den täglichen BTC-Call, Meme Spot-Gewinn, den Gold Room, Bybit-Volumen, Moon-Einsätze -, sodass ein rücksichtsloser 1000×-Zocker an der Spitze des ROE-Boards in dieser Season nicht automatisch „besser“ ist als ein Trader mit einer langweiligen Win Rate von 65%. Beobachte die Boards Green Days, Win Rate und XP, wenn du ein Signal willst, das Können spiegelt statt einen glücklichen Ausschlag. Echte USDT-Preise werden jede Season ausgezahlt."
+    },
+    {
+     "h": "Duels: Disziplin mit Anzeigetafel",
+     "p": "Ein Duel stellt dich gegen einen anderen Trader auf einer gewählten Kennzahl - ROE, Win Rate, was du willst - für eine Stunde, einen Tag, drei Tage oder eine Woche, mit Ticks als Einsatz. Nur Trades zählen, die nach dem Start des Duels eröffnet wurden. Es ist dieselbe Übung, die du ohnehin machen würdest, nur mit einem Rivalen dran, und das ist erstaunlich wirksam, um bei einem Plan zu bleiben. Fordere jemanden heraus, dessen Zahlen du respektierst, nicht nur den an der Spitze des Boards."
+    },
+    {
+     "h": "Squads: fünf Leute, ein Raum",
+     "p": "Ein Squad besteht aus bis zu fünf Mitgliedern mit privatem Chatraum, Logo, eigenen Levels und Raids - 48 Stunden, um einen Pool mit dem realisierten Gewinn des Squads auf einem Major zu füllen, wobei Verluste ihn leeren. Ein Viertel der XP jedes Mitglieds speist das Level des Squads. Es ist die soziale Hälfte des Kreislaufs: Die Person, die dich am ehesten von einem Revenge-Trade abhält, sitzt im Raum und schaut zu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welches Verhalten belohnen tägliche Missionen typischerweise?",
+     "o": [
+      "Nur den Trade mit dem höchsten Leverage zu öffnen",
+      "Trades ordentlich zu planen, Lektionen abzuschließen und beständig dabei zu sein",
+      "Handelsvolumen, egal wie das Ergebnis ist",
+      "Jeden einzelnen Trade zu gewinnen"
+     ]
+    },
+    {
+     "q": "Warum das Board für Win Rate oder XP beobachten statt nur das ROE-Board?",
+     "o": [
+      "ROE-Boards sind gefälscht",
+      "Eine Top-ROE-Season kann von einem einzigen rücksichtslosen Glückstrade kommen, nicht unbedingt von Können",
+      "Win-Rate-Boards zahlen größere Preise",
+      "XP ist das einzige Board mit echtem Geld"
+     ]
+    },
+    {
+     "q": "Was ist ein Duel?",
+     "o": [
+      "Ein privater Trade, bei dem das Paper-Guthaben des Verlierers an den Gewinner geht",
+      "Ein direkter Vergleich mit einem anderen Trader auf einer gewählten Kennzahl, für eine Stunde bis eine Woche, mit Ticks als Einsatz",
+      "Ein Turnier, das dein Paper-Guthaben zurücksetzt, wenn du verlierst",
+      "Ein Feature nur für Trader der Top 100 des Leaderboards"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm8",
+   "t": "Was den Kurs bewegt hat",
+   "cards": [
+    {
+     "h": "Eine Kerze hat einen Grund, oder keinen",
+     "p": "Die meisten Kerzen sind Rauschen: der Markt atmet, eine Korrektur nach einem Schub, jemand schließt eine Position. Manche sind es nicht - ein Listing, ein Hack, eine CPI-Zahl, ein Delisting, ein Whale, der rausgedrängt wird - und der Unterschied ist der ganze Trade. MarginPad liest 37 Quellen, sobald sie veröffentlichen, bewertet jeden Eintrag und misst die Bewegung, die danach auf jeder genannten Coin folgte. Das ist die Catalysts-Seite."
+    },
+    {
+     "h": "Die Flagge im Chart",
+     "p": "Schalte What Moved It ein, und auf der Kerze, bei der eine Bewegung begann, erscheint eine Flagge mit Ursache und Größe: „Binance hack, −7.0%“. Eine Bewegung kann mehrere Ursachen haben, und die Karte nennt die Anteile - die Nachricht, die Liquidationskaskade, die sie auslöste, Bitcoin, das alles mitzieht. Eine Flagge wird nur gezeichnet, wenn sich die Engine sicher ist; eine Kerze, die sie nicht erklären kann, bleibt kahl, statt eine Vermutung zu tragen."
+    },
+    {
+     "h": "Eine Story ist eine Bewegung, ganz gemessen",
+     "p": "Ein Hack sind nicht fünf einzelne Rücksetzer. Solange die Story läuft, steht auf der Flagge LIVE, und die Zone wächst weiter bis zum Extrem; hat der Markt die Bewegung zurückgegeben, schließt sie und zeigt die Endzahl. Sieben Redaktionen, die über denselben Hack berichten, sind eine Story, nicht sieben Ursachen. Und die Richtung muss passen: Ein Rebound nach einem Hack ist die Erholung des Marktes, nie der Hack."
+    },
+    {
+     "h": "Was zählt und was nicht",
+     "p": "Ein Hack von $3M an einem Nebenprojekt bewegt nichts und ist nie eine Ursache; die, die den Kurs bewegen, sind die Hundert-Millionen-Sorte. Eine Schlagzeile in die Gegenrichtung der Bewegung wird abgelehnt. Ein Listing auf einer kleinen Börse ist Rauschen; ein Binance- oder Upbit-Spot-Listing hat den Kurs um das Zehnfache der üblichen Schwelle bewegt, gemessen über jedes, das wir gesehen haben. Die Seite zeigt, wie oft eine Quelle spricht und wie weit der Kurs bei den letzten Malen lief."
+    },
+    {
+     "h": "Wie du damit tradest",
+     "p": "Prüfe vor einem Einstieg die Flaggen auf der Coin: Waren die letzten drei Bewegungen Kaskaden und keine Nachrichten, wird die Coin von Leverage getrieben, nicht von Information - verkleinere die Position. Läuft eine Story LIVE, ist die Bewegung nicht vorbei; ein Stop darin ist eine Spende. Premium-Mitglieder, die die Coin halten, bekommen den Katalysator als Alert in der Minute, in der er eintrifft, sodass die Nachricht dich findet statt umgekehrt. Die Regel ist dieselbe wie beim Kalender: Lass dich nie von etwas überraschen, das angekündigt war."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wann zeichnet What Moved It eine Flagge auf eine Kerze?",
+     "o": [
+      "Auf jede Kerze",
+      "Nur, wenn sich die Engine der Ursache sicher ist",
+      "Nur auf rote Kerzen",
+      "Nur für Bitcoin"
+     ]
+    },
+    {
+     "q": "Eine Coin springt eine Stunde nach einer Hack-Schlagzeile um +1%. Was ist die Ursache?",
+     "o": [
+      "Der Hack",
+      "Nicht der Hack - eine Ursache muss in dieselbe Richtung zeigen wie die Bewegung",
+      "Die Börse",
+      "Funding"
+     ]
+    },
+    {
+     "q": "Was bedeutet eine LIVE-Flagge?",
+     "o": [
+      "Die Nachricht ist falsch",
+      "Die Story läuft noch und die Bewegung ist noch nicht vorbei",
+      "Die Coin wurde delistet",
+      "Der Alert wurde gesendet"
+     ]
+    }
+   ]
+  }
+ ]
+}
