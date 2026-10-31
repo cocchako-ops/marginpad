@@ -15474,6 +15474,7 @@ const SQUAD_DURS = [86400000, 259200000, 604800000]; // 24h / 3d / 7d
 // did not trade is paid nothing: without that, two friends could make two squads and mint XP daily for nobody's
 // trading. dayCap is the existing per-source guard.
 const SQUAD_XP = { win: 120, draw: 60, loss: 30, dayCap: 480 };
+const DUEL_XP_DAY = 2000, DUEL_XP_PAIR_MAX = 2;
 const SQUAD_METRICS = {
   pnl: { label: 'total profit', agg: 'topsum', how: 'Sum of realized profit. Only the best N members of each squad count, where N is the smaller squad.' },
   roe: { label: 'best ROE', agg: 'best', how: 'The single best ROE anyone in the squad closed.' },
@@ -28347,7 +28348,7 @@ export default {
    try { const d = await (await stubF.fetch(new Request('https://do/lbfollowdump?uid=' + encodeURIComponent(fu)))).json(); return J(d || { error: 'unavailable' }); } catch (e) { return J({ error: 'unavailable' }, 503); }
  }
  if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
- const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '' });
+ const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '', vs: url.searchParams.get('vs') || '' });
  out.now = Date.now();
  return J(out);
  }
@@ -33454,6 +33455,7 @@ export class UserStore {
     for (const col of ['entry REAL', 'exit REAL']) { try { s.exec('ALTER TABLE tradeev ADD COLUMN ' + col); } catch (e) {} } // 2026-10-23: the fill prices, so the Following feed can open the same trade sheet (Copy / Chart / AI analyze) the push does
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
+    try { s.exec('ALTER TABLE duels ADD COLUMN xp_paid INTEGER DEFAULT 0'); } catch (e) {}
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
     // ── Squads (2026-09-29, owner) ── max 5, a leader-designed crest that rides on every member's profile card,
     // a private chat room, and squad-vs-squad duels staked in Ticks. The id is 6 uppercase alnum ON PURPOSE:
@@ -34040,9 +34042,26 @@ export class UserStore {
     if (winner) {
       const loser = String(winner) === String(d.a_uid) ? d.b_uid : d.a_uid, wName = String(winner) === String(d.a_uid) ? d.a_name : d.b_name, lName = String(winner) === String(d.a_uid) ? d.b_name : d.a_name;
       if (stake > 0 && esc >= 2) this._giveTicks(winner, stake * 2, 'Duel pot vs @' + lName); // pot = both stakes
-      try { const hh2 = hhActiveAt(Date.now()); this._grantXp(winner, 'duel', hh2 ? 300 : 150, { dayCap: 600, note: 'Won a ' + ml + ' duel' + (hh2 ? ' · Happy Hour x2' : '') }); } catch (e) {}
+      /* THE CAP WENT FROM 600 TO 2,000 A DAY (2026-10-31, owner), AND TWO RULES CAME WITH IT, because at 2,000 duels alone could
+         out-earn the whole paid Season XP board: XP only when BOTH sides traded inside the duel (measured: 4 of Emapola14's 10
+         wins and 5 of Papis's 19 were over an opponent with no trade), and DUEL_XP_PAIR_MAX paid wins a day against one
+         opponent. The win itself, the pot and the Ticks bonus are untouched. */
+      let xpNote = '';
+      try {
+        const rl = (() => { try { return d.rules ? JSON.parse(d.rules) : {}; } catch (e) { return {}; } })();
+        const traded = (this._duelStats(d.a_uid, d.start_ts, d.end_ts, rl).n > 0) && (this._duelStats(d.b_uid, d.start_ts, d.end_ts, rl).n > 0);
+        const day0 = Math.floor(Date.now() / 86400000) * 86400000;
+        const paid = (this.rows('SELECT COUNT(*) c FROM duels WHERE winner=? AND xp_paid=1 AND end_ts>=? AND ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?))', winner, day0, d.a_uid, d.b_uid, d.b_uid, d.a_uid)[0] || { c: 0 }).c;
+        if (!traded) xpNote = ' No XP: both sides have to trade.';
+        else if (paid >= DUEL_XP_PAIR_MAX) xpNote = ' No XP: two paid wins a day against one opponent.';
+        else {
+          const hh2 = hhActiveAt(Date.now());
+          const got = this._grantXp(winner, 'duel', hh2 ? 300 : 150, { dayCap: DUEL_XP_DAY, note: 'Won a ' + ml + ' duel' + (hh2 ? ' · Happy Hour x2' : '') });
+          if (got > 0) sql.exec('UPDATE duels SET xp_paid=1 WHERE id=?', d.id);
+        }
+      } catch (e) {}
       try { this._grantTicks(winner, 'duel', 10, { dayCap: TICK_CAP.duel, note: 'won a ' + ml + ' duel' }); } catch (e) {} // house win-bonus (capped, anti-farm); settles during XP Happy Hour -> doubled
-      this._pushNotif(winner, 'duel', 'Duel won. You beat @' + lName + ' on ' + ml + (stake > 0 && esc >= 2 ? '. +' + (stake * 2) + ' Ticks' : '') + '. Run it back?', 'duel');
+      this._pushNotif(winner, 'duel', 'Duel won. You beat @' + lName + ' on ' + ml + (stake > 0 && esc >= 2 ? '. +' + (stake * 2) + ' Ticks' : '') + '.' + xpNote + ' Run it back?', 'duel');
       this._pushNotif(loser, 'duel', '@' + wName + ' took the ' + ml + ' duel' + (stake > 0 && esc >= 2 ? '. ' + stake + ' Ticks gone' : '') + '. Rematch?', 'duel');
     } else {
       if (stake > 0 && esc >= 2) { this._giveTicks(d.a_uid, stake, 'Duel refund (tie)'); this._giveTicks(d.b_uid, stake, 'Duel refund (tie)'); }
@@ -37991,7 +38010,9 @@ export class UserStore {
  const duels = this.rows("SELECT id, a_uid, b_uid, a_name, b_name, metric, created, start_ts, end_ts, status, winner, a_score, b_score, dur, stake, escrowed, sym, rules FROM duels WHERE a_uid=? OR b_uid=? ORDER BY created DESC LIMIT 30", uid, uid)
  .map((d) => ({ ...d, me: String(d.a_uid) === uid ? 'a' : 'b', myStats: (d.start_ts && d.end_ts) ? this._duelStats(uid, +d.start_ts, +d.end_ts, (() => { try { return d.rules ? JSON.parse(d.rules) : {}; } catch (e) { return {}; } })()) : null }));
  const ticks = this.rows('SELECT ts, src, amt, note FROM ticklog WHERE user_id=? ORDER BY id DESC LIMIT 25', uid);
- return this.j({ user: { id: uid, username: u.username, ticks: +u.ticks || 0 }, duels, ticks });
+ let h2h = null; const vs = String((b && b.vs) || '').trim().toLowerCase();
+ if (vs) { const o = this.rows('SELECT id, username FROM users WHERE LOWER(username)=? LIMIT 1', vs)[0]; if (o) { const r = this.rows("SELECT winner, metric, end_ts, a_uid, a_score, b_score FROM duels WHERE status='done' AND ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) ORDER BY end_ts", uid, o.id, o.id, uid); h2h = { me: u.username, vs: o.username, total: r.length, wins: r.filter((x) => String(x.winner) === uid).length, losses: r.filter((x) => String(x.winner) === String(o.id)).length, ties: r.filter((x) => !x.winner).length, first: r[0] ? r[0].end_ts : 0, last: r.length ? r[r.length - 1].end_ts : 0 }; } }
+ return this.j({ user: { id: uid, username: u.username, ticks: +u.ticks || 0 }, duels, ticks, h2h });
  }
     if (path === '/ticksbuy') { // a PAID Tick pack: write the book row first (PRIMARY KEY ref = the idempotency), then grant
       const uid = String((b && b.uid) || '').replace(/^u:/, ''), ref = String((b && b.ref) || '').slice(0, 80);
