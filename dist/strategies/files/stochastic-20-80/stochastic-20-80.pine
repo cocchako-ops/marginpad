@@ -1,0 +1,15 @@
+//@version=6
+// Stochastic 20/80 - Buy the stochastic under 20, sell over 80.
+// From the MarginPad strategy library: https://marginpad.io/strategies/stochastic-20-80/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Stochastic 20/80 [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+longIn = ta.stoch(close, high, low, 14) < 20
+longOut = ta.stoch(close, high, low, 14) > 80
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if longOut
+    strategy.close("Long")

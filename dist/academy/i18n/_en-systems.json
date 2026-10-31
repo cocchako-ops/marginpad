@@ -108,7 +108,7 @@
    "try": {
     "p": "Run your first real backtest - EMA cross or RSI rules on live-quality data, one click, full stats.",
     "label": "Strategy Backtester →",
-    "href": "/crypto-backtester/"
+    "href": "/strategies/"
    }
   },
   {

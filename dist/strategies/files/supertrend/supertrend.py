@@ -1,0 +1,386 @@
+#!/usr/bin/env python3
+"""Supertrend 10/3 - Long while Supertrend is green.
+
+From the MarginPad strategy library: https://marginpad.io/strategies/supertrend/
+Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+    python supertrend.py candles.csv        columns: time,open,high,low,close,volume
+"""
+import csv, json, math, sys
+
+NAN = float("nan")
+_memo = {}
+
+
+def memo(fn):
+    def wrap(*a):
+        k = (fn.__name__,) + tuple(id(x) if isinstance(x, (list, dict)) else x for x in a)
+        if k not in _memo:
+            _memo[k] = fn(*a)
+            KEEP.append(_memo[k])
+        return _memo[k]
+    return wrap
+
+
+KEEP = []
+
+
+@memo
+def num(x):
+    return [x] * LEN[0]
+
+
+LEN = [0]
+
+
+@memo
+def sma(s, p):
+    o, t, c = [NAN] * len(s), 0.0, 0
+    for i, v in enumerate(s):
+        if v != v:
+            t, c = 0.0, 0
+            continue
+        t += v
+        c += 1
+        if c > p:
+            t -= s[i - p]
+            c -= 1
+        if c == p:
+            o[i] = t / p
+    return o
+
+
+def seeded(s, p, k):
+    o, prev, t, c = [NAN] * len(s), NAN, 0.0, 0
+    for i, v in enumerate(s):
+        if v != v:
+            continue
+        if prev != prev:
+            t += v
+            c += 1
+            if c == p:
+                prev = t / p
+                o[i] = prev
+            continue
+        prev = v * k + prev * (1 - k)
+        o[i] = prev
+    return o
+
+
+@memo
+def ema(s, p):
+    return seeded(s, p, 2 / (p + 1))
+
+
+@memo
+def rma(s, p):
+    return seeded(s, p, 1 / p)
+
+
+@memo
+def wma(s, p):
+    o, d = [NAN] * len(s), p * (p + 1) / 2
+    for i in range(p - 1, len(s)):
+        w = [s[i - j] for j in range(p)]
+        if any(v != v for v in w):
+            continue
+        o[i] = sum(v * (p - j) for j, v in enumerate(w)) / d
+    return o
+
+
+@memo
+def hma(s, p):
+    a, b = wma(s, p // 2), wma(s, p)
+    return wma([2 * x - y for x, y in zip(a, b)], int(math.sqrt(p)))
+
+
+@memo
+def std(s, p):
+    m, o = sma(s, p), [NAN] * len(s)
+    for i in range(p - 1, len(s)):
+        if m[i] == m[i]:
+            o[i] = math.sqrt(sum((s[i - j] - m[i]) ** 2 for j in range(p)) / p)
+    return o
+
+
+@memo
+def rsi(s, p):
+    n, up, dn = len(s), [NAN] * len(s), [NAN] * len(s)
+    for i in range(1, n):
+        c = s[i] - s[i - 1]
+        if c == c:
+            up[i], dn[i] = max(c, 0.0), max(-c, 0.0)
+    u, d, o = rma(up, p), rma(dn, p), [NAN] * n
+    for i in range(n):
+        if u[i] == u[i]:
+            o[i] = 100.0 if d[i] == 0 else 0.0 if u[i] == 0 else 100 - 100 / (1 + u[i] / d[i])
+    return o
+
+
+@memo
+def true_range(b):
+    h, l, c = b["h"], b["l"], b["c"]
+    o = [NAN] * len(c)
+    for i in range(1, len(c)):
+        o[i] = max(h[i] - l[i], abs(h[i] - c[i - 1]), abs(l[i] - c[i - 1]))
+    return o
+
+
+@memo
+def atr(b, p):
+    return rma(true_range(b), p)
+
+
+@memo
+def roc(s, p):
+    o = [NAN] * len(s)
+    for i in range(p, len(s)):
+        o[i] = 100 * (s[i] / s[i - p] - 1)
+    return o
+
+
+def window(s, p, skip, f):
+    o = [NAN] * len(s)
+    for i in range(p - 1 + skip, len(s)):
+        o[i] = f(s[i - skip - p + 1:i - skip + 1])
+    return o
+
+
+@memo
+def highest(s, p):
+    return window(s, p, 1, max)
+
+
+@memo
+def lowest(s, p):
+    return window(s, p, 1, min)
+
+
+@memo
+def stoch(b, p):
+    hh, ll, o = window(b["h"], p, 0, max), window(b["l"], p, 0, min), [NAN] * len(b["c"])
+    for i, c in enumerate(b["c"]):
+        r = hh[i] - ll[i]
+        if r == r:
+            o[i] = 50.0 if r == 0 else 100 * (c - ll[i]) / r
+    return o
+
+
+def typical(b):
+    return [(h + l + c) / 3 for h, l, c in zip(b["h"], b["l"], b["c"])]
+
+
+@memo
+def cci(b, p):
+    tp, o = typical(b), [NAN] * len(b["c"])
+    m = sma(tp, p)
+    for i in range(p - 1, len(tp)):
+        d = sum(abs(tp[i - j] - m[i]) for j in range(p)) / p
+        o[i] = 0.0 if d == 0 else (tp[i] - m[i]) / (0.015 * d)
+    return o
+
+
+@memo
+def mfi(b, p):
+    tp, n = typical(b), len(b["c"])
+    pos, neg, o = [0.0] * n, [0.0] * n, [NAN] * n
+    for i in range(1, n):
+        f = tp[i] * b["v"][i]
+        if tp[i] > tp[i - 1]:
+            pos[i] = f
+        elif tp[i] < tp[i - 1]:
+            neg[i] = f
+    for i in range(p, n):
+        u, d = sum(pos[i - p + 1:i + 1]), sum(neg[i - p + 1:i + 1])
+        o[i] = 100.0 if d == 0 else 100 - 100 / (1 + u / d)
+    return o
+
+
+@memo
+def obv(b):
+    o, c, v = [0.0] * len(b["c"]), b["c"], b["v"]
+    for i in range(1, len(c)):
+        o[i] = o[i - 1] + (v[i] if c[i] > c[i - 1] else -v[i] if c[i] < c[i - 1] else 0)
+    return o
+
+
+@memo
+def dmi(b, p):
+    h, l, n = b["h"], b["l"], len(b["c"])
+    pl, mi = [NAN] * n, [NAN] * n
+    for i in range(1, n):
+        u, d = h[i] - h[i - 1], l[i - 1] - l[i]
+        pl[i] = u if u > d and u > 0 else 0.0
+        mi[i] = d if d > u and d > 0 else 0.0
+    tr, sp, sm = atr(b, p), rma(pl, p), rma(mi, p)
+    dp, dm, dx = [NAN] * n, [NAN] * n, [NAN] * n
+    for i in range(n):
+        if tr[i] != tr[i] or tr[i] == 0:
+            continue
+        dp[i], dm[i] = 100 * sp[i] / tr[i], 100 * sm[i] / tr[i]
+        t = dp[i] + dm[i]
+        dx[i] = 0.0 if t == 0 else 100 * abs(dp[i] - dm[i]) / t
+    return dp, dm, rma(dx, p)
+
+
+@memo
+def supertrend_dir(b, p, m):
+    h, l, c, a = b["h"], b["l"], b["c"], atr(b, p)
+    o, up, lo, d = [NAN] * len(c), NAN, NAN, 1
+    for i in range(len(c)):
+        if a[i] != a[i]:
+            continue
+        mid = (h[i] + l[i]) / 2
+        u, w = mid + m * a[i], mid - m * a[i]
+        if up == up:
+            u = u if u < up or c[i - 1] > up else up
+            w = w if w > lo or c[i - 1] < lo else lo
+            if d == -1 and c[i] > up:
+                d = 1
+            elif d == 1 and c[i] < lo:
+                d = -1
+        up, lo, o[i] = u, w, d
+    return o
+
+
+@memo
+def macd(b, f, s):
+    return [x - y for x, y in zip(ema(b["c"], f), ema(b["c"], s))]
+
+
+@memo
+def prev(s, p):
+    return [NAN] * p + list(s[:-p])
+
+
+@memo
+def op(k, a, b):
+    if k == "add":
+        return [x + y for x, y in zip(a, b)]
+    if k == "sub":
+        return [x - y for x, y in zip(a, b)]
+    if k == "mul":
+        return [x * y for x, y in zip(a, b)]
+    return [x / y if y else NAN for x, y in zip(a, b)]
+
+
+@memo
+def weekday(b):
+    return [float((math.floor(t / 86400000) + 4) % 7) for t in b["t"]]
+
+
+def gt(a, b, i):
+    return a[i] > b[i]
+
+
+def lt(a, b, i):
+    return a[i] < b[i]
+
+
+def xup(a, b, i):
+    return i > 0 and a[i] > b[i] and a[i - 1] <= b[i - 1]
+
+
+def xdn(a, b, i):
+    return i > 0 and a[i] < b[i] and a[i - 1] >= b[i - 1]
+
+
+def backtest(rule, b, fee=0.00055, slip=0.0002):
+    """Next-bar-open fills, slippage against the trade, a gapped stop fills at the open, stop before target in one bar."""
+    o, h, l, c, n = b["o"], b["h"], b["l"], b["c"], len(b["c"])
+    a = atr(b, 14)
+    eq, d, ent, base, stop, tp, ent_i, pending, trades = 1.0, 0, 0.0, 1.0, NAN, NAN, -1, 0, []
+
+    def open_pos(dd, px, i):
+        nonlocal d, ent, base, ent_i, stop, tp
+        d, ent, base, ent_i = dd, px * (1 + dd * slip), eq * (1 - fee), i
+        stop, tp = NAN, NAN
+        if rule["stop"]:
+            kind, v = rule["stop"]
+            stop = ent - d * v * a[i - 1] if kind == "atr" else ent * (1 - d * v / 100)
+        if rule["target"]:
+            kind, v = rule["target"]
+            tp = ent + d * v * abs(ent - stop) if kind == "r" else ent + d * v * a[i - 1] if kind == "atr" else ent * (1 + d * v / 100)
+
+    def close_pos(px, i, why, no_slip=False):
+        nonlocal eq, d
+        fill = px if no_slip else px * (1 - d * slip)
+        val = max(0.0, base * (1 + d * (fill / ent - 1))) * (1 - fee)
+        trades.append(dict(entry_i=ent_i, exit_i=i, side=d, entry=ent, exit=fill, why=why, ret=val / eq0[0] - 1))
+        eq, d = val, 0
+
+    eq0 = [1.0]
+    for i in range(1, n):
+        if pending:
+            act, pending = pending, 0
+            if act == 2 and d:
+                close_pos(o[i], i, "signal")
+            elif act != 2:
+                if d and d != act:
+                    close_pos(o[i], i, "reverse")
+                if not d and a[i - 1] == a[i - 1]:
+                    eq0[0] = eq
+                    open_pos(act, o[i], i)
+        if d:
+            if rule["trail"]:
+                w = c[i - 1] - d * rule["trail"] * a[i - 1]
+                if i - 1 >= ent_i and w == w and (stop != stop or (w > stop if d > 0 else w < stop)):
+                    stop = w
+            hit_s = stop == stop and (l[i] <= stop if d > 0 else h[i] >= stop)
+            hit_t = tp == tp and (h[i] >= tp if d > 0 else l[i] <= tp)
+            if hit_s:
+                close_pos(min(o[i], stop) if d > 0 else max(o[i], stop), i, "stop")
+            elif hit_t:
+                close_pos(max(o[i], tp) if d > 0 else min(o[i], tp), i, "target", True)
+        if i == n - 1:
+            break
+        if d and rule["max_bars"] and i - ent_i + 1 >= rule["max_bars"]:
+            pending = 2
+            continue
+        if d > 0 and rule["exit_long"] and rule["exit_long"](b, i):
+            pending = 2
+        if d < 0 and rule["exit_short"] and rule["exit_short"](b, i):
+            pending = 2
+        if d >= 0 and rule["entry_short"] and rule["entry_short"](b, i) and not (d > 0 and not rule["reverse"]):
+            pending = -1
+        if d <= 0 and rule["entry_long"] and rule["entry_long"](b, i) and not (d < 0 and not rule["reverse"]):
+            pending = 1
+    return trades
+
+
+def load(path):
+    b = dict(t=[], o=[], h=[], l=[], c=[], v=[])
+    with open(path) as f:
+        for r in csv.DictReader(f):
+            for k, name in (("t", "time"), ("o", "open"), ("h", "high"), ("l", "low"), ("c", "close"), ("v", "volume")):
+                b[k].append(float(r[name]))
+    LEN[0] = len(b["c"])
+    return b
+
+
+def main(rule):
+    if len(sys.argv) < 2:
+        sys.exit(__doc__)
+    tr = backtest(rule, load(sys.argv[1]))
+    eq = 1.0
+    for t in tr:
+        eq *= 1 + t["ret"]
+    wins = sum(1 for t in tr if t["ret"] > 0)
+    print(json.dumps(dict(strategy=rule["name"], trades=len(tr), win_rate=round(100 * wins / max(1, len(tr)), 1), return_pct=round((eq - 1) * 100, 2))))
+
+
+RULE = dict(
+    name="Supertrend 10/3",
+    entry_long=lambda b, i: gt(supertrend_dir(b, 10, 3), num(0), i),
+    exit_long=lambda b, i: lt(supertrend_dir(b, 10, 3), num(0), i),
+    entry_short=None,
+    exit_short=None,
+    reverse=False,
+    stop=None,
+    target=None,
+    trail=None,
+    max_bars=None,
+)
+
+if __name__ == "__main__":
+    main(RULE)

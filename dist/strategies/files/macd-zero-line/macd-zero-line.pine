@@ -1,0 +1,16 @@
+//@version=6
+// MACD Zero Line - Long while MACD is above zero, a slower read of the same idea.
+// From the MarginPad strategy library: https://marginpad.io/strategies/macd-zero-line/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("MACD Zero Line [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+[macdLine, macdSignal, _h] = ta.macd(close, 12, 26, 9)
+
+longIn = ta.crossover(macdLine, 0)
+longOut = ta.crossunder(macdLine, 0)
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if longOut
+    strategy.close("Long")

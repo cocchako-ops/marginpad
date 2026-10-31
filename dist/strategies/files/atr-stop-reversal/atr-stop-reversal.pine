@@ -1,0 +1,30 @@
+//@version=6
+// ATR Stop Long & Short - Trend flips with a 2 ATR stop on every position.
+// From the MarginPad strategy library: https://marginpad.io/strategies/atr-stop-reversal/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("ATR Stop Long & Short [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+atr14 = ta.atr(14)
+
+longIn = ta.crossover(ta.ema(close, 20), ta.ema(close, 50))
+shortIn = ta.crossunder(ta.ema(close, 20), ta.ema(close, 50))
+
+if longIn
+    strategy.entry("Long", strategy.long)
+if shortIn
+    strategy.entry("Short", strategy.short)
+if strategy.position_size > 0
+    entry = strategy.opentrades.entry_price(0)
+    var float risk = na
+    if strategy.opentrades.entry_bar_index(0) == bar_index or na(risk)
+        risk := 2 * atr14[1]
+    stopPx = entry - risk
+    strategy.exit("Long exit", "Long", stop=stopPx)
+if strategy.position_size < 0
+    entry = strategy.opentrades.entry_price(0)
+    var float risk = na
+    if strategy.opentrades.entry_bar_index(0) == bar_index or na(risk)
+        risk := 2 * atr14[1]
+    stopPx = entry + risk
+    strategy.exit("Short exit", "Short", stop=stopPx)

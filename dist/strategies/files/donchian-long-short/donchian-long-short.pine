@@ -1,0 +1,15 @@
+//@version=6
+// Donchian Long & Short - Goes with whichever side breaks a 20-bar range.
+// From the MarginPad strategy library: https://marginpad.io/strategies/donchian-long-short/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Donchian Long & Short [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+longIn = close > ta.highest(high, 20)[1]
+shortIn = close < ta.lowest(low, 20)[1]
+
+if longIn
+    strategy.entry("Long", strategy.long)
+if shortIn
+    strategy.entry("Short", strategy.short)

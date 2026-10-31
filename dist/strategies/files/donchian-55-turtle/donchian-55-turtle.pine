@@ -1,0 +1,15 @@
+//@version=6
+// Donchian 55 (Turtle) - The Turtle system: a 55-day high in, a 20-day low out.
+// From the MarginPad strategy library: https://marginpad.io/strategies/donchian-55-turtle/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Donchian 55 (Turtle) [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+longIn = close > ta.highest(high, 55)[1]
+longOut = close < ta.lowest(low, 20)[1]
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if longOut
+    strategy.close("Long")

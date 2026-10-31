@@ -1,0 +1,15 @@
+//@version=6
+// EMA 9/21 Long & Short - Always in the market, on the side of the 9/21 EMA cross.
+// From the MarginPad strategy library: https://marginpad.io/strategies/ema-9-21-long-short/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("EMA 9/21 Long & Short [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+longIn = ta.crossover(ta.ema(close, 9), ta.ema(close, 21))
+shortIn = ta.crossunder(ta.ema(close, 9), ta.ema(close, 21))
+
+if longIn
+    strategy.entry("Long", strategy.long)
+if shortIn
+    strategy.entry("Short", strategy.short)

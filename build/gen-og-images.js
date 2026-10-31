@@ -105,6 +105,10 @@ function plan(rel, html) {
     return { t: 'article', d: { title: s.head + (s.tail && s.head.length < 44 ? ' - ' + s.tail : ''), sub: desc, kind: hit[1], accent: hit[2], path: rel } };
   }
 
+  if (rel === '/strategies/') return { t: 'tool', d: { title: 'The open library of trading strategies', sub: 'Sixty rules, five markets, every result after fees. Download any of them.', tag: 'NO SIGN-UP', accent: ACCENT.lime, path: rel } };
+  if (/^\/strategies\//.test(rel))
+    return { t: 'article', d: { title: s.head, sub: desc, kind: rel.includes('automate') ? 'GUIDE' : 'STRATEGY', accent: ACCENT.green, path: rel } };
+
   if (/^\/guides\//.test(rel))
     return { t: 'article', d: { title: s.head, sub: s.tail || desc, kind: 'GUIDE', accent: ACCENT.blue, path: rel } };
 

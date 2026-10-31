@@ -48,6 +48,7 @@ run('DeFi dashboard', 'node build/gen-defi-page.js');
 run('Bitcoin cycle', 'node build/gen-cycle-page.js');
 run('ETF flows', 'node build/gen-etf-page.js');
 run('Hyperliquid whales', 'node build/gen-hl-page.js');
+run('Strategy library (numbers from build/strategies/run.js)', 'node build/gen-strategies.js');
 run('Exchange comparison', 'node build/gen-exchanges-page.js');
 run('Markets hub', 'node build/gen-markets-hub.js');
 run('How-to guides', 'node build/gen-guides-pages.js');

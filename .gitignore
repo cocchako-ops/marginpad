@@ -113,3 +113,6 @@ build/data/de/chunks/
 
 # Catalyst Engine F0 kline cache (131 MB, regenerable)
 build/data/catalyst/cache/
+
+# strategy library: raw history, rebuilt by build/strategies/fetch-data.js
+build/data/strategies/

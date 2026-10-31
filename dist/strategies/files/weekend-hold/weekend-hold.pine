@@ -1,0 +1,17 @@
+//@version=6
+// Friday To Monday - Hold over the weekend only. Nothing but the calendar decides.
+// From the MarginPad strategy library: https://marginpad.io/strategies/weekend-hold/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Friday To Monday [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+dow = dayofweek(time, "UTC") - 1
+
+c1 = dow > 4
+c2 = dow < 6
+longIn = (c1 and c2)
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if strategy.position_size != 0 and bar_index - strategy.opentrades.entry_bar_index(0) + 1 >= 3
+    strategy.close_all()

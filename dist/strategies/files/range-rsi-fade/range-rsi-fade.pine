@@ -1,0 +1,25 @@
+//@version=6
+// Range High Fade - Short a 60-bar high with RSI stretched: 3 ATR stop, 2R target, 48 bars at most.
+// From the MarginPad strategy library: https://marginpad.io/strategies/range-rsi-fade/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Range High Fade [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+atr14 = ta.atr(14)
+
+c1 = high > ta.highest(high, 60)[1]
+c2 = ta.rsi(close, 14) > 70
+shortIn = (c1 and c2)
+
+if shortIn and strategy.position_size == 0
+    strategy.entry("Short", strategy.short)
+if strategy.position_size != 0 and bar_index - strategy.opentrades.entry_bar_index(0) + 1 >= 48
+    strategy.close_all()
+if strategy.position_size < 0
+    entry = strategy.opentrades.entry_price(0)
+    var float risk = na
+    if strategy.opentrades.entry_bar_index(0) == bar_index or na(risk)
+        risk := 3 * atr14[1]
+    stopPx = entry + risk
+    tpPx = entry - risk * 2
+    strategy.exit("Short exit", "Short", stop=stopPx, limit=tpPx)

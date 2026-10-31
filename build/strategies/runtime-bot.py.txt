@@ -1,0 +1,105 @@
+
+# ---------- the bot: paper money only, on the MarginPad Bot API ----------
+import argparse, os, time, urllib.error, urllib.parse, urllib.request
+
+API = "https://marginpad.io/api"
+
+
+def http(path, body=None, key=None):
+    headers = {"content-type": "application/json", "user-agent": "marginpad-strategy-bot"}
+    if key:
+        headers["x-api-key"] = key
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(API + path, data=data, headers=headers, method="POST" if body is not None else "GET")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        return dict(error=e.code, detail=e.read().decode()[:300])
+
+
+def closed_candles(symbol, minutes):
+    """Candles with the forming bar removed: a rule only ever reads a closed bar."""
+    j = http("/v1/klines?symbol=%s&interval=%d" % (urllib.parse.quote(symbol), minutes))
+    rows = j.get("data", j) if isinstance(j, dict) else j
+    if not isinstance(rows, list) or len(rows) < 60:
+        raise SystemExit("no candles: %s" % str(j)[:200])
+    now = time.time()
+    rows = [x for x in rows if x["time"] + minutes * 60 <= now]
+    _memo.clear()
+    KEEP.clear()
+    LEN[0] = len(rows)
+    return dict(t=[x["time"] * 1000.0 for x in rows], o=[float(x["open"]) for x in rows], h=[float(x["high"]) for x in rows],
+                l=[float(x["low"]) for x in rows], c=[float(x["close"]) for x in rows], v=[float(x.get("vol") or 0) for x in rows])
+
+
+def levels(rule, side, px, a):
+    d, out = (1 if side == "long" else -1), {}
+    stop = NAN
+    if rule["stop"]:
+        kind, v = rule["stop"]
+        stop = px - d * v * a if kind == "atr" else px * (1 - d * v / 100)
+        out["sl"] = round(stop, 8)
+    if rule["target"]:
+        kind, v = rule["target"]
+        out["tp"] = round(px + d * v * abs(px - stop) if kind == "r" else px + d * v * a if kind == "atr" else px * (1 + d * v / 100), 8)
+    if rule["trail"]:
+        out["trail_pct"] = round(max(0.05, min(50.0, 100 * rule["trail"] * a / px)), 3)
+    return out
+
+
+def step(rule, a):
+    b = closed_candles(a.symbol, a.minutes)
+    i = len(b["c"]) - 1
+    r = http("/bot/v1/positions", key=a.key)
+    rows = r if isinstance(r, list) else r.get("positions", r.get("data", []))
+    if isinstance(r, dict) and r.get("error"):
+        print("positions refused:", r)
+        return
+    mine = [p for p in rows if p.get("symbol") == a.symbol and p.get("status", "open") == "open"]
+    pos = mine[0] if mine else None
+    want = None
+    if pos:
+        long_pos = pos.get("side") == "long"
+        held = (time.time() * 1000 - float(pos.get("opened_ts") or time.time() * 1000)) / (a.minutes * 60000)
+        out = rule["exit_long"] if long_pos else rule["exit_short"]
+        opp = rule["entry_short"] if long_pos else rule["entry_long"]
+        rev = bool(rule["reverse"] and opp and opp(b, i))
+        if rev or (out and out(b, i)) or (rule["max_bars"] and held >= rule["max_bars"]):
+            print("close", a.symbol, http("/bot/v1/close", dict(id=pos.get("id")), key=a.key))
+            pos = None
+            if rev:
+                want = "short" if long_pos else "long"
+    if not pos and not want:
+        if rule["entry_long"] and rule["entry_long"](b, i):
+            want = "long"
+        elif rule["entry_short"] and rule["entry_short"](b, i):
+            want = "short"
+    if want:
+        body = dict(symbol=a.symbol, side=want, margin_usd=a.margin, leverage=1, client_order_id="%s-%d" % (a.symbol, b["t"][i]))
+        body.update(levels(rule, want, b["c"][i], atr(b, 14)[i]))
+        if a.check:
+            body["dry_run"] = True
+        print("open", want, a.symbol, http("/bot/v1/open", body, key=a.key))
+    else:
+        print(time.strftime("%H:%M:%S"), a.symbol, "no signal on the last closed bar", "(in a position)" if pos else "")
+
+
+def main_bot(rule, minutes):
+    p = argparse.ArgumentParser(description=rule["name"] + ": paper trading on the MarginPad Bot API. No real money.")
+    p.add_argument("symbol", nargs="?", default="BTC")
+    p.add_argument("--margin", type=float, default=100, help="paper margin per trade in USD")
+    p.add_argument("--minutes", type=int, default=minutes, help="candle length; the rule was tested on %d" % minutes)
+    p.add_argument("--once", action="store_true", help="read one closed bar and stop")
+    p.add_argument("--check", action="store_true", help="price the trade with dry_run and place nothing")
+    a = p.parse_args()
+    a.key = os.environ.get("MARGINPAD_KEY")
+    if not a.key:
+        sys.exit("Set MARGINPAD_KEY. Get a key at https://marginpad.io/trading-api/")
+    a.symbol = a.symbol.upper()
+    while True:
+        step(rule, a)
+        if a.once:
+            return
+        wait = a.minutes * 60 - time.time() % (a.minutes * 60) + 5
+        time.sleep(wait)

@@ -1,0 +1,15 @@
+//@version=6
+// RSI Fade Short - Short RSI over 75, cover under 50.
+// From the MarginPad strategy library: https://marginpad.io/strategies/rsi-fade-short/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("RSI Fade Short [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+shortIn = ta.rsi(close, 14) > 75
+shortOut = ta.rsi(close, 14) < 50
+
+if shortIn and strategy.position_size == 0
+    strategy.entry("Short", strategy.short)
+if shortOut
+    strategy.close("Short")

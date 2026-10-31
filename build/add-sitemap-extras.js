@@ -43,6 +43,9 @@ const EXTRAS = [
   ['/leverage-report/', '1.0', D],
   ['/crypto-liquidations-today/', '0.9', D],
   ['/liquidations/by-exchange/', '0.9', D],
+  ['/strategies/', '1.0', W],
+  ['/strategies/automate/', '0.7', M],
+  ...require('./strategies/rules').RULES.map((r) => [`/strategies/${r.slug}/`, '0.7', M]),
   ['/hyperliquid-liquidations/', '0.9', D],
   ['/heatmap', '0.9', D],
   // the glossary stopped being a dictionary on 2026-10-19: ten of its sixty cards carry a figure measured when

@@ -90,7 +90,7 @@
     <div class="meta">Guias · 7 min de leitura · Atualizado em junho de 2026</div>
     <p>Bots de trading estão por toda parte em 2026 - e contas estouradas também, de bots que pareciam ótimos no backtest e perderam dinheiro na primeira semana ao vivo. A diferença entre os dois resultados quase sempre é o <strong>teste</strong>. Este é o fluxo profissional de três etapas - backtest, paper trading, entrada ao vivo - e como rodar a etapa do meio de graça. <em>(Apenas educativo - não é recomendação financeira.)</em></p>
     <h2>Etapa 1: Faça o backtest da ideia</h2>
-    <p>Um <strong>backtest</strong> reproduz sua estratégia sobre candles históricos e responde rápido a uma pergunta: <em>essa ideia já funcionou alguma vez?</em> Taxa de acerto, profit factor, drawdown máximo, curva de capital vs buy &amp; hold. Você roda estratégias clássicas (cruzamento de EMAs, reversão por RSI, rompimento de Donchian e mais) em minutos com nosso <a href="/pt/crypto-backtester/">backtester de estratégias</a> gratuito - sem escrever código.</p>
+    <p>Um <strong>backtest</strong> reproduz sua estratégia sobre candles históricos e responde rápido a uma pergunta: <em>essa ideia já funcionou alguma vez?</em> Taxa de acerto, profit factor, drawdown máximo, curva de capital vs buy &amp; hold. Você roda estratégias clássicas (cruzamento de EMAs, reversão por RSI, rompimento de Donchian e mais) em minutos com nosso <a href="/strategies/">backtester de estratégias</a> gratuito - sem escrever código.</p>
     <p>Mas seja honesto sobre o que é um backtest: um <strong>filtro</strong>, não uma prova. Você ajustou os parâmetros nos mesmos dados que está testando, então o resultado favorece a estratégia (<strong>overfitting</strong>). E um backtest nunca roda o código real do seu bot - não pega o bug na sua lógica de ordens, porque não há ordens.</p>
     <h2>Etapa 2: Teste a frente no paper (o passo que todo mundo pula)</h2>
     <p>O <strong>forward testing</strong> - paper trading - roda seu <em>bot de verdade</em>, o caminho de código real, contra <strong>preços reais ao vivo em tempo real</strong>. As ordens são chamadas de API reais; só os dólares são simulados. É aqui que você pega o que os backtests escondem:</p>
@@ -108,7 +108,7 @@
     <h2>Etapa 3: Entre ao vivo com pouco</h2>
     <p>Quando os resultados no paper se sustentarem, financie uma conta real com <strong>tamanho pequeno</strong> - operar ao vivo acrescenta o que nenhum simulador modela por completo: slippage em livros finos, taxas, pagamentos de funding, instabilidade da corretora. Mantenha o bot de paper rodando em paralelo como grupo de controle; se o resultado ao vivo divergir muito do paper, algo na sua execução (não na estratégia) está vazando dinheiro.</p>
     <h2>O fluxo em uma linha</h2>
-    <p>Faça o <a href="/pt/crypto-backtester/">backtest</a> para filtrar ideias &rarr; faça <a href="/pt/trading-api/">paper trading do bot real em preços ao vivo</a> para provar o código e a estratégia &rarr; entre ao vivo com pouco e compare. Registre tudo no <a href="/pt/trading-journal/">diário de trading</a> e, se você opera manualmente ao lado do bot, pratique no <a href="/pt/paper-trade">Paper Trade</a> com a mesma disciplina que exige da máquina.</p>
+    <p>Faça o <a href="/strategies/">backtest</a> para filtrar ideias &rarr; faça <a href="/pt/trading-api/">paper trading do bot real em preços ao vivo</a> para provar o código e a estratégia &rarr; entre ao vivo com pouco e compare. Registre tudo no <a href="/pt/trading-journal/">diário de trading</a> e, se você opera manualmente ao lado do bot, pratique no <a href="/pt/paper-trade">Paper Trade</a> com a mesma disciplina que exige da máquina.</p>
     <div class="callout"><div class="k">TESTE SEU BOT DE GRAÇA</div><p style="margin-bottom:14px">Uma API REST de paper trading gratuita com preços reais ao vivo - alavancagem, SL/TP, fechamentos parciais e simulação de liquidação. Pegue uma chave de API em 30 segundos.</p><a class="cta" href="/pt/trading-api/">Pegue sua chave de API grátis &rarr;</a></div>
     <div class="toolshow">
       <div class="ts-head">Tudo grátis na MarginPad - sem cadastro</div>
@@ -140,6 +140,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> · <a href="/pt/blog/">Blog</a> · <a href="/pt/terms/">Termos</a> · <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=bed55e84"></script>
+<script defer src="/assets/mp-nav.js?v=4ae29e65"></script>
 </body>
 </html>

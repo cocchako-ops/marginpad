@@ -2460,6 +2460,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
   function aiAnalyzeAuto(sym){
     sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return;
     try{var _t=sessionStorage.getItem('mp_ai_trade');if(_t){var c=JSON.parse(_t);if(c&&String(c.sym||'').toUpperCase()===sym)aiTradeCtx=c;sessionStorage.removeItem('mp_ai_trade');}}catch(e){}
+    var aiQ=null;try{aiQ=sessionStorage.getItem('mp_ai_q');if(aiQ)sessionStorage.removeItem('mp_ai_q');}catch(e){} /* the strategy library's Explain button asks its question once the panel is up */
     var tfSet=false,oldBars=null,tries=0;
     (function go(){
       var w=null;for(var i=0;i<wins.length;i++){if(wins[i].sym===sym){w=wins[i];break;}}
@@ -2473,6 +2474,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          then open the panel - the card's "Analyze this trade" button runs the AI (markers already on; no timeframe to pick) */
       if(aiTradeCtx){try{mpTradeMarks(w,aiTradeCtx);}catch(e){}setTimeout(function(){try{mpTradeMarks(w,aiTradeCtx);}catch(e){}},600);}
       openAiPanel(w);
+      if(aiQ){var t3=0;(function ask(){if(aiBusy)return;if(aiPremium&&aiEl&&!aiEl.hidden){askAi(aiQ);return;}if(t3++<60)setTimeout(ask,200);})();}
     })();
   }
   /* Set a price alert straight from the chart - tap a level, it creates a real /api/alerts alert + draws an anchored line */

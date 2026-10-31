@@ -19,7 +19,7 @@ const { htmlFiles } = require('./lib-html-files');
 const ROOT = path.join(__dirname, '..');
 const A = path.join(ROOT, 'dist', 'assets');
 
-const BUNDLES = ['mp-nav.js', 'mp-auth.js', 'mp-trade.js', 'mp-trade.css', 'mp-profile.js', 'mp-calc.js', 'pwa-nav.js', 'sentry.js', 'i18n.js', 'mp-charts.js', 'mp-mcharts.js', 'mp-heatmap.js', 'mp-screener.js', 'lightweight-charts-4.2.0.js'];
+const BUNDLES = ['mp-nav.js', 'mp-auth.js', 'mp-trade.js', 'mp-trade.css', 'mp-profile.js', 'mp-calc.js', 'pwa-nav.js', 'sentry.js', 'i18n.js', 'mp-charts.js', 'mp-mcharts.js', 'mp-heatmap.js', 'mp-screener.js', 'mp-strat.js', 'mp-strategies.js', 'mp-strategies.css', 'lightweight-charts-4.2.0.js'];
 const hashOf = (buf) => crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
 const esc = (s) => s.replace(/[.]/g, '\\.');
 function writeIfChanged(f, next) { const cur = fs.readFileSync(f, 'utf8'); if (cur === next) return false; const tmp = f + '.tmp'; fs.writeFileSync(tmp, Buffer.from(next, 'utf8')); fs.renameSync(tmp, f); return true; }

@@ -1,0 +1,17 @@
+//@version=6
+// EMA Ribbon 8/21/50 - Long only while three averages are stacked in order.
+// From the MarginPad strategy library: https://marginpad.io/strategies/ema-ribbon/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("EMA Ribbon 8/21/50 [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+c1 = ta.ema(close, 8) > ta.ema(close, 21)
+c2 = ta.ema(close, 21) > ta.ema(close, 50)
+longIn = (c1 and c2)
+longOut = ta.ema(close, 8) < ta.ema(close, 21)
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if longOut
+    strategy.close("Long")

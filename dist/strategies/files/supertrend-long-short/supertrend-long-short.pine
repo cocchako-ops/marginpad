@@ -1,0 +1,18 @@
+//@version=6
+// Supertrend Long & Short - Always in the market, on the side Supertrend shows.
+// From the MarginPad strategy library: https://marginpad.io/strategies/supertrend-long-short/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Supertrend Long & Short [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+stDir(int p, float m) =>
+    [_v, d] = ta.supertrend(m, p)
+    -d
+
+longIn = ta.crossover(stDir(10, 3), 0)
+shortIn = ta.crossunder(stDir(10, 3), 0)
+
+if longIn
+    strategy.entry("Long", strategy.long)
+if shortIn
+    strategy.entry("Short", strategy.short)

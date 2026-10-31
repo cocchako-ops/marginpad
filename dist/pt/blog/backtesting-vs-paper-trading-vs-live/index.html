@@ -90,14 +90,14 @@
     <div class="meta">Guias · 6 min de leitura · Atualizado em junho de 2026</div>
     <p>“Fiz backtest e dá lucro” é uma das frases mais perigosas do trading. Backtest, paper trading e trading real provam coisas diferentes - e pular a etapa do meio é o motivo pelo qual a maioria das estratégias que parecem ótimas no papel perde dinheiro na primeira semana no real. Veja exatamente o que cada etapa faz e a ordem para usá-las. <em>(Apenas educativo - não é recomendação financeira.)</em></p>
     <h2>Backtest: essa ideia tem alguma vantagem?</h2>
-    <p>Um <strong>backtest</strong> reproduz a sua estratégia em candles históricos e responde rápido a uma pergunta: <em>isso já funcionou alguma vez?</em> Ele entrega taxa de acerto, profit factor, drawdown e curva de capital em minutos. Nosso <a href="/pt/crypto-backtester/">backtester de estratégias</a> grátis roda cruzamento de EMA, RSI, tendência de SMA e rompimento de Donchian em dados históricos reais, sem código.</p>
+    <p>Um <strong>backtest</strong> reproduz a sua estratégia em candles históricos e responde rápido a uma pergunta: <em>isso já funcionou alguma vez?</em> Ele entrega taxa de acerto, profit factor, drawdown e curva de capital em minutos. Nosso <a href="/strategies/">backtester de estratégias</a> grátis roda cruzamento de EMA, RSI, tendência de SMA e rompimento de Donchian em dados históricos reais, sem código.</p>
     <p><strong>O que ele esconde:</strong> você ajustou os parâmetros nos mesmos dados que está testando, então o resultado favorece a estratégia - isso é <strong>overfitting</strong>. E um backtest nunca roda o seu código de execução de verdade, então não pega um bug que só aparece com ordens reais. Trate o backtest como um <em>filtro</em>, não como prova.</p>
     <h2>Paper trading: funciona em dados que nunca viu?</h2>
     <p>O <strong>paper trading</strong> (forward test) roda a estratégia em <strong>preços reais ao vivo, em tempo real</strong>, com dinheiro simulado. É aqui que você pega o que o backtest não pega: bugs de lógica, tamanho de posição ruim, excesso de alavancagem e overfitting exposto por dados nunca vistos. Faça à mão no <a href="/pt/paper-trade">Paper Trade</a> ou aponte uma estratégia automatizada para a <a href="/pt/trading-api/">API de bot grátis</a>. Mesmo mercado, tempo real, risco zero.</p>
     <h2>Trading real: sobrevive ao atrito de verdade?</h2>
     <p>O <strong>trading real</strong> acrescenta o que nenhuma simulação modela por completo: slippage em livros rasos, taxas, pagamentos de funding e queda de corretora. Entre no real com <strong>pouco</strong> e mantenha a versão em paper rodando como controle - se o real divergir muito do paper, o vazamento está na sua execução, não na estratégia.</p>
     <h2>A ordem certa (e por que ela importa)</h2>
-    <p>Faça <a href="/pt/crypto-backtester/">backtest</a> para filtrar ideias &rarr; use o <a href="/pt/paper-trade">paper trading</a> (ou a <a href="/pt/trading-api/">API de bot</a>) para prová-las em dados ao vivo &rarr; entre no real com pouco e compare. O passo do meio é o que a maioria pula - e o que teria salvado essas pessoas. Registre tudo no <a href="/pt/trading-journal/">Diário de Trading</a> e, se for automatizar, comece por <a href="/pt/blog/how-to-test-a-crypto-trading-bot/">como testar um bot de trading de cripto</a>.</p>
+    <p>Faça <a href="/strategies/">backtest</a> para filtrar ideias &rarr; use o <a href="/pt/paper-trade">paper trading</a> (ou a <a href="/pt/trading-api/">API de bot</a>) para prová-las em dados ao vivo &rarr; entre no real com pouco e compare. O passo do meio é o que a maioria pula - e o que teria salvado essas pessoas. Registre tudo no <a href="/pt/trading-journal/">Diário de Trading</a> e, se for automatizar, comece por <a href="/pt/blog/how-to-test-a-crypto-trading-bot/">como testar um bot de trading de cripto</a>.</p>
     <div class="callout"><div class="k">PROVE PRIMEIRO EM DADOS AO VIVO</div><p style="margin-bottom:14px">Faça o backtest da ideia e depois o forward test em preços reais ao vivo, sem dinheiro em risco - à mão ou com a API de bot grátis.</p><a class="cta" href="/pt/paper-trade">Abrir o Paper Trade &rarr;</a></div>
     <div class="toolshow">
       <div class="ts-head">Tudo grátis na MarginPad - sem cadastro</div>
@@ -129,6 +129,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> · <a href="/pt/blog/">Blog</a> · <a href="/pt/terms/">Termos</a> · <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=bed55e84"></script>
+<script defer src="/assets/mp-nav.js?v=4ae29e65"></script>
 </body>
 </html>

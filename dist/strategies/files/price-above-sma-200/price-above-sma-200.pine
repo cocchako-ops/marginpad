@@ -1,0 +1,15 @@
+//@version=6
+// Price Above SMA 200 - The simplest trend filter there is: above the 200-day average or in cash.
+// From the MarginPad strategy library: https://marginpad.io/strategies/price-above-sma-200/
+// Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
+
+strategy("Price Above SMA 200 [MarginPad]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.055, slippage=2, pyramiding=0)
+
+
+longIn = ta.crossover(close, ta.sma(close, 200))
+longOut = ta.crossunder(close, ta.sma(close, 200))
+
+if longIn and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if longOut
+    strategy.close("Long")
