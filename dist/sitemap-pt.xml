@@ -268,6 +268,7 @@
   <url><loc>https://marginpad.io/pt/hyperliquid-vs-bitget/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/hyperliquid-vs-bybit/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/hyperliquid-vs-okx/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/hyperliquid-whales/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/icp-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/imx-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/index-trading-simulator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -346,6 +347,74 @@
   <url><loc>https://marginpad.io/pt/status/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/stock-trading-simulator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/stop-loss-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/adx-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/atr-stop-reversal/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/automate/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/bollinger-breakout/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/bollinger-dip/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/bollinger-fade/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/bracket-rsi/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/bracket-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/breakout-3r/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/breakout-atr-trail/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/cci-reversion/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/chandelier-exit/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/di-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/donchian-20/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/donchian-55-turtle/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/donchian-long-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/edge-fade-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/ema-20-50-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/ema-9-21-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/ema-9-21-long-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/ema-ribbon/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/funding-crowded-long/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/funding-crowded-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/golden-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/hull-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/ibs-reversion/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/keltner-breakout/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/long-flush-bounce/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/macd-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/macd-zero-line/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/mfi-reversion/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/momentum-10/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/momentum-90/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/monday-effect/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/negative-funding-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/obv-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/oco-dip-or-breakout/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/oi-washout-long/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/price-above-sma-200/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/price-above-sma-50/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/protective-stop/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/pullback-1-percent/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/pullback-ema-21/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/pullback-rsi/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/pullback-sma-200/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/range-rsi-fade/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/rsi-2-trend-filter/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/rsi-2/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/rsi-30-70/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/rsi-fade-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/short-squeeze-fade/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/short-the-rally/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/sma-20-50-cross/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/squeeze-breakout/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/stochastic-20-80/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/stretch-below-sma/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/supertrend-long-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/supertrend-slow/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/supertrend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/three-down-days/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/time-exit-momentum/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/trailing-stop-trend/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/trend-and-macd/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/volume-breakout/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/volume-climax/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/weekend-hold/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pt/strategies/zscore-reversion/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/stx-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/sui-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/pt/sui-liquidation-map/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

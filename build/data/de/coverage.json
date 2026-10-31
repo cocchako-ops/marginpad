@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 0.9935064935064936,
-  "hit": 153,
-  "missing": 1
+  "cover": 1,
+  "hit": 154,
+  "missing": 0
  },
  {
   "rel": "alerts/index.html",
@@ -1170,12 +1170,6 @@
   "missing": 0
  },
  {
-  "rel": "crypto-backtester/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
- },
- {
   "rel": "crypto-break-even-calculator/index.html",
   "cover": 1,
   "hit": 45,
@@ -1634,7 +1628,7 @@
  {
   "rel": "hyperliquid-whales/index.html",
   "cover": 1,
-  "hit": 100,
+  "hit": 32,
   "missing": 0
  },
  {
@@ -1657,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.9715447154471545,
-  "hit": 239,
-  "missing": 7
+  "cover": 1,
+  "hit": 242,
+  "missing": 0
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1735,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.9052631578947369,
-  "hit": 86,
-  "missing": 9
+  "cover": 1,
+  "hit": 95,
+  "missing": 0
  },
  {
   "rel": "levels/index.html",
@@ -2041,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.9908256880733946,
-  "hit": 108,
-  "missing": 1
+  "cover": 1,
+  "hit": 109,
+  "missing": 0
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2109,6 +2103,414 @@
   "rel": "stop-loss-calculator/index.html",
   "cover": 1,
   "hit": 43,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/adx-trend/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/atr-stop-reversal/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/automate/index.html",
+  "cover": 1,
+  "hit": 48,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/bollinger-breakout/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/bollinger-dip/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/bollinger-fade/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/bracket-rsi/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/bracket-trend/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/breakout-3r/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/breakout-atr-trail/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/cci-reversion/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/chandelier-exit/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/di-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/donchian-20/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/donchian-55-turtle/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/donchian-long-short/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/edge-fade-short/index.html",
+  "cover": 1,
+  "hit": 53,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/ema-20-50-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/ema-9-21-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/ema-9-21-long-short/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/ema-ribbon/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/funding-crowded-long/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/funding-crowded-short/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/golden-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/hull-trend/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/ibs-reversion/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/index.html",
+  "cover": 1,
+  "hit": 857,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/keltner-breakout/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/long-flush-bounce/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/macd-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/macd-zero-line/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/mfi-reversion/index.html",
+  "cover": 1,
+  "hit": 54,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/momentum-10/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/momentum-90/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/monday-effect/index.html",
+  "cover": 1,
+  "hit": 51,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/negative-funding-trend/index.html",
+  "cover": 1,
+  "hit": 47,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/obv-trend/index.html",
+  "cover": 1,
+  "hit": 54,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/oco-dip-or-breakout/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/oi-washout-long/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/price-above-sma-200/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/price-above-sma-50/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/protective-stop/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/pullback-1-percent/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/pullback-ema-21/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/pullback-rsi/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/pullback-sma-200/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/range-rsi-fade/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/rsi-2-trend-filter/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/rsi-2/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/rsi-30-70/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/rsi-fade-short/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/short-squeeze-fade/index.html",
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/short-the-rally/index.html",
+  "cover": 1,
+  "hit": 57,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/sma-20-50-cross/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/squeeze-breakout/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/stochastic-20-80/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/stretch-below-sma/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/supertrend-long-short/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/supertrend-slow/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/supertrend/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/three-down-days/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/time-exit-momentum/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/trailing-stop-trend/index.html",
+  "cover": 1,
+  "hit": 56,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/trend-and-macd/index.html",
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/volume-breakout/index.html",
+  "cover": 1,
+  "hit": 54,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/volume-climax/index.html",
+  "cover": 1,
+  "hit": 54,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/weekend-hold/index.html",
+  "cover": 1,
+  "hit": 51,
+  "missing": 0
+ },
+ {
+  "rel": "strategies/zscore-reversion/index.html",
+  "cover": 1,
+  "hit": 55,
   "missing": 0
  },
  {
@@ -2185,9 +2587,9 @@
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 0.9029850746268657,
-  "hit": 121,
-  "missing": 13
+  "cover": 1,
+  "hit": 134,
+  "missing": 0
  },
  {
   "rel": "trading-journal/index.html",

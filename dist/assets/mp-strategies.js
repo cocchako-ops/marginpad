@@ -6,6 +6,21 @@
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.mpStrategies = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
+  /* The library draws its cards, drawer and compare from JSON, so the page twins' static translation cannot reach them.
+     Labels go through H() by exact text; sentences with figures through T(). English is the key and the fallback. */
+  var LANGS = {
+    es: { 'Return': 'Retorno', 'Holding': 'Mantener', 'Max DD': 'DD máx.', 'Win rate': 'Acierto', 'Trades': 'Trades', 'Compare': 'Comparar', 'beat holding': 'batió a mantener', 'smoother than holding': 'más estable que mantener', 'few trades': 'pocos trades', 'Total return': 'Retorno total', 'Buy and hold': 'Comprar y mantener', 'Max drawdown': 'Drawdown máx.', 'Holding drawdown': 'Drawdown al mantener', 'Holding Sharpe': 'Sharpe al mantener', 'Volatility': 'Volatilidad', 'Profit factor': 'Factor de beneficio', 'Months up': 'Meses al alza', 'Strategy': 'Estrategia', 'Drawdown': 'Drawdown', 'Linear': 'Lineal', 'Did it hold up?': '¿Aguantó?', 'Year by year': 'Año por año', 'Every market': 'Cada mercado', 'Market': 'Mercado', 'ID': 'ID', 'TF': 'TF', 'Out of sample': 'Fuera de muestra', 'Sharpe, first 70%': 'Sharpe, primer 70%', 'Sharpe, last 30%': 'Sharpe, último 30%', 'Timeframe': 'Temporalidad', 'Fee per side %': 'Comisión por lado %', 'Slippage %': 'Deslizamiento %', 'Run it': 'Ejecutar', 'Replay': 'Repetir', 'Pause': 'Pausa', 'Click for details': 'Haz clic para ver detalles', 'Open details': 'Abrir detalles', 'Full page and downloads': 'Página completa y descargas', 'Practice it': 'Practícala', 'Add to compare': 'Añadir a comparar', 'In compare': 'En comparar', 'Pick one more': 'Elige una más', 'Loading results': 'Cargando resultados', 'Loading': 'Cargando', 'Running...': 'Ejecutando...', 'Run them together': 'Combínalas', 'How they move together': 'Cómo se mueven juntas', 'Sharpe, monthly': 'Sharpe, mensual', 'Max drawdown, monthly': 'Drawdown máx., mensual', 'Crypto': 'Cripto', 'Stocks': 'Acciones', 'Commodities': 'Materias primas', 'Indices': 'Índices', 'Forex': 'Forex' ,
+      s1: '{n} estrategias en {c}.', s2: 'Crecimiento de $1, escala logarítmica, tras comisiones. Frente a simplemente mantener: {b} rindieron más, {s} tuvieron mejor Sharpe, {d} tuvieron menor drawdown.', s3: 'La primera parte del historial, el 70%, es una prueba y el 30% final, desde {d}, es otra. Una regla que solo funcionó en la primera parte no funcionó.', s4: '{n} mercados, igual peso, {a} a {b}', s5: 'Crecimiento de $1 en escala logarítmica, cesta de {c}. Cada una en la temporalidad que declara.', s6: 'Escribe un peso para cada una. La mezcla se reequilibra cada mes durante los {n} meses que comparten.', s7: '1,00 se mueven juntas, 0 sin relación. Los números bajos hacen que una mezcla sea más estable que sus partes.', s8: 'Registro en vivo desde {d}.', s9: 'El seguimiento empezó el {d}. Los resultados aparecen aquí tras el primer día completo.', s10: 'Sin retrospectiva: estas velas no existían cuando se publicó la regla. Cripto, antes de funding.', s11: 'Velas recientes, para que la respuesta hable de ahora y no de todo el historial.', s12: '{n} velas de {s}. Sin funding en esta prueba rápida; las cifras de la biblioteca lo incluyen.', s13: 'Menos de 30 trades dicen muy poco.', s14: 'No hay velas para este mercado en esta temporalidad. Prueba otra.', s15: 'No se pudieron cargar las velas. Inténtalo de nuevo.', s16: 'Ninguna de estas funciona en {c}.' },
+    pt: { 'Return': 'Retorno', 'Holding': 'Manter', 'Max DD': 'DD máx.', 'Win rate': 'Acerto', 'Trades': 'Trades', 'Compare': 'Comparar', 'beat holding': 'bateu manter', 'smoother than holding': 'mais estável que manter', 'few trades': 'poucos trades', 'Total return': 'Retorno total', 'Buy and hold': 'Comprar e manter', 'Max drawdown': 'Drawdown máx.', 'Holding drawdown': 'Drawdown ao manter', 'Holding Sharpe': 'Sharpe ao manter', 'Volatility': 'Volatilidade', 'Profit factor': 'Fator de lucro', 'Months up': 'Meses em alta', 'Strategy': 'Estratégia', 'Drawdown': 'Drawdown', 'Linear': 'Linear', 'Did it hold up?': 'Se sustentou?', 'Year by year': 'Ano a ano', 'Every market': 'Cada mercado', 'Market': 'Mercado', 'ID': 'ID', 'TF': 'TF', 'Out of sample': 'Fora da amostra', 'Sharpe, first 70%': 'Sharpe, primeiros 70%', 'Sharpe, last 30%': 'Sharpe, últimos 30%', 'Timeframe': 'Timeframe', 'Fee per side %': 'Taxa por lado %', 'Slippage %': 'Slippage %', 'Run it': 'Executar', 'Replay': 'Replay', 'Pause': 'Pausar', 'Click for details': 'Clique para ver detalhes', 'Open details': 'Abrir detalhes', 'Full page and downloads': 'Página completa e downloads', 'Practice it': 'Pratique', 'Add to compare': 'Adicionar à comparação', 'In compare': 'Na comparação', 'Pick one more': 'Escolha mais uma', 'Loading results': 'Carregando resultados', 'Loading': 'Carregando', 'Running...': 'Executando...', 'Run them together': 'Combine-as', 'How they move together': 'Como se movem juntas', 'Sharpe, monthly': 'Sharpe, mensal', 'Max drawdown, monthly': 'Drawdown máx., mensal', 'Crypto': 'Cripto', 'Stocks': 'Ações', 'Commodities': 'Commodities', 'Indices': 'Índices', 'Forex': 'Forex',
+      s1: '{n} estratégias em {c}.', s2: 'Crescimento de $1, escala logarítmica, após taxas. Contra simplesmente manter: {b} renderam mais, {s} tiveram Sharpe melhor, {d} tiveram drawdown menor.', s3: 'Os primeiros 70% do histórico são um teste e os últimos 30%, desde {d}, são outro. Uma regra que só funcionou na primeira parte não funcionou.', s4: '{n} mercados, peso igual, {a} a {b}', s5: 'Crescimento de $1 em escala logarítmica, cesta de {c}. Cada uma no timeframe que declara.', s6: 'Digite um peso para cada uma. A mistura rebalanceia todo mês ao longo dos {n} meses em comum.', s7: '1,00 se movem juntas, 0 sem relação. Números baixos deixam uma mistura mais estável que suas partes.', s8: 'Registro ao vivo desde {d}.', s9: 'O acompanhamento começou em {d}. Os resultados aparecem aqui após o primeiro dia completo.', s10: 'Sem retrospectiva: estes candles não existiam quando a regra foi publicada. Cripto, antes do funding.', s11: 'Candles recentes, para a resposta falar de agora e não de todo o histórico.', s12: '{n} candles de {s}. Sem funding neste teste rápido; os números da biblioteca o incluem.', s13: 'Menos de 30 trades dizem muito pouco.', s14: 'Sem candles para este mercado neste timeframe. Tente outro.', s15: 'Não foi possível carregar os candles. Tente de novo.', s16: 'Nenhuma destas roda em {c}.' },
+    de: { 'Return': 'Rendite', 'Holding': 'Halten', 'Max DD': 'Max. DD', 'Win rate': 'Trefferquote', 'Trades': 'Trades', 'Compare': 'Vergleichen', 'beat holding': 'schlug Halten', 'smoother than holding': 'ruhiger als Halten', 'few trades': 'wenige Trades', 'Total return': 'Gesamtrendite', 'Buy and hold': 'Kaufen und halten', 'Max drawdown': 'Max. Drawdown', 'Holding drawdown': 'Drawdown beim Halten', 'Holding Sharpe': 'Sharpe beim Halten', 'Volatility': 'Volatilität', 'Profit factor': 'Profitfaktor', 'Months up': 'Monate im Plus', 'Strategy': 'Strategie', 'Drawdown': 'Drawdown', 'Linear': 'Linear', 'Did it hold up?': 'Hat es gehalten?', 'Year by year': 'Jahr für Jahr', 'Every market': 'Jeder Markt', 'Market': 'Markt', 'ID': 'ID', 'TF': 'TF', 'Out of sample': 'Out of Sample', 'Sharpe, first 70%': 'Sharpe, erste 70%', 'Sharpe, last 30%': 'Sharpe, letzte 30%', 'Timeframe': 'Timeframe', 'Fee per side %': 'Gebühr je Seite %', 'Slippage %': 'Slippage %', 'Run it': 'Starten', 'Replay': 'Replay', 'Pause': 'Pause', 'Click for details': 'Für Details klicken', 'Open details': 'Details öffnen', 'Full page and downloads': 'Ganze Seite und Downloads', 'Practice it': 'Üben', 'Add to compare': 'Zum Vergleich', 'In compare': 'Im Vergleich', 'Pick one more': 'Noch eine wählen', 'Loading results': 'Ergebnisse laden', 'Loading': 'Laden', 'Running...': 'Läuft...', 'Run them together': 'Zusammen laufen lassen', 'How they move together': 'Wie sie sich gemeinsam bewegen', 'Sharpe, monthly': 'Sharpe, monatlich', 'Max drawdown, monthly': 'Max. Drawdown, monatlich', 'Crypto': 'Krypto', 'Stocks': 'Aktien', 'Commodities': 'Rohstoffe', 'Indices': 'Indizes', 'Forex': 'Forex',
+      s1: '{n} Strategien auf {c}.', s2: 'Wachstum von $1, Log-Skala, nach Gebühren. Gegenüber einfachem Halten: {b} brachten mehr, {s} hatten ein besseres Sharpe, {d} einen kleineren Drawdown.', s3: 'Die ersten 70% der Historie sind ein Test, die letzten 30% ab {d} ein zweiter. Eine Regel, die nur im ersten Teil funktionierte, hat nicht funktioniert.', s4: '{n} Märkte, gleich gewichtet, {a} bis {b}', s5: 'Wachstum von $1 auf Log-Skala, {c}-Korb. Jede auf dem Timeframe, den sie festlegt.', s6: 'Gib für jede ein Gewicht ein. Die Mischung wird monatlich neu gewichtet, über die {n} gemeinsamen Monate.', s7: '1,00 bewegt sich gemeinsam, 0 unabhängig. Niedrige Werte machen eine Mischung ruhiger als ihre Teile.', s8: 'Live-Bilanz seit {d}.', s9: 'Die Erfassung begann am {d}. Ergebnisse erscheinen hier nach dem ersten vollen Tag.', s10: 'Kein Rückblick: Diese Kerzen gab es nicht, als die Regel veröffentlicht wurde. Krypto vor Funding.', s11: 'Aktuelle Kerzen, damit die Antwort vom Jetzt handelt und nicht von der ganzen Historie.', s12: '{n} Kerzen von {s}. Kein Funding in diesem Schnelltest; die Zahlen der Bibliothek enthalten es.', s13: 'Unter 30 Trades sagen sehr wenig.', s14: 'Keine Kerzen für diesen Markt auf diesem Timeframe. Versuche einen anderen.', s15: 'Die Kerzen konnten nicht geladen werden. Versuche es erneut.', s16: 'Keine davon läuft auf {c}.' }
+  };
+  var LG = typeof document !== 'undefined' ? (document.documentElement.lang || 'en').slice(0, 2) : 'en', LD = LANGS[LG] || null;
+  var P = LD ? '/' + LG : ''; // the twin's own path prefix
+  var EN = { s1: '{n} strategies on {c}.', s2: 'Growth of $1, log scale, after fees. Against simply holding: {b} returned more, {s} had a better Sharpe, {d} had a smaller drawdown.', s3: 'The first 70% of the history is one test and the last 30%, from {d}, is another. A rule that only worked in the first part did not work.', s4: '{n} markets, equal weight, {a} to {b}', s5: 'Growth of $1 on a log scale, {c} basket. Each on the timeframe it declares.', s6: 'Type a weight for each. The mix rebalances monthly over the {n} months they share.', s7: '1.00 moves together, 0 unrelated. Low numbers are what make a mix smoother than its parts.', s8: 'Live record since {d}.', s9: 'Tracking started on {d}. Results appear here after the first full day.', s10: 'No hindsight here: these bars did not exist when the rule was published. Crypto is before funding.', s11: 'Recent candles, so the answer is about now and not the whole history.', s12: '{n} candles of {s}. No funding in this quick run; the library figures include it.', s13: 'Under 30 trades says very little.', s14: 'No candles for this market on this timeframe. Try another.', s15: 'Could not load the candles. Try again.', s16: 'None of these run on {c}.' };
+  function T(k, v) { var t = (LD && LD[k]) || EN[k] || k; for (var x in v) t = t.split('{' + x + '}').join(v[x]); return t; }
+  function H(html) { return LD ? html.replace(/>([^<>]+)</g, function (m, t) { var c = t.trim(), r = LD[c]; return r ? m.replace(c, r) : m; }) : html; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function fmtRet(x) {
     if (x == null) return '-';
@@ -24,7 +39,7 @@
   function cardHtml(r, cn, styles) {
     var c = r.classes[cn]; if (!c) return '';
     var m = c.m, dir = m.ret >= 0 ? 'up' : 'dn', sp = sparkPath(c.spark, 320, 110), beat = m.ret > c.bench;
-    return '<a class="sc" href="/strategies/' + r.slug + '/" data-open="' + r.slug + '" data-id="' + r.id + '">'
+    return H('<a class="sc" href="' + P + '/strategies/' + r.slug + '/" data-open="' + r.slug + '" data-id="' + r.id + '">'
       + '<div class="sc-top ' + dir + '"><div class="sc-tags"><b>' + r.id + '</b><span>' + esc(c.tf) + '</span>' + (beat ? '<span class="beat">beat holding</span>' : !c.thin && m.sharpe > c.benchS ? '<span class="beat">smoother than holding</span>' : '') + '</div>'
       + '<button type="button" class="sc-cmp" data-cmp="' + r.slug + '" aria-label="Compare ' + esc(r.name) + '">Compare</button>'
       + '<svg viewBox="0 0 320 110" preserveAspectRatio="none" aria-hidden="true"><path class="fill" d="' + sp + 'L320 110L0 110Z"/><path class="ln" d="' + sp + '"/></svg>'
@@ -37,7 +52,7 @@
       + '<div><dt>Max DD</dt><dd>' + fmtPct(m.mdd, 1) + '</dd></div>'
       + '<div><dt>Win rate</dt><dd>' + fmtNum(m.win, 1) + '%</dd></div>'
       + '<div><dt>Trades</dt><dd>' + m.trades.toLocaleString('en-US') + '</dd></div>'
-      + '</dl></div></a>';
+      + '</dl></div></a>');
   }
   var API = { cardHtml: cardHtml, fmtRet: fmtRet, fmtPct: fmtPct, fmtNum: fmtNum, CLSLBL: CLSLBL };
   if (typeof document === 'undefined') return API;
@@ -63,7 +78,7 @@
     $('#wSvg').innerHTML = '<line class="wone" x1="0" x2="1000" y1="' + one + '" y2="' + one + '"/>' + html;
     var g = $('#wLbl'); if (g) {
       var beat = rows.filter(function (r) { var c = r.classes[st.cn]; return c.m.ret > c.bench; }).length, calm = rows.filter(function (r) { var c = r.classes[st.cn]; return !c.thin && c.m.sharpe > c.benchS; }).length, dd = rows.filter(function (r) { var c = r.classes[st.cn]; return c.m.mdd > c.benchD; }).length;
-      g.innerHTML = '<b>' + rows.length + ' strategies on ' + CLSLBL[st.cn] + '.</b> Growth of $1, log scale, after fees. Against simply holding: ' + beat + ' returned more, ' + calm + ' had a better Sharpe, ' + dd + ' had a smaller drawdown.';
+      var lb = (LD && LD[CLSLBL[st.cn]]) || CLSLBL[st.cn]; g.innerHTML = '<b>' + T('s1', { n: rows.length, c: lb }) + '</b> ' + T('s2', { b: beat, s: calm, d: dd });
     }
     fr._m = { rows: rows, Y: Y, W: W, H: H };
     $('#wSvg').animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1900, easing: 'cubic-bezier(.2,.7,.2,1)' });
@@ -87,7 +102,7 @@
       }
       fr.classList.add('hv');
       var mm = best.c.m;
-      tip.innerHTML = '<div class="tg"><b>' + best.r.id + '</b><span>' + esc(best.c.tf) + '</span></div><h4>' + esc(best.r.name) + '</h4><div class="tr"><span>Return<b class="' + cl(mm.ret) + '">' + fmtRet(mm.ret) + '</b></span><span>Max DD<b>' + fmtPct(mm.mdd, 1) + '</b></span><span>Holding<b>' + fmtRet(best.c.bench) + '</b></span></div><div class="ht">' + (e.pointerType === 'mouse' ? 'Click for details' : '<button type="button" data-open="' + best.r.slug + '">Open details</button>') + '</div>';
+      tip.innerHTML = H('<div class="tg"><b>' + best.r.id + '</b><span>' + esc(best.c.tf) + '</span></div><h4>' + esc(best.r.name) + '</h4><div class="tr"><span>Return<b class="' + cl(mm.ret) + '">' + fmtRet(mm.ret) + '</b></span><span>Max DD<b>' + fmtPct(mm.mdd, 1) + '</b></span><span>Holding<b>' + fmtRet(best.c.bench) + '</b></span></div><div class="ht">' + (e.pointerType === 'mouse' ? 'Click for details' : '<button type="button" data-open="' + best.r.slug + '">Open details</button>') + '</div>');
       tip.hidden = false; dot.hidden = false;
       var w = tip.offsetWidth, h = tip.offsetHeight, L = x + 18; if (L + w > b.width) L = x - w - 18; L = Math.max(0, Math.min(L, b.width - w));
       var T = best.py - h - 14; if (T < 0) T = best.py + 18;
@@ -119,11 +134,11 @@
     $('#libNone').hidden = rows.length > 0;
     box.className = st.view === 'table' ? 'tbw' : 'grid';
     if (st.view === 'table') {
-      box.innerHTML = '<table class="st"><thead><tr><th>ID</th><th>Strategy</th><th>TF</th><th>Return</th><th>Holding</th><th>Sharpe</th><th>Out of sample</th><th>Max DD</th><th>Win rate</th><th>Trades</th></tr></thead><tbody>'
+      box.innerHTML = H('<table class="st"><thead><tr><th>ID</th><th>Strategy</th><th>TF</th><th>Return</th><th>Holding</th><th>Sharpe</th><th>Out of sample</th><th>Max DD</th><th>Win rate</th><th>Trades</th></tr></thead><tbody>'
         + rows.map(function (r) {
           var c = r.classes[st.cn], m = c.m;
           return '<tr data-open="' + r.slug + '"><td>' + r.id + '</td><td class="nm">' + esc(r.name) + '</td><td>' + c.tf + '</td><td class="' + cl(m.ret) + '">' + fmtRet(m.ret) + '</td><td>' + fmtRet(c.bench) + '</td><td>' + (c.thin ? '-' : fmtNum(m.sharpe)) + '</td><td>' + (c.thin ? '-' : fmtNum(c.oos)) + '</td><td>' + fmtPct(m.mdd, 1) + '</td><td>' + fmtNum(m.win, 1) + '%</td><td>' + m.trades.toLocaleString('en-US') + '</td></tr>';
-        }).join('') + '</tbody></table>';
+        }).join('') + '</tbody></table>');
     } else box.innerHTML = rows.map(function (r) { return cardHtml(r, st.cn, D.meta.styles); }).join('');
     paintCmp();
   }
@@ -163,11 +178,11 @@
     var tile = function (l, v, k) { return '<div><dt>' + l + '</dt><dd class="' + (k || '') + '">' + v + '</dd></div>'; };
     return '<div class="d-sw">' + Object.keys(d.classes).map(function (k) { return '<button type="button" data-dc="' + k + '" class="' + (k === cn ? 'on' : '') + '">' + CLSLBL[k] + '</button>'; }).join('') + '</div>'
       + (Object.keys(cs).length > 1 ? '<div class="d-sw sm">' + Object.keys(cs).map(function (k) { return '<button type="button" data-dt="' + k + '" class="' + (k === tf ? 'on' : '') + '">' + k + '</button>'; }).join('') + '</div>' : '')
-      + '<div class="d-ch"><div class="d-chh"><div><b class="' + cl(m.ret) + '">' + fmtRet(m.ret) + '</b><span>' + t.markets + ' market' + (t.markets > 1 ? 's' : '') + ', equal weight, ' + dateOf(t.from) + ' to ' + dateOf(t.to) + '</span></div><div class="d-sw sm"><button type="button" data-ds="1" class="on">Log</button><button type="button" data-ds="0">Linear</button></div></div>'
+      + '<div class="d-ch"><div class="d-chh"><div><b class="' + cl(m.ret) + '">' + fmtRet(m.ret) + '</b><span>' + T('s4', { n: t.markets, a: dateOf(t.from), b: dateOf(t.to) }) + '</span></div><div class="d-sw sm"><button type="button" data-ds="1" class="on">Log</button><button type="button" data-ds="0">Linear</button></div></div>'
       + '<div class="d-plot" id="dPlot"><div class="ct" hidden></div><div class="cx" hidden></div><div class="d-pl"></div></div><div class="d-dd">' + dd(t.curve) + '</div>'
       + '<div class="d-lg"><span class="a">Strategy</span><span class="b">Buy and hold</span><span class="c">Drawdown</span></div></div>'
       + '<dl class="d-m">' + tile('Total return', fmtRet(m.ret), cl(m.ret)) + tile('Buy and hold', fmtRet(b.ret)) + tile('CAGR', fmtPct(m.cagr), cl(m.cagr)) + tile('Sharpe', t.thin ? 'few trades' : fmtNum(m.sharpe)) + tile('Max drawdown', fmtPct(m.mdd, 1)) + tile('Holding drawdown', fmtPct(b.mdd, 1)) + tile('Holding Sharpe', fmtNum(b.sharpe)) + tile('Sortino', fmtNum(m.sortino)) + tile('Volatility', fmtPct(m.vol, 1)) + tile('Win rate', fmtNum(m.win, 1) + '%') + tile('Profit factor', m.pf == null ? '-' : fmtNum(m.pf)) + tile('Trades', m.trades.toLocaleString('en-US')) + tile('Months up', t.months.up + ' of ' + t.months.of) + '</dl>'
-      + '<h3>Did it hold up?</h3><p class="d-n">The first 70% of the history is one test and the last 30%, from ' + dateOf(t.oosFrom) + ', is another. A rule that only worked in the first part did not work.</p><dl class="d-m two">' + tile('Sharpe, first 70%', fmtNum(t.is)) + tile('Sharpe, last 30%', fmtNum(t.oos), cl(t.oos)) + '</dl>'
+      + '<h3>Did it hold up?</h3><p class="d-n">' + T('s3', { d: dateOf(t.oosFrom) }) + '</p><dl class="d-m two">' + tile('Sharpe, first 70%', fmtNum(t.is)) + tile('Sharpe, last 30%', fmtNum(t.oos), cl(t.oos)) + '</dl>'
       + '<h3>Year by year</h3><div class="d-y">' + t.years.map(function (y) { return '<span class="' + cl(y[1]) + '"><i>' + y[0] + '</i>' + fmtRet(y[1]) + '</span>'; }).join('') + '</div>'
       + '<h3>Every market</h3><div class="tbw"><table class="st"><thead><tr><th>Market</th><th>Return</th><th>Holding</th><th>Sharpe</th><th>Max DD</th><th>Win rate</th><th>Trades</th></tr></thead><tbody>'
       + t.rows.slice().sort(function (a, c) { return c.ret - a.ret; }).map(function (r) { return '<tr><td class="nm">' + esc(r.sym) + (r.basket ? '' : ' <i>not in basket</i>') + '</td><td class="' + cl(r.ret) + '">' + fmtRet(r.ret) + '</td><td>' + fmtRet(r.bh) + '</td><td>' + fmtNum(r.sharpe) + '</td><td>' + fmtPct(r.mdd, 1) + '</td><td>' + fmtNum(r.win, 1) + '%</td><td>' + r.trades + '</td></tr>'; }).join('')
@@ -177,7 +192,7 @@
     if (!d.classes[cn]) cn = Object.keys(d.classes)[0];
     if (!d.classes[cn][tf]) tf = d.classes[cn][d.tf] ? d.tf : Object.keys(d.classes[cn])[0];
     root._s = { cn: cn, tf: tf, log: true };
-    root.innerHTML = detailHtml(d, cn, tf);
+    root.innerHTML = H(detailHtml(d, cn, tf));
     var plot = function () {
       var c = d.classes[root._s.cn][root._s.tf].curve;
       $('.d-pl', root).innerHTML = chartSvg([{ v: c.map(function (x) { return x[2]; }), cls: 'b' }, { v: c.map(function (x) { return x[1]; }), cls: 'a' }], { log: root._s.log });
@@ -201,21 +216,21 @@
     if (!root) return;
     var opts = '', M = d.labMarkets || [];
     M.forEach(function (m) { opts += '<option value="' + m + '">' + m + '</option>'; });
-    root.innerHTML = '<div class="lab-f"><label>Market<select id="lSym">' + opts + '</select></label><label>Timeframe<select id="lTf"><option value="1440">1d</option><option value="240">4h</option><option value="60">1h</option></select></label><label>Fee per side %<input id="lFee" type="number" step="0.005" min="0" value="0.055"></label><label>Slippage %<input id="lSlip" type="number" step="0.005" min="0" value="0.02"></label><button type="button" id="lRun">Run it</button></div><div id="lOut" class="lab-o">Recent candles, so the answer is about now and not the whole history.</div>';
+    root.innerHTML = H('<div class="lab-f"><label>Market<select id="lSym">' + opts + '</select></label><label>Timeframe<select id="lTf"><option value="1440">1d</option><option value="240">4h</option><option value="60">1h</option></select></label><label>Fee per side %<input id="lFee" type="number" step="0.005" min="0" value="0.055"></label><label>Slippage %<input id="lSlip" type="number" step="0.005" min="0" value="0.02"></label><button type="button" id="lRun">Run it</button></div><div id="lOut" class="lab-o">' + T('s11') + '</div>');
     $('#lRun', root).onclick = function () {
       var out = $('#lOut', root), sym = $('#lSym', root).value, tf = $('#lTf', root).value, btn = this;
-      btn.disabled = true; out.textContent = 'Running...'; beacon('lab:' + d.slug);
+      btn.disabled = true; out.textContent = (LD && LD['Running...']) || 'Running...'; beacon('lab:' + d.slug);
       fetch('/api/klines?symbol=' + encodeURIComponent(sym) + '&interval=' + tf, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (k) {
         btn.disabled = false;
-        if (!Array.isArray(k) || k.length < 60) { out.textContent = 'No candles for this market on this timeframe. Try another.'; return; }
+        if (!Array.isArray(k) || k.length < 60) { out.textContent = T('s14'); return; }
         var raw = { t: [], o: [], h: [], l: [], c: [], v: [] };
         k.forEach(function (x) { raw.t.push(x.time * 1000); raw.o.push(+x.open); raw.h.push(+x.high); raw.l.push(+x.low); raw.c.push(+x.close); raw.v.push(+x.vol || 0); });
         var E = window.mpStrat, b = E.bars(raw), r = E.run(d.rule, b, { fee: +$('#lFee', root).value || 0, slip: +$('#lSlip', root).value || 0 }, null);
         var s = E.tradeStats(r.trades), last = r.equity[r.equity.length - 1], bh = raw.c[raw.c.length - 1] / raw.c[0] - 1;
         var tr = r.trades;
-        out.innerHTML = '<div class="lab-c" id="lChart"></div><div class="lab-p"><button type="button" id="lPlay">Replay</button><span id="lProg"></span></div><dl class="d-m"><div><dt>Return</dt><dd class="' + cl(last - 1) + '">' + fmtPct((last - 1) * 100, 1) + '</dd></div><div><dt>Holding</dt><dd>' + fmtPct(bh * 100, 1) + '</dd></div><div><dt>Trades</dt><dd>' + s.trades + '</dd></div><div><dt>Win rate</dt><dd>' + fmtNum(s.win, 1) + '%</dd></div></dl><p class="d-n">' + raw.c.length + ' candles of ' + esc(sym) + '. No funding in this quick run; the library figures include it.' + (s.trades < 30 ? ' Under 30 trades says very little.' : '') + '</p>';
+        out.innerHTML = H('<div class="lab-c" id="lChart"></div><div class="lab-p"><button type="button" id="lPlay">Replay</button><span id="lProg"></span></div><dl class="d-m"><div><dt>Return</dt><dd class="' + cl(last - 1) + '">' + fmtPct((last - 1) * 100, 1) + '</dd></div><div><dt>Holding</dt><dd>' + fmtPct(bh * 100, 1) + '</dd></div><div><dt>Trades</dt><dd>' + s.trades + '</dd></div><div><dt>Win rate</dt><dd>' + fmtNum(s.win, 1) + '%</dd></div></dl><p class="d-n">' + T('s12', { n: raw.c.length, s: esc(sym) }) + (s.trades < 30 ? ' ' + T('s13') : '') + '</p>');
         labChart(out, raw, tr);
-      }).catch(function () { btn.disabled = false; out.textContent = 'Could not load the candles. Try again.'; });
+      }).catch(function () { btn.disabled = false; out.textContent = T('s15'); });
     };
   }
 
@@ -238,11 +253,11 @@
       marks.sort(function (a, b) { return a.time - b.time; });
       se.setData(bars); se.setMarkers(marks); ch.timeScale().fitContent();
       var play = $('#lPlay', out), prog = $('#lProg', out), timer = null, n = 0;
-      var stop = function () { clearInterval(timer); timer = null; play.textContent = 'Replay'; };
+      var RP = (LD && LD.Replay) || 'Replay', PS = (LD && LD.Pause) || 'Pause', stop = function () { clearInterval(timer); timer = null; play.textContent = RP; };
       play.onclick = function () {
         if (timer) { stop(); return; }
         if (n === 0 || n >= bars.length) { n = Math.min(40, bars.length); se.setData(bars.slice(0, n)); se.setMarkers([]); }
-        play.textContent = 'Pause'; beacon('replay');
+        play.textContent = PS; beacon('replay');
         var total = bars.length, per = Math.max(1, Math.round(total / 500));
         timer = setInterval(function () {
           for (var k = 0; k < per && n < total; k++) se.update(bars[n++]);
@@ -263,8 +278,8 @@
     var r = D.rules.filter(function (x) { return x.slug === slug; })[0]; if (!r) return;
     openSlug = slug; beacon('open:' + slug);
     $('#drH').innerHTML = '<div class="tg"><b>' + r.id + '</b><span>' + esc(D.meta.styles[r.style]) + '</span></div><h2>' + esc(r.name) + '</h2><p>' + esc(r.summary) + '</p>';
-    $('#drA').innerHTML = '<a class="pri" href="/strategies/' + slug + '/">Full page and downloads</a><a href="/paper-trade">Practice it</a><button type="button" data-cmp="' + slug + '">Add to compare</button>';
-    $('#drB').innerHTML = '<div class="d-wait">Loading results</div>';
+    $('#drA').innerHTML = H('<a class="pri" href="' + P + '/strategies/' + slug + '/">Full page and downloads</a><a href="' + P + '/paper-trade">Practice it</a><button type="button" data-cmp="' + slug + '">Add to compare</button>');
+    $('#drB').innerHTML = H('<div class="d-wait">Loading results</div>');
     dr.hidden = false; $('#scrim').hidden = false; document.body.classList.add('s-lock');
     dr.animate([{ transform: innerWidth < 760 ? 'translateY(30px)' : 'translateX(40px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 300, easing: 'cubic-bezier(.2,.7,.2,1)' });
     if (!keep) history.replaceState(history.state, '', '#' + slug);
@@ -285,10 +300,10 @@
   var COL = ['#c2f64a', '#46e0e6', '#f0b64a', '#ff7ac6'];
   function paintCmp() {
     var t = $('#tray'); if (!t) return;
-    $$('[data-cmp]').forEach(function (b) { var on = st.cmp.indexOf(b.dataset.cmp) >= 0; b.classList.toggle('on', on); if (b.tagName === 'BUTTON' && !b.classList.contains('sc-cmp')) b.textContent = on ? 'In compare' : 'Add to compare'; });
+    $$('[data-cmp]').forEach(function (b) { var on = st.cmp.indexOf(b.dataset.cmp) >= 0; b.classList.toggle('on', on); if (b.tagName === 'BUTTON' && !b.classList.contains('sc-cmp')) { var tt = on ? 'In compare' : 'Add to compare'; b.textContent = (LD && LD[tt]) || tt; } });
     t.hidden = !st.cmp.length;
     $('#trayI').innerHTML = st.cmp.map(function (s, i) { var r = D.rules.filter(function (x) { return x.slug === s; })[0]; return '<button type="button" data-rm="' + s + '"><i style="background:' + COL[i] + '"></i>' + r.id + '</button>'; }).join('');
-    var g = $('#trayGo'); g.disabled = st.cmp.length < 2; g.textContent = st.cmp.length < 2 ? 'Pick one more' : 'Compare ' + st.cmp.length;
+    var g = $('#trayGo'); g.disabled = st.cmp.length < 2; var pk = 'Pick one more', cm = 'Compare'; g.textContent = st.cmp.length < 2 ? ((LD && LD[pk]) || pk) : ((LD && LD[cm]) || cm) + ' ' + st.cmp.length;
   }
   function cmpToggle(s) {
     var i = st.cmp.indexOf(s);
@@ -297,15 +312,15 @@
   }
   function compare() {
     var m = $('#cmpM'); m.hidden = false; $('#scrim').hidden = false; document.body.classList.add('s-lock');
-    $('#cmpB').innerHTML = '<div class="d-wait">Loading</div>'; beacon('compare');
+    $('#cmpB').innerHTML = H('<div class="d-wait">Loading</div>'); beacon('compare');
     Promise.all(st.cmp.map(load)).then(function (ds) {
       var rows = ds.map(function (d) { var cs = d.classes[st.cn]; return cs ? { d: d, t: cs[cs[d.tf] ? d.tf : Object.keys(cs)[0]] } : null; }).filter(Boolean);
-      if (!rows.length) { $('#cmpB').textContent = 'None of these run on ' + CLSLBL[st.cn] + '.'; return; }
+      if (!rows.length) { $('#cmpB').textContent = T('s16', { c: (LD && LD[CLSLBL[st.cn]]) || CLSLBL[st.cn] }); return; }
       var n = Math.min.apply(null, rows.map(function (r) { return r.t.curve.length; }));
       var ser = rows.map(function (r, i) { var c = r.t.curve, v = []; for (var k = 0; k < n; k++) v.push(c[Math.round(k / (n - 1) * (c.length - 1))][1]); return { v: v, col: COL[i] }; });
       var line = function (l, f) { return '<tr><td>' + l + '</td>' + rows.map(function (r) { return '<td>' + f(r) + '</td>'; }).join('') + '</tr>'; };
-      $('#cmpB').innerHTML = '<div class="d-plot big"><div class="d-pl">' + chartSvg(ser, { log: true, h: 300 }) + '</div></div><p class="d-n">Growth of $1 on a log scale, ' + CLSLBL[st.cn] + ' basket. Each on the timeframe it declares.</p><div class="tbw"><table class="st"><thead><tr><th></th>' + rows.map(function (r, i) { return '<th><i class="sw" style="background:' + COL[i] + '"></i>' + esc(r.d.name) + '</th>'; }).join('') + '</tr></thead><tbody>'
-        + line('Total return', function (r) { return fmtRet(r.t.m.ret); }) + line('CAGR', function (r) { return fmtPct(r.t.m.cagr); }) + line('Sharpe', function (r) { return r.t.thin ? '-' : fmtNum(r.t.m.sharpe); }) + line('Sharpe, last 30%', function (r) { return fmtNum(r.t.oos); }) + line('Max drawdown', function (r) { return fmtPct(r.t.m.mdd, 1); }) + line('Win rate', function (r) { return fmtNum(r.t.m.win, 1) + '%'; }) + line('Trades', function (r) { return r.t.m.trades.toLocaleString('en-US'); }) + '</tbody></table></div>';
+      $('#cmpB').innerHTML = H('<div class="d-plot big"><div class="d-pl">' + chartSvg(ser, { log: true, h: 300 }) + '</div></div><p class="d-n">' + T('s5', { c: (LD && LD[CLSLBL[st.cn]]) || CLSLBL[st.cn] }) + '</p><div class="tbw"><table class="st"><thead><tr><th></th>' + rows.map(function (r, i) { return '<th><i class="sw" style="background:' + COL[i] + '"></i>' + esc(r.d.name) + '</th>'; }).join('') + '</tr></thead><tbody>'
+        + line('Total return', function (r) { return fmtRet(r.t.m.ret); }) + line('CAGR', function (r) { return fmtPct(r.t.m.cagr); }) + line('Sharpe', function (r) { return r.t.thin ? '-' : fmtNum(r.t.m.sharpe); }) + line('Sharpe, last 30%', function (r) { return fmtNum(r.t.oos); }) + line('Max drawdown', function (r) { return fmtPct(r.t.m.mdd, 1); }) + line('Win rate', function (r) { return fmtNum(r.t.m.win, 1) + '%'; }) + line('Trades', function (r) { return r.t.m.trades.toLocaleString('en-US'); }) + '</tbody></table></div>');
       drawIn($('#cmpB'));
       portfolio(rows);
     });
@@ -325,10 +340,10 @@
     if (months.length < 12) return;
     var ser = maps.map(function (m) { return months.map(function (k) { return m[k]; }); });
     var el = document.createElement('div'); el.className = 'pf';
-    el.innerHTML = '<h3>Run them together</h3><p class="d-n">Type a weight for each. The mix rebalances monthly over the ' + months.length + ' months they share.</p><div class="pf-w">'
+    el.innerHTML = H('<h3>Run them together</h3><p class="d-n">' + T('s6', { n: months.length }) + '</p><div class="pf-w">'
       + rows.map(function (r, i) { return '<label><i class="sw" style="background:' + COL[i] + '"></i>' + esc(r.d.name) + '<input type="number" min="0" step="5" data-w="' + i + '" value="' + Math.round(100 / rows.length) + '"></label>'; }).join('') + '</div><dl class="d-m" id="pfM"></dl>'
       + '<h3>How they move together</h3><div class="tbw"><table class="st"><thead><tr><th></th>' + rows.map(function (r) { return '<th>' + r.d.id + '</th>'; }).join('') + '</tr></thead><tbody>'
-      + rows.map(function (r, i) { return '<tr><td class="nm">' + esc(r.d.name) + '</td>' + rows.map(function (q, j) { return '<td>' + corr(ser[i], ser[j]).toFixed(2) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div><p class="d-n">1.00 moves together, 0 unrelated. Low numbers are what make a mix smoother than its parts.</p>';
+      + rows.map(function (r, i) { return '<tr><td class="nm">' + esc(r.d.name) + '</td>' + rows.map(function (q, j) { return '<td>' + corr(ser[i], ser[j]).toFixed(2) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div><p class="d-n">' + T('s7') + '</p>');
     host.appendChild(el);
     var paint = function () {
       var w = $$('[data-w]', el).map(function (x) { return Math.max(0, +x.value || 0); }), t = w.reduce(function (a, b) { return a + b; }, 0) || 1;
@@ -338,7 +353,7 @@
         eq *= 1 + r; if (eq > peak) peak = eq; mdd = Math.min(mdd, eq / peak - 1); s += r; s2 += r * r;
       });
       var n = months.length, mean = s / n, vol = Math.sqrt(Math.max(0, s2 / n - mean * mean)), cagr = Math.pow(eq, 12 / n) - 1;
-      $('#pfM', el).innerHTML = '<div><dt>Total return</dt><dd class="' + cl(eq - 1) + '">' + fmtRet((eq - 1) * 100) + '</dd></div><div><dt>CAGR</dt><dd>' + fmtPct(cagr * 100) + '</dd></div><div><dt>Max drawdown, monthly</dt><dd>' + fmtPct(mdd * 100, 1) + '</dd></div><div><dt>Sharpe, monthly</dt><dd>' + fmtNum(vol ? mean / vol * Math.sqrt(12) : 0) + '</dd></div>';
+      $('#pfM', el).innerHTML = H('<div><dt>Total return</dt><dd class="' + cl(eq - 1) + '">' + fmtRet((eq - 1) * 100) + '</dd></div><div><dt>CAGR</dt><dd>' + fmtPct(cagr * 100) + '</dd></div><div><dt>Max drawdown, monthly</dt><dd>' + fmtPct(mdd * 100, 1) + '</dd></div><div><dt>Sharpe, monthly</dt><dd>' + fmtNum(vol ? mean / vol * Math.sqrt(12) : 0) + '</dd></div>');
     };
     el.addEventListener('input', paint); paint();
   }
@@ -349,8 +364,8 @@
       var host = $('#sLive'); if (!host || !j || !j.from) return;
       var rows = j.rules && j.rules[slug], keys = rows ? Object.keys(rows) : [];
       host.hidden = false;
-      if (!keys.length) { host.innerHTML = '<b>Live record.</b> Tracking started on ' + dateOf(j.from) + '. Results appear here after the first full day.'; return; }
-      host.innerHTML = '<b>Live record since ' + dateOf(j.from) + '.</b> ' + keys.map(function (k) { var x = rows[k]; return CLSLBL[k] + ': <span class="' + cl(x.e - 1) + '">' + fmtPct((x.e - 1) * 100) + '</span> against ' + fmtPct((x.b - 1) * 100) + ' holding, ' + x.n + ' day' + (x.n === 1 ? '' : 's') + ', ' + x.t + ' trades'; }).join('. ') + '. No hindsight here: these bars did not exist when the rule was published. Crypto is before funding.';
+      if (!keys.length) { host.innerHTML = '<b>' + T('s8', { d: dateOf(j.from) }) + '</b> ' + T('s9', { d: dateOf(j.from) }); return; }
+      host.innerHTML = '<b>' + T('s8', { d: dateOf(j.from) }) + '</b> ' + keys.map(function (k) { var x = rows[k]; return CLSLBL[k] + ': <span class="' + cl(x.e - 1) + '">' + fmtPct((x.e - 1) * 100) + '</span> against ' + fmtPct((x.b - 1) * 100) + ' holding, ' + x.n + ' day' + (x.n === 1 ? '' : 's') + ', ' + x.t + ' trades'; }).join('. ') + '. ' + T('s10');
     }).catch(function () {});
   }
 
@@ -416,7 +431,13 @@
     $$('[data-tool]').forEach(function (a) { a.addEventListener('click', function () { try { navigator.sendBeacon('/api/track?t=tool&e=' + encodeURIComponent(a.dataset.tool) + '&p=' + encodeURIComponent(location.pathname)); } catch (e) {} }); });
     if ($('#sDetail')) { page(); return; }
     if (!$('#lib')) return;
-    fetch('/strategies/data/index.json').then(function (r) { return r.json(); }).then(function (j) { D = j; hub(); });
+    var names = LD ? fetch('/strategies/data/i18n-' + LG + '.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }) : Promise.resolve({});
+    Promise.all([fetch('/strategies/data/index.json').then(function (r) { return r.json(); }), names]).then(function (a) {
+      D = a[0]; var n = a[1] || {};
+      if (n.styles) D.meta.styles = n.styles;
+      D.rules.forEach(function (r) { if (n[r.slug]) r.summary = n[r.slug]; });
+      hub();
+    });
   });
   API.state = function () { return { st: st, n: D ? D.rules.length : 0 }; };
   return API;
