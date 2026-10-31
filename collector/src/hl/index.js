@@ -28,7 +28,8 @@ const { db, q, tx } = openStore(DB);
 const W = new Map();             // addr -> wallet summary; everything else is in the database
 const dirtyW = new Set();
 const hot = new Map();           // addr -> fill time: traded, read me next (insertion order is the queue)
-let ready = [];                  // due wallets, best first, rebuilt every 20 s
+let ready = [];                  // wallets due a re-read, best first, rebuilt every 20 s
+let fresh = [];                  // wallets never read at all, best first
 let vaults = new Set(), coins = [], dexes = [];
 const M = { startedAt: Date.now(), fills: 0, wsMsgs: 0, wsReconnects: 0, snaps: 0, snapErr: 0, refused: 0, pausedUntil: 0, deltas: 0, lastLb: 0, lastCohort: 0, cohortMs: 0 };
 let cohortCache = { ts: 0, oi: {}, cohorts: [], excluded: [], coverage: null };
@@ -65,16 +66,21 @@ function rebuildReady() {
   // (of the top 2,000 accounts by value only 572 hold anything)
   const rank = (w) => w.ntl * 10 + (w.vlm_m || 0) / 30 + (w.av || 0);
   due.sort((a, b) => rank(b) - rank(a));
-  ready = due.slice(0, Math.max(200, WEIGHT_MIN * 2));
+  ready = due.filter((w) => w.last_snap).slice(0, Math.max(200, WEIGHT_MIN * 2));
+  fresh = due.filter((w) => !w.last_snap).slice(0, Math.max(200, WEIGHT_MIN * 2));
 }
-/* ONE READ IN THREE GOES TO WHO JUST TRADED. The first run gave them every read: 2,838 waiting after six minutes, the
-   queue of big wallets never touched, and 250 of 382 positions belonged to tiny wallets with no known PnL. */
+/* FOUR READS: WHO TRADED, WHO IS DUE, AND TWO FOR WALLETS NEVER READ. Measured over ninety minutes with one shared queue: 200
+   reads a minute and only 13 of them new, because a held position always outranks an unread wallet and there are always
+   held positions due. At that pace the 60,000 wallets take days, so the unread get a fixed half of the reads. */
 let turn = 0;
 function next() {
   const now = Date.now();
   const fromHot = () => { for (const [a] of hot) { hot.delete(a); const w = W.get(a); if (w && now - w.last_snap >= (w.ntl >= 1e5 ? 60e3 : 600e3)) return w; } return null; };
-  const fromReady = () => { while (ready.length) { const w = ready.shift(); if (w.due <= now) return w; } return null; };
-  return (++turn % 3 === 0) ? (fromHot() || fromReady()) : (fromReady() || fromHot());
+  const from = (q) => { while (q.length) { const w = q.shift(); if (w.due <= now) return w; } return null; };
+  const t = ++turn % 4;
+  if (t === 0) return fromHot() || from(ready) || from(fresh);
+  if (t === 1) return from(ready) || from(fresh) || fromHot();
+  return from(fresh) || from(ready) || fromHot();
 }
 
 // one wallet, read as it is, compared with what we held
@@ -269,7 +275,7 @@ async function coverage() {
 function api() {
   const app = express();
   const posRow = (r) => { const w = W.get(r.addr) || {}; return { a: r.addr, label: w.label || undefined, coin: r.coin, long: r.szi > 0, ntl: Math.round(r.ntl), szi: r.szi, entry: r.entry, lev: r.lev, cross: r.cross, liq: r.liq, margin: r.margin, upnl: Math.round(r.upnl), funding: r.funding, ts: r.ts, since: r.since, av: w.av == null ? null : Math.round(w.av), pnl_c: pnlTier(w.pnl_all), size_c: sizeTier(w.av), kind: w.kind }; };
-  app.get('/status', (req, res) => res.json({ ok: true, uptimeSec: Math.round((Date.now() - M.startedAt) / 1000), wallets: W.size, withPos: [...W.values()].filter((w) => w.n > 0).length, hot: hot.size, ready: ready.length, stale: Date.now() - lastMsg, coins: coins.length, dexes, coverage: cohortCache.coverage, ...M, weightMin: WEIGHT_MIN, hl: hlMeter(), mem: Object.fromEntries(Object.entries(process.memoryUsage()).map(([k, v]) => [k, Math.round(v / 1048576)])) }));
+  app.get('/status', (req, res) => res.json({ ok: true, uptimeSec: Math.round((Date.now() - M.startedAt) / 1000), wallets: W.size, withPos: [...W.values()].filter((w) => w.n > 0).length, hot: hot.size, ready: ready.length, fresh: fresh.length, stale: Date.now() - lastMsg, coins: coins.length, dexes, coverage: cohortCache.coverage, ...M, weightMin: WEIGHT_MIN, hl: hlMeter(), mem: Object.fromEntries(Object.entries(process.memoryUsage()).map(([k, v]) => [k, Math.round(v / 1048576)])) }));
   app.get('/cohorts', (req, res) => res.json({ ts: cohortCache.ts, coverage: cohortCache.coverage, oi: cohortCache.oi, ...(cohortCache.ALL || {}), coins: (cohortCache.coins || []).slice(0, 60) }));
   app.get('/market', (req, res) => { const c = String(req.query.coin || ''), m = cohortCache.byCoin && cohortCache.byCoin[c]; if (!m) return res.status(404).json({ error: 'no_market' }); res.json({ ts: cohortCache.ts, coin: c, ...m }); });
   app.get('/traders', (req, res) => {
