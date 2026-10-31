@@ -307,7 +307,51 @@
       $('#cmpB').innerHTML = '<div class="d-plot big"><div class="d-pl">' + chartSvg(ser, { log: true, h: 300 }) + '</div></div><p class="d-n">Growth of $1 on a log scale, ' + CLSLBL[st.cn] + ' basket. Each on the timeframe it declares.</p><div class="tbw"><table class="st"><thead><tr><th></th>' + rows.map(function (r, i) { return '<th><i class="sw" style="background:' + COL[i] + '"></i>' + esc(r.d.name) + '</th>'; }).join('') + '</tr></thead><tbody>'
         + line('Total return', function (r) { return fmtRet(r.t.m.ret); }) + line('CAGR', function (r) { return fmtPct(r.t.m.cagr); }) + line('Sharpe', function (r) { return r.t.thin ? '-' : fmtNum(r.t.m.sharpe); }) + line('Sharpe, last 30%', function (r) { return fmtNum(r.t.oos); }) + line('Max drawdown', function (r) { return fmtPct(r.t.m.mdd, 1); }) + line('Win rate', function (r) { return fmtNum(r.t.m.win, 1) + '%'; }) + line('Trades', function (r) { return r.t.m.trades.toLocaleString('en-US'); }) + '</tbody></table></div>';
       drawIn($('#cmpB'));
+      portfolio(rows);
     });
+  }
+
+  /* ---------- portfolio: the picks together, month by month, in the weights the reader types ---------- */
+  function corr(a, b) {
+    var n = a.length, ma = 0, mb = 0, sa = 0, sb = 0, c = 0, i;
+    for (i = 0; i < n; i++) { ma += a[i]; mb += b[i]; } ma /= n; mb /= n;
+    for (i = 0; i < n; i++) { sa += (a[i] - ma) * (a[i] - ma); sb += (b[i] - mb) * (b[i] - mb); c += (a[i] - ma) * (b[i] - mb); }
+    return sa && sb ? c / Math.sqrt(sa * sb) : 0;
+  }
+  function portfolio(rows) {
+    var host = $('#cmpB');
+    var maps = rows.map(function (r) { var m = {}; r.t.monthly.forEach(function (x) { m[x[0]] = x[1]; }); return m; });
+    var months = Object.keys(maps[0]).filter(function (k) { return maps.every(function (m) { return m[k] != null; }); }).map(Number).sort(function (a, b) { return a - b; });
+    if (months.length < 12) return;
+    var ser = maps.map(function (m) { return months.map(function (k) { return m[k]; }); });
+    var el = document.createElement('div'); el.className = 'pf';
+    el.innerHTML = '<h3>Run them together</h3><p class="d-n">Type a weight for each. The mix rebalances monthly over the ' + months.length + ' months they share.</p><div class="pf-w">'
+      + rows.map(function (r, i) { return '<label><i class="sw" style="background:' + COL[i] + '"></i>' + esc(r.d.name) + '<input type="number" min="0" step="5" data-w="' + i + '" value="' + Math.round(100 / rows.length) + '"></label>'; }).join('') + '</div><dl class="d-m" id="pfM"></dl>'
+      + '<h3>How they move together</h3><div class="tbw"><table class="st"><thead><tr><th></th>' + rows.map(function (r) { return '<th>' + r.d.id + '</th>'; }).join('') + '</tr></thead><tbody>'
+      + rows.map(function (r, i) { return '<tr><td class="nm">' + esc(r.d.name) + '</td>' + rows.map(function (q, j) { return '<td>' + corr(ser[i], ser[j]).toFixed(2) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div><p class="d-n">1.00 moves together, 0 unrelated. Low numbers are what make a mix smoother than its parts.</p>';
+    host.appendChild(el);
+    var paint = function () {
+      var w = $$('[data-w]', el).map(function (x) { return Math.max(0, +x.value || 0); }), t = w.reduce(function (a, b) { return a + b; }, 0) || 1;
+      var eq = 1, peak = 1, mdd = 0, s = 0, s2 = 0;
+      months.forEach(function (_, k) {
+        var r = 0; for (var i = 0; i < w.length; i++) r += ser[i][k] * w[i] / t;
+        eq *= 1 + r; if (eq > peak) peak = eq; mdd = Math.min(mdd, eq / peak - 1); s += r; s2 += r * r;
+      });
+      var n = months.length, mean = s / n, vol = Math.sqrt(Math.max(0, s2 / n - mean * mean)), cagr = Math.pow(eq, 12 / n) - 1;
+      $('#pfM', el).innerHTML = '<div><dt>Total return</dt><dd class="' + cl(eq - 1) + '">' + fmtRet((eq - 1) * 100) + '</dd></div><div><dt>CAGR</dt><dd>' + fmtPct(cagr * 100) + '</dd></div><div><dt>Max drawdown, monthly</dt><dd>' + fmtPct(mdd * 100, 1) + '</dd></div><div><dt>Sharpe, monthly</dt><dd>' + fmtNum(vol ? mean / vol * Math.sqrt(12) : 0) + '</dd></div>';
+    };
+    el.addEventListener('input', paint); paint();
+  }
+
+  /* ---------- live: what happened after the rule was published ---------- */
+  function liveLine(box, slug) {
+    fetch('/api/strategies/live').then(function (r) { return r.json(); }).then(function (j) {
+      var host = $('#sLive'); if (!host || !j || !j.from) return;
+      var rows = j.rules && j.rules[slug], keys = rows ? Object.keys(rows) : [];
+      host.hidden = false;
+      if (!keys.length) { host.innerHTML = '<b>Live record.</b> Tracking started on ' + dateOf(j.from) + '. Results appear here after the first full day.'; return; }
+      host.innerHTML = '<b>Live record since ' + dateOf(j.from) + '.</b> ' + keys.map(function (k) { var x = rows[k]; return CLSLBL[k] + ': <span class="' + cl(x.e - 1) + '">' + fmtPct((x.e - 1) * 100) + '</span> against ' + fmtPct((x.b - 1) * 100) + ' holding, ' + x.n + ' day' + (x.n === 1 ? '' : 's') + ', ' + x.t + ' trades'; }).join('. ') + '. No hindsight here: these bars did not exist when the rule was published. Crypto is before funding.';
+    }).catch(function () {});
   }
 
   /* ---------- hero count ---------- */
@@ -364,7 +408,7 @@
   }
   function page() {
     var box = $('#sDetail'), slug = box.dataset.slug;
-    load(slug).then(function (d) { paintDetail(box, d, 'crypto', d.tf); lab($('#sLab'), d); });
+    load(slug).then(function (d) { paintDetail(box, d, 'crypto', d.tf); if ($('#sLab')) lab($('#sLab'), d); liveLine(box, slug); });
     var ex = $('[data-explain]'); if (ex) ex.addEventListener('click', function () { try { sessionStorage.setItem('mp_ai_q', ex.dataset.explain); } catch (e) {} beacon('explain:' + slug); });
     $$('[data-dl]').forEach(function (a) { a.addEventListener('click', function () { beacon('download:' + a.dataset.dl + ':' + slug); }); });
   }

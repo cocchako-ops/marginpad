@@ -74,7 +74,7 @@ const on = ['gt', ['close'], ['num', 104]]; // true on the bar that closes at 10
   const cut = raw.c.length - 300;
   let bad = [];
   for (const r of RULES) {
-    if (r.only && !r.only.includes('crypto')) continue;
+    if (r.own || (r.only && !r.only.includes('crypto'))) continue;
     const a = S.run(r, S.bars(raw), CLASSES.crypto, null).trades.filter((t) => t.xt < raw.t[cut - 1]);
     const c = { ...raw, o: raw.o.slice(), h: raw.h.slice(), l: raw.l.slice(), c: raw.c.slice() };
     for (let i = cut; i < c.c.length; i++) { c.o[i] *= 3; c.h[i] *= 3; c.l[i] *= 3; c.c[i] *= 3; }
@@ -90,9 +90,11 @@ ok(RULES.every((r) => r.entryL || r.entryS), 'every rule can enter');
 ok(RULES.every((r) => r.exitL || r.exitS || r.stop || r.tp || r.maxBars || r.reverse), 'every rule has a way out');
 ok(RULES.every((r) => !r.tp || !r.tp.r || r.stop), 'a target in R always has a stop to measure it from');
 ok(RULES.every((r) => describe(r).length >= 1), 'every rule describes itself in English');
+ok(RULES.filter((r) => r.own).length >= 6, 'rules on our own data exist');
 ok(MARKETS.filter((m) => m.cls === 'crypto' && m.basket).length === 20, 'the crypto basket is twenty markets');
 
-const pines = RULES.map((r) => [r, toPine(r)]);
+const EXPORT = RULES.filter((r) => !r.own);
+const pines = EXPORT.map((r) => [r, toPine(r)]);
 ok(pines.every(([, p]) => p.startsWith('//@version=6') && /strategy\("/.test(p)), 'every rule compiles to a Pine v6 strategy');
 ok(pines.every(([r, p]) => !/undefined|NaN|\[object/.test(p)), 'no Pine file carries a broken expression', pines.filter(([, p]) => /undefined|NaN|\[object/.test(p)).map(([r]) => r.slug));
 const lazy = (p) => p.split('\n').filter((l) => !l.startsWith('//')).some((l) => /\b(and|or)\b/.test(l) && /\bta\./.test(l));
@@ -110,7 +112,7 @@ if (!process.argv.includes('--pure')) {
   fs.writeFileSync(path.join(tmp, 'c.csv'), csv.join('\n'));
   const bad = [], cost = { fee: 0.055, slip: 0.02 };
   let compared = 0;
-  for (const r of RULES) {
+  for (const r of EXPORT) {
     const f = path.join(tmp, r.slug + '.py');
     const dump = '\n\nif __name__ == "__main__":\n    pass\n';
     fs.writeFileSync(f, toPython(r, runtime).replace('    main(RULE)', '    print(json.dumps(backtest(RULE, load(sys.argv[1]))))'));
@@ -121,7 +123,7 @@ if (!process.argv.includes('--pure')) {
     const same = pyT.length === jsT.length && pyT.every((t, i) => t.side === jsT[i].d && near(t.entry, jsT[i].ep, 1e-6) && near(t.exit, jsT[i].xp, 1e-6));
     if (!same) { const i = pyT.findIndex((t, k) => !jsT[k] || !near(t.exit, jsT[k].xp, 1e-6)); bad.push([r.slug, pyT.length, jsT.length, i]); }
   }
-  ok(!bad.length, `all ${RULES.length} generated Python files match the engine trade by trade (${compared} trades)`, bad.slice(0, 6));
+  ok(!bad.length, `all ${EXPORT.length} generated Python files match the engine trade by trade (${compared} trades)`, bad.slice(0, 6));
 }
 console.log(`\n${pass} ok, ${fail} failed`);
 process.exit(fail ? 1 : 0);

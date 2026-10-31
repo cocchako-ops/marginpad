@@ -66,12 +66,13 @@ const write = (p, s) => { const f = path.join(OUT, p); fs.mkdirSync(path.dirname
 
 /* ---------- hub ---------- */
 const rows = D.rules.filter((r) => r.classes.crypto);
+const COUNT = 'Sixty-six';
 const beat = rows.filter((r) => r.classes.crypto.m.ret > r.classes.crypto.bench).length;
 const calm = rows.filter((r) => !r.classes.crypto.thin && r.classes.crypto.m.sharpe > r.classes.crypto.benchS).length;
-const runs = RULES.reduce((a, r) => a + MARKETS.reduce((b, m) => b + ((!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex') ? CLASSES[m.cls].tfs.length : 0), 0), 0);
+const runs = RULES.reduce((a, r) => { const d = JSON.parse(fs.readFileSync(path.join(OUT, 'data', r.slug + '.json'), 'utf8')); return a + Object.values(d.classes).reduce((b, c) => b + Object.values(c).reduce((x, t) => x + t.rows.length, 0), 0); }, 0);
 const firstYear = Math.min(...D.rules.flatMap((r) => Object.values(r.classes).map((c) => new Date(c.from * 864e5).getUTCFullYear())));
 const faq = [
-  ['Where do these strategies come from?', 'Sixty readable rules: the textbook trend, breakout and mean-reversion systems, written in the same form, plus rules from our own measurements. Parameters are the textbook defaults, not values tuned to this history.'],
+  ['Where do these strategies come from?', `${COUNT} readable rules: the textbook trend, breakout and mean-reversion systems, written in the same form, plus rules that read our own funding, liquidation and open interest data. Parameters are the textbook defaults, not values tuned to this history.`],
   ['Are these results after costs?', `Yes. Every fill pays the fee and slippage Paper Trade charges for that market, and crypto positions also pay or earn the real funding prints. Crypto is ${CLASSES.crypto.fee}% a side plus ${CLASSES.crypto.slip}% slippage.`],
   ['Why does so little beat buy and hold?', 'Simple rules sit in cash for much of a rising market, so on total return holding is hard to beat. What a rule can offer is a smaller drawdown, which is why Sharpe and maximum drawdown sit beside the return. Every rule stays on the page whatever it did.'],
   ['Can I run one on 3Commas?', 'Yes, for crypto, through TradingView: download the Pine file, add it to a chart, and point its alert at a 3Commas Signal Bot. The automate guide walks through it. There is no one-click import.'],
@@ -81,7 +82,7 @@ const hub = `<main>
 <div class="w hero">
   <div>
     <h1>The open library of trading strategies</h1>
-    <p>Sixty rules tested on crypto, stocks, forex, commodities and indices, after fees and funding. See the full result, read the exact rule, try it on live candles and download it. Nothing is hidden, the losers included.</p>
+    <p>${COUNT} rules tested on crypto, stocks, forex, commodities and indices, after fees and funding. See the full result, read the exact rule, try it on live candles and download it. Nothing is hidden, the losers included.</p>
     <div class="cta"><a class="pri" href="#library">Browse all ${RULES.length} strategies</a><a href="#automate">Run one yourself</a></div>
   </div>
   <div class="hst">
@@ -113,8 +114,8 @@ const hub = `<main>
   <p class="lead">Practice before anything real. Each step uses tools that already exist.</p>
   <div class="steps">
     <a href="/paper-trade"><h3>Practice it</h3><p>Trade the rule by hand with paper money, on the live market.</p></a>
-    <a href="/trading-api/"><h3>Run it as a bot</h3><p>Every strategy downloads as a paper bot for the Bot API. One command, no real money.</p></a>
-    <a href="/strategies/automate/"><h3>Automate it</h3><p>Every strategy downloads as a Pine Script for TradingView. The guide shows how to connect it to a bot.</p></a>
+    <a href="/trading-api/"><h3>Run it as a bot</h3><p>Each price-based strategy downloads as a paper bot for the Bot API. One command, no real money.</p></a>
+    <a href="/strategies/automate/"><h3>Automate it</h3><p>Each price-based strategy downloads as a Pine Script for TradingView. The guide shows how to connect it to a bot.</p></a>
   </div>
 </div></section>
 <section class="s" id="metrics"><div class="w">
@@ -155,7 +156,7 @@ const hub = `<main>
 <div class="tray" id="tray" hidden><div class="i" id="trayI"></div><button type="button" class="go" id="trayGo">Compare</button><button type="button" class="x" id="trayX">Clear</button></div>
 <div class="cmpm" id="cmpM" role="dialog" aria-label="Compare strategies" hidden><h2>Compare strategies</h2><button type="button" class="xx" id="cmpX" aria-label="Close">X</button><div id="cmpB"></div></div>`;
 write('index.html', shell({
-  title: 'Trading Strategies Library: 60 Backtests After Fees | MarginPad',
+  title: `Trading Strategies Library: ${RULES.length} Backtests After Fees | MarginPad`,
   desc: `${RULES.length} free trading strategies backtested on crypto, stocks, forex, commodities and indices after fees and funding. Full results, exact rules, Pine Script and Python downloads.`,
   url: '/strategies/',
   ld: [
@@ -175,10 +176,12 @@ RULES.forEach((r, i) => {
   det.labMarkets = LAB;
   fs.writeFileSync(dPath, JSON.stringify(det));
   const logic = describe(r);
+  if (!r.own) {
   write(`files/${r.slug}/${r.slug}.pine`, toPine(r));
   write(`files/${r.slug}/${r.slug}.py`, toPython(r, runtime));
   write(`files/${r.slug}/${r.slug}-bot.py`, toBot(r, runtime, botRuntime));
   write(`files/${r.slug}/README.md`, `# ${r.name}\n\n${r.summary}\n\n## The rule\n\n${logic.map((l) => '- ' + l).join('\n')}\n\nDeclared timeframe: ${r.tf}.\n\n## Results\n\nhttps://marginpad.io/strategies/${r.slug}/\n\n## Files\n\n- \`${r.slug}.pine\`: Pine Script v6 for TradingView. Results there use TradingView's own fills and will differ a little.\n- \`${r.slug}.py\`: Python 3, no dependencies. \`python ${r.slug}.py candles.csv\`, columns time,open,high,low,close,volume.\n- \`${r.slug}-bot.py\`: runs the rule on the MarginPad Bot API with paper money. Set MARGINPAD_KEY, then \`python ${r.slug}-bot.py BTC\`. Add \`--check\` to price a trade and place nothing.\n\nResearch, not advice. A backtest is evidence, never a promise. MIT licence.\n`);
+  }
 
   const cls = Object.entries(card.classes);
   const c0 = card.classes.crypto || cls[0][1], cn0 = card.classes.crypto ? 'crypto' : cls[0][0];
@@ -193,13 +196,14 @@ RULES.forEach((r, i) => {
 <div class="crumb"><a href="/strategies/">Strategies</a> / ${r.id}</div>
 <h1>${esc(r.name)}</h1>
 <p class="sub">${esc(r.summary)}</p>
-<div class="cta"><a class="pri" href="#lab">Watch it trade</a><a href="#download">Download</a><a href="/paper-trade">Practice it</a><a href="/charts?coin=BTC">Open charts</a></div>
+<div class="cta">${r.own ? '' : '<a class="pri" href="#lab">Watch it trade</a><a href="#download">Download</a>'}<a href="/paper-trade">Practice it</a><a href="/charts?coin=BTC">Open charts</a></div>
 <h2>Results</h2>
+<p class="live" id="sLive" hidden></p>
 <div id="sDetail" data-slug="${r.slug}" style="min-height:620px">${staticTable}</div>
 <h2>The exact rule</h2>
 <ul>${logic.map((l) => `<li>${esc(l)}</li>`).join('')}<li>Declared timeframe: ${esc(r.tf)}.</li></ul>
 <p><a class="ln" href="/charts?coin=BTC&amp;ai=1" data-explain="${esc('Explain this trading rule in plain words, and say where it would have entered and left on this chart: ' + logic.join(' '))}">Explain it with Ask AI</a> <span style="color:var(--d)">(Premium, on a desktop)</span></p>
-<h2 id="lab">Watch it trade</h2>
+${r.own ? `<p class="warn"><b>Runs on MarginPad data.</b> This rule reads ${ { fund: 'our funding history', liq: 'our own liquidation feed', oi: 'our hourly open interest' }[r.own] }, which TradingView cannot see, so it has no Pine or Python file and no live lab.${r.own === 'fund' ? '' : ' The sample is short: months, not years.'}</p>` : `<h2 id="lab">Watch it trade</h2>
 <p>This runs the same engine in your browser on the latest candles, with your own costs. Press Replay to watch every entry and exit arrive bar by bar.</p>
 <div id="sLab"></div>
 <h2 id="download">Download</h2>
@@ -209,7 +213,7 @@ RULES.forEach((r, i) => {
 <a href="/strategies/files/${r.slug}/${r.slug}.py" download data-dl="py"><b>Python backtest</b><span>One file, no dependencies</span></a>
 <a href="/strategies/files/${r.slug}/README.md" download data-dl="readme"><b>README</b><span>The rule in plain words</span></a>
 </div>
-<p class="partner">Want it to run by itself? <a href="/strategies/automate/">Read the automate guide</a>, and use paper money first.</p>
+<p class="partner">Want it to run by itself? <a href="/strategies/automate/">Read the automate guide</a>, and use paper money first.</p>`}
 <h2>Related strategies</h2>
 <div class="next">${next.map((x) => `<a href="/strategies/${x.slug}/"><b>${esc(x.name)}</b><span>${esc(x.summary)}</span></a>`).join('')}</div>
 <p class="warn"><b>Research, not advice.</b> Past results do not predict future ones. Results run to ${LATEST}.</p>
@@ -242,7 +246,7 @@ const auto = `<main class="pg">
 <div><h3>Watch it first</h3><p>Use 3Commas demo mode if your account offers it, or a very small amount. Check that entries and exits appear when TradingView says they should before you trust it.</p></div>
 </div>
 <h2>Prefer to stay on paper?</h2>
-<p>Each strategy also downloads as a paper bot. Get a key from the <a class="ln" href="/trading-api/">MarginPad Bot API</a>, set MARGINPAD_KEY and run the file. It trades paper money with real fees and funding, and the same key covers crypto, stocks, forex, metals and indices.</p>
+<p>Each price-based strategy also downloads as a paper bot. Get a key from the <a class="ln" href="/trading-api/">MarginPad Bot API</a>, set MARGINPAD_KEY and run the file. It trades paper money with real fees and funding, and the same key covers crypto, stocks, forex, metals and indices.</p>
 <h2>What can differ from the backtest</h2>
 <ul><li>TradingView fills and our engine are not identical, so its figures will differ a little.</li><li>Live fills pay your exchange's real spread and fee.</li><li>A webhook can arrive late or fail. Keep a stop on the exchange.</li></ul>
 <p style="margin-top:22px"><a class="ln" href="/strategies/">Back to all strategies</a></p>

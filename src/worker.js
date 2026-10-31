@@ -5,6 +5,9 @@
    - everything else   → static assets (the website) */
 // mp-ops v2 shell (2026-09-03): real files under src/ops/, bundled as text modules (wrangler.toml [[rules]] type=Text).
 import OPS_SHELL from './ops/shell.html';
+import STRAT from '../dist/assets/mp-strat.js?v=ce260405';
+import { RULES as STRAT_RULES } from '../build/strategies/rules.js';
+import { MARKETS as STRAT_MARKETS, CLASSES as STRAT_CLASSES } from '../build/strategies/markets.js';
 import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
@@ -7399,6 +7402,54 @@ async function handleKlines(url, env, klSrc, ctx) {
 // SEPARATE cache namespace (__klines_lean_) so it can NEVER share/poison the chart's __klines_v2_ 1000-candle key
 // (verified: no chart caller passes &limit=, so __klines_v2_ has no limit dimension). ~2.7KB (30) vs 91KB (1000);
 // high/low is all a level-check needs, so no flat-ratio source-picking. Returns [{time(sec),high,low,close}] or null.
+/* THE LIVE RECORD OF THE STRATEGY LIBRARY (2026-10-31). A backtest can be tuned to its history; these bars did not exist when a
+   rule was published, so this line is the one figure nobody can have fitted. One pass a day after the daily close, on our own
+   klines, for the same equal-weight baskets the page shows. Compounded in KV and advanced one closed UTC day at a time, so a
+   missed run catches up. Crypto is before funding here (the file figures include it), and the page says so. */
+const STRAT_LIVE_FROM = Date.UTC(2026, 10, 1) / 864e5;
+async function strategyLive(env, dryDays) {
+  const today = Math.floor(Date.now() / 864e5), last = today - 1;
+  const st = dryDays ? { from: last - dryDays + 1, rules: {}, through: last - dryDays } : ((await env.STATS.get('strat:live', 'json')) || { from: STRAT_LIVE_FROM, rules: {}, through: STRAT_LIVE_FROM - 1 });
+  if (st.through >= last) return st;
+  const rules = STRAT_RULES.filter((r) => !r.own), IV = { '1h': 60, '4h': 240, '1d': 1440 };
+  const days = []; for (let d = st.through + 1; d <= last; d++) days.push(d);
+  const acc = {};
+  for (const m of STRAT_MARKETS) {
+    if (!m.basket) continue;
+    const cls = STRAT_CLASSES[m.cls];
+    for (const tf of cls.tfs) {
+      const use = rules.filter((r) => (!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex') && (cls.tfs.includes(r.tf) ? r.tf : '1d') === tf);
+      if (!use.length) continue;
+      let rows = null;
+      try { rows = await (await handleKlines(new URL(`https://marginpad.io/api/klines?symbol=${m.sym}&interval=${IV[tf]}`), env)).json(); } catch (e) { continue; }
+      if (!Array.isArray(rows) || rows.length < 260) continue;
+      const ms = IV[tf] * 6e4, c = rows.filter((x) => x.time * 1000 + ms <= today * 864e5);
+      const raw = { t: c.map((x) => x.time * 1000), o: c.map((x) => +x.open), h: c.map((x) => +x.high), l: c.map((x) => +x.low), c: c.map((x) => +x.close), v: c.map((x) => +x.vol || 0) };
+      const b = STRAT.bars(raw), bh = STRAT.daily(b.t, Float64Array.from(b.c));
+      for (const r of use) {
+        const res = STRAT.run(r, b, cls, null), dd = STRAT.daily(b.t, res.equity);
+        for (const d of days) {
+          const i = dd.days.indexOf(d); if (i < 0) continue;
+          const k = r.slug + '|' + m.cls + '|' + d, a = acc[k] || (acc[k] = { r: 0, b: 0, n: 0, t: 0 });
+          a.r += dd.rets[i]; a.b += bh.rets[bh.days.indexOf(d)] || 0; a.n++;
+          a.t += res.trades.filter((x) => Math.floor(x.xt / 864e5) === d).length;
+        }
+      }
+    }
+  }
+  for (const d of days) {
+    let any = false;
+    for (const r of rules) for (const cn of Object.keys(STRAT_CLASSES)) {
+      const a = acc[r.slug + '|' + cn + '|' + d]; if (!a || !a.n) continue;
+      any = true;
+      const row = ((st.rules[r.slug] = st.rules[r.slug] || {})[cn] = st.rules[r.slug][cn] || { e: 1, b: 1, n: 0, t: 0 });
+      row.e = +(row.e * (1 + a.r / a.n)).toFixed(6); row.b = +(row.b * (1 + a.b / a.n)).toFixed(6); row.n++; row.t += a.t;
+    }
+    if (any) st.through = d;
+  }
+  if (!dryDays) await env.STATS.put('strat:live', JSON.stringify(st)); // a dry run proves the pass on production and stores nothing
+  return st;
+}
 async function leanKlines(sym, ivMin, n, env) {
   sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!sym) return null;
   const iv = String(ivMin || '1'), N = Math.min(200, Math.max(2, +n || 30)), pair = sym + 'USDT';
@@ -9675,7 +9726,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4ae29e65" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=bfe3e6f6" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -25644,6 +25695,11 @@ export default {
     if (url.pathname === '/api/cg/cycle') return handleCgCycle(url, env);
     if (url.pathname === '/api/cg/etf') return handleCgEtf(url, env);
     if (url.pathname === '/api/competition') return handleCompetition(url, request, env, ctx);
+    if (url.pathname === '/api/strategies/live') {
+      if (url.searchParams.get('run') === '1' && adminKeyFrom(request, url) === adminKeyOf(env)) return new Response(JSON.stringify(await strategyLive(env, +url.searchParams.get('dry') || 0)), { headers: { 'content-type': 'application/json' } });
+      const st = (await env.STATS.get('strat:live', 'json')) || { from: STRAT_LIVE_FROM, rules: {} };
+      return new Response(JSON.stringify(st), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*' } });
+    }
     if (url.pathname === '/trading-competition/' || url.pathname === '/trading-competition') return handleSsrComp(request, url, env, ctx);
     if (url.pathname === '/glossary/' || url.pathname === '/glossary') return handleSsrGlossary(request, url, env);
     if (url.pathname === '/api/glossary/live') { // the same ten sentences as JSON: what the open page refreshes from, and free to cite
@@ -30621,6 +30677,7 @@ export default {
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
+    bg(strategyLive, 'stratlive'); // once a closed UTC day, the strategy library's forward record
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
     bg(checkPremiumExpiry, 'premexpiry'); // and tell a PREMIUM member the same, which nobody had ever done (2026-10-11)
     bg(squadMvpWeekly, 'squadmvp'); // every squad's MVP for the week that just ended, once per UTC week (KV flag)

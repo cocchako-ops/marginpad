@@ -44,7 +44,7 @@ const ready = (p) => p.waitForFunction(() => window.mpStrategies && window.mpStr
   ok(/c=tc2235309/.test(auto) && /rel="sponsored noopener"/.test(auto) && /Partner link/.test(auto), 'the referral link is on the guide, marked as one');
   const pages = fs.readdirSync(path.join(DIST, 'strategies')).filter((d) => fs.existsSync(path.join(DIST, 'strategies', d, 'index.html')) && d !== 'automate');
   ok(pages.length === IDX.rules.length, 'one page per strategy', pages.length);
-  ok(IDX.rules.every((r) => ['pine', 'py'].every((x) => fs.existsSync(path.join(DIST, `strategies/files/${r.slug}/${r.slug}.${x}`)))), 'every strategy has its downloads');
+  ok(IDX.rules.filter((r) => !r.own).every((r) => ['pine', 'py'].every((x) => fs.existsSync(path.join(DIST, `strategies/files/${r.slug}/${r.slug}.${x}`)))), 'every strategy has its downloads');
   const emoji = /[\u{1F300}-\u{1FAFF}☀-➿]/u;
   ok(!emoji.test(html) && !emoji.test(auto), 'no emoji');
 
@@ -105,9 +105,14 @@ const ready = (p) => p.waitForFunction(() => window.mpStrategies && window.mpStr
     await p.evaluate(() => document.querySelector('#fBeat').click()); await sleep(150);
 
     // compare
-    await p.evaluate(() => { const c = document.querySelectorAll('.sc-cmp'); c[0].click(); c[1].click(); }); await sleep(150);
+    await p.evaluate(() => { document.querySelector('.sc-cmp[data-cmp="rsi-2"]').click(); document.querySelector('.sc-cmp[data-cmp="golden-cross"]').click(); }); await sleep(150);
     await p.click('#trayGo'); await p.waitForSelector('#cmpB .cl', { timeout: 10000 });
     ok(await p.evaluate(() => document.querySelectorAll('#cmpB .cl').length === 2 && document.querySelectorAll('#cmpB tbody tr').length >= 6), 'compare draws both curves and the table');
+    const pf1 = await p.evaluate(() => document.querySelector('#pfM dd') && document.querySelector('#pfM dd').textContent);
+    ok(!!pf1, 'the two run together as one portfolio', pf1);
+    await p.evaluate(() => { const i = document.querySelector('[data-w="0"]'); i.value = 100; document.querySelectorAll('[data-w]')[1].value = 0; i.dispatchEvent(new Event('input', { bubbles: true })); });
+    const pf2 = await p.evaluate(() => document.querySelector('#pfM dd').textContent);
+    ok(pf1 !== pf2, 'a typed weight changes the mix', [pf1, pf2]);
     await p.keyboard.press('Escape'); await sleep(200);
     await go(p, '/strategies/'); await ready(p); await sleep(200);
     ok(await p.evaluate(() => !document.querySelector('#tray').hidden), 'the compare list survives a reload');

@@ -15,6 +15,8 @@ const ST = (p, m) => ['stDir', p, m];
 const IBS = ['div', sub(C, L), sub(H, L)];
 const VX = (k) => gt(V, mul(['sma', V, 20], k));
 
+const FUND = ['ext', 'fund'], FZ = ['div', sub(FUND, ['sma', FUND, 90]), ['std', FUND, 90]];
+const LQL = ['ext', 'liqL'], LQS = ['ext', 'liqS'], OIR = ['roc', ['ext', 'oi'], 4];
 const r = (slug, name, style, tf, summary, def) => ({ slug, name, style, tf, summary, ...def });
 const both = (el, es) => ({ entryL: el, entryS: es, reverse: true });
 
@@ -92,7 +94,15 @@ const RULES = [
 
   // Found by our own simulations, 2026-10-29
   r('edge-fade-short', 'Hourly Edge Fade', 'reversion', '1h', 'Short a 60-bar high at market: 3 ATR stop, 2R target. The most stable row of our October study.', { only: ['crypto'], entryS: gt(['high'], HH(60)), stop: { atr: 3 }, tp: { r: 2 }, maxBars: 48 }),
+
+  // MarginPad data: series that exist only here, so they run on the site and cannot become a Pine file
+  r('funding-crowded-short', 'Crowded Longs Fade', 'marginpad', '4h', 'Short when funding is two deviations above its own recent mean. The crowd is paying up to stay long.', { own: 'fund', entryS: gt(FZ, 2), exitS: lt(FZ, 0), stop: { atr: 3 }, maxBars: 42 }),
+  r('funding-crowded-long', 'Crowded Shorts Fade', 'marginpad', '4h', 'Long when funding is two deviations below its own recent mean. Shorts are paying to stay in.', { own: 'fund', entryL: lt(FZ, -2), exitL: gt(FZ, 0), stop: { atr: 3 }, maxBars: 42 }),
+  r('negative-funding-trend', 'Paid To Hold The Trend', 'marginpad', '4h', 'Long above the 200 SMA while funding is negative, so longs collect instead of paying.', { own: 'fund', entryL: and(gt(C, S(200)), lt(FUND, 0)), exitL: or(lt(C, S(200)), gt(FUND, 0.0003)) }),
+  r('long-flush-bounce', 'Long Flush Bounce', 'marginpad', '1h', 'Buy after long liquidations hit four times their two-week hourly average: 3 ATR stop, 2R target.', { own: 'liq', entryL: gt(LQL, mul(['sma', LQL, 336], 4)), stop: { atr: 3 }, tp: { r: 2 }, maxBars: 24 }),
+  r('short-squeeze-fade', 'Short Squeeze Fade', 'marginpad', '1h', 'Short after short liquidations hit four times their two-week hourly average: 3 ATR stop, 2R target.', { own: 'liq', entryS: gt(LQS, mul(['sma', LQS, 336], 4)), stop: { atr: 3 }, tp: { r: 2 }, maxBars: 24 }),
+  r('oi-washout-long', 'Open Interest Washout', 'marginpad', '1h', 'Buy when open contracts drop 5% in four hours and price fell with them: leverage has just been cleared.', { own: 'oi', entryL: and(lt(OIR, -5), lt(['roc', C, 4], 0)), stop: { atr: 3 }, tp: { r: 2 }, maxBars: 24 }),
 ].map((x, i) => ({ id: 'S' + String(i + 1).padStart(2, '0'), ...x }));
 
-const STYLES = { trend: 'Trend following', momentum: 'Momentum', breakout: 'Breakout', reversion: 'Mean reversion', pullback: 'Pullback', risk: 'Risk managed', calendar: 'Calendar' };
+const STYLES = { trend: 'Trend following', momentum: 'Momentum', breakout: 'Breakout', reversion: 'Mean reversion', pullback: 'Pullback', risk: 'Risk managed', calendar: 'Calendar', marginpad: 'MarginPad data' };
 module.exports = { RULES, STYLES };

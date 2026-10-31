@@ -175,6 +175,7 @@
         break;
       }
       case 'prev': { var P = S(x[1]); o = nan(n); for (i = x[2]; i < n; i++) o[i] = P[i - x[2]]; break; }
+      case 'ext': o = (b.x && b.x[x[1]]) || nan(n); break; // our own data, aligned to the bars by the caller
       case 'dow': o = new F(n); for (i = 0; i < n; i++) o[i] = new Date(b.t[i]).getUTCDay(); break;
       default: throw new Error('unknown series ' + k);
     }
@@ -198,7 +199,7 @@
     throw new Error('unknown condition ' + k);
   }
 
-  function bars(raw) { return { t: raw.t, o: raw.o, h: raw.h, l: raw.l, c: raw.c, v: raw.v, _c: {} }; }
+  function bars(raw) { return { t: raw.t, o: raw.o, h: raw.h, l: raw.l, c: raw.c, v: raw.v, x: raw.x, _c: {} }; }
 
   /* cost = {fee, slip} in percent per side. funding = {t:[ms], r:[rate]} or null. */
   function run(rule, b, cost, funding) {

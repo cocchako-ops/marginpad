@@ -8,7 +8,7 @@ Last updated: 2026-10-31
 The dated changelog lives in its own file: https://marginpad.io/llms-changelog.txt (newest first, one entry per shipped
 change, back to June 2026). Everything below is the CURRENT state and already reflects every entry there.
 ## Strategy library
-https://marginpad.io/strategies/ holds 60 readable rules, one page each, tested on equal-weight baskets of crypto (the first 20 perpetuals Binance listed), ten large stocks, six forex pairs, five commodities and five indices, on the timeframe each rule declares before the test. Every result pays the fee and slippage Paper Trade charges, and crypto pays real funding. Signals fill at the next open. Most rules do not beat buy and hold on total return, and the page says so. Each strategy downloads as Pine Script and as a single-file Python backtester. Automation guide: https://marginpad.io/strategies/automate/ (TradingView alert to a 3Commas Signal Bot; there is no one-click import).
+https://marginpad.io/strategies/ holds 66 readable rules, one page each, six of them on our own funding, liquidation and open interest data, tested on equal-weight baskets of crypto (the first 20 perpetuals Binance listed), ten large stocks, six forex pairs, five commodities and five indices, on the timeframe each rule declares before the test. Every result pays the fee and slippage Paper Trade charges, and crypto pays real funding. Signals fill at the next open. Most rules do not beat buy and hold on total return, and the page says so. Each strategy downloads as Pine Script and as a single-file Python backtester. Automation guide: https://marginpad.io/strategies/automate/ (TradingView alert to a 3Commas Signal Bot; there is no one-click import).
 
 ## Simulators (practice trading - live prices)
 

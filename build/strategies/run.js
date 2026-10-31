@@ -13,7 +13,36 @@ const only = arg('--only'), START = Date.UTC(2000, 0, 1), WARM = 220, MIN_TRADES
 const rules = only ? RULES.filter((r) => only.split(',').includes(r.slug)) : RULES;
 const rd = (f) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')); } catch (e) { return null; } };
 const fx = (x, d = 2) => (x == null || !isFinite(x) ? null : +x.toFixed(d));
-const usable = (r, m) => (!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex');
+const usable = (r, m) => (!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex') && (!r.own || m.cls === 'crypto');
+const SIM = path.join(__dirname, '..', 'data', 'sim');
+const rdSim = (f) => { try { return JSON.parse(fs.readFileSync(path.join(SIM, f), 'utf8')); } catch (e) { return null; } };
+/* Our own series, aligned to the bars. Only what had happened by a bar's close is on it, and a kind with no data leaves the
+   market out of that rule rather than filling a gap with zeros. */
+function ownSeries(kind, b, m, tf, fund) {
+  const n = b.t.length, o = new Float64Array(n).fill(NaN), ms = { '1h': 36e5, '4h': 144e5, '1d': 864e5 }[tf];
+  if (kind === 'fund') {
+    if (!fund || !fund.t.length) return null;
+    let k = 0, last = NaN;
+    for (let i = 0; i < n; i++) { while (k < fund.t.length && fund.t[k] <= b.t[i] + ms) last = fund.r[k++]; o[i] = last; }
+    return { fund: o, from: fund.t[0] };
+  }
+  if (kind === 'oi') {
+    const d = rdSim(`oi/${m.sym}-60.json`); if (!d) return null;
+    let k = 0, last = NaN;
+    for (let i = 0; i < n; i++) { while (k < d.length && d[k].t <= b.t[i] + ms) last = d[k++].oi; if (i && b.t[i] > d[d.length - 1].t) last = NaN; o[i] = last; }
+    return { oi: o, from: d[0].t, to: d[d.length - 1].t };
+  }
+  const d = rdSim(`liq/${m.sym}.json`); if (!d) return null;
+  const L = new Float64Array(n), S2 = new Float64Array(n); let k = 0;
+  for (let i = 0; i < n; i++) { while (k < d.length && d[k].t < b.t[i] + ms) { if (d[k].t >= b.t[i]) { L[i] += d[k].long; S2[i] += d[k].short; } k++; } }
+  return { liqL: L, liqS: S2, from: d[0].t, to: d[d.length - 1].t };
+}
+function window2(b, ext) {
+  let a = 0, z = b.t.length; while (a < z && b.t[a] < ext.from) a++; if (ext.to) while (z > a && b.t[z - 1] > ext.to) z--;
+  const o = {}; for (const k of ['t', 'o', 'h', 'l', 'c', 'v']) o[k] = b[k].slice(a, z);
+  o.x = {}; for (const k of Object.keys(ext)) if (k !== 'from' && k !== 'to') o.x[k] = ext[k].slice(a, z);
+  return o;
+}
 
 function clip(raw) {
   let i = 0; while (i < raw.t.length && raw.t[i] < START) i++;
@@ -49,6 +78,11 @@ function years(days, rets) {
   days.forEach((d, i) => { const k = new Date(d * 864e5).getUTCFullYear(); y[k] = (y[k] || 1) * (1 + rets[i]); });
   return Object.keys(y).map((k) => [+k, fx((y[k] - 1) * 100, 1)]);
 }
+function monthly(days, rets) {
+  const m = {};
+  days.forEach((d, i) => { const dt = new Date(d * 864e5), k = dt.getUTCFullYear() * 12 + dt.getUTCMonth(); m[k] = (m[k] || 1) * (1 + rets[i]); });
+  return Object.keys(m).map((k) => [+k, +(m[k] - 1).toFixed(5)]);
+}
 function monthsUp(days, rets) {
   const m = {};
   days.forEach((d, i) => { const dt = new Date(d * 864e5), k = dt.getUTCFullYear() * 12 + dt.getUTCMonth(); m[k] = (m[k] || 1) * (1 + rets[i]); });
@@ -66,10 +100,17 @@ for (const m of MARKETS) {
     const dayB = S.daily(b.t, Float64Array.from(b.c)); // buy & hold, on the same clock as the rule
     for (const r of rules) {
       if (!usable(r, m)) continue;
-      const res = S.run(r, b, cls, fund);
-      const d = S.daily(b.t, res.equity);
+      if (r.own && tf !== r.tf) continue;
+      let B = b, bench = dayB.rets, days0 = dayB.days;
+      if (r.own) {
+        const ext = ownSeries(r.own, b, m, tf, fund); if (!ext) continue;
+        const raw2 = window2(b, ext); if (raw2.t.length < 300) continue;
+        B = S.bars(raw2); const db = S.daily(B.t, Float64Array.from(B.c)); bench = db.rets;
+      }
+      const res = S.run(r, B, cls, fund);
+      const d = S.daily(B.t, res.equity);
       const w = Math.ceil(WARM * { '1d': 1, '4h': 1 / 6, '1h': 1 / 24 }[tf]);
-      const row = { sym: m.sym, basket: m.basket, days: d.days.slice(w), rets: d.rets.slice(w), bench: dayB.rets.slice(w), trades: res.trades };
+      const row = { sym: m.sym, basket: r.own ? true : m.basket, days: d.days.slice(w), rets: d.rets.slice(w), bench: bench.slice(w), trades: res.trades };
       const k = `${r.slug}|${m.cls}|${tf}`; (store[k] = store[k] || []).push(row);
     }
   }
@@ -80,7 +121,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const index = [];
 for (const r of rules) {
   const detail = { id: r.id, slug: r.slug, name: r.name, style: r.style, styleLabel: STYLES[r.style], tf: r.tf, summary: r.summary, classes: {} };
-  const card = { id: r.id, slug: r.slug, name: r.name, style: r.style, summary: r.summary, tf: r.tf, stop: r.stop || null, tp: r.tp || null, classes: {} };
+  const card = { id: r.id, slug: r.slug, name: r.name, style: r.style, summary: r.summary, tf: r.tf, stop: r.stop || null, tp: r.tp || null, own: r.own || null, classes: {} };
   for (const cn of Object.keys(CLASSES)) {
     const cls = CLASSES[cn], tfs = {};
     for (const tf of cls.tfs) {
@@ -94,7 +135,7 @@ for (const r of rules) {
         is: fx(S.metrics(bk.rets.slice(0, cut), cls.year).sharpe), oos: fx(S.metrics(bk.rets.slice(cut), cls.year).sharpe),
         oosFrom: bk.days[cut], from: bk.days[0], to: bk.days[bk.days.length - 1],
         thin: allTr.length < MIN_TRADES, markets: inB.length,
-        months: monthsUp(bk.days, bk.rets), years: years(bk.days, bk.rets), curve: curve(bk.days, bk.rets, bk.bench, 400),
+        months: monthsUp(bk.days, bk.rets), monthly: monthly(bk.days, bk.rets), years: years(bk.days, bk.rets), curve: curve(bk.days, bk.rets, bk.bench, 400),
         spark: curve(bk.days, bk.rets, bk.bench, 110).map((x) => x[1]),
         rows: rows.map((x) => ({ sym: x.sym, basket: x.basket, ...summary(x.rets, cls.year, x.trades), bh: fx(S.metrics(x.bench, cls.year).ret, 1) })),
       };

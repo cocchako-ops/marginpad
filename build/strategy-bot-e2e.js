@@ -44,12 +44,12 @@ const base = { id: 'X', slug: 'x', name: 'Test', summary: 's', tf: '4h' };
     console.log('      closed, gone after', waited, 's; bot said:', c.stdout.trim().slice(0, 170));
     ok(!left, 'nothing is left open', [left, c.stdout]);
     const bad = [];
-    for (const r of RULES.slice(0, 60)) {
+    for (const r of RULES.filter((x) => !x.own)) {
       const pf = path.join(tmp, r.slug + '-bot.py'); fs.writeFileSync(pf, toBot(r, rt, bot));
       const res = spawnSync('python', ['-m', 'py_compile', pf], { encoding: 'utf8' });
       if (res.status !== 0) bad.push(r.slug);
     }
-    ok(!bad.length, 'all sixty bot files compile', bad);
+    ok(!bad.length, 'every bot file compiles', bad);
     const run = RULES.filter((r) => ['supertrend', 'rsi-2', 'donchian-20', 'bollinger-fade', 'edge-fade-short'].includes(r.slug));
     const errs = [];
     for (const r of run) { const out = py(path.join(tmp, r.slug + '-bot.py'), ['ETH', '--once', '--check'], key); if (out.status !== 0 || /Traceback/.test(out.stderr)) errs.push([r.slug, out.stderr.slice(-160)]); }
