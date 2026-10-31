@@ -1,0 +1,364 @@
+{
+ "id": "mpstart",
+ "name": "Başlangıç: MarginPad",
+ "sub": "Sitenin kendisi, yedi kısa derste",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "MarginPad gerçekte nedir",
+   "cards": [
+    {
+     "h": "Gerçek fiyatlar, alıştırma parası",
+     "p": "Önündeki grafik canlı piyasadır. Fiyatlar ve mumlar doğrudan borsalardan gelir, fonlu bir trader'ın şu an baktığı verilerin aynısıdır. Para ise gerçek değil: size verdiğimiz 10.000 $ ile başlarsın ve bu sitede tek bir kuruş bile yatırmanın yolu yok."
+    },
+    {
+     "h": "Neden önce alıştırma yapılır",
+     "p": "Kaldıraçlı vadeli işlemler kriptoda para kaybetmenin en hızlı yoludur ve neredeyse herkes ilk hesabını kaybeder. Burada piyasa pozisyonunu elinden alıp sana aynı dersi verebilir, bedeli de sadece harcadığın zamandır. 10.000 $'ı kaybetsen bile hiçbir şey olmaz."
+    },
+    {
+     "h": "Yine de bir kısmı gerçek",
+     "p": "İşlem alıştırmadır. Ödüller değil. MarginPad siteyi kullandığın için gerçek USDT öder - günlük bir havuzdan küçük tutarlar - ve bunu bir borsa hesabına çekersin. Bu, işlemden ayrı bir sistemdir ve iki ders sonra nasıl çalıştığını tam olarak bileceksin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "MarginPad'de işlem yaptığın fiyatlar:",
+     "o": [
+      "Site tarafından uydurulmuş",
+      "Gerçek borsalardan canlı fiyatlar",
+      "Dünün kapanış fiyatları",
+      "Sadece sayfayı yenileyince güncellenen"
+     ]
+    },
+    {
+     "q": "Burada işlem yapmadan önce ne kadar yatırman gerekir?",
+     "o": [
+      "Hiçbir şey - sitede yatırma diye bir şey yok",
+      "Terminali açmak için 10 $",
+      "İşlem yapmak istediğin kadar",
+      "İade edilebilir 50 $"
+     ]
+    },
+    {
+     "q": "Bir işlem açtın ve kötü gidiyor. Sana neye mal oldu?",
+     "o": [
+      "Kartından çekilen gerçek para",
+      "Alıştırma bakiyesinin bir kısmı, başka hiçbir şey",
+      "Hesabından kesilen bir ücret",
+      "Lider tablolarındaki yerin, kalıcı olarak"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "XP, seviyen ve Bronz",
+   "cards": [
+    {
+     "h": "XP, yaptıklarının sayılmış hali",
+     "p": "Bitirdiğin her ders 25 XP, siteye geldiğin her gün 20, bir işlem 3, kazanan işlem 15 XP eder. Hiçbir şey satın alınmaz, hiçbir şey rastgele değildir - XP, siteyi kullandığının kaydıdır. Sayı hesap menünde adının yanında ve sezon sayfanın en üstünde durur."
+    },
+    {
+     "h": "Bronz ilk seviyedir, bir kapı değil",
+     "p": "500 XP altında Derecesiz'sin; 500'de Bronz olursun, sayı arttıkça Gümüş, Altın, Platin, Elmas, Usta ve Efsane gelir. Bu sitede artık hiçbir şey bir seviyeyi beklemez: faucet, günlük görevler, davetler, çekimler ve her ücretsiz tablo kayıt olduğun günden itibaren açıktır. Seviye bir rozet ve bir bonustur, asla bir kilit değil."
+    },
+    {
+     "h": "Seviye gerçekte neyi değiştirir",
+     "p": "Gümüş'ten itibaren her faucet talebi biraz daha fazla öder - çarpan seviyeyle birlikte artar. Her seviye profil kartın için bir çerçeve açar ve Altın Oda tablosu - on tablodan biri - yalnızca Altın seviyedeki, yani 12.000 XP'lik hesapları sıralar. Listenin tamamı bu. Alıştırma terminali, grafikler ve alarmlar her seviyede aynıdır."
+    },
+    {
+     "h": "Bu kurs yolun büyük kısmı",
+     "p": "Yedi dersin ikincisini okuyorsun. Yedisini bitirmek, tetikledikleri iki Bronz'a Giden Yol bonusuyla birlikte seni 400 XP'nin biraz üstüne çıkarır - yani bundan sonra stop-loss'lu tek bir kağıt işlem ya da yarın tekrar gelmek seni Bronz yapar. Sezon sayfandaki Bronz'a Giden Yol kartı dokuz başlangıç görevini ve her birinin ne ödediğini listeler."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bronz nedir?",
+     "o": [
+      "Ücretli bir üyelik kademesi",
+      "500 XP'de ulaştığın seviye",
+      "İlk lider tablosu ödülü",
+      "Profil kartın için kozmetik bir çerçeve"
+     ]
+    },
+    {
+     "q": "Bronza ulaşmak neyi açar?",
+     "o": [
+      "Faucet ve görevleri",
+      "Çekimleri",
+      "Hiçbir şeyi - ödüller kayıt olduğun günden açıktı; seviye bir rozet ve bonustur",
+      "Grafikleri ve ısı haritasını"
+     ]
+    },
+    {
+     "q": "Ücretsiz XP kazanmanın en hızlı yolu nedir?",
+     "o": [
+      "Mümkün olduğunca çok işlem açmak",
+      "Akademi dersleri - her biri 25, bitirilen kurs için ayrıca 50",
+      "Siteyi bir sekmede açık bırakmak",
+      "Arkadaş davet etmek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "Bu sitedeki gerçek para",
+   "cards": [
+    {
+     "h": "Nereden geliyor",
+     "p": "MarginPad ücretsizdir ve reklam içermez. Bir okuyucu linklerimizden biriyle borsada hesap açtığında kazanır; borsa ücretinin bir kısmını bizimle paylaşır. İş modelinin tamamı bu ve ödüllerin büyük ve hayali değil, küçük, gerçek ve sınırlı olmasının nedeni de bu."
+    },
+    {
+     "h": "Masada neler var",
+     "p": "0,50 $ hoş geldin bonusu. Faucet'ten birkaç dakikada bir 0,01 $, günde en fazla 0,10 $. Üstüne günlük görevler, her biri bir iki sent. Bizim üzerimizden Moon, MEXC, BingX veya Bybit hesabı açtığında 1,00 $ - dördünden üçü ortaklık listesine karşı otomatik kontrol edilir. Davet ettiğin bir arkadaş gerçekten işlem yaptığında 0,50 $. Hiçbiri bir seviyeyi beklemez."
+    },
+    {
+     "h": "Dışarı almak",
+     "p": "Bakiye USDT olarak ödenir ve 5,00 $'dan başlayarak MarginPad üzerinden açılmış bir Bybit, Moon veya MEXC hesabına çekebilirsin. Her çekim elle kontrol edilip ödenir, yani anlık değildir. Bu, siteyi kullandığın için bir teşekkürdür, gelir değil - onu olduğu gibi gör, seni asla hayal kırıklığına uğratmaz."
+    },
+    {
+     "h": "Bir çekim gerçekte nasıl ilerler",
+     "p": "Tutarı 5 $'dan bakiyene kadar yazarsın ve ödemenin yapılacağı hesabı girersin. Aynı anda tek talep: ikincisi, birincisi ödenene kadar bekler. Masa o borsa hesabının gerçekten bizim üzerimizden açılıp açılmadığını, başka bir üyenin aynı hesaba çekim yapıp yapmadığını ve bakiyenin nasıl kazanıldığını görür - böylece gerçek hesap ödenir, çiftlik ödenmez. Para ulaştığında bildirim alırsın."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "MarginPad nasıl para kazanır?",
+     "o": [
+      "Verilerini satarak",
+      "Borsa ortaklık linkleri - biri bizim üzerimizden kaydolunca ücretten bir pay",
+      "Akademi için ücret alarak",
+      "Kağıt işlem kârlarından pay alarak"
+     ]
+    },
+    {
+     "q": "Çekebileceğin en küçük tutar nedir?",
+     "o": [
+      "1,00 $",
+      "5,00 $",
+      "20,00 $",
+      "Alt sınır yok"
+     ]
+    },
+    {
+     "q": "Bunlardan hangisi bir seviyeyi bekler?",
+     "o": [
+      "Faucet",
+      "Günlük görevler",
+      "Davetler",
+      "Hiçbiri - her ödül ilk günden açık"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Yukarıda adı geçen her şey tek bir sayfada. Aç ve bakiyenin, faucet'in ve kayıt bonuslarının nerede olduğuna bak - düzeni gördükten sonra daha anlamlı gelecek.",
+    "label": "Ödülleri aç"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short ve kaldıraç gerçekte ne yapar",
+   "cards": [
+    {
+     "h": "Tek yön değil, iki yön",
+     "p": "Long, fiyat yükselince kazanır. Short, fiyat düşünce kazanır. Bütün fark bu ve vadeli işlem trader'ının düşen piyasayı seyretmek zorunda kalmamasının nedeni de bu. MarginPad'de ikisi de tek dokunuş: işlem biletindeki Long ve Short düğmeleri."
+    },
+    {
+     "h": "Kaldıraç büyüklüktür, sihir değil",
+     "p": "10x ile 100 $ koyarsan 1.000 $'lık bir pozisyonu oynatırsın. Piyasanın her %1'lik hareketi artık paranın %10'u demektir, hangi yöne giderse gitsin. Kaldıraç işlemi iyileştirmez - işlem zaten sana ne yapacaksa onu çarpar."
+    },
+    {
+     "h": "Biletteki merdiven",
+     "p": "Kaldıraç kontrolü bir merdivene oturur: 10x'e kadar tam adımlar, sonra onlar - 20, 30, 50, 100 ve devamı. 107 yazarsan 110 olarak işleme girer. Merdiven, seçtiğin sayının yüksek sesle söyleyebileceğin bir sayı olması ve grafiğin ondan çizdiği likidasyon çizgisini açmadan önce okuyabilmen için var."
+    },
+    {
+     "h": "Neden 1000x'e çıkmana izin veriyoruz",
+     "p": "Buradaki majörler 1000x'e kadar gider, aklı başında birinin kullanacağının çok ötesinde. Bu kasıtlı. 1000x'te aleyhine binde birden az bir hareket pozisyonu bitirir - bunu kendi paranla bir borsada değil, bu gece bir alıştırma hesabında öğrenmelisin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "10x kaldıraçla 100 $ koyuyorsun. Pozisyon ne kadar büyük?",
+     "o": [
+      "100 $",
+      "110 $",
+      "1.000 $",
+      "10.000 $"
+     ]
+    },
+    {
+     "q": "Short pozisyon ne zaman kazanır:",
+     "o": [
+      "Fiyat yükselince",
+      "Fiyat düşünce",
+      "Fiyat sabit kalınca",
+      "Hacim yükselince"
+     ]
+    },
+    {
+     "q": "Kaldıracı artırmak gerçekte neyi değiştirir?",
+     "o": [
+      "Haklı olma ihtimalini",
+      "Pozisyonun büyüklüğünü, yani her hareket daha çok sayılır",
+      "Ödediğin ücreti",
+      "İşlemi ne kadar tutabileceğini"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Teminat ve pozisyonun öldüğü yer",
+   "cards": [
+    {
+     "h": "Teminat, ortaya koyduğun paradır",
+     "p": "Teminat, bakiyenden tek bir işleme ayırdığın dilimdir. Aynı zamanda o işlemin alabileceği en fazla paradır: kayıp teminatında sınırlanır, yani 100 $ ile açılan pozisyon sana o 100 $'a mal olabilir, bir kuruş fazlasına asla. Diğer 9.900 $'a ulaşamaz."
+    },
+    {
+     "h": "Likidasyon, tabana çarpmaktır",
+     "p": "Fiyat aleyhine yeterince uzağa giderse pozisyon kendini kapatır ve teminat gider. O fiyat likidasyondur ve MarginPad onu açtığın andan itibaren grafiğinde çizer - yani işlemin biteceği seviye içinde olduğun sürece görünür, sonunda sürpriz olmaz."
+    },
+    {
+     "h": "Karar tarayıcında değil, sunucumuzda verilir",
+     "p": "Pozisyonun sunucuda tutulur. Sekmeyi kapat, sinyali kaybet, başka bir telefona geç - hiçbir şey değişmez. Stop-loss, take-profit ve likidasyon, hepsi bizim tarafımızdan kapanmış mumlara göre kontrol edilir; bu yüzden seviyenden geçen bir fitil, mum gerçekten orada kapanmadıkça seni burada bitirmez."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir pozisyonun sana kaybettirebileceği en fazla nedir?",
+     "o": [
+      "Bütün bakiyen",
+      "Ona ayırdığın teminat",
+      "Teminatın iki katı",
+      "Kaldıraca bağlı"
+     ]
+    },
+    {
+     "q": "Bir işlem açıp tarayıcıyı kapatıyorsun. İşleme ne olur?",
+     "o": [
+      "İptal edilir",
+      "Açık kalır ve sunucuda kontrol edilir",
+      "Sen dönene kadar donar",
+      "Güncel fiyattan kapanır"
+     ]
+    },
+    {
+     "q": "Likidasyon şudur:",
+     "o": [
+      "Çok uzun tutmanın ücreti",
+      "Fiyat teminatın bittiği seviyeye ulaştığı için pozisyonun otomatik kapanması",
+      "Site tarafından elle kapatma",
+      "Stop-loss ile aynı şey"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "İki çıkışın: stop-loss ve take-profit",
+   "cards": [
+    {
+     "h": "Çıkışa ihtiyaç duymadan önce karar ver",
+     "p": "Stop-loss, işlem kötü giderse seçtiğin fiyattan işlemi kapatır. Take-profit, iyi giderse aynısını yapar. İkisi de bir kez ayarlanır ve sen olmadan uygulanır; asıl mesele bu: bir pozisyonun kaybettirdiği an, ne yapacağına karar vermek için en kötü andır."
+    },
+    {
+     "h": "Burada nereden ayarlarsın",
+     "p": "Açmadan önce bilette - ya da sonradan, işlem kartındaki Ayarla düğmesinden ve İşlemlerim'den. İşlem açıkken istediğin kadar oynatabilirsin. İkisi de olmayan bir işlemin çıkışını, o sırada ne hissediyorsan o seçer."
+    },
+    {
+     "h": "Biletin üzerinde, adım adım",
+     "p": "İşlem formunun altındaki Gelişmiş'i aç. Stop ve hedef, her biri bir fiyat ya da teminatının yüzdesini alır - birini yazarsın, diğeri yeniden yazılır, yani asla çelişmezler. Panel başlangıç olarak 2% uzakta bir stop ve 3% uzakta bir hedef doldurur; tarafı çevirirsen otomatik doldurulan seviyeler de çevrilir. Panelin gizlediği şey geçerli olmaz: Gelişmiş'i kapat, işlem onlarsız açılır."
+    },
+    {
+     "h": "Kazanmaya değer alışkanlık bu",
+     "p": "Bu kurstaki hiçbir şey sonuçlarını bu kadar değiştirmez. Gerçek USDT ödeyen tablolarda kalıcı olanlar daha iyi giriş seçenler değil, nerede yanılacaklarına önceden karar vermiş olanlardır. Bir tane ayarlamak aynı zamanda 40 XP değerinde bir Bronz'a Giden Yol görevidir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stop-loss ne yapar?",
+     "o": [
+      "Daha fazla işlem açmanı engeller",
+      "İşlem aleyhine giderse seçtiğin fiyattan kapatır",
+      "Pozisyonu duraklatır",
+      "Kaybedemeyeceğini garanti eder"
+     ]
+    },
+    {
+     "q": "MarginPad'de stop-loss'u ne zaman ayarlayabilir veya oynatabilirsin?",
+     "o": [
+      "Sadece işlemi açarken",
+      "Sadece kârdayken",
+      "Açmadan önce ve işlem açıkken her an",
+      "Günde bir kez"
+     ]
+    },
+    {
+     "q": "Stop'u teminatın yüzdesi olarak yazıyorsun. Fiyat alanına ne olur?",
+     "o": [
+      "Hiçbir şey - ayrı alanlar",
+      "Uyacak şekilde yeniden yazılır, yani ikisi asla çelişmez",
+      "Temizlenir",
+      "Kilitlenir"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Sezonlar, tablolar ve pass",
+   "cards": [
+    {
+     "h": "Site on dört günlük sezonlarla çalışır",
+     "p": "Rekabete dair her şey on dört günlük bir saatle sıfırlanır. Sezon XP'n, tablolardaki yerin ve pass baştan başlar; yani kötü bir iki hafta asla kalıcı değildir ve yeni gelen biri hiçbir zaman bir yıl geride kalmaz. Sezonun kaçıncı günü olduğu sezon sayfasının en üstünde yazar."
+    },
+    {
+     "h": "On tablo, yedisi ücretsiz",
+     "p": "On lider tablosu sezon bittiğinde gerçek USDT öder ve hepsi tek bir sayfada: /leaderboards/. Yedisi bedava: En Yüksek ROE, Yeşil Günler, En İyi Kazanma Oranı, Sezon XP, Günlük BTC Tahmini, Meme Spot ve Altın Oda - tek şartı olan, Altın seviye. İkisi MarginPad üzerinden Bybit veya Moon'da gerçek parayla işlem yapan okuyucular için. Havuzlar ve ödül dağılımları sayfada yazar."
+    },
+    {
+     "h": "Pass da hepsinin altında çalışır",
+     "p": "Her 100 sezon XP bir pass kademesidir, toplam kırk tane, ve ücretsiz yol tırmandıkça Ticks ve kozmetik öder. Zaten kazanıyorsun - bu kurstan gelen XP sen okurken buna sayıldı. Ücretli yol, mağazada kimsenin satın alamayacağı parçalar ekler."
+    },
+    {
+     "h": "Tabloların ötesinde",
+     "p": "Düello seni bir saat, bir gün, üç gün ya da bir hafta boyunca, ikinizin de kabul ettiği bir ölçüte göre tek bir trader'a karşı, Ticks riske ederek karşılaştırır. Squad, özel bir oda, majörlerde baskınlar ve bir logo ile en fazla beş kişidir. Demo Spot, 10.000 $ ile al-ve-tut oyunudur ve kendi tablosu vardır. Hiçbiri zorunlu değil - terminal üründür; geri kalanı alıştırmanın ödev gibi hissettirmesini önleyen şeydir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir MarginPad sezonu ne kadar sürer?",
+     "o": [
+      "Yedi gün",
+      "On dört gün",
+      "Bir ay",
+      "Biri kazanana kadar"
+     ]
+    },
+    {
+     "q": "On tablodan kaçına girmek ücretsiz?",
+     "o": [
+      "İki",
+      "Dört",
+      "Yedi",
+      "Dokuzunun hepsi"
+     ]
+    },
+    {
+     "q": "Her tablonun sıralaması nerede durur?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Telegram kanalı",
+      "Terminalin içinde"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Tur bu kadar. Geriye siteyi var eden şey kaldı: terminali aç, bir coin seç, stop-loss'lu küçük bir pozisyon koy ve ne olduğunu izle. O tek işlem Bronz'a giden son adım.",
+    "label": "Paper Trade'i aç"
+   }
+  }
+ ]
+}

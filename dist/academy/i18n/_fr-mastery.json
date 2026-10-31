@@ -1,1 +1,480 @@
-{"id":"mastery","name":"Maîtrise MarginPad","sub":"Tourner la boîte à outils dedans un workflow","lessons":[{"id":"mm1","t":"Trade du Papier Comme C'est Réel","cards":[{"h":"Argent factice, vraies habitudes","p":"Le compte papier te donne $100 qui ne peut réellement pas disparaître. C'est le point, et le piège. Traite-la comme un jeu vidéo et tu n'apprendras rien sauf comment secouer les boutons. Traite-la comme ta rente réelle de l'argent et tu apprendras le dimensionnement, la patience, et ce qu'une liquidation se sent - les trois seules choses qui valent la peine d'apprendre avant que tu ne touches jamais une vraie bourse."},{"h":"Même maths comme une vraie bourse","p":"Ce n'est pas un jouet simulateur avec les règles fantaisistes. Paper Trade fonctionne sur les prix en direct et la formule liquidation exacte vraies bourses utilisent - marge, levier, taux de maintenance, tout. Un long 50× qui se liquide ici aurait été liquidé sur une vraie bourse aussi. Si une stratégie ne peut pas survivre les maths pratiques, cela ne survivra pas les maths réelles."},{"h":"Dimensionne le compte comme c'est rente","p":"Avant que tu n'ouvres n'importe quoi, décide quoi une mauvaise journée ressemble. Risquant 1–2% de tes $100 par trade signifie huit trades perdants d'affilée avant que tu sois dehors - le coussin d'un trader réel. Risquant 20% par trade signifie trois mauvais trades termine le compte. Le démo ne s'en souciera pas quel chemin tu choisis. Ton toi futur s'en souciera."},{"h":"Définis la sortie avant l'entrée","p":"Chaque position obtient un stop-loss et un take-profit mis au moment où tu l'ouvres - pas après, une fois que la chandelle se déplace déjà contre toi et ton jugement est compromis. Si tu ne peux pas décider où tu as tort avant d'entrer, tu n'es pas prêt à entrer. Le plan vient en premier ; le trade est juste l'exécution."},{"h":"Diplôme sur les habitudes, pas la chance","p":"Tu es prêt à dimensionner - même dans le démo - quand tes gagnants viennent de suivre un plan, pas d'un tirage au sort chanceux 500× qui a atterri une fois. Ferme une semaine de trades dans Mes Trades et regarde honnêtement : tu dimensionnes correctement, tu utilises les stops, et tu ne fais pas les mauvais setups ? Cette habitude est le produit réel ici."}],"quiz":[{"q":"Qu'est-ce qui rend le Paper Trade de MarginPad différent d'un simulateur inventé ?","o":["Il donne plus d'argent de départ que les vraies bourses","Il utilise les prix vivants et la vraie maths de liquidation","Il ne peut pas te liquider","C'est seulement pour les débutants en-dessous de $1000"]},{"q":"Pourquoi tu devrais risquer seulement 1–2% de l'équilibre de démo par trade ?","o":["La plate-forme le requiert","Cela correspond à la vraie discipline de risque qui porte à trading vivant","Les tailles de position plus grandes sont contre les règles","Cela garantit un profit"]},{"q":"Quand tu devrais défini ton stop-loss et take-profit ?","o":["Après que le trade commence à se déplacer contre toi","Seulement sur les trades au-dessus du levier 100×","Au moment que tu ouvres la position","Jamais - fermer manuellement est plus sûr"]}]},{"id":"mm2","t":"Laisse le Screener Faire la Chasse","cards":[{"h":"Arrête de faire défiler les graphiques fatalement","p":"Feuilleter par quarante pièces en espérant une ressemble 'sur le point de se déplacer' n'est pas l'analyse, c'est la procrastination avec les marches supplémentaires. Tu trouveras toujours un graphique qui ressemble haussier si tu le fixes assez longtemps - c'est le biais de confirmation, pas un setup. Le screener existe pour que tu arrêtes la chasse par vibe et tu commence la chasse par les nombres."},{"h":"200+ paires, noté pour toi","p":"Le screener à /screener scanne au-dessus de 200 paires USDT et note chacun 0–100 de RSI, MACD, force de tendance, et le volume - les mêmes input un trader technique discipliné vérifie à la main, juste fini instantanément au-dessus du marché entier au lieu des cinq pièces que tu a arrivé à ouvrir. Il te remet une shortlist, pas un verdict."},{"h":"Un score est un plomb, pas une commande","p":"Une paire noté 85 avec un setup suggéré n'est pas un signal de tirer aveuglément - c'est un candidat qui vaut cinq minutes supplémentaires de ta attention. Ouvre le graphique, vérifie le calendrier pour le risque d'infos, vérifie le financement pour l'encombrement. Le screener rétrécit un marché de milliers vers un poignée qui vaut réellement regarder."},{"h":"Les scores hauts et bas importent tous les deux","p":"Une paire qui s'assied près de 0 n'est pas cassée - c'est te disant le setup favorise le côté court, ou qu'il simplement n'est pas qui vaut la peine de trader maintenant. Tri la liste les deux chemins devient le screener dans deux outils : un pour trouver des longs, un pour trouver des shorts, et un tiers pour trouver ce à quitter seul entièrement."},{"h":"Le raccourci, pas un raccourci autour de penser","p":"Les traders qui ignorent le screener dépensent leur avantage en cherchant. Les traders qui ignorent la vérification après le screener dépensent leur avantage en faisant confiance aveuglément. Le workflow est : le screener trouve les candidats, tu vérifie avec un graphique et une vérification de calendrier, puis - et seulement alors - tu dimensionnes une position. Saute soit la moitié et tu as sauté le point."}],"quiz":[{"q":"Ce que le screener de MarginPad réellement fait :","o":["Place les trades automatiquement pour toi","Note 200+ paires de RSI, MACD, tendance, et volume pour construire une shortlist","Suit seulement les 10 principales pièces par marché cap","Prédit les prix futurs exactes"]},{"q":"Qu'est-ce que tu devrais faire avec une paire qui note 85 ?","o":["Entre le trade immédiatement à max levier","Ignore-la - les scores hauts sont les pièges","Enquête-la davantage avant de décider n'importe quoi","Shorte-la, puisque les scores hauts signifient suracheté"]},{"q":"Ce qu'un score très bas sur une paire généralement suggère :","o":["L'échange est cassé pour cette pièce","Le setup peut favoriser le côté court, ou c'est pas qui vaut la peine de trader","Tu devrais l'acheter parce qu'elle est bon marché","Le screener a fait une erreur"]}]},{"id":"mm3","t":"Un Workspace de Graphique Qui Fonctionne","cards":[{"h":"Trente tabs n'est pas l'analyse","p":"Quinze browser tabs, six timeframes, quatre indicateurs se battant chacun pour l'attention - ce n'est pas un workspace, c'est le bruit portant un costume de workspace. Chaque graphique supplémentaire ouvert est une chose de plus qui peut te parler dans une mauvaise entrée. Le correctif n'est pas plus de graphiques. C'est moins, meilleur, organisé pour que tu les lises vraiment."},{"h":"Dix fenêtres, un board","p":"/charts te donne jusqu'à dix fenêtres de graphique flottantes sur un board - assez pour regarder tes setups au-dessus des symbols et des timeframes sans alt-tab à travers un cimetière de browser. Traîne, redimensionne, sauve le layout. La plupart des traders ne requièrent seulement deux ou trois fenêtres courantes ; les sept autres slots existent quand une vraie raison montre, pas par défaut."},{"h":"Les indicateurs sont une deuxième opinion","p":"Dix-neuf indicateurs sont disponibles. Charger tous dix-neuf ne te rend pas dix-neuf fois plus droit - cela rend le graphique illisible et te donne dix-neuf excuses pour te parler dans un trade que tu voulais déjà prendre. Choisir deux ou trois qui répondent une vraie question (tendance, momentum, volatilité) et laisse le reste s'asseoir inutilisé jusqu'à que tu les requiers."},{"h":"Sauve le layout, garde-le ennuyeux","p":"Un layout sauvé signifie tu ouvres /charts et tu vois le même board propre chaque fois - pas une décision fraîche à propos duquel dix-cinq indicateurs à ajouter aujourd'hui. Ennuyeux est l'objectif. Le workspace devrait ressembler le même sur ta meilleur jour de trading et le pire, parce que les setups que tu chasses ne changent juste parce que tu es impatient."},{"h":"Laisse un deuxième lecteur vérifier ta lecture","p":"Les utilisateurs signés-en obtiennent un analyste de graphique AI sur chaque fenêtre - pas à te remettre un trade, mais à santé-vérifier ta raisonnement propre contre ce qui est réellement sur le graphique. Si elle signale quelque chose ta lecture a manqué, c'est utile. Si elle juste accepte toi, ce n'est pas la confirmation, c'est toi parlant à toi-même dans une plus gentille police."}],"quiz":[{"q":"Quel est le problème réel de charger dix-neuf indicateurs sur un graphique ?","o":["Le graphique va crash","Cela multiplie la précision","Cela crée du bruit et des excuses à justifier un trade que tu voulais déjà","C'est techniquement pas possible"]},{"q":"Pourquoi sauver un layout de graphique au lieu de le reconstruire chaque fois ?","o":["C'est requis pour utiliser /charts","Cela garde ton workspace constant au lieu d'une décision embrouillée propre chaque session","Cela découvre automatiquement les meilleurs trades","Cela désactive les indicateurs que tu n'as pas besoin"]},{"q":"Ce que l'analyste de graphique AI est pour :","o":["Placer les trades automatiquement","Remplace ta propre analyse entièrement","Santé-vérifier ta lecture contre ce qui est sur le graphique","Prévoir les prix de liquidation exactes"]}]},{"id":"mm4","t":"Ne Te Fais Jamais Embusquer par les Infos","cards":[{"h":"La chandelle qui est sortie de nulle part","p":"Tu n'as pas eu de malchance. FOMC était programmé pour 18:00 UTC trois semaines il y a et chaque calendrier économique sur terre l'a listé. Le marché ne t'a pas embusqué - tu as marché dedans un événement programmé avec une position levée et aucune idée qu'il venait. Ce n'est pas la mauvaise chance. Ce n'est pas la vérification du calendrier."},{"h":"Les événements drapeau rouge, marqués à l'avance","p":"/calendar suit chaque décision FOMC, libération CPI, et impression NFP avec le compte à rebours vivant, reculant vers 2023 et avant comme loin comme les données existent. Ce ne sont pas les petits blips - ce sont les événements les plus probables d'envoyer une position 50× tout directement à liquidation en secondes, précisément parce que tout le monde se repositionne autour de la même manchette à la fois."},{"h":"Vérifie-la avant l'entrée, pas après la mèche","p":"L'habitude est simple : avant d'ouvrir n'importe quelle position levée, jette un coup d'œil au calendrier. Y a-t-il un événement drapeau rouge dans les prochaines heures ? Si oui, soit saute le trade, soit dimensionne dur vers le bas, ou élargis ton stop assez pour survivre le bruit. Vérifier après que tu es déjà dedans le trade n'est pas une habitude, c'est une autopsie."},{"h":"Règle la rappelle au lieu de te souvenant","p":"La mémoire est un mauvais outil de risque - tu oublieras le temps exact, tu auras la timezone fausse, ou tu seras simplement dormant. Chaque événement sur le calendrier a un email et une rappelle Telegram intégrée. Règle-la une fois pour les événements qui comptent à tes paires et laisse la plate-forme faire le souvenir. C'est gratuit et enlève un catégorie entière de pertes stupides."},{"h":"Pas chaque événement requiert une réaction","p":"Le point n'est pas d'éviter de trader autour d'infos pour toujours - certains des meilleurs mouvements arrivent après une impression. Le point est de ne jamais être dans une position levée que tu n'a pas choisi à être dedans quand la manchette chute. Trade l'événement à dessein, avec un plan, ou mets de côté à dessein. Obtenir attrapé par surprise n'est pas."}],"quiz":[{"q":"Quel type d'événements /calendar suit avec les comptes à rebours ?","o":["Seulement les fenêtres de maintenance de bourse crypto","Les décisions FOMC, les libérations CPI, et les impressions NFP","Les tendances random des réseaux sociaux","Seulement les événements pour Bitcoin spécifiquement"]},{"q":"Pourquoi les rappelles email/Telegram du calendrier vaut la peine de réglage ?","o":["Elles garantissent un trade gagnant","Elles enlèvent le besoin de te souvenir de temps d'événement toi-même","Elles ferment automatiquement tes positions","Elles sont requises pour utiliser le calendrier du tout"]},{"q":"Quelle est la vraie leçon à propos de trader autour d'événements d'infos ?","o":["Ne jamais trade près de n'importe quel événement économique","Toujours trade les infos pour un profit garanti","Sois dedans une position levée à dessein quand la manchette chute - pas par accident","Le calendrier est seulement utile pour les traders de stock"]}]},{"id":"mm5","t":"Lis la Foule Avant de la Rejoindre","cards":[{"h":"Tout le monde a déjà fait le même pari","p":"Si un trade ressemble évidemment à toi, c'est ressemblé évidemment à cent mille autres traders levés environ six heures il y a. D'ici que un setup se sente sûr et tout le monde est d'accord, la foule est déjà positionnée - et un trade surpeuplé ne requiert pas les mauvaises infos pour dérouler, cela requiert juste la foule à avoir tort une fois."},{"h":"Le taux de financement : le prix d'être dedans la foule","p":"/funding montre ce que les longs paient les shorts, ou vice versa, au-dessus des bourses, rafraîchi vivant. Le financement sauvagement positif signifie les longs paient lourdement pour rester longs - le bateau est surpeuplé et tout le monde est déjà dedans. C'est ne signifie pas le prix a à inverser immédiatement, mais c'est signifier une pression de levier est l'un de pousse loin d'être forçé dehors."},{"h":"L'intérêt ouvert te dit combien gros le bateau est","p":"/open-interest montre l'exposition totale levée au-dessus du marché. L'intérêt ouvert montant pendant un rassemblement signifie l'argent de nouveau levier amasse dedans, pas juste les holders existants obtenant plus sûrs - c'est le carburant pour un mouvement plus tranchant si cela inverse. L'intérêt ouvert tombant dedans un mouvement souvent signifie les positions ferment, pas ouvrent, qui lisent très différemment."},{"h":"Le ratio long/short : qui est réellement positionné","p":"/long-short agrège la division long-versus-short au-dessus des bourses. Un biais extrême - dis 80% long - n'est pas une prédiction, c'est une étiquette d'avertissement : beaucoup de gens ont fait le même pari que tu es sur le point de faire. Les biais extrêmes finalement snape, et quand ils font, c'est généralement la foule qui se liquidé, pas la minorité."},{"h":"Soixante secondes avant chaque entrée levée","p":"Avant de dimensionner une position, dépense une minute sur le financement, l'intérêt ouvert, et le long/short - pas pour trouver un trade, mais pour vérifier soit tu es sur le point de rejoindre une foule ou une trouver une. Les lectures neutres signifie la côte est relativement claire. Les lectures extrêmes signifie ton stop a besoin d'être plus large, ta taille plus petite, ou ta entrée plus tard."}],"quiz":[{"q":"Ce qu'un taux de financement sauvagement positif généralement indique :","o":["L'échange est glitching","Les longs sont surpeuplés et paient lourdement pour rester longs","Les shorts sont sur le point d'être liquidés pour certain","La pièce est sur le point d'être rayée de la liste"]},{"q":"L'intérêt ouvert montant pendant un rassemblement de prix le plus probable signifie :","o":["Les holders existants sont juste plus sûrs, rien de nouveau","L'argent de nouveau levier entre le marché","L'échange réduit la marge disponible","Le volume a arrêté entièrement"]},{"q":"Ce que tu devrais faire avec un biais long/short extrême, comme 80% long ?","o":["Immédiatement rejoins le côté de majorité","Ignore-la, elle n'a aucun relèvement","Traite-la comme un avertissement et dimensionne ou arrête en conséquence","Assume les données est fausse et saute la vérification"]}]},{"id":"mm6","t":"Les Alertes Au Lieu de Babysitting du Graphique","cards":[{"h":"Starer au graphique n'est pas une stratégie","p":"Tu définis un niveau, puis tu t'assois là regardant la chandelle l'approcher pendant quarante-cinq minutes, et quelque part dans la minute trente ta patience court dehors et tu entre trois dollars tôt 'juste en cas.' Ce n'est pas la discipline, c'est l'ennui prétendant à être conviction. Le graphique ne t'a pas requiert te regardant. Ton plan t'a requiert à attendre."},{"h":"L'alerte fait le regardage","p":"/alerts te permet de régler un niveau de prix - au-dessus ou en-dessous - et recevez une notification le moment exact cela atteint, aucun graphique-starer requis. Règle-la à ton entrée réelle niveau, celui de ton plan, pas un niveau tu gardes ajuster parce que le prix n'a pas atteint l'ancien. Puis ferme la tab et fais quelque chose d'autre."},{"h":"Regarder plus ne signifie pas réagir mieux","p":"Les traders qui regardent un graphique pendant des heures se persuadent qu'ils cueillent l'information. Surtout qu'ils cueillent l'anxiété, qui produit les entrées tôt, les sorties tôt, et les stops bougés. Une alerte déclenche exactement une fois, au niveau exact que tu choisir quand tu étais calme. C'est un meilleur décideur que toi es, quarante-cinq minutes dans une compétition starer."},{"h":"La watchlist est une shortlist, pas une chapelle","p":"Les paires vedette-marquées sur la page d'accueil construisent une watchlist - mais une watchlist qui ne se prune jamais se transforme dedans quarante pièces tu 'as un sentiment à propos de,' ce qui est juste le problème de screener encore avec les marches supplémentaires. Vedette qui tu suive vraiment avec un plan attaché, dévedette ce que tu étais juste curieux à propos de le mois passé, et couples chaque vedette avec une alerte."},{"h":"Marche loin à dessein","p":"Le point entier des alertes plus une watchlist est la permission d'arrêter de regarder. Règle le niveau, règle l'alerte, ferme l'appli. Si le niveau atteint, tu te dis. Si cela ne fait, tu n'as pas gaspillé un après-midi le découvrir. Les traders qui durent ne sont pas ceux gluées au graphique - ceux qui construisent un système qui ne les requiert gluées."}],"quiz":[{"q":"Quel est le problème réel de starer un graphique en attendant ton niveau ?","o":["Cela utilise trop de données","Il tend à produire les entrées tôt et les plans bougés de l'impatience","Le graphique mises à jour trop lentement à regarder vivant","C'est techniquement pas possible sur mobile"]},{"q":"Qu'est-ce que tu devrais régler une alerte de prix à ?","o":["Partout le prix est actuellement","Le niveau d'entrée exact de ton plan","Un nombre rond aléatoire","N'importe quel niveau qui se sent excitant"]},{"q":"Ce qui garde une watchlist utile au lieu d'embrouillé :","o":["Vedette chaque pièce que tu l'as jamais entendu parler de","Ne jamais enlever n'importe quoi, jamais","Le prune régulièrement et couples les entrées avec un plan réel ou une alerte","Utilise-la seulement pour les pièces déjà en profit"]}]},{"id":"mm7","t":"La Boucle XP : La Pratique Qui Paie","cards":[{"h":"Les reps, pas la chance","p":"Un seul trade chanceux 200× enseigne-toi rien sauf la chance existe. XP, missions, et leaderboards sur MarginPad sont construits autour de l'opposé : récompensant les reps ennuyeux - planification des trades proprement, finition des leçons, montrant quotidiennement - parce que les reps sont ce qui réellement construit un trader. La gamification n'est pas une distraction de la discipline. C'est la discipline, avec un scoreboard attaché."},{"h":"Les missions récompensent les bons comportements","p":"Les missions quotidiennes paient les montants petits du USDT réel pour les choses comme fermer un trade planifié avec un stop-loss attaché, finition une leçon Academy, ou utilisation les outils qui te rendent mieux - pas pour le volume, pas pour la taille, pas pour la chance. Vérifie-les chaque jour, assomme les qui correspondent ce que tu étais de toute façon sur le point de faire, et laisse le repos aller."},{"h":"Les séries sont juste l'habitude avec un nombre dessus","p":"Un compteur de série est un truc bon marché et cela fonctionne de toute façon - les humains haïssent brisant un nombre qui monte. Utilise cela. Montre quotidiennement, vérifie les missions, jette un œil au calendrier, révise un trade ouvert. La série n'est pas l'objectif ; c'est l'échafaudage pour l'objectif réel, qui est le faire la checklist souvent assez que cela cesse d'être une checklist."},{"h":"Les leaderboards tu peux réellement respecter","p":"Les boards de saison - Green Days, ROE, taux de gain et XP - durent 14 jours et suivent chaque chose séparément, donc un parieur imprudent à 1000× qui domine le board ROE cette saison n’est pas automatiquement « meilleur » qu’un trader avec un ennuyeux 65 % de taux de gain. Regarde les boards Green Days, taux de gain et XP si tu veux un signal qui reflète la compétence plutôt qu’un coup de chance. Les vrais prix en USDT sont versés à chaque saison de 14 jours ; le point tient toujours."},{"h":"Les duels : la discipline avec un scoreboard","p":"Un duel de 7 jours te met contre un autre trader sur une métrique choisie - ROE, taux de gagnant, partout tu sélectionne. C'est la pratique pareille que tu ferais de toute façon, juste avec un rival attaché, qui s'avère être une voie étonnamment efficace de réellement t'en tenir à un plan une semaine droite. Défi quelqu'un dont tu respectes les stats, pas juste la personne au top du board."}],"quiz":[{"q":"Quel type de comportement les missions quotidiennes généralement récompensent ?","o":["Seulement ouvrir le trade possible levier plus élevé","Planification des trades proprement, finition des leçons, et l'engagement constant","Le volume de trading peu importe le résultat","Gagner chaque seul trade"]},{"q":"Pourquoi regarder le taux de gagnant ou le board XP au lieu juste du board ROE ?","o":["Les boards ROE sont faux","Un top ROE la semaine peut venir d'un trade chanceux risqué, pas nécessairement la compétence","Les boards du taux de gagnant paient les plus gros prix","XP est la seule qui est l'argent réel"]},{"q":"Qu'est-ce qu'un duel de 7 jours ?","o":["Un trade privé où le bilan de papier du perdant est transféré au gagnant","Une compétition tête-à-tête contre un autre trader sur une métrique choisie comme le ROE ou taux de gagnant","Un tournoi qui réinitialise le solde de ton papier si tu perds","Une caractéristique seulement disponible aux traders de top-100 leaderboard"]}]}]}
+{
+ "id": "mastery",
+ "name": "Maîtrise MarginPad",
+ "sub": "Tourner la boîte à outils dedans un workflow",
+ "lessons": [
+  {
+   "id": "mm1",
+   "t": "Fais du paper trading comme si c'était réel",
+   "cards": [
+    {
+     "h": "Faux argent, vraies habitudes",
+     "p": "Le compte papier te donne 10 000 $ qui ne peuvent pas vraiment disparaître. C'est le but, et c'est le piège. Traite-le comme un jeu vidéo et tu n'apprendras qu'à marteler des boutons. Traite-le comme l'argent de ton loyer et tu apprendras le dimensionnement, la patience et ce que ressent une liquidation - les trois seules choses qui valent la peine d'être connues avant de toucher un vrai exchange."
+    },
+    {
+     "h": "Les mêmes maths qu'un exchange réel",
+     "p": "Ce n'est pas un simulateur jouet avec des règles inventées. Paper Trade tourne sur des prix en direct et la formule de liquidation exacte des vrais exchanges - marge, levier, taux de maintenance, tout. Un long 50× liquidé ici l'aurait été aussi sur un vrai exchange. Si une stratégie ne survit pas aux maths de l'entraînement, elle ne survivra pas aux vraies."
+    },
+    {
+     "h": "Ta position vit sur le serveur",
+     "p": "Ouvre un trade et il est tenu de notre côté, pas dans l'onglet de ton navigateur. Ferme l'ordinateur, change de téléphone, perds le signal : le stop, l'objectif et la liquidation sont toujours vérifiés chaque minute sur des bougies clôturées. C'est aussi pourquoi une mèche à travers ton stop ne te termine pas ici, sauf si la bougie a clôturé là, et pourquoi le P&L du ticket est le chiffre du serveur, jamais un chiffre inventé par ton écran."
+    },
+    {
+     "h": "Dimensionne le compte comme si c'était ton loyer",
+     "p": "Avant d'ouvrir quoi que ce soit, décide à quoi ressemble une mauvaise journée. Risquer 1-2% de tes 10 000 $ par trade, c'est huit trades perdants d'affilée avant d'être éliminé - un vrai coussin de trader. Risquer 20% par trade, c'est trois mauvais trades pour finir le compte. La démo se fiche de ton choix. Ton toi du futur, non."
+    },
+    {
+     "h": "Fixe la sortie avant l'entrée",
+     "p": "Chaque position reçoit un stop-loss et un take-profit au moment où tu l'ouvres - pas après, quand la bougie est déjà en train de filer contre toi et que ton jugement est compromis. Si tu ne sais pas décider où tu as tort avant d'entrer, tu n'es pas prêt à entrer. Le plan vient d'abord ; le trade ne fait que l'exécuter."
+    },
+    {
+     "h": "Passe un cap sur les habitudes, pas sur la chance",
+     "p": "Tu es prêt à augmenter la taille - même en démo - quand tes gains viennent d'un plan suivi, pas d'un coup de chance à 500× tombé une fois. Clôture une semaine de trades dans My Trades et regarde honnêtement : as-tu dimensionné correctement, utilisé des stops, laissé passer les mauvais setups ? Cette habitude est le vrai produit ici."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Qu'est-ce qui distingue le Paper Trade de MarginPad d'un simulateur inventé ?",
+     "o": [
+      "Il donne plus d'argent de départ que les vrais exchanges",
+      "Il utilise des prix en direct et de vraies maths de liquidation",
+      "Il ne peut pas te liquider",
+      "Il est réservé aux débutants sous 1 000 $"
+     ]
+    },
+    {
+     "q": "Pourquoi ne risquer que 1-2% du solde de démo par trade ?",
+     "o": [
+      "La plateforme l'exige",
+      "Ça correspond à une vraie discipline de risque qui se transpose au trading réel",
+      "Les grosses tailles sont contre les règles",
+      "Ça garantit un profit"
+     ]
+    },
+    {
+     "q": "Quand faut-il régler ton stop-loss et ton take-profit ?",
+     "o": [
+      "Après que le trade commence à aller contre toi",
+      "Seulement sur les trades au-dessus de 100× de levier",
+      "Au moment où tu ouvres la position",
+      "Jamais - fermer à la main est plus sûr"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm2",
+   "t": "Laisse le Screener chasser pour toi",
+   "cards": [
+    {
+     "h": "Arrête de faire défiler les graphiques",
+     "p": "Zapper entre quarante coins en espérant qu'un semble \"sur le point de bouger\", ce n'est pas de l'analyse, c'est de la procrastination avec des étapes en plus. Tu trouveras toujours un graphique qui a l'air haussier si tu le fixes assez longtemps - c'est du biais de confirmation, pas un setup. Le screener existe pour que tu arrêtes de chasser au feeling et que tu chasses avec des chiffres."
+    },
+    {
+     "h": "Plus de 130 paires, notées pour toi",
+     "p": "Le screener sur /screener passe en revue plus de 130 paires USDT et note chacune de 0 à 100 d'après le RSI, le MACD, la force de tendance et le volume - les mêmes entrées qu'un trader technique rigoureux vérifie à la main, mais faites instantanément sur tout le marché au lieu des cinq coins que tu as ouverts par hasard. C'est un seul tableau dense : trie n'importe quelle colonne, mets en favori les paires que tu suis, et la fiche de chaque ligne ouvre le graphique, le terminal, une alerte ou Rekt pour ce coin."
+    },
+    {
+     "h": "Un score est une piste, pas un ordre",
+     "p": "Une paire à 85 avec un setup suggéré n'est pas un signal à tirer à l'aveugle - c'est une candidate qui mérite cinq minutes de plus de ton attention. Ouvre le graphique, regarde le calendrier pour le risque d'actualité, regarde le funding pour voir si c'est bondé. Le screener réduit un marché de milliers de paires à une poignée qui valent vraiment un coup d'œil."
+    },
+    {
+     "h": "Les scores hauts et bas comptent tous les deux",
+     "p": "Une paire proche de 0 n'est pas cassée - elle te dit que le setup favorise le short, ou qu'elle ne vaut tout simplement pas d'être tradée maintenant. Trier la liste dans les deux sens fait du screener deux outils : un pour trouver des longs, un pour trouver des shorts, et un troisième pour trouver ce qu'il faut laisser de côté."
+    },
+    {
+     "h": "Le setup dit ce que coûte le stop",
+     "p": "Chaque setup suggéré affiche le stop en pourcentage de la marge, pas seulement en prix - \"perdre 44% de la marge\" est un chiffre que tu peux refuser. Un setup avec un rapport gain/risque faible est grisé, le funding est affiché à quatre décimales pour qu'un côté bondé se voie, et la ligne Telegram sous le tableau est pour ceux qui veulent le haut de la liste dans leur chat une fois par jour."
+    },
+    {
+     "h": "Le raccourci, pas un raccourci pour ne pas réfléchir",
+     "p": "Les traders qui sautent le screener dépensent leur avantage à chercher. Ceux qui sautent la vérification après le screener le dépensent à faire confiance aveuglément. Le flux est : le screener trouve des candidates, tu vérifies avec un graphique et le calendrier, puis - et seulement alors - tu dimensionnes une position. Saute l'une des deux moitiés et tu as sauté le but."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Que fait réellement le screener de MarginPad ?",
+     "o": [
+      "Il place des trades automatiquement pour toi",
+      "Il note plus de 130 paires d'après le RSI, le MACD, la tendance et le volume pour bâtir une présélection",
+      "Il suit seulement les 10 premiers coins par capitalisation",
+      "Il prédit les prix futurs exacts"
+     ]
+    },
+    {
+     "q": "Que faire d'une paire qui score 85 ?",
+     "o": [
+      "Entrer tout de suite au levier maximum",
+      "L'ignorer - les scores élevés sont des pièges",
+      "L'examiner de plus près avant de décider quoi que ce soit",
+      "La shorter, puisque les scores élevés signifient surachat"
+     ]
+    },
+    {
+     "q": "Que suggère généralement un score très bas sur une paire ?",
+     "o": [
+      "L'exchange est cassé pour ce coin",
+      "Le setup favorise peut-être le short, ou ne vaut pas d'être tradé",
+      "Tu dois l'acheter parce qu'elle est pas chère",
+      "Le screener s'est trompé"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm3",
+   "t": "Un espace de graphiques qui marche",
+   "cards": [
+    {
+     "h": "Trente onglets, ce n'est pas de l'analyse",
+     "p": "Quinze onglets de navigateur, six unités de temps, quatre indicateurs qui se disputent ton attention - ce n'est pas un espace de travail, c'est du bruit déguisé en espace de travail. Chaque graphique ouvert en plus est une chose de plus qui peut te convaincre d'une mauvaise entrée. La solution n'est pas plus de graphiques. C'est moins, mieux choisis, disposés pour que tu puisses les lire."
+    },
+    {
+     "h": "Huit fenêtres, un tableau",
+     "p": "/charts te donne jusqu'à huit fenêtres de graphique sur un tableau - assez pour suivre tes setups sur plusieurs symboles et unités de temps sans jongler dans un cimetière d'onglets. Glisse, redimensionne, sauvegarde la disposition. La plupart des traders n'ont besoin que de deux ou trois fenêtres à la fois ; les autres emplacements servent quand une vraie raison se présente, pas par défaut. Sur téléphone, le même moteur tourne bord à bord avec un dock en bas."
+    },
+    {
+     "h": "Les indicateurs sont un deuxième avis",
+     "p": "Dix-neuf indicateurs standard sont disponibles, plus six mesures MarginPad que personne d'autre n'a - Liquidation Cascade, Market Brain, Market Memory, Magnet, Big Liquidations et What Moved It. Tout charger ne te rend pas plus juste - ça rend le graphique illisible et te donne plus d'excuses pour te convaincre d'un trade que tu voulais déjà prendre. Choisis-en deux ou trois qui répondent à une vraie question et laisse les autres de côté jusqu'à en avoir besoin."
+    },
+    {
+     "h": "Sauvegarde la disposition, garde-la ennuyeuse",
+     "p": "Une disposition sauvegardée, c'est ouvrir /charts et voir chaque fois le même tableau propre - pas une nouvelle décision sur les quinze indicateurs à ajouter aujourd'hui. L'ennui est le but. L'espace de travail doit avoir le même aspect lors de ton meilleur jour de trading et du pire, parce que les setups que tu cherches ne changent pas parce que tu es impatient."
+    },
+    {
+     "h": "Fais vérifier ta lecture par un second lecteur",
+     "p": "Ask AI, une fonction Premium, lit les mêmes bougies, niveaux, funding et poches de liquidation que toi, dessine le setup sur le graphique et répond par un plan avec une entrée, un stop et des objectifs - ou dit qu'il n'y a pas de trade maintenant. Il n'est pas là pour te donner un trade ; il est là pour vérifier ton raisonnement par rapport à ce qui est à l'écran. S'il ne fait que te donner raison, ce n'est pas une confirmation, c'est toi qui te parles à toi-même dans une plus jolie police."
+    },
+    {
+     "h": "Ses appels sont notés, et les tiens aussi",
+     "p": "Chaque plan directionnel donné par l'assistant est enregistré avec ses niveaux et réglé ensuite sur les vraies bougies : le premier objectif a-t-il été touché avant le stop. Le bilan devient public quand il y a assez d'appels réglés, et sous la carte tu vois le tien : combien des plans que tu as demandés ont gagné, perdu ou n'ont jamais été remplis. Une lecture qui ne tient pas de score est un horoscope."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel est le vrai problème de charger dix-neuf indicateurs sur un graphique ?",
+     "o": [
+      "Le graphique va planter",
+      "Ça multiplie la précision",
+      "Ça crée du bruit et des excuses pour justifier un trade que tu voulais déjà",
+      "Ce n'est pas techniquement possible"
+     ]
+    },
+    {
+     "q": "Pourquoi sauvegarder une disposition plutôt que la refaire à chaque fois ?",
+     "o": [
+      "C'est obligatoire pour utiliser /charts",
+      "Ça garde ton espace de travail constant au lieu d'une nouvelle décision encombrée à chaque session",
+      "Ça trouve automatiquement de meilleurs trades",
+      "Ça désactive les indicateurs inutiles"
+     ]
+    },
+    {
+     "q": "À quoi sert Ask AI ?",
+     "o": [
+      "À placer des trades automatiquement",
+      "À remplacer entièrement ta propre analyse",
+      "À vérifier ta lecture par rapport à ce qui est sur le graphique, avec un bilan noté",
+      "À prédire les prix de liquidation exacts"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm4",
+   "t": "Ne Te Fais Jamais Embusquer par les Infos",
+   "cards": [
+    {
+     "h": "La chandelle qui est sortie de nulle part",
+     "p": "Tu n'as pas eu de malchance. FOMC était programmé pour 18:00 UTC trois semaines il y a et chaque calendrier économique sur terre l'a listé. Le marché ne t'a pas embusqué - tu as marché dedans un événement programmé avec une position levée et aucune idée qu'il venait. Ce n'est pas la mauvaise chance. Ce n'est pas la vérification du calendrier."
+    },
+    {
+     "h": "Les événements drapeau rouge, marqués à l'avance",
+     "p": "/calendar suit chaque décision FOMC, libération CPI, et impression NFP avec le compte à rebours vivant, reculant vers 2023 et avant comme loin comme les données existent. Ce ne sont pas les petits blips - ce sont les événements les plus probables d'envoyer une position 50× tout directement à liquidation en secondes, précisément parce que tout le monde se repositionne autour de la même manchette à la fois."
+    },
+    {
+     "h": "Vérifie-la avant l'entrée, pas après la mèche",
+     "p": "L'habitude est simple : avant d'ouvrir n'importe quelle position levée, jette un coup d'œil au calendrier. Y a-t-il un événement drapeau rouge dans les prochaines heures ? Si oui, soit saute le trade, soit dimensionne dur vers le bas, ou élargis ton stop assez pour survivre le bruit. Vérifier après que tu es déjà dedans le trade n'est pas une habitude, c'est une autopsie."
+    },
+    {
+     "h": "Règle la rappelle au lieu de te souvenant",
+     "p": "La mémoire est un mauvais outil de risque - tu oublieras le temps exact, tu auras la timezone fausse, ou tu seras simplement dormant. Chaque événement sur le calendrier a un email et une rappelle Telegram intégrée. Règle-la une fois pour les événements qui comptent à tes paires et laisse la plate-forme faire le souvenir. C'est gratuit et enlève un catégorie entière de pertes stupides."
+    },
+    {
+     "h": "Pas chaque événement requiert une réaction",
+     "p": "Le point n'est pas d'éviter de trader autour d'infos pour toujours - certains des meilleurs mouvements arrivent après une impression. Le point est de ne jamais être dans une position levée que tu n'a pas choisi à être dedans quand la manchette chute. Trade l'événement à dessein, avec un plan, ou mets de côté à dessein. Obtenir attrapé par surprise n'est pas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel type d'événements /calendar suit avec les comptes à rebours ?",
+     "o": [
+      "Seulement les fenêtres de maintenance de bourse crypto",
+      "Les décisions FOMC, les libérations CPI, et les impressions NFP",
+      "Les tendances random des réseaux sociaux",
+      "Seulement les événements pour Bitcoin spécifiquement"
+     ]
+    },
+    {
+     "q": "Pourquoi les rappelles email/Telegram du calendrier vaut la peine de réglage ?",
+     "o": [
+      "Elles garantissent un trade gagnant",
+      "Elles enlèvent le besoin de te souvenir de temps d'événement toi-même",
+      "Elles ferment automatiquement tes positions",
+      "Elles sont requises pour utiliser le calendrier du tout"
+     ]
+    },
+    {
+     "q": "Quelle est la vraie leçon à propos de trader autour d'événements d'infos ?",
+     "o": [
+      "Ne jamais trade près de n'importe quel événement économique",
+      "Toujours trade les infos pour un profit garanti",
+      "Sois dedans une position levée à dessein quand la manchette chute - pas par accident",
+      "Le calendrier est seulement utile pour les traders de stock"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm5",
+   "t": "Lis la Foule Avant de la Rejoindre",
+   "cards": [
+    {
+     "h": "Tout le monde a déjà fait le même pari",
+     "p": "Si un trade ressemble évidemment à toi, c'est ressemblé évidemment à cent mille autres traders levés environ six heures il y a. D'ici que un setup se sente sûr et tout le monde est d'accord, la foule est déjà positionnée - et un trade surpeuplé ne requiert pas les mauvaises infos pour dérouler, cela requiert juste la foule à avoir tort une fois."
+    },
+    {
+     "h": "Le taux de financement : le prix d'être dedans la foule",
+     "p": "/funding montre ce que les longs paient les shorts, ou vice versa, au-dessus des bourses, rafraîchi vivant. Le financement sauvagement positif signifie les longs paient lourdement pour rester longs - le bateau est surpeuplé et tout le monde est déjà dedans. C'est ne signifie pas le prix a à inverser immédiatement, mais c'est signifier une pression de levier est l'un de pousse loin d'être forçé dehors."
+    },
+    {
+     "h": "L'intérêt ouvert te dit combien gros le bateau est",
+     "p": "/open-interest montre l'exposition totale levée au-dessus du marché. L'intérêt ouvert montant pendant un rassemblement signifie l'argent de nouveau levier amasse dedans, pas juste les holders existants obtenant plus sûrs - c'est le carburant pour un mouvement plus tranchant si cela inverse. L'intérêt ouvert tombant dedans un mouvement souvent signifie les positions ferment, pas ouvrent, qui lisent très différemment."
+    },
+    {
+     "h": "Le ratio long/short : qui est réellement positionné",
+     "p": "/long-short agrège la division long-versus-short au-dessus des bourses. Un biais extrême - dis 80% long - n'est pas une prédiction, c'est une étiquette d'avertissement : beaucoup de gens ont fait le même pari que tu es sur le point de faire. Les biais extrêmes finalement snape, et quand ils font, c'est généralement la foule qui se liquidé, pas la minorité."
+    },
+    {
+     "h": "Soixante secondes avant chaque entrée levée",
+     "p": "Avant de dimensionner une position, dépense une minute sur le financement, l'intérêt ouvert, et le long/short - pas pour trouver un trade, mais pour vérifier soit tu es sur le point de rejoindre une foule ou une trouver une. Les lectures neutres signifie la côte est relativement claire. Les lectures extrêmes signifie ton stop a besoin d'être plus large, ta taille plus petite, ou ta entrée plus tard."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ce qu'un taux de financement sauvagement positif généralement indique :",
+     "o": [
+      "L'échange est glitching",
+      "Les longs sont surpeuplés et paient lourdement pour rester longs",
+      "Les shorts sont sur le point d'être liquidés pour certain",
+      "La pièce est sur le point d'être rayée de la liste"
+     ]
+    },
+    {
+     "q": "L'intérêt ouvert montant pendant un rassemblement de prix le plus probable signifie :",
+     "o": [
+      "Les holders existants sont juste plus sûrs, rien de nouveau",
+      "L'argent de nouveau levier entre le marché",
+      "L'échange réduit la marge disponible",
+      "Le volume a arrêté entièrement"
+     ]
+    },
+    {
+     "q": "Ce que tu devrais faire avec un biais long/short extrême, comme 80% long ?",
+     "o": [
+      "Immédiatement rejoins le côté de majorité",
+      "Ignore-la, elle n'a aucun relèvement",
+      "Traite-la comme un avertissement et dimensionne ou arrête en conséquence",
+      "Assume les données est fausse et saute la vérification"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm6",
+   "t": "Des alertes plutôt que surveiller le graphique",
+   "cards": [
+    {
+     "h": "Fixer le graphique n'est pas une stratégie",
+     "p": "Tu fixes un niveau, puis tu regardes la bougie s'en approcher pendant quarante-cinq minutes, et quelque part à la minute trente ta patience lâche et tu entres trois dollars trop tôt \"au cas où\". Ce n'est pas de la discipline, c'est de l'ennui qui se fait passer pour de la conviction. Le graphique n'avait pas besoin que tu le surveilles. Ton plan avait besoin que tu attendes."
+    },
+    {
+     "h": "Une page pour toutes les alertes",
+     "p": "/alerts/ est l'endroit où vivent toutes les alertes du site et où tu choisis comment elles te parviennent : une notification push sur ton téléphone, un message du bot Telegram, ou un email. Une alerte de prix est gratuite - un coin au-dessus ou en dessous d'un niveau. Une alerte de ligne de tendance l'est aussi : trace la ligne sur un graphique, touche la cloche, et elle sonne quand le prix croise une ligne qui bouge. Règle-les au niveau de ton plan, puis ferme l'onglet."
+    },
+    {
+     "h": "Les alertes que nous seuls pouvons envoyer",
+     "p": "Les alertes de position sont Premium, et aucun site de graphiques ne peut les copier, car nous détenons tes positions : ta liquidation qui approche, ton stop sur le point de se déclencher, ton objectif presque atteint, un ordre en attente sur le point d'être exécuté. Le même interrupteur t'apporte un catalyseur sur un coin que tu détiens - un listing, un hack, une publication macro - à la minute où il tombe. Les alertes de zone sonnent quand une grosse bande de liquidation est sur le point d'être touchée ; les alertes baleine suivent un wallet que tu as choisi."
+    },
+    {
+     "h": "Regarder plus ne veut pas dire mieux réagir",
+     "p": "Les traders qui scrutent un graphique pendant des heures se convainquent qu'ils collectent de l'information. Ils collectent surtout de l'anxiété, qui produit des entrées trop tôt, des sorties trop tôt et des stops déplacés. Une alerte se déclenche une fois, exactement au niveau que tu as choisi quand tu étais calme. C'est un meilleur décideur que toi, quarante-cinq minutes après le début d'un concours de regard."
+    },
+    {
+     "h": "La watchlist est une présélection, pas un sanctuaire",
+     "p": "Mettre des paires en favori dans le screener bâtit une watchlist - mais une watchlist jamais élaguée devient quarante coins sur lesquels tu \"as une intuition\", ce qui est le problème du screener en plus compliqué. Mets en favori ce que tu suis vraiment avec un plan, retire ce qui n'était que de la curiosité le mois dernier, et associe chaque étoile à une alerte."
+    },
+    {
+     "h": "Pars exprès",
+     "p": "Tout l'intérêt des alertes et d'une watchlist est la permission d'arrêter de regarder. Fixe le niveau, fixe l'alerte, ferme l'app. Si le niveau est touché, on te prévient. Sinon, tu n'as pas perdu un après-midi à le vérifier. Les traders qui durent ne sont pas ceux qui sont collés à l'écran - ce sont ceux qui ont bâti un système qui n'a pas besoin qu'ils y soient collés."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel est le vrai problème de fixer un graphique en attendant ton niveau ?",
+     "o": [
+      "Ça consomme trop de données",
+      "Ça tend à produire des entrées trop tôt et des plans déplacés par impatience",
+      "Le graphique se met à jour trop lentement pour être suivi en direct",
+      "C'est techniquement impossible sur mobile"
+     ]
+    },
+    {
+     "q": "À quel niveau fixer une alerte de prix ?",
+     "o": [
+      "Là où le prix est actuellement",
+      "Le niveau d'entrée exact de ton plan",
+      "Un chiffre rond au hasard",
+      "Le niveau qui te donne de l'excitation"
+     ]
+    },
+    {
+     "q": "Quelle alerte seul MarginPad peut-il t'envoyer ?",
+     "o": [
+      "Un coin qui croise un prix",
+      "Ta propre liquidation qui approche",
+      "Un titre d'actualité",
+      "Un changement de taux de funding"
+     ]
+    },
+    {
+     "q": "Qu'est-ce qui garde une watchlist utile plutôt qu'encombrée ?",
+     "o": [
+      "Mettre en favori tous les coins dont tu as déjà entendu parler",
+      "Ne jamais rien retirer",
+      "L'élaguer régulièrement et associer chaque entrée à un vrai plan ou une alerte",
+      "L'utiliser seulement pour les coins déjà en gain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm7",
+   "t": "La boucle XP : s'entraîner qui paie",
+   "cards": [
+    {
+     "h": "Des répétitions, pas de la chance",
+     "p": "Un seul trade chanceux à 200× ne t'apprend rien, sauf que la chance existe. L'XP, les missions et les classements de MarginPad sont construits sur l'inverse : récompenser les répétitions ennuyeuses - planifier correctement ses trades, finir ses leçons, venir chaque jour - parce que ce sont les répétitions qui font un trader. La gamification n'est pas une distraction de la discipline. C'est la discipline, avec un tableau de scores."
+    },
+    {
+     "h": "Les missions récompensent les bons comportements",
+     "p": "Les missions quotidiennes paient de petits montants de vrais USDT pour des choses comme clôturer un trade planifié avec un stop-loss, finir une leçon de l'Académie, ou utiliser les outils qui te rendent meilleur - pas pour le volume, ni la taille, ni la chance. Sept par jour ; réussis-en cinq et le bonus de série paie de l'XP. Regarde-les chaque jour, fais celles qui correspondent à ce que tu comptais déjà faire, et laisse le reste."
+    },
+    {
+     "h": "Une série, c'est une habitude avec un chiffre",
+     "p": "Un compteur de série est un truc bon marché et il marche quand même - les humains détestent casser un chiffre qui monte. Utilise ça. Viens chaque jour, regarde les missions, jette un œil au calendrier, passe en revue un trade ouvert. La série n'est pas le but ; c'est l'échafaudage du vrai but, qui est de faire la checklist assez souvent pour qu'elle cesse d'en être une."
+    },
+    {
+     "h": "Des classements que tu peux respecter",
+     "p": "Les dix classements de saison durent 14 jours et chacun suit une seule chose - ROE, Green Days, taux de réussite, XP, l'appel BTC quotidien, le profit Meme Spot, la Gold Room, le volume Bybit, les mises Moon - donc un joueur à 1000× imprudent en tête du classement ROE cette saison n'est pas automatiquement \"meilleur\" qu'un trader avec un banal taux de réussite de 65%. Surveille les classements Green Days, taux de réussite et XP si tu veux un signal qui reflète la compétence plutôt qu'un seul coup de chance. De vrais prix en USDT sont versés à chaque saison."
+    },
+    {
+     "h": "Duels : la discipline avec un tableau de scores",
+     "p": "Un duel t'oppose à un autre trader sur une métrique choisie - ROE, taux de réussite, ce que tu veux - pendant une heure, un jour, trois jours ou une semaine, avec des Ticks en jeu. Seuls les trades ouverts après le début du duel comptent. C'est la même pratique que tu ferais de toute façon, avec un rival en plus, ce qui s'avère étonnamment efficace pour tenir un plan. Défie quelqu'un dont tu respectes les stats, pas juste celui qui est en haut du classement."
+    },
+    {
+     "h": "Squads : cinq personnes, un salon",
+     "p": "Un squad, c'est jusqu'à cinq membres avec un salon de chat privé, un logo, des niveaux propres et des raids - 48 heures pour remplir un pool avec le profit réalisé du squad sur une majeure, les pertes le vidant. Un quart de l'XP de chaque membre alimente le niveau du squad. C'est la moitié sociale de la boucle : la personne la plus susceptible de t'éviter un revenge trade est celle qui est dans le salon et qui te regarde."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel type de comportement les missions quotidiennes récompensent-elles généralement ?",
+     "o": [
+      "Seulement l'ouverture du trade au levier le plus élevé possible",
+      "Planifier ses trades correctement, finir ses leçons et rester régulier",
+      "Le volume de trading, quel que soit le résultat",
+      "Gagner chaque trade"
+     ]
+    },
+    {
+     "q": "Pourquoi surveiller le classement du taux de réussite ou de l'XP plutôt que seulement celui du ROE ?",
+     "o": [
+      "Les classements ROE sont faux",
+      "Une saison en tête du ROE peut venir d'un seul trade imprudent et chanceux, pas forcément de la compétence",
+      "Les classements de taux de réussite paient de plus gros prix",
+      "L'XP est le seul classement en argent réel"
+     ]
+    },
+    {
+     "q": "Qu'est-ce qu'un duel ?",
+     "o": [
+      "Un trade privé où le solde papier du perdant est transféré au gagnant",
+      "Un face-à-face contre un autre trader sur une métrique choisie, d'une heure à une semaine, avec des Ticks en jeu",
+      "Un tournoi qui remet ton solde papier à zéro si tu perds",
+      "Une fonction réservée aux traders du top 100 du classement"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm8",
+   "t": "Ce qui a fait bouger le prix",
+   "cards": [
+    {
+     "h": "Une bougie a une raison, ou n'en a pas",
+     "p": "La plupart des bougies sont du bruit : le marché qui respire, une correction après une poussée, quelqu'un qui ferme une position. Certaines non - un listing, un hack, une publication de CPI, un délisting, une baleine forcée de sortir - et la différence est tout le trade. MarginPad lit 37 sources dès leur publication, note chaque élément, et mesure le mouvement qui a suivi sur chaque coin nommé. C'est la page Catalysts."
+    },
+    {
+     "h": "Le drapeau sur le graphique",
+     "p": "Active What Moved It et un drapeau apparaît sur la bougie où un mouvement a commencé, avec la cause et l'ampleur : \"Binance hack, −7,0%\". Un mouvement peut avoir plusieurs causes et la carte indique les parts - l'actualité, la cascade de liquidations qu'elle a déclenchée, Bitcoin qui entraîne tout. Un drapeau n'est tracé que quand le moteur est sûr ; une bougie qu'il ne sait pas expliquer reste nue plutôt que de porter une supposition."
+    },
+    {
+     "h": "Une histoire est un mouvement, mesuré en entier",
+     "p": "Un hack n'est pas cinq creux séparés. Tant que l'histoire est vivante, le drapeau affiche LIVE et la zone continue de s'étendre jusqu'à l'extrême ; quand le marché a rendu le mouvement, elle se ferme et affiche le chiffre final. Sept desks qui rapportent le même hack, c'est une histoire, pas sept causes. Et la direction doit concorder : un rebond après un hack est le marché qui récupère, jamais le hack."
+    },
+    {
+     "h": "Ce qui compte, et ce qui ne compte pas",
+     "p": "Un hack de 3 M$ sur un projet annexe ne bouge rien et n'est jamais une cause ; ceux qui font bouger le prix sont de l'ordre de la centaine de millions. Un titre qui va dans le sens inverse du mouvement est refusé. Un listing sur un petit exchange est du bruit ; un listing spot sur Binance ou Upbit a fait bouger le prix dix fois plus que le seuil habituel, mesuré sur tous ceux que nous avons vus. La page affiche la fréquence à laquelle une source parle et jusqu'où le prix est allé les dernières fois."
+    },
+    {
+     "h": "Comment trader avec",
+     "p": "Avant une entrée, vérifie les drapeaux sur le coin : si les trois derniers mouvements étaient des cascades et non des actualités, le coin est poussé par le levier, pas par l'information - réduis la taille. Si une histoire est LIVE, le mouvement n'est pas fini ; un stop à l'intérieur est un cadeau. Les membres Premium qui détiennent le coin reçoivent le catalyseur en alerte à la minute où il tombe, donc l'actualité vient à eux et non l'inverse. La règle est la même que celle du calendrier : ne jamais être surpris par quelque chose d'annoncé."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quand What Moved It trace-t-il un drapeau sur une bougie ?",
+     "o": [
+      "Sur chaque bougie",
+      "Seulement quand le moteur est sûr de la cause",
+      "Seulement sur les bougies rouges",
+      "Seulement pour Bitcoin"
+     ]
+    },
+    {
+     "q": "Un coin rebondit de +1% une heure après un titre sur un hack. Quelle est la cause ?",
+     "o": [
+      "Le hack",
+      "Pas le hack - une cause doit aller dans le même sens que le mouvement",
+      "L'exchange",
+      "Le funding"
+     ]
+    },
+    {
+     "q": "Que signifie un drapeau LIVE ?",
+     "o": [
+      "L'actualité est fausse",
+      "L'histoire est toujours en cours et le mouvement n'est pas fini",
+      "Le coin est délisté",
+      "L'alerte a été envoyée"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ouvre la page Catalysts : les derniers listings, hacks, publications macro et titres, notés, avec le mouvement que chacun a causé. Puis active l'indicateur What Moved It dans /charts et lis une journée de drapeaux sur un coin que tu trades.",
+    "label": "Ouvrir Catalysts →"
+   }
+  }
+ ]
+}

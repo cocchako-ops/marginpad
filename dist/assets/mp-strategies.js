@@ -435,7 +435,7 @@
     Promise.all([fetch('/strategies/data/index.json').then(function (r) { return r.json(); }), names]).then(function (a) {
       D = a[0]; var n = a[1] || {};
       if (n.styles) D.meta.styles = n.styles;
-      D.rules.forEach(function (r) { if (n[r.slug]) r.summary = n[r.slug]; });
+      D.rules.forEach(function (r) { if (n[r.slug]) r.summary = n[r.slug]; if (n.names && n.names[r.slug]) r.name = n.names[r.slug]; });
       hub();
     });
   });

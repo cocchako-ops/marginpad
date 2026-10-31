@@ -1,0 +1,364 @@
+{
+ "id": "mpstart",
+ "name": "Begin hier: MarginPad",
+ "sub": "De site zelf, in zeven korte lessen",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "Wat MarginPad echt is",
+   "cards": [
+    {
+     "h": "Echte koersen, oefengeld",
+     "p": "De grafiek voor je neus is de live markt. De koersen en candles komen rechtstreeks van de exchanges, dezelfde die een funded trader nu bekijkt. Het geld is niet echt: je begint met $10.000 die wij je hebben gegeven, en je kunt op deze site geen cent storten."
+    },
+    {
+     "h": "Waarom je eerst zou oefenen",
+     "p": "Futures met hefboom zijn de snelste manier om geld te verliezen in crypto, en bijna iedereen verliest zijn eerste account. Hier kan de markt een positie van je afnemen en je dezelfde les leren, en het enige wat het kost is de tijd die je erin stak. Raak je de $10.000 kwijt, dan is er niets gebeurd."
+    },
+    {
+     "h": "Een deel is wel echt",
+     "p": "Het traden is oefening. De beloningen niet. MarginPad betaalt echte USDT voor het gebruik van de site - kleine bedragen, uit een dagelijkse pot - en die neem je op naar een exchange-account. Dat is een apart systeem naast het traden, en over twee lessen weet je precies hoe het werkt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De koersen waartegen je op MarginPad tradet zijn:",
+     "o": [
+      "Verzonnen door de site",
+      "Live koersen van echte exchanges",
+      "De slotkoersen van gisteren",
+      "Alleen ververst als je de pagina herlaadt"
+     ]
+    },
+    {
+     "q": "Hoeveel moet je storten voordat je hier kunt traden?",
+     "o": [
+      "Niets - er is nergens op de site een storting",
+      "$10 om de terminal te ontgrendelen",
+      "Wat je maar wilt gebruiken om te traden",
+      "Een terugbetaalbare $50"
+     ]
+    },
+    {
+     "q": "Je opent een trade en het gaat slecht. Wat kostte dat je?",
+     "o": [
+      "Echt geld van je kaart",
+      "Een deel van het oefensaldo, en niets anders",
+      "Een bedrag dat op je account in rekening wordt gebracht",
+      "Je plek op de ranglijsten, voorgoed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "XP, je level en Bronze",
+   "cards": [
+    {
+     "h": "XP is gewoon wat je deed, geteld",
+     "p": "Elke les die je afrondt is 25 XP, elke dag dat je langskomt 20, een trade 3 en een winnende trade 15. Er wordt niets gekocht en niets is willekeurig - XP is een logboek van je gebruik van de site. Het getal staat naast je naam in je accountmenu en bovenaan je seizoenspagina."
+    },
+    {
+     "h": "Bronze is het eerste level, geen poort",
+     "p": "Onder de 500 XP ben je Unranked; bij 500 ben je Bronze, daarna Silver, Gold, Platinum, Diamond, Master en Legendary naarmate het getal stijgt. Niets op deze site wacht nog op een level: de faucet, de dagelijkse missies, verwijzingen, opnames en elke gratis ranglijst staan open vanaf de dag dat je je aanmeldt. Een level is een badge en een bonus, nooit een slot."
+    },
+    {
+     "h": "Wat een level echt verandert",
+     "p": "Vanaf Silver betaalt elke faucet-claim iets meer - de vermenigvuldiger stijgt met je level. Elk level ontgrendelt een frame voor je profielkaart, en de Gold Room-ranglijst - een van de tien - rangschikt alleen accounts op Gold, en dat is 12.000 XP. Dat is de hele lijst. De oefenterminal, de grafieken en de alerts zijn op elk level hetzelfde."
+    },
+    {
+     "h": "Deze cursus brengt je al bijna er",
+     "p": "Je leest les twee van zeven. Als je alle zeven afrondt, met de twee Road to Bronze-bonussen die ze activeren, kom je net boven de 400 XP - dus daarna is één papertrade met een stop-loss, of gewoon morgen terugkomen, genoeg voor Bronze. De Road to Bronze-kaart op je seizoenspagina toont de negen starttaken en wat elk oplevert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is Bronze?",
+     "o": [
+      "Een betaald lidmaatschap",
+      "Het level dat je bij 500 XP bereikt",
+      "De eerste prijs op een ranglijst",
+      "Een cosmetisch frame voor je profielkaart"
+     ]
+    },
+    {
+     "q": "Wat ontgrendelt Bronze?",
+     "o": [
+      "De faucet en de missies",
+      "Opnames",
+      "Niets - de beloningen stonden open vanaf de dag dat je je aanmeldde; een level is een badge en een bonus",
+      "De grafieken en de heatmap"
+     ]
+    },
+    {
+     "q": "Wat is de snelste gratis manier om XP te verdienen?",
+     "o": [
+      "Zoveel mogelijk trades openen",
+      "Academy-lessen - 25 per stuk, plus 50 voor een afgeronde cursus",
+      "De site open laten staan in een tabblad",
+      "Vrienden uitnodigen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "Het echte geld op deze site",
+   "cards": [
+    {
+     "h": "Waar het vandaan komt",
+     "p": "MarginPad is gratis en heeft geen reclame. De site verdient als een lezer via een van onze links een account bij een exchange opent en de exchange een deel van zijn fee deelt. Dat is het hele bedrijf, en daarom zijn de beloningen klein, echt en begrensd in plaats van groot en ingebeeld."
+    },
+    {
+     "h": "Wat er te halen valt",
+     "p": "Een welkomstbonus van $0,50. $0,01 van de faucet elke paar minuten, tot $0,10 per dag. Daarbovenop dagelijkse missies, een cent of twee per stuk. $1,00 voor het openen van een Moon-, MEXC-, BingX- of Bybit-account via ons - bij drie van de vier wordt automatisch gecontroleerd tegen de affiliate-lijst. $0,50 als een vriend die je uitnodigde echt gaat traden. Niets hiervan wacht op een level."
+    },
+    {
+     "h": "Eruit halen",
+     "p": "Het saldo wordt in USDT uitbetaald en je kunt opnemen vanaf $5,00 naar een Bybit-, Moon- of MEXC-account dat via MarginPad is geopend. Elke opname wordt gecontroleerd en met de hand betaald, dus het gaat niet direct. Het is een bedankje voor het gebruik van de site, geen inkomen - behandel het als wat het is en het stelt je nooit teleur."
+    },
+    {
+     "h": "Hoe een opname echt verloopt",
+     "p": "Je typt het bedrag, vanaf $5 tot je saldo, en het account waarnaar betaald moet worden. Eén verzoek tegelijk: een tweede wacht tot het eerste betaald is. De desk ziet of dat exchange-account echt via ons is geopend, of een ander lid al naar hetzelfde account opnam, en hoe het saldo is verdiend - zo wordt een echt account betaald en een farm niet. Je krijgt een melding als het binnen is."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hoe verdient MarginPad geld?",
+     "o": [
+      "Je data verkopen",
+      "Exchange-affiliatelinks - een deel van de fee als iemand zich via ons aanmeldt",
+      "Betaling vragen voor de Academy",
+      "Een deel nemen van papertrading-winsten"
+     ]
+    },
+    {
+     "q": "Wat is het kleinste bedrag dat je kunt opnemen?",
+     "o": [
+      "$1,00",
+      "$5,00",
+      "$20,00",
+      "Er is geen minimum"
+     ]
+    },
+    {
+     "q": "Welke hiervan wacht op een level?",
+     "o": [
+      "De faucet",
+      "Dagelijkse missies",
+      "Verwijzingen",
+      "Geen van allen - elke beloning staat open vanaf dag één"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Alles hierboven staat op één pagina. Open die en kijk waar je saldo, de faucet en de aanmeldbonussen staan - het wordt duidelijker als je de indeling hebt gezien.",
+    "label": "Open Rewards"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short en wat hefboom echt doet",
+   "cards": [
+    {
+     "h": "Twee richtingen, niet één",
+     "p": "Een long wint als de koers stijgt. Een short wint als de koers daalt. Dat is het hele verschil, en daarom hoeft een futures-trader nooit aan de kant te blijven bij een dalende markt. Op MarginPad is beide één tik: de knoppen Long en Short op het tradeticket."
+    },
+    {
+     "h": "Hefboom is grootte, geen magie",
+     "p": "Zet $100 in op 10x en je beweegt een positie van $1.000. Elke 1% die de markt aflegt is nu 10% van je geld, in welke richting dan ook. Hefboom maakt een trade niet beter - hij vermenigvuldigt wat de trade je toch al ging aandoen."
+    },
+    {
+     "h": "De ladder op het ticket",
+     "p": "De hefboomregelaar springt over een ladder: hele stappen tot 10x, daarna tientallen - 20, 30, 50, 100 en verder. Typ 107 en het wordt 110. De ladder bestaat zodat het getal dat je koos er een is dat je hardop kunt zeggen, en zodat de liquidatielijn die de grafiek ervan tekent er een is die je kunt lezen voordat je opent."
+    },
+    {
+     "h": "Waarom we je tot 1000x laten gaan",
+     "p": "De majors gaan hier helemaal tot 1000x, ver voorbij alles wat een verstandig mens zou gebruiken. Dat is bewust. Bij 1000x maakt minder dan een tiende procent tegen je een einde aan de positie - en dat ontdek je liever op een oefenaccount, vanavond, dan op een exchange met je eigen geld."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je zet $100 in op 10x hefboom. Hoe groot is de positie?",
+     "o": [
+      "$100",
+      "$110",
+      "$1.000",
+      "$10.000"
+     ]
+    },
+    {
+     "q": "Een shortpositie verdient geld als:",
+     "o": [
+      "De koers stijgt",
+      "De koers daalt",
+      "De koers vlak blijft",
+      "Het volume stijgt"
+     ]
+    },
+    {
+     "q": "Wat verandert er echt als je de hefboom verhoogt?",
+     "o": [
+      "De kans dat je gelijk hebt",
+      "De grootte van de positie, zodat elke beweging zwaarder weegt",
+      "De fee die je betaalt",
+      "Hoe lang je de trade mag aanhouden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Marge, en waar een positie sterft",
+   "cards": [
+    {
+     "h": "Marge is wat je inlegt",
+     "p": "De marge is het deel van je saldo dat je aan één trade koppelt. Het is ook het meeste wat die trade ooit kan kosten: een verlies is begrensd op je marge, dus een positie geopend met $100 kan je die $100 kosten en nooit een cent meer. Je andere $9.900 is er niet mee te bereiken."
+    },
+    {
+     "h": "Liquidatie is de bodem die geraakt wordt",
+     "p": "Als de koers ver genoeg tegen je ingaat, sluit de positie zichzelf en is de marge weg. Die koers is de liquidatie, en MarginPad tekent hem op je grafiek vanaf het moment dat je opent - zodat het niveau waarop de trade eindigt de hele tijd zichtbaar is, geen verrassing aan het eind."
+    },
+    {
+     "h": "Het wordt op onze server bepaald, niet in je browser",
+     "p": "Je positie staat op de server. Sluit het tabblad, verlies je verbinding, ga naar een andere telefoon - niets verandert. De stop-loss, de take-profit en de liquidatie worden van onze kant gecontroleerd tegen gesloten candles, en daarom beëindigt een wiek door je niveau je hier niet, tenzij de candle echt daar sloot."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is het meeste wat één positie je kan kosten?",
+     "o": [
+      "Je hele saldo",
+      "De marge die je eraan koppelde",
+      "Twee keer de marge",
+      "Dat hangt af van de hefboom"
+     ]
+    },
+    {
+     "q": "Je opent een trade en sluit dan de browser. Wat gebeurt er met de trade?",
+     "o": [
+      "Hij wordt geannuleerd",
+      "Hij blijft open en wordt op de server gecontroleerd",
+      "Hij bevriest tot je terugkomt",
+      "Hij sluit tegen de huidige koers"
+     ]
+    },
+    {
+     "q": "Een liquidatie is:",
+     "o": [
+      "Een vergoeding voor te lang aanhouden",
+      "De positie die automatisch sluit omdat de koers het niveau bereikte waar de marge op is",
+      "Een handmatige sluiting door de site",
+      "Hetzelfde als een stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Je twee uitgangen: stop-loss en take-profit",
+   "cards": [
+    {
+     "h": "Bepaal de uitgang voordat je hem nodig hebt",
+     "p": "Een stop-loss sluit de trade op een koers die je kiest als het misgaat. Een take-profit doet hetzelfde als het goed gaat. Beide stel je één keer in en worden dan zonder jou uitgevoerd, en dat is de bedoeling: het moment dat een positie verlies maakt is het slechtst denkbare moment om te bedenken wat je eraan doet."
+    },
+    {
+     "h": "Waar je ze hier instelt",
+     "p": "Op het ticket, voordat je opent - of daarna, via de knop Set op de tradekaart en via My Trades. Je kunt ze zo vaak verplaatsen als je wilt terwijl de trade open is. Een trade zonder beide is een trade waarvan de uitgang wordt bepaald door wat je op dat moment toevallig voelt."
+    },
+    {
+     "h": "Op het ticket, stap voor stap",
+     "p": "Open Advanced onder het tradeformulier. De stop en het doel nemen elk een koers, of een percentage van je marge - typ de ene en de andere wordt herschreven, zodat ze nooit afwijken. Het paneel vult als startpunt een stop op 2% afstand en een doel op 3% afstand in; draai de kant om en de automatisch ingevulde niveaus draaien mee. Wat het paneel verbergt, geldt niet: sluit Advanced en de trade opent zonder."
+    },
+    {
+     "h": "Dit is de gewoonte die het waard is",
+     "p": "Niets anders in deze cursus verandert je resultaat zoveel. Op de ranglijsten die echte USDT uitbetalen, zijn de accounts die blijven niet degene met betere entries - maar degene die al hadden bepaald waar ze ongelijk zouden hebben. Er een instellen is ook een Road to Bronze-taak, goed voor 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat doet een stop-loss?",
+     "o": [
+      "Hij stopt je met het openen van meer trades",
+      "Hij sluit de trade op een koers die je koos als het tegen je gaat",
+      "Hij pauzeert de positie",
+      "Hij garandeert dat je niet kunt verliezen"
+     ]
+    },
+    {
+     "q": "Wanneer kun je op MarginPad een stop-loss instellen of verplaatsen?",
+     "o": [
+      "Alleen bij het openen van de trade",
+      "Alleen als hij in winst staat",
+      "Voor het openen, en op elk moment terwijl de trade open is",
+      "Eén keer per dag"
+     ]
+    },
+    {
+     "q": "Je typt een stop als percentage van de marge. Wat gebeurt er met het koersveld?",
+     "o": [
+      "Niets - ze staan los van elkaar",
+      "Het wordt herschreven zodat ze nooit afwijken",
+      "Het wordt leeggemaakt",
+      "Het wordt vergrendeld"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Seizoenen, ranglijsten en de pass",
+   "cards": [
+    {
+     "h": "De site draait in seizoenen van veertien dagen",
+     "p": "Alles wat competitief is begint elke veertien dagen opnieuw. Je seizoens-XP, je plek op de ranglijsten en de pass beginnen weer van voren af aan, dus een slechte twee weken is nooit blijvend en een nieuwkomer loopt nooit een jaar achter. De dag van het seizoen staat bovenaan de seizoenspagina."
+    },
+    {
+     "h": "Tien ranglijsten, zeven gratis",
+     "p": "Tien ranglijsten betalen echte USDT uit als een seizoen eindigt, en ze staan allemaal op één pagina, /leaderboards/. Zeven kosten niets: Highest ROE, Green Days, Best Win Rate, Season XP, de Daily BTC Call, Meme Spot en de Gold Room - de enige met een voorwaarde, Gold-level. Twee zijn voor lezers die met echt geld traden bij Bybit of Moon via MarginPad. De potten en de prijsverdeling staan op de pagina."
+    },
+    {
+     "h": "En de pass loopt eronder door",
+     "p": "Elke 100 seizoens-XP is een pass-tier, veertig in totaal, en het gratis spoor betaalt in Ticks en cosmetica terwijl je klimt. Je verdient hem al - de XP van deze cursus telde mee terwijl je las. Het betaalde spoor voegt stukken toe die niemand in de shop kan kopen."
+    },
+    {
+     "h": "Voorbij de ranglijsten",
+     "p": "Een duel zet je een uur, een dag, drie dagen of een week tegenover één trader, op een maatstaf die jullie allebei kiezen, met Ticks als inzet. Een squad is een groep van maximaal vijf spelers met een privéruimte, raids op de majors en een logo. Demo Spot is buy-and-hold met $10.000 en een eigen ranglijst. Niets hiervan is verplicht - de terminal is het product; de rest voorkomt dat oefenen als huiswerk voelt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hoe lang is een MarginPad-seizoen?",
+     "o": [
+      "Zeven dagen",
+      "Veertien dagen",
+      "Eén maand",
+      "Tot iemand wint"
+     ]
+    },
+    {
+     "q": "Hoeveel van de tien ranglijsten kosten niets om aan mee te doen?",
+     "o": [
+      "Twee",
+      "Vier",
+      "Zeven",
+      "Alle negen"
+     ]
+    },
+    {
+     "q": "Waar staan de standen van elke ranglijst?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Het Telegram-kanaal",
+      "In de terminal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Dat was de hele rondleiding. Eén ding rest, en daar is de site voor: open de terminal, kies een munt, zet een kleine positie neer met een stop-loss en kijk wat er gebeurt. Die ene trade is de laatste stap naar Bronze.",
+    "label": "Open Paper Trade"
+   }
+  }
+ ]
+}

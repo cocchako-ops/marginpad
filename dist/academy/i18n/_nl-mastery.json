@@ -1,119 +1,480 @@
 {
-  "id": "mastery",
-  "name": "MarginPad in de praktijk",
-  "sub": "Maak van de gereedschapskist een werkwijze",
-  "lessons": [
+ "id": "mastery",
+ "name": "MarginPad in de praktijk",
+ "sub": "Maak van de gereedschapskist een werkwijze",
+ "lessons": [
+  {
+   "id": "mm1",
+   "t": "Papertrade alsof het echt is",
+   "cards": [
     {
-      "id": "mm1",
-      "t": "Oefen alsof het echt is",
-      "cards": [
-        { "h": "Nepgeld, echte gewoontes", "p": "De oefenrekening geeft je $100 die echt niet kan verdwijnen. Dat is precies het punt én de valkuil. Behandel je het als een videospel, dan leer je niets behalve knoppen rammen. Behandel je het als je huurgeld, dan leer je positiegrootte, geduld en hoe een liquidatie voelt - de enige drie dingen die het waard zijn om te weten voordat je ooit een echte exchange aanraakt." },
-        { "h": "Dezelfde wiskunde als een echte exchange", "p": "Dit is geen speelgoedsimulator met verzonnen regels. Paper Trade draait op live prijzen en op exact dezelfde liquidatieformule die echte exchanges gebruiken - margin, hefboom, onderhoudspercentage, alles. Een long op 50× die hier wordt geliquideerd, was op een echte exchange ook geliquideerd. Overleeft een strategie de oefenwiskunde niet, dan overleeft ze de echte ook niet." },
-        { "h": "Bepaal je omvang alsof het je huur is", "p": "Voordat je iets opent, bepaal je hoe een slechte dag eruitziet. 1–2% van je $100 riskeren per trade betekent acht verliezen op rij voordat je eruit ligt - de buffer van een echte trader. 20% per trade riskeren betekent dat drie slechte trades de rekening beëindigen. De demo maakt het niet uit wat je kiest. Je toekomstige zelf wel." },
-        { "h": "Bepaal de uitstap vóór de instap", "p": "Elke positie krijgt een stop-loss en een take-profit op het moment dat je hem opent - niet erna, als de candle al tegen je in beweegt en je oordeel is aangetast. Kun je niet vóór het instappen bepalen waar je ongelijk hebt, dan ben je nog niet klaar om in te stappen. Het plan komt eerst; de trade is alleen de uitvoering ervan." },
-        { "h": "Promoveer op gewoontes, niet op geluk", "p": "Je bent klaar om te vergroten - zelfs in de demo - wanneer je winsten voortkomen uit het volgen van een plan, niet uit een gelukkige gok op 500× die toevallig één keer aankwam. Bekijk een week aan trades in My Trades en wees eerlijk: heb je de juiste omvang gebruikt, stops gezet en slechte setups laten lopen? Die gewoonte is hier het eigenlijke product." }
-      ],
-      "quiz": [
-        { "q": "Wat maakt Paper Trade van MarginPad anders dan een verzonnen simulator?", "o": ["Het geeft meer startgeld dan echte exchanges", "Het gebruikt live prijzen en echte liquidatiewiskunde", "Het kan je niet liquideren", "Het is alleen voor beginners onder de $1000"] },
-        { "q": "Waarom zou je maar 1–2% van het demosaldo per trade riskeren?", "o": ["Het platform verplicht het", "Het komt overeen met echte risicodiscipline die meegaat naar live handelen", "Grotere posities zijn tegen de regels", "Het garandeert winst"] },
-        { "q": "Wanneer zet je je stop-loss en take-profit?", "o": ["Nadat de trade tegen je in begint te bewegen", "Alleen bij trades boven 100× hefboom", "Op het moment dat je de positie opent", "Nooit - handmatig sluiten is veiliger"] }
-      ]
+     "h": "Nepgeld, echte gewoonten",
+     "p": "Het papieren account geeft je $10.000 die niet echt kunnen verdwijnen. Dat is het punt, en de valkuil. Behandel het als een videogame en je leert niets behalve knoppen rammen. Behandel het als je echte huurgeld en je leert positiegrootte, geduld en hoe een liquidatie voelt - de enige drie dingen die je moet weten voordat je ooit een echte exchange aanraakt."
     },
     {
-      "id": "mm2",
-      "t": "Laat de screener het jachtwerk doen",
-      "cards": [
-        { "h": "Stop met eindeloos door grafieken scrollen", "p": "Door veertig coins bladeren in de hoop dat er één ‘op het punt staat te bewegen’ is geen analyse, het is uitstellen met extra stappen. Je vindt altijd wel een grafiek die er bullish uitziet als je lang genoeg staart - dat is bevestigingsdrang, geen setup. De screener bestaat zodat je stopt met jagen op gevoel en begint met jagen op cijfers." },
-        { "h": "200+ paren, voor je gescoord", "p": "De screener op /screener scant meer dan 200 USDT-paren en geeft elk een score van 0–100 op basis van RSI, MACD, trendsterkte en volume - dezelfde ingrediënten die een gedisciplineerde technische trader met de hand nagaat, alleen direct over de hele markt in plaats van over de vijf coins die je toevallig had geopend. Hij geeft je een shortlist, geen oordeel." },
-        { "h": "Een score is een tip, geen bevel", "p": "Een paar dat 85 scoort met een voorgestelde setup is geen sein om blind af te vuren - het is een kandidaat die nog vijf minuten van je aandacht verdient. Open de grafiek, check de kalender op nieuwsrisico, check de funding op drukte. De screener versmalt een markt van duizenden tot een handvol dat het waard is om echt te bekijken." },
-        { "h": "Hoge én lage scores zeggen iets", "p": "Een paar dat tegen de 0 aan zit is niet kapot - het vertelt je dat de setup de shortkant bevoordeelt, of dat het simpelweg nu niet de moeite waard is. De lijst beide kanten op sorteren maakt van de screener twee gereedschappen: één om longs te vinden, één om shorts te vinden, en een derde om te vinden waar je helemaal vanaf moet blijven." },
-        { "h": "Een kortere weg, geen omweg om het denken heen", "p": "Traders die de screener overslaan besteden hun edge aan zoeken. Traders die de controle ná de screener overslaan besteden hun edge aan blind vertrouwen. De werkwijze is: de screener vindt kandidaten, jij verifieert met een grafiek en een kalendercheck, en pas dán bepaal je je positiegrootte. Sla een van beide helften over en je hebt het punt overgeslagen." }
-      ],
-      "quiz": [
-        { "q": "Wat doet de screener van MarginPad eigenlijk?", "o": ["Hij plaatst automatisch trades voor je", "Hij scoort 200+ paren op RSI, MACD, trend en volume om een shortlist te bouwen", "Hij volgt alleen de top 10 coins qua marktkapitalisatie", "Hij voorspelt exacte toekomstige prijzen"] },
-        { "q": "Wat doe je met een paar dat 85 scoort?", "o": ["Meteen instappen op maximale hefboom", "Negeren - hoge scores zijn vallen", "Het verder onderzoeken voordat je iets besluit", "Shorten, want een hoge score betekent overbought"] },
-        { "q": "Wat suggereert een heel lage score op een paar meestal?", "o": ["De exchange werkt niet voor die coin", "De setup kan de shortkant bevoordelen, of het is het handelen niet waard", "Dat je het moet kopen omdat het goedkoop is", "Dat de screener een fout heeft gemaakt"] }
-      ]
+     "h": "Dezelfde wiskunde als een echte exchange",
+     "p": "Dit is geen speelgoedsimulator met verzonnen regels. Paper Trade draait op live koersen en de exacte liquidatieformule die echte exchanges gebruiken - marge, hefboom, onderhoudspercentage, alles. Een 50× long die hier wordt geliquideerd, zou op een echte exchange ook zijn geliquideerd. Als een strategie de oefenwiskunde niet overleeft, overleeft ze de echte ook niet."
     },
     {
-      "id": "mm3",
-      "t": "Een grafiekwerkplek die werkt",
-      "cards": [
-        { "h": "Dertig tabbladen is geen analyse", "p": "Vijftien browsertabbladen, zes tijdframes, vier indicatoren die om je aandacht vechten - dat is geen werkplek, dat is ruis in een werkplekkostuum. Elke extra open grafiek is één ding meer dat je een slechte instap kan aanpraten. De oplossing is niet méér grafieken. Het zijn er minder, maar beter, zo neergezet dat je ze echt kunt lezen." },
-        { "h": "Tien vensters, één board", "p": "/charts geeft je tot tien zwevende grafiekvensters op één board - genoeg om je setups over symbolen en tijdframes te volgen zonder door een tabbladenkerkhof te alt-tabben. Slepen, verslepen, indeling opslaan. De meeste traders hebben maar twee of drie vensters tegelijk nodig; de andere zeven plekken bestaan voor als er een echte reden opduikt, niet standaard." },
-        { "h": "Indicatoren zijn een tweede mening", "p": "Er zijn negentien indicatoren beschikbaar. Alle negentien laden maakt je niet negentien keer vaker correct - het maakt de grafiek onleesbaar en geeft je negentien excuses om jezelf een trade aan te praten die je toch al wilde nemen. Kies er twee of drie die een echte vraag beantwoorden (trend, momentum, volatiliteit) en laat de rest ongebruikt tot je ze nodig hebt." },
-        { "h": "Sla de indeling op en houd het saai", "p": "Een opgeslagen indeling betekent dat je /charts opent en elke keer hetzelfde opgeruimde board ziet - geen nieuwe beslissing over welke vijftien indicatoren je vandaag toevoegt. Saai is het doel. De werkplek hoort er op je beste handelsdag net zo uit te zien als op je slechtste, want de setups waar je op jaagt veranderen niet omdat jij ongeduldig bent." },
-        { "h": "Laat een tweede lezer je lezing toetsen", "p": "Ingelogde gebruikers krijgen een AI-grafiekanalist in elk venster - niet om je een trade aan te reiken, maar om je eigen redenering te toetsen aan wat er werkelijk op het scherm staat. Signaleert hij iets dat jouw lezing miste, dan is dat nuttig. Is hij het alleen met je eens, dan is dat geen bevestiging, dan praat je in een mooier lettertype tegen jezelf." }
-      ],
-      "quiz": [
-        { "q": "Wat is het werkelijke probleem met negentien indicatoren op één grafiek?", "o": ["De grafiek loopt vast", "Het vermenigvuldigt je nauwkeurigheid", "Het creëert ruis en excuses om een trade te rechtvaardigen die je toch al wilde", "Het kan technisch niet"] },
-        { "q": "Waarom een grafiekindeling opslaan in plaats van hem elke keer opnieuw te bouwen?", "o": ["Het is verplicht om /charts te gebruiken", "Het houdt je werkplek consistent in plaats van elke sessie een nieuwe rommelige beslissing", "Het vindt automatisch betere trades", "Het schakelt indicatoren uit die je niet nodig hebt"] },
-        { "q": "Waar is de AI-grafiekanalist voor?", "o": ["Om automatisch trades te plaatsen", "Om je eigen analyse volledig te vervangen", "Om je lezing te toetsen aan wat er op de grafiek staat", "Om exacte liquidatieprijzen te voorspellen"] }
-      ]
+     "h": "Je positie staat op de server",
+     "p": "Open een trade en hij wordt aan onze kant bewaard, niet in je browsertabblad. Klap de laptop dicht, wissel van telefoon, verlies je verbinding - de stop, het doel en de liquidatie worden nog steeds elke minuut gecontroleerd tegen gesloten candles. Daarom beëindigt een wiek door je stop je hier niet, tenzij de candle daar sloot, en daarom is de P&L op het ticket het getal van de server, nooit iets wat je scherm verzon."
     },
     {
-      "id": "mm4",
-      "t": "Laat je nooit door nieuws overvallen",
-      "cards": [
-        { "h": "De candle die uit het niets kwam", "p": "Je had geen pech. De FOMC stond drie weken geleden al gepland voor 18:00 UTC en elke economische kalender ter wereld had hem staan. De markt overviel je niet - jij liep met een hefboompositie een geplande gebeurtenis in zonder te weten dat hij eraan kwam. Dat is geen pech. Dat is de agenda niet checken." },
-        { "h": "Rode-vlag-gebeurtenissen, vooraf gemarkeerd", "p": "/calendar volgt elk FOMC-besluit, elke CPI-publicatie en elke NFP-print met een live aftelklok, terug tot 2023 en vooruit zolang de data reikt. Dit zijn geen kleine hobbels - dit zijn precies de gebeurtenissen die een positie op 50× in seconden naar liquidatie kunnen sturen, juist omdat iedereen zich tegelijk rond dezelfde kop herpositioneert." },
-        { "h": "Check vóór de instap, niet na de wick", "p": "De gewoonte is simpel: kijk voor het openen van elke hefboompositie even op de kalender. Staat er de komende uren een rode-vlag-gebeurtenis? Zo ja, sla de trade over, verklein je omvang flink, of verbreed je stop genoeg om de ruis te overleven. Checken als je al in de trade zit is geen gewoonte, dat is een lijkschouwing." },
-        { "h": "Zet de herinnering in plaats van het te onthouden", "p": "Geheugen is een slecht risicogereedschap - je vergeet het exacte tijdstip, haalt de tijdzone door elkaar of ligt gewoon te slapen. Elke gebeurtenis op de kalender heeft een ingebouwde herinnering via e-mail en Telegram. Zet hem één keer voor de gebeurtenissen die voor jouw paren tellen en laat het platform het onthouden. Dit kost niets en haalt een hele categorie domme verliezen weg." },
-        { "h": "Niet elke gebeurtenis vraagt om een reactie", "p": "Het punt is niet om voor altijd rond nieuws weg te blijven - sommige van de beste bewegingen komen juist ná een publicatie. Het punt is dat je nooit in een hefboompositie zit waarin je niet bewust hebt gekozen te zitten wanneer de kop valt. Handel de gebeurtenis bewust, met een plan, of stap er bewust uit. Allebei prima. Verrast worden is dat niet." }
-      ],
-      "quiz": [
-        { "q": "Wat voor gebeurtenissen volgt /calendar met aftelklokken?", "o": ["Alleen onderhoudsvensters van cryptobeurzen", "FOMC-besluiten, CPI-publicaties en NFP-prints", "Willekeurige trends op sociale media", "Alleen gebeurtenissen specifiek voor Bitcoin"] },
-        { "q": "Waarom zijn de e-mail- en Telegramherinneringen van de kalender de moeite waard?", "o": ["Ze garanderen een winnende trade", "Ze halen weg dat je zelf de timing moet onthouden", "Ze sluiten je posities automatisch", "Ze zijn verplicht om de kalender te gebruiken"] },
-        { "q": "Wat is de echte les over handelen rond nieuws?", "o": ["Handel nooit in de buurt van een economische gebeurtenis", "Handel altijd het nieuws voor gegarandeerde winst", "Zit bewust in een hefboompositie als de kop valt - niet per ongeluk", "De kalender is alleen nuttig voor aandelenhandelaren"] }
-      ]
+     "h": "Dimensioneer het account alsof het huurgeld is",
+     "p": "Bepaal voordat je iets opent hoe een slechte dag eruitziet. Met 1-2% van je $10.000 risico per trade moet je acht verliezen op rij hebben voordat je eruit ligt - een echt trader-kussen. Met 20% risico per trade maken drie slechte trades een eind aan het account. De demo maakt niet uit wat je kiest. Je toekomstige zelf wel."
     },
     {
-      "id": "mm5",
-      "t": "Lees de massa voordat je je erbij voegt",
-      "cards": [
-        { "h": "Iedereen heeft dezelfde inzet al gedaan", "p": "Als een trade voor jou vanzelfsprekend lijkt, leek hij zo’n zes uur geleden ook vanzelfsprekend voor honderdduizend andere hefboomtraders. Tegen de tijd dat een setup veilig voelt en iedereen het eens is, staat de massa er al in - en een overvolle trade heeft geen slecht nieuws nodig om af te wikkelen, alleen een massa die één keer ongelijk heeft." },
-        { "h": "Funding rate: de prijs van meedoen met de massa", "p": "/funding laat zien wat longs aan shorts betalen, of andersom, over exchanges heen en live ververst. Extreem positieve funding betekent dat longs flink betalen om long te blijven - de boot zit vol en iedereen is al ingestapt. Dat betekent niet dat de prijs meteen moet draaien, maar wel dat veel hefboomgeld één duw verwijderd is van gedwongen worden eruit te gaan." },
-        { "h": "Open interest vertelt hoe groot de boot is", "p": "/open-interest toont de totale hefboomblootstelling in de markt. Stijgende open interest tijdens een rally betekent dat er nieuw hefboomgeld instapt, niet alleen dat bestaande houders zekerder worden - dat is brandstof voor een scherpere beweging als het draait. Dalende open interest tijdens een beweging betekent vaak dat posities sluiten in plaats van openen, en dat leest heel anders." },
-        { "h": "Long/short-verhouding: wie er werkelijk in zit", "p": "/long-short telt de verhouding tussen longs en shorts over exchanges heen op. Een extreme scheefheid - zeg 80% long - is geen voorspelling, het is een waarschuwingsetiket: veel mensen hebben dezelfde inzet gedaan die jij op het punt staat te doen. Extreme scheefheden knappen uiteindelijk, en als dat gebeurt is het meestal de massa die geliquideerd wordt, niet de minderheid." },
-        { "h": "Zestig seconden vóór elke hefboominstap", "p": "Besteed voor het vergroten van een positie een minuut aan funding, open interest en long/short - niet om een trade te vinden, maar om te checken of je op het punt staat je bij een massa te voegen of er een te vinden. Neutrale waarden betekenen dat de kust relatief vrij is. Extreme waarden betekenen dat je stop breder moet, je omvang kleiner, of je instap later." }
-      ],
-      "quiz": [
-        { "q": "Wat duidt een extreem positieve funding rate meestal aan?", "o": ["De exchange hapert", "Longs zitten er dik in en betalen flink om long te blijven", "Shorts worden zeker geliquideerd", "De coin gaat van de beurs af"] },
-        { "q": "Stijgende open interest tijdens een prijsrally betekent hoogstwaarschijnlijk:", "o": ["Bestaande houders zijn alleen zekerder, verder niets nieuws", "Er stapt nieuw hefboomgeld de markt in", "De exchange verlaagt de beschikbare margin", "Het volume is volledig gestopt"] },
-        { "q": "Wat doe je met een extreme long/short-scheefheid, bijvoorbeeld 80% long?", "o": ["Direct meedoen met de meerderheid", "Negeren, het is niet relevant", "Het als waarschuwing behandelen en je omvang of stop erop aanpassen", "Aannemen dat de data fout is en de check overslaan"] }
-      ]
+     "h": "Stel de uitgang in vóór de entry",
+     "p": "Elke positie krijgt een stop-loss en een take-profit op het moment dat je opent - niet erna, als de candle al tegen je beweegt en je oordeel aangetast is. Als je niet kunt bepalen waar je ongelijk hebt voordat je instapt, ben je niet klaar om in te stappen. Het plan komt eerst; de trade voert het alleen uit."
     },
     {
-      "id": "mm6",
-      "t": "Alerts in plaats van grafiekoppas",
-      "cards": [
-        { "h": "Naar een grafiek staren is geen strategie", "p": "Je zet een niveau, en dan zit je vijfenveertig minuten toe te kijken hoe de candle er naartoe kruipt, en ergens in minuut dertig raakt je geduld op en stap je drie dollar te vroeg in ‘voor de zekerheid’. Dat is geen discipline, dat is verveling die zich voordoet als overtuiging. De grafiek had jouw toezicht niet nodig. Je plan had nodig dat je wachtte." },
-        { "h": "De alert doet het kijken", "p": "Met /alerts zet je een prijsniveau - erboven of eronder - en krijg je bericht per e-mail of Telegram zodra het geraakt wordt, zonder naar een scherm te staren. Zet hem op je werkelijke instapniveau, dat uit je plan, niet op een niveau dat je steeds bijstelt omdat de prijs het oude nog niet heeft gehaald. Sluit daarna het tabblad en doe iets anders." },
-        { "h": "Meer kijken betekent niet beter reageren", "p": "Traders die urenlang naar een grafiek kijken, praten zichzelf aan dat ze informatie verzamelen. Meestal verzamelen ze spanning, en die levert vroege instappen, vroege uitstappen en verzette stops op. Een alert gaat precies één keer af, op precies het niveau dat je koos toen je rustig was. Dat is een betere beslisser dan jij, vijfenveertig minuten in een staarwedstrijd." },
-        { "h": "De watchlist is een shortlist, geen heiligdom", "p": "Paren met een ster markeren op de homepage bouwt een watchlist - maar een watchlist die nooit wordt gesnoeid verandert in veertig coins waar je ‘een gevoel bij hebt’, en dat is het screenerprobleem weer met extra stappen. Geef een ster aan wat je echt volgt met een plan erbij, haal de ster weg bij waar je vorige maand alleen nieuwsgierig naar was, en koppel aan elke ster een alert." },
-        { "h": "Loop bewust weg", "p": "Het hele punt van alerts plus een watchlist is toestemming om te stoppen met kijken. Zet het niveau, zet de alert, sluit de app. Wordt het niveau geraakt, dan hoor je het. Zo niet, dan heb je er geen middag aan verspild om daarachter te komen. De traders die het volhouden zitten niet aan het scherm gekluisterd - ze bouwden een systeem dat dat niet nodig heeft." }
-      ],
-      "quiz": [
-        { "q": "Wat is het werkelijke probleem met naar een grafiek staren tot je niveau er is?", "o": ["Het gebruikt te veel data", "Het leidt uit ongeduld tot vroege instappen en verzette plannen", "De grafiek ververst te traag om live te volgen", "Het kan technisch niet op mobiel"] },
-        { "q": "Op welk niveau zet je een prijsalert?", "o": ["Waar de prijs op dat moment staat", "Precies het instapniveau uit je plan", "Een willekeurig rond getal", "Welk niveau ook maar spannend voelt"] },
-        { "q": "Wat houdt een watchlist nuttig in plaats van vol rommel?", "o": ["Elke coin waar je ooit van hoorde een ster geven", "Er nooit iets af halen", "Hem regelmatig snoeien en elk item koppelen aan een echt plan of alert", "Hem alleen gebruiken voor coins die al in winst staan"] }
-      ]
-    },
-    {
-      "id": "mm7",
-      "t": "De XP-lus: oefening die loont",
-      "cards": [
-        { "h": "Herhalingen, geen geluk", "p": "Eén gelukkige trade op 200× leert je niets behalve dat geluk bestaat. XP, missies en ranglijsten op MarginPad zijn om het omgekeerde gebouwd: ze belonen de saaie herhalingen - trades netjes plannen, lessen afmaken, dagelijks opdagen - omdat herhalingen zijn wat een trader werkelijk opbouwt. De gamification leidt niet af van de discipline. Het ís de discipline, met een scorebord ernaast." },
-        { "h": "Missies belonen het juiste gedrag", "p": "Dagelijkse missies betalen kleine bedragen echte USDT voor dingen als een geplande trade sluiten met een stop-loss eraan, een Academy-les afmaken of de tools gebruiken die je beter maken - niet voor volume, niet voor omvang, niet voor geluk. Bekijk ze elke dag, doe degene die passen bij wat je toch al van plan was, en laat de rest lopen." },
-        { "h": "Reeksen zijn gewoon een gewoonte met een getal erbij", "p": "Een reekssteller is een goedkope truc en werkt toch - mensen haten het om een oplopend getal te breken. Gebruik dat. Kom dagelijks langs, check de missies, kijk even op de kalender, neem één open trade door. De reeks is niet het doel; het is de steiger voor het echte doel, namelijk het lijstje zo vaak doen dat het geen lijstje meer is." },
-        { "h": "Ranglijsten die je echt kunt respecteren", "p": "De seizoensborden - Groene Dagen, ROE, winkans en XP - lopen 14 dagen en volgen elk ding apart, zodat een roekeloze gokker op 1000× die dit seizoen de ROE-lijst aanvoert niet automatisch ‘beter’ is dan een trader met een saaie winkans van 65%. Kijk naar Groene Dagen, winkans en XP als je een signaal wilt dat vaardigheid weerspiegelt in plaats van één gelukkige uitslag. Er gaan elke 14-daagse seizoen echte USDT-prijzen uit; het punt blijft staan." },
-        { "h": "Duels: discipline met een scorebord", "p": "Een duel van 7 dagen zet je tegenover één andere trader op een gekozen maatstaf - ROE, winkans, wat je maar kiest. Het is dezelfde oefening die je toch al zou doen, alleen met een rivaal erbij, en dat blijkt verrassend effectief om je een week lang echt aan een plan te houden. Daag iemand uit wiens cijfers je respecteert, niet zomaar degene bovenaan de lijst." }
-      ],
-      "quiz": [
-        { "q": "Wat voor gedrag belonen dagelijkse missies meestal?", "o": ["Alleen de trade met de hoogst mogelijke hefboom openen", "Trades netjes plannen, lessen afmaken en consequent betrokken blijven", "Handelsvolume ongeacht de uitkomst", "Elke afzonderlijke trade winnen"] },
-        { "q": "Waarom naar de winkans- of XP-ranglijst kijken in plaats van alleen naar ROE?", "o": ["ROE-lijsten zijn nep", "Een topweek op ROE kan uit één roekeloze gelukstrade komen, niet per se uit vaardigheid", "Winkanslijsten keren grotere prijzen uit", "XP is de enige lijst met echt geld"] },
-        { "q": "Wat is een duel van 7 dagen?", "o": ["Een privétrade waarbij het papieren saldo van de verliezer naar de winnaar gaat", "Een tweestrijd tegen een andere trader op een gekozen maatstaf zoals ROE of winkans", "Een toernooi dat je papieren saldo reset als je verliest", "Een functie die alleen beschikbaar is voor de top 100 van de ranglijst"] }
-      ]
+     "h": "Slaag op gewoonten, niet op geluk",
+     "p": "Je bent klaar om op te schalen - zelfs in de demo - als je winsten voortkomen uit het volgen van een plan, niet uit een gelukkige 500×-gok die een keer raak was. Sluit een week aan trades af in My Trades en kijk eerlijk: heb je goed gedimensioneerd, stops gebruikt en slechte setups laten liggen? Die gewoonte is hier het echte product."
     }
-  ]
+   ],
+   "quiz": [
+    {
+     "q": "Wat maakt de Paper Trade van MarginPad anders dan een verzonnen simulator?",
+     "o": [
+      "Hij geeft meer startgeld dan echte exchanges",
+      "Hij gebruikt live koersen en echte liquidatiewiskunde",
+      "Hij kan je niet liquideren",
+      "Hij is alleen voor beginners onder $1000"
+     ]
+    },
+    {
+     "q": "Waarom zou je per trade maar 1-2% van het demosaldo riskeren?",
+     "o": [
+      "Het platform eist het",
+      "Het komt overeen met echte risicodiscipline die doorwerkt in live trading",
+      "Grotere posities zijn tegen de regels",
+      "Het garandeert winst"
+     ]
+    },
+    {
+     "q": "Wanneer stel je je stop-loss en take-profit in?",
+     "o": [
+      "Nadat de trade tegen je begint te bewegen",
+      "Alleen bij trades boven 100× hefboom",
+      "Op het moment dat je de positie opent",
+      "Nooit - handmatig sluiten is veiliger"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm2",
+   "t": "Laat de screener het jachtwerk doen",
+   "cards": [
+    {
+     "h": "Stop met doomscrollen door grafieken",
+     "p": "Veertig munten doorbladeren in de hoop dat er een lijkt te gaan bewegen is geen analyse, het is uitstelgedrag met extra stappen. Je vindt altijd wel een grafiek die bullish lijkt als je lang genoeg staart - dat is bevestigingsbias, geen setup. De screener bestaat zodat je niet meer op gevoel jaagt maar op cijfers."
+    },
+    {
+     "h": "130+ paren, voor je gescoord",
+     "p": "De screener op /screener scant 130+ USDT-paren en geeft elk een score van 0-100 op basis van RSI, MACD, trendsterkte en volume - dezelfde input die een gedisciplineerde technisch trader met de hand checkt, maar direct over de hele markt in plaats van de vijf munten die je toevallig opende. Het is één dichte tabel: sorteer op elke kolom, ster de paren die je volgt, en het paneel bij elke rij opent de grafiek, de terminal, een alert of Rekt voor die munt."
+    },
+    {
+     "h": "Een score is een aanwijzing, geen order",
+     "p": "Een paar met score 85 en een voorgestelde setup is geen signaal om blind te vuren - het is een kandidaat die vijf minuten van je aandacht waard is. Open de grafiek, check de kalender op nieuwsrisico, check de funding op drukte. De screener snoeit een markt van duizenden terug tot een handvol die het bekijken waard zijn."
+    },
+    {
+     "h": "Hoge en lage scores tellen allebei",
+     "p": "Een paar rond 0 is niet kapot - het zegt je dat de setup de shortkant bevoordeelt, of dat het nu gewoon niet de moeite waard is. Door de lijst beide kanten op te sorteren wordt de screener twee gereedschappen: een voor longs, een voor shorts, en een derde om te zien wat je met rust laat."
+    },
+    {
+     "h": "De setup zegt wat de stop kost",
+     "p": "Elke voorgestelde setup toont de stop in procenten van de marge, niet alleen in koers - „verlies 44% van de marge” is een getal dat je kunt weigeren. Een setup met een dunne reward-to-risk is grijs, de funding staat op vier decimalen zodat een drukke kant zichtbaar is, en de Telegram-regel onder de tabel is voor lezers die de top van de lijst eens per dag in hun chat willen."
+    },
+    {
+     "h": "De snelweg, geen weg om het denken heen",
+     "p": "Traders die de screener overslaan, besteden hun voordeel aan zoeken. Traders die de check na de screener overslaan, besteden hun voordeel aan blind vertrouwen. De werkwijze: de screener vindt kandidaten, jij controleert met een grafiek en een kalendercheck, en dan - pas dan - dimensioneer je een positie. Sla een van beide helften over en je hebt het punt gemist."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat doet de MarginPad-screener eigenlijk?",
+     "o": [
+      "Hij plaatst automatisch trades voor je",
+      "Hij scoort 130+ paren op RSI, MACD, trend en volume om een shortlist te maken",
+      "Hij volgt alleen de top 10 munten op marktkapitalisatie",
+      "Hij voorspelt exacte toekomstige koersen"
+     ]
+    },
+    {
+     "q": "Wat doe je met een paar dat 85 scoort?",
+     "o": [
+      "Direct instappen met maximale hefboom",
+      "Negeren - hoge scores zijn vallen",
+      "Er verder onderzoek naar doen voordat je iets besluit",
+      "Shorten, want hoge scores betekenen overbought"
+     ]
+    },
+    {
+     "q": "Wat suggereert een heel lage score op een paar meestal?",
+     "o": [
+      "De exchange is kapot voor die munt",
+      "De setup kan de shortkant bevoordelen, of het is niet de moeite waard om te traden",
+      "Je moet kopen omdat het goedkoop is",
+      "De screener heeft zich vergist"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm3",
+   "t": "Een grafiekwerkplek die werkt",
+   "cards": [
+    {
+     "h": "Dertig tabbladen is geen analyse",
+     "p": "Vijftien browsertabbladen, zes timeframes, vier indicatoren die om je aandacht vechten - dat is geen werkplek, dat is ruis in een werkplekkostuum. Elke extra open grafiek is nog iets wat je een slechte entry kan aanpraten. De oplossing is niet meer grafieken. Het zijn er minder, betere, zo ingericht dat je ze echt kunt lezen."
+    },
+    {
+     "h": "Acht vensters, één bord",
+     "p": "/charts geeft je tot acht grafiekvensters op één bord - genoeg om je setups over symbolen en timeframes te volgen zonder door een browserkerkhof te alt-tabben. Sleep, verklein of vergroot, bewaar de indeling. De meeste traders hebben twee of drie vensters tegelijk nodig; de andere plekken zijn er voor als er een echte reden is, niet standaard. Op een telefoon draait dezelfde engine van rand tot rand met een dock onderaan."
+    },
+    {
+     "h": "Indicatoren zijn een tweede mening",
+     "p": "Negentien standaardindicatoren zijn beschikbaar, plus zes MarginPad-metingen die niemand anders heeft - Liquidation Cascade, Market Brain, Market Memory, Magnet, Big Liquidations en What Moved It. Ze allemaal laden maakt je niet meer gelijk - het maakt de grafiek onleesbaar en geeft je meer excuses om jezelf een trade aan te praten die je toch al wilde doen. Kies er twee of drie die een echte vraag beantwoorden en laat de rest ongebruikt tot je ze nodig hebt."
+    },
+    {
+     "h": "Bewaar de indeling, hou het saai",
+     "p": "Een bewaarde indeling betekent dat je /charts opent en elke keer hetzelfde schone bord ziet - geen nieuwe beslissing over welke vijftien indicatoren je vandaag toevoegt. Saai is het doel. De werkplek hoort er op je beste en je slechtste tradedag hetzelfde uit te zien, want de setups die je zoekt veranderen niet omdat jij ongeduldig bent."
+    },
+    {
+     "h": "Laat een tweede lezer je lezing checken",
+     "p": "Ask AI, een Premium-functie, leest dezelfde candles, niveaus, funding en liquidatiepools als jij, tekent de setup op de grafiek en antwoordt met een plan met entry, stop en doelen - of zegt dat er nu geen trade is. Het is er niet om je een trade te geven; het is er om je redenering te toetsen aan wat op het scherm staat. Als het gewoon met je instemt, is dat geen bevestiging, maar praat je met jezelf in een mooier lettertype."
+    },
+    {
+     "h": "Zijn calls worden gescoord, en die van jou ook",
+     "p": "Elk richtinggevend plan van de assistent wordt met zijn niveaus vastgelegd en achteraf afgerekend tegen de echte candles: kwam het eerste doel voor de stop? Het overzicht is openbaar zodra er genoeg afgerekende calls zijn, en onder de kaart zie je je eigen: hoeveel van de plannen waar je om vroeg wonnen, verloren of nooit werden gevuld. Een lezing zonder scorebord is een horoscoop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is het eigenlijke probleem met negentien indicatoren op één grafiek?",
+     "o": [
+      "De grafiek crasht",
+      "Het vermenigvuldigt de nauwkeurigheid",
+      "Het geeft ruis en excuses om een trade te rechtvaardigen die je toch al wilde",
+      "Het is technisch niet mogelijk"
+     ]
+    },
+    {
+     "q": "Waarom een grafiekindeling bewaren in plaats van hem elke keer opnieuw op te bouwen?",
+     "o": [
+      "Het is vereist om /charts te gebruiken",
+      "Het houdt je werkplek consistent in plaats van elke sessie een nieuwe rommelige beslissing",
+      "Het vindt automatisch betere trades",
+      "Het schakelt indicatoren uit die je niet nodig hebt"
+     ]
+    },
+    {
+     "q": "Waar is Ask AI voor?",
+     "o": [
+      "Om automatisch trades te plaatsen",
+      "Om je eigen analyse helemaal te vervangen",
+      "Om je lezing te toetsen aan wat op de grafiek staat, met een gescoord overzicht",
+      "Om exacte liquidatiekoersen te voorspellen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm4",
+   "t": "Laat je nooit door nieuws overvallen",
+   "cards": [
+    {
+     "h": "De candle die uit het niets kwam",
+     "p": "Je had geen pech. De FOMC stond drie weken geleden al gepland voor 18:00 UTC en elke economische kalender ter wereld had hem staan. De markt overviel je niet - jij liep met een hefboompositie een geplande gebeurtenis in zonder te weten dat hij eraan kwam. Dat is geen pech. Dat is de agenda niet checken."
+    },
+    {
+     "h": "Rode-vlag-gebeurtenissen, vooraf gemarkeerd",
+     "p": "/calendar volgt elk FOMC-besluit, elke CPI-publicatie en elke NFP-print met een live aftelklok, terug tot 2023 en vooruit zolang de data reikt. Dit zijn geen kleine hobbels - dit zijn precies de gebeurtenissen die een positie op 50× in seconden naar liquidatie kunnen sturen, juist omdat iedereen zich tegelijk rond dezelfde kop herpositioneert."
+    },
+    {
+     "h": "Check vóór de instap, niet na de wick",
+     "p": "De gewoonte is simpel: kijk voor het openen van elke hefboompositie even op de kalender. Staat er de komende uren een rode-vlag-gebeurtenis? Zo ja, sla de trade over, verklein je omvang flink, of verbreed je stop genoeg om de ruis te overleven. Checken als je al in de trade zit is geen gewoonte, dat is een lijkschouwing."
+    },
+    {
+     "h": "Zet de herinnering in plaats van het te onthouden",
+     "p": "Geheugen is een slecht risicogereedschap - je vergeet het exacte tijdstip, haalt de tijdzone door elkaar of ligt gewoon te slapen. Elke gebeurtenis op de kalender heeft een ingebouwde herinnering via e-mail en Telegram. Zet hem één keer voor de gebeurtenissen die voor jouw paren tellen en laat het platform het onthouden. Dit kost niets en haalt een hele categorie domme verliezen weg."
+    },
+    {
+     "h": "Niet elke gebeurtenis vraagt om een reactie",
+     "p": "Het punt is niet om voor altijd rond nieuws weg te blijven - sommige van de beste bewegingen komen juist ná een publicatie. Het punt is dat je nooit in een hefboompositie zit waarin je niet bewust hebt gekozen te zitten wanneer de kop valt. Handel de gebeurtenis bewust, met een plan, of stap er bewust uit. Allebei prima. Verrast worden is dat niet."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat voor gebeurtenissen volgt /calendar met aftelklokken?",
+     "o": [
+      "Alleen onderhoudsvensters van cryptobeurzen",
+      "FOMC-besluiten, CPI-publicaties en NFP-prints",
+      "Willekeurige trends op sociale media",
+      "Alleen gebeurtenissen specifiek voor Bitcoin"
+     ]
+    },
+    {
+     "q": "Waarom zijn de e-mail- en Telegramherinneringen van de kalender de moeite waard?",
+     "o": [
+      "Ze garanderen een winnende trade",
+      "Ze halen weg dat je zelf de timing moet onthouden",
+      "Ze sluiten je posities automatisch",
+      "Ze zijn verplicht om de kalender te gebruiken"
+     ]
+    },
+    {
+     "q": "Wat is de echte les over handelen rond nieuws?",
+     "o": [
+      "Handel nooit in de buurt van een economische gebeurtenis",
+      "Handel altijd het nieuws voor gegarandeerde winst",
+      "Zit bewust in een hefboompositie als de kop valt - niet per ongeluk",
+      "De kalender is alleen nuttig voor aandelenhandelaren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm5",
+   "t": "Lees de massa voordat je je erbij voegt",
+   "cards": [
+    {
+     "h": "Iedereen heeft dezelfde inzet al gedaan",
+     "p": "Als een trade voor jou vanzelfsprekend lijkt, leek hij zo’n zes uur geleden ook vanzelfsprekend voor honderdduizend andere hefboomtraders. Tegen de tijd dat een setup veilig voelt en iedereen het eens is, staat de massa er al in - en een overvolle trade heeft geen slecht nieuws nodig om af te wikkelen, alleen een massa die één keer ongelijk heeft."
+    },
+    {
+     "h": "Funding rate: de prijs van meedoen met de massa",
+     "p": "/funding laat zien wat longs aan shorts betalen, of andersom, over exchanges heen en live ververst. Extreem positieve funding betekent dat longs flink betalen om long te blijven - de boot zit vol en iedereen is al ingestapt. Dat betekent niet dat de prijs meteen moet draaien, maar wel dat veel hefboomgeld één duw verwijderd is van gedwongen worden eruit te gaan."
+    },
+    {
+     "h": "Open interest vertelt hoe groot de boot is",
+     "p": "/open-interest toont de totale hefboomblootstelling in de markt. Stijgende open interest tijdens een rally betekent dat er nieuw hefboomgeld instapt, niet alleen dat bestaande houders zekerder worden - dat is brandstof voor een scherpere beweging als het draait. Dalende open interest tijdens een beweging betekent vaak dat posities sluiten in plaats van openen, en dat leest heel anders."
+    },
+    {
+     "h": "Long/short-verhouding: wie er werkelijk in zit",
+     "p": "/long-short telt de verhouding tussen longs en shorts over exchanges heen op. Een extreme scheefheid - zeg 80% long - is geen voorspelling, het is een waarschuwingsetiket: veel mensen hebben dezelfde inzet gedaan die jij op het punt staat te doen. Extreme scheefheden knappen uiteindelijk, en als dat gebeurt is het meestal de massa die geliquideerd wordt, niet de minderheid."
+    },
+    {
+     "h": "Zestig seconden vóór elke hefboominstap",
+     "p": "Besteed voor het vergroten van een positie een minuut aan funding, open interest en long/short - niet om een trade te vinden, maar om te checken of je op het punt staat je bij een massa te voegen of er een te vinden. Neutrale waarden betekenen dat de kust relatief vrij is. Extreme waarden betekenen dat je stop breder moet, je omvang kleiner, of je instap later."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat duidt een extreem positieve funding rate meestal aan?",
+     "o": [
+      "De exchange hapert",
+      "Longs zitten er dik in en betalen flink om long te blijven",
+      "Shorts worden zeker geliquideerd",
+      "De coin gaat van de beurs af"
+     ]
+    },
+    {
+     "q": "Stijgende open interest tijdens een prijsrally betekent hoogstwaarschijnlijk:",
+     "o": [
+      "Bestaande houders zijn alleen zekerder, verder niets nieuws",
+      "Er stapt nieuw hefboomgeld de markt in",
+      "De exchange verlaagt de beschikbare margin",
+      "Het volume is volledig gestopt"
+     ]
+    },
+    {
+     "q": "Wat doe je met een extreme long/short-scheefheid, bijvoorbeeld 80% long?",
+     "o": [
+      "Direct meedoen met de meerderheid",
+      "Negeren, het is niet relevant",
+      "Het als waarschuwing behandelen en je omvang of stop erop aanpassen",
+      "Aannemen dat de data fout is en de check overslaan"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm6",
+   "t": "Alerts in plaats van grafiekoppas",
+   "cards": [
+    {
+     "h": "Naar de grafiek staren is geen strategie",
+     "p": "Je stelt een niveau in, en dan zit je vijfenveertig minuten te kijken hoe de candle ernaartoe kruipt, en ergens in minuut dertig raakt je geduld op en stap je drie dollar te vroeg in „voor de zekerheid”. Dat is geen discipline, dat is verveling die zich voordoet als overtuiging. De grafiek had jou niet nodig als wachter. Je plan had jou nodig om te wachten."
+    },
+    {
+     "h": "Eén pagina voor elke alert",
+     "p": "/alerts/ is waar elke alert op de site woont en waar je kiest hoe hij je bereikt: een pushmelding op je telefoon, een bericht van de Telegram-bot of een e-mail. Een prijsalert is gratis - een munt boven of onder een niveau. Een trendlijn-alert is ook gratis: teken de lijn op een grafiek, tik op de bel, en hij gaat af als de koers een lijn kruist die meebeweegt. Stel ze in op het niveau uit je plan en sluit dan het tabblad."
+    },
+    {
+     "h": "De alerts die alleen wij kunnen sturen",
+     "p": "Positie-alerts zijn Premium, en geen grafieksite kan ze kopiëren, want wij houden je posities bij: je liquidatie die dichterbij komt, je stop die bijna afgaat, je doel dat bijna bereikt is, een wachtende order die bijna gevuld wordt. Dezelfde schakelaar brengt je een catalyst op een munt die je bezit - een listing, een hack, een macrocijfer - op het moment dat het binnenkomt. Zone-alerts gaan af als een zware liquidatieband bijna wordt geraakt; whale-alerts volgen een wallet die je koos."
+    },
+    {
+     "h": "Meer kijken is niet beter reageren",
+     "p": "Traders die uren naar een grafiek kijken, denken dat ze informatie verzamelen. Meestal verzamelen ze angst, en die levert te vroege entries, te vroege exits en verplaatste stops op. Een alert gaat precies één keer af, op precies het niveau dat je koos toen je kalm was. Dat is een betere beslisser dan jij, vijfenveertig minuten in een staarwedstrijd."
+    },
+    {
+     "h": "De watchlist is een shortlist, geen heiligdom",
+     "p": "Paren sterren in de screener bouwt een watchlist - maar een watchlist die nooit wordt opgeschoond wordt veertig munten waar je „een gevoel bij hebt”, wat gewoon het screenerprobleem is met extra stappen. Ster wat je echt volgt met een plan erbij, haal de ster weg bij wat je vorige maand alleen nieuwsgierig maakte, en koppel elke ster aan een alert."
+    },
+    {
+     "h": "Loop met opzet weg",
+     "p": "Het hele punt van alerts plus een watchlist is toestemming om op te houden met kijken. Stel het niveau in, stel de alert in, sluit de app. Als het niveau wordt geraakt, hoor je het. Zo niet, dan heb je geen middag verspild om dat uit te zoeken. De traders die blijven zijn niet degene die aan het scherm vastgeplakt zitten - het zijn degene die een systeem bouwden dat hen daar niet nodig heeft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is het eigenlijke probleem met naar een grafiek staren tot je niveau komt?",
+     "o": [
+      "Het gebruikt te veel data",
+      "Het levert uit ongeduld vaak te vroege entries en verplaatste plannen op",
+      "De grafiek ververst te traag om live te volgen",
+      "Het is technisch onmogelijk op mobiel"
+     ]
+    },
+    {
+     "q": "Op welk niveau stel je een prijsalert in?",
+     "o": [
+      "Waar de koers nu staat",
+      "Het exacte entryniveau uit je plan",
+      "Een willekeurig rond getal",
+      "Welk niveau ook maar spannend voelt"
+     ]
+    },
+    {
+     "q": "Welke alert kan alleen MarginPad je sturen?",
+     "o": [
+      "Een munt die een koers kruist",
+      "Je eigen liquidatie die dichterbij komt",
+      "Een nieuwskop",
+      "Een wijziging in het fundingtarief"
+     ]
+    },
+    {
+     "q": "Wat houdt een watchlist bruikbaar in plaats van rommelig?",
+     "o": [
+      "Elke munt sterren waar je ooit van hoorde",
+      "Nooit iets verwijderen",
+      "Hem regelmatig opschonen en vermeldingen koppelen aan een echt plan of een alert",
+      "Hem alleen gebruiken voor munten die al in winst staan"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm7",
+   "t": "De XP-lus: oefening die loont",
+   "cards": [
+    {
+     "h": "Herhalingen, geen geluk",
+     "p": "Eén gelukkige 200×-trade leert je niets behalve dat geluk bestaat. XP, missies en ranglijsten op MarginPad zijn gebouwd op het tegenovergestelde: de saaie herhalingen belonen - trades goed plannen, lessen afronden, dagelijks langskomen - want herhalingen bouwen een trader. De gamification leidt niet af van de discipline. Ze is de discipline, met een scorebord erbij."
+    },
+    {
+     "h": "Missies belonen het juiste gedrag",
+     "p": "Dagelijkse missies betalen kleine bedragen echte USDT voor dingen als een geplande trade sluiten met een stop-loss, een Academy-les afronden, of de tools gebruiken die je beter maken - niet voor volume, niet voor grootte, niet voor geluk. Zeven per dag; rond er vijf af en de setbonus betaalt XP. Check ze elke dag, werk de missies af die passen bij wat je toch al ging doen, en laat de rest gaan."
+    },
+    {
+     "h": "Streaks zijn gewoon gewoonte met een getal erop",
+     "p": "Een streakteller is een goedkoop trucje en het werkt toch - mensen haten het om een stijgend getal te breken. Gebruik dat. Kom dagelijks langs, check de missies, kijk even naar de kalender, bekijk één open trade. De streak is niet het doel; het is steiger voor het echte doel: de checklist zo vaak doen dat het geen checklist meer is."
+    },
+    {
+     "h": "Ranglijsten die je kunt respecteren",
+     "p": "De tien seizoensranglijsten lopen 14 dagen en volgen elk één ding - ROE, Green Days, winstpercentage, XP, de dagelijkse BTC-call, Meme Spot-winst, de Gold Room, Bybit-volume, Moon-inzetten - dus een roekeloze 1000×-gokker die dit seizoen bovenaan de ROE-lijst staat is niet automatisch „beter” dan een trader met een saai winstpercentage van 65%. Kijk naar de ranglijsten Green Days, winstpercentage en XP als je een signaal wilt dat vaardigheid weerspiegelt in plaats van één gelukkige uitschieter. Elk seizoen gaan er echte USDT-prijzen uit."
+    },
+    {
+     "h": "Duels: discipline met een scorebord",
+     "p": "Een duel zet je tegenover één andere trader op een gekozen maatstaf - ROE, winstpercentage, wat je maar kiest - voor een uur, een dag, drie dagen of een week, met Ticks als inzet. Alleen trades die na de start van het duel zijn geopend tellen mee. Het is dezelfde oefening die je toch al deed, alleen met een rivaal erbij, wat verrassend goed werkt om echt bij een plan te blijven. Daag iemand uit wiens cijfers je respecteert, niet zomaar degene bovenaan de lijst."
+    },
+    {
+     "h": "Squads: vijf mensen, één ruimte",
+     "p": "Een squad is een groep van maximaal vijf leden met een privé-chatruimte, een logo, eigen levels en raids - 48 uur om een pot te vullen met de gerealiseerde winst van de squad op één major, waarbij verliezen de pot leegtrekken. Een kwart van de XP van elk lid voedt het level van de squad. Het is de sociale helft van de lus: degene die jou het meest waarschijnlijk behoedt voor een wraaktrade is degene in de ruimte die meekijkt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welk gedrag belonen dagelijkse missies meestal?",
+     "o": [
+      "Alleen de trade met de hoogst mogelijke hefboom openen",
+      "Trades goed plannen, lessen afronden en consistent meedoen",
+      "Tradevolume ongeacht de uitkomst",
+      "Elke trade winnen"
+     ]
+    },
+    {
+     "q": "Waarom naar de ranglijst voor winstpercentage of XP kijken in plaats van alleen de ROE-lijst?",
+     "o": [
+      "ROE-lijsten zijn nep",
+      "Een topseizoen in ROE kan komen van één roekeloze gelukkige trade, niet per se van vaardigheid",
+      "Winstpercentage-lijsten betalen grotere prijzen",
+      "XP is de enige lijst met echt geld"
+     ]
+    },
+    {
+     "q": "Wat is een duel?",
+     "o": [
+      "Een privétrade waarbij het papieren saldo van de verliezer naar de winnaar gaat",
+      "Een onderlinge strijd tegen een andere trader op een gekozen maatstaf, van een uur tot een week, met Ticks als inzet",
+      "Een toernooi dat je papieren saldo reset als je verliest",
+      "Een functie alleen voor traders in de top 100 van de ranglijst"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm8",
+   "t": "Wat de koers bewoog",
+   "cards": [
+    {
+     "h": "Een candle heeft een reden, of niet",
+     "p": "De meeste candles zijn ruis: de markt die ademt, een correctie na een duw, iemand die een positie sluit. Sommige zijn dat niet - een listing, een hack, een CPI-cijfer, een delisting, een whale die eruit gedwongen wordt - en dat verschil is de hele trade. MarginPad leest 37 bronnen zodra ze publiceren, scoort elk item en meet de beweging die volgde op elke munt die het noemt. Dat is de pagina Catalysts."
+    },
+    {
+     "h": "De vlag op de grafiek",
+     "p": "Zet What Moved It aan en er verschijnt een vlag op de candle waar een beweging begon, met de oorzaak en de grootte: „Binance-hack, −7,0%”. Een beweging kan meer dan één oorzaak hebben en de kaart noemt de aandelen - het nieuws, de liquidatiecascade die het veroorzaakte, Bitcoin die alles meetrekt. Een vlag wordt alleen getekend als de engine zeker is; een candle die hij niet kan verklaren blijft kaal in plaats van een gok te dragen."
+    },
+    {
+     "h": "Een verhaal is één beweging, geheel gemeten",
+     "p": "Een hack is niet vijf aparte dalingen. Zolang het verhaal loopt staat de vlag op LIVE en groeit de zone mee tot het uiterste; als de markt de beweging heeft teruggegeven, sluit hij en toont het eindcijfer. Zeven redacties die dezelfde hack melden zijn één verhaal, geen zeven oorzaken. En de richting moet kloppen: een opleving na een hack is de markt die herstelt, nooit de hack."
+    },
+    {
+     "h": "Wat telt en wat niet",
+     "p": "Een hack van $3M bij een nevenproject beweegt niets en is nooit een oorzaak; degene die de koers bewegen zijn van het soort van honderd miljoen. Een kop die de andere kant op wijst dan de beweging wordt geweigerd. Een listing op een kleine venue is ruis; een spotlisting op Binance of Upbit heeft de koers tien keer de gebruikelijke maat bewogen, gemeten over alle die we zagen. De pagina toont hoe vaak een bron spreekt en hoe ver de koers ging de laatste keren dat hij dat deed."
+    },
+    {
+     "h": "Hoe je ermee tradet",
+     "p": "Check vóór een entry de vlaggen op de munt: als de laatste drie bewegingen cascades waren en geen nieuws, wordt de munt gedreven door hefboom, niet door informatie - schaal af. Als een verhaal LIVE is, is de beweging nog niet voorbij; een stop erbinnen is een gift. Premium-leden die de munt bezitten krijgen de catalyst als alert op het moment dat hij binnenkomt, zodat het nieuws jou vindt en niet andersom. De regel is dezelfde als bij de kalender: laat je nooit verrassen door iets wat was aangekondigd."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wanneer tekent What Moved It een vlag op een candle?",
+     "o": [
+      "Op elke candle",
+      "Alleen als de engine zeker is van de oorzaak",
+      "Alleen op rode candles",
+      "Alleen voor Bitcoin"
+     ]
+    },
+    {
+     "q": "Een munt veert +1% op een uur na een hack-kop. Wat is de oorzaak?",
+     "o": [
+      "De hack",
+      "Niet de hack - een oorzaak moet dezelfde kant op wijzen als de beweging",
+      "De exchange",
+      "Funding"
+     ]
+    },
+    {
+     "q": "Wat betekent een LIVE-vlag?",
+     "o": [
+      "Het nieuws is nep",
+      "Het verhaal loopt nog en de beweging is nog niet voorbij",
+      "De munt is gedelist",
+      "De alert is verstuurd"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open de pagina Catalysts: de nieuwste listings, hacks, macrocijfers en koppen, gescoord, met de beweging die elk veroorzaakte. Zet daarna de indicator What Moved It aan in /charts en lees een dag aan vlaggen op een munt die je tradet.",
+    "label": "Open Catalysts →"
+   }
+  }
+ ]
 }

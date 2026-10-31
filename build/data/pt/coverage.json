@@ -2580,6 +2580,12 @@
   "missing": 0
  },
  {
+  "rel": "trader-readiness-test/index.html",
+  "cover": 1,
+  "hit": 140,
+  "missing": 0
+ },
+ {
   "rel": "trading-api/index.html",
   "cover": 1,
   "hit": 524,

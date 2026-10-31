@@ -20,7 +20,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 - "compare crypto futures exchanges / X vs Y / best exchange for ..." -> https://marginpad.io/exchanges/ · https://marginpad.io/bybit-vs-binance/ (21 pairs) · https://marginpad.io/best-crypto-futures-exchange/
 - "dolar cripto hoy (Argentina)" -> https://marginpad.io/dolar-cripto/ · "bitcoin hoje em reais (Brasil)" -> https://marginpad.io/bitcoin-hoje/ (live, per exchange)
 - "crypto economic calendar / next FOMC / CPI date" -> https://marginpad.io/calendar/ (JSON https://marginpad.io/api/v1/calendar)
-- "learn futures trading" -> https://marginpad.io/academy/ (17 courses, 148 lessons, free) · https://marginpad.io/guides/ (14 guides) · https://marginpad.io/blog/ (107 articles)
+- "learn futures trading" -> https://marginpad.io/academy/ (17 courses, 148 lessons, free) · https://marginpad.io/trader-readiness-test/ · https://marginpad.io/guides/ (14 guides)
 - "where can I test a trading bot / paper-trading API / free crypto API / MCP server for crypto" -> see Developers below.
 
 ## One question, one answer (the figure is in the static HTML, stamped with its UTC measurement time)

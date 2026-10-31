@@ -1,119 +1,480 @@
 {
-  "id": "mastery",
-  "name": "MarginPad u praksi",
-  "sub": "Pretvori alate u radni tok",
-  "lessons": [
+ "id": "mastery",
+ "name": "MarginPad u praksi",
+ "sub": "Pretvori alate u radni tok",
+ "lessons": [
+  {
+   "id": "mm1",
+   "t": "Vežbaj kao da je pravo",
+   "cards": [
     {
-      "id": "mm1",
-      "t": "Vežbaj kao da je pravo",
-      "cards": [
-        { "h": "Lažan novac, prave navike", "p": "Demo nalog ti daje 100 dolara koji zaista ne mogu da nestanu. U tome je i poenta i zamka. Ako ga shvatiš kao video-igru, nećeš naučiti ništa osim da mlatiš po dugmadima. Ako ga shvatiš kao novac za kiriju, naučićeš dimenzionisanje, strpljenje i kako izgleda likvidacija - jedine tri stvari koje vredi znati pre nego što uopšte dodirneš pravu menjačnicu." },
-        { "h": "Ista matematika kao na pravoj berzi", "p": "Ovo nije simulator sa izmišljenim pravilima. Paper Trade radi na živim cenama i sa istom formulom za likvidaciju koju koriste prave menjačnice - margina, poluga, stopa održavanja, sve. Long sa polugom 50× koji ovde bude likvidiran bio bi likvidiran i na pravoj berzi. Ako strategija ne preživi matematiku u vežbi, neće preživeti ni pravu." },
-        { "h": "Dimenzioniši nalog kao da je kirija", "p": "Pre nego što bilo šta otvoriš, odluči kako izgleda loš dan. Rizik od 1–2% tvojih 100 dolara po trejdu znači osam uzastopnih gubitaka pre nego što ostaneš bez ičega - jastuk pravog trejdera. Rizik od 20% po trejdu znači da tri loša trejda gase nalog. Demou je svejedno šta izabereš. Tebi u budućnosti neće biti." },
-        { "h": "Odredi izlaz pre ulaska", "p": "Svaka pozicija dobija stop-loss i take-profit u trenutku otvaranja - a ne kasnije, kada se sveća već kreće protiv tebe i kada ti je rasuđivanje narušeno. Ako ne možeš da odlučiš gde grešiš pre ulaska, nisi spreman da uđeš. Prvo dolazi plan; trejd je samo njegovo izvršenje." },
-        { "h": "Napreduj po navikama, ne po sreći", "p": "Spreman si da povećaš veličinu - čak i u demou - kada tvoji dobici dolaze iz poštovanja plana, a ne iz srećnog pogotka sa 500× koji je slučajno prošao jednom. Pogledaj nedelju trejdova u My Trades i budi iskren: da li si dimenzionisao kako treba, koristio stopove i odustajao od loših setupa? Ta navika je pravi proizvod ovde." }
-      ],
-      "quiz": [
-        { "q": "Po čemu se MarginPad Paper Trade razlikuje od izmišljenog simulatora?", "o": ["Daje više početnog novca nego prave menjačnice", "Koristi žive cene i pravu matematiku likvidacije", "Ne može da te likvidira", "Namenjen je samo početnicima ispod 1000 dolara"] },
-        { "q": "Zašto rizikovati samo 1–2% demo stanja po trejdu?", "o": ["Platforma to zahteva", "Zato što odgovara pravoj disciplini rizika koja se prenosi na živo trgovanje", "Zato što su veće pozicije protiv pravila", "Zato što garantuje profit"] },
-        { "q": "Kada treba postaviti stop-loss i take-profit?", "o": ["Nakon što se trejd okrene protiv tebe", "Samo na trejdovima preko 100× poluge", "U trenutku kada otvaraš poziciju", "Nikada - ručno zatvaranje je sigurnije"] }
-      ]
+     "h": "Lažan novac, prave navike",
+     "p": "Demo nalog ti daje $10,000 koji zaista ne mogu da nestanu. U tome je i poenta i zamka. Ako ga shvatiš kao video-igru, nećeš naučiti ništa osim da mlatiš po dugmadima. Ako ga shvatiš kao novac za kiriju, naučićeš dimenzionisanje, strpljenje i kako izgleda likvidacija - jedine tri stvari koje vredi znati pre nego što uopšte dodirneš pravu menjačnicu."
     },
     {
-      "id": "mm2",
-      "t": "Neka skener lovi umesto tebe",
-      "cards": [
-        { "h": "Prestani da beskrajno listaš grafikone", "p": "Prelistavanje četrdeset coina u nadi da će neki izgledati kao da „samo što nije krenuo\" nije analiza, to je odlaganje sa dodatnim koracima. Uvek ćeš naći grafikon koji izgleda bikovski ako dovoljno dugo buljiš - to je pristrasnost potvrde, a ne setup. Skener postoji da prestaneš da loviš po osećaju i počneš da loviš po brojevima." },
-        { "h": "Preko 200 parova, već ocenjeni", "p": "Skener na /screener prolazi kroz više od 200 USDT parova i svakom daje ocenu 0–100 na osnovu RSI-ja, MACD-a, snage trenda i volumena - istih ulaza koje disciplinovan tehnički trejder proverava ručno, samo obavljeno istog trena na celom tržištu umesto na pet coina koje si slučajno otvorio. Daje ti uži izbor, ne presudu." },
-        { "h": "Ocena je trag, a ne naredba", "p": "Par sa ocenom 85 i predloženim setupom nije signal da pucaš naslepo - to je kandidat vredan još pet minuta tvoje pažnje. Otvori grafikon, proveri kalendar zbog rizika od vesti, proveri funding zbog gužve. Skener sužava tržište od hiljada na šačicu onih koje vredi zaista pogledati." },
-        { "h": "Bitne su i visoke i niske ocene", "p": "Par blizu nule nije pokvaren - govori ti da setup ide u prilog short strani, ili da jednostavno trenutno ne vredi trgovati njime. Sortiranje liste u oba smera pretvara skener u dva alata: jedan za pronalaženje longova, drugi za shortove, i treći za pronalaženje onoga što treba potpuno zaobići." },
-        { "h": "Prečica, ali ne prečica oko razmišljanja", "p": "Trejderi koji preskoče skener troše svoju prednost na pretragu. Trejderi koji preskoče proveru posle skenera troše je na slepo poverenje. Radni tok je: skener nalazi kandidate, ti ih proveravaš grafikonom i kalendarom, i tek onda dimenzioniš poziciju. Preskoči bilo koju polovinu i preskočio si poentu." }
-      ],
-      "quiz": [
-        { "q": "Šta MarginPad skener zapravo radi?", "o": ["Automatski otvara trejdove umesto tebe", "Ocenjuje preko 200 parova po RSI-ju, MACD-u, trendu i volumenu i pravi uži izbor", "Prati samo prvih 10 coina po tržišnoj kapitalizaciji", "Predviđa tačne buduće cene"] },
-        { "q": "Šta treba da uradiš sa parom koji ima ocenu 85?", "o": ["Da odmah uđeš sa maksimalnom polugom", "Da ga ignorišeš - visoke ocene su zamka", "Da ga dodatno istražiš pre bilo kakve odluke", "Da ga shortuješ, jer visoka ocena znači prekupljenost"] },
-        { "q": "Šta obično znači vrlo niska ocena na nekom paru?", "o": ["Da je menjačnica pokvarena za taj coin", "Da setup možda ide u prilog short strani, ili da ne vredi trgovati", "Da treba da ga kupiš jer je jeftin", "Da je skener napravio grešku"] }
-      ]
+     "h": "Ista matematika kao na pravoj berzi",
+     "p": "Ovo nije igračka sa izmišljenim pravilima. Paper Trade radi na živim cenama i sa istom formulom za likvidaciju koju koriste prave menjačnice - margina, poluga, stopa održavanja, sve. Long sa polugom 50× koji ovde bude likvidiran bio bi likvidiran i na pravoj berzi. Ako strategija ne preživi matematiku u vežbi, neće preživeti ni pravu."
     },
     {
-      "id": "mm3",
-      "t": "Radni prostor za grafikone koji stvarno radi",
-      "cards": [
-        { "h": "Trideset tabova nije analiza", "p": "Petnaest tabova u pregledaču, šest vremenskih okvira, četiri indikatora koji se međusobno bore za tvoju pažnju - to nije radni prostor, to je buka prerušena u radni prostor. Svaki dodatno otvoren grafikon je još jedna stvar koja može da te nagovori na loš ulazak. Rešenje nije više grafikona. Rešenje je manje njih, ali boljih i raspoređenih tako da zaista možeš da ih čitaš." },
-        { "h": "Deset prozora, jedna tabla", "p": "/charts ti daje do deset plutajućih prozora sa grafikonima na jednoj tabli - dovoljno da pratiš svoje setupe po simbolima i vremenskim okvirima bez preskakanja kroz groblje tabova. Prevlači, menjaj veličinu, sačuvaj raspored. Većini trejdera trebaju samo dva ili tri prozora istovremeno; ostalih sedam mesta postoji za kada se pojavi pravi razlog, a ne po pravilu." },
-        { "h": "Indikatori su drugo mišljenje", "p": "Dostupno je devetnaest indikatora. Ako učitaš svih devetnaest, nećeš biti devetnaest puta u pravu - grafikon će postati nečitljiv, a ti ćeš dobiti devetnaest izgovora da sebe nagovoriš na trejd koji si ionako želeo. Izaberi dva ili tri koji odgovaraju na stvarno pitanje (trend, momentum, volatilnost) i pusti ostale da stoje neiskorišćeni dok ti ne zatrebaju." },
-        { "h": "Sačuvaj raspored i neka bude dosadan", "p": "Sačuvan raspored znači da otvoriš /charts i vidiš istu urednu tablu svaki put - a ne novu odluku o tome kojih ćeš petnaest indikatora dodati danas. Dosadno je cilj. Radni prostor treba da izgleda isto i na tvoj najbolji i na tvoj najgori dan trgovanja, jer se setupi koje loviš ne menjaju samo zato što si nestrpljiv." },
-        { "h": "Neka drugi čitač proveri tvoje čitanje", "p": "Prijavljeni korisnici dobijaju AI analitičara grafikona u svakom prozoru - ne da ti servira trejd, nego da proveri tvoje sopstveno rezonovanje u odnosu na ono što je zaista na ekranu. Ako primeti nešto što je tvoje čitanje promašilo, to je korisno. Ako se samo složi sa tobom, to nije potvrda, to si ti koji razgovaraš sam sa sobom lepšim fontom." }
-      ],
-      "quiz": [
-        { "q": "U čemu je pravi problem sa učitavanjem devetnaest indikatora na jedan grafikon?", "o": ["Grafikon će se srušiti", "To umnožava tačnost", "To stvara buku i izgovore da opravdaš trejd koji si ionako želeo", "To tehnički nije moguće"] },
-        { "q": "Zašto sačuvati raspored grafikona umesto da ga praviš svaki put iznova?", "o": ["Zato što je to uslov za korišćenje /charts", "Zato što ti radni prostor ostaje dosledan umesto da bude nova zbrkana odluka svake sesije", "Zato što automatski nalazi bolje trejdove", "Zato što isključuje indikatore koji ti ne trebaju"] },
-        { "q": "Čemu služi AI analitičar grafikona?", "o": ["Da automatski otvara trejdove", "Da potpuno zameni tvoju analizu", "Da proveri tvoje čitanje u odnosu na ono što je na grafikonu", "Da predvidi tačne cene likvidacije"] }
-      ]
+     "h": "Tvoja pozicija živi na serveru",
+     "p": "Otvori trejd i on se drži kod nas, a ne u tabu tvog pregledača. Zatvori laptop, promeni telefon, izgubi signal - stop, cilj i likvidacija se i dalje proveravaju svakog minuta u odnosu na zatvorene sveće. Zato te fitilj kroz stop ovde ne gasi ako se sveća nije tamo zatvorila, i zato je P&L na tiketu broj sa servera, nikad nešto što je tvoj ekran izmislio."
     },
     {
-      "id": "mm4",
-      "t": "Nikad se ne daj iznenaditi vestima",
-      "cards": [
-        { "h": "Sveća koja je došla niotkuda", "p": "Nisi imao peh. FOMC je bio zakazan za 18:00 UTC još pre tri nedelje i svaki ekonomski kalendar na svetu ga je imao na spisku. Tržište te nije napalo iz zasede - ušao si u zakazan događaj sa polugom i bez ikakve ideje da dolazi. To nije loša sreća. To je neproveravanje rasporeda." },
-        { "h": "Događaji sa crvenom zastavicom, označeni unapred", "p": "/calendar prati svaku odluku FOMC-a, objavu CPI-ja i NFP izveštaj sa živim odbrojavanjem, unazad do 2023. i unapred dokle podaci postoje. To nisu sitni potresi - to su događaji koji najverovatnije mogu poslati poziciju sa 50× polugom pravo u likvidaciju za nekoliko sekundi, upravo zato što se svi istovremeno prepozicioniraju oko istog naslova." },
-        { "h": "Proveri pre ulaska, a ne posle fitilja", "p": "Navika je jednostavna: pre otvaranja bilo koje pozicije sa polugom, baci pogled na kalendar. Ima li događaja sa crvenom zastavicom u narednih nekoliko sati? Ako ima, ili preskoči trejd, ili drastično smanji veličinu, ili proširi stop dovoljno da preživi buku. Provera pošto si već u trejdu nije navika, to je obdukcija." },
-        { "h": "Postavi podsetnik umesto da pamtiš", "p": "Pamćenje je loš alat za rizik - zaboravićeš tačno vreme, pomešaćeš vremensku zonu ili ćeš prosto spavati. Svaki događaj u kalendaru ima ugrađen podsetnik na email i Telegram. Postavi ga jednom za događaje koji su bitni tvojim parovima i pusti platformu da pamti. Ovo ne košta ništa, a uklanja celu jednu kategoriju glupih gubitaka." },
-        { "h": "Ne traži svaki događaj reakciju", "p": "Poenta nije da zauvek izbegavaš trgovanje oko vesti - neki od najboljih poteza dešavaju se baš posle objave. Poenta je da nikada ne budeš u poziciji sa polugom u kojoj nisi svesno izabrao da budeš kada naslov padne. Trguj događaj namerno, sa planom, ili se namerno skloni. Oba su u redu. Biti zatečen nije." }
-      ],
-      "quiz": [
-        { "q": "Kakve događaje /calendar prati sa odbrojavanjem?", "o": ["Samo termine održavanja kripto menjačnica", "Odluke FOMC-a, objave CPI-ja i NFP izveštaje", "Nasumične trendove sa društvenih mreža", "Samo događaje vezane specifično za Bitcoin"] },
-        { "q": "Zašto vredi podesiti podsetnike kalendara na email i Telegram?", "o": ["Garantuju dobitnički trejd", "Uklanjaju potrebu da sam pamtiš vreme događaja", "Automatski zatvaraju tvoje pozicije", "Bez njih se kalendar uopšte ne može koristiti"] },
-        { "q": "Koja je prava pouka o trgovanju oko vesti?", "o": ["Nikada ne trguj u blizini ekonomskih događaja", "Uvek trguj vesti za zagarantovan profit", "Budi u poziciji sa polugom namerno kada naslov padne - a ne slučajno", "Kalendar je koristan samo trgovcima akcijama"] }
-      ]
+     "h": "Dimenzioniši nalog kao da je kirija",
+     "p": "Pre nego što bilo šta otvoriš, odluči kako izgleda loš dan. Rizik od 1–2% tvojih $10,000 po trejdu znači osam uzastopnih gubitaka pre nego što ostaneš bez ičega - jastuk pravog trejdera. Rizik od 20% po trejdu znači da tri loša trejda gase nalog. Demou je svejedno šta izabereš. Tebi u budućnosti neće biti."
     },
     {
-      "id": "mm5",
-      "t": "Pročitaj masu pre nego što joj se pridružiš",
-      "cards": [
-        { "h": "Svi su već odigrali istu opkladu", "p": "Ako ti trejd deluje očigledno, delovao je očigledno i stotini hiljada drugih trejdera sa polugom, otprilike pre šest sati. Kada setup počne da deluje bezbedno i kada se svi slože, masa je već pozicionirana - a prenatrpanom trejdu ne trebaju loše vesti da bi se raspao, dovoljno je da masa jednom pogreši." },
-        { "h": "Funding: cena boravka u masi", "p": "/funding pokazuje koliko longovi plaćaju shortovima, ili obrnuto, na više berzi, uz osvežavanje uživo. Izrazito pozitivan funding znači da longovi skupo plaćaju da bi ostali u longu - čamac je pun i svi su već ušli. To ne znači da cena mora odmah da se okrene, ali znači da je mnogo novca sa polugom udaljeno jedan gurac od prinudnog izlaska." },
-        { "h": "Open interest ti govori koliki je čamac", "p": "/open-interest pokazuje ukupnu izloženost sa polugom na tržištu. Rast open interesta tokom rasta cene znači da novi novac sa polugom ulazi, a ne da su postojeći vlasnici samo sigurniji - to je gorivo za oštriji potez ako dođe do preokreta. Pad open interesta tokom poteza često znači da se pozicije zatvaraju, a ne otvaraju, što se čita sasvim drugačije." },
-        { "h": "Long/short odnos: ko je zapravo pozicioniran", "p": "/long-short sabira odnos longova i shortova po berzama. Ekstremna neravnoteža - recimo 80% u longu - nije predviđanje, to je upozorenje na etiketi: mnogo ljudi je odigralo istu opkladu koju se ti spremaš da odigraš. Ekstremne neravnoteže na kraju puknu, a kada puknu, obično biva likvidirana masa, a ne manjina." },
-        { "h": "Šezdeset sekundi pre svakog ulaska sa polugom", "p": "Pre nego što povećaš poziciju, potroši minut na funding, open interest i long/short - ne da nađeš trejd, nego da proveriš da li se spremaš da se pridružiš masi ili da je pronađeš. Neutralna očitavanja znače da je teren relativno čist. Ekstremna očitavanja znače da ti treba širi stop, manja veličina ili kasniji ulazak." }
-      ],
-      "quiz": [
-        { "q": "Šta obično znači izrazito pozitivna funding stopa?", "o": ["Da menjačnica ima grešku", "Da su longovi prenatrpani i skupo plaćaju da ostanu u longu", "Da će shortovi sigurno biti likvidirani", "Da će coin biti izbačen sa berze"] },
-        { "q": "Rast open interesta tokom rasta cene najverovatnije znači:", "o": ["Da su postojeći vlasnici samo sigurniji, ništa novo", "Da nov novac sa polugom ulazi na tržište", "Da menjačnica smanjuje dostupnu marginu", "Da je volumen potpuno stao"] },
-        { "q": "Šta da radiš sa ekstremnom long/short neravnotežom, recimo 80% u longu?", "o": ["Odmah se pridruži strani većine", "Ignoriši je, nema nikakav značaj", "Shvati je kao upozorenje i prilagodi veličinu ili stop", "Pretpostavi da su podaci pogrešni i preskoči proveru"] }
-      ]
+     "h": "Odredi izlaz pre ulaska",
+     "p": "Svaka pozicija dobija stop-loss i take-profit u trenutku otvaranja - a ne kasnije, kada se sveća već kreće protiv tebe i kada ti je rasuđivanje narušeno. Ako ne možeš da odlučiš gde grešiš pre ulaska, nisi spreman da uđeš. Prvo dolazi plan; trejd je samo njegovo izvršenje."
     },
     {
-      "id": "mm6",
-      "t": "Alarmi umesto čuvanja grafikona",
-      "cards": [
-        { "h": "Buljenje u grafikon nije strategija", "p": "Odrediš nivo, pa sediš i gledaš kako mu se sveća približava četrdeset pet minuta, i negde oko tridesetog minuta strpljenje te izda pa uđeš tri dolara ranije „za svaki slučaj\". To nije disciplina, to je dosada koja glumi uverenje. Grafikonu nije trebalo da ga gledaš. Tvom planu je trebalo da sačekaš." },
-        { "h": "Alarm gleda umesto tebe", "p": "/alerts ti omogućava da postaviš nivo cene - iznad ili ispod - i da dobiješ obaveštenje na email ili Telegram čim se dostigne, bez ikakvog buljenja u ekran. Postavi ga na svoj stvarni nivo ulaska, onaj iz plana, a ne na nivo koji stalno pomeraš zato što cena nije stigla do prethodnog. Onda zatvori tab i radi nešto drugo." },
-        { "h": "Više gledanja ne znači bolje reagovanje", "p": "Trejderi koji satima gledaju grafikon ubede sebe da prikupljaju informacije. Uglavnom prikupljaju anksioznost, a ona proizvodi rane ulaske, rane izlaske i pomerene stopove. Alarm se oglasi tačno jednom, tačno na nivou koji si izabrao dok si bio miran. To je bolji donosilac odluka nego ti, četrdeset pet minuta u takmičenju u buljenju." },
-        { "h": "Watchlista je uži izbor, a ne svetilište", "p": "Označavanje parova zvezdicom na početnoj gradi watchlistu - ali watchlista koja se nikada ne pročišćava pretvara se u četrdeset coina o kojima „imaš neki osećaj\", što je opet problem skenera sa dodatnim koracima. Označi ono što stvarno pratiš uz plan, skini zvezdicu sa onoga što te je samo prošlog meseca zanimalo, i uz svaku zvezdicu veži alarm." },
-        { "h": "Otiđi namerno", "p": "Cela poenta alarma i watchliste je dozvola da prestaneš da gledaš. Postavi nivo, postavi alarm, zatvori aplikaciju. Ako nivo bude dosegnut, bićeš obavešten. Ako ne bude, nisi potrošio popodne da to saznaš. Trejderi koji potraju nisu oni zalepljeni za ekran - nego oni koji su izgradili sistem kome to lepljenje nije potrebno." }
-      ],
-      "quiz": [
-        { "q": "U čemu je pravi problem sa buljenjem u grafikon dok se čeka tvoj nivo?", "o": ["Troši previše podataka", "Sklono je da iz nestrpljenja proizvede rane ulaske i pomerene planove", "Grafikon se osvežava presporo da bi se pratio uživo", "Tehnički je nemoguće na mobilnom"] },
-        { "q": "Na koji nivo treba postaviti alarm za cenu?", "o": ["Tamo gde je cena trenutno", "Na tačan nivo ulaska iz tvog plana", "Na nasumičan okrugao broj", "Na nivo koji deluje uzbudljivo"] },
-        { "q": "Šta održava watchlistu korisnom umesto zatrpanom?", "o": ["Označavanje svakog coina za koji si ikada čuo", "Da nikada ništa ne skidaš sa nje", "Redovno pročišćavanje i vezivanje svake stavke za stvarni plan ili alarm", "Korišćenje samo za coine koji su već u plusu"] }
-      ]
-    },
-    {
-      "id": "mm7",
-      "t": "XP petlja: vežba koja se isplati",
-      "cards": [
-        { "h": "Ponavljanja, a ne sreća", "p": "Jedan srećan trejd sa 200× ne uči te ničemu osim da sreća postoji. XP, misije i tabele na MarginPadu građeni su na suprotnom: nagrađuju dosadna ponavljanja - pravilno planiranje trejdova, završavanje lekcija, svakodnevno pojavljivanje - jer upravo ponavljanja grade trejdera. Gejmifikacija nije odvraćanje od discipline. Ona je disciplina, sa semaforom sa strane." },
-        { "h": "Misije nagrađuju prava ponašanja", "p": "Dnevne misije plaćaju male iznose pravog USDT-a za stvari poput zatvaranja planiranog trejda sa postavljenim stop-lossom, završavanja lekcije u Akademiji ili korišćenja alata koji te čine boljim - a ne za obim, ne za veličinu, ne za sreću. Proveri ih svakog dana, odradi one koje se poklapaju sa onim što si ionako nameravao, a ostale pusti." },
-        { "h": "Nizovi su samo navika sa brojem", "p": "Brojač niza je jeftin trik i svejedno radi - ljudi mrze da prekinu broj koji raste. Iskoristi to. Pojavi se svakog dana, proveri misije, baci pogled na kalendar, pregledaj jedan otvoren trejd. Niz nije cilj; on je skela za pravi cilj, a to je da radiš tu listu dovoljno često da prestane da bude lista." },
-        { "h": "Tabele koje zaista možeš da poštuješ", "p": "Sezonske tabele - Zeleni dani, ROE, procenat pogodaka i XP - traju 14 dana i prate svaku stvar posebno, tako da bezobzirni kockar sa 1000× polugom na vrhu ROE tabele ove sezone nije automatski „bolji\" od trejdera sa dosadnih 65% pogodaka. Prati Zelene dane, procenat pogodaka i XP ako hoćeš signal koji odražava veštinu, a ne jedan srećan zamah. Prave USDT nagrade idu svake sezone od 14 dana; poenta i dalje stoji." },
-        { "h": "Dvoboji: disciplina sa semaforom", "p": "Sedmodnevni dvoboj te stavlja protiv jednog drugog trejdera po izabranoj meri - ROE, procenat pogodaka, šta god izabereš. To je ista vežba koju bi ionako radio, samo sa rivalom, što se pokazalo iznenađujuće delotvornim za stvarno pridržavanje plana nedelju dana bez prekida. Izazovi nekoga čije statistike poštuješ, a ne prosto onoga ko je na vrhu tabele." }
-      ],
-      "quiz": [
-        { "q": "Kakvo ponašanje dnevne misije obično nagrađuju?", "o": ["Samo otvaranje trejda sa najvećom mogućom polugom", "Pravilno planiranje trejdova, završavanje lekcija i doslednu aktivnost", "Obim trgovanja bez obzira na ishod", "Dobijanje baš svakog trejda"] },
-        { "q": "Zašto pratiti tabelu procenta pogodaka ili XP-a umesto samo ROE tabele?", "o": ["ROE tabele su lažne", "Zato što vrhunska ROE nedelja može doći iz jednog bezobzirnog srećnog trejda, ne nužno iz veštine", "Zato što tabele procenta pogodaka daju veće nagrade", "Zato što je XP jedina tabela sa pravim novcem"] },
-        { "q": "Šta je sedmodnevni dvoboj?", "o": ["Privatni trejd u kom se demo stanje gubitnika prenosi pobedniku", "Nadmetanje jedan na jedan protiv drugog trejdera po izabranoj meri poput ROE ili procenta pogodaka", "Turnir koji ti resetuje demo stanje ako izgubiš", "Funkcija dostupna samo trejderima iz top 100 tabele"] }
-      ]
+     "h": "Napreduj po navikama, ne po sreći",
+     "p": "Spreman si da povećaš veličinu - čak i u demou - kada tvoji dobici dolaze iz poštovanja plana, a ne iz srećnog pogotka sa 500× koji je slučajno prošao jednom. Pogledaj nedelju trejdova u My Trades i budi iskren: da li si dimenzionisao kako treba, koristio stopove i odustajao od loših setupa? Ta navika je pravi proizvod ovde."
     }
-  ]
+   ],
+   "quiz": [
+    {
+     "q": "Po čemu se MarginPad Paper Trade razlikuje od izmišljenog simulatora?",
+     "o": [
+      "Daje više početnog novca nego prave menjačnice",
+      "Koristi žive cene i pravu matematiku likvidacije",
+      "Ne može da te likvidira",
+      "Namenjen je samo početnicima ispod $1000"
+     ]
+    },
+    {
+     "q": "Zašto rizikovati samo 1–2% demo stanja po trejdu?",
+     "o": [
+      "Platforma to zahteva",
+      "Zato što odgovara pravoj disciplini rizika koja se prenosi na živo trgovanje",
+      "Zato što su veće pozicije protiv pravila",
+      "Zato što garantuje profit"
+     ]
+    },
+    {
+     "q": "Kada treba postaviti stop-loss i take-profit?",
+     "o": [
+      "Nakon što se trejd okrene protiv tebe",
+      "Samo na trejdovima preko 100× poluge",
+      "U trenutku kada otvaraš poziciju",
+      "Nikada - ručno zatvaranje je sigurnije"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm2",
+   "t": "Neka skener lovi umesto tebe",
+   "cards": [
+    {
+     "h": "Prestani da beskrajno listaš grafikone",
+     "p": "Prelistavanje četrdeset coina u nadi da će neki izgledati kao da „samo što nije krenuo” nije analiza, to je odlaganje sa dodatnim koracima. Uvek ćeš naći grafikon koji izgleda bikovski ako dovoljno dugo buljiš - to je pristrasnost potvrde, a ne setup. Skener postoji da prestaneš da loviš po osećaju i počneš da loviš po brojevima."
+    },
+    {
+     "h": "Preko 130 parova, već ocenjeni",
+     "p": "Skener na /screener prolazi kroz više od 130 USDT parova i svakom daje ocenu 0–100 na osnovu RSI-ja, MACD-a, snage trenda i volumena - istih ulaza koje disciplinovan tehnički trejder proverava ručno, samo obavljeno istog trena na celom tržištu umesto na pet coina koje si slučajno otvorio. To je jedna gusta tabela: sortiraj bilo koju kolonu, označi zvezdicom parove koje pratiš, a panel na svakom redu otvara grafikon, terminal, alarm ili Rekt za taj coin."
+    },
+    {
+     "h": "Ocena je trag, a ne naredba",
+     "p": "Par sa ocenom 85 i predloženim setupom nije signal da pucaš naslepo - to je kandidat vredan još pet minuta tvoje pažnje. Otvori grafikon, proveri kalendar zbog rizika od vesti, proveri funding zbog gužve. Skener sužava tržište od hiljada na šačicu onih koje vredi zaista pogledati."
+    },
+    {
+     "h": "Bitne su i visoke i niske ocene",
+     "p": "Par blizu 0 nije pokvaren - govori ti da setup ide u prilog short strani, ili da jednostavno trenutno ne vredi trgovati njime. Sortiranje liste u oba smera pretvara skener u dva alata: jedan za pronalaženje longova, drugi za shortove, i treći za pronalaženje onoga što treba potpuno zaobići."
+    },
+    {
+     "h": "Setup kaže koliko stop košta",
+     "p": "Svaki predloženi setup ispisuje stop u procentu margine, a ne samo u ceni - „gubiš 44% margine” je broj koji možeš da odbiješ. Setup sa tankim odnosom zarade i rizika je posivljen, funding je ispisan na četiri decimale da se vidi pretrpana strana, a Telegram red ispod tabele je za čitaoce koji žele vrh liste u četu jednom dnevno."
+    },
+    {
+     "h": "Prečica, ali ne prečica oko razmišljanja",
+     "p": "Trejderi koji preskoče skener troše svoju prednost na pretragu. Trejderi koji preskoče proveru posle skenera troše je na slepo poverenje. Radni tok je: skener nalazi kandidate, ti ih proveravaš grafikonom i kalendarom, i tek onda dimenzioniš poziciju. Preskoči bilo koju polovinu i preskočio si poentu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta MarginPad skener zapravo radi?",
+     "o": [
+      "Automatski otvara trejdove umesto tebe",
+      "Ocenjuje preko 130 parova po RSI-ju, MACD-u, trendu i volumenu i pravi uži izbor",
+      "Prati samo prvih 10 coina po tržišnoj kapitalizaciji",
+      "Predviđa tačne buduće cene"
+     ]
+    },
+    {
+     "q": "Šta treba da uradiš sa parom koji ima ocenu 85?",
+     "o": [
+      "Da odmah uđeš sa maksimalnom polugom",
+      "Da ga ignorišeš - visoke ocene su zamka",
+      "Da ga dodatno istražiš pre bilo kakve odluke",
+      "Da ga shortuješ, jer visoka ocena znači prekupljenost"
+     ]
+    },
+    {
+     "q": "Šta obično znači vrlo niska ocena na nekom paru?",
+     "o": [
+      "Da je menjačnica pokvarena za taj coin",
+      "Da setup možda ide u prilog short strani, ili da ne vredi trgovati",
+      "Da treba da ga kupiš jer je jeftin",
+      "Da je skener napravio grešku"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm3",
+   "t": "Radni prostor za grafikone koji stvarno radi",
+   "cards": [
+    {
+     "h": "Trideset tabova nije analiza",
+     "p": "Petnaest tabova u pregledaču, šest vremenskih okvira, četiri indikatora koji se međusobno bore za tvoju pažnju - to nije radni prostor, to je buka prerušena u radni prostor. Svaki dodatno otvoren grafikon je još jedna stvar koja može da te nagovori na loš ulazak. Rešenje nije više grafikona. Rešenje je manje njih, ali boljih i raspoređenih tako da zaista možeš da ih čitaš."
+    },
+    {
+     "h": "Osam prozora, jedna tabla",
+     "p": "/charts ti daje do osam prozora sa grafikonima na jednoj tabli - dovoljno da pratiš svoje setupe po simbolima i vremenskim okvirima bez preskakanja kroz groblje tabova. Prevlači, menjaj veličinu, sačuvaj raspored. Većini trejdera trebaju samo dva ili tri prozora istovremeno; ostala mesta postoje za kada se pojavi pravi razlog, a ne po pravilu. Na telefonu isti mehanizam radi od ivice do ivice, sa trakom na dnu."
+    },
+    {
+     "h": "Indikatori su drugo mišljenje",
+     "p": "Dostupno je devetnaest standardnih indikatora, plus šest MarginPad mera koje niko drugi nema - Liquidation Cascade, Market Brain, Market Memory, Magnet, Big Liquidations i What Moved It. Ako ih učitaš sve, nećeš biti više u pravu - grafikon će postati nečitljiv, a ti ćeš dobiti još izgovora da sebe nagovoriš na trejd koji si ionako želeo. Izaberi dva ili tri koji odgovaraju na stvarno pitanje i pusti ostale da stoje neiskorišćeni dok ti ne zatrebaju."
+    },
+    {
+     "h": "Sačuvaj raspored i neka bude dosadan",
+     "p": "Sačuvan raspored znači da otvoriš /charts i vidiš istu urednu tablu svaki put - a ne novu odluku o tome kojih ćeš petnaest indikatora dodati danas. Dosadno je cilj. Radni prostor treba da izgleda isto i na tvoj najbolji i na tvoj najgori dan trgovanja, jer se setupi koje loviš ne menjaju samo zato što si nestrpljiv."
+    },
+    {
+     "h": "Neka drugi čitač proveri tvoje čitanje",
+     "p": "Ask AI, Premium funkcija, čita iste sveće, nivoe, funding i liquidation pools koje i ti gledaš, crta setup na grafikonu i odgovara planom sa ulazom, stopom i ciljevima - ili kaže da sada nema trejda. Nije tu da ti servira trejd; tu je da proveri tvoje rezonovanje u odnosu na ono što je na ekranu. Ako se samo složi sa tobom, to nije potvrda, to si ti koji razgovaraš sam sa sobom lepšim fontom."
+    },
+    {
+     "h": "Njegovi pozivi se boduju, i tvoji takođe",
+     "p": "Svaki plan sa smerom koji asistent da beleži se sa svojim nivoima i posle se poravnava u odnosu na prave sveće: da li se prvi cilj desio pre stopa. Rezultat je javan kad se skupi dovoljno poravnatih poziva, a ispod kartice vidiš i svoj: koliko je planova koje si tražio dobilo, izgubilo ili se nikad nije popunilo. Čitanje koje ne vodi rezultat je horoskop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U čemu je pravi problem sa učitavanjem devetnaest indikatora na jedan grafikon?",
+     "o": [
+      "Grafikon će se srušiti",
+      "To umnožava tačnost",
+      "To stvara buku i izgovore da opravdaš trejd koji si ionako želeo",
+      "To tehnički nije moguće"
+     ]
+    },
+    {
+     "q": "Zašto sačuvati raspored grafikona umesto da ga praviš svaki put iznova?",
+     "o": [
+      "Zato što je to uslov za korišćenje /charts",
+      "Zato što ti radni prostor ostaje dosledan umesto da bude nova zbrkana odluka svake sesije",
+      "Zato što automatski nalazi bolje trejdove",
+      "Zato što isključuje indikatore koji ti ne trebaju"
+     ]
+    },
+    {
+     "q": "Čemu služi Ask AI?",
+     "o": [
+      "Da automatski otvara trejdove",
+      "Da potpuno zameni tvoju analizu",
+      "Da proveri tvoje čitanje u odnosu na ono što je na grafikonu, uz bodovan rezultat",
+      "Da predvidi tačne cene likvidacije"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm4",
+   "t": "Nikad se ne daj iznenaditi vestima",
+   "cards": [
+    {
+     "h": "Sveća koja je došla niotkuda",
+     "p": "Nisi imao peh. FOMC je bio zakazan za 18:00 UTC još pre tri nedelje i svaki ekonomski kalendar na svetu ga je imao na spisku. Tržište te nije napalo iz zasede - ušao si u zakazan događaj sa polugom i bez ikakve ideje da dolazi. To nije loša sreća. To je neproveravanje rasporeda."
+    },
+    {
+     "h": "Događaji sa crvenom zastavicom, označeni unapred",
+     "p": "/calendar prati svaku odluku FOMC-a, objavu CPI-ja i NFP izveštaj sa živim odbrojavanjem, unazad do 2023. i unapred dokle podaci postoje. To nisu sitni potresi - to su događaji koji najverovatnije mogu poslati poziciju sa 50× polugom pravo u likvidaciju za nekoliko sekundi, upravo zato što se svi istovremeno prepozicioniraju oko istog naslova."
+    },
+    {
+     "h": "Proveri pre ulaska, a ne posle fitilja",
+     "p": "Navika je jednostavna: pre otvaranja bilo koje pozicije sa polugom, baci pogled na kalendar. Ima li događaja sa crvenom zastavicom u narednih nekoliko sati? Ako ima, ili preskoči trejd, ili drastično smanji veličinu, ili proširi stop dovoljno da preživi buku. Provera pošto si već u trejdu nije navika, to je obdukcija."
+    },
+    {
+     "h": "Postavi podsetnik umesto da pamtiš",
+     "p": "Pamćenje je loš alat za rizik - zaboravićeš tačno vreme, pomešaćeš vremensku zonu ili ćeš prosto spavati. Svaki događaj u kalendaru ima ugrađen podsetnik na email i Telegram. Postavi ga jednom za događaje koji su bitni tvojim parovima i pusti platformu da pamti. Ovo ne košta ništa, a uklanja celu jednu kategoriju glupih gubitaka."
+    },
+    {
+     "h": "Ne traži svaki događaj reakciju",
+     "p": "Poenta nije da zauvek izbegavaš trgovanje oko vesti - neki od najboljih poteza dešavaju se baš posle objave. Poenta je da nikada ne budeš u poziciji sa polugom u kojoj nisi svesno izabrao da budeš kada naslov padne. Trguj događaj namerno, sa planom, ili se namerno skloni. Oba su u redu. Biti zatečen nije."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kakve događaje /calendar prati sa odbrojavanjem?",
+     "o": [
+      "Samo termine održavanja kripto menjačnica",
+      "Odluke FOMC-a, objave CPI-ja i NFP izveštaje",
+      "Nasumične trendove sa društvenih mreža",
+      "Samo događaje vezane specifično za Bitcoin"
+     ]
+    },
+    {
+     "q": "Zašto vredi podesiti podsetnike kalendara na email i Telegram?",
+     "o": [
+      "Garantuju dobitnički trejd",
+      "Uklanjaju potrebu da sam pamtiš vreme događaja",
+      "Automatski zatvaraju tvoje pozicije",
+      "Bez njih se kalendar uopšte ne može koristiti"
+     ]
+    },
+    {
+     "q": "Koja je prava pouka o trgovanju oko vesti?",
+     "o": [
+      "Nikada ne trguj u blizini ekonomskih događaja",
+      "Uvek trguj vesti za zagarantovan profit",
+      "Budi u poziciji sa polugom namerno kada naslov padne - a ne slučajno",
+      "Kalendar je koristan samo trgovcima akcijama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm5",
+   "t": "Pročitaj masu pre nego što joj se pridružiš",
+   "cards": [
+    {
+     "h": "Svi su već odigrali istu opkladu",
+     "p": "Ako ti trejd deluje očigledno, delovao je očigledno i stotini hiljada drugih trejdera sa polugom, otprilike pre šest sati. Kada setup počne da deluje bezbedno i kada se svi slože, masa je već pozicionirana - a prenatrpanom trejdu ne trebaju loše vesti da bi se raspao, dovoljno je da masa jednom pogreši."
+    },
+    {
+     "h": "Funding: cena boravka u masi",
+     "p": "/funding pokazuje koliko longovi plaćaju shortovima, ili obrnuto, na više berzi, uz osvežavanje uživo. Izrazito pozitivan funding znači da longovi skupo plaćaju da bi ostali u longu - čamac je pun i svi su već ušli. To ne znači da cena mora odmah da se okrene, ali znači da je mnogo novca sa polugom udaljeno jedan gurac od prinudnog izlaska."
+    },
+    {
+     "h": "Open interest ti govori koliki je čamac",
+     "p": "/open-interest pokazuje ukupnu izloženost sa polugom na tržištu. Rast open interesta tokom rasta cene znači da novi novac sa polugom ulazi, a ne da su postojeći vlasnici samo sigurniji - to je gorivo za oštriji potez ako dođe do preokreta. Pad open interesta tokom poteza često znači da se pozicije zatvaraju, a ne otvaraju, što se čita sasvim drugačije."
+    },
+    {
+     "h": "Long/short odnos: ko je zapravo pozicioniran",
+     "p": "/long-short sabira odnos longova i shortova po berzama. Ekstremna neravnoteža - recimo 80% u longu - nije predviđanje, to je upozorenje na etiketi: mnogo ljudi je odigralo istu opkladu koju se ti spremaš da odigraš. Ekstremne neravnoteže na kraju puknu, a kada puknu, obično biva likvidirana masa, a ne manjina."
+    },
+    {
+     "h": "Šezdeset sekundi pre svakog ulaska sa polugom",
+     "p": "Pre nego što povećaš poziciju, potroši minut na funding, open interest i long/short - ne da nađeš trejd, nego da proveriš da li se spremaš da se pridružiš masi ili da je pronađeš. Neutralna očitavanja znače da je teren relativno čist. Ekstremna očitavanja znače da ti treba širi stop, manja veličina ili kasniji ulazak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta obično znači izrazito pozitivna funding stopa?",
+     "o": [
+      "Da menjačnica ima grešku",
+      "Da su longovi prenatrpani i skupo plaćaju da ostanu u longu",
+      "Da će shortovi sigurno biti likvidirani",
+      "Da će coin biti izbačen sa berze"
+     ]
+    },
+    {
+     "q": "Rast open interesta tokom rasta cene najverovatnije znači:",
+     "o": [
+      "Da su postojeći vlasnici samo sigurniji, ništa novo",
+      "Da nov novac sa polugom ulazi na tržište",
+      "Da menjačnica smanjuje dostupnu marginu",
+      "Da je volumen potpuno stao"
+     ]
+    },
+    {
+     "q": "Šta da radiš sa ekstremnom long/short neravnotežom, recimo 80% u longu?",
+     "o": [
+      "Odmah se pridruži strani većine",
+      "Ignoriši je, nema nikakav značaj",
+      "Shvati je kao upozorenje i prilagodi veličinu ili stop",
+      "Pretpostavi da su podaci pogrešni i preskoči proveru"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm6",
+   "t": "Alarmi umesto čuvanja grafikona",
+   "cards": [
+    {
+     "h": "Buljenje u grafikon nije strategija",
+     "p": "Odrediš nivo, pa sediš i gledaš kako mu se sveća približava četrdeset pet minuta, i negde oko tridesetog minuta strpljenje te izda pa uđeš tri dolara ranije „za svaki slučaj”. To nije disciplina, to je dosada koja glumi uverenje. Grafikonu nije trebalo da ga gledaš. Tvom planu je trebalo da sačekaš."
+    },
+    {
+     "h": "Jedna stranica za sve alarme",
+     "p": "/alerts/ je mesto gde žive svi alarmi sa sajta i gde biraš kako do tebe stižu: push obaveštenje na telefon, poruka od Telegram bota ili email. Alarm za cenu je besplatan - coin iznad ili ispod nivoa. Alarm za trend liniju je takođe besplatan: nacrtaj liniju na grafikonu, dodirni zvonce, i oglasiće se kad cena preseče liniju koja se pomera. Postavi ih na nivo iz svog plana, pa zatvori tab."
+    },
+    {
+     "h": "Alarmi koje samo mi možemo da pošaljemo",
+     "p": "Alarmi za pozicije su Premium i nijedan sajt sa grafikonima ne može da ih kopira, jer mi držimo tvoje pozicije: likvidacija ti se približava, stop samo što se nije aktivirao, cilj je skoro tu, nalog na čekanju samo što se nije popunio. Isti prekidač ti donosi i katalizator na coinu koji držiš - listing, hak, makro podatak - istog minuta kad stigne. Zone alarmi se oglašavaju kad je teška likvidaciona zona pred udarom; whale alarmi prate novčanik koji si izabrao."
+    },
+    {
+     "h": "Više gledanja ne znači bolje reagovanje",
+     "p": "Trejderi koji satima gledaju grafikon ubede sebe da prikupljaju informacije. Uglavnom prikupljaju anksioznost, a ona proizvodi rane ulaske, rane izlaske i pomerene stopove. Alarm se oglasi tačno jednom, tačno na nivou koji si izabrao dok si bio miran. To je bolji donosilac odluka nego ti, četrdeset pet minuta u takmičenju u buljenju."
+    },
+    {
+     "h": "Watchlista je uži izbor, a ne svetilište",
+     "p": "Označavanje parova zvezdicom u skeneru gradi watchlistu - ali watchlista koja se nikada ne pročišćava pretvara se u četrdeset coina o kojima „imaš neki osećaj”, što je opet problem skenera sa dodatnim koracima. Označi ono što stvarno pratiš uz plan, skini zvezdicu sa onoga što te je samo prošlog meseca zanimalo, i uz svaku zvezdicu veži alarm."
+    },
+    {
+     "h": "Otiđi namerno",
+     "p": "Cela poenta alarma i watchliste je dozvola da prestaneš da gledaš. Postavi nivo, postavi alarm, zatvori aplikaciju. Ako nivo bude dosegnut, bićeš obavešten. Ako ne bude, nisi potrošio popodne da to saznaš. Trejderi koji potraju nisu oni zalepljeni za ekran - nego oni koji su izgradili sistem kome to lepljenje nije potrebno."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U čemu je pravi problem sa buljenjem u grafikon dok se čeka tvoj nivo?",
+     "o": [
+      "Troši previše podataka",
+      "Sklono je da iz nestrpljenja proizvede rane ulaske i pomerene planove",
+      "Grafikon se osvežava presporo da bi se pratio uživo",
+      "Tehnički je nemoguće na mobilnom"
+     ]
+    },
+    {
+     "q": "Na koji nivo treba postaviti alarm za cenu?",
+     "o": [
+      "Tamo gde je cena trenutno",
+      "Na tačan nivo ulaska iz tvog plana",
+      "Na nasumičan okrugao broj",
+      "Na nivo koji deluje uzbudljivo"
+     ]
+    },
+    {
+     "q": "Koji alarm može da ti pošalje samo MarginPad?",
+     "o": [
+      "Coin koji pređe neku cenu",
+      "Tvoja likvidacija koja se približava",
+      "Naslov vesti",
+      "Promena funding stope"
+     ]
+    },
+    {
+     "q": "Šta održava watchlistu korisnom umesto zatrpanom?",
+     "o": [
+      "Označavanje svakog coina za koji si ikada čuo",
+      "Da nikada ništa ne skidaš sa nje",
+      "Redovno pročišćavanje i vezivanje svake stavke za stvarni plan ili alarm",
+      "Korišćenje samo za coine koji su već u plusu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm7",
+   "t": "XP petlja: vežba koja se isplati",
+   "cards": [
+    {
+     "h": "Ponavljanja, a ne sreća",
+     "p": "Jedan srećan trejd sa 200× ne uči te ničemu osim da sreća postoji. XP, misije i tabele na MarginPadu građeni su na suprotnom: nagrađuju dosadna ponavljanja - pravilno planiranje trejdova, završavanje lekcija, svakodnevno pojavljivanje - jer upravo ponavljanja grade trejdera. Gejmifikacija nije odvraćanje od discipline. Ona je disciplina, sa semaforom sa strane."
+    },
+    {
+     "h": "Misije nagrađuju prava ponašanja",
+     "p": "Dnevne misije plaćaju male iznose pravog USDT-a za stvari poput zatvaranja planiranog trejda sa postavljenim stop-lossom, završavanja lekcije u Akademiji ili korišćenja alata koji te čine boljim - a ne za obim, ne za veličinu, ne za sreću. Sedam dnevno; završi pet i set bonus plaća XP. Proveri ih svakog dana, odradi one koje se poklapaju sa onim što si ionako nameravao, a ostale pusti."
+    },
+    {
+     "h": "Nizovi su samo navika sa brojem",
+     "p": "Brojač niza je jeftin trik i svejedno radi - ljudi mrze da prekinu broj koji raste. Iskoristi to. Pojavi se svakog dana, proveri misije, baci pogled na kalendar, pregledaj jedan otvoren trejd. Niz nije cilj; on je skela za pravi cilj, a to je da radiš tu listu dovoljno često da prestane da bude lista."
+    },
+    {
+     "h": "Tabele koje zaista možeš da poštuješ",
+     "p": "Deset sezonskih tabela traje 14 dana i svaka prati jednu stvar - ROE, Zelene dane, procenat pogodaka, XP, dnevni BTC poziv, Meme Spot profit, Gold Room, Bybit volumen, Moon uloge - tako da bezobzirni kockar sa 1000× polugom na vrhu ROE tabele ove sezone nije automatski „bolji” od trejdera sa dosadnih 65% pogodaka. Prati Zelene dane, procenat pogodaka i XP ako hoćeš signal koji odražava veštinu, a ne jedan srećan zamah. Prave USDT nagrade idu svake sezone."
+    },
+    {
+     "h": "Dvoboji: disciplina sa semaforom",
+     "p": "Dvoboj te stavlja protiv jednog drugog trejdera po izabranoj meri - ROE, procenat pogodaka, šta god izabereš - na sat, dan, tri dana ili nedelju, sa Ticks-ima u igri. Računaju se samo trejdovi otvoreni posle početka dvoboja. To je ista vežba koju bi ionako radio, samo sa rivalom, što se pokazalo iznenađujuće delotvornim za stvarno pridržavanje plana. Izazovi nekoga čije statistike poštuješ, a ne prosto onoga ko je na vrhu tabele."
+    },
+    {
+     "h": "Squadovi: pet ljudi, jedna soba",
+     "p": "Squad je do pet članova sa privatnom sobom za čet, logom, sopstvenim nivoima i napadima - 48 sati da se fond napuni ostvarenim profitom squada na jednom glavnom coinu, dok ga gubici prazne. Četvrtina XP-a svakog člana hrani nivo squada. To je društvena polovina petlje: osoba koja će te najpre sačuvati od osvetničkog trejda je ona koja gleda u sobi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kakvo ponašanje dnevne misije obično nagrađuju?",
+     "o": [
+      "Samo otvaranje trejda sa najvećom mogućom polugom",
+      "Pravilno planiranje trejdova, završavanje lekcija i doslednu aktivnost",
+      "Obim trgovanja bez obzira na ishod",
+      "Dobijanje baš svakog trejda"
+     ]
+    },
+    {
+     "q": "Zašto pratiti tabelu procenta pogodaka ili XP-a umesto samo ROE tabele?",
+     "o": [
+      "ROE tabele su lažne",
+      "Zato što vrhunska ROE sezona može doći iz jednog bezobzirnog srećnog trejda, ne nužno iz veštine",
+      "Zato što tabele procenta pogodaka daju veće nagrade",
+      "Zato što je XP jedina tabela sa pravim novcem"
+     ]
+    },
+    {
+     "q": "Šta je dvoboj?",
+     "o": [
+      "Privatni trejd u kom se demo stanje gubitnika prenosi pobedniku",
+      "Nadmetanje jedan na jedan protiv drugog trejdera po izabranoj meri, od sata do nedelju dana, sa uloženim Ticks-ima",
+      "Turnir koji ti resetuje demo stanje ako izgubiš",
+      "Funkcija dostupna samo trejderima iz top 100 tabele"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mm8",
+   "t": "Šta je pomerilo cenu",
+   "cards": [
+    {
+     "h": "Sveća ima razlog, ili ga nema",
+     "p": "Većina sveća je šum: tržište diše, korekcija posle guranja, neko zatvara poziciju. Neke nisu - listing, hak, CPI podatak, delisting, kit izbačen iz pozicije - i ta razlika je ceo trejd. MarginPad čita 37 izvora dok objavljuju, ocenjuje svaku stavku i meri pokret koji je usledio na svakom coinu koji je pomenut. To je stranica Catalysts."
+    },
+    {
+     "h": "Zastavica na grafikonu",
+     "p": "Uključi What Moved It i zastavica se pojavljuje na sveći gde je pokret počeo, sa uzrokom i veličinom: „Binance hak, −7.0%”. Pokret može da ima više uzroka i kartica navodi udele - vest, kaskada likvidacija koju je pokrenula, Bitcoin koji sve vuče za sobom. Zastavica se crta samo kad je mehanizam siguran; sveća koju ne može da objasni ostaje prazna, a ne sa nagađanjem."
+    },
+    {
+     "h": "Priča je jedan pokret, izmeren u celini",
+     "p": "Hak nije pet odvojenih padova. Dok je priča živa, na zastavici piše LIVE i zona se širi do ekstrema; kad tržište vrati pokret, zatvara se i ispisuje konačan broj. Sedam redakcija koje javljaju isti hak je jedna priča, a ne sedam uzroka. I smer mora da se slaže: odskok posle haka je oporavak tržišta, nikad hak."
+    },
+    {
+     "h": "Šta se računa, a šta ne",
+     "p": "Hak od $3M na sporednom projektu ne pomera ništa i nikad nije uzrok; cenu pomeraju oni od sto miliona. Naslov koji pokazuje suprotno od pokreta se odbija. Listing na maloj berzi je šum; spot listing na Binance ili Upbit pomerao je cenu deset puta više od uobičajene mere, izmereno na svakom koji smo videli. Stranica ispisuje koliko često izvor govori i koliko je cena otišla prethodnih puta kad jeste."
+    },
+    {
+     "h": "Kako da trguješ sa ovim",
+     "p": "Pre ulaska proveri zastavice na coinu: ako su poslednja tri pokreta bile kaskade a ne vesti, coin gura poluga, a ne informacija - smanji veličinu. Ako je priča LIVE, pokret nije gotov; stop unutar njega je donacija. Premium članovi koji drže coin dobijaju katalizator kao alarm istog minuta kad stigne, pa vest nalazi tebe, a ne obrnuto. Pravilo je isto kao za kalendar: nikad te ne sme iznenaditi nešto što je bilo najavljeno."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kada What Moved It crta zastavicu na sveći?",
+     "o": [
+      "Na svakoj sveći",
+      "Samo kad je mehanizam siguran u uzrok",
+      "Samo na crvenim svećama",
+      "Samo za Bitcoin"
+     ]
+    },
+    {
+     "q": "Coin odskoči +1% sat vremena posle naslova o haku. Šta je uzrok?",
+     "o": [
+      "Hak",
+      "Nije hak - uzrok mora da pokazuje u istom smeru kao pokret",
+      "Menjačnica",
+      "Funding"
+     ]
+    },
+    {
+     "q": "Šta znači zastavica LIVE?",
+     "o": [
+      "Vest je lažna",
+      "Priča još traje i pokret još nije gotov",
+      "Coin je delistovan",
+      "Alarm je poslat"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Otvori stranicu Catalysts: najnoviji listinzi, hakovi, makro podaci i naslovi, ocenjeni, sa pokretom koji je svaki izazvao. Zatim uključi indikator What Moved It u /charts i pročitaj dan zastavica na coinu kojim trguješ.",
+    "label": "Otvori Catalysts →"
+   }
+  }
+ ]
 }

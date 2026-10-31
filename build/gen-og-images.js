@@ -156,6 +156,7 @@ function plan(rel, html) {
     '/liquidation-statistics/': ['live', { title: 'Liquidation statistics', eyebrow: 'Our own collector, since day one', accent: ACCENT.red, path: '/liquidation-statistics/' }],
     '/hyperliquid-liquidations/': ['live', { title: 'Hyperliquid liquidations', eyebrow: 'On-chain, live', accent: ACCENT.cyan, path: '/hyperliquid-liquidations/' }],
     '/glossary/': ['article', { title: 'Every futures term, explained plainly', kind: 'REFERENCE', accent: ACCENT.blue, path: '/glossary/' }],
+    '/trader-readiness-test/': ['article', { title: 'Are you ready to trade crypto futures?', kind: 'FREE TEST', accent: ACCENT.lime || ACCENT.blue, path: '/trader-readiness-test/' }],
     '/where-to-start/': ['article', { title: 'Never traded futures? Start here.', kind: 'START HERE', accent: ACCENT.lime, path: '/where-to-start/' }],
     '/about/': ['product', { title: 'What MarginPad is, and who builds it', sub: 'A free crypto futures toolkit, paid for by exchange referrals.', accent: ACCENT.lime, path: '/about/' }],
     '/free-crypto-api/': ['product', { title: 'A free crypto futures API', sub: 'Liquidations, funding, open interest and prices. No key needed.', accent: ACCENT.cyan, path: '/free-crypto-api/', tag: 'KEYLESS' }],

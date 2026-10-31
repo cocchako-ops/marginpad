@@ -169,7 +169,7 @@ async function browserChecks() {
       const sec = document.querySelector('section.course[data-cid="' + cid + '"]');
       const all = [...document.querySelectorAll('section.course')];
       const first = all[0];
-      const nodes = sec ? [...sec.querySelectorAll('button.node')] : [];
+      const nodes = sec ? [...sec.querySelectorAll('button.node:not(.exam)')] : [];
       const r = sec ? sec.getBoundingClientRect() : null;
       // REACHABILITY, not existence: is the first lesson button actually the thing at its own centre?
       const b0 = nodes[0];

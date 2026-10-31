@@ -1,0 +1,364 @@
+{
+ "id": "mpstart",
+ "name": "Commence ici : MarginPad",
+ "sub": "Le site lui-même, en sept courtes leçons",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "Ce qu'est vraiment MarginPad",
+   "cards": [
+    {
+     "h": "De vrais prix, de l'argent d'entraînement",
+     "p": "Le graphique sous tes yeux, c'est le marché en direct. Les prix et les bougies viennent directement des exchanges, les mêmes que regarde en ce moment un trader financé. L'argent, lui, n'est pas réel : tu pars avec 10 000 $ que nous t'avons donnés, et il est impossible de déposer le moindre centime sur ce site."
+    },
+    {
+     "h": "Pourquoi s'entraîner d'abord",
+     "p": "Les futures avec levier sont le moyen le plus rapide de perdre de l'argent en crypto, et presque tout le monde perd son premier compte. Ici, le marché peut te prendre une position et te donner la même leçon, pour un coût limité au temps passé. Perds les 10 000 $ et il ne s'est rien passé."
+    },
+    {
+     "h": "Une partie est réelle, pourtant",
+     "p": "Le trading est de l'entraînement. Les récompenses, elles, ne le sont pas. MarginPad verse de vrais USDT pour l'utilisation du site - de petits montants, tirés d'un pool quotidien - et tu les retires vers un compte d'exchange. C'est un système séparé du trading, et dans deux leçons tu sauras exactement comment il fonctionne."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les prix sur lesquels tu trades sur MarginPad sont :",
+     "o": [
+      "Inventés par le site",
+      "Les prix en direct de vrais exchanges",
+      "Les cours de clôture d'hier",
+      "Mis à jour seulement quand tu recharges la page"
+     ]
+    },
+    {
+     "q": "Combien dois-tu déposer avant de pouvoir trader ici ?",
+     "o": [
+      "Rien - il n'y a aucun dépôt nulle part sur le site",
+      "10 $ pour débloquer le terminal",
+      "Ce que tu veux trader",
+      "50 $ remboursables"
+     ]
+    },
+    {
+     "q": "Tu ouvres un trade et ça tourne mal. Qu'est-ce que ça t'a coûté ?",
+     "o": [
+      "De l'argent réel prélevé sur ta carte",
+      "Une partie du solde d'entraînement, et rien d'autre",
+      "Des frais prélevés sur ton compte",
+      "Ta place dans les classements, pour toujours"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "L'XP, ton niveau et Bronze",
+   "cards": [
+    {
+     "h": "L'XP, c'est simplement ce que tu as fait, compté",
+     "p": "Chaque leçon terminée vaut 25 XP, chaque jour où tu passes 20, un trade 3 et un trade gagnant 15. Rien ne s'achète et rien n'est aléatoire : l'XP est la trace de ton usage du site. Le chiffre s'affiche à côté de ton nom dans le menu de ton compte et en haut de ta page de saison."
+    },
+    {
+     "h": "Bronze est le premier niveau, pas une barrière",
+     "p": "Sous 500 XP tu es Non classé ; à 500 tu es Bronze, puis Argent, Or, Platine, Diamant, Maître et Légendaire à mesure que le chiffre monte. Plus rien sur ce site n'attend un niveau : le faucet, les missions quotidiennes, le parrainage, les retraits et tous les classements gratuits sont ouverts dès l'inscription. Un niveau est un badge et un bonus, jamais un verrou."
+    },
+    {
+     "h": "Ce qu'un niveau change vraiment",
+     "p": "À partir d'Argent, chaque claim du faucet paie un peu plus - le multiplicateur grimpe avec le niveau. Chaque niveau débloque un cadre pour ta carte de profil, et le classement Gold Room - l'un des dix - ne classe que les comptes de niveau Or, soit 12 000 XP. C'est toute la liste. Le terminal d'entraînement, les graphiques et les alertes sont les mêmes à tous les niveaux."
+    },
+    {
+     "h": "Ce cours t'amène presque au but",
+     "p": "Tu lis la leçon deux sur sept. Les finir toutes, avec les deux bonus Road to Bronze qu'elles déclenchent, te donne un peu plus de 400 XP - donc après ça, un trade papier avec un stop-loss, ou simplement revenir demain, et c'est Bronze. La carte Road to Bronze sur ta page de saison liste les neuf tâches de départ et ce que chacune rapporte."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Qu'est-ce que Bronze ?",
+     "o": [
+      "Un abonnement payant",
+      "Le niveau atteint à 500 XP",
+      "Le premier prix d'un classement",
+      "Un cadre cosmétique pour ta carte de profil"
+     ]
+    },
+    {
+     "q": "Qu'est-ce que Bronze débloque ?",
+     "o": [
+      "Le faucet et les missions",
+      "Les retraits",
+      "Rien - les récompenses étaient ouvertes dès l'inscription ; un niveau est un badge et un bonus",
+      "Les graphiques et la heatmap"
+     ]
+    },
+    {
+     "q": "Quel est le moyen gratuit le plus rapide de gagner de l'XP ?",
+     "o": [
+      "Ouvrir un maximum de trades",
+      "Les leçons de l'Académie - 25 chacune, plus 50 pour un cours terminé",
+      "Laisser le site ouvert dans un onglet",
+      "Inviter des amis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "L'argent réel sur ce site",
+   "cards": [
+    {
+     "h": "D'où il vient",
+     "p": "MarginPad est gratuit et sans publicité. Le site gagne de l'argent quand un lecteur ouvre un compte chez un exchange via l'un de nos liens, et que l'exchange nous reverse une part de ses frais. C'est tout le modèle, et c'est pour ça que les récompenses sont petites, réelles et plafonnées plutôt que grosses et imaginaires."
+    },
+    {
+     "h": "Ce qu'il y a sur la table",
+     "p": "Un bonus de bienvenue de 0,50 $. 0,01 $ du faucet toutes les quelques minutes, jusqu'à 0,10 $ par jour. Des missions quotidiennes en plus, un ou deux centimes chacune. 1,00 $ pour l'ouverture d'un compte Moon, MEXC, BingX ou Bybit via nous - trois des quatre sont vérifiés automatiquement avec la liste d'affiliation. 0,50 $ quand un ami que tu as invité trade vraiment. Rien de tout ça n'attend un niveau."
+    },
+    {
+     "h": "Le retirer",
+     "p": "Le solde est versé en USDT et tu peux retirer à partir de 5,00 $ vers un compte Bybit, Moon ou MEXC ouvert via MarginPad. Chaque retrait est vérifié et payé à la main, donc ce n'est pas instantané. C'est un remerciement pour l'usage du site, pas un revenu - prends-le pour ce qu'il est et il ne te décevra jamais."
+    },
+    {
+     "h": "Comment se passe un retrait",
+     "p": "Tu indiques le montant, de 5 $ jusqu'à ton solde, et le compte à créditer. Une demande à la fois : la suivante attend que la première soit payée. Le bureau voit si ce compte d'exchange a vraiment été ouvert via nous, si un autre membre a déjà retiré vers le même, et comment le solde a été gagné - ainsi un vrai compte est payé et une ferme ne l'est pas. Tu reçois une notification à l'arrivée du paiement."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Comment MarginPad gagne-t-il de l'argent ?",
+     "o": [
+      "En vendant tes données",
+      "Par les liens d'affiliation d'exchanges - une part des frais quand quelqu'un s'inscrit via nous",
+      "En faisant payer l'Académie",
+      "En prenant une commission sur les gains du paper trading"
+     ]
+    },
+    {
+     "q": "Quel est le plus petit montant retirable ?",
+     "o": [
+      "1,00 $",
+      "5,00 $",
+      "20,00 $",
+      "Il n'y a pas de minimum"
+     ]
+    },
+    {
+     "q": "Lequel de ces éléments attend un niveau ?",
+     "o": [
+      "Le faucet",
+      "Les missions quotidiennes",
+      "Le parrainage",
+      "Aucun - chaque récompense est ouverte dès le premier jour"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Tout ce qui est cité plus haut se trouve sur une seule page. Ouvre-la et regarde où sont ton solde, le faucet et les bonus d'inscription - ce sera plus clair une fois que tu auras vu la disposition.",
+    "label": "Ouvrir Rewards"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short et ce que fait vraiment le levier",
+   "cards": [
+    {
+     "h": "Deux directions, pas une",
+     "p": "Un long gagne quand le prix monte. Un short gagne quand le prix baisse. C'est toute la différence, et c'est pourquoi un trader de futures n'est jamais obligé de rester à l'écart d'un marché qui chute. Sur MarginPad, les deux tiennent en un tap : les boutons Long et Short du ticket de trade."
+    },
+    {
+     "h": "Le levier, c'est de la taille, pas de la magie",
+     "p": "Mets 100 $ à 10x et tu fais bouger une position de 1 000 $. Chaque 1% parcouru par le marché pèse désormais 10% de ton argent, dans un sens comme dans l'autre. Le levier n'améliore pas un trade : il multiplie ce que le trade allait de toute façon te faire."
+    },
+    {
+     "h": "L'échelle sur le ticket",
+     "p": "Le réglage du levier s'accroche à une échelle : des pas entiers jusqu'à 10x, puis des dizaines - 20, 30, 50, 100 et plus. Tape 107 et ça s'enregistre comme 110. L'échelle existe pour que le chiffre choisi soit un chiffre que tu peux dire à voix haute, et que la ligne de liquidation que trace le graphique soit lisible avant d'ouvrir."
+    },
+    {
+     "h": "Pourquoi on te laisse aller à 1000x",
+     "p": "Les majeures montent ici jusqu'à 1000x, bien au-delà de ce qu'une personne sensée utiliserait. C'est voulu. À 1000x, moins d'un dixième de pour cent contre toi termine la position - et mieux vaut le découvrir sur un compte d'entraînement, ce soir, que sur un exchange avec ton propre argent."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tu engages 100 $ à 10x de levier. Quelle est la taille de la position ?",
+     "o": [
+      "100 $",
+      "110 $",
+      "1 000 $",
+      "10 000 $"
+     ]
+    },
+    {
+     "q": "Une position short gagne de l'argent quand :",
+     "o": [
+      "Le prix monte",
+      "Le prix baisse",
+      "Le prix reste stable",
+      "Le volume monte"
+     ]
+    },
+    {
+     "q": "Qu'est-ce que l'augmentation du levier change vraiment ?",
+     "o": [
+      "Tes chances d'avoir raison",
+      "La taille de la position, donc chaque mouvement compte davantage",
+      "Les frais que tu paies",
+      "La durée pendant laquelle tu peux garder le trade"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "La marge, et où meurt une position",
+   "cards": [
+    {
+     "h": "La marge, c'est ce que tu mets sur la table",
+     "p": "La marge est la part de ton solde que tu engages sur un trade. C'est aussi le maximum que ce trade peut te prendre : une perte est plafonnée à ta marge, donc une position ouverte avec 100 $ peut te coûter ces 100 $ et jamais un centime de plus. Tes 9 900 $ restants ne sont pas atteignables."
+    },
+    {
+     "h": "La liquidation, c'est le plancher qui est touché",
+     "p": "Si le prix va assez loin contre toi, la position se ferme d'elle-même et la marge est perdue. Ce prix, c'est la liquidation, et MarginPad la trace sur ton graphique dès l'ouverture - le niveau où le trade s'arrête est donc visible pendant toute sa durée, pas une surprise à la fin."
+    },
+    {
+     "h": "C'est décidé sur notre serveur, pas dans ton navigateur",
+     "p": "Ta position est tenue côté serveur. Ferme l'onglet, perds le signal, change de téléphone : rien ne change. Le stop-loss, le take-profit et la liquidation sont tous vérifiés de notre côté sur des bougies clôturées, ce qui explique aussi qu'une mèche qui traverse ton niveau ne te termine pas ici, sauf si la bougie a vraiment clôturé là."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel est le maximum qu'une position peut te faire perdre ?",
+     "o": [
+      "Tout ton solde",
+      "La marge que tu y as engagée",
+      "Le double de la marge",
+      "Ça dépend du levier"
+     ]
+    },
+    {
+     "q": "Tu ouvres un trade, puis tu fermes le navigateur. Que devient-il ?",
+     "o": [
+      "Il est annulé",
+      "Il reste ouvert et il est vérifié sur le serveur",
+      "Il se fige jusqu'à ton retour",
+      "Il se ferme au prix actuel"
+     ]
+    },
+    {
+     "q": "Une liquidation, c'est :",
+     "o": [
+      "Des frais pour avoir tenu trop longtemps",
+      "La fermeture automatique de la position parce que le prix a atteint le niveau où la marge est épuisée",
+      "Une fermeture manuelle par le site",
+      "La même chose qu'un stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Tes deux sorties : stop-loss et take-profit",
+   "cards": [
+    {
+     "h": "Décide la sortie avant d'en avoir besoin",
+     "p": "Un stop-loss ferme le trade à un prix que tu choisis s'il tourne mal. Un take-profit fait pareil s'il tourne bien. Les deux se règlent une fois et sont ensuite respectés sans toi, et c'est tout l'intérêt : le moment où une position perd est le pire moment pour décider quoi en faire."
+    },
+    {
+     "h": "Où les régler ici",
+     "p": "Sur le ticket, avant d'ouvrir - ou après, avec le bouton Set de la carte du trade et depuis My Trades. Tu peux les déplacer autant de fois que tu veux tant que le trade est ouvert. Un trade sans aucun des deux est un trade dont la sortie sera choisie par ce que tu ressens à ce moment-là."
+    },
+    {
+     "h": "Sur le ticket, pas à pas",
+     "p": "Ouvre Advanced sous le formulaire de trade. Le stop et l'objectif prennent chacun un prix, ou un pourcentage de ta marge - tape l'un et l'autre se réécrit, donc ils ne peuvent jamais se contredire. Le panneau préremplit un stop à 2% et un objectif à 3% comme point de départ ; inverse le sens et les niveaux auto-remplis s'inversent avec. Ce que le panneau cache ne s'applique pas : ferme Advanced et le trade s'ouvre sans eux."
+    },
+    {
+     "h": "C'est l'habitude à construire",
+     "p": "Rien d'autre dans ce cours ne changera autant tes résultats. Sur les classements qui paient de vrais USDT, les comptes qui durent ne sont pas ceux qui choisissent de meilleures entrées - ce sont ceux qui avaient déjà décidé où ils auraient tort. En régler un est aussi une tâche Road to Bronze, qui vaut 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Que fait un stop-loss ?",
+     "o": [
+      "Il t'empêche d'ouvrir d'autres trades",
+      "Il ferme le trade à un prix que tu as choisi, s'il va contre toi",
+      "Il met la position en pause",
+      "Il garantit que tu ne peux pas perdre"
+     ]
+    },
+    {
+     "q": "Quand peux-tu régler ou déplacer un stop-loss sur MarginPad ?",
+     "o": [
+      "Seulement à l'ouverture du trade",
+      "Seulement quand il est en gain",
+      "Avant l'ouverture, et à tout moment tant que le trade est ouvert",
+      "Une fois par jour"
+     ]
+    },
+    {
+     "q": "Tu tapes un stop en pourcentage de la marge. Que devient le champ du prix ?",
+     "o": [
+      "Rien - ils sont séparés",
+      "Il se réécrit pour correspondre, donc les deux ne se contredisent jamais",
+      "Il est vidé",
+      "Il est verrouillé"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Saisons, classements et le pass",
+   "cards": [
+    {
+     "h": "Le site tourne par saisons de quatorze jours",
+     "p": "Tout ce qui est compétitif se remet à zéro sur un cycle de quatorze jours. Ton XP de saison, ta place dans les classements et le pass repartent de zéro, donc une mauvaise quinzaine n'est jamais définitive et un nouveau n'a jamais un an de retard. Le jour de la saison est affiché en haut de la page de saison."
+    },
+    {
+     "h": "Dix classements, sept gratuits",
+     "p": "Dix classements paient de vrais USDT à la fin d'une saison, et tous vivent sur une seule page, /leaderboards/. Sept ne coûtent rien : Highest ROE, Green Days, Best Win Rate, Season XP, le Daily BTC Call, Meme Spot et la Gold Room - la seule avec une condition, le niveau Or. Deux s'adressent aux lecteurs qui tradent en réel chez Bybit ou Moon via MarginPad. Les pools et les répartitions des prix sont affichés sur la page."
+    },
+    {
+     "h": "Et le pass tourne en dessous de tout ça",
+     "p": "Chaque tranche de 100 XP de saison est un palier du pass, quarante en tout, et la piste gratuite verse des Ticks et des cosmétiques à mesure que tu montes. Tu le gagnes déjà : l'XP de ce cours comptait pour lui pendant que tu lisais. La piste payante ajoute des pièces que personne ne peut acheter dans la boutique."
+    },
+    {
+     "h": "Au-delà des classements",
+     "p": "Un duel t'oppose à un trader pendant une heure, un jour, trois jours ou une semaine, sur une métrique que vous acceptez tous les deux, avec des Ticks en jeu. Un squad, c'est jusqu'à cinq personnes avec un salon privé, des raids sur les majeures et un logo. Demo Spot est du buy-and-hold avec 10 000 $ et un classement à part. Rien de tout ça n'est obligatoire - le terminal est le produit ; le reste évite que l'entraînement ressemble à des devoirs."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Combien de temps dure une saison MarginPad ?",
+     "o": [
+      "Sept jours",
+      "Quatorze jours",
+      "Un mois",
+      "Jusqu'à ce que quelqu'un gagne"
+     ]
+    },
+    {
+     "q": "Combien des dix classements sont gratuits à rejoindre ?",
+     "o": [
+      "Deux",
+      "Quatre",
+      "Sept",
+      "Les neuf"
+     ]
+    },
+    {
+     "q": "Où se trouvent les classements de tous les tableaux ?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Le canal Telegram",
+      "Dans le terminal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Voilà tout le tour. Il reste ce pour quoi le site existe : ouvre le terminal, choisis un coin, prends une petite position avec un stop-loss, et regarde ce qui se passe. Ce seul trade est la dernière étape vers Bronze.",
+    "label": "Ouvrir Paper Trade"
+   }
+  }
+ ]
+}

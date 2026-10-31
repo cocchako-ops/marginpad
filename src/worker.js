@@ -8316,7 +8316,7 @@ async function handleTrack(url, request, env, ctx) {
     // A click-out that resolves to no partner is not a money click and not a reader action: it is a scanner hitting
     // /api/track. It stays COUNTED (aff:junk + affjunk:day + affjunk:lbl) and gets one radar line, but never a row.
     const _junkClick = (type === 'exchange' || type === 'tool') && !partner;
-    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'diag' || type === 'grad' || type === 'openfail' || type === 'aiscan' || type === 'lb' || type === 'widget')) { // 'openfail' (2026-09-29) = an open the server did not take, with the reason: 12.1% of journal rows were local-only and nothing recorded WHY // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    if (!_clientTrade && !_junkClick && (type === 'readiness' || type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'diag' || type === 'grad' || type === 'openfail' || type === 'aiscan' || type === 'lb' || type === 'widget')) { // 'openfail' (2026-09-29) = an open the server did not take, with the reason: 12.1% of journal rows were local-only and nothing recorded WHY // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
         let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);
@@ -9726,7 +9726,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=bfe3e6f6" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1902717a" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -10152,12 +10152,44 @@ async function rrScan(env, force) {
 
    So: one call, three places. Ledger ban removes them from the boards and the money; the site ban kills login and
    sessions; the device goes on the banned-device list unless the caller is keeping a main account alive on it. */
+/* THE BAN EMAIL (2026-10-31, owner: "kad kliknem dugme ban, da mu ujedno i email stigne"). Every ban path goes through
+   banNotice, so the profile button, the promo-abuse desk and the multi-account sweep cannot say different things.
+   It fires only on the transition into banned: pressing Ban twice mails once. A test account is never mailed. A send
+   that fails is said out loud (the answer + Telegram + AE), because this is the only notice the member will ever get.
+   The login screen still answers a banned address with "no account" (the owner's 2026-10-22 order). */
+function banMailBody(username) {
+  const un = String(username || '').replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 24), who = un ? ' (@' + un + ')' : '';
+  const terms = 'https://marginpad.io/terms/';
+  const lines = ['Your MarginPad account' + who + ' has been banned for breaching our Terms of Service.',
+    'This decision is final. There is nothing you can do to get the account back, and it cannot be appealed.',
+    'Any account you open after this will be suspended and banned as well.'];
+  return { subject: 'Your MarginPad account has been banned',
+    text: lines.join('\n\n') + '\n\nTerms of Service: ' + terms,
+    html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">' + lines.map(l => '<p style="margin:0 0 14px">' + l + '</p>').join('') + '<p style="margin:0;font-size:13px;color:#555"><a href="' + terms + '" style="color:#555">Terms of Service</a></p></div>' };
+}
+function banMailSkip(email, uid) { const e = String(email || '').toLowerCase(); return !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) || /^e2e/.test(String(uid || '')) || /^e2e[+_-]/.test(e) || /@example\.(com|org|net)$/.test(e); }
+// answers 'sent' | 'failed' | 'skip' (a test account or no address) | 'already' (this ban changed nothing)
+async function banNotice(env, d) {
+  const m = d && d.banMail; if (!m) return 'skip';
+  if (m.was === 'banned') return 'already';
+  if (banMailSkip(m.email, m.uid)) return 'skip';
+  if (!env.RESEND_API_KEY) { mailFail(env, 'ban', 0); return 'failed'; }
+  let st = 0; const b = banMailBody(m.username);
+  try {
+    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({ from: 'MarginPad <support@marginpad.io>', to: [m.email], subject: b.subject, text: b.text, html: b.html }) });
+    st = r.status; if (r.ok) return 'sent';
+  } catch (e) {}
+  mailFail(env, 'ban', st);
+  try { await tgAdmin(env, 'Ban email FAILED for @' + String(m.username || m.uid).slice(0, 24) + ' (status ' + st + '). The ban itself stands.', { kind: 'ban-mail', sev: 'warn' }); } catch (e) {}
+  return 'failed';
+}
 async function banEverywhere(env, uid, opts) {
   const o = opts || {}; const id = String(uid || '').replace(/^u:/, '');
   const out = { uid: id, site: false, ledger: false, device: false, errors: [] };
   if (!id) { out.errors.push('no_uid'); return out; }
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, action: 'ban', keepdev: !!o.keepdev, by: String(o.by || 'ops').slice(0, 24) }) }));
-    const d = await r.json(); out.site = !!(d && d.ok); out.device = !!(d && d.ok) && !o.keepdev;
+    const d = await r.json(); out.site = !!(d && d.ok); out.device = !!(d && d.ok) && !o.keepdev; if (d && d.ok) out.mail = await banNotice(env, d);
     if (d && Array.isArray(d.revokedTokens)) await Promise.all(d.revokedTokens.slice(0, 200).map(t => sessRevoke(env, t)));
     if (d && d.error) out.errors.push('site:' + d.error);
   } catch (e) { out.errors.push('site:throw'); }
@@ -15426,6 +15458,9 @@ const TICK_SOURCES = [
   { k: 'trade_sl', label: 'Closed with a stop set', cap: 24 },
   { k: 'mission', label: 'Missions claimed', cap: 28 }, // 2026-09-29: 7 missions x 4 T. It was 20, which ran out on the fifth claim and dropped the rest with nothing said; the set and weekly bonuses no longer draw from it at all
   { k: 'academy', label: 'Academy lessons', cap: 30 },
+  { k: 'exam', label: 'Academy final exams', cap: 60 },
+  { k: 'review', label: 'Academy daily review', cap: 3 },
+  { k: 'pract', label: 'Academy practical exam', cap: 30 }, // 2026-10-31: ACAD_EXAM.perDay x ACAD_EXAM.ticks
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
@@ -22039,7 +22074,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '63809284';
+const ASSET_V = '86a4da54';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -22535,7 +22570,7 @@ function showView(v){document.querySelectorAll('.view').forEach(function(s){s.cl
 document.getElementById('navb').addEventListener('click',function(e){var b=e.target.closest('button[data-v]');if(b)showView(b.getAttribute('data-v'));});
 (function(){var si=document.getElementById('uSearch');if(si)si.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=si.value.trim();if(v)location.href='/api/admin/user?username='+encodeURIComponent(v);}});})();
 function aiWire(){if(!DATA||!DATA.user||!DATA.user.id)return;var uid=DATA.user.id,inp=document.getElementById('aiLimIn'),btn=document.getElementById('saveAiLim'),hint=document.getElementById('aiLimHint');if(!btn)return;fetch('/api/ai/admin?key='+encodeURIComponent(key)+'&uid='+encodeURIComponent(uid)).then(function(r){return r.json();}).then(function(d){if(inp&&d.userLimit!=null&&!inp.value)inp.value=d.userLimit;if(hint)hint.textContent='default '+(d.globalLimit!=null?d.globalLimit:10)+' / day · used '+(d.usedToday||0)+' today';}).catch(function(){});if(btn._w)return;btn._w=1;btn.addEventListener('click',function(){var v=String(inp.value).trim(),body={uid:uid,userLimit:(v===''?null:parseInt(v,10))},m=document.getElementById('cmsg');if(m){m.className='msg';m.textContent='Saving…';}fetch('/api/ai/admin?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(m){m.className='msg ok';m.textContent=(body.userLimit===null)?'AI limit reset to default':('AI limit set to '+d.userLimit+'/day');}aiWire();}).catch(function(){if(m){m.className='msg err';m.textContent='Error';}});});}
-function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();rwWire();loadReward();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
+function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();if(window.__cm){cmsg(window.__cm[0],window.__cm[1]);window.__cm=null;}aiWire();rwWire();loadReward();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
   fetch('/api/auth/clicks?'+uarg()).then(function(r){return r.json();}).then(function(d){CLICKS=d;renderHeat();}).catch(function(){});
   fetch('/api/prices').then(function(r){return r.json();}).then(function(d){if(d&&d.pairs)d.pairs.forEach(function(x){PRICES[String(x.symbol||'').replace('USDT','')]=+x.price;});if(DATA)renderOpen();}).catch(function(){});}
 function loadReward(){if(!DATA||!DATA.user||!DATA.user.id)return;fetch('/api/reward/detail?key='+encodeURIComponent(key)+'&address=u:'+encodeURIComponent(DATA.user.id)).then(function(r){return r.json();}).then(function(d){RWD=d;renderReward();rwCtl();}).catch(function(){renderReward();rwCtl();});loadMoney();}
@@ -22610,7 +22645,7 @@ function renderOpen(){var el=document.getElementById('openTrades');if(!el)return
     +'</div>';
   }).join('')+'</div>';}
 function cmsg(t,k){var m=document.getElementById('cmsg');m.textContent=t;m.className='msg '+(k||'');}
-function ctrl(action,extra,done){var _u=(DATA&&DATA.user)||{};var body=Object.assign({email:_u.email||email,id:_u.id||id,username:_u.username||uname0,action:action},extra||{});cmsg('Working…','');fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(d.ok){cmsg('Done.','ok');if(done)done();else load();}else{cmsg('Error: '+(d.error||'failed'),'err');}}).catch(function(){cmsg('Network error','err');});}
+function ctrl(action,extra,done){var _u=(DATA&&DATA.user)||{};var body=Object.assign({email:_u.email||email,id:_u.id||id,username:_u.username||uname0,action:action},extra||{});cmsg('Working…','');fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(d.ok){var bm=action==='ban'?({sent:'Banned. Email sent.',failed:'Banned, but the email FAILED.',already:'Already banned. No email sent.',skip:'Banned. No email (test account or no address).'}[d.mail]||'Banned.'):'Done.';window.__cm=[bm,d.mail==='failed'?'err':'ok'];cmsg(bm,window.__cm[1]);if(done)done();else load();}else{cmsg('Error: '+(d.error||'failed'),'err');}}).catch(function(){cmsg('Network error','err');});}
 function badge(cls,txt){return '<span class="badge '+cls+'">'+txt+'</span>';}
 function render(){if(!DATA||!DATA.exists){document.getElementById('title').textContent='No such user.';document.getElementById('uun').textContent='Not found';return;}var u=DATA.user;
   var st=u.status||'active';var name=u.username||u.email.split('@')[0];
@@ -22634,7 +22669,7 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
      literal and kills the ENTIRE inline script - every button on the profile, not just this one. It shipped
      that way for one deploy on 2026-10-18; lint and the smoke test both passed happily and the browser's page
      error is what found it. One line, separators only. */
-  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+'? Kills every session, blocks re-login, bars the device they last signed in from, bans the faucet account and takes them off every paid leaderboard.'))ctrl('ban');};
+  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+'? Kills every session, blocks re-login, bars the device they last signed in from, bans the faucet account, takes them off every paid leaderboard and emails them that the ban is final.'))ctrl('ban');};
   var unban=document.getElementById('unbanBtn');if(unban)unban.onclick=function(){ctrl('unban');};
   var susp=document.getElementById('suspBtn');if(susp)susp.onclick=function(){var d=prompt('Suspend for how many days? (0 = indefinite)','7');if(d===null)return;ctrl('suspend',{days:+d||0});};
   var act=document.getElementById('actBtn');if(act)act.onclick=function(){ctrl('activate');};
@@ -23176,6 +23211,7 @@ async function handleAuth(url, request, env, ctx) {
       else { d.ledger = false; d.ledgerError = 'no_uid'; }
     }
     if (d && d.ok) { try { const ap = evPush(env, request, 'admin', String(b.action || '') + ' ' + (b.email ? maskEmail(b.email) : '#' + String(b.id || '').slice(0, 8)) + (b.days ? ' ' + b.days + 'd' : '') + (b.username ? ' -> ' + String(b.username).slice(0, 20) : ''), '/', { by: 'owner', action: String(b.action || '') }); if (ctx && ctx.waitUntil) ctx.waitUntil(ap); } catch (e) {} } // ops feed: bans, suspensions, renames, deletions
+    if (d && d.ok && b.action === 'ban') d.mail = await banNotice(env, d); delete d.banMail;
     if (d && Array.isArray(d.revokedTokens)) await Promise.all(d.revokedTokens.slice(0, 200).map(t => sessRevoke(env, t))); // parallel - a ban on a user with many sessions would time out on sequential awaits. Drops the read-through cache for every touched session.
     return jr(d);
   }
@@ -26566,6 +26602,19 @@ export default {
       const body = JSON.stringify({ tabs: rows.map(r => ({ tab: r.tab, n: Math.round(+r.n || 0), last: r.last })), since: '30d', ts: Date.now() });
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/academy' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // GET the learning funnel + exam results; POST {key} uploads the answer key (KV, never the repo)
+      const jh9 = { 'content-type': 'application/json' };
+      if (request.method === 'POST') {
+        if (!isAdminKey(env, adminKeyFrom(request, url))) return new Response('{"error":"key_only"}', { status: 403, headers: jh9 });
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        if (!b.key || typeof b.key !== 'object' || Object.keys(b.key).length < 15) return new Response('{"error":"bad_key"}', { status: 400, headers: jh9 });
+        await env.STATS.put('acad:examkey', JSON.stringify(b.key));
+        return new Response(JSON.stringify({ ok: true, questions: Object.keys(b.key).length }), { headers: jh9 });
+      }
+      let d = null; try { d = await (await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/funnel'))).json(); } catch (e) { d = { error: 'do_failed' }; }
+      let hasKey = false; try { hasKey = !!(await env.STATS.get('acad:examkey')); } catch (e) {}
+      return new Response(JSON.stringify(Object.assign({ rules: ACAD_EXAM, hasKey }, d)), { headers: jh9 });
     }
     if (url.pathname === '/api/admin/goaldbg' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // season-goal check-in provenance for one uid (2026-10-08)
       let d = null, st = 0; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/goal/dbg?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); st = r.status; d = await r.json(); } catch (e) { d = { error: 'do_failed', e: String(e).slice(0, 120) }; }
@@ -30152,7 +30201,7 @@ export default {
         return resp; }
       return new Response('{"error":"not_found"}', { status: 404, headers: jh });
     }
-    if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
+    if (url.pathname === '/api/academy' || url.pathname === '/api/academy/exam' || url.pathname === '/api/academy/review' || url.pathname === '/api/academy/practical') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
     if (url.pathname === '/api/bronze') return handleBronze(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
@@ -33373,6 +33422,8 @@ export class UserStore {
     if (_xlAdded) { try { s.exec('UPDATE users SET xp_life=COALESCE(xp,0)'); } catch (e) {} } // one-time backfill TIED to the ALTER success so it never re-runs. CAVEAT: users.xp is NET (already reduced by duel-stake _takeXp), so the seeded xp_life is NOT true "lifetime earned" - it is "net XP at migration + positive XP earned after". Harmless to the seasonal delta (both ends use xp_life), but do NOT surface xp_life to users as a lifetime-earned total.
     s.exec('CREATE TABLE IF NOT EXISTS xpseason(user_id TEXT, season INTEGER, base INTEGER, PRIMARY KEY(user_id,season))'); // xp_life snapshot at a user's FIRST grant of a season → seasonal XP = xp_life - base (trim-proof, no xplog dependency)
     s.exec('CREATE TABLE IF NOT EXISTS lbbest(user_id TEXT, season INTEGER, roe REAL, pnl REAL, symbol TEXT, side TEXT, bp REAL, bpSym TEXT, bpSide TEXT, PRIMARY KEY(user_id,season))'); // trim-proof season-best trade per user (keep-max at close time) - the ROE board used to re-scan the 100-row utrades blob, so a heavy trader's best trade VANISHED from the board when the trim pushed it out (Mistrlefty 1882%→342%, 2026-08-10); legacy corrupt trades also hogged the top-3 trim protection
+    s.exec('CREATE TABLE IF NOT EXISTS acadrev(user_id TEXT, lesson TEXT, qi INTEGER, box INTEGER, due INTEGER, PRIMARY KEY(user_id,lesson,qi))'); s.exec('CREATE TABLE IF NOT EXISTS acadrevday(user_id TEXT, day INTEGER, ok INTEGER, PRIMARY KEY(user_id,day))'); s.exec('CREATE TABLE IF NOT EXISTS acadprac(user_id TEXT PRIMARY KEY, start INTEGER, done INTEGER)'); // Academy daily review + practical exam
+    s.exec('CREATE TABLE IF NOT EXISTS acadexam(id TEXT PRIMARY KEY, user_id TEXT, course TEXT, ts INTEGER, exp INTEGER, ids TEXT, status TEXT, score INTEGER, sub INTEGER, wrong TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS idx_acadexam_u ON acadexam(user_id, course)'); // Academy final exams, one row per attempt: open | pass | fail | expired
     s.exec('CREATE TABLE IF NOT EXISTS academy(user_id TEXT, lesson TEXT, ts INTEGER, PRIMARY KEY(user_id,lesson))'); // completed Academy lessons (+ "course:<id>" bonus markers); XP via _grantXp src=academy lifeCap 800
     for (const col of ['best INTEGER', 'tries INTEGER DEFAULT 1']) { try { s.exec('ALTER TABLE academy ADD COLUMN ' + col); } catch (e) {} } // mastery (2026-09-06): best = fewest mistakes on a finished run, 0 = perfect
     try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
@@ -33508,6 +33559,7 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution - client / site / bot / sweep / cron / sltp
     try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {}
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN slpx REAL'); } catch (e) {} // the stop PRICE at close (2026-10-31): `sl` says one existed, the practical exam needs what it risked
     try { s.exec('ALTER TABLE tradeev ADD COLUMN sl INTEGER'); } catch (e) {} // skill score (2026-09-06): had a stop set at close (0/1); NULL = before the column existed
     try { s.exec('ALTER TABLE tradeev ADD COLUMN rz TEXT'); } catch (e) {} // realism the trade was FILLED with (2026-09-16): S=slippage, T=size tier, M=venue margin rate. NULL/'' = the defaults, which is every trade before that date - so the Bot arena can say on the board which bots ran on easy mode.
     for (const col of ['entry REAL', 'exit REAL']) { try { s.exec('ALTER TABLE tradeev ADD COLUMN ' + col); } catch (e) {} } // 2026-10-23: the fill prices, so the Following feed can open the same trade sheet (Copy / Chart / AI analyze) the push does
@@ -33568,6 +33620,53 @@ export class UserStore {
     const seed = Math.min(4000, Math.round((+u.xp_life || 0) / 60));
     this.state.storage.sql.exec('UPDATE users SET ticks=COALESCE(ticks,0)+?, ticks_life=COALESCE(ticks_life,0)+?, ticks_seed=1 WHERE id=?', seed, seed, uid);
     return seed;
+  }
+  _reviewState(uid) {
+    const now = Date.now(), day = Math.floor(now / 864e5);
+    const days = this.rows('SELECT day, ok FROM acadrevday WHERE user_id=? ORDER BY day DESC LIMIT 400', uid);
+    let streak = 0, want = (days[0] && +days[0].day === day) ? day : day - 1;
+    for (const d of days) { if (+d.day === want) { streak++; want--; } else break; }
+    const today = days[0] && +days[0].day === day ? days[0] : null;
+    if (today) return { done: true, ok: +today.ok, n: ACAD_REVIEW.n, streak, items: [] };
+    const done = this.rows("SELECT lesson, ts FROM academy WHERE user_id=? AND lesson NOT LIKE '%:%'", uid);
+    return { done: false, n: ACAD_REVIEW.n, streak, items: reviewPick(done, this.rows('SELECT lesson, qi, box, due FROM acadrev WHERE user_id=?', uid), now, ACAD_REVIEW.n) };
+  }
+  _pracState(uid) { // recomputed from tradeev on every read, and paid here, once: there is no "submit", the trades are the answer
+    const p = this.rows('SELECT start, done FROM acadprac WHERE user_id=?', uid)[0];
+    if (!p) return { started: false, rules: ACAD_PRACT };
+    const out = { started: true, start: +p.start, done: +p.done || 0, run: 0, n: ACAD_PRACT.n, rules: ACAD_PRACT, trades: [] };
+    if (p.done) { out.run = ACAD_PRACT.n; return out; }
+    const rows = this.rows("SELECT tid, ts, sym, side, lev, margin, liq, src, sl, slpx, entry FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts ASC, id ASC LIMIT 500", uid, +p.start), seen = {};
+    for (const r of rows) {
+      if (seen[r.tid]) continue; seen[r.tid] = 1; // a partial close and the final one are one trade
+      const why = pracCheck(r, +p.start); if (!why) continue;
+      out.run = why.length ? 0 : out.run + 1;
+      out.trades.push({ sym: r.sym, ts: +r.ts, why });
+      if (out.run >= ACAD_PRACT.n) break;
+    }
+    out.trades = out.trades.slice(-8);
+    if (out.run >= ACAD_PRACT.n) {
+      this.state.storage.sql.exec('UPDATE acadprac SET done=? WHERE user_id=? AND (done IS NULL OR done=0)', Date.now(), uid);
+      out.done = Date.now(); out.xp = this._grantXp(uid, 'academy_prac', ACAD_PRACT.xp, { note: 'practical exam passed' });
+      try { out.ticks = this._grantTicks(uid, 'pract', ACAD_PRACT.ticks, { dayCap: TICK_CAP.pract, note: 'practical exam' }) || 0; } catch (e) {}
+    }
+    return out;
+  }
+  _examState(uid) { // {course: {tries, best, passed, perfect, open, next}}. An attempt past its clock is closed HERE, on the first read after it, as a failure
+    const out = {}, now = Date.now(), sql = this.state.storage.sql;
+    let rows = []; try { rows = this.rows('SELECT id, course, ts, exp, status, score, sub FROM acadexam WHERE user_id=? ORDER BY ts ASC', uid); } catch (e) { return out; }
+    for (const r of rows) {
+      if (r.status === 'open' && now > +r.exp + 30000) { r.status = 'expired'; r.score = 0; r.sub = +r.exp; try { sql.exec("UPDATE acadexam SET status='expired', score=0, sub=? WHERE id=?", r.sub, r.id); } catch (e) {} }
+      const c = out[r.course] = out[r.course] || { tries: 0, best: 0, passed: false, perfect: false, open: null, openExp: 0, next: 0 };
+      c.tries++;
+      if (r.status === 'open') { c.open = r.id; c.openExp = +r.exp; continue; }
+      c.best = Math.max(c.best, +r.score || 0);
+      if (r.status === 'pass') c.passed = true;
+      if ((+r.score || 0) >= ACAD_EXAM.n) c.perfect = true;
+      c.next = (+r.sub || +r.ts) + ACAD_EXAM.cooldownH * 36e5;
+    }
+    for (const k in out) if (out[k].perfect || out[k].next <= now) out[k].next = 0;
+    return out;
   }
   _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
     // A squad levels on what its members DO - every lesson, mission and trade. Placed at the top so it sees
@@ -34427,7 +34526,7 @@ export class UserStore {
           if (_q9 > 0 && _en9 > 0 && _ex9 > 0 && _fr9 > 0) _fee9 = Math.round(_q9 * (_en9 + _ex9) * _fr9 * 1e4) / 1e4;
           if (isFinite(+e.fund)) _fnd9 = Math.round(+e.fund * 1e4) / 1e4;
         }
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null); // the client journal says `sl`, a server-filled position says `stop`
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit,slpx) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null, (+e.sl > 0) ? +e.sl : ((+e.stop > 0) ? +e.stop : null)); // the client journal says `sl`, a server-filled position says `stop`
         nIns++;
       }
       if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
@@ -35934,7 +36033,7 @@ export class UserStore {
       const uid = String(url.searchParams.get('uid') || '');
       const rowsA = uid ? this.rows('SELECT lesson, best FROM academy WHERE user_id=?', uid) : [];
       const best = {}; rowsA.forEach(r => { if (r.best != null && r.lesson.indexOf(':') < 0) best[r.lesson] = +r.best; });
-      return this.j({ done: rowsA.map(r => r.lesson), best, mastered: rowsA.filter(r => r.lesson.indexOf('master:') === 0).map(r => r.lesson.slice(7)) });
+      return this.j({ done: rowsA.map(r => r.lesson), best, mastered: rowsA.filter(r => r.lesson.indexOf('master:') === 0).map(r => r.lesson.slice(7)), exams: uid ? this._examState(uid) : {}, review: uid ? this._reviewState(uid) : null, prac: uid ? this._pracState(uid) : null });
     }
     if (path === '/academy/cert') { // public: is this course mastered by this trader (every lesson a perfect run)? -> the shareable certificate
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24), course = String(url.searchParams.get('course') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
@@ -35942,6 +36041,83 @@ export class UserStore {
       const u = this.rows('SELECT id, username FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0]; if (!u) return this.j({ ok: false });
       const m = this.rows('SELECT ts FROM academy WHERE user_id=? AND lesson=?', u.id, 'master:' + course)[0]; if (!m) return this.j({ ok: false });
       return this.j({ ok: true, name: u.username, course, ts: +m.ts || 0, perfect: this.rows('SELECT COUNT(*) c FROM academy WHERE user_id=? AND best=0 AND lesson NOT LIKE ?', u.id, '%:%')[0].c || 0 });
+    }
+    if (path === '/academy/review/submit') { // b.results = [{l,q,ok}], which must be exactly today's pick. Once a day, whatever is sent
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'bad' }, 400);
+      const st = this._reviewState(uid); if (st.done) return this.j({ error: 'done_today', streak: st.streak });
+      const res = Array.isArray(b.results) ? b.results : [];
+      if (!st.items.length || res.length !== st.items.length || !st.items.every((it) => res.some((r) => r.l === it.l && +r.q === it.q))) return this.j({ error: 'bad_items' }, 400);
+      let ok = 0; const day = Math.floor(now / 864e5);
+      for (const it of st.items) {
+        const r = res.find((x) => x.l === it.l && +x.q === it.q), right = !!r.ok, prev = this.rows('SELECT box FROM acadrev WHERE user_id=? AND lesson=? AND qi=?', uid, it.l, it.q)[0];
+        const box = right ? Math.min(ACAD_REVIEW.days.length, (prev ? +prev.box : 0) + 1) : 1; if (right) ok++;
+        sql.exec('INSERT OR REPLACE INTO acadrev(user_id,lesson,qi,box,due) VALUES(?,?,?,?,?)', uid, it.l, it.q, box, now + (right ? ACAD_REVIEW.days[box - 1] : 1) * 864e5 - 36e5);
+      }
+      sql.exec('INSERT INTO acadrevday(user_id,day,ok) VALUES(?,?,?)', uid, day, ok);
+      const streak = st.streak + 1, xp = this._grantXp(uid, 'academy_review', ACAD_REVIEW.xp, { dayCap: ACAD_REVIEW.xp, note: 'daily review' });
+      let bonus = 0; if (streak % ACAD_REVIEW.streakEvery === 0) bonus = this._grantXp(uid, 'academy_review', ACAD_REVIEW.streakXp, { note: 'review streak ' + streak });
+      let ticks = 0; try { ticks = this._grantTicks(uid, 'review', ACAD_REVIEW.ticks, { dayCap: TICK_CAP.review, note: 'daily review' }) || 0; } catch (e) {}
+      return this.j({ ok: true, right: ok, n: st.items.length, streak, xp, bonus, ticks });
+    }
+    if (path === '/academy/prac/start') { // the clock of the run starts here: b.courseLessons is the worker's own map
+      const uid = String(b.uid || ''), lessons = (Array.isArray(b.courseLessons) ? b.courseLessons : []).map(String);
+      if (!uid || !lessons.length) return this.j({ error: 'bad' }, 400);
+      if (this.rows('SELECT 1 FROM acadprac WHERE user_id=?', uid)[0]) return this.j({ ok: true, prac: this._pracState(uid) });
+      const done = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { done[r.lesson] = 1; });
+      const left = lessons.filter(l => !done[l]).length; if (left) return this.j({ error: 'lessons_left', left });
+      sql.exec('INSERT INTO acadprac(user_id,start,done) VALUES(?,?,0)', uid, now);
+      return this.j({ ok: true, prac: this._pracState(uid) });
+    }
+    if (path === '/academy/exam/start') { // begin an attempt, or hand back the one still running. b.bank = the course's question ids, b.courseLessons = the worker's own map
+      const uid = String(b.uid || ''), course = String(b.course || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+      const lessons = (Array.isArray(b.courseLessons) ? b.courseLessons : []).map(String), bank = (Array.isArray(b.bank) ? b.bank : []).map(String);
+      if (!uid || !course || !lessons.length || bank.length < ACAD_EXAM.n) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      const done = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { done[r.lesson] = 1; });
+      const left = lessons.filter(l => !done[l]).length;
+      if (left) return this.j({ error: 'lessons_left', left });
+      const st = this._examState(uid)[course] || {};
+      if (st.perfect) return this.j({ error: 'already_perfect' });
+      if (st.open) { const o = this.rows('SELECT id, ids, exp FROM acadexam WHERE id=?', st.open)[0]; if (o) return this.j({ ok: true, resumed: true, id: o.id, ids: JSON.parse(o.ids), exp: +o.exp, now, n: ACAD_EXAM.n, pass: ACAD_EXAM.pass }); }
+      if (st.next && st.next > now) return this.j({ error: 'cooldown', next: st.next });
+      const dayStart = Math.floor(now / 864e5) * 864e5;
+      const today = +(this.rows('SELECT COUNT(*) c FROM acadexam WHERE user_id=? AND ts>=?', uid, dayStart)[0] || {}).c || 0;
+      if (today >= ACAD_EXAM.perDay) return this.j({ error: 'daily_limit', next: dayStart + 864e5 });
+      const pool = bank.slice(); for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)), t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+      const ids = pool.slice(0, ACAD_EXAM.n), id = crypto.randomUUID().replace(/-/g, ''), exp = now + ACAD_EXAM.mins * 60000;
+      sql.exec("INSERT INTO acadexam(id,user_id,course,ts,exp,ids,status) VALUES(?,?,?,?,?,?,'open')", id, uid, course, now, exp, JSON.stringify(ids));
+      return this.j({ ok: true, id, ids, exp, now, n: ACAD_EXAM.n, pass: ACAD_EXAM.pass });
+    }
+    if (path === '/academy/exam/submit') { // grade an attempt. b.key = {qid:[answer, lesson]} from KV, never from the page. Thirty seconds of grace for the network, not for the reader
+      const uid = String(b.uid || ''), id = String(b.id || '').replace(/[^a-f0-9]/gi, '').slice(0, 40), key = (b.key && typeof b.key === 'object') ? b.key : null, ans = (b.answers && typeof b.answers === 'object') ? b.answers : {};
+      const row = id ? this.rows('SELECT * FROM acadexam WHERE id=? AND user_id=?', id, uid)[0] : null;
+      if (!row) return this.j({ error: 'no_attempt' }, 404);
+      if (row.status !== 'open') return this.j({ error: 'closed', status: row.status, score: row.score });
+      if (!key) return this.j({ error: 'bad' }, 400);
+      if (now > +row.exp + 30000) { sql.exec("UPDATE acadexam SET status='expired', score=0, sub=? WHERE id=?", +row.exp, id); return this.j({ ok: true, expired: true, score: 0, n: ACAD_EXAM.n, pass: ACAD_EXAM.pass, passed: false, next: +row.exp + ACAD_EXAM.cooldownH * 36e5 }); }
+      const ids = JSON.parse(row.ids || '[]'), wrong = [], review = {};
+      let score = 0;
+      for (const q of ids) { const k = key[q]; if (k && +ans[q] === +k[0] && ans[q] !== null && ans[q] !== undefined && ans[q] !== '') score++; else { wrong.push(q); if (k && k[1]) review[k[1]] = 1; } }
+      const prev = this._examState(uid)[row.course] || {}, passed = score >= ACAD_EXAM.pass, perfect = score === ids.length;
+      sql.exec('UPDATE acadexam SET status=?, score=?, sub=?, wrong=? WHERE id=?', passed ? 'pass' : 'fail', score, now, JSON.stringify(wrong), id);
+      let xp = 0, perfectXp = 0, ticks = 0;
+      if (passed && !prev.passed) { xp = this._grantXp(uid, 'academy_exam', ACAD_EXAM.xp, { note: 'final exam ' + row.course + ' passed ' + score + '/' + ids.length }); try { ticks = this._grantTicks(uid, 'exam', ACAD_EXAM.ticks, { dayCap: TICK_CAP.exam, note: 'final exam' }) || 0; } catch (e) {} }
+      if (perfect && !prev.perfect) perfectXp = this._grantXp(uid, 'academy_exam', ACAD_EXAM.perfectXp, { note: 'final exam ' + row.course + ' perfect' });
+      const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, score, n: ids.length, pass: ACAD_EXAM.pass, passed, perfect, xp, perfectXp, ticks, first: passed && !prev.passed, review: Object.keys(review), next: perfect ? 0 : now + ACAD_EXAM.cooldownH * 36e5, level: xpLevelOf(u ? u.xp : 0) });
+    }
+    if (path === '/academy/funnel') { // owner read: who learns, where they stop, and which exam question beats people (e2e accounts dropped)
+      const skip = "(u.username IS NULL OR u.username NOT LIKE 'e2e_%') AND a.user_id NOT LIKE 'e2e%'";
+      const lessons = this.rows('SELECT a.lesson l, COUNT(*) n, SUM(CASE WHEN a.best=0 THEN 1 ELSE 0 END) perfect FROM academy a LEFT JOIN users u ON u.id=a.user_id WHERE ' + skip + " AND a.lesson NOT LIKE '%:%' GROUP BY a.lesson");
+      const ex = this.rows('SELECT a.course, a.status, a.score, a.wrong, a.ids, a.user_id FROM acadexam a LEFT JOIN users u ON u.id=a.user_id WHERE ' + skip);
+      const exams = {}, qs = {};
+      for (const r of ex) {
+        const e = exams[r.course] = exams[r.course] || { tries: 0, pass: 0, fail: 0, expired: 0, open: 0, sum: 0, graded: 0, people: {} };
+        e.tries++; e.people[r.user_id] = 1; if (r.status === 'pass') e.pass++; else if (r.status === 'fail') e.fail++; else if (r.status === 'expired') e.expired++; else e.open++;
+        if (r.status === 'pass' || r.status === 'fail') { e.sum += +r.score || 0; e.graded++; let ids = [], w = []; try { ids = JSON.parse(r.ids || '[]'); w = JSON.parse(r.wrong || '[]'); } catch (je) {} for (const q of ids) { const z = qs[q] = qs[q] || [0, 0]; z[0]++; if (w.indexOf(q) >= 0) z[1]++; } }
+      }
+      for (const k in exams) { const e = exams[k]; e.people = Object.keys(e.people).length; e.avg = e.graded ? Math.round(e.sum / e.graded * 10) / 10 : null; delete e.sum; }
+      return this.j({ lessons, exams, questions: qs });
     }
     if (path === '/academy/complete') { // Academy: idempotent lesson-complete marker -> +25 XP (lifeCap 800); +50 course bonus when a whole course is done
       const uid = String(b.uid || ''), lesson = String(b.lesson || '').replace(/[^a-z0-9]/gi, '').slice(0, 12);
@@ -35957,7 +36133,7 @@ export class UserStore {
       const row = this.rows('SELECT best, tries FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0];
       if (!row) {
         sql.exec('INSERT INTO academy(user_id,lesson,ts,best,tries) VALUES(?,?,?,?,1)', uid, lesson, now, mistakes); fresh = true;
-        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 3000, note: 'lesson ' + lesson });
+        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 6000, note: 'lesson ' + lesson });
         try { this._grantTicks(uid, 'academy', 6, { dayCap: TICK_CAP.academy, note: 'academy lesson' }); } catch (ae) {}
         if (mistakes === 0) { improved = true; up = this._grantXp(uid, 'academy_up', 5, { dayCap: 25, note: 'perfect run ' + lesson }); }
       } else if (mistakes != null) {
@@ -35969,14 +36145,14 @@ export class UserStore {
       if (course && courseLessons.length) { // every lesson of the course at a perfect run, once
         const bestSet = {}; this.rows('SELECT lesson, best FROM academy WHERE user_id=?', uid).forEach(r => { bestSet[r.lesson] = r.best; });
         const mk2 = 'master:' + course;
-        if (!(mk2 in bestSet) && courseLessons.every(l => bestSet[l] === 0)) { sql.exec('INSERT INTO academy(user_id,lesson,ts,best) VALUES(?,?,?,0)', uid, mk2, now); mastered = course; masterBonus = this._grantXp(uid, 'academy', 50, { lifeCap: 3000, note: 'course ' + course + ' mastered' }); }
+        if (!(mk2 in bestSet) && courseLessons.every(l => bestSet[l] === 0)) { sql.exec('INSERT INTO academy(user_id,lesson,ts,best) VALUES(?,?,?,0)', uid, mk2, now); mastered = course; masterBonus = this._grantXp(uid, 'academy', 50, { lifeCap: 6000, note: 'course ' + course + ' mastered' }); }
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
         const mk = 'course:' + course;
         if (!doneSet[mk] && courseLessons.every(l => doneSet[l])) {
           sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, mk, now);
-          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 3000, note: 'course ' + course + ' complete' });
+          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 6000, note: 'course ' + course + ' complete' });
         }
       }
       const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
@@ -36334,7 +36510,7 @@ export class UserStore {
     }
     if (path === '/export') { // nightly backup dump - identity, money-adjacent progress and social state. Ephemeral/analytics tables (sessions, otp, uevents, uclicks, udwell) are deliberately excluded.
       // PAGED ONLY (doExport, whole:false): the whole dump of this store exceeded the DO's memory and RESET the live store on every nightly retry (2026-10-27) - ?list=1 with counts, then ?t=<table>&after=<cursor>
-      return doExport(this, url, ['users', 'utrades', 'academy', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts'], { whole: false });
+      return doExport(this, url, ['users', 'utrades', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts'], { whole: false });
     }
     if (path === '/briefstats') { // morning-brief cron: signups + actives over the last 24h/48h
       const d24 = now - 86400000, d48 = now - 2 * 86400000;
@@ -36565,7 +36741,7 @@ export class UserStore {
       else if (act === 'revoke') sql.exec('DELETE FROM sessions WHERE user_id=? AND created=?', u.id, +b.created || 0);
       else if (act === 'delete') { for (const tb of ['users WHERE id', 'sessions WHERE user_id', 'uevents WHERE user_id', 'uclicks WHERE user_id', 'utrades WHERE user_id', 'udwell WHERE user_id']) sql.exec('DELETE FROM ' + tb + '=?', u.id); }
       else return this.j({ error: 'bad_action' });
-      return this.j({ ok: true, uid: u.id, revokedTokens: _revoked }); // uid so the worker can ban the same person in the ledger without a second lookup
+      return this.j({ ok: true, uid: u.id, revokedTokens: _revoked, banMail: act === 'ban' ? { uid: u.id, email: u.email || '', username: u.username || '', was: u.status || '' } : undefined }); // uid so the worker can ban the same person in the ledger without a second lookup
     }
     if (path === '/click') { // record a normalized click for the per-user heatmap (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
@@ -37218,7 +37394,7 @@ export class UserStore {
       const sql = this.state.storage.sql;
       if (b.op === 'sweep') { // remove every e2e_* member older than an hour: an E2E that crashed mid-run leaves its throwaway behind (goals-e2e 2026-09-06)
         const olds = this.rows("SELECT id FROM users WHERE username LIKE 'e2e\\_%' ESCAPE '\\' AND created < ?", Date.now() - 3600000).map(r => String(r.id));
-        for (const id of olds) { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', id); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', id); } catch (e) {} }
+        for (const id of olds) { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', id); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', id); } catch (e) {} }
         return this.j({ ok: true, removed: olds.length, ids: olds });
       }
       // Every UserStore table keyed to the account, not a hand-kept subset. The list used to stop at eighteen, so a
@@ -37226,7 +37402,7 @@ export class UserStore {
       // as no_match noise), in xpseason/xpday, and - worse - a live row in `sessions`, so a deleted account's token
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
-        const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
+        const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
         const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq'];
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -39174,6 +39350,42 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
 const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7','mm8'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
+/* FINAL EXAMS (2026-10-31, owner: "finalne testove posle svake grupe lekcija, vise XP-a ali teski, na svim jezicima"). One exam per course: ACAD_EXAM.n questions drawn at random
+   from a bank of 15, ACAD_EXAM.pass to pass, ACAD_EXAM.mins on the clock, graded HERE and never in the page, because XP counts on a paid board and this repo is public: the answers
+   live in KV acad:examkey, uploaded from gitignored drafts/academy-exams by build/academy-exam-build.js. The page gets questions and options only. A wrong answer is never named, only
+   the lesson to go back to, or twelve hours of retakes would read the key off the bank. Starting an attempt spends it: leaving one open expires it as a failure, or a member could
+   read the questions, close the tab and come back knowing them. */
+const ACAD_EXAM = { n: 10, pass: 8, mins: 12, cooldownH: 12, perDay: 4, xp: 150, perfectXp: 50, ticks: 15 };
+/* DAILY REVIEW (2026-10-31, owner approved after the funnel: 270 of 448 learners studied on one single day). Three old quiz questions a day, picked by a five-box Leitner schedule.
+   The quiz answers are in the page, so the result is the member's word: that is why it pays a small fixed amount once a day and nothing else depends on it. */
+const ACAD_REVIEW = { n: 3, xp: 15, ticks: 3, streakEvery: 7, streakXp: 50, days: [1, 3, 7, 14, 30] };
+/* reviewPick: PURE, the suite drives it. done = [{lesson, ts}], cards = [{lesson, qi, box, due}]. Lessons finished today wait until tomorrow, or the review would ask what the reader just read.
+   Due cards first, oldest first, then the first unseen question of the oldest lessons; never two from one lesson, because three questions on one idea is not a review. */
+function reviewPick(done, cards, now, n) {
+  const dayStart = Math.floor(now / 864e5) * 864e5, seen = {}, out = [], used = {};
+  for (const c of cards) seen[c.lesson + ':' + c.qi] = 1;
+  const due = cards.filter((c) => +c.due <= now).sort((a, b) => (+a.due - +b.due) || String(a.lesson).localeCompare(String(b.lesson)) || (a.qi - b.qi));
+  for (const c of due) { if (out.length >= n) break; if (used[c.lesson]) continue; used[c.lesson] = 1; out.push({ l: c.lesson, q: +c.qi }); }
+  const old = done.filter((d) => +d.ts < dayStart).sort((a, b) => (+a.ts - +b.ts) || String(a.lesson).localeCompare(String(b.lesson)));
+  for (const d of old) { if (out.length >= n) break; if (used[d.lesson]) continue; for (let q = 0; q < 3; q++) if (!seen[d.lesson + ':' + q]) { used[d.lesson] = 1; out.push({ l: d.lesson, q }); break; } }
+  return out.length >= n ? out : [];
+}
+/* PRACTICAL EXAM (2026-10-31, owner approved): the only exam that cannot be answered by reading. ACAD_PRACT.n closed paper trades IN A ROW that keep every rule, read from tradeev, which the
+   server wrote. Winning is not a rule: this measures discipline, and a rule about profit would reward luck. Only server-filled trades count (src 'srv'): a client journal row is the browser's word
+   and a Bot API row is not the learner's hand. Those, and the RNG class, neither count nor break the run. A trade opened before Start does not count either. */
+const ACAD_PRACT = { n: 5, course: 'firsttrade', minSize: 1000, maxRisk: 200, maxLev: 20, holdMs: 120000, xp: 300, ticks: 30 };
+function pracCheck(r, start) { // PURE. null = does not count at all; [] = clean; otherwise the rules it broke
+  const open = tradeOpenTs(r.tid);
+  if (!isFinite(open) || open < start || String(r.src || '') !== 'srv' || lbExcluded(r.sym)) return null;
+  const size = (+r.margin || 0) * (+r.lev || 1), why = [], stop = +r.slpx || 0, entry = +r.entry || 0;
+  if (r.liq) why.push('liq');
+  if (!r.sl || !(stop > 0) || !(entry > 0)) why.push('stop');
+  else if (size * (r.side === 'short' ? stop - entry : entry - stop) / entry > ACAD_PRACT.maxRisk) why.push('risk');
+  if (size < ACAD_PRACT.minSize) why.push('size');
+  if ((+r.lev || 1) > ACAD_PRACT.maxLev) why.push('lev');
+  if ((+r.ts || 0) - open < ACAD_PRACT.holdMs) why.push('hold');
+  return why;
+}
 const ACAD_TOTAL_LESSONS = Object.values(ACAD_COURSES).reduce((t, a) => t + a.length, 0); // "finished the Academy" = every lesson; derived from the list above so it can never lag it again (it sat at 96 after the expansion to 139)
 async function handleAcademy(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
@@ -39184,10 +39396,43 @@ async function handleAcademy(url, request, env) {
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only, same pattern as missions)
   if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = adminUid;
   const stub = env.USERS ? env.USERS.get(env.USERS.idFromName('main')) : null;
+  if (url.pathname === '/api/academy/review' || url.pathname === '/api/academy/practical') {
+    if (request.method !== 'POST') return jr({ error: 'method' }, 405);
+    if (!uid || !stub) return jr({ error: 'login_required' }, 401);
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    const isRev = url.pathname === '/api/academy/review';
+    const body = isRev ? { uid, results: b.results } : { uid, courseLessons: ACAD_COURSES[ACAD_PRACT.course] };
+    try { const r = await stub.fetch(new Request('https://do/academy/' + (isRev ? 'review/submit' : 'prac/start'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); const rd = await r.json(); if (rd && rd.ok) { try { await evPush(env, request, 'academy', isRev ? ('daily review ' + rd.right + '/' + rd.n) : 'practical exam started', '/academy/'); } catch (e) {} } return jr(rd); } catch (e) { return jr({ error: 'busy' }, 503); }
+  }
+  if (url.pathname === '/api/academy/exam') { // POST {op:'start', course} | {op:'submit', id, answers:{qid:index}}
+    if (request.method !== 'POST') return jr({ error: 'method' }, 405);
+    if (!uid || !stub) return jr({ error: 'login_required' }, 401);
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    let key = null; try { key = JSON.parse((await env.STATS.get('acad:examkey', { cacheTtl: 300 })) || 'null'); } catch (e) {}
+    if (!key) return jr({ error: 'exam_unavailable' }, 503);
+    try {
+      if (b.op === 'start') {
+        const course = String(b.course || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), lessons = ACAD_COURSES[course];
+        if (!lessons) return jr({ error: 'bad_course' }, 400);
+        const bank = Object.keys(key).filter(q => q.indexOf(course + '-') === 0);
+        const r = await stub.fetch(new Request('https://do/academy/exam/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, course, courseLessons: lessons, bank }) }));
+        const rd = await r.json();
+        if (rd && rd.ok && !rd.resumed) { try { await evPush(env, request, 'academy', 'exam start ' + course, '/academy/'); } catch (e) {} }
+        return jr(rd);
+      }
+      if (b.op === 'submit') {
+        const r = await stub.fetch(new Request('https://do/academy/exam/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, id: b.id, answers: b.answers, key }) }));
+        const rd = await r.json();
+        if (rd && rd.ok) { try { await evPush(env, request, 'academy', 'exam ' + (rd.passed ? 'passed ' : 'failed ') + rd.score + '/' + rd.n, '/academy/'); } catch (e) {} }
+        return jr(rd);
+      }
+    } catch (e) { return jr({ error: 'busy' }, 503); }
+    return jr({ error: 'bad_op' }, 400);
+  }
   if (request.method === 'GET') {
     if (!uid || !stub) return jr({ signedIn: false, done: [] });
-    let done = [], best = {}, mastered = []; try { const r = await stub.fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const sj = (await r.json()) || {}; done = sj.done || []; best = sj.best || {}; mastered = sj.mastered || []; } catch (e) {}
-    return jr({ signedIn: true, done, best, mastered, xp, level });
+    let done = [], best = {}, mastered = [], exams = {}, review = null, prac = null; try { const r = await stub.fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const sj = (await r.json()) || {}; done = sj.done || []; best = sj.best || {}; mastered = sj.mastered || []; exams = sj.exams || {}; review = sj.review || null; prac = sj.prac || null; } catch (e) {}
+    return jr({ signedIn: true, done, best, mastered, exams, examRules: ACAD_EXAM, review, reviewRules: ACAD_REVIEW, prac, pracRules: ACAD_PRACT, xp, level });
   }
   if (request.method === 'POST') {
     if (!uid || !stub) return jr({ error: 'login_required' }, 401);

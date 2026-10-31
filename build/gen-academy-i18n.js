@@ -22,7 +22,7 @@ const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
 const I18N = path.join(DIST, 'academy', 'i18n');
 const PAGE = path.join(DIST, 'academy', 'index.html');
-const LANGS = ['sr', 'es', 'de', 'fr', 'pt', 'nl', 'ru', 'tr', 'id', 'zh', 'ja', 'ko', 'ar'];
+const LANGS = ['sr', 'es', 'de', 'fr', 'pt', 'nl', 'ru', 'tr', 'id', 'zh', 'ja', 'ko', 'ar', 'hi'];
 const CHECK_ONLY = process.argv.includes('--check');
 
 // ---- EN master out of the page (order + shape authority) ----

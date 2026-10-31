@@ -1,0 +1,174 @@
+  /* exam:start - final exams (build/fix-academy-exams.js writes this block; the source is build/academy-exam.js.txt). The page never holds an answer: it shows questions and sends choices. */
+  var EXV='0';
+  var EXU=/*EXU*/{}/*/EXU*/;
+  var EX={on:false,r:{n:10,pass:8,mins:12,cooldownH:12,perDay:4,xp:150,perfectXp:50,ticks:15},pack:null,packL:'',c:null,a:null,t:null,view:''};
+  function EU(k,m){var s=(EXU[lang]&&EXU[lang][k])||EXU.en[k]||'';return m?fmt(s,m):s;}
+  function exLeft(ms){var m=Math.max(1,Math.ceil(ms/60000)),h=Math.floor(m/60);return (h?h+EU('uh')+' ':'')+(m%60||!h?(m%60)+EU('um'):'');}
+  function exClock(ms){var s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+  var EX_IC='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 8 12 13l9.5-5z"/><path d="M6.5 10.4v5.2c1.6 1.5 3.4 2.2 5.5 2.2s3.900-.7 5.500-2.200v-5.200"/><path d="M21.500 8v6"/></svg>';
+  function examNode(c,cd){
+    var s=(st.exams||{})[c.id]||{},all=cd===c.lessons.length,now=Date.now(),cls='',sub='',r=EX.r;
+    if(!all){cls='lockedx';sub=EU('sLocked');}
+    else if(s.perfect){cls='passx';sub=EU('sPerf',{n:r.n});}
+    else if(s.open&&s.openExp>now){cls='ready';sub=EU('sOpen',{t:exLeft(s.openExp-now)});}
+    else if(s.next&&s.next>now){cls=s.passed?'passx':'coolx';sub=(s.passed?EU('sPass',{b:s.best,n:r.n})+' · ':'')+EU('sCool',{t:exLeft(s.next-now)});}
+    else if(s.passed){cls='passx';sub=EU('sPass',{b:s.best,n:r.n});}
+    else{cls='ready';sub=EU('sReady',{n:r.n,m:r.mins});}
+    var pay=s.passed?(s.perfect?'':'+'+r.perfectXp+' XP'):'+'+r.xp+' XP';
+    return '<button type="button" class="node exam '+cls+'" data-exam="'+c.id+'" '+(all?'':'disabled')+'><span class="dot">'+EX_IC+'</span><span><span class="nt">'+esc(EU('t'))+'</span><span class="ns">'+esc(sub)+'</span></span><span class="xpb">'+pay+'</span></button>';
+  }
+  function exHearts(html){var el=document.getElementById('lpHearts');if(el){el.classList.remove('low');el.innerHTML=html||'';}}
+  function examStop(){RV.on=false;RV.view='';PR.on=false;EX.on=false;EX.view='';if(EX.t){clearInterval(EX.t);EX.t=null;}}
+  function examShell(){lp.classList.add('on');document.body.style.overflow='hidden';lpGo.removeAttribute('data-fail');lpBar.style.width='0%';exHearts('');}
+  function openExam(cid){
+    var c=COURSES.filter(function(x){return x.id===cid;})[0];if(!c)return;
+    EX.on=true;EX.c=c;EX.a=null;EX.view='intro';examShell();
+    var s=(st.exams||{})[cid]||{},r=EX.r,open=s.open&&s.openExp>Date.now(),cool=s.next&&s.next>Date.now()&&!open;
+    var rules=[EU('r1',{n:r.n,m:r.mins}),EU('r2',{p:r.pass,n:r.n}),EU('r3'),EU('r4',{h:r.cooldownH}),EU('r5',{x:r.xp,tk:r.ticks,y:r.perfectXp,n:r.n})];
+    var html='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(EU('t'))+'</div><div class="lp-h">'+esc(c.name)+'</div><ul class="ex-rules">'+rules.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul><div class="ex-msg" id="exMsg"></div>';
+    lpBody.innerHTML=html;lpBody.scrollTop=0;lpGo.hidden=false;
+    if(!signedIn){document.getElementById('exMsg').innerHTML=esc(EU('signin'))+'<br><button type="button" class="ex-sign" data-auth-open>'+esc(EU('signb'))+'</button>';lpGo.hidden=true;return;}
+    if(cool){document.getElementById('exMsg').textContent=EU('cooldown',{t:exLeft(s.next-Date.now())});lpGo.hidden=true;return;}
+    lpGo.disabled=false;lpGo.textContent=open?EU('resume'):EU('start');
+  }
+  function exPack(cb){
+    if(EX.pack&&EX.packL===lang)return cb(EX.pack);
+    var want=lang;
+    fetch('/academy/i18n/exam-'+want+'.json?v='+EXV).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return fetch('/academy/i18n/exam-en.json?v='+EXV).then(function(r){return r.json();});})
+      .then(function(p){EX.pack=p;EX.packL=want;cb(p);}).catch(function(){cb(null);});
+  }
+  function exMsg(t){var m=document.getElementById('exMsg');if(m)m.textContent=t;}
+  function exStart(){
+    lpGo.disabled=true;
+    exPack(function(p){
+      if(!p){lpGo.disabled=false;exMsg(EU('busy'));return;}
+      fetch('/api/academy/exam',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'start',course:EX.c.id})}).then(function(r){return r.json();}).then(function(d){
+        if(!EX.on)return;
+        if(!d||!d.ok){
+          var e=d&&d.error;lpGo.hidden=e==='cooldown'||e==='daily_limit'||e==='already_perfect'||e==='lessons_left';lpGo.disabled=false;
+          exMsg(e==='cooldown'?EU('cooldown',{t:exLeft(d.next-Date.now())}):e==='daily_limit'?EU('daily',{n:EX.r.perDay}):e==='lessons_left'?EU('left',{n:d.left}):e==='exam_unavailable'?EU('unavailable'):EU('busy'));return;
+        }
+        var saved={};try{saved=JSON.parse(localStorage.getItem('mp_ex_'+d.id)||'{}')||{};}catch(e2){}
+        var ord={};d.ids.forEach(function(q){var o=[0,1,2,3];for(var z=3;z>0;z--){var r=Math.floor(Math.random()*(z+1)),t=o[z];o[z]=o[r];o[r]=t;}ord[q]=o;});
+        EX.a={id:d.id,ids:d.ids,end:Date.now()+(d.exp-d.now),i:0,ans:saved,ord:ord};EX.view='q';
+        if(EX.t)clearInterval(EX.t);
+        EX.t=setInterval(exTick,1000);exTick();exQ();
+      }).catch(function(){lpGo.disabled=false;exMsg(EU('busy'));});
+    });
+  }
+  function exTick(){var a=EX.a;if(!a||EX.view!=='q')return;var ms=a.end-Date.now();exHearts('<span class="ex-clock'+(ms<60000?' low':'')+'">'+exClock(ms)+'</span>');if(ms<=0)exSubmit();}
+  function exQ(){
+    var a=EX.a,c=EX.c,qid=a.ids[a.i],q=EX.pack&&EX.pack.q&&EX.pack.q[qid];if(!q)return;
+    lpBar.style.width=(a.i/a.ids.length*100)+'%';
+    var last=a.i===a.ids.length-1,miss=a.ids.filter(function(x){return a.ans[x]==null;}).length;
+    lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(EU('qof',{i:a.i+1,n:a.ids.length}))+'</div><div class="lp-q">'+esc(q.q)+'</div>'
+      +a.ord[qid].map(function(i){return '<button type="button" class="lp-opt'+(+a.ans[qid]===i&&a.ans[qid]!=null?' sel':'')+'" data-exo="'+i+'">'+esc(q.o[i])+'</button>';}).join('')
+      +(a.i?'<button type="button" class="ex-prev" data-exprev="1">'+esc(EU('prev'))+'</button>':'')
+      +(last&&miss?'<div class="ex-msg">'+esc(EU('ua',{n:miss}))+'</div>':'');
+    lpBody.scrollTop=0;lpGo.hidden=false;lpGo.disabled=a.ans[qid]==null&&!last;lpGo.textContent=last?EU('finish'):EU('next');
+  }
+  function exSubmit(){
+    var a=EX.a;if(!a||EX.view==='send')return;EX.view='send';lpGo.disabled=true;
+    fetch('/api/academy/exam',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'submit',id:a.id,answers:a.ans})}).then(function(r){return r.json();}).then(function(d){
+      if(!d||!(d.ok||d.error==='closed'))throw 0;
+      if(EX.t){clearInterval(EX.t);EX.t=null;}
+      try{localStorage.removeItem('mp_ex_'+a.id);}catch(e){}
+      exDone(d);
+      if(window.mpXpCheck)window.mpXpCheck();
+      loadServer();
+    }).catch(function(){EX.view='q';lpGo.disabled=false;lpGo.textContent=EU('again');exMsg(EU('busy'));});
+  }
+  function exDone(d){
+    EX.view='done';exHearts('');lpBar.style.width='100%';
+    var pay=[];if(d.xp)pay.push('+'+d.xp+' XP');if(d.perfectXp)pay.push('+'+d.perfectXp+' XP · '+EU('perfect'));if(d.ticks)pay.push('+'+d.ticks+' Ticks');
+    var names={};ALL.forEach(function(x){names[x.l.id]=x.l.t;});
+    var rev=(d.review||[]).filter(function(x){return names[x];});
+    lpBody.innerHTML='<div class="lp-done ex-done '+(d.passed?'ok':'no')+'"><div class="ex-score">'+(d.score||0)+'<small>/'+(d.n||EX.r.n)+'</small></div><h2>'+esc(d.expired?EU('exp'):d.passed?EU('pass'):EU('fail'))+'</h2>'
+      +(pay.length?'<div class="xp">'+esc(pay.join(' · '))+'</div>':'')
+      +(!d.passed?'<p>'+esc(EU('need',{p:d.pass||EX.r.pass}))+(d.next?' '+esc(EU('cooldown',{t:exLeft(d.next-Date.now())})):'')+'</p>':'')
+      +(rev.length?'<div class="ex-rev"><div class="ex-revt">'+esc(EU('review'))+'</div>'+rev.map(function(id){return '<button type="button" data-exlesson="'+id+'">'+esc(names[id])+'</button>';}).join('')+'</div>':'')+'</div>';
+    lpGo.hidden=false;lpGo.disabled=false;lpGo.textContent=EU('close');
+  }
+  function examGo(){if(EX.view==='intro')exStart();else if(EX.view==='q'){var a=EX.a;if(a.i===a.ids.length-1)exSubmit();else{a.i++;exQ();}}else if(EX.view==='done'){closeLp();}}
+  lpBody.addEventListener('click',function(e){
+    if(RV.on){var v=e.target.closest&&e.target.closest('[data-rvo],[data-rvl]');if(!v)return;if(v.hasAttribute('data-rvl')){var lid=v.getAttribute('data-rvl');closeLp();openLesson(lid);return;}rvAnswer(+v.getAttribute('data-rvo'));return;}
+    if(!EX.on)return;var t=e.target.closest&&e.target.closest('[data-exo],[data-exprev],[data-exlesson]');if(!t)return;
+    if(t.hasAttribute('data-exlesson')){var id=t.getAttribute('data-exlesson');closeLp();openLesson(id);return;}
+    var a=EX.a;if(!a||EX.view!=='q')return;
+    if(t.hasAttribute('data-exprev')){a.i=Math.max(0,a.i-1);exQ();return;}
+    a.ans[a.ids[a.i]]=+t.getAttribute('data-exo');try{localStorage.setItem('mp_ex_'+a.id,JSON.stringify(a.ans));}catch(e2){}
+    try{if(window.mpBuzz)window.mpBuzz(8);}catch(e3){}
+    exQ();
+  });
+  /* ---- daily review ---- */
+  var RV={on:false,st:null,r:{n:3,xp:15,streakEvery:7,streakXp:50},items:[],i:0,res:[],wait:false};
+  function rvFind(it){for(var i=0;i<ALL.length;i++)if(ALL[i].l.id===it.l)return ALL[i];return null;}
+  function rtLink(){var h=document.getElementById('courses'),el=document.getElementById('rtLink');if(!h)return;if(!el){el=document.createElement('a');el.id='rtLink';el.className='rt-link';h.parentNode.insertBefore(el,h);}var p=/^(es|pt|de)$/.test(lang)?'/'+lang:'';el.href=p+'/trader-readiness-test/';el.textContent=EU('rtLink');}
+  function reviewCard(){
+    rtLink();
+    var h=document.getElementById('courses'),el=document.getElementById('rvCard'),r=RV.st;
+    if(!signedIn||!r||(!r.done&&!(r.items&&r.items.length))){if(el)el.hidden=true;return;}
+    if(!el){el=document.createElement('button');el.type='button';el.id='rvCard';el.className='rv-card';h.parentNode.insertBefore(el,h);el.addEventListener('click',function(){if(RV.st&&!RV.st.done)openReview();});}
+    el.hidden=false;el.disabled=!!r.done;el.classList.toggle('done',!!r.done);
+    el.innerHTML='<span class="rv-ic">'+(r.done?ICONS.check:'<b>'+r.n+'</b>')+'</span><span class="rv-b"><span class="rv-t">'+esc(EU('rvT'))+'</span><span class="rv-s">'+esc(r.done?EU('rvDone',{ok:r.ok,n:r.n}):EU('rvS',{n:r.n}))+'</span></span><span class="rv-r">'+(r.streak?'<span class="rv-st">'+esc(EU('rvStreak',{n:r.streak}))+'</span>':'')+(r.done?'':'<span class="xpb">+'+RV.r.xp+' XP</span>')+'</span>';
+  }
+  function openReview(){
+    RV.items=(RV.st.items||[]).filter(rvFind);if(!RV.items.length)return;
+    RV.on=true;RV.i=0;RV.res=[];lp.classList.add('on');document.body.style.overflow='hidden';lpGo.removeAttribute('data-fail');exHearts('');rvQ();
+  }
+  function rvQ(){
+    var it=RV.items[RV.i],x=rvFind(it),q=x.l.quiz[it.q],c=x.c;RV.wait=false;
+    lpBar.style.width=(RV.i/RV.items.length*100)+'%';
+    var o=q.o.map(function(t,i){return i;});for(var z=o.length-1;z>0;z--){var r=Math.floor(Math.random()*(z+1)),t=o[z];o[z]=o[r];o[r]=t;}
+    lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(EU('qof',{i:RV.i+1,n:RV.items.length}))+' · '+esc(x.l.t)+'</div><div class="lp-q">'+esc(q.q)+'</div>'+o.map(function(i){return '<button type="button" class="lp-opt" data-rvo="'+i+'">'+esc(q.o[i])+'</button>';}).join('')+'<div class="ex-msg" id="rvMsg"></div>';
+    lpBody.scrollTop=0;lpGo.hidden=true;
+  }
+  function rvAnswer(i){
+    if(RV.wait)return;RV.wait=true;var it=RV.items[RV.i],x=rvFind(it),q=x.l.quiz[it.q],right=i===q.a;
+    RV.res.push({l:it.l,q:it.q,ok:right});
+    Array.prototype.forEach.call(lpBody.querySelectorAll('.lp-opt'),function(b){var n=+b.getAttribute('data-rvo');b.disabled=true;if(n===q.a)b.classList.add('ok');else if(n===i)b.classList.add('bad');});
+    document.getElementById('rvMsg').innerHTML=right?esc(EU('rvRight')):esc(EU('rvWrong'))+'<br><button type="button" class="ex-prev" data-rvl="'+it.l+'">'+esc(EU('rvLesson'))+'</button>';
+    lpGo.hidden=false;lpGo.disabled=false;lpGo.textContent=RV.i===RV.items.length-1?EU('finish2'):EU('next');
+  }
+  function reviewGo(){
+    if(RV.view==='done'){closeLp();return;}
+    if(RV.i<RV.items.length-1){RV.i++;rvQ();return;}
+    lpGo.disabled=true;
+    fetch('/api/academy/review',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({results:RV.res})}).then(function(r){return r.json();}).then(function(d){
+      RV.view='done';lpBar.style.width='100%';var okN=RV.res.filter(function(x){return x.ok;}).length,pay=[];
+      if(d&&d.xp)pay.push('+'+d.xp+' XP');if(d&&d.bonus)pay.push('+'+d.bonus+' XP · '+EU('rvStreak',{n:d.streak}));if(d&&d.ticks)pay.push('+'+d.ticks+' Ticks');
+      lpBody.innerHTML='<div class="lp-done ex-done ok"><div class="ex-score">'+okN+'<small>/'+RV.res.length+'</small></div><h2>'+esc(EU('rvBack'))+'</h2>'+(pay.length?'<div class="xp">'+esc(pay.join(' · '))+'</div>':'')+(d&&d.streak?'<p>'+esc(EU('rvStreak',{n:d.streak}))+'</p>':'')+'</div>';
+      lpGo.disabled=false;lpGo.textContent=EU('close');if(window.mpXpCheck)window.mpXpCheck();loadServer();
+    }).catch(function(){lpGo.disabled=false;lpGo.textContent=EU('again');});
+  }
+  /* ---- practical exam: read from the trades themselves, nothing to submit ---- */
+  var PR={on:false,st:null,r:{n:5,minSize:1000,maxRisk:200,maxLev:20,holdMs:120000,xp:300,ticks:30,course:'firsttrade'}};
+  function pracNode(c,cd){
+    if(c.id!==PR.r.course)return '';var all=cd===c.lessons.length,p=PR.st||{},r=PR.r,cls='',sub='';
+    if(!all){cls='lockedx';sub=EU('sLocked');}
+    else if(p.done){cls='passx';sub=EU('pPass');}
+    else if(p.started){cls='ready';sub=EU('pProg',{r:p.run||0,n:r.n});}
+    else{cls='ready';sub=EU('pReady',{n:r.n});}
+    return '<button type="button" class="node exam '+cls+'" data-prac="1" '+(all?'':'disabled')+'><span class="dot">'+ICONS.check+'</span><span><span class="nt">'+esc(EU('pT'))+'</span><span class="ns">'+esc(sub)+'</span></span><span class="xpb">'+(p.done?'':'+'+r.xp+' XP')+'</span></button>';
+  }
+  function exWhy(w){var r=PR.r;return EU('w_'+w,{m:r.minSize,r:r.maxRisk,l:r.maxLev,h:Math.round(r.holdMs/60000)});}
+  function openPrac(){
+    PR.on=true;lp.classList.add('on');document.body.style.overflow='hidden';lpGo.removeAttribute('data-fail');exHearts('');lpBar.style.width='0%';var p=PR.st||{},r=PR.r,hold=Math.round(r.holdMs/60000);
+    lpBar.style.width=((p.done?r.n:(p.run||0))/r.n*100)+'%';
+    var rules=[EU('pR1',{n:r.n}),EU('pR2',{m:r.minSize,r:r.maxRisk,l:r.maxLev,h:hold}),EU('pR3'),EU('pR4'),EU('pR5',{x:r.xp,tk:r.ticks})];
+    var head=p.done?'<div class="ex-msg">'+esc(EU('pDone'))+'</div>':(p.started?'<div class="ex-prog"><b>'+(p.run||0)+'</b>/'+r.n+' '+esc(EU('pClean'))+'</div>':'');
+    var list=(p.trades&&p.trades.length)?'<div class="ex-rev"><div class="ex-revt">'+esc(EU('pLast'))+'</div>'+p.trades.slice().reverse().map(function(t){return '<div class="ex-tr '+(t.why.length?'no':'ok')+'"><b>'+esc(t.sym)+'</b><span>'+esc(t.why.length?t.why.map(exWhy).join(' · '):EU('pClean'))+'</span></div>';}).join('')+'</div>':'';
+    lpBody.innerHTML='<div class="lp-kicker" style="--cc:#c2f64a">'+esc(EU('pT'))+'</div><div class="lp-h">'+esc(EU('pH'))+'</div>'+head+'<ul class="ex-rules">'+rules.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'+list+'<div class="ex-msg" id="exMsg"></div>';
+    lpBody.scrollTop=0;lpGo.hidden=!!p.done&&false;lpGo.disabled=false;
+    lpGo.textContent=p.done?EU('close'):(p.started?EU('pOpen'):(signedIn?EU('pStart'):EU('signb')));
+  }
+  function pracGo(){
+    var p=PR.st||{};if(p.done){closeLp();return;}
+    if(p.started){location.href='/paper-trade';return;}
+    if(!signedIn){closeLp();if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    lpGo.disabled=true;
+    fetch('/api/academy/practical',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.ok){PR.st=d.prac;openPrac();}else{lpGo.disabled=false;exMsg(d&&d.error==='lessons_left'?EU('left',{n:d.left}):EU('busy'));}
+    }).catch(function(){lpGo.disabled=false;exMsg(EU('busy'));});
+  }
+  /* exam:end */

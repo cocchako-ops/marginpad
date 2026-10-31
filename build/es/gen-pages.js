@@ -51,6 +51,17 @@ function hreflangBlock(html, enUrl, esUrl) {
   return html.replace('</head>', lines + '\n</head>');
 }
 
+/* The script layer of a twin (2026-10-31): the language files before any bundle, and the page's own dictionaries filled in. build/i18n/ui.js holds the strings. */
+const UI = require('../i18n/ui.js');
+function uiHead(html, app) {
+  html = html.replace(/var __(esD|esVD)_(\w+) = \{\};?/g, (all, kind, name) => {
+    const t = UI.pageDict((kind === 'esVD' ? 'V:' : '') + name, LANG);
+    return 'var __' + kind + '_' + name + ' = ' + JSON.stringify(t).replace(/<\//g, '<\\/') + ';';
+  });
+  const big = app || /\/assets\/(home|mp-calc|mp-screener|mp-heatmap|mp-charts|mp-mcharts|fundingcalc)\.js/.test(html);
+  const tags = '<script src="/assets/ui-' + LANG + '.js"></script>' + (big ? '<script src="/assets/ui-' + LANG + '-app.js"></script>' : '');
+  return html.replace(/<meta charset="[^"]*"\s*\/?>/i, (m) => m + '\n' + tags);
+}
 function main() {
   const dry = process.argv.includes('--dry');
   const cat = JSON.parse(fs.readFileSync(CAT, 'utf8')).items;
@@ -74,7 +85,7 @@ function main() {
     const enUrl = ORIGIN + urlOf(rel), esUrl = ORIGIN + '/' + LANG + urlOf(rel);
     const allowed = !ALLOW || ALLOW.has(urlOf(rel)) || ALLOW.has(urlOf(rel).replace(/\/$/, '')) || ALLOW.has('/' + rel);
     if (cover < MIN_COVER || !allowed) { skipped++; report.push({ rel, cover, hit: r.hit, missing: r.missing, skipped: true, allowed }); continue; }
-    let html = r.html;
+    let html = uiHead(r.html, false);
     html = html.replace(/<html([^>]*)\blang="en"/, '<html$1lang="' + LANG + '"');
     // Match the English URL with AND without its trailing slash. /premium/ declares `canonical href=".../premium"`,
     // so the exact-string swap missed it and the twin canonicalised AWAY to the English page - which deindexes it.
@@ -111,7 +122,7 @@ function main() {
   {
     const src = fs.readFileSync(path.join(DIST, 'app.html'), 'utf8');
     const r = apply(src, tx);
-    let html = r.html.replace(/<html([^>]*)\blang="en"/, '<html$1lang="' + LANG + '"');
+    let html = uiHead(r.html, true).replace(/<html([^>]*)\blang="en"/, '<html$1lang="' + LANG + '"');
     html = html.replace(/<a\b([^>]*?)\bhref="([^"]*)"/g, (all, pre, h) => { const t = esHref(h); return t ? '<a' + pre + 'href="' + t + '"' : all; });
     if (!dry) fs.writeFileSync(path.join(DIST, 'app-' + LANG + '.html'), html);
     report.push({ rel: 'app.html → app-' + LANG + '.html', cover: r.hit / Math.max(1, r.hit + r.missing), hit: r.hit, missing: r.missing });

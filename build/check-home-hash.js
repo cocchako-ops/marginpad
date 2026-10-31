@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { htmlFiles } = require('./lib-html-files');
 const ROOT = path.join(__dirname, '..');
-const BUNDLES = ['home.css', 'home.js', 'mp-nav.js', 'mp-auth.js', 'mp-trade.js', 'mp-trade.css', 'mp-profile.js', 'mp-calc.js', 'pwa-nav.js', 'sentry.js', 'i18n.js', 'mp-charts.js', 'mp-mcharts.js', 'mp-heatmap.js', 'mp-screener.js', 'lightweight-charts-4.2.0.js'];
+const BUNDLES = ['ui-es.js', 'ui-es-app.js', 'ui-pt.js', 'ui-pt-app.js', 'ui-de.js', 'ui-de-app.js', 'home.css', 'home.js', 'mp-nav.js', 'mp-auth.js', 'mp-trade.js', 'mp-trade.css', 'mp-profile.js', 'mp-calc.js', 'pwa-nav.js', 'sentry.js', 'i18n.js', 'mp-charts.js', 'mp-mcharts.js', 'mp-heatmap.js', 'mp-screener.js', 'lightweight-charts-4.2.0.js'];
 const esc = (s) => s.replace(/[.]/g, '\\.');
 
 const files = htmlFiles(ROOT);

@@ -52,6 +52,7 @@ const EXTRAS = [
   // the page is served (funding, open interest, positioning, 24h liquidations, sentiment), so `daily` is what
   // the page now does rather than an over-declaration
   ['/glossary/', '0.8', D],
+  ['/trader-readiness-test/', '0.9', W],
   ['/arena/', '0.8', D],
   ['/leaderboards/', '0.9', D],
   ['/season/', '0.9', D],

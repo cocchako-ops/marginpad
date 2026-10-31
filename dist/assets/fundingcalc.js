@@ -2,8 +2,8 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_fundingcalc = {"youPayFunding":"Pagas funding","youReceiveFunding":"Recibes funding"};
-function __esT_fundingcalc(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_fundingcalc[k] != null) return __esD_fundingcalc[k]; } catch (e) {} return en; }
+var __esD_fundingcalc = {};
+function __esT_fundingcalc(k, en) { try { var d = (window.__mpUI && window.__mpUI.fundingcalc) || __esD_fundingcalc; if (d[k] != null) return d[k]; } catch (e) {} return en; }
 (function () {
   var num = function (id) { var e = document.getElementById(id); var v = e ? parseFloat(e.value) : NaN; return isFinite(v) ? v : NaN; };
   var money = function (x) { return (x < 0 ? '-$' : '$') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };

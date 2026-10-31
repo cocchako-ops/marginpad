@@ -4,6 +4,53 @@
  "sub": "The site itself, in seven short lessons",
  "lessons": [
   {
+   "id": "mp1",
+   "t": "O que o MarginPad realmente é",
+   "cards": [
+    {
+     "h": "Preços reais, dinheiro de treino",
+     "p": "O gráfico à sua frente é o mercado ao vivo. Os preços e os candles vêm direto das corretoras, as mesmas que um trader profissional está olhando agora. O dinheiro não é real: você começa com US$ 10.000 que nós te demos, e não há como depositar um centavo em lugar nenhum neste site."
+    },
+    {
+     "h": "Por que praticar primeiro",
+     "p": "Futuros com alavancagem são o jeito mais rápido de perder dinheiro em cripto, e quase todo mundo perde a primeira conta. Aqui o mercado pode tirar uma posição de você e dar a mesma lição, e o único custo é o tempo que você gastou. Perdeu os US$ 10.000? Nada aconteceu."
+    },
+    {
+     "h": "Mas uma parte é real",
+     "p": "O trading é treino. As recompensas, não. O MarginPad paga USDT de verdade por usar o site - valores pequenos, de um pool diário - e você saca para uma conta em corretora. É um sistema separado do trading, e daqui a duas lições você vai saber exatamente como funciona."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Os preços com que você opera no MarginPad são:",
+     "o": [
+      "Inventados pelo site",
+      "Preços ao vivo de corretoras reais",
+      "Os preços de fechamento de ontem",
+      "Atualizados só quando você recarrega a página"
+     ]
+    },
+    {
+     "q": "Quanto você precisa depositar antes de poder operar aqui?",
+     "o": [
+      "Nada - não existe depósito em lugar nenhum do site",
+      "US$ 10 para liberar o terminal",
+      "O quanto você quiser operar",
+      "US$ 50 reembolsáveis"
+     ]
+    },
+    {
+     "q": "Você abre uma operação e ela dá errado. O que ela te custou?",
+     "o": [
+      "Dinheiro real do seu cartão",
+      "Uma parte do saldo de treino, e mais nada",
+      "Uma taxa cobrada na sua conta",
+      "Sua posição nos rankings, para sempre"
+     ]
+    }
+   ]
+  },
+  {
    "id": "mp2",
    "t": "XP, seu nível e Bronze",
    "cards": [
@@ -152,6 +199,53 @@
       "O tamanho da posição, então cada movimento conta mais",
       "A taxa que você paga",
       "Por quanto tempo você pode manter o trade"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Margem, e onde uma posição morre",
+   "cards": [
+    {
+     "h": "Margem é o que você coloca",
+     "p": "A margem é a fatia do seu saldo que você compromete em uma operação. Ela também é o máximo que essa operação pode tirar de você: a perda é limitada à sua margem, então uma posição aberta com US$ 100 pode custar esses US$ 100 e nem um centavo a mais. Seus outros US$ 9.900 ficam fora do alcance dela."
+    },
+    {
+     "h": "Liquidação é bater no piso",
+     "p": "Se o preço andar longe o bastante contra você, a posição se fecha sozinha e a margem se vai. Esse preço é a liquidação, e o MarginPad a desenha no seu gráfico desde o momento em que você abre - então o nível em que a operação termina fica visível o tempo todo, e não é uma surpresa no final."
+    },
+    {
+     "h": "Quem decide é o nosso servidor, não o seu navegador",
+     "p": "Sua posição fica guardada no servidor. Feche a aba, perca o sinal, troque de celular - nada muda. O stop-loss, o take-profit e a liquidação são checados do nosso lado, contra candles fechados. Por isso um pavio que passa pelo seu nível não te tira da operação aqui, a menos que o candle realmente feche ali."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Qual é o máximo que uma posição pode te fazer perder?",
+     "o": [
+      "Todo o seu saldo",
+      "A margem que você comprometeu nela",
+      "O dobro da margem",
+      "Depende da alavancagem"
+     ]
+    },
+    {
+     "q": "Você abre uma operação e fecha o navegador. O que acontece com ela?",
+     "o": [
+      "É cancelada",
+      "Continua aberta e é checada no servidor",
+      "Congela até você voltar",
+      "Fecha no preço atual"
+     ]
+    },
+    {
+     "q": "Uma liquidação é:",
+     "o": [
+      "Uma taxa por segurar por tempo demais",
+      "A posição sendo fechada automaticamente porque o preço chegou ao nível em que a margem acaba",
+      "Um fechamento manual feito pelo site",
+      "A mesma coisa que um stop-loss"
      ]
     }
    ]

@@ -1,0 +1,364 @@
+{
+ "id": "mpstart",
+ "name": "Mulai dari Sini: MarginPad",
+ "sub": "Situsnya sendiri, dalam tujuh pelajaran singkat",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "Sebenarnya MarginPad itu apa",
+   "cards": [
+    {
+     "h": "Harga asli, uang latihan",
+     "p": "Chart di depanmu adalah pasar yang hidup. Harga dan candle datang langsung dari exchange, sama seperti yang sedang dilihat trader funded saat ini. Uangnya tidak nyata: kamu mulai dengan $10.000 dari kami, dan di situs ini tidak ada cara untuk deposit sepeser pun."
+    },
+    {
+     "h": "Kenapa orang berlatih dulu",
+     "p": "Futures dengan leverage adalah cara tercepat kehilangan uang di kripto, dan hampir semua orang kehilangan akun pertamanya. Di sini pasar bisa mengambil posisimu dan memberi pelajaran yang sama, dan seluruh biayanya hanyalah waktumu. Kalau $10.000 habis, tidak ada yang terjadi."
+    },
+    {
+     "h": "Tapi sebagian memang nyata",
+     "p": "Tradingnya latihan. Hadiahnya tidak. MarginPad membayar USDT sungguhan karena kamu memakai situs ini - jumlah kecil, dari pool harian - dan kamu bisa mencairkannya ke akun exchange. Itu sistem terpisah dari trading, dan dua pelajaran lagi kamu akan tahu persis cara kerjanya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Harga yang kamu tradingkan di MarginPad adalah:",
+     "o": [
+      "Dibuat sendiri oleh situs",
+      "Harga langsung dari exchange sungguhan",
+      "Harga penutupan kemarin",
+      "Hanya diperbarui saat kamu memuat ulang halaman"
+     ]
+    },
+    {
+     "q": "Berapa yang harus kamu deposit sebelum bisa trading di sini?",
+     "o": [
+      "Tidak ada - di situs ini tidak ada deposit sama sekali",
+      "$10 untuk membuka terminal",
+      "Sebanyak yang ingin kamu tradingkan",
+      "$50 yang bisa dikembalikan"
+     ]
+    },
+    {
+     "q": "Kamu membuka trade dan hasilnya buruk. Apa yang hilang darimu?",
+     "o": [
+      "Uang sungguhan dari kartumu",
+      "Sebagian saldo latihan, tidak lebih",
+      "Biaya yang ditagihkan ke akunmu",
+      "Posisimu di leaderboard, selamanya"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "XP, levelmu, dan Bronze",
+   "cards": [
+    {
+     "h": "XP hanyalah catatan apa yang sudah kamu lakukan",
+     "p": "Setiap pelajaran yang selesai bernilai 25 XP, setiap hari kamu datang 20, satu trade 3 dan trade yang menang 15. Tidak ada yang dibeli dan tidak ada yang acak - XP adalah catatan bahwa kamu memakai situs ini. Angkanya ada di samping namamu di menu akun dan di bagian atas halaman season."
+    },
+    {
+     "h": "Bronze adalah level pertama, bukan gerbang",
+     "p": "Di bawah 500 XP kamu Unranked; di 500 kamu Bronze, lalu Silver, Gold, Platinum, Diamond, Master dan Legendary seiring angkanya naik. Tidak ada lagi yang menunggu level di situs ini: faucet, misi harian, referral, penarikan, dan setiap board gratis terbuka sejak hari kamu mendaftar. Level adalah lencana dan bonus, bukan kunci."
+    },
+    {
+     "h": "Apa yang sebenarnya diubah oleh level",
+     "p": "Mulai dari Silver, setiap klaim faucet membayar sedikit lebih banyak - pengalinya naik seiring level. Setiap level membuka satu frame untuk kartu profilmu, dan board Gold Room - salah satu dari sepuluh - hanya memeringkat akun di level Gold, yaitu 12.000 XP. Hanya itu daftarnya. Terminal latihan, chart, dan alert sama di setiap level."
+    },
+    {
+     "h": "Kursus ini sudah hampir sampai",
+     "p": "Kamu sedang membaca pelajaran kedua dari tujuh. Menyelesaikan ketujuhnya, dengan dua bonus Road to Bronze yang dipicunya, membawamu sedikit di atas 400 XP - jadi setelah ini, satu paper trade dengan stop-loss, atau sekadar kembali besok, sudah Bronze. Kartu Road to Bronze di halaman season-mu mencantumkan sembilan tugas awal dan hadiah masing-masing."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa itu Bronze?",
+     "o": [
+      "Tingkat keanggotaan berbayar",
+      "Level yang kamu capai di 500 XP",
+      "Hadiah leaderboard pertama",
+      "Frame kosmetik untuk kartu profilmu"
+     ]
+    },
+    {
+     "q": "Apa yang dibuka oleh Bronze?",
+     "o": [
+      "Faucet dan misi",
+      "Penarikan",
+      "Tidak ada - hadiah sudah terbuka sejak hari kamu mendaftar; level adalah lencana dan bonus",
+      "Chart dan heatmap"
+     ]
+    },
+    {
+     "q": "Cara gratis tercepat untuk mendapat XP?",
+     "o": [
+      "Membuka sebanyak mungkin trade",
+      "Pelajaran Academy - 25 per pelajaran, ditambah 50 untuk kursus yang selesai",
+      "Membiarkan situs terbuka di tab",
+      "Mengundang teman"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "Uang sungguhan di situs ini",
+   "cards": [
+    {
+     "h": "Dari mana datangnya",
+     "p": "MarginPad gratis dan tanpa iklan. Situs ini menghasilkan uang saat pembaca membuka akun di exchange lewat salah satu link kami, dan exchange membagi sebagian biayanya. Hanya itu bisnisnya, dan itulah kenapa hadiahnya kecil, nyata, dan dibatasi, bukan besar dan khayalan."
+    },
+    {
+     "h": "Apa saja yang ditawarkan",
+     "p": "Bonus selamat datang $0,50. $0,01 dari faucet setiap beberapa menit, hingga $0,10 per hari. Misi harian di atasnya, satu dua sen per misi. $1,00 untuk membuka akun Moon, MEXC, BingX, atau Bybit lewat kami - tiga dari empat dicek otomatis dengan daftar affiliate. $0,50 saat teman yang kamu undang benar-benar trading. Tidak ada satu pun yang menunggu level."
+    },
+    {
+     "h": "Mengeluarkannya",
+     "p": "Saldo dibayar dalam USDT dan kamu bisa menarik mulai $5,00 ke akun Bybit, Moon, atau MEXC yang dibuka lewat MarginPad. Setiap penarikan dicek dan dibayar manual, jadi tidak instan. Ini ucapan terima kasih karena memakai situs, bukan penghasilan - perlakukan sebagaimana adanya dan kamu tidak akan kecewa."
+    },
+    {
+     "h": "Bagaimana penarikan sebenarnya berjalan",
+     "p": "Kamu mengetik jumlahnya, dari $5 sampai saldomu, dan akun tujuan pembayaran. Satu permintaan pada satu waktu: yang kedua menunggu sampai yang pertama dibayar. Tim kami melihat apakah akun exchange itu benar-benar dibuka lewat kami, apakah member lain sudah menarik ke akun yang sama, dan bagaimana saldo itu diperoleh - jadi akun asli dibayar dan akun farming tidak. Kamu mendapat notifikasi saat dana masuk."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bagaimana MarginPad menghasilkan uang?",
+     "o": [
+      "Menjual datamu",
+      "Link affiliate exchange - bagian dari biaya saat seseorang mendaftar lewat kami",
+      "Memungut biaya untuk Academy",
+      "Mengambil potongan dari profit paper trading"
+     ]
+    },
+    {
+     "q": "Berapa jumlah penarikan terkecil?",
+     "o": [
+      "$1,00",
+      "$5,00",
+      "$20,00",
+      "Tidak ada minimum"
+     ]
+    },
+    {
+     "q": "Mana di antara ini yang menunggu level?",
+     "o": [
+      "Faucet",
+      "Misi harian",
+      "Referral",
+      "Tidak ada - semua hadiah terbuka sejak hari pertama"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Semua yang disebut di atas ada di satu halaman. Buka dan lihat di mana saldomu, faucet, dan bonus pendaftaran berada - akan lebih masuk akal setelah kamu melihat tata letaknya.",
+    "label": "Buka Rewards"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short, dan apa yang sebenarnya dilakukan leverage",
+   "cards": [
+    {
+     "h": "Dua arah, bukan satu",
+     "p": "Long menang saat harga naik. Short menang saat harga turun. Hanya itu bedanya, dan itulah kenapa trader futures tidak pernah dipaksa diam saat pasar turun. Di MarginPad keduanya cukup satu ketukan: tombol Long dan Short di tiket trade."
+    },
+    {
+     "h": "Leverage adalah ukuran, bukan sihir",
+     "p": "Taruh $100 dengan 10x dan kamu menggerakkan posisi $1.000. Setiap 1% gerakan pasar kini setara 10% uangmu, ke arah mana pun. Leverage tidak memperbaiki trade - ia melipatgandakan apa pun yang memang akan terjadi pada trade itu."
+    },
+    {
+     "h": "Tangga di tiket",
+     "p": "Kontrol leverage mengikuti tangga: langkah penuh sampai 10x, lalu puluhan - 20, 30, 50, 100 dan seterusnya. Ketik 107 dan jadinya 110. Tangga ini ada agar angka pilihanmu mudah disebut, dan agar garis likuidasi yang digambar chart darinya bisa kamu baca sebelum membuka posisi."
+    },
+    {
+     "h": "Kenapa kami membolehkan sampai 1000x",
+     "p": "Koin-koin besar di sini bisa sampai 1000x, jauh melampaui yang dipakai orang waras. Itu disengaja. Di 1000x, gerakan melawanmu kurang dari sepersepuluh persen sudah mengakhiri posisi - dan sebaiknya kamu mengetahuinya di akun latihan, malam ini, bukan di exchange dengan uangmu sendiri."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu menaruh $100 dengan leverage 10x. Seberapa besar posisinya?",
+     "o": [
+      "$100",
+      "$110",
+      "$1.000",
+      "$10.000"
+     ]
+    },
+    {
+     "q": "Posisi short untung saat:",
+     "o": [
+      "Harga naik",
+      "Harga turun",
+      "Harga datar",
+      "Volume naik"
+     ]
+    },
+    {
+     "q": "Apa yang sebenarnya berubah saat leverage dinaikkan?",
+     "o": [
+      "Peluang benar",
+      "Ukuran posisi, sehingga setiap gerakan lebih berarti",
+      "Biaya yang kamu bayar",
+      "Berapa lama trade boleh ditahan"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Margin, dan di mana posisi mati",
+   "cards": [
+    {
+     "h": "Margin adalah yang kamu taruh",
+     "p": "Margin adalah bagian saldomu yang kamu komitmenkan untuk satu trade. Itu juga batas maksimal yang bisa diambil trade itu: kerugian dibatasi sebesar margin, jadi posisi yang dibuka dengan $100 bisa menghabiskan $100 itu dan tidak pernah lebih. Sisa $9.900 milikmu tidak terjangkau olehnya."
+    },
+    {
+     "h": "Likuidasi adalah saat lantainya tersentuh",
+     "p": "Kalau harga bergerak cukup jauh melawanmu, posisi menutup sendiri dan margin hilang. Harga itulah likuidasi, dan MarginPad menggambarnya di chart sejak kamu membuka posisi - jadi level berakhirnya trade terlihat sepanjang kamu di dalamnya, bukan kejutan di akhir."
+    },
+    {
+     "h": "Diputuskan di server kami, bukan di browsermu",
+     "p": "Posisimu disimpan di server. Tutup tab, kehilangan sinyal, pindah ke ponsel lain - tidak ada yang berubah. Stop-loss, take-profit, dan likuidasi semuanya dicek dari sisi kami terhadap candle yang sudah closed, itu juga kenapa sumbu yang menembus levelmu tidak mengakhirimu di sini kecuali candle benar-benar closed di sana."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Berapa kerugian terbesar dari satu posisi?",
+     "o": [
+      "Seluruh saldomu",
+      "Margin yang kamu komitmenkan untuknya",
+      "Dua kali margin",
+      "Tergantung leverage"
+     ]
+    },
+    {
+     "q": "Kamu membuka trade, lalu menutup browser. Apa yang terjadi padanya?",
+     "o": [
+      "Dibatalkan",
+      "Tetap terbuka dan dicek di server",
+      "Membeku sampai kamu kembali",
+      "Ditutup di harga saat ini"
+     ]
+    },
+    {
+     "q": "Likuidasi adalah:",
+     "o": [
+      "Biaya karena menahan terlalu lama",
+      "Posisi ditutup otomatis karena harga mencapai level di mana margin habis",
+      "Penutupan manual oleh situs",
+      "Sama dengan stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Dua jalan keluarmu: stop-loss dan take-profit",
+   "cards": [
+    {
+     "h": "Putuskan jalan keluar sebelum kamu membutuhkannya",
+     "p": "Stop-loss menutup trade di harga pilihanmu kalau berjalan salah. Take-profit melakukan hal yang sama kalau berjalan benar. Keduanya diatur sekali lalu dijalankan tanpa kamu, dan itulah intinya: saat posisi sedang rugi adalah waktu terburuk untuk memutuskan apa yang harus dilakukan."
+    },
+    {
+     "h": "Di mana mengaturnya di sini",
+     "p": "Di tiket, sebelum membuka - atau sesudahnya, dari tombol Set di kartu trade dan dari My Trades. Kamu bisa memindahkannya sesering apa pun selama trade terbuka. Trade tanpa keduanya adalah trade yang jalan keluarnya akan ditentukan oleh perasaanmu saat itu."
+    },
+    {
+     "h": "Di tiket, langkah demi langkah",
+     "p": "Buka Advanced di bawah form trade. Stop dan target masing-masing menerima harga, atau persen dari margin - ketik satu dan yang lain ditulis ulang, jadi keduanya tidak pernah berbeda. Panel mengisi stop 2% jauhnya dan target 3% jauhnya sebagai titik awal; balik sisinya dan level otomatis ikut terbalik. Yang disembunyikan panel tidak berlaku: tutup Advanced dan trade dibuka tanpa keduanya."
+    },
+    {
+     "h": "Ini kebiasaan yang layak dibangun",
+     "p": "Tidak ada hal lain di kursus ini yang mengubah hasilmu sebanyak ini. Di board yang membayar USDT sungguhan, akun yang bertahan bukan yang memilih entry lebih baik - melainkan yang sudah memutuskan di mana mereka salah. Mengatur satu juga tugas Road to Bronze, bernilai 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa yang dilakukan stop-loss?",
+     "o": [
+      "Menghentikanmu membuka trade lagi",
+      "Menutup trade di harga pilihanmu, jika bergerak melawanmu",
+      "Menjeda posisi",
+      "Menjamin kamu tidak bisa rugi"
+     ]
+    },
+    {
+     "q": "Kapan kamu bisa mengatur atau memindahkan stop-loss di MarginPad?",
+     "o": [
+      "Hanya saat membuka trade",
+      "Hanya setelah profit",
+      "Sebelum membuka, dan kapan saja selama trade terbuka",
+      "Sekali sehari"
+     ]
+    },
+    {
+     "q": "Kamu mengetik stop sebagai persen dari margin. Apa yang terjadi pada kolom harga?",
+     "o": [
+      "Tidak ada - keduanya terpisah",
+      "Ditulis ulang agar cocok, sehingga keduanya tidak pernah berbeda",
+      "Dikosongkan",
+      "Dikunci"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Season, board, dan pass",
+   "cards": [
+    {
+     "h": "Situs ini berjalan dalam season empat belas hari",
+     "p": "Semua yang kompetitif direset setiap empat belas hari. XP season, posisimu di board, dan pass dimulai lagi, jadi dua minggu yang buruk tidak pernah permanen dan pendatang baru tidak pernah tertinggal setahun. Hari ke berapa season ditampilkan di bagian atas halaman season."
+    },
+    {
+     "h": "Sepuluh board, tujuh di antaranya gratis",
+     "p": "Sepuluh leaderboard membayar USDT sungguhan saat season berakhir, dan semuanya ada di satu halaman, /leaderboards/. Tujuh tidak dipungut biaya: Highest ROE, Green Days, Best Win Rate, Season XP, Daily BTC Call, Meme Spot, dan Gold Room - satu-satunya yang punya syarat, yaitu level Gold. Dua lagi untuk pembaca yang trading uang sungguhan di Bybit atau Moon lewat MarginPad. Pool dan pembagian hadiahnya tercantum di halaman."
+    },
+    {
+     "h": "Dan pass berjalan di bawah semuanya",
+     "p": "Setiap 100 XP season adalah satu tier pass, empat puluh semuanya, dan jalur gratisnya membayar dalam Ticks dan kosmetik seiring kamu naik. Kamu sudah mengumpulkannya - XP dari kursus ini terhitung sambil kamu membaca. Jalur berbayar menambah item yang tidak bisa dibeli siapa pun di shop."
+    },
+    {
+     "h": "Di luar board",
+     "p": "Duel mengadu kamu dengan satu trader selama satu jam, satu hari, tiga hari, atau seminggu, dengan metrik yang kalian sepakati, dengan Ticks sebagai taruhan. Squad terdiri dari maksimal lima orang dengan room privat, raid di koin-koin besar, dan sebuah logo. Demo Spot adalah buy-and-hold dengan $10.000 dan board sendiri. Tidak ada yang wajib - terminal adalah produknya; sisanya yang membuat latihan tidak terasa seperti PR."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Berapa lama satu season MarginPad?",
+     "o": [
+      "Tujuh hari",
+      "Empat belas hari",
+      "Satu bulan",
+      "Sampai ada yang menang"
+     ]
+    },
+    {
+     "q": "Berapa dari sepuluh board yang gratis untuk diikuti?",
+     "o": [
+      "Dua",
+      "Empat",
+      "Tujuh",
+      "Semua sembilan"
+     ]
+    },
+    {
+     "q": "Di mana klasemen semua board berada?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Channel Telegram",
+      "Di dalam terminal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Itu seluruh tur. Tinggal satu hal yang menjadi tujuan situs ini: buka terminal, pilih koin, pasang posisi kecil dengan stop-loss, dan lihat apa yang terjadi. Satu trade itu adalah langkah terakhir menuju Bronze.",
+    "label": "Buka Paper Trade"
+   }
+  }
+ ]
+}

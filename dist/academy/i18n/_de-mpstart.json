@@ -4,6 +4,53 @@
  "sub": "The site itself, in seven short lessons",
  "lessons": [
   {
+   "id": "mp1",
+   "t": "Was MarginPad wirklich ist",
+   "cards": [
+    {
+     "h": "Echte Preise, Übungsgeld",
+     "p": "Der Chart vor dir ist der Live-Markt. Kurse und Kerzen kommen direkt von den Börsen, genau die, die auch ein finanzierter Trader gerade ansieht. Das Geld ist nicht echt: Du startest mit 10.000 $, die wir dir geschenkt haben, und auf dieser Seite kannst du keinen einzigen Cent einzahlen."
+    },
+    {
+     "h": "Warum man erst üben sollte",
+     "p": "Futures mit Hebel sind der schnellste Weg, in Krypto Geld zu verlieren, und fast jeder verliert sein erstes Konto. Hier kann der Markt dir eine Position abnehmen und dir dieselbe Lektion erteilen, und die ganzen Kosten sind die Zeit, die du investiert hast. Verlierst du die 10.000 $, ist nichts passiert."
+    },
+    {
+     "h": "Ein Teil ist aber echt",
+     "p": "Das Trading ist Übung. Die Belohnungen nicht. MarginPad zahlt echte USDT fürs Nutzen der Seite - kleine Beträge aus einem Tagespool - und du lässt sie dir auf ein Börsenkonto auszahlen. Das ist ein eigenes System, getrennt vom Trading, und in zwei Lektionen weißt du genau, wie es funktioniert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die Kurse, gegen die du auf MarginPad tradest, sind:",
+     "o": [
+      "Von der Seite erfunden",
+      "Live-Kurse echter Börsen",
+      "Die Schlusskurse von gestern",
+      "Nur aktuell, wenn du die Seite neu lädst"
+     ]
+    },
+    {
+     "q": "Wie viel musst du einzahlen, bevor du hier traden kannst?",
+     "o": [
+      "Nichts - auf der Seite gibt es keine Einzahlung",
+      "10 $, um das Terminal freizuschalten",
+      "So viel, wie du traden willst",
+      "Erstattbare 50 $"
+     ]
+    },
+    {
+     "q": "Du eröffnest einen Trade und er läuft schlecht. Was hat er dich gekostet?",
+     "o": [
+      "Echtes Geld von deiner Karte",
+      "Einen Teil des Übungsguthabens, sonst nichts",
+      "Eine Gebühr auf dein Konto",
+      "Deinen Platz in den Bestenlisten, dauerhaft"
+     ]
+    }
+   ]
+  },
+  {
    "id": "mp2",
    "t": "XP, dein Level und Bronze",
    "cards": [
@@ -152,6 +199,53 @@
       "Die Größe der Position, sodass jede Bewegung mehr zählt",
       "Die Gebühr, die du zahlst",
       "Wie lange du den Trade halten darfst"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Margin und wo eine Position stirbt",
+   "cards": [
+    {
+     "h": "Margin ist das, was du hinterlegst",
+     "p": "Die Margin ist der Teil deines Guthabens, den du für einen Trade einsetzt. Sie ist auch das Maximum, das dieser Trade je kosten kann: Ein Verlust ist bei deiner Margin gedeckelt, eine mit 100 $ eröffnete Position kann dich also diese 100 $ kosten und keinen Cent mehr. Deine übrigen 9.900 $ erreicht sie nicht."
+    },
+    {
+     "h": "Liquidation heißt: Der Boden ist erreicht",
+     "p": "Bewegt sich der Kurs weit genug gegen dich, schließt sich die Position von selbst und die Margin ist weg. Dieser Preis ist die Liquidation, und MarginPad zeichnet ihn ab dem Moment der Eröffnung in deinen Chart - das Level, an dem der Trade endet, siehst du also die ganze Zeit und es überrascht dich nicht am Ende."
+    },
+    {
+     "h": "Entschieden wird auf unserem Server, nicht in deinem Browser",
+     "p": "Deine Position liegt auf dem Server. Tab schließen, Empfang verlieren, aufs andere Handy wechseln - nichts ändert sich. Stop-Loss, Take-Profit und Liquidation werden von unserer Seite gegen geschlossene Kerzen geprüft. Deshalb beendet ein Docht durch dein Level dich hier nicht, solange die Kerze nicht wirklich dort schließt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was ist der Höchstverlust einer einzelnen Position?",
+     "o": [
+      "Dein gesamtes Guthaben",
+      "Die Margin, die du dafür eingesetzt hast",
+      "Das Doppelte der Margin",
+      "Das hängt vom Hebel ab"
+     ]
+    },
+    {
+     "q": "Du eröffnest einen Trade und schließt dann den Browser. Was passiert mit ihm?",
+     "o": [
+      "Er wird storniert",
+      "Er bleibt offen und wird auf dem Server geprüft",
+      "Er friert ein, bis du zurückkommst",
+      "Er wird zum aktuellen Preis geschlossen"
+     ]
+    },
+    {
+     "q": "Eine Liquidation ist:",
+     "o": [
+      "Eine Gebühr fürs zu lange Halten",
+      "Die automatische Schließung der Position, weil der Preis das Level erreicht hat, an dem die Margin aufgebraucht ist",
+      "Ein manuelles Schließen durch die Seite",
+      "Dasselbe wie ein Stop-Loss"
      ]
     }
    ]

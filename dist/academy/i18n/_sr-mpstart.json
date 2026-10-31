@@ -1,0 +1,364 @@
+{
+ "id": "mpstart",
+ "name": "Počni ovde: MarginPad",
+ "sub": "Sam sajt, u sedam kratkih lekcija",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "Šta je MarginPad, u stvari",
+   "cards": [
+    {
+     "h": "Prave cene, novac za vežbu",
+     "p": "Grafikon pred tobom je živo tržište. Cene i sveće stižu direktno sa menjačnica, istih onih koje upravo sada gleda trejder sa pravim novcem. Novac nije pravi: počinješ sa $10,000 koje smo ti mi dali, a na ovom sajtu nigde ne možeš da uplatiš ni cent."
+    },
+    {
+     "h": "Zašto bi iko prvo vežbao",
+     "p": "Fjučersi sa polugom su najbrži način da izgubiš novac u kriptu, i skoro svako izgubi svoj prvi nalog. Ovde tržište može da ti uzme poziciju i nauči te istu lekciju, a cela cena je vreme koje si potrošio. Izgubi $10,000 i ništa se nije desilo."
+    },
+    {
+     "h": "Ipak, nešto od toga je pravo",
+     "p": "Trgovanje je vežba. Nagrade nisu. MarginPad plaća pravi USDT za korišćenje sajta - male iznose, iz dnevnog fonda - i to povlačiš na nalog na menjačnici. To je sistem odvojen od trgovanja, a za dve lekcije tačno ćeš znati kako radi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Cene po kojima trguješ na MarginPadu su:",
+     "o": [
+      "Izmislio ih je sajt",
+      "Žive cene sa pravih menjačnica",
+      "Jučerašnje cene zatvaranja",
+      "Osvežavaju se samo kad ponovo učitaš stranicu"
+     ]
+    },
+    {
+     "q": "Koliko moraš da uplatiš pre nego što ovde počneš da trguješ?",
+     "o": [
+      "Ništa - na sajtu nigde nema uplate",
+      "$10 da otključaš terminal",
+      "Koliko god želiš da trguješ",
+      "Povratnih $50"
+     ]
+    },
+    {
+     "q": "Otvoriš trejd i on krene loše. Koliko te je to koštalo?",
+     "o": [
+      "Pravi novac sa tvoje kartice",
+      "Deo stanja za vežbu i ništa više",
+      "Naknadu naplaćenu na tvoj nalog",
+      "Trajno tvoje mesto na tabelama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "XP, tvoj nivo i Bronze",
+   "cards": [
+    {
+     "h": "XP je samo prebrojano ono što si uradio",
+     "p": "Svaka završena lekcija je 25 XP, svaki dan kad se pojaviš 20, trejd 3, a dobitan trejd 15. Ništa se ne kupuje i ništa nije slučajno - XP je zapis o tome da si koristio sajt. Broj stoji pored tvog imena u meniju naloga i na vrhu sezonske stranice."
+    },
+    {
+     "h": "Bronze je prvi nivo, ne kapija",
+     "p": "Ispod 500 XP si Unranked; na 500 si Bronze, a kako broj raste slede Silver, Gold, Platinum, Diamond, Master i Legendary. Ništa na ovom sajtu više ne čeka nivo: faucet, dnevne misije, preporuke, isplate i sve besplatne tabele otvoreni su od dana kad se prijaviš. Nivo je značka i bonus, nikad brava."
+    },
+    {
+     "h": "Šta nivo zapravo menja",
+     "p": "Od Silver naviše svako preuzimanje sa faucet-a plaća malo više - množilac raste sa nivoom. Svaki nivo otključava okvir za tvoju profilnu karticu, a tabela Gold Room - jedna od deset - rangira samo naloge na nivou Gold, a to je 12,000 XP. To je cela lista. Terminal za vežbu, grafikoni i alarmi isti su na svakom nivou."
+    },
+    {
+     "h": "Ovaj kurs te vodi skoro do kraja",
+     "p": "Čitaš drugu lekciju od sedam. Kad završiš svih sedam, sa dva Road to Bronze bonusa koja one pokreću, imaćeš malo preko 400 XP - pa te posle toga do nivoa Bronze deli jedan demo trejd sa stop-lossom, ili prosto povratak sutra. Kartica Road to Bronze na sezonskoj stranici navodi devet početnih zadataka i koliko svaki plaća."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta je Bronze?",
+     "o": [
+      "Plaćeni nivo članstva",
+      "Nivo koji dostižeš na 500 XP",
+      "Prva nagrada na tabeli",
+      "Kozmetički okvir za profilnu karticu"
+     ]
+    },
+    {
+     "q": "Šta dostizanje nivoa Bronze otključava?",
+     "o": [
+      "Faucet i misije",
+      "Isplate",
+      "Ništa - nagrade su otvorene od dana kad si se prijavio; nivo je značka i bonus",
+      "Grafikone i heatmap"
+     ]
+    },
+    {
+     "q": "Koji je najbrži besplatan način da zaradiš XP?",
+     "o": [
+      "Otvaranje što više trejdova",
+      "Lekcije u Akademiji - 25 svaka, plus 50 za završen kurs",
+      "Ostavljanje sajta otvorenog u tabu",
+      "Pozivanje prijatelja"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "Pravi novac na ovom sajtu",
+   "cards": [
+    {
+     "h": "Odakle dolazi",
+     "p": "MarginPad je besplatan i nema reklame. Zarađuje kad čitalac otvori nalog na menjačnici preko našeg linka, a menjačnica podeli deo svoje naknade. To je ceo posao, i zato su nagrade male, prave i ograničene, a ne velike i izmišljene."
+    },
+    {
+     "h": "Šta je na stolu",
+     "p": "Bonus dobrodošlice od $0.50. $0.01 sa faucet-a na svakih nekoliko minuta, do $0.10 dnevno. Dnevne misije povrh toga, cent ili dva po misiji. $1.00 za otvaranje naloga na Moon, MEXC, BingX ili Bybit preko nas - tri od četiri se proveravaju automatski u affiliate listi. $0.50 kad prijatelj kog si pozvao stvarno trguje. Ništa od ovoga ne čeka nivo."
+    },
+    {
+     "h": "Kako da ga izvučeš",
+     "p": "Stanje se isplaćuje u USDT-u, a možeš da povučeš od $5.00 na Bybit, Moon ili MEXC nalog otvoren preko MarginPada. Svaka isplata se proverava i plaća ručno, pa nije trenutna. Ovo je zahvalnost za korišćenje sajta, a ne prihod - gledaj na to tako i nikad te neće razočarati."
+    },
+    {
+     "h": "Kako isplata zapravo ide",
+     "p": "Upišeš iznos, od $5 do svog stanja, i nalog na koji se plaća. Jedan zahtev u jednom trenutku: drugi čeka dok prvi ne bude plaćen. Mi vidimo da li je taj nalog na menjačnici stvarno otvoren preko nas, da li je neki drugi član već povlačio na isti, i kako je stanje zarađeno - pa se pravi nalog plati, a farma ne. Dobićeš obaveštenje kad novac stigne."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kako MarginPad zarađuje?",
+     "o": [
+      "Prodaje tvoje podatke",
+      "Affiliate linkovi menjačnica - deo naknade kad se neko prijavi preko nas",
+      "Naplaćuje Akademiju",
+      "Uzima deo profita od demo trgovanja"
+     ]
+    },
+    {
+     "q": "Koji je najmanji iznos koji možeš da povučeš?",
+     "o": [
+      "$1.00",
+      "$5.00",
+      "$20.00",
+      "Nema minimuma"
+     ]
+    },
+    {
+     "q": "Šta od ovoga čeka nivo?",
+     "o": [
+      "Faucet",
+      "Dnevne misije",
+      "Preporuke",
+      "Ništa - svaka nagrada je otvorena od prvog dana"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sve što je ovde navedeno nalazi se na jednoj stranici. Otvori je i vidi gde su tvoje stanje, faucet i bonusi za prijavu - imaće više smisla kad vidiš raspored.",
+    "label": "Otvori Rewards"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short i šta poluga stvarno radi",
+   "cards": [
+    {
+     "h": "Dva smera, ne jedan",
+     "p": "Long dobija kad cena raste. Short dobija kad cena pada. To je cela razlika, i zato fjučers trejder nikad nije primoran da sedi po strani dok tržište pada. Na MarginPadu su oba jedan dodir: dugmad Long i Short na tiketu za trejd."
+    },
+    {
+     "h": "Poluga je veličina, ne magija",
+     "p": "Uloži $100 na 10x i pomeraš poziciju od $1,000. Svakih 1% koje tržište pređe sada je 10% tvog novca, u kom god smeru da ide. Poluga ne popravlja trejd - samo množi ono što bi ti trejd ionako uradio."
+    },
+    {
+     "h": "Lestvica na tiketu",
+     "p": "Kontrola poluge skače po lestvici: celi koraci do 10x, zatim desetice - 20, 30, 50, 100 i dalje. Upiši 107 i biće potvrđeno 110. Lestvica postoji da bi broj koji si izabrao mogao naglas da izgovoriš, i da bi liniju likvidacije koju grafikon iz njega crta mogao da pročitaš pre otvaranja."
+    },
+    {
+     "h": "Zašto te puštamo do 1000x",
+     "p": "Glavni coini ovde idu sve do 1000x, daleko preko onoga što bi razuman čovek koristio. To je namerno. Na 1000x manje od desetine procenta protiv tebe gasi poziciju - i bolje je da to saznaš na nalogu za vežbu, večeras, nego na menjačnici sa svojim novcem."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Uložiš $100 na poluzi 10x. Kolika je pozicija?",
+     "o": [
+      "$100",
+      "$110",
+      "$1,000",
+      "$10,000"
+     ]
+    },
+    {
+     "q": "Short pozicija zarađuje kad:",
+     "o": [
+      "Cena raste",
+      "Cena pada",
+      "Cena stoji u mestu",
+      "Volumen raste"
+     ]
+    },
+    {
+     "q": "Šta povećanje poluge stvarno menja?",
+     "o": [
+      "Šanse da si u pravu",
+      "Veličinu pozicije, pa svaki pokret više vredi",
+      "Naknadu koju plaćaš",
+      "Koliko dugo smeš da držiš trejd"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "Margina, i gde pozicija umire",
+   "cards": [
+    {
+     "h": "Margina je ono što uložiš",
+     "p": "Margina je deo tvog stanja koji odvojiš za jedan trejd. To je ujedno i najviše što ti taj trejd može da uzme: gubitak staje na tvojoj margini, pa pozicija otvorena sa $100 može da te košta tih $100 i nijedan cent više. Do tvojih ostalih $9,900 ne može da dođe."
+    },
+    {
+     "h": "Likvidacija je udar o to dno",
+     "p": "Ako se cena pomeri dovoljno protiv tebe, pozicija se sama zatvara i margine više nema. Ta cena je likvidacija, a MarginPad je crta na grafikonu od trenutka kad otvoriš - pa je nivo na kom se trejd završava vidljiv sve vreme dok si u njemu, a ne iznenađenje na kraju."
+    },
+    {
+     "h": "Odlučuje se na našem serveru, ne u tvom pregledaču",
+     "p": "Tvoja pozicija stoji na serveru. Zatvori tab, izgubi signal, pređi na drugi telefon - ništa se ne menja. Stop-loss, take-profit i likvidacija proveravaju se sa naše strane u odnosu na zatvorene sveće, i zato te fitilj kroz tvoj nivo ovde ne gasi ako se sveća stvarno nije tamo zatvorila."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Koliko najviše možeš da izgubiš na jednoj poziciji?",
+     "o": [
+      "Celo stanje",
+      "Marginu koju si uložio u nju",
+      "Dvostruku marginu",
+      "Zavisi od poluge"
+     ]
+    },
+    {
+     "q": "Otvoriš trejd, pa zatvoriš pregledač. Šta se dešava sa njim?",
+     "o": [
+      "Otkazuje se",
+      "Ostaje otvoren i proverava se na serveru",
+      "Zamrzava se dok se ne vratiš",
+      "Zatvara se po trenutnoj ceni"
+     ]
+    },
+    {
+     "q": "Likvidacija je:",
+     "o": [
+      "Naknada za predugo držanje",
+      "Automatsko zatvaranje pozicije jer je cena stigla do nivoa na kom je margina potrošena",
+      "Ručno zatvaranje od strane sajta",
+      "Isto što i stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Tvoja dva izlaza: stop-loss i take-profit",
+   "cards": [
+    {
+     "h": "Odluči o izlazu pre nego što ti zatreba",
+     "p": "Stop-loss zatvara trejd po ceni koju izabereš ako krene loše. Take-profit radi isto ako krene dobro. Oba postaviš jednom i onda rade bez tebe, i u tome je poenta: trenutak kad je pozicija u minusu najgori je mogući trenutak za odlučivanje šta s njom."
+    },
+    {
+     "h": "Gde ih ovde postavljaš",
+     "p": "Na tiketu, pre otvaranja - ili posle, preko dugmeta Set na kartici trejda i iz My Trades. Možeš da ih pomeraš koliko god hoćeš dok je trejd otvoren. Trejd bez ijednog od njih je trejd čiji će izlaz odrediti ono što u tom trenutku budeš osećao."
+    },
+    {
+     "h": "Na tiketu, korak po korak",
+     "p": "Otvori Advanced ispod forme za trejd. Stop i cilj primaju cenu ili procenat tvoje margine - upiši jedno i drugo se prepiše, pa se nikad ne mogu razilaziti. Panel unapred popuni stop na 2% i cilj na 3% kao polaznu tačku; promeni stranu i automatski popunjeni nivoi se okrenu sa njom. Ono što panel krije ne važi: zatvori Advanced i trejd se otvara bez njih."
+    },
+    {
+     "h": "Ovo je navika koju vredi izgraditi",
+     "p": "Ništa drugo u ovom kursu neće toliko promeniti tvoje rezultate. Na tabelama koje plaćaju pravi USDT, nalozi koji potraju nisu oni koji biraju bolje ulaze - nego oni koji su već odlučili gde će biti u krivu. Postavljanje stopa je i Road to Bronze zadatak, vredan 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta radi stop-loss?",
+     "o": [
+      "Sprečava te da otvaraš nove trejdove",
+      "Zatvara trejd po ceni koju si izabrao, ako krene protiv tebe",
+      "Pauzira poziciju",
+      "Garantuje da ne možeš da izgubiš"
+     ]
+    },
+    {
+     "q": "Kada možeš da postaviš ili pomeriš stop-loss na MarginPadu?",
+     "o": [
+      "Samo pri otvaranju trejda",
+      "Tek kad je u profitu",
+      "Pre otvaranja, i bilo kada dok je trejd otvoren",
+      "Jednom dnevno"
+     ]
+    },
+    {
+     "q": "Upišeš stop kao procenat margine. Šta se dešava sa poljem za cenu?",
+     "o": [
+      "Ništa - to su odvojena polja",
+      "Prepiše se da se poklopi, pa se ta dva nikad ne razilaze",
+      "Obriše se",
+      "Zaključa se"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Sezone, tabele i pass",
+   "cards": [
+    {
+     "h": "Sajt radi u sezonama od četrnaest dana",
+     "p": "Sve takmičarsko se resetuje na četrnaest dana. Tvoj sezonski XP, mesto na tabelama i pass kreću iz početka, pa loše dve nedelje nikad nisu trajne, a novajlija nikad nije godinu dana iza. Dan sezone piše na vrhu sezonske stranice."
+    },
+    {
+     "h": "Deset tabela, sedam besplatnih",
+     "p": "Deset tabela plaća pravi USDT kad se sezona završi, i sve su na jednoj stranici, /leaderboards/. Sedam ne košta ništa: Highest ROE, Green Days, Best Win Rate, Season XP, Daily BTC Call, Meme Spot i Gold Room - jedina sa uslovom, nivoom Gold. Dve su za čitaoce koji trguju pravim novcem na Bybit ili Moon preko MarginPada. Fondovi i podela nagrada pišu na stranici."
+    },
+    {
+     "h": "A ispod svega toga ide pass",
+     "p": "Svakih 100 sezonskih XP je jedan nivo passa, ima ih četrdeset, a besplatna staza isplaćuje Ticks i kozmetiku kako se penješ. Već ga zarađuješ - XP iz ovog kursa računao se dok si čitao. Plaćena staza dodaje delove koje niko ne može da kupi u prodavnici."
+    },
+    {
+     "h": "Iza tabela",
+     "p": "Dvoboj te stavlja protiv jednog trejdera na sat, dan, tri dana ili nedelju, po meri oko koje se obojica složite, sa Ticks-ima u igri. Squad je do petoro vas sa privatnom sobom, napadima na glavne coine i logom. Demo Spot je kupi-i-drži sa $10,000 i svojom tabelom. Ništa od toga nije obavezno - terminal je proizvod; ostalo je tu da vežba ne deluje kao domaći."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Koliko traje sezona na MarginPadu?",
+     "o": [
+      "Sedam dana",
+      "Četrnaest dana",
+      "Mesec dana",
+      "Dok neko ne pobedi"
+     ]
+    },
+    {
+     "q": "Koliko od deset tabela ne košta ništa za ulazak?",
+     "o": [
+      "Dve",
+      "Četiri",
+      "Sedam",
+      "Svih devet"
+     ]
+    },
+    {
+     "q": "Gde stoji poredak svih tabela?",
+     "o": [
+      "/season/",
+      "/leaderboards/",
+      "Telegram kanal",
+      "Unutar terminala"
+     ]
+    }
+   ],
+   "try": {
+    "p": "To je ceo obilazak. Ostaje samo ono zbog čega sajt postoji: otvori terminal, izaberi coin, otvori malu poziciju sa stop-lossom i gledaj šta se dešava. Taj jedan trejd je poslednji korak do nivoa Bronze.",
+    "label": "Otvori Paper Trade"
+   }
+  }
+ ]
+}
