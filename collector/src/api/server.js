@@ -34,7 +34,7 @@ function resolveWindow(q) {
   const w = config.windows[q.window] || config.windows['24h'];
   return w;
 }
-function validSymbol(s) { return typeof s === 'string' && /^[A-Z0-9]{2,20}$/.test(s.toUpperCase()); } // any captured ticker
+function validSymbol(s) { return typeof s === 'string' && /^[A-Z0-9]{1,20}$/.test(s.toUpperCase()); } // any captured ticker
 
 export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCols = [], bookMap = null }) {
   const app = express();

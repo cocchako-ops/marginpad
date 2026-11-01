@@ -1820,7 +1820,14 @@
   .cwin-subleg-row b{font-weight:700;} /* the legend itself is input-transparent so chart drags pass through - only the HIDE/VALUES chip takes clicks */
   .cwin-subrz{position:absolute;left:0;right:0;top:-1px;height:9px;cursor:ns-resize;z-index:6;touch-action:none;}
   .cwin-subrz:hover{background:linear-gradient(180deg,rgba(194,246,74,.28),transparent);}
-  .cwin-leg{position:absolute;top:4px;left:7px;z-index:5;display:flex;gap:9px;flex-wrap:wrap;max-width:calc(100% - 14px);font-family:'Space Mono',monospace;font-size:10px;line-height:1.25;color:#9aa3ad;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+  .cwin-leg{position:absolute;top:4px;left:7px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:2px;max-width:min(68%,440px);max-height:calc(100% - 12px);overflow:hidden;font-family:'Space Mono',monospace;font-size:10px;line-height:1.3;color:#9aa3ad;pointer-events:none;}
+  .lg-top{display:flex;gap:5px;align-items:center;}
+  .lg-r{display:block;max-width:100%;box-sizing:border-box;padding:1px 6px;border-radius:4px;background:rgba(10,13,17,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lg-r em{font-style:normal;color:#8b95a3;font-weight:700;margin-right:7px;}
+  .lg-r .lg-v{margin-right:9px;}.lg-r .lg-v:last-child{margin-right:0;}
+  .lg-raw{font-weight:700;pointer-events:auto;cursor:default;}
+  .lg-more{pointer-events:auto;cursor:pointer;color:#c2f64a;border:1px solid #2a3140;border-radius:7px;padding:1px 7px;font-size:10px;font-weight:700;background:rgba(10,13,17,.72);}
+  .cwin-leg [data-legtg]{background:rgba(10,13,17,.72);}
   .cwin-leg b{font-weight:700;}
   .cwin-skel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c656f;font-family:'Space Mono',monospace;font-size:12px;}
   .cwin-rsz{position:absolute;right:0;bottom:0;width:18px;height:18px;z-index:3;pointer-events:none;}
@@ -3095,6 +3102,8 @@
   body.charts-page.ch-light .cwin-ind-btn,body.charts-page.ch-light .cwin-draw-tg,body.charts-page.ch-light .cwin-mt,body.charts-page.ch-light .cwin-notes-btn{background:#ffffff;border-color:#d6dade;color:#5a6472;}
   body.charts-page.ch-light .cwin-x{color:#5a6472;}
   body.charts-page.ch-light .cwin-leg,body.charts-page.ch-light .cwin-subleg-row{color:#4a5260;text-shadow:none;}
+  body.charts-page.ch-light .lg-r,body.charts-page.ch-light .lg-more,body.charts-page.ch-light .cwin-leg [data-legtg],.mfc.light .lg-r,.mfc.light .lg-more{background:rgba(255,255,255,.82);}
+  body.charts-page.ch-light .lg-r em,.mfc.light .lg-r em{color:#5a6472;}
   body.charts-page.ch-light .cwin-tools{background:rgba(255,255,255,.95);border-color:#d6dade;}
   body.charts-page.ch-light .cwin-tool{background:#f1f3f6;border-color:#d6dade;color:#2a2f37;}
   body.charts-page.ch-light .cwin-pop{background:#ffffff;border-color:#d6dade;}
@@ -3745,7 +3754,7 @@ undefined
 .cwin-cxc .cxc-cause{font-weight:700;}
 .cwin-cxc .cxc-note{margin:4px 0 6px;font-size:11px;line-height:1.4;color:#aab5c4;}
 .cwin-liqc.cwin-cxc{max-height:calc(100% - 12px);overflow:auto;overscroll-behavior:contain;}
-.cwin-cxc .cxc-sh{margin:5px 0 4px;}.cwin-cxc .cxc-sh i{display:flex;height:6px;border-radius:3px;overflow:hidden;background:#1d232c;gap:1px;}.cwin-cxc .cxc-sh i b{display:block;height:100%;background:#8b95a3;}.cwin-cxc .cxc-sh i .cxs-news{background:#5ec6ff}.cwin-cxc .cxc-sh i .cxs-cascade,.cwin-cxc .cxc-sh i .cxs-liqs{background:#ff6258}.cwin-cxc .cxc-sh i .cxs-whale,.cwin-cxc .cxc-sh i .cxs-flow{background:#b18cff}.cwin-cxc .cxc-sh i .cxs-btc,.cwin-cxc .cxc-sh i .cxs-stocks{background:#ffb020}.cwin-cxc .cxc-sh i .cxs-oi,.cwin-cxc .cxc-sh i .cxs-book{background:#2ebd85}.cwin-cxc .cxc-sh span{display:block;margin-top:3px;font-size:10.5px;color:#aab5c4;}
+.cwin-cxc .cxc-sh i b.cxs-volume{background:#c9a24a;}.cwin-cxc .cxc-sh i b.cxs-gap{background:#7f8ea3;}.cwin-cxc .cxc-sh i b.cxs-lead{background:#6aa3ff;}.cwin-cxc .cxc-sh i b.cxs-index{background:#c2f64a;}.cwin-cxc .cxc-sh{margin:5px 0 4px;}.cwin-cxc .cxc-sh i{display:flex;height:6px;border-radius:3px;overflow:hidden;background:#1d232c;gap:1px;}.cwin-cxc .cxc-sh i b{display:block;height:100%;background:#8b95a3;}.cwin-cxc .cxc-sh i .cxs-news{background:#5ec6ff}.cwin-cxc .cxc-sh i .cxs-cascade,.cwin-cxc .cxc-sh i .cxs-liqs{background:#ff6258}.cwin-cxc .cxc-sh i .cxs-whale,.cwin-cxc .cxc-sh i .cxs-flow{background:#b18cff}.cwin-cxc .cxc-sh i .cxs-btc,.cwin-cxc .cxc-sh i .cxs-stocks{background:#ffb020}.cwin-cxc .cxc-sh i .cxs-oi,.cwin-cxc .cxc-sh i .cxs-book{background:#2ebd85}.cwin-cxc .cxc-sh span{display:block;margin-top:3px;font-size:10.5px;color:#aab5c4;}
 .cwin-cxc .cxc-real{display:block;margin-top:4px;font-size:10.5px;font-style:normal;color:#8b95a3;}
 .cwin-cxc .cxc-cause small,.cwin-cxc .lqc-d dd small{font-family:"Space Mono",monospace;font-weight:400;color:#8b95a3;}
 .cwin-cxc .cxc-cat{margin:8px 0 0;padding:7px 8px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);border-radius:8px;font-size:11.5px;line-height:1.35;}

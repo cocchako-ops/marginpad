@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 1,
-  "hit": 154,
-  "missing": 0
+  "cover": 0.9935064935064936,
+  "hit": 153,
+  "missing": 1
  },
  {
   "rel": "alerts/index.html",
@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 242,
-  "missing": 0
+  "cover": 0.9958677685950413,
+  "hit": 241,
+  "missing": 1
  },
  {
   "rel": "inj-liquidation-calculator/index.html",

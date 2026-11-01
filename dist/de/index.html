@@ -1074,6 +1074,11 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 /* v3e: the NEW PARTNER pill sat over the 3.5% figure once the block lost its side column; on a phone Fear & Greed and DeFi stood alone in a half-empty row */
 .exbig .exbig-tag{display:none;}
 @media(max-width:720px){.band:not(#trade) .bento>.tile.s3[href="/fear-greed/"],.band:not(#trade) .bento>.tile.s3[href="/defi/"]{grid-column:span 12;}}
+/* v3f (2026-11-01, owner: "sve kartice sto imaju samo tekst mozda mogu da se nabudze sa nekim slicicama ... ovo je dobro za one koji ne znaju jezik"): a word-only tile carries a drawing of what it is. Same room as the empty row height the bento already held. */
+.t-art{display:block;width:100%;height:60px;margin-top:12px;position:relative;z-index:2;flex:1 1 60px;min-height:52px;max-height:150px;}
+@media(max-width:720px){.t-art{height:44px;min-height:44px;margin-top:9px;flex:0 0 44px;}}
+/* the Moon block reads from its top edge and says what Moon is: the sentence and the five points were hidden in the compaction, and the block stood centred in a box as tall as the offer beside it */
+@media(min-width:1001px){.exbig{align-items:stretch;gap:26px;}.exbig .exbig-main{flex:1 1 40%;justify-content:flex-start;}.exbig .exbig-s{display:block;font-size:13px;line-height:1.55;max-width:none;}.exbig .exbig-side{display:flex;flex:1 1 30%;justify-content:center;gap:0;}.exbig .moon-feats{gap:10px;}.exbig .mf-item,.exbig .mf-item.out{opacity:1;transform:none;transition:none;}.exbig .mf-ic{transform:none;}.exbig .exbig-act{margin-top:auto;}.exbig .exbig-offer{flex:0 0 auto;align-self:flex-start;}.exbig .mf-tx{font-size:14px;line-height:1.3;}.exbig .mf-ic{width:28px;height:28px;}}
 </style>
 <style id="dashv2">
 /* MOON (2026-10-30, owner: title beside the logo, RNG in the list, 1000x shown "na cool nacin") */
@@ -1223,7 +1228,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         </div>
         <div class="cp-side">
           <div class="cp-days"><div class="cp-strip" id="cpDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="cp-left" id="cpLeft">14-Tage-Seasons</span></div>
-          <span class="cp-go">Alle neun Boards<i>&rarr;</i></span>
+          <span class="cp-go">All ten boards<i>&rarr;</i></span>
         </div>
       </div>
       <div class="cp-boards" id="cpBoards">
@@ -1249,18 +1254,21 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       <div class="t-title">Charts + Ask AI</div>
       <div class="t-sub">Bis zu 8 Fenster, 19+ Indikatoren, Zeichnen - und eine KI, die den Chart liest, das Setup einzeichnet und sagt, <b>was den Preis bewegte</b>.</div>
       <div class="pz-chips"><span class="new">Neu</span><span>What moved it</span><span>Ask AI</span><span>Bar Replay</span></div>
+      <svg class="t-art" viewBox="0 0 300 80" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><g stroke-width="1.4"><path d="M14 66V53" stroke="#2ebd85"/><rect x="10" y="56" width="8" height="8" fill="#2ebd85" stroke="none"/><path d="M29.5 62V52" stroke="#ff6258"/><rect x="25.5" y="56" width="8" height="4" fill="#ff6258" stroke="none"/><path d="M45 62V47" stroke="#2ebd85"/><rect x="41" y="50" width="8" height="10" fill="#2ebd85" stroke="none"/><path d="M60.5 52V42" stroke="#2ebd85"/><rect x="56.5" y="45" width="8" height="5" fill="#2ebd85" stroke="none"/><path d="M76 51V43" stroke="#ff6258"/><rect x="72" y="45" width="8" height="4" fill="#ff6258" stroke="none"/><path d="M91.5 50V37" stroke="#2ebd85"/><rect x="87.5" y="40" width="8" height="9" fill="#2ebd85" stroke="none"/><path d="M107 45V37" stroke="#ff6258"/><rect x="103" y="40" width="8" height="3" fill="#ff6258" stroke="none"/><path d="M122.5 45V31" stroke="#2ebd85"/><rect x="118.5" y="34" width="8" height="9" fill="#2ebd85" stroke="none"/><path d="M138 36V27" stroke="#2ebd85"/><rect x="134" y="30" width="8" height="4" fill="#2ebd85" stroke="none"/><path d="M153.5 38V28" stroke="#ff6258"/><rect x="149.5" y="30" width="8" height="6" fill="#ff6258" stroke="none"/><path d="M169 37V23" stroke="#2ebd85"/><rect x="165" y="26" width="8" height="10" fill="#2ebd85" stroke="none"/><path d="M184.5 63V24" stroke="#ff6258"/><rect x="180.5" y="26" width="8" height="36" fill="#ff6258" stroke="none"/><path d="M200 66V54" stroke="#2ebd85"/><rect x="196" y="56" width="8" height="6" fill="#2ebd85" stroke="none"/><path d="M215.5 58V47" stroke="#2ebd85"/><rect x="211.5" y="50" width="8" height="6" fill="#2ebd85" stroke="none"/><path d="M231 55V48" stroke="#ff6258"/><rect x="227" y="50" width="8" height="3" fill="#ff6258" stroke="none"/><path d="M246.5 55V42" stroke="#2ebd85"/><rect x="242.5" y="44" width="8" height="9" fill="#2ebd85" stroke="none"/><path d="M262 46V37" stroke="#2ebd85"/><rect x="258" y="40" width="8" height="4" fill="#2ebd85" stroke="none"/><path d="M277.5 42V31" stroke="#2ebd85"/><rect x="273.5" y="34" width="8" height="6" fill="#2ebd85" stroke="none"/></g><path d="M6 62C50 54 90 44 130 37s40 16 70 16 60-14 94-20" stroke="#f5b400" stroke-width="1.8"/><path d="M184 24v-13" stroke="#ff6258"/><rect x="146" y="1" width="76" height="13" rx="3" fill="#0b0d11" stroke="#ff6258"/><path d="M152 7.500h52" stroke="#e9edf3" stroke-width="2.4" stroke-dasharray="26 4 14 4"/></svg>
       <div class="t-go">Bau dir deinen Desk <i>→</i></div>
     </a>
     <a class="tile s3 pz" href="/de/catalysts/" style="--ac:#c2f64a">
       <div class="t-kick"><span class="dot"></span> Live · bewertet</div>
       <div class="t-title">Katalysatoren</div>
       <div class="t-sub">Jedes Listing, Delisting, Makro-Datum, jeder Hack und jede Schlagzeile, sobald sie eintrifft - bewertet, mit der Bewegung, die sie ausgelöst hat.</div>
+      <svg class="t-art" viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><path d="M0 46h40l10-3 12 4 14-2 12 3 10-20 8-22 10 34 12 4 14-4 16 2 20-3 20 2 24-2" stroke="var(--ac)" stroke-width="1.8"/><path d="M106 8V58" stroke="var(--ac)" stroke-opacity=".45" stroke-dasharray="3 3"/><path d="M106 5h26l-6 5 6 5h-26z" fill="var(--ac)"/><g fill="var(--ac)" fill-opacity=".45"><circle cx="26" cy="58" r="2.400"/><circle cx="62" cy="58" r="2.400"/><circle cx="106" cy="58" r="3.400" fill-opacity="1"/><circle cx="160" cy="58" r="2.400"/><circle cx="214" cy="58" r="2.400"/></g></svg>
       <div class="t-go">Was den Markt bewegt <i>→</i></div>
     </a>
     <a class="tile s3 pz" href="/de/heatmap" style="--ac:#ff8c5a">
       <div class="t-kick">Liquidationskarte</div>
       <div class="t-title">Heatmap</div>
       <div class="t-sub">Wo die gehebelten Positionen bei zehn Majors liegen, mit dem Live-Orderbuch und dem Tape darunter.</div>
+      <svg class="t-art" viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><rect x="90" y="6" width="150" height="4" rx="1" fill="#2e70b0"/><rect x="150" y="13" width="90" height="4" rx="1" fill="#34407e"/><rect x="0" y="20" width="240" height="4" rx="1" fill="#ffe230"/><rect x="120" y="27" width="120" height="4" rx="1" fill="#1eaaa0"/><rect x="40" y="42" width="200" height="4" rx="1" fill="#7ad660"/><rect x="170" y="49" width="70" height="4" rx="1" fill="#34407e"/><rect x="70" y="56" width="170" height="4" rx="1" fill="#2e70b0"/><path d="M0 44 22 40 44 42 66 34 88 37 110 30 132 33 154 36 176 34" stroke="#e9edf3" stroke-width="1.8"/><circle cx="176" cy="34" r="3" fill="#c2f64a"/><path d="M0 34.500h240" stroke="#c2f64a" stroke-opacity=".5" stroke-dasharray="4 4"/></svg>
       <div class="t-go">Karte öffnen <i>→</i></div>
     </a>
     <a class="tile s3 pz" href="/de/screener" style="--ac:#6aa3ff">
@@ -1284,12 +1292,14 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       <div class="t-kick"><span class="dot"></span> Kaufen und halten</div>
       <div class="t-title">Demo Spot</div>
       <div class="t-sub">$10,000 zum Start, $100 am Tag zum Abholen. Memecoins auf 4 Chains und die Top 250 - ein Board zahlt $30 pro Season.</div>
+      <svg class="t-art" viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><g stroke="var(--ac)" stroke-width="1.5" fill="#15121f"><ellipse cx="44" cy="52" rx="26" ry="8"/><ellipse cx="44" cy="44" rx="26" ry="8"/><ellipse cx="44" cy="36" rx="26" ry="8"/><ellipse cx="44" cy="28" rx="26" ry="8"/></g><path d="M36 28h16" stroke="var(--ac)" stroke-width="1.8"/><path d="M92 54l22-8 18 4 22-16 18 6 22-22 18 4 22-14" stroke="var(--ac)" stroke-width="2"/><path d="M222 8h12v12" stroke="var(--ac)" stroke-width="2"/></svg>
       <div class="t-go">Starte mit $10,000 <i>→</i></div>
     </a>
     <a class="tile s3 pz" href="/de/hyperliquid-whales/" style="--ac:#5ee6c8">
       <div class="t-kick"><span class="dot"></span> Hyperliquid · live</div>
       <div class="t-title">Wal-Tracker</div>
       <div class="t-sub">Jede Position über $1M, ihr Liquidationspreis und die Trades, sobald sie gedruckt werden.</div>
+      <svg class="t-art" viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><path d="M46 40c6-17 33-25 58-25 28 0 47 13 58 24 4 4 10 4 15 0l11-9c-5-1-9-4-10-10 6 1 12 3 15 7 3-5 8-8 14-9-1 6-4 11-10 13l-13 14c-8 9-19 13-33 13H86c-22 0-33-8-40-18z" fill="var(--ac)" fill-opacity=".9"/><circle cx="72" cy="34" r="2.400" fill="#0b0d11"/><path d="M58 46c7 4 16 5 26 4" stroke="#0b0d11" stroke-width="1.800"/><path d="M104 15V7m0 0c-3-4-8-4-11-2m11 2c3-4 8-4 11-2" stroke="var(--ac)" stroke-width="1.800" stroke-linecap="round"/><path d="M0 60c12-4 24-4 36 0s24 4 36 0 24-4 36 0 24 4 36 0 24-4 36 0 24 4 36 0 24-4 28 0" stroke="var(--ac)" stroke-opacity=".5" stroke-width="1.500"/></svg>
       <div class="t-go">Wale beobachten <i>→</i></div>
     </a>
     <a class="tile s3 pz" href="/de/coins/" style="--ac:#16c2d6">
@@ -1365,6 +1375,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       <div class="t-kick">66 Regeln · nach Gebühren</div>
       <div class="t-title">Strategie-Bibliothek</div>
       <div class="t-sub">Krypto, Aktien, Forex, Rohstoffe und Indizes: vollständige Ergebnisse, die genaue Regel und ein kostenloser Download, Verlierer inklusive.</div>
+      <svg class="t-art" viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true"><path d="M0 54.500h240" stroke="#ffffff" stroke-opacity=".12" stroke-dasharray="3 4"/><path d="M0 54 20 50 36 52 56 44 72 47 92 38 106 42 128 30 144 34 164 22 182 26 204 14 240 8V64H0z" fill="var(--ac)" fill-opacity=".1"/><path d="M0 54 20 50 36 52 56 44 72 47 92 38 106 42 128 30 144 34 164 22 182 26 204 14 240 8" stroke="var(--ac)" stroke-width="2"/><path d="M0 54 30 56 60 50 90 56 120 49 150 55 180 50 210 53 240 48" stroke="#8b95a3" stroke-width="1.400"/></svg>
       <div class="t-go">Strategien ansehen <i>→</i></div>
     </a>
 
@@ -2328,8 +2339,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=a3b34094"></script>
-<script defer src="/assets/mp-auth.js?v=86a4da54"></script>
-<script defer src="/assets/mp-nav.js?v=1902717a"></script>
+<script defer src="/assets/mp-auth.js?v=1ef29b25"></script>
+<script defer src="/assets/mp-nav.js?v=f5a3656f"></script>
 
 <script>
 (function(){try{
@@ -2487,24 +2498,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   if(x)x.addEventListener('click',close);
 })();
 </script>
-<script>
-/* Moon partner card - accumulating benefit list: items slide in one by one, hold, then all clear and
-   restart. JS-driven so it works even with "reduce motion" on (CSS transitions still run). */
-(function(){
-  var wrap=document.querySelector('.moon-feats'); if(!wrap)return;
-  var items=[].slice.call(wrap.querySelectorAll('.mf-item')); if(!items.length)return;
-  var STEP=640, HOLD=1800, CLR=110, EXIT=520, timers=[];
-  function run(){
-    timers.forEach(clearTimeout); timers=[];
-    items.forEach(function(it){it.classList.remove('in','out');});
-    items.forEach(function(it,idx){ timers.push(setTimeout(function(){it.classList.add('in');}, 150+idx*STEP)); });
-    var allIn=150+items.length*STEP;
-    items.forEach(function(it,idx){ timers.push(setTimeout(function(){it.classList.remove('in');it.classList.add('out');}, allIn+HOLD+idx*CLR)); });
-    timers.push(setTimeout(run, allIn+HOLD+items.length*CLR+EXIT));
-  }
-  run();
-})();
-</script>
+
 <script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=sect&e=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=nav&e=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>

@@ -128,11 +128,6 @@ function bkSelect(cls, opts, cur) {
     '@media(max-width:980px){.hm-targets .hm-oi,.hm-targets .hm-tg-r.rl{display:none}.hm-tg-g.has-real{grid-template-columns:1fr}}' +
     '.hm-oi span{color:#5c6b84}' +
     '.hm-selbox .hm-oi{display:block!important;margin:4px 0 0;font-size:10.5px}' +
-    '.hm-risk{order:3;width:100%;font:11px "Space Mono",monospace;color:#8fa3c4;margin:3px 0 0;padding:5px 8px;background:#0d1116;border:1px solid #1d242f;border-radius:8px}' +
-    '.hm-risk b{color:#e9e7df}.hm-risk span{color:#5c6b84}.hm-risk .l{color:#66d3a5}.hm-risk .s{color:#ff8f86}' +
-    '.hm-risk.lk{cursor:pointer;color:#8fa3c4;border-color:#2a3444;display:flex;align-items:center;gap:6px}' +
-    '.hm-risk.lk:hover{border-color:#c2f64a55;color:#c9d4e6}' +
-    '.hm-risk.lk b{color:#c2f64a}' +
     '.hm-lk{display:inline-flex;color:#c2f64a;flex:none}' +
     '.hm-zal{display:flex;align-items:center;gap:6px;margin:7px 0 0;padding:5px 7px;border:1px solid #2a3444;border-radius:8px;cursor:pointer;font:10.5px "Space Mono",monospace;color:#8fa3c4;line-height:1.3}' +
     '.hm-zal:hover{border-color:#c2f64a55;color:#c9d4e6}' +
@@ -524,7 +519,10 @@ function bkSelect(cls, opts, cur) {
       x0 = Math.max(0, x0); x1 = Math.min(W, x1);
       var al = heatAlpha(s._h), col = heatCol(s._h);
       ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')';
-      ctx.fillRect(x0, y, x1 - x0, bh);
+      // WIDE BINS READ AS A WALL (2026-11-01, owner: "sve treba da bude izuzetno pregledno"): zoomed in, one 0.1% bin is 15px tall and a run of them is a solid slab.
+      // Drawn as a line with air on both sides each level can be told from the next; the click box stays the whole bin.
+      var dh = bh >= 5 ? Math.max(3, bh * 0.62) : bh, dy = y + (bh - dh) / 2;
+      ctx.fillRect(x0, dy, x1 - x0, dh);
       S.bandRects.push({ s: s, x0: x0, x1: x1, y: y, h: bh, al: al });
       // The cut itself is marked, so "this line stops" reads as an event rather than as a rendering bug.
       if (isGone && cx && x1 > x0 + 2) {
@@ -540,7 +538,9 @@ function bkSelect(cls, opts, cur) {
       ctx.strokeStyle = up ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x, Y(b.high)); ctx.lineTo(x, Y(b.low)); ctx.stroke();
       ctx.fillStyle = up ? '#2ebd85' : '#ff6258';
-      var yO = Y(b.open), yC = Y(b.close); ctx.fillRect(x - cw / 2, Math.min(yO, yC), cw, Math.max(1.2, Math.abs(yC - yO)));
+      var yO = Y(b.open), yC = Y(b.close), yT = Math.min(yO, yC), bH = Math.max(1.2, Math.abs(yC - yO));
+      if (cw >= 3) { ctx.fillStyle = 'rgba(7,9,12,.9)'; ctx.fillRect(x - cw / 2 - 1, yT - 1, cw + 2, bH + 2); ctx.fillStyle = up ? '#2ebd85' : '#ff6258'; } // the candle keeps an edge over a bright band
+      ctx.fillRect(x - cw / 2, yT, cw, bH);
     }
     // real liquidations - subtle dots; only sizeable ones get an outline (toggleable via the Dots button)
     // Measured 2026-09-18 on live BTC: of the 1000 newest events the MEDIAN notional is $994 and 506 of them are
@@ -616,27 +616,6 @@ function bkSelect(cls, opts, cur) {
         }
       }
     }
-    // YOUR position on the map - see whether your liq sits inside a pool the price is hunting
-    if (S.myPos && S.myPos.length) {
-      ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'left';
-      for (i = 0; i < S.myPos.length; i++) { var mp = S.myPos[i];
-        if (mp.entry > pLo && mp.entry < pHi) { var ey2 = Y(mp.entry);
-          ctx.setLineDash([2, 3]); ctx.strokeStyle = 'rgba(56,189,248,.85)'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(0, ey2); ctx.lineTo(W, ey2); ctx.stroke(); ctx.setLineDash([]);
-          ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ey2 - 13, 118, 12);
-          ctx.fillStyle = '#38bdf8'; ctx.fillText(__esT_mpheatmap("yourEntry",'YOUR ENTRY ') + (mp.long ? 'L' : 'S') + mp.lev + 'x', 7, ey2 - 4);
-        }
-        if (mp.liq > pLo && mp.liq < pHi) { var ly2 = Y(mp.liq);
-          ctx.setLineDash([5, 3]); ctx.strokeStyle = 'rgba(160,107,255,.9)'; ctx.lineWidth = 1.2;
-          ctx.beginPath(); ctx.moveTo(0, ly2); ctx.lineTo(W, ly2); ctx.stroke(); ctx.setLineDash([]);
-          var inPool = false; for (var pi2 = 0; pi2 < P.alive.length; pi2++) { if (Math.abs(P.alive[pi2].price - mp.liq) < P.binH * 1.5 && P.alive[pi2].w > (P.alive[0] ? P.alive[0].w * 0.2 : 0)) { inPool = true; break; } }
-          var lqTxt = __esT_mpheatmap("yourLiq",'YOUR LIQ ') + fpx(mp.liq) + (inPool ? ' - INSIDE A POOL' : '');
-          var lw2 = ctx.measureText(lqTxt).width;
-          ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ly2 - 13, lw2 + 8, 12);
-          ctx.fillStyle = inPool ? '#ffd75a' : '#a06bff'; ctx.fillText(lqTxt, 7, ly2 - 4);
-        }
-      }
-    }
     // REAL whale liquidation prices (measured, from Hyperliquid's own position data - no model in them)
     if (S.whales && S.whales.length) {
       ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'right';
@@ -652,6 +631,10 @@ function bkSelect(cls, opts, cur) {
       }
       ctx.textAlign = 'left';
     }
+    // the scale, on the map: colour is how crowded a level is, and a reader should not need the docs to know that
+    if (W > 300) { var kw = 96, kx = 8, ky = 8; ctx.fillStyle = 'rgba(7,9,12,.82)'; ctx.fillRect(kx - 4, ky - 3, kw + 96, 15);
+      var kg = ctx.createLinearGradient(kx, 0, kx + kw, 0); for (i = 0; i <= 6; i++) kg.addColorStop(i / 6, 'rgba(' + heatCol(i / 6) + ',1)'); ctx.fillStyle = kg; ctx.fillRect(kx, ky + 2, kw, 5);
+      ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'left'; ctx.fillStyle = '#9aa7b8'; ctx.fillText(__esT_mpheatmap('keyCrowded', 'how crowded'), kx + kw + 6, ky + 8); }
     // live price - the LINE stays on the plot, the TAG moved to the price axis where a price tag belongs
     if (S.price > 0 && S.price > pLo && S.price < pHi) {
       var py = Y(S.price);
@@ -859,7 +842,7 @@ function bkSelect(cls, opts, cur) {
   // still knowable at a glance because a zone above the price is where shorts die and one below is where
   // longs do - that is always true and needs no colour. What could not be read before is WHICH zone is
   // the heavy one, and that is the thing a reader is actually looking for.
-  var VIRIDIS = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+  var VIRIDIS = [[52, 62, 128], [46, 112, 176], [30, 170, 160], [122, 214, 96], [255, 226, 48]]; // the purple foot of the ramp sat on our black ground and read as mud (2026-11-01)
   function heatCol(h) {
     var t = Math.max(0, Math.min(1, +h || 0)) * (VIRIDIS.length - 1);
     var i0 = Math.floor(t), i1 = Math.min(VIRIDIS.length - 1, i0 + 1), f = t - i0;
@@ -979,7 +962,7 @@ function bkSelect(cls, opts, cur) {
     // than that is named in TARGETS and one tap away (the chips move the view), which is better than opening on a
     // map where the candles are an 11% ribbon nobody can read.
     if (out.grew) {
-      var cR = Math.max(hi - lo, px * 0.006), maxSpan = Math.max(cR / 0.3, px * 0.025);
+      var cR = Math.max(hi - lo, px * 0.006), maxSpan = Math.max(cR / 0.42, px * 0.02);
       if (out.hi - out.lo > maxSpan) { var mid = (lo + hi) / 2; out.lo = mid - maxSpan / 2; out.hi = mid + maxSpan / 2; }
     }
     return out;
@@ -1100,7 +1083,7 @@ function bkSelect(cls, opts, cur) {
       // the model happens to be there.
       loadObs(coin);
       if (res[2] && +res[2].price > 0) { S.price = +res[2].price; S.chg = +res[2].chg || 0; }
-      loadMyPos(); updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
+      updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
       sched();
       if (first) { S._noMore = 0; S._lm = 0; setTimeout(function () { loadMore(3); }, 800); } // ~5000 candles of history in the background
     });
@@ -1119,18 +1102,6 @@ function bkSelect(cls, opts, cur) {
       sched();
       if (chain > 0) loadMore(chain - 1); // eager warm-up right after the first paint
     }).catch(function () { S._lm = 0; });
-  }
-  function loadMyPos() { // the user's OPEN paper trades for this coin -> drawn on the map (entry + liq lines)
-    if (!S) return;
-    try {
-      var jn = JSON.parse(localStorage.getItem('mp_journal') || '[]');
-      S.myPos = jn.filter(function (t) { return t && t.status !== 'win' && t.status !== 'loss' && String(t.sym || '').toUpperCase() === S.coin && +t.entry > 0; })
-        .slice(0, 6).map(function (t) { var lev = +t.lev || 1, long = t.side !== 'short';
-          // A position carries the liq it was FILLED with and history is never rewritten; this is only the
-          // fallback for a row that has none, and it has to use the same formula as everything else.
-          var liq = +t.liq || liqPx(+t.entry, lev, long, +t.mmr > 0 ? +t.mmr : MMR);
-          return { entry: +t.entry, liq: liq, long: long, lev: lev }; });
-    } catch (e) { S.myPos = []; }
   }
   function pollEvents() {
     if (!S || document.hidden) return;
@@ -1179,45 +1150,6 @@ function bkSelect(cls, opts, cur) {
       + '<b style="color:' + (up ? '#66d3a5' : dn ? '#ff8f86' : '#8fa3c4') + '">' + (v >= 0 ? '+' : '') + v.toFixed(1) + '%</b> ' + lab
       + ' <span>' + (up ? __esT_mpheatmap('oiBuild', __esT_mpheatmap("leverageIsStillBeing",'leverage is still being added')) : dn ? __esT_mpheatmap('oiUnwind', __esT_mpheatmap("leverageIsBeingUnwound",'leverage is being unwound')) : __esT_mpheatmap('oiFlat', __esT_mpheatmap("leverageIsFlat",'leverage is flat'))) + '</span></div>';
   }
-  // YOUR RISK ON THE MAP - Premium, and the only panel here that is about the reader rather than the
-  // market. It reads the open paper positions this browser already holds and the bands already drawn, so
-  // it costs no request. What it answers is the question the map cannot: how much modelled leverage stands
-  // between the price and YOUR liquidation, and how heavy the worst of it is. Shown locked rather than
-  // hidden for everybody else, because a locked thing has to be visible to be wanted (MP Shop rule).
-  function riskLine() {
-    var pos = (S.myPos || []); if (!pos.length) return '';
-    if (S.prem !== 1) {
-      return '<div class="hm-risk lk" role="button" tabindex="0" data-prem="risk">'
-        + '<span class="hm-lk">' + lockSvg() + '</span>'
-        + __esT_mpheatmap('riskLocked', __esT_mpheatmap("seeWhatStandsBetween",'See what stands between the price and your own liquidation')) + ' <b>' + __esT_mpheatmap('riskLockedB', 'Premium') + '</b></div>';
-    }
-    var px = S.price, P = S.pools; if (!(px > 0) || !P || !P.alive) return '';
-    var wSum = 0, wN = 0; P.alive.forEach(function (q) { if (!poolGone(q)) { wSum += (+q.w || 0); wN++; } });
-    var wAvg = wN ? wSum / wN : 0;
-    var out = [];
-    pos.slice(0, 2).forEach(function (t) {
-      if (!(t.liq > 0)) return;
-      var lo = Math.min(px, t.liq), hi = Math.max(px, t.liq), cnt = 0, worst = null;
-      P.alive.forEach(function (q) {
-        if (poolGone(q)) return;
-        if (q.price < lo || q.price > hi) return;
-        if (q.long !== t.long) return;          // only the side that would be forced out WITH them counts as fuel
-        if (!(wAvg > 0) || (+q.w || 0) < wAvg) return;  // and only bands at or above an average one - the rest is the model's noise floor
-        cnt++;
-        if (!worst || (+q.w || 0) > (+worst.w || 0)) worst = q;
-      });
-      var rel = (worst && wAvg > 0) ? (+worst.w || 0) / wAvg : 0;
-      var cb = worst ? calibFor(worst) : null;
-      out.push('<div class="hm-risk"><b>' + __esT_mpheatmap('riskYour', 'YOUR') + ' ' + (t.long ? '<span class="l">' + __esT_mpheatmap('riskLong', 'LONG') + '</span>' : '<span class="s">' + __esT_mpheatmap('riskShort', 'SHORT') + '</span>') + ' ' + (t.lev || 1) + 'x</b> '
-        + (cnt
-            ? '<b>' + cnt + '</b> ' + (cnt === 1 ? __esT_mpheatmap('riskZone2', 'zone heavier than average') : __esT_mpheatmap('riskZones2', 'zones heavier than average')) + ' ' + __esT_mpheatmap('riskBetween', __esT_mpheatmap("betweenThePriceAnd",'between the price and your liq at')) + ' <b>' + fpx(t.liq) + '</b>'
-              + (rel > 0 ? ' \u00b7 ' + __esT_mpheatmap('riskHeaviest', 'heaviest') + ' <b>' + relTxt(rel) + '</b> ' + __esT_mpheatmap('riskAt', 'at') + ' <b>' + fpx(worst.price) + '</b>' : '')
-              + (cb && cb.med > 0 ? ' <span>(' + __esT_mpheatmap('riskCalib', __esT_mpheatmap("bandsThatHeavyHave",'bands that heavy have really liquidated a median of')) + ' ' + usdShort(cb.med) + ')</span>' : '')
-            : __esT_mpheatmap('riskClear2', __esT_mpheatmap("noZoneHeavierThan",'no zone heavier than average stands between the price and your liq at')) + ' <b>' + fpx(t.liq) + '</b>')
-        + '</div>');
-    });
-    return out.join('');
-  }
   function lockSvg() { return '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'; }
   function updTargets() {
     if (!S || !S.tgEl) return; var px = S.price, P = S.pools; if (!(px > 0) || !P.alive.length) { S.tgEl.innerHTML = ''; return; }
@@ -1244,7 +1176,6 @@ function bkSelect(cls, opts, cur) {
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += riskLine();   // the OI sentence is in the readout (oiLine inside showSel) - as a standing row it put the map 6px below the fold on a 1366x768 desktop
     h += __esT_mpheatmap("theNearestLevelsWhere",'<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>');
     S.tgEl.innerHTML = h;
   }
@@ -3431,7 +3362,6 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     S.timers.push(setInterval(function () { if (!document.hidden) bkLoad(); }, 4000));
     bmFetch();
     S.timers.push(setInterval(function () { if (!document.hidden) bmFetch(); }, 5000));
-    S.timers.push(setInterval(function () { loadMyPos(); }, 15000));
     S.timers.push(setInterval(pollEvents, 6000));
     S.timers.push(setInterval(function () { if (S && !document.hidden) loadAll(false); }, 60000));
     S.onVis = function () { if (S && !document.hidden) { loadAll(false); pollEvents(); } };
@@ -3488,7 +3418,6 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
         model: S.model || null,
         prem: S.prem == null ? null : +S.prem,
         zal: S.zal ? { on: !!S.zal.on, rel: +S.zal.rel, dist: +S.zal.dist, coins: (S.zal.coins || []).slice() } : null,
-        myPos: (S.myPos || []).length,
         yLo: S.yLo, yHi: S.yHi, price: S.price, yViewed: !!S.yView,
         targets: (S._tg || []).map(function (x) { return { price: x.price, long: !!x.long }; }),
         // The film, read-only, so a test can check the axis really fits the widest label it prints -

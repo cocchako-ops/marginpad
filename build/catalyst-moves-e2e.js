@@ -32,7 +32,7 @@ function lift() {
     block = block.replace("const rateW = isMacro ? 1 : Math.max(0.1, 1 - chance);", 'const rateW = 1;');
     if (!/const rateW = 1;/.test(block)) throw new Error('falsify anchor missing');
   }
-  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE, cxOneStory, cxStoryZones };')();
+  return new Function(block + '\nreturn { cxDetectMoves, cxAttribute, cxLabel, cxMedian, CX_BEFORE_MS, CX_AFTER_MS, cxRealW, cxImpactOf, cxEnrich, cxNote, CX_IMPACT, cxTech, cxStories, cxEpisodes, cxUsd, cxOiFactor, cxFuelFactor, cxBookFactor, cxShares, cxEnt, cxEntShared, cxStoryName, cxMoney, CX_IMP_NOISE, cxOneStory, cxStoryZones, cxBig, cxLeaderOf };')();
 }
 function synthBars(n, opt) {
   const o = Object.assign({ p0: 100, noise: 0.0005, step: 900 }, opt || {}); const out = []; let p = o.p0; let seed = 7;
@@ -232,6 +232,63 @@ function pureLeg() {
   const zc = X.cxStoryZones(zmoves.map(m => Object.assign({}, m)), zb2, T0 + 14 * 900000).find(m => m.zone);
   ok('once price gives back 80% of the move the zone closes at the extreme it reached', zc && zc.live === false && zc.closedBy === 'recovered' && Math.abs(zc.pct - (-5.9)) < 0.15, JSON.stringify([zc && zc.live, zc && zc.closedBy, zc && zc.pct]));
   ok('a -0.9% blip between two legs of one story does not split the episode', !!big && Math.abs(big.pct - 21.7) < 0.2 && bl.length === 2 && bl.some(m => m.blip), JSON.stringify(bl.map(m => [m.pct, m.legs, !!m.blip])));
+
+  console.log('[pure] the first report owns the move (2026-11-01)');
+  {
+    const H0 = Date.UTC(2026, 9, 29, 20, 39), hk = (o) => cat(Object.assign({ kind: 'hack', tier: 'mediaA', expect: -1, syms: '', score: 57, ts_src: H0, source: 'rss:coindesk', title: 'Binance hot wallet drained for $2.5 billion', lbl: { imp: 90, kind: 'hack', sum: 'Binance drained', story: 'binance-hack-2026', expect: -1, syms: [] } }, o));
+    const items = [hk({ id: 'h1' }), hk({ id: 'h2', source: 'tg:bwenews', ts_src: H0 + 300000, title: 'Tether freezes $971 million linked to the Binance drain' }), hk({ id: 'h3', source: 'rss:cointelegraph', ts_src: H0 + 40 * 3600000, title: 'FBI attributes $6 billion Binance hack to North Korea' }), hk({ id: 'h4', source: 'rss:defiant', ts_src: H0 + 62 * 3600000, title: 'Binance resumes withdrawals after record hack' })];
+    X.cxStories(items);
+    ok('reports days apart under one slug are one story, dated by the first', items.every(c => c.story && c.story.first === H0 && c.story.reports === 4), JSON.stringify(items.map(c => c.story && c.story.reports)));
+    ok('only the first report is not a repeat', !items[0].repeat && items.slice(1).every(c => c.repeat));
+    ok('the follow-ups raise the score of the first report', items[0].score > 57, items[0].score);
+    const crash = { t0: H0 - 9 * 60000, t1: H0 + 6 * 60000, pct: -1.9, dir: -1, z: 24 };
+    const r1 = X.cxAttribute(crash, items, null, { sym: 'BTC' });
+    ok('the crash is the hack, and the card prints the headline that broke it', r1.cause === 'news' && r1.catalyst && /drained/.test(r1.catalyst.title) && r1.catalyst.ts === H0, JSON.stringify(r1.catalyst));
+    const later = { t0: H0 + 62 * 3600000 + 600000, t1: H0 + 62 * 3600000 + 1500000, pct: -0.9, dir: -1, z: 6 };
+    const r2 = X.cxAttribute(later, items, null, { sym: 'BTC' });
+    ok('a dip two days later is NOT the hack, even with a follow-up ten minutes before it', r2.cause !== 'news' && !r2.catalyst, JSON.stringify([r2.cause, r2.catalyst]));
+    const un = [items[0], items[1], cat({ id: 'u1', kind: 'hack', tier: 'mediaB', syms: '', score: 48, expect: -1, ts_src: H0 + 3 * 3600000, source: 'rss:x', title: 'Binance hot wallet drained for $2.5 billion, Tether freezes funds' })];
+    X.cxStories(un);
+    ok('an item the model never read may join a running story by its words, and is a repeat there', un[2].story && un[2].repeat === true, JSON.stringify(un[2].story));
+    const al = X.cxAttribute({ ...crash, pct: -8 }, items, null, { sym: 'XPL', cls: 'crypto' });
+    ok('a market-wide story explains an alt it never named', al.cause === 'news', al.cause);
+    for (const [sym, cls] of [['NVDA', 'stock'], ['XAU', 'metal'], ['SPX500', 'index'], ['EURUSD', 'forex'], ['MPAD', 'house']]) { const r = X.cxAttribute({ ...crash, pct: -2 }, items, null, { sym, cls }); ok('a crypto hack is not the cause of a move on ' + sym, r.cause !== 'news' && !r.catalyst, r.cause); }
+    const mac = X.cxAttribute({ ...crash, pct: 1 , dir: 1 }, [cat({ kind: 'macro', tier: 'primary', source: 'calendar', title: 'US CPI inflation report', syms: '', expect: 0, score: 80, ts_src: crash.t0 - 300000 })], null, { sym: 'EURUSD', cls: 'forex' });
+    ok('a macro print still explains forex', mac.cause === 'news' && mac.catalyst, mac.cause);
+    const nm = X.cxAttribute({ ...crash, pct: -3, gap: 50400000 }, [cat({ kind: 'earnings', tier: 'primary', source: 'rss:nasdaq', title: 'Nvidia earnings: EPS 1.89', syms: 'NVDA', expect: 0, score: 85, ts_src: crash.t0 - 13 * 3600000, major: true })], null, { sym: 'NVDA', cls: 'stock' });
+    ok('an opening gap reaches back over the closed market to the earnings report', nm.cause === 'news' && nm.label === 'Earnings', JSON.stringify([nm.cause, nm.label]));
+  }
+
+  console.log('[pure] the mechanisms, on every market');
+  {
+    const B0 = Date.UTC(2026, 10, 1, 4, 0), bk = []; for (let i = 0; i < 2000; i++) bk.push({ t: B0 - i * 300000, long: 500, short: 500 });
+    bk.push({ t: B0 + 1800000, long: 19300000, short: 25000 });
+    const xpl = X.cxAttribute({ t0: B0 + 1800000, t1: B0 + 2700000, pct: -17.95, dir: -1, z: 70 }, [], bk, { sym: 'XPL', liqFloor: 50000 });
+    ok('XPL -18% over $19.3M of long liquidations is a cascade, long, and sure', xpl.cause === 'cascade' && xpl.label === 'Long liquidations' && xpl.sure, JSON.stringify([xpl.cause, xpl.label]));
+    const before = X.cxAttribute({ t0: B0, t1: B0 + 1800000, pct: 3.1, dir: 1, z: 12 }, [], bk, { sym: 'XPL', liqFloor: 50000 });
+    ok('the move before it is not credited with that bucket', before.cause !== 'cascade' && (!before.liq || before.liq.usd < 1e6), JSON.stringify(before.liq));
+    const wrong = X.cxAttribute({ t0: B0 + 1800000, t1: B0 + 2700000, pct: 2, dir: 1, z: 9 }, [], bk, { sym: 'XPL', liqFloor: 50000 });
+    ok('longs liquidated under a RISE are not a cascade that explains the rise', !wrong.cascade, JSON.stringify(wrong.liq));
+    const gp = X.cxAttribute({ t0: B0 + 1800000, t1: B0 + 2700000, pct: -3, dir: -1, z: 9, gap: 50400000 }, [], bk, { sym: 'NVDA', cls: 'stock', liqFloor: 1000 });
+    ok('a gap is a gap, whatever liquidated at the open', gp.cause === 'gap' && gp.label === 'Opening gap', JSON.stringify([gp.cause, gp.label]));
+    const bt = [{ t0: B0, t1: B0 + 900000, pct: 0.7, dir: 1, cause: 'unknown' }];
+    const q = X.cxAttribute({ t0: B0, t1: B0 + 900000, pct: 47, dir: 1, z: 40 }, [], null, { sym: 'Q', btcMoves: bt });
+    ok('+47% beside BTC +0.7% did not follow Bitcoin', q.cause !== 'btc' && !q.factors.some(f => f.k === 'btc'), q.cause);
+    const fo = X.cxAttribute({ t0: B0, t1: B0 + 900000, pct: 2.1, dir: 1, z: 8 }, [], null, { sym: 'SOL', btcMoves: bt });
+    ok('+2.1% beside BTC +0.7% did', fo.cause === 'btc', fo.cause);
+    const sv = X.cxAttribute({ t0: B0, t1: B0 + 900000, pct: 1, dir: 1, z: 8 }, [], null, { sym: 'XAG', cls: 'metal', lead: X.cxLeaderOf('XAG', 'metal'), btcMoves: [{ t0: B0, t1: B0 + 900000, pct: 0.8, dir: 1 }] });
+    ok('silver follows gold, and says so', sv.cause === 'lead' && sv.label === 'Gold move', JSON.stringify([sv.cause, sv.label]));
+    const jp = X.cxAttribute({ t0: B0, t1: B0 + 900000, pct: -0.4, dir: -1, z: 8 }, [], null, { sym: 'USDJPY', cls: 'forex', lead: X.cxLeaderOf('USDJPY', 'forex'), btcMoves: [{ t0: B0, t1: B0 + 900000, pct: 0.4, dir: 1 }] });
+    ok('a USD-first pair reads the dollar the other way round', jp.cause === 'lead', jp.cause);
+    const hr = []; for (let i = 0; i < 200; i++) hr.push({ t: B0 - (200 - i) * 3600000, usd: 1e8 * (1 + 0.0005 * (i % 2)) }); hr.push({ t: B0 + 3600000, usd: 0.86e8 });
+    const f0 = X.cxOiFactor({ t0: B0, t1: B0 + 900000, dir: -1 }, hr);
+    ok('hourly open interest gives the same reading the two-minute series gives', f0 && f0.k === 'oi' && f0.kind === 'delever', JSON.stringify(f0));
+    ok('-18% on a coin is notable', X.cxBig({ pct: -18, scale: 0.25 }, 'crypto'));
+    ok('-1% on a coin is not', !X.cxBig({ pct: -1, scale: 0.25 }, 'crypto'));
+    ok('-0.6% on a currency pair is', X.cxBig({ pct: -0.6, scale: 0.02 }, 'forex'));
+    const dt = X.cxDetectMoves((() => { const b = synthBars(300); for (let i = 200; i < 300; i++) { b[i].time += 50400; } b[200].open = b[199].close; b[200].close = b[199].close * 0.95; b[200].low = b[200].close; for (let i = 201; i < 300; i++) { const k = b[200].close / b[199].close; b[i].close *= k; b[i].open *= k; b[i].high *= k; b[i].low *= k; } return b; })());
+    ok('the bar after a closed market carries the length of the close', dt.moves.some(m => m.gap > 3600000), JSON.stringify(dt.moves.slice(0, 2)));
+  }
 }
 
 // ---------- production ----------
@@ -266,9 +323,9 @@ async function prodLeg() {
   ok('and its news-explained share is well under the real one (the matching is not chance)', placNews <= realNews * 0.6, 'real ' + Math.round(realNews * 100) + '% placebo ' + Math.round(placNews * 100) + '%');
   console.log('  info news-explained real ' + Math.round(realNews * 100) + '% / placebo ' + Math.round(placNews * 100) + '% ; all causes real ' + Math.round(real * 100) + '% / placebo ' + Math.round(plac * 100) + '%');
   // a coin with no liquidation feed
-  const h = await getJ(BASE + '/api/catalysts/moves?symbol=HYPE&nc=1');
+  const h = await getJ(BASE + '/api/catalysts/moves?symbol=EURUSD&nc=1');
   const hj = h.j || {};
-  ok('HYPE (no liquidation feed) answers with moves and never a cascade', h.status === 200 && hj.liqMeasured === false && (hj.moves || []).every(m => !m.cascade), hj.liqMeasured);
+  ok('a forex pair (no liquidation feed) answers with moves and never a cascade', h.status === 200 && hj.liqMeasured === false && (hj.moves || []).every(m => !m.cascade), hj.liqMeasured);
   // the live path
   const at = Date.now() - 10 * 60000;
   const l = await getJ(BASE + '/api/catalysts/moves?symbol=BTC&at=' + at + '&pct=-1.5&n=2&nc=1');
