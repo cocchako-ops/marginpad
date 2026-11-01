@@ -314,6 +314,8 @@ const LAYOUT = () => {
     let swRead = { skip: true };
     if (swPt) {
       await page.evaluate(() => { const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none'; });
+      await page.mouse.move(swPt.x, swPt.y); await new Promise((r) => setTimeout(r, 200));
+      const hoverFig = await page.evaluate(() => { const m = ((document.querySelector('.hm-tip') || {}).textContent || '').match(/\$[0-9.]+[KMB]?/); return m ? m[0] : ''; });
       await page.mouse.click(swPt.x, swPt.y);
       await new Promise((r) => setTimeout(r, 420));
       swRead = await page.evaluate(() => {
@@ -323,6 +325,7 @@ const LAYOUT = () => {
       });
       // a dead rect, clicked at its own centre, must open the SWEPT readout - no walking, no second guess
       ok('a cut line is selectable at its own rectangle', swRead.head === 'SWEPT', JSON.stringify({ price: swPt.price, head: swRead.head }));
+      ok('the hover and the box print the same dollar figure for one line (owner: $5.3M against $543K)', !hoverFig || (swRead.txt || '').indexOf(hoverFig) >= 0 && (swRead.txt || '').search(/\$[0-9.]+[KMB]?/) === (swRead.txt || '').indexOf(hoverFig), JSON.stringify({ hoverFig, box: (swRead.txt || '').slice(0, 120) }));
     } else { console.log('  note  no cut line is drawn wide enough to click in this frame'); }
     // A STANDING ZONE CARRIES A MEASURED DOLLAR FIGURE AND STILL REFUSES TO PRICE THE MODEL. Those are
     // two different claims in the same box and both have to survive: the crowding is an ESTIMATE and says
@@ -346,7 +349,7 @@ const LAYOUT = () => {
     // MEASURED OR HONESTLY ABSENT - never a confident blank. The figure comes from our own collector and
     // the feed raises its size floor to reach further back, so the basis is printed with the number.
     ok('and it carries the measured dollars, or says why it cannot',
-      !!swRead.skip || /really was liquidated|recorded no liquidation|older than the liquidations loaded/i.test(swRead.txt || ''),
+      !!swRead.skip || /really liquidated|recorded no liquidation|older than the liquidations loaded/i.test(swRead.txt || ''),
       (swRead.txt || '').slice(0, 140));
 
     await page.close();

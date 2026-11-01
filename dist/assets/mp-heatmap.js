@@ -892,6 +892,24 @@ function bkSelect(cls, opts, cur) {
     return z._su;
   }
 
+  // ONE ZONE, ONE FIGURE (2026-11-01, owner: hover said $5.3M, the box said $543K for the same line). The two were different measurements printed as the same claim:
+  // the hover read the collector's complete aggregate at this price over the window, the box read only the orders this browser downloaded around the crossing, which on
+  // a long view are the biggest ones alone. The complete figure is the answer on both; the named orders are a detail under it, labelled as what they are. The crossing
+  // figure stands in only when it is the larger, i.e. the crossing is older than the window on screen.
+  function zoneDead(z) { return !!(z.dead || z._gone || poolGone(z)); }
+  function zoneUsd(z) {
+    var obs = +z.obs || 0, cx = zoneDead(z) ? (z.tsw || crossAt(z)) : 0, su = cx ? sweptUsd(z, cx) : null, named = su && su.usd ? su.usd : 0;
+    if (obs > 0 && obs >= named) return { usd: obs, win: obsWinTxt(), su: su, cx: cx };
+    if (named > 0) return { usd: named, win: '', su: su, cx: cx };
+    return { usd: 0, win: obsWinTxt(), su: su, cx: cx };
+  }
+  function zoneHead(z, cx, agoFn) {
+    return '<b>' + fpx(z.price) + '</b> - ' + __esT_mpheatmap('sweptWhere', 'where') + ' <span class="' + (z.long ? 'l' : 's') + '">' + (z.long ? 'longs' : 'shorts') + '</span> '
+      + __esT_mpheatmap('sweptWere', __esT_mpheatmap("wereClosedOut", 'were closed out')) + (cx ? ', ' + agoFn(cx * 1000) : '');
+  }
+  function zoneUsdLine(u) {
+    return '<b style="color:#c2f64a">' + usdShort(u.usd) + '</b> ' + (u.win ? __esT_mpheatmap("reallyLiqAtPriceIn", 'really liquidated at this price in') + ' ' + u.win : __esT_mpheatmap("reallyLiqCrossing", 'really liquidated when the price crossed it'));
+  }
   function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
   function selAt(my, H) { if (!S) return; S._selLo = (my / Math.max(1, H)) < 0.5; } // touched the top half -> the box goes low, and the other way round
   function dotR(e) { var d = Math.max(0.55, Math.min(1, (S.cv ? S.cv.clientWidth : 900) / 900)); return Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * d); }
@@ -1231,9 +1249,11 @@ function bkSelect(cls, opts, cur) {
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
       var h = '';
       if (best) { var s2 = best.s, r2 = relOf(s2);
-        h += '<b>' + fpx(s2.price) + '</b> - where <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs' : 'shorts') + __esT_mpheatmap("getLiquidated",'</span> get liquidated');
-        if (r2 > 0) h += '<br>' + relSwatch(s2) + relPhrase(r2, 1) + ' <span style="color:#8b95a1">(our estimate)</span>';
-        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + __esT_mpheatmap("obsTipIn", '</b> really liquidated here in ') + obsWinTxt() : '<span style="color:#8b95a1">' + __esT_mpheatmap('obsTipNone', __esT_mpheatmap("nothingReallyLiquidatedHer",'nothing really liquidated here in ')) + obsWinTxt() + '</span>');
+        var u2 = zoneUsd(s2), dd2 = zoneDead(s2);
+        if (dd2) h += zoneHead(s2, u2.cx, ago2);
+        else { h += '<b>' + fpx(s2.price) + '</b> - where <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs' : 'shorts') + __esT_mpheatmap("getLiquidated",'</span> get liquidated');
+          if (r2 > 0) h += '<br>' + relSwatch(s2) + relPhrase(r2, 1) + ' <span style="color:#8b95a1">(our estimate)</span>'; }
+        h += '<br>' + (u2.usd > 0 ? zoneUsdLine(u2) : '<span style="color:#8b95a1">' + __esT_mpheatmap('obsTipNone', __esT_mpheatmap("nothingReallyLiquidatedHer",'nothing really liquidated here in ')) + obsWinTxt() + '</span>');
       }
       if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + __esT_mpheatmap("priceAlreadyWentThrough",'price already went through this level - the <span class="') + (sw3.long ? 'l' : 's') + '">' + (sw3.long ? 'longs' : 'shorts') + __esT_mpheatmap("hereAreGone",'</span> here are gone'); }
       else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + 'a <span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'long' : 'short') + '</span> worth ' + money(e2.notional) + __esT_mpheatmap("wasLiquidatedOn",' was liquidated on ') + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + __esT_mpheatmap("moreClickToList",' more - click to list them</span>') : ''); }
@@ -1343,18 +1363,14 @@ function bkSelect(cls, opts, cur) {
         // candles went through, and what our own collector actually recorded there. The model said a
         // crowd would be closed out at this price; the measurement says what really was. Where we
         // measured nothing, it says that too rather than borrowing the model's confidence.
-        var zg = S.sel.ref, cxg = zg.tsw || crossAt(zg), sug = sweptUsd(zg, cxg);
+        var zg = S.sel.ref, ug = zoneUsd(zg), cxg = ug.cx, sug = ug.su;
         var vg = sug && sug.ven ? Object.keys(sug.ven).sort(function (a, b) { return sug.ven[b] - sug.ven[a]; }).slice(0, 3) : [];
-        h = __esT_mpheatmap('sweptK', '<span class="k">SWEPT</span>')
-          + '<b>' + fpx(zg.price) + '</b> - ' + __esT_mpheatmap('sweptWhere', 'where') + ' <span class="' + (zg.long ? 'l' : 's') + '">' + (zg.long ? 'longs' : 'shorts') + '</span> '
-          + __esT_mpheatmap('sweptWere', __esT_mpheatmap("wereClosedOut",'were closed out')) + (cxg ? ', ' + ago2(cxg * 1000) : '') + '.<br>'
-          + (sug && sug.unloaded
+        h = __esT_mpheatmap('sweptK', '<span class="k">SWEPT</span>') + zoneHead(zg, cxg, ago2) + '.<br>'
+          + (ug.usd > 0
+            ? zoneUsdLine(ug) + '.<br>'
+              + (sug && sug.usd ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptNamed', 'The orders we can name around the crossing') + ': ' + usdShort(sug.usd) + ', ' + sug.n + ' ' + (sug.n === 1 ? __esT_mpheatmap('sweptOrder', 'order') : __esT_mpheatmap('sweptOrders', 'orders')) + (vg.length ? ' · ' + vg.map(function (x) { return x.toUpperCase(); }).join(' + ') : '') + (sug.floor > 5000 ? ' (' + __esT_mpheatmap('sweptOver', 'only orders over') + ' ' + usdShort(sug.floor) + ' ' + __esT_mpheatmap('sweptLoaded', 'are loaded on this view') + ')' : '') + '.</span><br>' : '')
+            : sug && sug.unloaded
             ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptUnloaded', __esT_mpheatmap("thisSweepIsOlder",'This sweep is older than the liquidations loaded for the window you are on - pick a longer one and the real figure appears.')) + '</span><br>'
-            : sug
-            ? '<b style="color:#c2f64a">' + usdShort(sug.usd) + '</b> ' + __esT_mpheatmap('sweptReal', __esT_mpheatmap("reallyWasLiquidatedHere",'really was liquidated here, across')) + ' ' + sug.n + ' '
-              + (sug.n === 1 ? __esT_mpheatmap('sweptOrder', 'order') : __esT_mpheatmap('sweptOrders', 'orders'))
-              + (vg.length ? ' · ' + vg.map(function (x) { return x.toUpperCase(); }).join(' + ') : '') + '.<br>'
-              + (sug.floor > 5000 ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptFloor', __esT_mpheatmap("countingTheLiquidationsThi",'Counting the liquidations this window has loaded, which on a long view is only those over')) + ' ' + usdShort(sug.floor) + '.</span><br>' : '')
             : '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptNone', __esT_mpheatmap("ourCollectorRecordedNo",'Our collector recorded no liquidation at this price when the candles went through - the crowd our model put here was smaller than it looked, or it had already left.')) + '</span><br>')
           + '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptTail', __esT_mpheatmap("theLineStopsWhere",'The line stops where the candles crossed it: that leverage is gone. What is left of it is the record.')) + '</span>';
       } else { var pl2 = S.sel.ref, dPct = S.price > 0 ? (pl2.price - S.price) / S.price * 100 : null;
