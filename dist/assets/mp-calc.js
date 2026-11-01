@@ -298,7 +298,7 @@ function __esT_mpcalc(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpc
       recompute(true);
     }
     function resize(){
-      dpr=Math.min(2, window.devicePixelRatio||1);
+      dpr=0.6; /* a faint line behind the page: never the screen's own resolution */
       W=cv.clientWidth; H=cv.clientHeight;
       cv.width=Math.max(1,Math.floor(W*dpr)); cv.height=Math.max(1,Math.floor(H*dpr));
       ctx.setTransform(dpr,0,0,dpr,0,0); seed();
@@ -318,14 +318,15 @@ function __esT_mpcalc(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpc
       for (let i=0;i<pts.length;i++){ const x=i*STEP - scrollX, y=yv(pts[i]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
       ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5; ctx.lineJoin='round'; ctx.stroke();
       // glowing dot that "draws" the line at the leading edge
-      ctx.shadowColor='rgba(255,255,255,0.9)'; ctx.shadowBlur=14;
-      ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill();
-      ctx.shadowBlur=0;
+            ctx.beginPath(); ctx.arc(lx, ly, 8, 0, Math.PI*2); ctx.fillStyle='rgba(255,255,255,.14)'; ctx.fill(); ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill(); /* canvas shadowBlur on every frame was the single dearest call on the page */
     }
-    function tick(){
-      if (document.hidden) { raf=requestAnimationFrame(tick); return; } // pause only when the tab is hidden
-      scrollX += SPEED;
-      if (scrollX >= STEP){ scrollX-=STEP; pts.shift(); pts.push(nextP(pts[pts.length-1])); recompute(false); }
+    /* TWELVE FRAMES A SECOND, BY THE CLOCK (2026-11-01, owner: "uzasno mi koci sajt na desktopu"): one redraw per screen refresh was 239 full-screen redraws a second on his monitor */
+    let tl=0;
+    function tick(t){
+      if (document.hidden || t-tl<83) { raf=requestAnimationFrame(tick); return; }
+      const dt=Math.min(250, t-tl||83); tl=t;
+      scrollX += SPEED*dt/16.7;
+      while (scrollX >= STEP){ scrollX-=STEP; pts.shift(); pts.push(nextP(pts[pts.length-1])); recompute(false); }
       pts[pts.length-1] = Math.max(0.0001, pts[pts.length-1]*(1+(Math.random()-0.5)*0.004));
       draw();
       raf=requestAnimationFrame(tick);
