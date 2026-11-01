@@ -1305,13 +1305,19 @@ function cxStories(items) {
   // days of its first, and an item the model never read may JOIN a running story by its words but can never start one.
   const idx = items.map((c, i) => i).sort((a, b) => (+items[a].ts_src || 0) - (+items[b].ts_src || 0));
   const SLUG_MS = 10 * 86400000, NEAR_MS = 12 * 3600000, SPAN_MS = 3 * 86400000;
-  const open = [], bySlug = {}, groupsOf = [];
+  const open = [], bySlug = {}, groupsOf = [], hackBy = {};
+  // ONE VICTIM IS ONE HACK, WHATEVER THE DESKS CALL IT (2026-11-01, measured after the month was re-read: the model filed the Binance hack under
+  // binance-suspected-hack-1-8b, binance-6-3b-btc-hack and binance-90pct-stolen-assets, each a story of its own with its own 'first report', so a
+  // recovery update three days later claimed XPL -2.8% - the very fault this pass exists to end). A hack belongs to its victim for ten days.
+  const HACK_RE = /\b(hack|hacked|hacker|hackers|stolen|exploit|exploited|drain|drained|breach|breached|attacker)\b/i, HACK_SKIP = { crypto: 1, defi: 1, hack: 1, hacks: 1, hacker: 1, hackers: 1, exploit: 1, attack: 1, attacker: 1, protocol: 1, suspected: 1, record: 1, major: 1, the: 1, north: 1, korea: 1, fbi: 1, lazarus: 1, stolen: 1, funds: 1, security: 1, incident: 1 };
   const noise = c => c.kind === 'promo' || c.kind === 'pair' || (c.lbl && c.lbl.imp != null && +c.lbl.imp < CX_IMP_NOISE);
   for (const i of idx) {
     const c = items[i]; if (noise(c)) continue;
     const ts = +c.ts_src || 0, labelled = !!c.lbl, tok = cxTok((labelled ? (c.lbl.sum || '') + ' ' : '') + (c.title || '')), ent = cxEnt(c), slug = labelled ? String(c.lbl.story || '') : '';
     let hit = null;
     if (slug && bySlug[slug] && ts - bySlug[slug].last <= SLUG_MS) hit = bySlug[slug];
+    const isHack = c.kind === 'hack' || (labelled && c.lbl.kind === 'hack') || HACK_RE.test(String(c.title || '')), hw = {};
+    if (isHack) { for (const w of (slug + ' ' + String(c.title || '')).toLowerCase().split(/[^a-z0-9]+/)) if (w) hw[w] = 1; if (!hit) for (const v in hackBy) if (hw[v] && ts - hackBy[v].last <= SLUG_MS) { hit = hackBy[v]; break; } }
     if (!hit) {
       while (open.length && ts - open[0].last > SPAN_MS + NEAR_MS) open.shift();
       for (let k = open.length - 1; k >= 0 && !hit; k--) {
@@ -1324,6 +1330,7 @@ function cxStories(items) {
     }
     if (!hit && !labelled) continue;                                  // nothing read it and nothing claims it: it stays a lone row
     if (!hit) { hit = { first: ts, last: ts, members: [], recent: [], slugs: {} }; open.push(hit); groupsOf.push(hit); }
+    if (isHack && slug && !hit.victim) { const v = slug.split('-').find(w => w.length >= 3 && !HACK_SKIP[w] && !/^[0-9]/.test(w)); if (v) { hit.victim = v; hackBy[v] = hit; } }
     hit.members.push(i); hit.last = Math.max(hit.last, ts); if (slug) { bySlug[slug] = hit; hit.slugs[slug] = (hit.slugs[slug] || 0) + 1; }
     hit.recent.push({ tok, ent, kind: c.kind, lk: labelled ? c.lbl.kind : '' }); if (hit.recent.length > 8) hit.recent.shift();
   }
@@ -1410,7 +1417,7 @@ function cxTech(bars, mv) {
 // for the same list. The catalysts and the S&P moves are the caller's (one fetch per request); BTC's own liquidations are
 // fetched here.
 async function cxBtcMoves(env, tf, days, since, x) {
-  const ck = new Request('https://marginpad.io/__cxbtc_v8_' + tf + '_' + days);
+  const ck = new Request('https://marginpad.io/__cxbtc_v9_' + tf + '_' + days);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
   let out = [];
   try {
@@ -2097,7 +2104,7 @@ async function handleCatalystMoves(url, env) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v8_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v9_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       // eight days, not twelve hours: a follow-up to a story that broke two days ago must be seen as a follow-up, not as news
@@ -2122,7 +2129,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v12_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v13_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
