@@ -9,6 +9,7 @@ import STRAT from '../dist/assets/mp-strat.js?v=ce260405';
 import { RULES as STRAT_RULES } from '../build/strategies/rules.js';
 import { MARKETS as STRAT_MARKETS, CLASSES as STRAT_CLASSES } from '../build/strategies/markets.js';
 import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
+import OPS_VIZ from './ops/client/ops-viz.js.txt'; // the chart engine and history reader (2026-11-01): served as one file with ops.js, kept as a real file of its own
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
 /* ---- COLLECTOR CIRCUIT BREAKER (2026-10-06) ----
@@ -10748,7 +10749,13 @@ async function snapshotDaily(env) {
   const day = new Date().toISOString().slice(0, 10);
   const [uv, pv, aff, nw, rt] = await Promise.all([gc('uv:day:' + day), gc('pv:day:' + day), gc('aff:day:' + day), gc('uv:new:' + day), gc('uv:ret:' + day)]);
   const rev = Math.round(aff * 0.45); // same per-click estimate the dashboard uses
-  try { await env.STATS.put('snap:' + day, '1', { metadata: { uv, pv, aff, rev, nw, rt }, expirationTtl: 31536000 }); } catch (e) {}
+  // three things no table can reconstruct afterwards, so they are written down once a day from 2026-11-01: what the ledger owes, paying Premium members, and the day's online peak
+  let owed, subs, peak;
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/admin', { headers: { 'x-cfg': JSON.stringify(await rewardCfg(env)) } })); const d = await r.json(); if (d && d.owedUsd != null) owed = Math.round(+d.owedUsd); } catch (e) {}
+  try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); subs = 0; for (const k of l.keys || []) { if (/^e2e/.test(k.name.slice(9))) continue; if ((+(await env.STATS.get(k.name)) || 0) > Date.now()) subs++; } } catch (e) { subs = undefined; }
+  try { const r = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/online')); const d = await r.json(); if (d && d.peak) peak = +d.peak.n; } catch (e) {}
+  const meta = { uv, pv, aff, rev, nw, rt }; if (owed != null) meta.owed = owed; if (subs != null) meta.subs = subs; if (peak != null) meta.peak = peak;
+  try { await env.STATS.put('snap:' + day, '1', { metadata: meta, expirationTtl: 31536000 }); } catch (e) {}
 }
 // Query Analytics Engine via the SQL API (read). Returns an array of row objects, or null if unavailable
 // (no token / API error) so callers can fall back to KV. Token = Wrangler secret CF_API_TOKEN.
@@ -11094,7 +11101,7 @@ function mimeDecodeWords(s) {
 }
 // ---- mp-ops v2 (2026-09-03) ----
 function _fnv(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16).padStart(8, '0'); }
-const OPS_V = _fnv(OPS_SHELL + OPS_CSS + OPS_JS);
+const OPS_V = _fnv(OPS_SHELL + OPS_CSS + OPS_VIZ + OPS_JS);
 async function handleOpsShell(url, env, request) { // the v2 dashboard: static shell + JSON endpoints; ?legacy=1 keeps the old server-rendered page
   if (!(await adminCookieOk(request, env))) { const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || ''; return new Response(adminLoginHTML('Stats dashboard', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } }); }
   const _ph = adminCookieHash(request, 'mp_sadm'); const hd = new Headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
@@ -11108,7 +11115,7 @@ async function handleOpsAsset(url, env, request) {
     return new Response(JSON.stringify(man), { headers: { 'content-type': 'application/manifest+json; charset=utf-8', 'cache-control': 'private, max-age=86400', 'x-ops-v': OPS_V } });
   }
   const isCss = url.pathname.endsWith('.css');
-  return new Response(isCss ? OPS_CSS : OPS_JS, { headers: { 'content-type': (isCss ? 'text/css' : 'application/javascript') + '; charset=utf-8', 'cache-control': 'private, max-age=31536000, immutable', 'x-ops-v': OPS_V } });
+  return new Response(isCss ? OPS_CSS : OPS_VIZ + '\n' + OPS_JS, { headers: { 'content-type': (isCss ? 'text/css' : 'application/javascript') + '; charset=utf-8', 'cache-control': 'private, max-age=31536000, immutable', 'x-ops-v': OPS_V } });
 }
 // Ops pocket view (2026-09-03, ops plan block F): the phone page. One column, three things - what needs the owner (the
 // same /api/admin/attention list as the dashboard strip), the alert kinds with Ack/Snooze, and the kill switches - plus
@@ -26712,7 +26719,8 @@ export default {
       const list = Object.values(kinds).sort((a, b) => b.last - a.last);
       await Promise.all(list.map(async k => { try { k.ack = +(await env.STATS.get('alrt:ack:' + k.k)) || 0; const sz = +(await env.STATS.get('alrt:snooze:' + k.k)) || 0; k.snooze = sz > now ? sz : 0; } catch (e) {} }));
       const silent = list.filter(k => k.n30 > 0 && k.n7 === 0 && k.s !== 'info');
-      const body = JSON.stringify({ log: log.slice(0, 80), kinds: list, silent, ts: now });
+      const real = log.filter(a => !a.sup && a.s !== 'info'), byDay = {}; real.forEach(a => { const k = new Date(a.ts).toISOString().slice(0, 10), o = byDay[k] || (byDay[k] = { v: 0, r: 0 }); o.v++; if (a.s === 'red') o.r++; }); // Incidents: the 80 rows above are mostly info, so a day count needs the whole ring
+      const body = JSON.stringify({ log: log.slice(0, 80), kinds: list, silent, ts: now, byDay, hot: real.slice(0, 40), oldest: log.length ? log[log.length - 1].ts : now });
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=30' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
@@ -26781,6 +26789,86 @@ export default {
       const resp = new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } });
       if (rows) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return new Response(body, { headers: jh2 });
+    }
+    /* THE HISTORY ROUTE (2026-11-01). Before this, every chart on mp-ops was "the last 14 days", because that is all
+       each route happened to read - while the data itself goes back to the first day: KV snap:<day> a year, the ledger
+       and users for the whole life of the site, Analytics Engine 90 days. ONE read returns all of it; the chart picks
+       its own range on the device, so changing 30d to 1y costs no request. A series carries only the days its source
+       really holds, so "we did not measure this" stays visible instead of reading as zero. */
+    if (url.pathname === '/api/admin/series' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ck = new Request('https://marginpad.io/__adm_series_v1');
+      if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return new Response(await hit.text(), { headers: jh2 }); } catch (e) {} }
+      const S = {}, now = Date.now(), today = new Date(now).toISOString().slice(0, 10), diag = {};
+      const put = (k, d, v) => { const m = S[k] || (S[k] = {}); m[d] = v; }, merge = o => { if (o) Object.keys(o).forEach(k => { S[k] = Object.assign(S[k] || {}, o[k]); }); };
+      let seasons = [], usersN = 0, oldestEv = 0;
+      await Promise.all([
+        (async () => { // the nightly snapshot, read with one KV list a page: metadata comes back with the key, so a year is two or three subrequests and not 365
+          try { let cur, n = 0; do { const l = await env.STATS.list({ prefix: 'snap:', limit: 1000, cursor: cur }); (l.keys || []).forEach(k => { const d = k.name.slice(5), m = k.metadata; if (!m || !/^\d{4}-\d\d-\d\d$/.test(d)) return; n++; ['uv', 'pv', 'aff', 'nw', 'rt', 'owed', 'subs', 'peak'].forEach(f => { if (m[f] != null) put(f, d, +m[f]); }); }); cur = l.list_complete ? null : l.cursor; } while (cur); diag.snaps = n; } catch (e) { diag.snaps = 'err'; }
+        })(),
+        (async () => { // today is not snapshotted until the night, so the live counters fill it
+          const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
+          const [uv, pv, aff, nw, rt] = await Promise.all(['uv:day:', 'pv:day:', 'aff:day:', 'uv:new:', 'uv:ret:'].map(p => gc(p + today)));
+          put('uv', today, uv); put('pv', today, pv); put('aff', today, aff); put('nw', today, nw); put('rt', today, rt);
+        })(),
+        (async () => { try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/opsdaily')); const d = await r.json(); merge(d.series); seasons = d.seasons || []; } catch (e) { diag.ledger = 'err'; } })(),
+        (async () => { try { const d = await usersDO(env, '/opsdaily', {}); if (d) { merge(d.series); usersN = +d.usersN || 0; oldestEv = +d.oldestEv || 0; } } catch (e) { diag.users = 'err'; } })(),
+        (async () => { // Analytics Engine: what people did per day, 90 days. Grouped by source so the assistant channel gets its own line.
+          const toDay = v => String(v).slice(0, 10);
+          const ev = await aeQuery(env, "SELECT toDate(timestamp) AS d, blob2 AS ty, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2 IN ('paper','close','chatmsg','jserr','signin','academy','squad','duel') AND timestamp > NOW() - INTERVAL '90' DAY GROUP BY d, ty");
+          (ev || []).forEach(r => put('ev_' + r.ty, toDay(r.d), +r.n || 0)); diag.ae = ev ? ev.length : 'off';
+          const src = await aeQuery(env, "SELECT toDate(timestamp) AS d, blob4 AS s, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND timestamp > NOW() - INTERVAL '90' DAY GROUP BY d, s");
+          (src || []).forEach(r => { const s = String(r.s || '').toLowerCase(), d = toDay(r.d), n = +r.n || 0; const k = /chatgpt|openai|perplexity|gemini|copilot|claude|poe\.com/.test(s) ? 'pv_ai' : /google|bing|yahoo|duckduck|yandex|baidu|brave|ecosia/.test(s) ? 'pv_search' : (!s || s === 'direct') ? 'pv_direct' : 'pv_other'; S[k] = S[k] || {}; S[k][d] = (S[k][d] || 0) + n; });
+          const ai = await aeQuery(env, "SELECT toDate(timestamp) AS d, SUM(double5 * _sample_interval) AS m FROM marginpad_events WHERE blob1='aicost' AND blob4 NOT LIKE 'e2e%' AND timestamp > NOW() - INTERVAL '90' DAY GROUP BY d");
+          (ai || []).forEach(r => put('aicost', toDay(r.d), Math.round((+r.m || 0) / 10000) / 100));
+        })(),
+      ]);
+      const body = JSON.stringify({ ts: now, today, series: S, seasons, usersN, oldestEv, diag });
+      if (diag.snaps !== 'err' && diag.ledger !== 'err' && diag.users !== 'err') try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
+      return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/rhythm' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // pageviews by weekday x UTC hour over 30 days, for the week heatmap
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ck = new Request('https://marginpad.io/__adm_rhythm_v1');
+      try { const hit = await caches.default.match(ck); if (hit) return new Response(await hit.text(), { headers: jh2 }); } catch (e) {}
+      const rows = await aeQuery(env, "SELECT toDayOfWeek(timestamp) AS w, toHour(timestamp) AS h, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY w, h");
+      const body = JSON.stringify({ ae: !!rows, rows: rows || [] });
+      if (rows) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' } })); } catch (e) {}
+      return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/movers' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // what rose and fell: the last 7 full days against the 7 before, by country, source and page
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ck = new Request('https://marginpad.io/__adm_movers_v1');
+      try { const hit = await caches.default.match(ck); if (hit) return new Response(await hit.text(), { headers: jh2 }); } catch (e) {}
+      const q = col => aeQuery(env, "SELECT " + col + " AS k, SUM(IF(timestamp > NOW() - INTERVAL '7' DAY, _sample_interval, 0)) AS a, SUM(IF(timestamp <= NOW() - INTERVAL '7' DAY, _sample_interval, 0)) AS b FROM marginpad_events WHERE blob1='pageview' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY k ORDER BY a DESC LIMIT 60");
+      const [cc, src, page] = await Promise.all([q('blob2'), q('blob4'), q('blob3')]);
+      const body = JSON.stringify({ ae: !!cc, cc: cc || [], src: src || [], page: page || [] });
+      if (cc) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=1800' } })); } catch (e) {}
+      return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/onhist' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      try { const r = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/onhist')); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response('{"rows":[]}', { headers: { 'content-type': 'application/json' } }); }
+    }
+    if (url.pathname === '/api/admin/queue' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/opsqueue')); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response('{"transient":true}', { headers: { 'content-type': 'application/json' } }); }
+    }
+    if (url.pathname === '/api/admin/topcost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the forty members who cost the most, named
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/opstopcost')); const d = await r.json(); const rows = d.rows || []; let names = {}; try { names = await resolveProfiles(env, rows.map(x => x.acct)); } catch (e) {} rows.forEach(x => { const p = names[String(x.acct).replace(/^u:/, '')]; x.u = (p && p.username) || ''; x.cc = (p && p.cc) || ''; }); return new Response(JSON.stringify({ rows }), { headers: jh2 }); } catch (e) { return new Response(JSON.stringify({ rows: [], transient: true }), { headers: jh2 }); }
+    }
+    // the owner's own marks on the charts and the goals he sets: KV, one JSON each, same on every device. Cookie-only writes.
+    if ((url.pathname === '/api/admin/marks' || url.pathname === '/api/admin/goals') && (await adminCookieOk(request, env))) {
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const key = url.pathname.endsWith('marks') ? 'ops:marks' : 'ops:goals';
+      let cur = []; try { cur = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {}
+      if (request.method === 'POST') {
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        if (b.op === 'rm') cur = cur.filter(x => x.id !== b.id);
+        else if (key === 'ops:marks') { if (!/^\d{4}-\d\d-\d\d$/.test(String(b.day || '')) || !String(b.t || '').trim()) return new Response(JSON.stringify({ error: 'bad_mark' }), { status: 400, headers: jh2 }); cur.push({ id: Date.now().toString(36), day: b.day, t: String(b.t).slice(0, 80) }); cur = cur.slice(-300); }
+        else { if (!String(b.m || '').trim() || !(+b.target > 0)) return new Response(JSON.stringify({ error: 'bad_goal' }), { status: 400, headers: jh2 }); cur = cur.filter(x => x.m !== b.m); cur.push({ id: Date.now().toString(36), m: String(b.m).slice(0, 24), target: +b.target, per: b.per === 'month' ? 'month' : 'day' }); cur = cur.slice(-12); }
+        await env.STATS.put(key, JSON.stringify(cur));
+      }
+      return new Response(JSON.stringify({ rows: cur }), { headers: jh2 });
     }
     if (url.pathname === '/api/admin/notes' && (await adminCookieOk(request, env))) { // owner's scratchpad on ops Today (KV ops:notes, cookie-only, survives devices unlike localStorage)
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -26901,7 +26989,7 @@ export default {
       // answerable question: a number that was fine yesterday and is bad today is drift; a number that has looked
       // like this all week is the baseline, and the honest move there is to fix the page, not to raise the budget.
       const g = String(url.searchParams.get('g') || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
-      const days = Math.min(14, Math.max(2, +url.searchParams.get('days') || 7));
+      const days = Math.min(90, Math.max(2, +url.searchParams.get('days') || 7)); // was 14 until 2026-11-01; AE keeps 90 days and the Performance charts read all of it
       const sql = "SELECT toDate(timestamp) AS d, blob2 AS grp, count() AS n, quantileWeighted(0.5)(double1, _sample_interval) AS p50, quantileWeighted(0.95)(double1, _sample_interval) AS p95 FROM marginpad_events WHERE index1 = 'perf' AND timestamp > now() - INTERVAL '" + days + "' DAY" + (g ? " AND blob2 = '" + g + "'" : '') + " GROUP BY d, grp ORDER BY d DESC, n DESC FORMAT JSON";
       const r = await aeQuery(env, sql);
       if (!r) return new Response(JSON.stringify({ error: 'ae_unavailable', hint: 'CF_API_TOKEN / CF_ACCOUNT_ID must be set for the SQL API.' }), { headers: { 'content-type': 'application/json' } });
@@ -31175,6 +31263,9 @@ export class OpsLog {
       const y = this.rows('SELECT ts, n FROM onhist WHERE ts>=? AND ts<? ORDER BY n DESC, ts ASC LIMIT 1', day0 - 86400000, day0)[0] || null;
       return this.j({ now, rows, hist, usual: this.usual(now), peak: pk ? { n: +pk.n, ts: +pk.ts } : null, peakYday: y ? { n: +y.n, ts: +y.ts } : null, socks: (this.socks && this.socks.size) || 0, samples: +(this.rows('SELECT COUNT(*) c FROM onhist')[0] || {}).c || 0 });
     }
+    if (path === '/onhist') { // mp-ops: people on the site over the last seven days, one point per 15 minutes (the table keeps one sample a minute)
+      return this.j({ rows: this.rows('SELECT (ts/900000)*900000 AS t, MAX(n) AS n, MAX(m) AS m, MAX(api) AS api FROM onhist WHERE ts>? GROUP BY t ORDER BY t', Date.now() - 7 * 86400000) });
+    }
     if (path === '/onlinecount') { return this.j({ online: this.onPeople() }); } // public whole-site online-people count (one per account), nothing identifying
     if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
       const keys = String(url.searchParams.get('k') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
@@ -32106,6 +32197,45 @@ export class RewardLedger {
       const dispensed7d = (this.rows('SELECT COALESCE(SUM(dispensed),0) s FROM daily WHERE day>=? AND day<?', d7, day)[0] || { s: 0 }).s;
       const dispensedByDay = this.rows('SELECT day, dispensed FROM daily ORDER BY day DESC LIMIT 14').map(r => ({ day: r.day, usd: (r.dispensed || 0) / 100 }));
       return this.j({ pending, paidHistory, accounts: st.c, totalEarnedUsd: st.e / 100, dispensedTodayUsd: disp / 100, dailyCapUsd: cfg.capC / 100, totalPaidUsd: paid / 100, claimsToday, activeToday, newToday, owedUsd: owed / 100, dispensed7dUsd: dispensed7d / 100, dispensedByDay });
+    }
+    /* mp-ops history (2026-11-01, owner: "grafikoni su beskorisni, ne mogu da vidim istoriju"). Every per-day money
+       figure this store can answer for, from the day it began, in one read. Test accounts are dropped by acct, the
+       same rule the money pages follow. A table that does not answer simply leaves its series out: an absent series
+       draws as "no data", never as a line of zeros. */
+    if (path === '/opsdaily') {
+      const dk = ts => new Date(+ts).toISOString().slice(0, 10), o = {}, put = (k, d, v) => { const m = o[k] || (o[k] = {}); m[d] = (m[d] || 0) + (+v || 0); };
+      const real = a => !/^(u:)?e2e/i.test(String(a || ''));
+      try { this.rows('SELECT day, dispensed FROM daily').forEach(r => put('faucet', r.day, (r.dispensed || 0) / 100)); } catch (e) {}
+      try { this.rows('SELECT day, n FROM claimday').forEach(r => put('claims', r.day, r.n)); } catch (e) {}
+      try { this.rows('SELECT acct, amount, bonus, status, ts, paid_ts FROM withdrawals').forEach(r => { if (!real(r.acct)) return; put('wdreq', dk(r.ts), (r.amount || 0) / 100); if (r.status === 'paid' && r.paid_ts) { put('paid', dk(r.paid_ts), (r.amount || 0) / 100); put('paidn', dk(r.paid_ts), 1); } }); } catch (e) {}
+      try { this.rows('SELECT ts, acct, cents, via, src FROM prempay').forEach(r => { if (!real(r.acct)) return; const usd = (r.cents || 0) / 100; put('prem', dk(r.ts), usd); if (/bal|ledger/i.test(String(r.via || ''))) put('prembal', dk(r.ts), usd); else put('premcash', dk(r.ts), usd); }); } catch (e) {}
+      try { this.rows('SELECT ts, acct, cents, via FROM apipay').forEach(r => { if (!real(r.acct)) return; put('api', dk(r.ts), (r.cents || 0) / 100); }); } catch (e) {}
+      try { this.rows('SELECT ts, acct, cents, kind FROM shoplog').forEach(r => { if (!real(r.acct)) return; put('shop', dk(r.ts), (r.kind === 'refund' ? -1 : 1) * (r.cents || 0) / 100); }); } catch (e) {}
+      try { this.rows('SELECT ts, acct, amount FROM lbpay').forEach(r => { if (!real(r.acct)) return; put('prizes', dk(r.ts), (r.amount || 0) / 100); }); } catch (e) {}
+      try { this.rows("SELECT acct, amount, decided_ts FROM exsign WHERE status='approved'").forEach(r => { if (!real(r.acct) || !r.decided_ts) return; put('bonus', dk(r.decided_ts), (r.amount || 0) / 100); }); } catch (e) {}
+      try { this.rows("SELECT acct, amount, decided_ts FROM promos WHERE status='approved'").forEach(r => { if (!real(r.acct) || !r.decided_ts) return; put('promo', dk(r.decided_ts), (r.amount || 0) / 100); }); } catch (e) {}
+      // first reply: for each ticket, how long until the next email we sent that person. A median per day, with its n.
+      const fr = {};
+      try {
+        const inb = this.rows("SELECT ts, email, address FROM support ORDER BY ts ASC"), out = this.rows('SELECT ts, email FROM sreply ORDER BY ts ASC'), byE = {};
+        out.forEach(r => { const e = String(r.email || '').toLowerCase(); (byE[e] || (byE[e] = [])).push(+r.ts); });
+        inb.forEach(r => { if (!real(r.address)) return; const d = dk(r.ts); put('tickets', d, 1); const e = String(r.email || '').toLowerCase(), l = byE[e]; if (!l) return; let t = 0; for (const x of l) { if (x > r.ts) { t = x; break; } } if (t) (fr[d] || (fr[d] = [])).push((t - r.ts) / 60000); });
+      } catch (e) {}
+      Object.keys(fr).forEach(d => { const a = fr[d].sort((x, y) => x - y); put('replymin', d, Math.round(a[Math.floor(a.length / 2)])); });
+      const seasons = {};
+      try { this.rows('SELECT week, board, acct, amount FROM lbpay').forEach(r => { if (!real(r.acct)) return; const s = seasons[r.week] || (seasons[r.week] = { week: +r.week, usd: 0, n: 0, boards: {} }); const u = (r.amount || 0) / 100; s.usd += u; s.n++; s.boards[r.board] = (s.boards[r.board] || 0) + u; }); } catch (e) {}
+      return this.j({ series: o, seasons: Object.values(seasons).sort((a, b) => a.week - b.week) });
+    }
+    if (path === '/opsqueue') { // everything a human has to decide, with the oldest wait, for Inbox > Waiting for you
+      const out = { wd: null, promo: null, exsign: [] };
+      try { const r = this.rows("SELECT COUNT(*) n, SUM(amount) c, MIN(ts) t FROM withdrawals WHERE status='pending'")[0] || {}; out.wd = { n: +r.n || 0, usd: (+r.c || 0) / 100, oldest: +r.t || 0 }; } catch (e) {}
+      try { const r = this.rows("SELECT COUNT(*) n, MIN(ts) t FROM promos WHERE status='pending'")[0] || {}; out.promo = { n: +r.n || 0, oldest: +r.t || 0 }; } catch (e) {}
+      try { out.exsign = this.rows("SELECT exchange, COUNT(*) n, MIN(ts) t FROM exsign WHERE status='pending' GROUP BY exchange").map(r => ({ exchange: r.exchange, n: +r.n || 0, oldest: +r.t || 0 })); } catch (e) {}
+      return this.j(out);
+    }
+    if (path === '/opstopcost') { // Money > Members: who has cost the most, read from the whole table (the /accounts list stops at 500 rows and that is what hid the farmers until 2026-10-18)
+      const rows = this.rows("SELECT a.address AS acct, a.earned AS e, a.claims AS c, a.balance AS b, (SELECT COALESCE(SUM(amount),0) FROM withdrawals w WHERE w.acct=a.address AND w.status='paid') AS p FROM accounts a WHERE a.address NOT LIKE 'u:e2e%' ORDER BY p DESC, e DESC LIMIT 40");
+      return this.j({ rows: rows.map(r => ({ acct: r.acct, earned: (+r.e || 0) / 100, claims: +r.c || 0, balance: (+r.b || 0) / 100, paid: (+r.p || 0) / 100 })) });
     }
     if (path === '/claimsdaily') { // Funnel tab: faucet-claim COUNT per UTC day (claims aren't /api/track events so the funnel can't read them from AE)
       const cd = {}, lc = {};
@@ -35729,6 +35859,12 @@ export class UserStore {
       if (ids.length) { try { inChunks(ids, (part, ph) => this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name, p: L.stars || 0 }; }); } catch (e) {} }
       if (names.length) { try { inChunks(names, (part, ph) => this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...part)).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name, p: L.stars || 0 }; }); } catch (e) {} }
       return this.j({ byId, byName });
+    }
+    if (path === '/opsdaily') { // mp-ops history: sign-ups for the whole life of the site, and trading from tradeev for as long as that table keeps it (30/90 days). e2e accounts dropped.
+      const o = { signups: {}, traders: {}, closes: {}, liqs: {} }; let usersN = 0, oldestEv = 0;
+      try { this.rows("SELECT created/86400000 AS d, COUNT(*) AS n FROM users WHERE id NOT LIKE 'e2e%' AND COALESCE(username,'') NOT LIKE 'e2e%' AND created>0 GROUP BY d").forEach(r => { o.signups[new Date(+r.d * 86400000).toISOString().slice(0, 10)] = +r.n; usersN += +r.n; }); } catch (e) {}
+      try { this.rows("SELECT ts/86400000 AS d, COUNT(*) AS n, COUNT(DISTINCT user_id) AS u, SUM(CASE WHEN liq=1 THEN 1 ELSE 0 END) AS l, MIN(ts) AS t FROM tradeev WHERE user_id NOT LIKE 'e2e%' AND user_id NOT LIKE 'u:e2e%' GROUP BY d").forEach(r => { const k = new Date(+r.d * 86400000).toISOString().slice(0, 10); o.traders[k] = +r.u; o.closes[k] = +r.n; o.liqs[k] = +r.l; if (!oldestEv || r.t < oldestEv) oldestEv = +r.t; }); } catch (e) {}
+      return this.j({ series: o, usersN, oldestEv });
     }
     if (path === '/signupsdaily') { // Funnel tab: new-account COUNT per UTC day, last 15 days (signups happen via /api/auth/verify, not /api/track, so the funnel can't read them from AE)
       const since = now - 15 * 86400000;

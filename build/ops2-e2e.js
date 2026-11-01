@@ -24,7 +24,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 140)); });
     page.on('response', r => { try { const u = r.url(); if (u.indexOf(BASE + '/api/') === 0 && r.status() >= 400 && !/\/api\/prices?\b/.test(u)) bad.push(r.status() + ' ' + u.slice(BASE.length, BASE.length + 70)); } catch (e) {} });
     const t0 = Date.now(); await page.goto(BASE + '/api/stats', { waitUntil: 'networkidle2', timeout: 120000 }); const load = Date.now() - t0; await sleep(2500);
-    const g = await page.evaluate(() => ({ v2: !!(window.__ops2 && window.__ops2.NAV), nav: document.querySelectorAll('#nav a').length, gate: !!document.querySelector('input[type="password"]'), attn: document.querySelectorAll('#attnbar .al').length, online: (document.getElementById('online') || {}).textContent, bytes: document.documentElement.outerHTML.length }));
+    const g = await page.evaluate(() => ({ v2: !!(window.__ops2 && window.__ops2.NAV), nav: document.querySelectorAll('#nav a').length, gate: !!document.querySelector('input[type="password"]'), attn: document.querySelectorAll('#attnbar .wait').length, online: (document.getElementById('online') || {}).textContent, bytes: document.documentElement.outerHTML.length }));
     chk('v2 shell renders (no gate, nav built, attention strip)', g.v2 && !g.gate && g.nav >= 20, { load, nav: g.nav, attn: g.attn, online: g.online, kb: Math.round(g.bytes / 1024) });
     const views = await page.evaluate(() => { const o = []; window.__ops2.NAV.forEach(s => s.views.forEach(v => o.push({ key: s.id + '/' + v.id, legacy: v.legacy || '' }))); return o; });
     for (const v of views) {
@@ -407,9 +407,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     chk('late responses of the previous view never overwrite the current view', /Shop/.test(ov.crumb || '') && !ov.live && ov.shop, ov);
     // attention strip lives on Today/Overview only; flags are images that actually load; scrollbars are dark (color-scheme)
     await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(1500);
-    const a1 = await page.evaluate(() => document.querySelectorAll('#attnbar .al').length);
+    const a1 = await page.evaluate(() => document.querySelectorAll('#attnbar .wait').length);
     await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(3500);
-    const a2 = await page.evaluate(() => ({ strip: document.querySelectorAll('#attnbar .al').length, flags: Array.from(document.querySelectorAll('img.fl')).length, loaded: Array.from(document.querySelectorAll('img.fl')).filter(i => !i.complete || i.naturalWidth > 0 || i.style.display === 'none').length, scheme: getComputedStyle(document.documentElement).colorScheme, legacyLabel: /legacy/i.test(document.getElementById('side').innerText) }));
+    const a2 = await page.evaluate(() => ({ strip: document.querySelectorAll('#attnbar .wait').length, flags: Array.from(document.querySelectorAll('img.fl')).length, loaded: Array.from(document.querySelectorAll('img.fl')).filter(i => !i.complete || i.naturalWidth > 0 || i.style.display === 'none').length, scheme: getComputedStyle(document.documentElement).colorScheme, legacyLabel: /legacy/i.test(document.getElementById('side').innerText) }));
     chk('attention strip only on Today (users view: none, overview: items)', a1 === 0 && a2.strip >= 1, { users: a1, overview: a2.strip });
     chk('flag images render in the live feed', a2.flags > 0 && a2.loaded === a2.flags, { flags: a2.flags, loaded: a2.loaded });
     chk('dark color-scheme, no "legacy" wording in the sidebar', a2.scheme === 'dark' && !a2.legacyLabel, { scheme: a2.scheme, legacyLabel: a2.legacyLabel });
@@ -424,8 +424,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     // and Support must open a thread from a real tap on a visible row (the first phone release shipped an empty Support
     // because the panes were hidden until a JS click that only the test could make).
     await page.setViewport({ width: 390, height: 780, isMobile: true, hasTouch: true }); await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);
-    const m = await page.evaluate(() => ({ hscroll: document.documentElement.scrollWidth > window.innerWidth + 2, menu: getComputedStyle(document.getElementById('menuBtn')).display !== 'none', tiles: document.querySelectorAll('.tile').length }));
-    chk('phone: no horizontal scroll, menu button, tiles', !m.hscroll && m.menu && m.tiles >= 4, m);
+    const m = await page.evaluate(() => ({ hscroll: document.documentElement.scrollWidth > window.innerWidth + 2, menu: getComputedStyle(document.getElementById('tabMore')).display !== 'none', tiles: document.querySelectorAll('.tile').length }));
+    chk('phone: no horizontal scroll, More tab, tiles', !m.hscroll && m.menu && m.tiles >= 4, m);
     for (const v of views) {
       if (v.legacy) continue; if (only.length && !only.includes(v.key)) continue;
       await page.evaluate((k) => { location.hash = k; }, v.key);
@@ -444,9 +444,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const tb = await page.evaluate(() => { const a = document.querySelector('#tabbar a[data-sec="money"]'); if (!a) return null; const b = a.getBoundingClientRect(); const hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x + b.width / 2, y: b.y + b.height / 2, reachable: !!(hit && (hit === a || a.contains(hit))), visible: b.height > 0 && b.y < window.innerHeight }; });
     chk('phone: bottom tab bar visible and reachable', !!(tb && tb.visible && tb.reachable), tb);
     if (tb && tb.reachable) { await page.touchscreen.tap(tb.x, tb.y); await sleep(1200); chk('phone: tab bar tap opens Money', await page.evaluate(() => /money/.test(location.hash) && document.querySelector('#tabbar a.on') && document.querySelector('#tabbar a.on').getAttribute('data-sec') === 'money')); }
-    await page.evaluate(() => document.getElementById('menuBtn').click()); await sleep(400);
-    const mo = await page.evaluate(() => document.getElementById('side').classList.contains('open') && document.getElementById('side').getBoundingClientRect().left >= -1);
-    chk('phone: menu drawer opens', mo);
+    await page.evaluate(() => document.getElementById('tabMore').click()); await sleep(500);
+    const mo = await page.evaluate(() => { const r = document.querySelectorAll('.vzs .mrow').length; const x = document.querySelector('.vzs .vzs-x'); if (x) x.click(); return r >= 30; });
+    chk('phone: More sheet lists every view', mo);
     try { await page.screenshot({ path: path.join(SHOTS, 'v2-_phone.png') }); } catch (e) {}
     chk('zero page errors overall', errs.length === 0, errs.slice(0, 6));
     await page.evaluate(() => fetch('/api/stats/logout', { method: 'POST' }).catch(() => {}));

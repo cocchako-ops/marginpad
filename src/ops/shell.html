@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a0b0d">
+<meta name="theme-color" content="#08090b">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>MarginPad ops</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/app-icon-180.png">
 <link rel="manifest" href="/api/stats/asset/ops.webmanifest?v=__V__" crossorigin="use-credentials">
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/api/stats/asset/ops.css?v=__V__">
 </head>
 <body>
@@ -24,9 +26,9 @@
     <header class="top">
       <button class="iconbtn menubtn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
       <div class="crumb" id="crumb">Today</div>
-      <div class="topright"><span class="mkt" id="mkt"></span><span class="pulse" id="pulse"></span><span class="online" id="online"><i></i><b>-</b> online</span><span class="clock" id="clock"></span><span class="stamp" id="stamp"></span><button class="btn sm" id="tzBtn" type="button" title="switch every time on the page between UTC and your local zone">UTC</button><button class="btn sm" id="refreshBtn" type="button">Refresh</button></div>
+      <div class="topright"><span class="mkt" id="mkt"></span><span class="pulse" id="pulse"></span><span class="online" id="online"><i></i><b>-</b> online</span><span class="clock" id="clock"></span><span class="stamp" id="stamp"></span><button class="btn sm" id="tzBtn" type="button" title="switch every time on the page between UTC and your local zone">UTC</button><button class="ticon" id="eyeBtn" type="button" aria-label="Hide amounts" title="hide amounts"></button><a class="ticon" id="bellBtn" href="#inbox/queue" aria-label="Waiting for you" title="waiting for you"><i id="bellN" hidden></i></a><button class="btn sm" id="refreshBtn" type="button">Refresh</button></div>
     </header>
-    <div class="attnbar" id="attnbar"></div>
+    <nav id="subnav" aria-label="Views" hidden></nav><div class="attnbar" id="attnbar"></div><section id="vch" hidden></section>
     <main id="view" class="view"></main>
   </div>
 </div>
@@ -37,6 +39,7 @@
 <div class="hk"><kbd>Ctrl K</kbd> or <kbd>/</kbd> search or jump</div><div class="hk"><kbd>r</kbd> refresh this view</div><div class="hk"><kbd>[</kbd> <kbd>]</kbd> previous / next view</div><div class="hk"><kbd>1</kbd> … <kbd>8</kbd> jump to a section (Today, Inbox, Money, People, Trading, Growth, Health, Settings)</div><div class="hk"><kbd>u</kbd> switch times between UTC and local</div><div class="hk">click any table header to sort it · <b style="display:inline;font:inherit;color:var(--lime)">csv</b> in a card header downloads the table</div><div class="hk"><kbd>Ctrl Enter</kbd> send a reply (Support, chat)</div><div class="hk"><kbd>Esc</kbd> close card, palette or this</div><div class="hk"><kbd>?</kbd> this help</div>
 <div class="line" style="margin-top:10px;font-size:12px">Click any @user anywhere for the quick card; Ctrl-click opens the full profile in a new tab.</div></div></div></div>
 <div class="pal" id="pal" hidden><div class="palbox"><input id="palIn" type="text" placeholder="Type a user, wallet, page or a section name…" autocomplete="off" spellcheck="false"><div class="palres" id="palRes"></div><div class="palhint">Enter opens · Esc closes · sections, users, faucet accounts, community posts</div></div></div>
+<div id="ptr" aria-hidden="true"></div>
 <div class="toast" id="toast" hidden></div>
 <script src="/api/stats/asset/ops.js?v=__V__"></script>
 </body>

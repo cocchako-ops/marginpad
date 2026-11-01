@@ -1,0 +1,289 @@
+/* mp-ops charts (2026-11-01, owner: "ovi grafikoni su maltene beskorisni, ne mogu da vidim istoriju, jako su razvuceni").
+   What it replaced: a row of <i> bars stretched across the card with no axis, no scale, no value and always the last 14
+   days. Everything here reads ONE payload (/api/admin/series), so a range change is a redraw on the device, never a
+   request. Served in front of ops.js as one file (real .txt, Text rule), exposes window.OV and nothing else.
+   Rules: UTC days. A day the source did not measure is a gap, never a zero. Today is partial, so it is drawn hollow and
+   dashed: a half-finished day must not read as a crash. No @keyframes (the owner's Windows has animations off). */
+(function () {
+  'use strict';
+  var LIME = '#c2f64a', INK = '#e8ecf1', DIM = '#9aa3ad', FAINT = '#5f6873', GRID = 'rgba(255,255,255,.055)', RED = '#ff6a5e', AMBER = '#ffb347';
+  var PAL = [LIME, '#7fb2ff', '#ff8fb1', '#ffb347']; // fixed order, never cycled: passes CVD and contrast on the panel surface (validate_palette.js); four series is the ceiling on a compare chart
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); };
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var d2t = function (d) { return Date.parse(d + 'T00:00:00Z'); }, t2d = function (t) { return new Date(t).toISOString().slice(0, 10); };
+  var dayLabel = function (d) { var x = new Date(d2t(d)); return x.getUTCDate() + ' ' + MON[x.getUTCMonth()]; };
+  var dayLong = function (d) { var x = new Date(d2t(d)); return WD[x.getUTCDay()] + ', ' + x.getUTCDate() + ' ' + MON[x.getUTCMonth()] + ' ' + x.getUTCFullYear(); };
+  var store = function (k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('ops_' + k) || 'null'); localStorage.setItem('ops_' + k, JSON.stringify(v)); } catch (e) { return null; } };
+
+  // ---------- the one table of what can be charted ----------
+  // sum/avg/last = how days fold into a week or a month. ratio = [top, bottom, multiplier]: recomputed from the summed
+  // parts, because an average of daily percentages is a different number. add = a sum of other series. sparse = most
+  // days are empty by nature, so it stays bars and a missing day is a real zero. down = lower is better.
+  var M = [
+    { id: 'uv', l: 'Visitors', g: 'Audience', u: 'n', a: 'sum', src: 'nightly snapshot, a year back' },
+    { id: 'pv', l: 'Pageviews', g: 'Audience', u: 'n', a: 'sum', src: 'nightly snapshot' },
+    { id: 'nw', l: 'New visitors', g: 'Audience', u: 'n', a: 'sum', src: 'nightly snapshot' },
+    { id: 'rt', l: 'Returning visitors', g: 'Audience', u: 'n', a: 'sum', src: 'nightly snapshot' },
+    { id: 'retpct', l: 'Returning share', g: 'Audience', u: 'pct', ratio: ['rt', 'uv', 100], src: 'returning / visitors' },
+    { id: 'pvuv', l: 'Pages per visitor', g: 'Audience', u: 'x', ratio: ['pv', 'uv', 1], src: 'pageviews / visitors' },
+    { id: 'pv_ai', l: 'Views from AI assistants', g: 'Audience', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'pv_search', l: 'Views from search', g: 'Audience', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'signups', l: 'Sign-ups', g: 'Members', u: 'n', a: 'sum', sparse: 1, src: 'users table, whole history' },
+    { id: 'signrate', l: 'Sign-up rate', g: 'Members', u: 'pct', ratio: ['signups', 'uv', 100], src: 'sign-ups / visitors' },
+    { id: 'subs', l: 'Paying Premium members', g: 'Members', u: 'n', a: 'last', src: 'nightly snapshot, from 1 Nov 2026' },
+    { id: 'peak', l: 'Peak online', g: 'Members', u: 'n', a: 'avg', src: 'nightly snapshot, from 1 Nov 2026' },
+    { id: 'ev_signin', l: 'Sign-ins', g: 'Members', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'ev_paper', l: 'Trades opened', g: 'Activity', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'ev_close', l: 'Trades closed', g: 'Activity', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'traders', l: 'Active traders', g: 'Activity', u: 'n', a: 'avg', src: 'closed trades, 30-90 days' },
+    { id: 'liqs', l: 'Liquidated positions', g: 'Activity', u: 'n', a: 'sum', src: 'closed trades, 30-90 days' },
+    { id: 'ev_academy', l: 'Academy events', g: 'Activity', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'ev_chatmsg', l: 'Chat messages', g: 'Activity', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'ev_duel', l: 'Duel events', g: 'Activity', u: 'n', a: 'sum', src: 'Analytics Engine, 90 days' },
+    { id: 'claims', l: 'Faucet claims', g: 'Activity', u: 'n', a: 'sum', src: 'ledger' },
+    { id: 'aff', l: 'Money clicks', g: 'Income', u: 'n', a: 'sum', src: 'nightly snapshot' },
+    { id: 'ctr', l: 'Click rate', g: 'Income', u: 'pct', ratio: ['aff', 'uv', 100], src: 'money clicks / visitors' },
+    { id: 'estaff', l: 'Affiliate estimate', g: 'Income', u: 'usd', scale: ['aff', 0.45], est: 1, src: 'clicks x $0.45, not real commission' },
+    { id: 'premcash', l: 'Premium paid in crypto', g: 'Income', u: 'usd', a: 'sum', sparse: 1, src: 'payment book' },
+    { id: 'prembal', l: 'Premium paid from balance', g: 'Income', u: 'usd', a: 'sum', sparse: 1, src: 'payment book, no new money' },
+    { id: 'api', l: 'API plans', g: 'Income', u: 'usd', a: 'sum', sparse: 1, src: 'API payment book' },
+    { id: 'shop', l: 'MP Shop', g: 'Income', u: 'usd', a: 'sum', sparse: 1, src: 'shop ledger, paid from balance' },
+    { id: 'income', l: 'Income, estimated', g: 'Income', u: 'usd', add: ['estaff', 'premcash', 'api'], est: 1, src: 'affiliate estimate + crypto payments' },
+    { id: 'faucet', l: 'Faucet dispensed', g: 'Costs', u: 'usd', a: 'sum', down: 1, src: 'ledger, whole history' },
+    { id: 'prizes', l: 'Season prizes', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'prize ledger' },
+    { id: 'bonus', l: 'Sign-up bonuses', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'approved claims' },
+    { id: 'promo', l: 'Promo posts', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'approved posts' },
+    { id: 'aicost', l: 'AI spend', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'Anthropic usage, from 18 Sep' },
+    { id: 'earned', l: 'Credited to members', g: 'Costs', u: 'usd', add: ['faucet', 'prizes', 'bonus', 'promo'], down: 1, src: 'faucet + prizes + bonuses + promo' },
+    { id: 'paid', l: 'Paid out', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'withdrawals marked paid' },
+    { id: 'wdreq', l: 'Withdrawals requested', g: 'Costs', u: 'usd', a: 'sum', sparse: 1, down: 1, src: 'withdrawal book' },
+    { id: 'net', l: 'Net, estimated', g: 'Costs', u: 'usd', sub: ['income', 'earned'], est: 1, signed: 1, src: 'income minus what was credited to members' },
+    { id: 'cost1k', l: 'Faucet per 1,000 visitors', g: 'Unit costs', u: 'usd', ratio: ['faucet', 'uv', 1000], down: 1, src: 'faucet / visitors' },
+    { id: 'costsign', l: 'Credited per sign-up', g: 'Unit costs', u: 'usd', ratio: ['earned', 'signups', 1], down: 1, src: 'credited to members / sign-ups' },
+    { id: 'owed', l: 'Ledger owes', g: 'Unit costs', u: 'usd', a: 'last', down: 1, src: 'nightly snapshot, from 1 Nov 2026' },
+    { id: 'ev_jserr', l: 'Broken pages', g: 'Health', u: 'n', a: 'sum', down: 1, src: 'Analytics Engine, 90 days' },
+    { id: 'tickets', l: 'Support messages in', g: 'Health', u: 'n', a: 'sum', sparse: 1, down: 1, src: 'support table' },
+    { id: 'replymin', l: 'First reply time', g: 'Health', u: 'min', a: 'avg', sparse: 2, down: 1, src: 'median per day, minutes to our next email' }
+  ];
+  var BY = {}; M.forEach(function (m) { BY[m.id] = m; });
+
+  // ---------- data ----------
+  var DATA = null, wait = [], loading = false, loadedAt = 0, listeners = [], MARKS = [];
+  function onData(fn) { if (DATA) fn(DATA); else wait.push(fn); }
+  function load(force) {
+    if (loading) return; if (!force && DATA && Date.now() - loadedAt < 240000) return;
+    if (!DATA) { var c = store('series'); if (c && c.series && c.today) { DATA = c; while (wait.length) wait.shift()(DATA); } } // yesterday's copy paints at once on a phone; the live answer replaces it
+    loading = true;
+    fetch('/api/admin/series').then(function (r) { return r.json(); }).then(function (j) { loading = false; if (!j || !j.series) return; DATA = j; CACHE = {}; loadedAt = Date.now(); store('series', j); while (wait.length) wait.shift()(DATA); listeners.forEach(function (f) { f(); }); hydrateAll(true); }).catch(function () { loading = false; });
+    fetch('/api/admin/marks').then(function (r) { return r.json(); }).then(function (j) { if (j && j.rows) MARKS = j.rows; }).catch(function () {});
+  }
+  var CACHE = {};
+  function raw(id) { var m = DATA && DATA.series && DATA.series[id]; return m || null; }
+  // one continuous run of days from the first the metric has to today: [{d, v}], v null = not measured
+  function daily(id) {
+    if (CACHE[id]) return CACHE[id]; var m = BY[id] || { id: id }; var out = [];
+    if (!DATA) return out; var map = {};
+    if (m.ratio) { var a = daily(m.ratio[0]), b = daily(m.ratio[1]), bm = {}; b.forEach(function (x) { bm[x.d] = x.v; }); a.forEach(function (x) { var bo = bm[x.d]; map[x.d] = (x.v == null || !bo) ? null : x.v / bo * m.ratio[2]; }); out = a.map(function (x) { return { d: x.d, v: map[x.d] }; }); return (CACHE[id] = trim(out)); }
+    if (m.scale) { out = daily(m.scale[0]).map(function (x) { return { d: x.d, v: x.v == null ? null : x.v * m.scale[1] }; }); return (CACHE[id] = out); }
+    if (m.add || m.sub) { var parts = (m.add || m.sub).map(daily), first = null; parts.forEach(function (p) { if (p[0] && (!first || p[0].d < first)) first = p[0].d; }); if (!first) return []; var ds = range(first, DATA.today); var maps = parts.map(function (p) { var o = {}; p.forEach(function (x) { o[x.d] = x.v; }); return o; }); out = ds.map(function (d) { var s = 0, any = false; maps.forEach(function (o, i) { var v = o[d]; if (v != null) { any = true; s += (m.sub && i ? -v : v); } }); return { d: d, v: any ? s : null }; }); return (CACHE[id] = out); }
+    var r = raw(id); if (!r) return []; var keys = Object.keys(r).sort(); if (!keys.length) return [];
+    var fillZero = m.sparse === 1; var last = fillZero ? DATA.today : keys[keys.length - 1];
+    out = range(keys[0], last > DATA.today ? last : DATA.today).map(function (d) { var v = r[d]; return { d: d, v: v != null ? +v : (fillZero ? 0 : null) }; });
+    return (CACHE[id] = out);
+  }
+  function trim(a) { var i = 0; while (i < a.length && a[i].v == null) i++; return a.slice(i); }
+  function range(a, b) { var o = [], t = d2t(a), e = d2t(b); for (; t <= e; t += 86400000) o.push(t2d(t)); return o; }
+  var isoWeek = function (d) { var t = d2t(d), wd = (new Date(t).getUTCDay() + 6) % 7; return t2d(t - wd * 86400000); }; // Monday of its week
+  // days -> weeks or months. A ratio is rebuilt from its parts; `partial` marks a bucket that is still filling.
+  function folded(id, grain) {
+    var m = BY[id] || {}; var ds = daily(id); if (grain === 'day') return ds.map(function (x) { return { k: x.d, d0: x.d, d1: x.d, v: x.v, partial: x.d === DATA.today }; });
+    var key = grain === 'week' ? isoWeek : function (d) { return d.slice(0, 7); }, g = {}, ord = [];
+    var parts = m.ratio ? [daily(m.ratio[0]), daily(m.ratio[1])] : null;
+    if (parts) { parts.forEach(function (p, ix) { p.forEach(function (x) { var k = key(x.d), o = g[k]; if (!o) { o = g[k] = { k: k, d0: x.d, d1: x.d, n: 0, s: [0, 0] }; ord.push(k); } if (x.d > o.d1) o.d1 = x.d; if (x.d < o.d0) o.d0 = x.d; if (x.v != null) o.s[ix] += x.v; }); }); ord.sort(); return ord.map(function (k) { var o = g[k]; return { k: k, d0: o.d0, d1: o.d1, v: o.s[1] ? o.s[0] / o.s[1] * m.ratio[2] : null, partial: o.d1 >= DATA.today }; }); }
+    ds.forEach(function (x) { var k = key(x.d), o = g[k]; if (!o) { o = g[k] = { k: k, d0: x.d, d1: x.d, n: 0, s: 0, l: null }; ord.push(k); } o.d1 = x.d; if (x.v != null) { o.n++; o.s += x.v; o.l = x.v; } });
+    return ord.map(function (k) { var o = g[k], a = m.a || 'sum'; return { k: k, d0: o.d0, d1: o.d1, v: !o.n ? null : a === 'avg' ? o.s / o.n : a === 'last' ? o.l : o.s, partial: o.d1 >= DATA.today }; });
+  }
+  var median = function (a) { if (!a.length) return null; var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(s.length / 2)]; };
+  // how far a day sits from its own recent past: 28 days before it, robust against a single spike. Below 14 days of history it says nothing.
+  function usual(id, d) { var ds = daily(id), t = d2t(d), v = ds.filter(function (x) { return x.v != null && x.d < d && d2t(x.d) >= t - 28 * 86400000; }).map(function (x) { return x.v; }); if (v.length < 14) return null; var md = median(v), dv = median(v.map(function (x) { return Math.abs(x - md); })); return { med: md, mad: dv, n: v.length }; }
+  function oddity(id, d, v) { var u = usual(id, d); if (!u || v == null) return null; var sc = Math.max(u.mad * 1.4826, Math.abs(u.med) * 0.08, 1e-9), z = (v - u.med) / sc; return { z: z, pct: u.med ? (v - u.med) / u.med * 100 : null, med: u.med, n: u.n }; }
+
+  // ---------- formats ----------
+  var thou = function (x, d) { return (+x || 0).toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+  function fmt(u, v, short) {
+    if (v == null || !isFinite(v)) return '-'; var a = Math.abs(v), sign = v < 0 ? '-' : '';
+    if (u === 'usd') { if (short && a >= 1000) return sign + '$' + (a / 1000).toFixed(a >= 10000 ? 0 : 1) + 'k'; return sign + '$' + thou(a, a >= 1000 || (short && a >= 100) ? 0 : 2); }
+    if (u === 'ms') return thou(a) + (short ? '' : ' ms'); if (u === 'pct') return v.toFixed(a >= 10 ? 1 : 2) + '%'; if (u === 'x') return v.toFixed(1) + 'x';
+    if (u === 'min') { if (a < 60) return Math.round(a) + 'm'; if (a < 1440) return Math.floor(a / 60) + 'h ' + Math.round(a % 60) + 'm'; return (a / 1440).toFixed(1) + 'd'; }
+    if (short && a >= 10000) return sign + (a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : Math.round(a / 1000) + 'k'); if (short && a >= 1000) return sign + (a / 1000).toFixed(1) + 'k';
+    return sign + thou(a, a < 10 && a % 1 ? 1 : 0);
+  }
+  function deltaHtml(cur, prev, down, label) { if (cur == null || !prev) return ''; var p = (cur - prev) / Math.abs(prev) * 100; if (!isFinite(p)) return ''; var good = down ? p <= 0 : p >= 0; return '<span class="vz-d ' + (Math.abs(p) < 0.5 ? 'flat' : good ? 'up' : 'dn') + '">' + (p >= 0 ? '+' : '') + p.toFixed(Math.abs(p) >= 10 ? 0 : 1) + '%</span>' + (label ? ' ' + label : ''); }
+
+  // ---------- the plot ----------
+  function niceStep(x) { var e = Math.pow(10, Math.floor(Math.log10(x || 1))), f = x / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; }
+  function draw(host, s) { // s = {pts:[{v,lab,partial,hot}], series:[...], ghost:[v], kind, unit, h, xl(i), marks:[i], color}
+    var W = Math.max(120, Math.round(host.clientWidth || host.getBoundingClientRect().width || 320)), H = s.h || 180, gut = s.compact ? 0 : (W < 420 ? 38 : 46), bot = s.compact ? 2 : 20, top = s.compact ? 3 : 10, pw = W - gut - 2, ph = H - top - bot;
+    var vals = [], ser = s.series || [{ pts: s.pts, color: s.color || LIME }]; ser.forEach(function (x) { x.pts.forEach(function (p) { if (p.v != null) vals.push(p.v); }); }); (s.ghost || []).forEach(function (v) { if (v != null) vals.push(v); });
+    var mx = vals.length ? Math.max.apply(null, vals) : 1, mn = vals.length ? Math.min.apply(null, vals) : 0; if (mn > 0) mn = 0; if (mx < 0) mx = 0; if (mx === mn) mx = mn + 1;
+    var step = niceStep((mx - mn) / (s.compact ? 2 : 3.2)), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step; var n = ser[0].pts.length, cw = pw / Math.max(1, n), kind = s.kind || 'bar';
+    var X = function (i) { return (i + 0.5) * cw; }, Y = function (v) { return top + (hi - v) / (hi - lo) * ph; }, o = '';
+    var uid = 'vz' + (++seq);
+    if (!s.compact) { for (var t = lo; t <= hi + step / 2; t += step) { var y = Y(t); o += '<line x1="0" x2="' + pw + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + (Math.abs(t) < 1e-9 ? 'rgba(255,255,255,.16)' : GRID) + '"/>'; o += '<text x="' + (W - 1) + '" y="' + (y + 3.5).toFixed(1) + '" text-anchor="end" class="vz-y">' + esc(fmt(s.unit, t, true)) + '</text>'; } }
+    (s.bands || []).forEach(function (b) { o += '<rect x="' + (b[0] * cw).toFixed(1) + '" y="' + top + '" width="' + ((b[1] - b[0]) * cw).toFixed(1) + '" height="' + ph + '" fill="rgba(255,255,255,.022)"/>'; });
+    if (s.ghost) { var gp = ''; s.ghost.forEach(function (v, i) { if (i >= n || v == null) return; gp += (gp && s.ghost[i - 1] != null ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }); if (kind === 'bar' && s.ghostBars) { s.ghost.forEach(function (v, i) { if (i >= n || v == null) return; var yy = Y(Math.max(0, v)); o += '<rect x="' + (X(i) - cw / 2 + 0.5).toFixed(1) + '" y="' + yy.toFixed(1) + '" width="' + Math.max(1, cw - 1).toFixed(1) + '" height="' + Math.max(0, Y(0) - yy).toFixed(1) + '" fill="rgba(255,255,255,.075)" rx="1.5"/>'; }); } else o += '<path d="' + gp + '" fill="none" stroke="' + FAINT + '" stroke-width="1.4" stroke-linejoin="round"/>'; }
+    ser.forEach(function (x, si) {
+      var col = x.color || LIME;
+      if (kind === 'bar' && ser.length === 1) {
+        var bw = Math.max(1, Math.min(cw - (cw > 5 ? Math.min(2, cw * 0.22) : 0.4), s.compact ? 12 : 34)), r = Math.min(3, bw / 2), y0 = Y(0);
+        x.pts.forEach(function (p, i) { if (p.v == null) return; var yy = Y(p.v), hh = Math.abs(y0 - yy); if (p.v && hh < 1.5) { hh = 1.5; if (p.v > 0) yy = y0 - 1.5; } var neg = p.v < 0, c = neg ? RED : col; var x0 = X(i) - bw / 2, top2 = neg ? y0 : yy; o += p.partial ? '<rect x="' + (x0 + 0.5).toFixed(1) + '" y="' + (top2 + 0.5).toFixed(1) + '" width="' + Math.max(0.5, bw - 1).toFixed(1) + '" height="' + Math.max(0.5, hh - 0.5).toFixed(1) + '" rx="' + r.toFixed(1) + '" fill="' + c + '" fill-opacity=".16" stroke="' + c + '" stroke-dasharray="2.5 2"/>' : '<rect x="' + x0.toFixed(1) + '" y="' + top2.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="' + r.toFixed(1) + '" fill="' + c + '" fill-opacity="' + (s.dimBars ? '.55' : '.86') + '"/>'; });
+      } else {
+        var d = '', fill = '', open = false, lastIx = -1, firstIx = -1, n2 = x.pts.length, solidEnd = n2 - 1; if (x.pts[n2 - 1] && x.pts[n2 - 1].partial) solidEnd = n2 - 2;
+        for (var i = 0; i <= solidEnd; i++) { var p = x.pts[i]; if (p.v == null) { open = false; continue; } var px = X(i).toFixed(1), py = Y(p.v).toFixed(1); d += (open ? 'L' : 'M') + px + ' ' + py; if (!open && firstIx < 0) firstIx = i; open = true; lastIx = i; }
+        if (ser.length === 1 && firstIx >= 0) { fill = d + 'L' + X(lastIx).toFixed(1) + ' ' + Y(Math.max(lo, 0)).toFixed(1) + 'L' + X(firstIx).toFixed(1) + ' ' + Y(Math.max(lo, 0)).toFixed(1) + 'Z'; o += '<linearGradient id="' + uid + 'f" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".22"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient><path d="' + fill + '" fill="url(#' + uid + 'f)"/>'; }
+        o += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + (s.compact ? 1.5 : 2) + '" stroke-linejoin="round" stroke-linecap="round"/>';
+        if (solidEnd < n2 - 1 && lastIx >= 0 && x.pts[n2 - 1].v != null) { o += '<path d="M' + X(lastIx).toFixed(1) + ' ' + Y(x.pts[lastIx].v).toFixed(1) + 'L' + X(n2 - 1).toFixed(1) + ' ' + Y(x.pts[n2 - 1].v).toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="' + X(n2 - 1).toFixed(1) + '" cy="' + Y(x.pts[n2 - 1].v).toFixed(1) + '" r="3" fill="#0f1216" stroke="' + col + '" stroke-width="1.6"/>'; }
+      }
+    });
+    if (!s.compact) {
+      ser[0].pts.forEach(function (p, i) { if (p.hot && p.v != null) o += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(p.v).toFixed(1) + '" r="4" fill="#0f1216" stroke="' + AMBER + '" stroke-width="1.8"/>'; });
+      (s.marks || []).forEach(function (i) { var mx2 = X(i).toFixed(1); o += '<line x1="' + mx2 + '" x2="' + mx2 + '" y1="' + top + '" y2="' + (top + ph) + '" stroke="#7fb2ff" stroke-opacity=".5" stroke-dasharray="2 3"/><circle cx="' + mx2 + '" cy="' + (top + 2) + '" r="3" fill="#7fb2ff"/>'; });
+      var ticks = s.xt || xTicks(n, W); ticks.forEach(function (i) { var lab = s.xl ? s.xl(i) : ''; if (!lab) return; var x2 = X(i), an = x2 < 20 ? 'start' : x2 > pw - 20 ? 'end' : 'middle'; o += '<text x="' + x2.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + an + '" class="vz-x">' + esc(lab) + '</text>'; });
+    }
+    o += '<line class="vz-cross" x1="0" x2="0" y1="' + top + '" y2="' + (top + ph) + '" style="display:none"/><circle class="vz-dot" r="4.5" fill="#0f1216" stroke="' + INK + '" stroke-width="2" style="display:none"/>';
+    host.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(s.title || 'chart') + '">' + o + '</svg>';
+    host._g = { X: X, Y: Y, n: n, cw: cw, pts: ser[0].pts, ser: ser, pw: pw };
+  }
+  var seq = 0;
+  function xTicks(n, W) { var want = W < 420 ? 4 : W < 760 ? 6 : 9, st = Math.max(1, Math.ceil(n / want)), o = []; for (var i = n - 1; i >= 0; i -= st) o.unshift(i); return o; }
+  // the finger reads the chart. touch-action: pan-y keeps the page scrolling; a sideways drag scrubs, and a tap without a drag opens that day.
+  function scrub(host, onMove, onEnd, onTap) {
+    if (host._sc) return; host._sc = 1; var moved = 0, sx = 0, idx = -1, timer = null;
+    function at(e) { var g = host._g; if (!g) return -1; var r = host.getBoundingClientRect(), i = Math.floor((e.clientX - r.left) / g.cw); return i < 0 || i >= g.n ? -1 : i; }
+    function setI(i) { var g = host._g, c = host.querySelector('.vz-cross'), d = host.querySelector('.vz-dot'); if (!g || !c) return; if (i < 0) { c.style.display = 'none'; d.style.display = 'none'; return; } var p = g.pts[i], x = g.X(i).toFixed(1); c.setAttribute('x1', x); c.setAttribute('x2', x); c.style.display = ''; if (p && p.v != null) { d.setAttribute('cx', x); d.setAttribute('cy', g.Y(p.v).toFixed(1)); d.style.display = ''; } else d.style.display = 'none'; }
+    function mv(e) { var i = at(e); if (i === idx) return; idx = i; setI(i); if (i >= 0) { if (onMove) onMove(i); if (e.pointerType === 'touch' && navigator.vibrate) { try { navigator.vibrate(2); } catch (x) {} } } }
+    host.addEventListener('pointerdown', function (e) { moved = 0; sx = e.clientX; clearTimeout(timer); if (e.pointerType === 'mouse' && e.button) return; mv(e); });
+    host.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' || e.pressure > 0 || e.buttons) { if (Math.abs(e.clientX - sx) > 6) moved = 1; mv(e); } });
+    function finish(e) { var i = idx; clearTimeout(timer); timer = setTimeout(function () { idx = -1; setI(-1); if (onEnd) onEnd(); }, e && e.pointerType === 'mouse' ? 60 : 2600); return i; }
+    var tapI = -1; host.addEventListener('pointerup', function (e) { var i = finish(e); tapI = (!moved && i >= 0) ? i : -1; }); // the sheet opens on the click, never on pointerup: the click that follows a touch would land on whatever the sheet just put under the finger
+    host.addEventListener('click', function () { if (tapI >= 0 && onTap) { var i = tapI; tapI = -1; onTap(i); } });
+    host.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') finish(e); }); host.addEventListener('pointercancel', function (e) { finish(e); });
+  }
+  function observe(host, fn) { if (!window.ResizeObserver) return; var w0 = host.clientWidth; var ro = new ResizeObserver(function () { if (!host.isConnected) { ro.disconnect(); return; } var w = host.clientWidth; if (w && Math.abs(w - w0) > 1) { w0 = w; fn(); } }); ro.observe(host); }
+
+  // ---------- the panel: readout, plot, controls ----------
+  var RANGES = [[7, '7d'], [30, '30d'], [90, '90d'], [365, '1y'], [0, 'All']], GRAINS = [['day', 'Day'], ['week', 'Week'], ['month', 'Month']];
+  var ST = store('vz') || {};
+  function st(id, o) { var s = ST[id]; if (!s) s = ST[id] = { r: (o && o.r) || 30, g: 'day', cmp: 1 }; return s; }
+  function saveSt() { store('vz', ST); }
+  // what the chart will show for a range and grain, plus the same length of time before it
+  function slice(id, r, g) { var all = folded(id, g), perDay = g === 'day' ? 1 : g === 'week' ? 7 : 30.4, n = r ? Math.max(2, Math.round(r / perDay)) : all.length; var cur = all.slice(-n), prev = r ? all.slice(-2 * n, -n) : []; while (cur.length && cur[0].v == null) cur.shift(); return { cur: cur, prev: prev, n: n }; }
+  function label(p, g) { if (g === 'month') { var d = new Date(d2t(p.k + '-01')); return MON[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); } if (g === 'week') return dayLabel(p.d0) + ' - ' + dayLabel(p.d1); return dayLong(p.d0); }
+  function stats(p, m) { var v = p.filter(function (x) { return x.v != null && !x.partial; }), arr = v.map(function (x) { return x.v; }), s = arr.reduce(function (a, b) { return a + b; }, 0); return { n: arr.length, sum: s, avg: arr.length ? s / arr.length : null, med: median(arr), best: v.slice().sort(function (a, b) { return b.v - a.v; })[0] || null, worst: v.slice().sort(function (a, b) { return a.v - b.v; })[0] || null }; }
+  function headline(m, cur, prev) { // the number that describes a range: a total where a total means something, the true rate for a ratio, the latest for a level
+    var all = cur.filter(function (x) { return x.v != null; }), done = all.filter(function (x) { return !x.partial; }), pd = prev.filter(function (x) { return x.v != null; });
+    if (m.a === 'last') return { v: all.length ? all[all.length - 1].v : null, p: pd.length ? pd[pd.length - 1].v : null, w: 'latest' };
+    if (m.ratio || m.a === 'avg') { var a = done.length ? done.reduce(function (s, x) { return s + x.v; }, 0) / done.length : null, b = pd.length ? pd.reduce(function (s, x) { return s + x.v; }, 0) / pd.length : null; return { v: a, p: b, w: 'average' }; }
+    var s = all.reduce(function (t, x) { return t + x.v; }, 0), n = done.length, sd = done.reduce(function (t, x) { return t + x.v; }, 0), sp = pd.slice(-n).reduce(function (t, x) { return t + x.v; }, 0); return { v: s, p: pd.length ? sp : null, cmpv: sd, w: 'total' };
+  }
+  function panel(host, id, o) {
+    o = o || {}; var m = BY[id]; if (!m) { host.innerHTML = ''; return; } var s = st(id, o);
+    if (!DATA) { host.innerHTML = '<div class="vz-load"></div>'; onData(function () { if (host.isConnected) panel(host, id, o); }); return; }
+    var sp = o.hero ? 'hero' : o.big ? 'big' : ''; var c = daily(id); if (!c.length) { host.innerHTML = '<div class="vz-none"><b>' + esc(m.l) + '</b><span>Nothing recorded yet. Source: ' + esc(m.src) + '.</span></div>'; return; }
+    var firstD = c[0].d, spanDays = Math.round((d2t(DATA.today) - d2t(firstD)) / 86400000) + 1;
+    host.innerHTML = '<div class="vz-h"><div class="vz-hl"><div class="vz-t">' + (o.noTitle ? '' : '<button type="button" class="vz-open" data-vzopen="' + id + '">' + esc(m.l) + '</button>') + '<span class="vz-w"></span></div><div class="vz-v"></div><div class="vz-s"></div></div></div><div class="vz-p" style="height:' + (o.h || 170) + 'px"></div><div class="vz-c"><div class="vz-seg">' + RANGES.filter(function (r) { return !r[0] || r[0] < spanDays * 1.6; }).map(function (r) { return '<button type="button" data-r="' + r[0] + '"' + (s.r === r[0] ? ' class="on"' : '') + '>' + r[1] + '</button>'; }).join('') + '</div><div class="vz-seg">' + GRAINS.map(function (g) { return '<button type="button" data-g="' + g[0] + '"' + (s.g === g[0] ? ' class="on"' : '') + '>' + g[1] + '</button>'; }).join('') + '</div><button type="button" class="vz-prev' + (s.cmp ? ' on' : '') + '" data-cmp="1" title="draw the period before this one">vs previous</button></div>';
+    var plot = host.querySelector('.vz-p'), hv = host.querySelector('.vz-v'), hs = host.querySelector('.vz-s'), hw = host.querySelector('.vz-w');
+    function resting() { var p = host._view; var h = headline(m, p.cur, p.prev); hv.textContent = fmt(m.u, h.v); hw.textContent = (h.w === 'total' ? 'total' : h.w) + (s.r ? ', last ' + (s.r === 365 ? 'year' : s.r + ' days') : ', all time'); hs.innerHTML = (h.p ? deltaHtml(h.cmpv != null ? h.cmpv : h.v, h.p, m.down, 'vs the period before') : '') + (m.est ? '<span class="vz-est">estimate</span>' : ''); }
+    function paint() {
+      var p = slice(id, s.r, s.g); host._view = p; if (!plot.clientWidth) return; var dayG = s.g === 'day', marks = [];
+      var pts = p.cur.map(function (x, i) { var hot = false; if (dayG && !x.partial && x.v != null && p.cur.length <= 120 && !m.ratio && !m.sparse) { var od = oddity(id, x.k, x.v); hot = !!(od && Math.abs(od.z) >= 4.5); } if (dayG) MARKS.forEach(function (mk) { if (mk.day === x.k) marks.push(i); }); return { v: x.v, partial: x.partial, hot: hot, k: x.k }; });
+      var kind = m.sparse || p.cur.length <= 45 ? 'bar' : 'line'; var ghost = s.cmp && p.prev.length ? p.prev.map(function (x) { return x.v; }) : null; if (ghost) { var pad = p.cur.length - ghost.length; if (pad > 0) ghost = new Array(pad).fill(null).concat(ghost); else if (pad < 0) ghost = ghost.slice(-p.cur.length); }
+      draw(plot, { pts: pts, kind: kind, unit: m.u, h: o.h || 170, ghost: ghost, marks: marks, title: m.l, xl: function (i) { var x = p.cur[i]; if (!x) return ''; if (s.g === 'month') { var d = new Date(d2t(x.k + '-01')); return MON[d.getUTCMonth()]; } return dayLabel(x.d0); } });
+      resting();
+    }
+    paint(); observe(plot, paint);
+    scrub(plot, function (i) { var p = host._view.cur[i]; if (!p) return; hv.textContent = fmt(m.u, p.v); hw.textContent = p.partial ? 'so far' : ''; var pr = host._view.prev; var gh = pr.length ? pr[i - (host._view.cur.length - pr.length)] : null; var us = s.g === 'day' && p.v != null ? oddity(id, p.k, p.v) : null; hs.innerHTML = '<span class="vz-date">' + esc(label(p, s.g)) + '</span>' + (us && us.pct != null ? ' ' + deltaHtml(p.v, us.med, m.down, 'vs usual') : (gh && gh.v != null ? ' ' + deltaHtml(p.v, gh.v, m.down, 'vs before') : '')); }, resting, function (i) { var p = host._view.cur[i]; if (!p) return; if (s.g === 'day') day(p.k); else open(id); });
+    host.querySelector('.vz-c').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; if (b.hasAttribute('data-r')) s.r = +b.getAttribute('data-r'); if (b.hasAttribute('data-g')) s.g = b.getAttribute('data-g'); if (b.hasAttribute('data-cmp')) s.cmp = s.cmp ? 0 : 1; if (s.r === 7 && s.g !== 'day') s.g = 'day'; if (s.r === 0 && spanDays > 120 && b.hasAttribute('data-r')) s.g = 'week'; saveSt(); panel(host, id, o); if (o.onChange) o.onChange(); });
+  }
+  // a chart that is not a tracked metric: hours of today, ten-minute beats, anything a view computed itself. pts = [{v,l}]
+  function inline(host, cfg) {
+    var pts = cfg.pts || [], o = cfg, hv;
+    host.innerHTML = '<div class="vz-p" style="height:' + (o.h || 120) + 'px"></div>' + (o.compact ? '' : '<div class="vz-ir"></div>'); var plot = host.firstChild, r = host.querySelector('.vz-ir');
+    function rest() { if (r) r.innerHTML = o.note || ''; }
+    function paint() { if (!plot.clientWidth) return; draw(plot, { pts: pts, kind: o.kind || 'bar', unit: o.unit || 'n', h: o.h || 120, ghost: o.ghost, ghostBars: !!o.ghost, compact: o.compact, xl: function (i) { return pts[i] ? pts[i].x != null ? pts[i].x : pts[i].l : ''; }, xt: o.xt, dimBars: o.dim }); }
+    paint(); observe(plot, paint); rest();
+    if (!o.compact) scrub(plot, function (i) { var p = pts[i]; if (r && p) r.innerHTML = '<b>' + esc(fmt(o.unit || 'n', p.v)) + '</b> ' + esc(p.l || '') + (o.ghost && o.ghost[i] != null ? ' <span>usual ' + esc(fmt(o.unit || 'n', o.ghost[i])) + '</span>' : ''); }, rest);
+  }
+
+  // ---------- sheets ----------
+  var sheetEl = null;
+  function closeSheet() { if (sheetEl) { var s = sheetEl; sheetEl = null; document.body.classList.remove('vz-lock'); s.classList.remove('in'); setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 180); } }
+  function sheet(html) { if (sheetEl && sheetEl.parentNode) sheetEl.parentNode.removeChild(sheetEl); var s = document.createElement('div'); s.className = 'vzs'; s.innerHTML = '<div class="vzs-b">' + html + '</div>'; s.addEventListener('click', function (e) { if (e.target === s || e.target.closest('[data-vzx]')) closeSheet(); }); document.body.appendChild(s); document.body.classList.add('vz-lock'); sheetEl = s; requestAnimationFrame(function () { s.classList.add('in'); }); return s; }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && sheetEl) closeSheet(); });
+  var X_ICON = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  function open(id) {
+    var m = BY[id]; if (!m) return; var h = Math.max(240, Math.min(window.innerHeight * 0.42, 420));
+    var s = sheet('<div class="vzs-h"><div><b>' + esc(m.l) + '</b><span>' + esc(m.src) + '</span></div><button type="button" class="vzs-x" data-vzx aria-label="Close">' + X_ICON + '</button></div><div class="vz big" id="vzBig"></div><div id="vzStats"></div><div class="vzs-acts"><button type="button" class="btn sm" data-csv1>Download CSV</button><button type="button" class="btn sm" data-png1>Save image</button><button type="button" class="btn sm" data-goal1>Set a goal</button>' + (window.OV.more && window.OV.more[id] ? '<button type="button" class="btn sm" data-more1>' + esc(window.OV.more[id][0]) + '</button>' : '') + '</div><div id="vzDays"></div>');
+    var host = s.querySelector('#vzBig'); host.setAttribute('data-on', '1');
+    function extra() { var cs = st(id), p = slice(id, cs.r, cs.g), a = stats(p.cur, m), lab = function (x) { return x ? '<em>' + esc(cs.g === 'day' ? dayLabel(x.k) : label(x, cs.g)) + '</em>' : ''; };
+      s.querySelector('#vzStats').innerHTML = '<div class="vzg">' + [[cs.g === 'day' ? 'Daily average' : 'Average', fmt(m.u, a.avg)], ['Median', fmt(m.u, a.med)], ['Highest', fmt(m.u, a.best && a.best.v) + lab(a.best)], ['Lowest', fmt(m.u, a.worst && a.worst.v) + lab(a.worst)]].map(function (x) { return '<div><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; }).join('') + '</div>';
+      var rows = p.cur.slice().reverse().slice(0, 120); s.querySelector('#vzDays').innerHTML = '<div class="vzl">' + rows.map(function (x) { return '<' + (cs.g === 'day' ? 'button type="button" data-day="' + x.k + '"' : 'div') + ' class="vzl-r"><span>' + esc(cs.g === 'day' ? dayLong(x.k) : label(x, cs.g)) + (x.partial ? ' <i>so far</i>' : '') + '</span><b>' + fmt(m.u, x.v) + '</b></' + (cs.g === 'day' ? 'button' : 'div') + '>'; }).join('') + '</div>'; }
+    panel(host, id, { noTitle: 1, big: 1, h: h, onChange: extra }); extra();
+    s.addEventListener('click', function (e) { var d = e.target.closest('[data-day]'); if (d) day(d.getAttribute('data-day')); if (e.target.closest('[data-csv1]')) csv(id); if (e.target.closest('[data-more1]')) { closeSheet(); window.OV.drill(window.OV.more[id][1]); } if (e.target.closest('[data-png1]')) png(host, id); if (e.target.closest('[data-goal1]')) { closeSheet(); location.hash = 'today/records/' + id; } });
+  }
+  function csv(id) { var m = BY[id], d = daily(id); var body = 'day,' + id + '\n' + d.map(function (x) { return x.d + ',' + (x.v == null ? '' : x.v); }).join('\n'); saveBlob(new Blob([body], { type: 'text/csv' }), 'marginpad-' + id + '-' + DATA.today + '.csv'); }
+  function saveBlob(b, name) { try { var f = new File([b], name, { type: b.type }); if (navigator.canShare && navigator.canShare({ files: [f] }) && /Mobi/.test(navigator.userAgent)) { navigator.share({ files: [f] }).catch(function () {}); return; } } catch (e) {} var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+  function png(host, id) { var svg = host.querySelector('svg'); if (!svg) return; var m = BY[id], c = document.createElement('canvas'), W = +svg.getAttribute('width'), H = +svg.getAttribute('height'), S = 2, PAD = 58; c.width = W * S; c.height = (H + PAD) * S; var x = c.getContext('2d'); x.scale(S, S); x.fillStyle = '#0f1216'; x.fillRect(0, 0, W, H + PAD); x.fillStyle = INK; x.font = '700 16px sans-serif'; x.fillText(m.l, 0, 22); x.fillStyle = DIM; x.font = '12px sans-serif'; x.fillText('MarginPad ops, ' + DATA.today, 0, 42); var src = svg.cloneNode(true); src.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); var st2 = document.createElementNS('http://www.w3.org/2000/svg', 'style'); st2.textContent = 'text{font:10.5px sans-serif;fill:#5f6873}'; src.insertBefore(st2, src.firstChild); var img = new Image(); img.onload = function () { x.drawImage(img, 0, PAD, W, H); c.toBlob(function (b) { saveBlob(b, 'marginpad-' + id + '-' + DATA.today + '.png'); }); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(src)); }
+  // one day, everything we measured: what was unusual comes first
+  function day(d) {
+    if (!DATA) return; var rows = M.filter(function (m) { return !m.add && !m.sub && !m.scale; }).map(function (m) { var ds = daily(m.id), x = null; for (var i = ds.length - 1; i >= 0; i--) { if (ds[i].d === d) { x = ds[i]; break; } if (ds[i].d < d) break; } if (!x || x.v == null) return null; var od = oddity(m.id, d, x.v); return { m: m, v: x.v, od: od }; }).filter(Boolean).filter(function (r) { return r.v || !r.m.sparse; });
+    rows.sort(function (a, b) { return Math.abs(b.od ? b.od.z : 0) - Math.abs(a.od ? a.od.z : 0); });
+    var marks = MARKS.filter(function (x) { return x.day === d; });
+    var prevD = t2d(d2t(d) - 86400000), nextD = t2d(d2t(d) + 86400000);
+    var s = sheet('<div class="vzs-h"><div><b>' + esc(dayLong(d)) + '</b><span>' + (d === DATA.today ? 'today so far, ' : '') + 'compared with the 28 days before it</span></div><button type="button" class="vzs-x" data-vzx aria-label="Close">' + X_ICON + '</button></div><div class="vzs-nav"><button type="button" class="btn sm" data-go="' + prevD + '">Previous day</button>' + (d < DATA.today ? '<button type="button" class="btn sm" data-go="' + nextD + '">Next day</button>' : '') + '</div>'
+      + '<div class="vzm">' + marks.map(function (x) { return '<div class="vzm-r"><span>' + esc(x.t) + '</span><button type="button" data-rm="' + esc(x.id) + '">Remove</button></div>'; }).join('') + '<form class="vzm-f"><input class="in" placeholder="Note this day: a post, a deploy, an outage" maxlength="80"><button class="btn sm lime" type="submit">Add note</button></form></div>'
+      + '<div class="vzl">' + rows.map(function (r) { var cl = '', tag = ''; if (r.od && r.od.pct != null && Math.abs(r.od.z) >= 2.5) { var good = r.m.down ? r.od.pct < 0 : r.od.pct > 0; cl = good ? 'up' : 'dn'; tag = '<i class="' + cl + '">' + (r.od.pct >= 0 ? '+' : '') + Math.round(r.od.pct) + '%</i>'; } return '<button type="button" class="vzl-r" data-open="' + r.m.id + '"><span>' + esc(r.m.l) + '</span>' + tag + '<b>' + fmt(r.m.u, r.v) + '</b></button>'; }).join('') + '</div>');
+    s.addEventListener('click', function (e) { var g = e.target.closest('[data-go]'); if (g) { day(g.getAttribute('data-go')); return; } var o = e.target.closest('[data-open]'); if (o) { open(o.getAttribute('data-open')); return; } var r = e.target.closest('[data-rm]'); if (r) { markOp({ op: 'rm', id: r.getAttribute('data-rm') }).then(function () { day(d); }); } });
+    s.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var i = s.querySelector('form input'), t = i.value.trim(); if (!t) return; markOp({ day: d, t: t }).then(function () { day(d); }); });
+  }
+  function markOp(b) { return fetch('/api/admin/marks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }).then(function (j) { if (j && j.rows) MARKS = j.rows; hydrateAll(true); }); }
+
+  // ---------- small forms ----------
+  // the tile's little trend: a real line over the last 30 days, its own scale, no axis
+  function miniSvg(id, n) { if (!DATA) return ''; var d = daily(id).slice(-(n || 30)).filter(function (x) { return x.d !== DATA.today; }); var v = d.map(function (x) { return x.v; }).filter(function (x) { return x != null; }); if (v.length < 3) return ''; var mx = Math.max.apply(null, v), mn = Math.min.apply(null, v), W = 100, H = 26, st0 = W / (d.length - 1), p = '', on = false; if (mx === mn) mx = mn + 1; d.forEach(function (x, i) { if (x.v == null) { on = false; return; } p += (on ? 'L' : 'M') + (i * st0).toFixed(1) + ' ' + (H - 2 - (x.v - mn) / (mx - mn) * (H - 4)).toFixed(1); on = true; }); return '<svg class="vz-mini" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="' + p + '" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>'; }
+  // a year on one screen: one square per day, one hue, five steps by rank. Tap a square, get the day.
+  function calendar(host, id) {
+    var m = BY[id]; var ds = daily(id); if (!ds.length) { host.innerHTML = '<div class="empty">nothing recorded</div>'; return; }
+    var vals = ds.map(function (x) { return x.v; }).filter(function (x) { return x != null && x > 0; }).sort(function (a, b) { return a - b; }), q = [0.2, 0.4, 0.6, 0.8].map(function (f) { return vals[Math.floor(vals.length * f)] || 0; });
+    var step = function (v) { if (v == null) return -1; if (v <= 0) return 0; for (var i = 0; i < 4; i++) if (v <= q[i]) return i + 1; return 5; };
+    var first = isoWeek(ds[0].d), map = {}; ds.forEach(function (x) { map[x.d] = x.v; }); var weeks = Math.ceil((d2t(DATA.today) - d2t(first)) / 604800000) + 1, C = 13, G = 3, Lft = 26, Tp = 16, W = Lft + weeks * (C + G), H = Tp + 7 * (C + G), o = '', lastM = -1;
+    ['Mon', 'Wed', 'Fri'].forEach(function (l, i) { o += '<text x="0" y="' + (Tp + (i * 2) * (C + G) + 10) + '" class="vz-x">' + l + '</text>'; });
+    for (var w = 0; w < weeks; w++) { var t0 = d2t(first) + w * 604800000, mo = new Date(t0).getUTCMonth(); if (mo !== lastM) { o += '<text x="' + (Lft + w * (C + G)) + '" y="10" class="vz-x">' + MON[mo] + '</text>'; lastM = mo; } for (var d = 0; d < 7; d++) { var k = t2d(t0 + d * 86400000); if (k > DATA.today) continue; var v = map[k], s = step(v), fill = s < 0 ? 'rgba(255,255,255,.03)' : s === 0 ? 'rgba(255,255,255,.07)' : 'rgba(194,246,74,' + [0, .16, .32, .5, .72, 1][s] + ')'; o += '<rect data-day="' + k + '" x="' + (Lft + w * (C + G)) + '" y="' + (Tp + d * (C + G)) + '" width="' + C + '" height="' + C + '" rx="2.5" fill="' + fill + '"><title>' + dayLabel(k) + ': ' + fmt(m.u, v) + '</title></rect>'; } }
+    host.innerHTML = '<div class="vz-cal"><svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(m.l) + ' per day">' + o + '</svg></div>'; var box = host.firstChild; box.scrollLeft = box.scrollWidth;
+    box.addEventListener('click', function (e) { var r = e.target.closest('[data-day]'); if (r) day(r.getAttribute('data-day')); });
+  }
+  function weekHeat(host, rows) { // rows from /api/admin/rhythm: w 1-7 (Mon-Sun), h 0-23. Each cell is an average for that hour.
+    var g = {}, mx = 0; rows.forEach(function (r) { var v = +r.n || 0; g[r.w + '-' + r.h] = v; if (v > mx) mx = v; }); var dn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], o = '<div class="vz-wh">'; o += '<div class="vzw-r vzw-x"><span></span>' + [0, 6, 12, 18].map(function (h) { return '<i style="grid-column:' + (h + 1) + '/span 6">' + (h < 10 ? '0' : '') + h + '</i>'; }).join('') + '</div>';
+    dn.forEach(function (l, i) { o += '<div class="vzw-r"><span>' + l + '</span>'; for (var h = 0; h < 24; h++) { var v = g[(i + 1) + '-' + h] || 0, a = mx ? Math.pow(v / mx, 2.2) : 0; o += '<b style="background:rgba(194,246,74,' + (0.05 + a * 0.95).toFixed(2) + ')" title="' + l + ' ' + h + ':00 UTC, ' + thou(v / 4.3) + ' pageviews"></b>'; } o += '</div>'; }); host.innerHTML = o + '</div>';
+  }
+  function compare(host, ids, o) { // several metrics on one chart means several scales, so each is indexed to its own first full point = 100. One axis, always.
+    o = o || {}; if (!DATA) { onData(function () { if (host.isConnected) compare(host, ids, o); }); return; } var r = o.r || 90;
+    var sets = ids.slice(0, 4).map(function (id, i) { var cur = slice(id, r, 'week').cur.filter(function (x) { return !x.partial; }); return { id: id, m: BY[id], cur: cur, color: PAL[i] }; }).filter(function (x) { return x.cur.length >= 3; }); if (!sets.length) { host.innerHTML = '<div class="empty">not enough history in that range</div>'; return; } var n = Math.min.apply(null, sets.map(function (x) { return x.cur.length; }));
+    sets.forEach(function (x) { var c = x.cur.slice(-n), b = null; c.forEach(function (p) { if (b == null && p.v) b = p.v; }); x.pts = c.map(function (p) { return { v: p.v == null || !b ? null : p.v / b * 100, raw: p.v, k: p.k, d0: p.d0 }; }); });
+    host.innerHTML = '<div class="vz-p" style="height:' + (o.h || 220) + 'px"></div><div class="vz-leg">' + sets.map(function (x) { var l = x.pts[x.pts.length - 1]; return '<span><i style="background:' + x.color + '"></i>' + esc(x.m.l) + ' <b>' + (l && l.v != null ? (l.v >= 100 ? '+' : '') + Math.round(l.v - 100) + '%' : '-') + '</b></span>'; }).join('') + '</div><div class="vz-ir"></div>'; var plot = host.firstChild, ir = host.querySelector('.vz-ir');
+    function paint() { if (!plot.clientWidth) return; draw(plot, { series: sets.map(function (x) { return { pts: x.pts, color: x.color }; }), kind: 'line', unit: 'n', h: o.h || 220, xl: function (i) { var p = sets[0].pts[i]; return p ? dayLabel(p.d0) : ''; }, title: 'Compared' }); }
+    var rest = 'Each line starts at 100, so the shape is comparable and the size is not. Weekly.'; ir.textContent = rest; paint(); observe(plot, paint);
+    scrub(plot, function (i) { var p0 = sets[0].pts[i]; ir.innerHTML = '<b>' + esc(p0 ? 'Week of ' + dayLabel(p0.d0) : '') + '</b> ' + sets.map(function (x) { var p = x.pts[i]; return esc(x.m.l) + ' ' + fmt(x.m.u, p && p.raw); }).join(', '); }, function () { ir.textContent = rest; });
+  }
+
+  // ---------- hydration: any <div class="vz" data-m="uv"> in any view becomes a chart ----------
+  function hydrate(el) { el.setAttribute('data-on', '1'); var c = el.getAttribute('data-cfg'), id = el.getAttribute('data-m'), o = {}; try { o = c ? JSON.parse(c) : {}; } catch (e) {} if (el.hasAttribute('data-inline')) inline(el, o); else if (id) panel(el, id, o); }
+  function hydrateAll(force) { var sel = force ? '.vz[data-m]' : '.vz:not([data-on])'; document.querySelectorAll(sel).forEach(function (el) { if (el.closest('.vzs')) return; hydrate(el); }); }
+  var pending = false; // a rAF, never a microtask: this observer only ever writes into elements it has just marked, so it cannot feed itself (the 2026-10-25 freeze shape)
+  new MutationObserver(function () { if (pending) return; if (!document.querySelector('.vz:not([data-on])')) return; pending = true; requestAnimationFrame(function () { pending = false; hydrateAll(false); }); }).observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-vzopen]'); if (b) { e.preventDefault(); e.stopPropagation(); open(b.getAttribute('data-vzopen')); } }, true);
+
+  window.OV = { M: M, BY: BY, load: load, onData: onData, ready: function () { return !!DATA; }, data: function () { return DATA; }, daily: daily, folded: folded, usual: usual, oddity: oddity, fmt: fmt, thou: thou, deltaHtml: deltaHtml, miniSvg: miniSvg, open: open, day: day, closeSheet: closeSheet, calendar: calendar, weekHeat: weekHeat, compare: compare, dayLabel: dayLabel, dayLong: dayLong, t2d: t2d, d2t: d2t, median: median, sheet: sheet, X_ICON: X_ICON, onLoaded: function (f) { listeners.push(f); }, marks: function () { return MARKS; },
+    trend: function (id, o) { return '<div class="vz" data-m="' + id + '"' + (o ? ' data-cfg="' + esc(JSON.stringify(o)) + '"' : '') + '></div>'; },
+    plain: function (cfg) { return '<div class="vz" data-inline="1" data-cfg="' + esc(JSON.stringify(cfg)) + '"></div>'; } };
+})();
