@@ -1447,7 +1447,7 @@ async function cxLabelsLive(env) { try { const j = JSON.parse(await env.STATS.ge
 // read "Long liquidations" two days later. cx:lblarch keeps the same reading without the prose for 40 days.
 let _cxArch = null, _cxArchAt = 0;
 async function cxLabelsArch(env, fresh) { try { if (fresh || Date.now() - _cxArchAt > 120000) { const a = JSON.parse(await env.STATS.get('cx:lblarch') || 'null'); _cxArch = a && a.m ? a.m : (_cxArch || {}); _cxArchAt = Date.now(); } } catch (e) {} return _cxArch || {}; }
-async function cxLabelsGet(env) { const lv = await cxLabelsLive(env), ar = await cxLabelsArch(env); return { ...lv, m: Object.assign({}, ar, lv.m) }; }
+async function cxLabelsGet(env) { const lv = await cxLabelsLive(env), ar = await cxLabelsArch(env), a2 = {}; for (const k in ar) if (ar[k].imp != null) a2[k] = ar[k]; return { ...lv, m: Object.assign(a2, lv.m) }; }
 const CX_ARCH_MS = 40 * 86400000, CX_ARCH_MAX = 12000;
 async function cxArchPut(env, add, now) {
   const m = Object.assign({}, await cxLabelsArch(env, true));
@@ -1465,9 +1465,9 @@ async function cxLabelBatch(env, todo, slugs, now) {
   const run = slugs && slugs.length ? '\n\nRUNNING STORIES (exact slugs): ' + slugs.join(', ') + '. A headline that follows up one of these events - a new detail, a reaction, a recovery, an arrest, a statement - takes that exact slug, however many days later; a new slug only for a genuinely new event. A follow-up to an event the market already traded scores imp under 40 unless it is itself a new forced buy or sell.' : '';
   let j = null, status = 0;
   try {
-    const r = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 2200, system: CX_LBL_SYS + run, messages: [{ role: 'user', content: lines.join('\n') }] }) }, 25000);
+    const r = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 3600, system: CX_LBL_SYS + run, messages: [{ role: 'user', content: lines.join('\n') }] }) }, 25000);
     status = r ? r.status : 0;
-    if (r && r.ok) { const b = await r.json(); try { aiUsageLog(env, null, { model: 'claude-haiku-4-5-20251001', surface: 'catalyst', uid: '', sym: '', usage: b && b.usage }); } catch (e) {} const txt = ((b && b.content || []).find(x => x.type === 'text') || {}).text || ''; const mm = txt.match(/\{[\s\S]*\}/); if (mm) j = JSON.parse(mm[0]); }
+    if (r && r.ok) { const b = await r.json(); try { aiUsageLog(env, null, { model: 'claude-haiku-4-5-20251001', surface: 'catalyst', uid: '', sym: '', usage: b && b.usage }); } catch (e) {} const txt = ((b && b.content || []).find(x => x.type === 'text') || {}).text || ''; const mm = txt.match(/\{[\s\S]*\}/); if (mm) { try { j = JSON.parse(mm[0]); } catch (e) { const it = []; for (const o of txt.matchAll(/\{"id"[^{}]*\}/g)) { try { it.push(JSON.parse(o[0])); } catch (e2) {} } j = { items: it }; } } } // a cut-off answer keeps every row that arrived whole
     else aiFail(env, 'catalyst', status);
   } catch (e) { aiFail(env, 'catalyst', 0); }
   const out = {}; if (!j || !Array.isArray(j.items)) return out;
@@ -25476,15 +25476,14 @@ export default {
       const r = await __realFetch(base + '/api/v1/catalysts?since=' + since + '&until=' + until + '&limit=9000&min=25'); const items = ((await r.json()).items || []);
       const live = await cxLabelsLive(env), arch = await cxLabelsArch(env, true);
       if (b.mergeLive) await cxArchPut(env, live.m, n);
-      const todo = items.filter(c => c && c.id && !live.m[c.id] && !arch[c.id] && c.kind !== 'promo' && c.kind !== 'pair').sort((x, y) => (+x.ts_src || 0) - (+y.ts_src || 0));
+      const todo = items.filter(c => c && c.id && !live.m[c.id] && !(arch[c.id] && arch[c.id].imp != null) && c.kind !== 'promo' && c.kind !== 'pair').sort((x, y) => (+x.ts_src || 0) - (+y.ts_src || 0));
       if (!b.go) return J({ ok: true, dry: true, items: items.length, todo: todo.length, oldest: todo[0] ? todo[0].ts_src : null });
       const batch = todo.slice(0, Math.min(25, +b.n || 20)); if (!batch.length) return J({ ok: true, left: 0 });
       const slugs = cxRunningSlugs(Object.assign({}, arch, live.m), +batch[0].ts_src + 3600000);
       const got = await cxLabelBatch(env, batch, slugs, n);
-      // an item the model refused to answer for still gets a row, or the loop would ask for it for ever
-      for (const c of batch) if (!got[c.id]) got[c.id] = { imp: null, kind: '', syms: [], story: '', expect: 0, ts: +c.ts_src || n };
+      if (!Object.keys(got).length) return J({ ok: false, why: 'no_answer' });
       await cxArchPut(env, got, n);
-      return J({ ok: true, done: batch.length, answered: Object.values(got).filter(x => x.imp != null).length, left: todo.length - batch.length, at: batch[0].ts_src, slugs: slugs.slice(0, 8) });
+      return J({ ok: true, done: batch.length, answered: Object.values(got).filter(x => x.imp != null).length, left: todo.length - Object.keys(got).length, at: batch[0].ts_src, slugs: slugs.slice(0, 8) });
     }
     if (url.pathname === '/api/catalysts/top') return handleCatalystTop(url, env);
     if (url.pathname === '/api/catalysts/health') return handleCatalystHealth(url, env);

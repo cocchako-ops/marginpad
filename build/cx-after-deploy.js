@@ -21,7 +21,7 @@ const get = (u) => fetch(BASE + u, { headers: H }).then(r => r.json());
   if (!SKIP) {
     let left = d0.todo, fails = 0;
     while (left > 0 && fails < 5) {
-      const r = await post({ go: true, n: 20 }).catch(e => ({ err: String(e) }));
+      const r = await post({ go: true, n: 14 }).catch(e => ({ err: String(e) }));
       if (!r || !r.ok) { fails++; console.log('  retry', JSON.stringify(r).slice(0, 120)); await new Promise(x => setTimeout(x, 4000)); continue; }
       left = +r.left || 0; fails = 0;
       console.log('  ', new Date(+r.at).toISOString().slice(0, 16), 'answered', r.answered, 'of', r.done, 'left', left);
