@@ -3440,7 +3440,7 @@ window.addEventListener('load', function () {
     try{var _uxT=performance.now();requestAnimationFrame(function(){try{window.__mpUxm&&window.__mpUxm('nav',performance.now()-_uxT);}catch(e){}});}catch(e){} // UX budget: SPA transition → next paint
     try{var _ss=document.querySelector('.scr-sheet.on');if(_ss)_ss.classList.remove('on');}catch(e){} // close the screener action sheet so it doesn't carry over onto the new route
     var hc=document.documentElement;
-    hc.className=hc.className.replace(/\s*\broute-(paper|charts|calc|screener)\b/g,'');
+    hc.className=hc.className.replace(/\s*\broute-(paper|charts|calc|screener|heat|swap)\b/g,''); // heat and swap joined the first-paint classes on 2026-10-27 and were never cleared here, so html.route-heat kept #heatmap on screen over every page reached from it
     document.body.classList.remove('paper-page','charts-page','calc-page','heatmap-page','swap-page');
     _unhideWrap(); // restore marketing sections, then re-hide the default-hidden tool sections (each route shows the one it needs)
     var cs=document.getElementById('chartspace');
