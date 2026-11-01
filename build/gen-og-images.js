@@ -141,7 +141,7 @@ function plan(rel, html) {
     '/trading-api/': ['product', { title: 'Trade MarginPad from your own bot', sub: 'REST, WebSocket and MCP. Python and JavaScript SDKs, zero dependencies.', accent: ACCENT.cyan, path: '/trading-api/', points: ['REST + WS', 'MCP, 23 tools', 'Webhooks', 'Free tier'] }],
     '/trading-report/': ['product', { title: 'How you actually trade', sub: 'Your real patterns, measured from every close - not a feeling.', accent: ACCENT.violet, path: '/trading-report/' }],
     '/leaderboards/': ['competition', { title: 'Leaderboards', sub: 'Six season boards, every ranked trader, the prize per rank and the rule each board is scored by.', accent: ACCENT.gold, path: '/leaderboards/' }],
-    '/ai-indicators/': ['product', { title: 'The 5 AI indicators, explained', sub: 'Real liquidations marked on the candle they happened on, and four models built on our own feed - what each measures and how to read it before a position.', accent: ACCENT.lime, path: '/ai-indicators/', eyebrow: 'Included with Premium' }],
+    '/ai-indicators/': ['product', { title: 'The 6 AI indicators, explained', sub: 'Real liquidations and the cause of every move marked on the candle, and four models built on our own feed - what each measures and how to read it before a position.', accent: ACCENT.lime, path: '/ai-indicators/', eyebrow: 'Included with Premium' }],
     '/community/': ['product', { title: 'The MarginPad floor', sub: 'Setups, screenshots and arguments, from people trading the same pairs.', accent: ACCENT.pink, path: '/community/' }],
     '/exchanges/': ['product', { title: 'Crypto futures exchanges, compared properly', sub: 'Fees, leverage, liquidity and what each one actually costs you.', accent: ACCENT.blue, path: '/exchanges/' }],
     '/levels/': ['product', { title: 'Levels and XP', sub: 'Bronze to Legendary, and what each one unlocks.', accent: ACCENT.gold, path: '/levels/' }],
@@ -167,9 +167,9 @@ function plan(rel, html) {
   if (ONE[key]) { const [t, d] = ONE[key]; return { t, d: Object.assign({ sub: desc }, d) }; }
 
   // the four one-question pages
-  if (/^\/(how-many-traders-liquidated-today|longs-or-shorts-liquidated-more|biggest-liquidation-today|is-funding-positive-or-negative|crypto-liquidations-today|where-can-i-test-a-trading-bot|mcp-server-for-crypto-trading|practice-for-a-funded-account|what-leverage-should-a-beginner-use|leverage-report)\/$/.test(rel)) {
+  if (/^\/(how-many-traders-liquidated-today|longs-or-shorts-liquidated-more|biggest-liquidation-today|is-funding-positive-or-negative|crypto-liquidations-today|where-can-i-test-a-trading-bot|mcp-server-for-crypto-trading|practice-for-a-funded-account|what-leverage-should-a-beginner-use|why-is-bitcoin-down-today|leverage-report)\/$/.test(rel)) {
     const A = { 'how-many-traders-liquidated-today': 'Counted every hour', 'longs-or-shorts-liquidated-more': 'Longs vs shorts, live',
-      'biggest-liquidation-today': 'The single largest', 'is-funding-positive-or-negative': 'Who pays whom', 'crypto-liquidations-today': 'Today, so far', 'where-can-i-test-a-trading-bot': 'Free, on live prices', 'mcp-server-for-crypto-trading': 'One line of config', 'practice-for-a-funded-account': 'Our own pass rate', 'what-leverage-should-a-beginner-use': 'Counted, not guessed', 'leverage-report': 'Month by month' };
+      'biggest-liquidation-today': 'The single largest', 'why-is-bitcoin-down-today': 'Measured, not guessed', 'is-funding-positive-or-negative': 'Who pays whom', 'crypto-liquidations-today': 'Today, so far', 'where-can-i-test-a-trading-bot': 'Free, on live prices', 'mcp-server-for-crypto-trading': 'One line of config', 'practice-for-a-funded-account': 'Our own pass rate', 'what-leverage-should-a-beginner-use': 'Counted, not guessed', 'leverage-report': 'Month by month' };
     return { t: 'ask', d: { title: s.head, answer: A[rel.replace(/\//g, '')] || 'Live', sub: desc, path: rel, accent: ACCENT.orange } };
   }
 

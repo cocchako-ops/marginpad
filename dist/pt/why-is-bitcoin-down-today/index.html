@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt" data-es-twin="/why-is-bitcoin-down-today/"><head>
+<meta charset="UTF-8">
+<script src="/assets/ui-pt.js?v=8aa23f56"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Por que o Bitcoin está em queda hoje? O que moveu o preço | MarginPad</title>
+<meta name="description" content="A causa medida de cada grande movimento do Bitcoin: notícias, cascatas de liquidação, baleias e interesse aberto, com horário ao minuto. Atualizado ao vivo, grátis, sem cadastro.">
+<link rel="canonical" href="https://marginpad.io/pt/why-is-bitcoin-down-today/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/why-is-bitcoin-down-today/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/why-is-bitcoin-down-today/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/why-is-bitcoin-down-today/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/why-is-bitcoin-down-today/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Por que o Bitcoin está em queda hoje? O que moveu o preço | MarginPad">
+<meta property="og:description" content="A causa medida de cada grande movimento do Bitcoin: notícias, cascatas de liquidação, baleias e interesse aberto, com horário ao minuto. Atualizado ao vivo, grátis, sem cadastro.">
+<meta property="og:url" content="https://marginpad.io/pt/why-is-bitcoin-down-today/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"O que moveu o preço no MarginPad: Bitcoin","description":"Todo movimento anormal do Bitcoin dos últimos 30 dias com a causa medida: o primeiro relato da notícia, liquidações, trades de baleias rastreadas e interesse aberto naquele minuto.","url":"https://marginpad.io/pt/why-is-bitcoin-down-today/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/catalysts/moves?symbol=BTC"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"Por que o Bitcoin está em queda hoje?","acceptedAnswer":{"@type":"Answer","text":"A caixa no topo desta página responde com o número atual: a variação de 24 horas, o maior movimento dentro dela e o que medimos naquele minuto. Se nada mensurável explicar, ela diz isso em vez de chutar."}},{"@type":"Question","name":"Por que o Bitcoin despenca tão rápido?","acceptedAnswer":{"@type":"Answer","text":"Porque um preço em queda força a saída de longs alavancados. Uma liquidação é uma venda a mercado, então empurra o preço para o próximo grupo de liquidações. Essa corrente é uma cascata, e é por isso que uma queda pode ir muito além do que a começou."}},{"@type":"Question","name":"A notícia é sempre o motivo?","acceptedAnswer":{"@type":"Answer","text":"Não. Ao longo de um mês, muitos movimentos do Bitcoin vêm só do posicionamento: liquidações, baleias ou interesse aberto, sem notícia nenhuma. Uma manchete escrita depois de uma queda costuma ser a descrição dela, não a causa."}},{"@type":"Question","name":"Isso funciona quando o Bitcoin está subindo?","acceptedAnswer":{"@type":"Answer","text":"Sim. A página lê todo movimento anormal nas duas direções, e uma alta é julgada pelas mesmas regras, incluindo short squeezes."}},{"@type":"Question","name":"E as outras moedas?","acceptedAnswer":{"@type":"Answer","text":"A mesma leitura existe para todo mercado que o MarginPad exibe em gráfico. Ative o What moved it em um gráfico ou consulte o JSON grátis com outro símbolo."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/why-is-bitcoin-down-today.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/why-is-bitcoin-down-today.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/pt/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/pt/liquidations/">Liquidações</a><a href="/pt/heatmap">Mapa de calor</a><a href="/pt/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Uma pergunta, uma resposta</p>
+    <h1>Por que o Bitcoin está em queda hoje?</h1>
+    <p class="lead">Subindo ou caindo, esta página nomeia o que moveu o Bitcoin, a partir de medições feitas naquele minuto e não de uma manchete escrita depois.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Lendo o número ao vivo&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/pt/catalysts/">Catalisadores cripto ao vivo</a><a class="ask-cta alt" href="/pt/ai-indicators/">Os seis indicadores de IA, explicados</a><a class="ask-cta alt" href="/pt/rekt/">O feed de liquidações ao vivo</a><a class="ask-cta alt" href="/pt/coin/btc/">Dados de mercado do Bitcoin</a><a class="ask-cta alt" href="/pt/paper-trade">Pratique o próximo movimento com dinheiro de mentira</a></p>
+
+    <h2>Como uma causa é decidida</h2>
+    <p>Um movimento é considerado anormal em relação à escala recente do próprio Bitcoin, então uma semana calma e uma semana agitada são medidas por réguas diferentes. Para cada um, checamos o que era mensurável naquele minuto: notícias que saíram antes ou quando começou, <a href="/pt/rekt/">liquidações do nosso próprio coletor</a>, trades de <a href="/pt/hyperliquid-whales/">baleias da Hyperliquid</a> rastreadas, e interesse aberto subindo ou caindo junto com o preço.</p>
+
+    <h2>Só o primeiro relato conta</h2>
+    <p>Uma notícia que sai e depois é repetida por quarenta veículos é uma única notícia. Um movimento só pode ser creditado ao primeiro relato de uma história, então um resumo escrito depois da queda não pode afirmar que a causou. As repetições apenas aumentam o quanto aquela história importou. Todo evento está na <a href="/pt/catalysts/">lista de catalisadores ao vivo</a>.</p>
+
+    <h2>Por que alguns movimentos ficam sem resposta</h2>
+    <p>Se nada mensurável explica um movimento, a linha diz isso em vez de emprestar a manchete mais próxima. A maioria dos movimentos reais também tem mais de uma causa: uma grande queda pode ser uma notícia que a começou e uma cascata de liquidações que a terminou. Um fechamento forçado é uma ordem a mercado, e é assim que uma queda pequena vira uma longa.</p>
+
+    <h2>Veja no gráfico</h2>
+    <p>As mesmas respostas aparecem em cada candle como <a href="/pt/ai-indicators/#catalyst">What moved it</a>, um dos seis indicadores Premium dos <a href="/pt/charts">gráficos do MarginPad</a>, para moedas, ações, índices, forex e metais.</p>
+
+    <h2>Pegue os dados</h2>
+    <p>Grátis em JSON, sem chave: <code>GET https://marginpad.io/api/catalysts/moves?symbol=BTC</code> retorna todo movimento anormal dos últimos 30 dias com suas causas e as respectivas parcelas. As outras moedas funcionam do mesmo jeito.</p>
+
+    <h2>Perguntas</h2>
+    <details><summary>Por que o Bitcoin está em queda hoje?</summary><p>A caixa no topo desta página responde com o número atual: a variação de 24 horas, o maior movimento dentro dela e o que medimos naquele minuto. Se nada mensurável explicar, ela diz isso em vez de chutar.</p></details>
+    <details><summary>Por que o Bitcoin despenca tão rápido?</summary><p>Porque um preço em queda força a saída de longs alavancados. Uma liquidação é uma venda a mercado, então empurra o preço para o próximo grupo de liquidações. Essa corrente é uma cascata, e é por isso que uma queda pode ir muito além do que a começou.</p></details>
+    <details><summary>A notícia é sempre o motivo?</summary><p>Não. Ao longo de um mês, muitos movimentos do Bitcoin vêm só do posicionamento: liquidações, baleias ou interesse aberto, sem notícia nenhuma. Uma manchete escrita depois de uma queda costuma ser a descrição dela, não a causa.</p></details>
+    <details><summary>Isso funciona quando o Bitcoin está subindo?</summary><p>Sim. A página lê todo movimento anormal nas duas direções, e uma alta é julgada pelas mesmas regras, incluindo short squeezes.</p></details>
+    <details><summary>E as outras moedas?</summary><p>A mesma leitura existe para todo mercado que o MarginPad exibe em gráfico. Ative o What moved it em um gráfico ou consulte o JSON grátis com outro símbolo.</p></details>
+
+    <div class="sibs">
+      <h2>Outras perguntas que respondemos com um número ao vivo</h2>
+      <ul><li><a href="/pt/how-many-traders-liquidated-today/">Quantos traders foram liquidados hoje?</a></li><li><a href="/pt/longs-or-shorts-liquidated-more/">Longs ou shorts estão sendo mais liquidados?</a></li><li><a href="/pt/biggest-liquidation-today/">Qual foi a maior liquidação de hoje?</a></li><li><a href="/pt/is-funding-positive-or-negative/">O funding está positivo ou negativo agora?</a></li><li><a href="/pt/where-can-i-test-a-trading-bot/">Onde posso testar um bot de trading de graça?</a></li><li><a href="/pt/mcp-server-for-crypto-trading/">Existe um servidor MCP para trading de cripto?</a></li><li><a href="/pt/practice-for-a-funded-account/">Onde posso praticar para um desafio de conta financiada?</a></li><li><a href="/pt/what-leverage-should-a-beginner-use/">Qual alavancagem um iniciante deve usar?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Relacionados: <a href="/pt/catalysts/">catalisadores cripto ao vivo</a> &middot; <a href="/pt/ai-indicators/">os seis indicadores de IA, explicados</a> &middot; <a href="/pt/rekt/">o feed de liquidações ao vivo</a> &middot; <a href="/pt/coin/btc/">dados de mercado do Bitcoin</a> &middot; <a href="/pt/paper-trade">pratique o próximo movimento com dinheiro de mentira</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> &middot; <a href="/pt/blog/">Blog</a> &middot; <a href="/pt/terms/">Termos</a> &middot; <a href="/pt/privacy/">Privacidade</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=f5a3656f"></script>
+</body>
+</html>

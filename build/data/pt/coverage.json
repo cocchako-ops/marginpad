@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 0.9935064935064936,
-  "hit": 153,
-  "missing": 1
+  "cover": 1,
+  "hit": 154,
+  "missing": 0
  },
  {
   "rel": "alerts/index.html",
@@ -788,7 +788,7 @@
  {
   "rel": "blog/is-kucoin-safe-2026/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 56,
   "missing": 0
  },
  {
@@ -884,7 +884,7 @@
  {
   "rel": "blog/pce-inflation-crypto/index.html",
   "cover": 1,
-  "hit": 45,
+  "hit": 49,
   "missing": 0
  },
  {
@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.9958677685950413,
-  "hit": 241,
-  "missing": 1
+  "cover": 1,
+  "hit": 242,
+  "missing": 0
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -2084,7 +2084,7 @@
  {
   "rel": "squads/index.html",
   "cover": 1,
-  "hit": 32,
+  "hit": 37,
   "missing": 0
  },
  {
@@ -2661,6 +2661,12 @@
   "rel": "where-to-start/index.html",
   "cover": 1,
   "hit": 69,
+  "missing": 0
+ },
+ {
+  "rel": "why-is-bitcoin-down-today/index.html",
+  "cover": 1,
+  "hit": 58,
   "missing": 0
  },
  {

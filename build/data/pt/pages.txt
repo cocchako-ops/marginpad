@@ -455,3 +455,4 @@
 /strategies/short-squeeze-fade/
 /strategies/oi-washout-long/
 /trader-readiness-test/
+/why-is-bitcoin-down-today/

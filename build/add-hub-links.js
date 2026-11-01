@@ -88,7 +88,7 @@ if (has('liquidations')) {
     block('Liquidation calculators by coin', '', CALCS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-calculator')])),
     block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))),
     // the one-question pages (2026-09-14) - an orphan page is one an assistant never finds a route to
-    block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?'], ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
+    block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/why-is-bitcoin-down-today/', 'Why is Bitcoin down today?'], ['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?'], ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
   b.push(block('Build on this data', 'Every liquidation on this page is in the free JSON API, and the same account can paper-trade against it through the Bot API or an MCP server.', [['/trading-api/', 'Paper-trading Bot API'], ['/free-crypto-api/', 'Free keyless market-data API'], ['/api-docs/', 'Live API reference']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))));
   if (inject(rel('liquidations'), null, b)) n++;
 }
@@ -128,6 +128,7 @@ const PRACTICE_LINKS = [
   ['/academy/', 'Academy - 17 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
   ['/trading-competition/', 'Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account'],
+  ['/squads/', 'Squads - five traders, one logo, squad duels'],
   // 2026-09-21: the highest-intent destination in this block. Somebody reading a liquidation page is a trader, and a
   // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
   ['/practice-for-a-funded-account/', 'Practising for a funded account? Try the rules free first'],
@@ -142,7 +143,9 @@ const PRACTICE_LINKS = [
 // the whole of dist. Four of the five are models built on the liquidation feed these pages describe and the
 // fifth marks real liquidations on the candle they happened on, so this is the same subject, not a promotion.
 const CHART_LINKS = [
-  ['/ai-indicators/', 'The five AI indicators, explained'],
+  ['/why-is-bitcoin-down-today/', 'Why is Bitcoin down today? The measured cause'],
+  ['/catalysts/', 'Crypto catalysts live - what is moving the market'],
+  ['/ai-indicators/', 'The six AI indicators, explained'],
   ['/heatmap', 'Live liquidation heatmap'],
   ['/charts', 'Chart workspace - every big liquidation marked where it happened'],
 ].filter(([h]) => h === '/heatmap' || h === '/charts' || has(h.replace(/^\/|\/$/g, '')));
@@ -216,6 +219,7 @@ for (const hub of HUBS) {
    block that appears on all 107 posts with the same five links is boilerplate, and a post that matches nothing
    keeps only its translations. */
 const ASK_TOPICS = [
+  { re: /news|catalyst|hack|crash|dump|why-|etf|fomc|cpi|macro|bitcoin-price/i, links: [['/why-is-bitcoin-down-today/', 'Why is Bitcoin down today'], ['/catalysts/', 'Crypto catalysts live']] },
   { re: /liquidat|cascade|rekt|wipe|margin-call|forced/i, links: [['/how-many-traders-liquidated-today/', 'How many traders were liquidated today'], ['/longs-or-shorts-liquidated-more/', 'Longs or shorts - who lost more'], ['/biggest-liquidation-today/', 'The biggest liquidation today'], ['/heatmap', 'Live liquidation heatmap']] },
   { re: /funding|basis|carry|perpetual-fee/i, links: [['/is-funding-positive-or-negative/', 'Is funding positive or negative right now'], ['/funding/', 'Live funding rates']] },
   { re: /\bbot\b|api|algo|automat|script|backtest|mcp/i, links: [['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot'], ['/mcp-server-for-crypto-trading/', 'MCP server for crypto trading'], ['/trading-api/', 'Free paper-trading API']] },

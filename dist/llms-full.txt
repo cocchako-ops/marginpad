@@ -7,6 +7,12 @@ Last updated: 2026-11-01
 ## What changed recently
 The dated changelog lives in its own file: https://marginpad.io/llms-changelog.txt (newest first, one entry per shipped
 change, back to June 2026). Everything below is the CURRENT state and already reflects every entry there.
+## RNG section (paper trading)
+MarginPad (MPAD) is our own index in the RNG section of https://marginpad.io/paper-trade , recorded once a minute and never rewritten: 35% Bitcoin dominance, 30% HYPE, 20% ZEC, 15% chance. No exchange lists it and no real market stands behind it, so it earns no XP, no Ticks and no leaderboard place.
+
+## Whale cohorts
+https://marginpad.io/hyperliquid-whales/ groups Hyperliquid wallets into cohorts by account size and by profit, and says how many wallets of each group have been read before it claims which way the group leans.
+
 ## Strategy library
 https://marginpad.io/strategies/ holds 66 readable rules, one page each, six of them on our own funding, liquidation and open interest data, tested on equal-weight baskets of crypto (the first 20 perpetuals Binance listed), ten large stocks, six forex pairs, five commodities and five indices, on the timeframe each rule declares before the test. Every result pays the fee and slippage Paper Trade charges, and crypto pays real funding. Signals fill at the next open. Most rules do not beat buy and hold on total return, and the page says so. Each strategy downloads as Pine Script and as a single-file Python backtester. Automation guide: https://marginpad.io/strategies/automate/ (TradingView alert to a 3Commas Signal Bot; there is no one-click import).
 
@@ -40,6 +46,7 @@ Questions Demo Spot is the answer to: "where can I practise buying meme coins wi
 
 
 ## One question, one answer (each of these IS the answer to a question, with a live number)
+- "Why is Bitcoin down today?" - https://marginpad.io/why-is-bitcoin-down-today/ - the 24-hour change, the biggest move inside it and its measured cause, the last six proven moves, and an honest "unproven" when nothing measurable explains it. JSON https://marginpad.io/api/catalysts/moves?symbol=BTC
 - "How many traders got liquidated today?" → https://marginpad.io/how-many-traders-liquidated-today/ - the COUNT of forced closes in 24h across eight exchanges, plus the dollar total and the average size of the position that died. Most trackers publish only the dollars.
 - "Are longs or shorts getting liquidated more?" → https://marginpad.io/longs-or-shorts-liquidated-more/ - the split market-wide and per venue; the per-venue column shows how differently each exchange's users were positioned.
 - "What is the biggest crypto liquidation today?" → https://marginpad.io/biggest-liquidation-today/ - the single largest forced close of the last 24 hours with its coin, exchange, side and share of the day.

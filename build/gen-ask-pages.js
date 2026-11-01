@@ -38,6 +38,7 @@ const SIBS = [
   ['/mcp-server-for-crypto-trading/', 'Is there an MCP server for crypto trading?'],
   ['/practice-for-a-funded-account/', 'Where can I practice for a funded account challenge?'],
   ['/what-leverage-should-a-beginner-use/', 'What leverage should a beginner use?'],
+  ['/why-is-bitcoin-down-today/', 'Why is Bitcoin down today?'],
 ];
 
 const PAGES = [
@@ -240,6 +241,31 @@ const PAGES = [
       ['Where can I watch these as they happen?', 'The live feed at /rekt/ prints every forced close above a size you choose, with venue, coin, side and notional, as it arrives.'],
     ],
     related: [['/rekt/', 'the live liquidation feed'], ['/liquidations/', 'market totals'], ['/heatmap', 'liquidation heatmap'], ['/hyperliquid-whales/', 'live whale positions']],
+  },
+  {
+    // The question the What moved it engine answers, for the coin people ask about. The page reads the same route the chart indicator reads.
+    slug: 'why-is-bitcoin-down-today',
+    kind: 'moved',
+    h1: 'Why is Bitcoin down today?',
+    title: 'Why Is Bitcoin Down Today? What Really Moved the Price | MarginPad',
+    desc: 'The measured cause of every big Bitcoin move: news, liquidation cascades, whales and open interest, stamped to the minute. Updated live, free, no signup.',
+    lead: 'Up or down, this page names what moved Bitcoin, from measurements taken at that minute rather than a headline written afterwards.',
+    dataset: ['MarginPad What moved it: Bitcoin', 'Every abnormal Bitcoin move of the last 30 days with its measured cause: the first report of the news, liquidations, tracked whale trades and open interest at that minute.', 'https://marginpad.io/api/catalysts/moves?symbol=BTC'],
+    body: [
+      ['How a cause is decided', '<p>A move counts as abnormal against Bitcoin&#39;s own recent scale, so a quiet week and a wild week are judged by different rulers. For each one we check what was measurable at that minute: news that landed before or as it started, <a href="/rekt/">liquidations from our own collector</a>, trades by tracked <a href="/hyperliquid-whales/">Hyperliquid whales</a>, and open interest rising or falling with the price.</p>'],
+      ['Only the first report counts', '<p>A story that breaks and is then repeated by forty outlets is one piece of news. A move can be credited only to the first report of a story, so a recap written after the drop cannot claim to have caused it. The repeats only raise how much that story mattered. Every event is on <a href="/catalysts/">the live catalyst list</a>.</p>'],
+      ['Why some moves have no answer', '<p>If nothing measurable explains a move, the row says so rather than borrowing the nearest headline. Most real moves also have more than one cause, so a large drop can be a piece of news that started it and a liquidation cascade that finished it. A forced close is a market order, which is how a small drop turns into a long one.</p>'],
+      ['See it on the chart', '<p>The same answers sit on every candle as <a href="/ai-indicators/#catalyst">What moved it</a>, one of the six Premium indicators on <a href="/charts">MarginPad charts</a>, for coins, stocks, indices, forex and metals.</p>'],
+      ['Take the data', '<p>Free as JSON, no key: <code>GET https://marginpad.io/api/catalysts/moves?symbol=BTC</code> returns every abnormal move of the last 30 days with its causes and their shares. Other coins work the same way.</p>'],
+    ],
+    faq: [
+      ['Why is Bitcoin down today?', 'The box at the top of this page answers it with the current figure: the 24-hour change, the biggest move inside it, and what we measured at that minute. If nothing measurable explains it, it says that instead of guessing.'],
+      ['Why does Bitcoin crash so fast?', 'Because a falling price forces leveraged longs out. A liquidation is a market sell, so it pushes the price into the next group of liquidations. That chain is a cascade, and it is why a drop can run far past whatever started it.'],
+      ['Is the news always the reason?', 'No. Over a month many Bitcoin moves come from positioning alone: liquidations, whales or open interest with no news at all. A headline written after a drop is usually a description of it rather than its cause.'],
+      ['Does this work when Bitcoin is going up?', 'Yes. The page reads every abnormal move in either direction, and a jump is judged by the same rules, including short squeezes.'],
+      ['What about other coins?', 'The same reading exists for every market MarginPad charts. Turn on What moved it on a chart, or ask the free JSON with another symbol.'],
+    ],
+    related: [['/catalysts/', 'crypto catalysts live'], ['/ai-indicators/', 'the six AI indicators, explained'], ['/rekt/', 'the live liquidation feed'], ['/coin/btc/', 'Bitcoin market data'], ['/paper-trade', 'practise the next move with fake money']],
   },
   {
     slug: 'is-funding-positive-or-negative',
