@@ -198,7 +198,7 @@ function page(c, lang) {
 <meta name="keywords" content="${kw}" />
 <link rel="canonical" href="${url}" />
 ${hreflang}
-<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="robots" content="noindex, follow" /><!-- 2026-11-02: kept for readers and links, out of the index (0 Google clicks in 3 months) -->
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="${title}" />
 <meta property="og:description" content="${desc}" />
@@ -362,7 +362,7 @@ try {
   let added = 0;
   for (const c of COINS) {
     const loc = `https://marginpad.io/coin/${slug(c.sym)}/`;
-    if (sm.indexOf(loc) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); added++; }
+    if (false && sm.indexOf(loc) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); added++; }
   }
   if (added) { fs.writeFileSync(smp, sm); console.log('sitemap: +' + added + ' coin URLs'); }
 } catch (e) { console.log('sitemap skipped:', e.message); }

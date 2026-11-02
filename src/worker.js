@@ -3121,6 +3121,14 @@ function ssrCoinBlock(sym, name, sentences, L, table) {
     '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-faint,#5a636e)">' + foot + '</p>' +
     '</section>\n';
 }
+// A PAGE WE KEEP FOR READERS AND LINKS BUT DO NOT WANT IN THE INDEX: header + meta, links still followed (2026-11-02)
+function noindexFollow(r) {
+  if (!r || r.status !== 200) return r;
+  const h = new Headers(r.headers); h.set('x-robots-tag', 'noindex, follow');
+  const out = new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
+  if ((h.get('content-type') || '').indexOf('text/html') < 0) return out;
+  return new HTMLRewriter().on('meta[name="robots"]', { element(e) { e.setAttribute('content', 'noindex, follow'); } }).transform(out);
+}
 async function handleSsrCoin(request, url, env) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
@@ -25344,7 +25352,12 @@ export default {
     // was competing with the pages that actually answer. The EXACT path only: every real route under /api/
     // (/api/v1/*, /api/bot/*, /api/apiplan…) must fall straight through to the router below.
     if (/^\/(es\/)?api\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/', 301);
-    { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
+    { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); }
+    // THE OLD BLOG TRANSLATIONS ARE RETIRED (2026-11-02): 62 pages under /blog/<slug>/<lang>/ in 15 languages, Google crawled them and refused to index
+    // them (GSC 'crawled - currently not indexed'), 0 clicks in 3 months. German and Portuguese go to the full twins, the rest to the English original.
+    { const _ol = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/(ar|da|de|fi|fr|id|ja|ko|nl|no|pt|ru|sv|tr|zh)\/?$/); if (_ol) return Response.redirect(url.origin + ({ de: 1, pt: 1 }[_ol[2]] ? '/' + _ol[2] : '') + '/blog/' + _ol[1] + '/', 301); }
+    // an app route with a trailing slash was a second URL for the same page (/screener/ sat in GSC beside /screener)
+    { const _as = url.pathname.match(/^(\/(?:es|pt|de))?\/(screener|paper-trade|charts|heatmap|calculators|swap)\/$/); if (_as) return Response.redirect(url.origin + url.pathname.slice(0, -1) + url.search, 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
     // SPANISH SITE (2026-09-12, owner: "ceo sajt na španski"): /es/<path> is a full twin of the English page, written by
     // build/es/gen-pages.js from the SAME markup with the text swapped through build/data/es/catalog.json. "/es/*" is in
     // run_worker_first, so every Spanish request lands here: the request keeps its own URL (every `env.ASSETS.fetch(request)`
@@ -30870,7 +30883,7 @@ export default {
       }
       return rw.transform(base);
     }
-    if (request.method === 'GET' && (url.pathname.indexOf('/coin/') === 0 || /^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//.test(url.pathname))) return handleSsrCoin(request, url, env);
+    if (request.method === 'GET' && (url.pathname.indexOf('/coin/') === 0 || /^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//.test(url.pathname))) return noindexFollow(await handleSsrCoin(request, url, env)); // 0 Google clicks in 3 months on 50 coin URLs, ~3,000 bingbot crawls each a month (2026-11-02)
     if (request.method === 'GET') {
       const mLiq = url.pathname.match(/^\/([a-z0-9]+)-liquidation-(calculator|map)\/$/);
       if (mLiq) {
@@ -40228,6 +40241,7 @@ async function commPage(url, request, env) {
   } else if ((m = url.pathname.match(/^\/community\/u\/([^\/]{3,40})/))) {
     const who = decodeURIComponent(m[1]).replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 30);
     setMeta(who + ' - trader profile | MarginPad Community', who + "'s trading ideas, market analysis and discussions on the MarginPad community.", 'https://marginpad.io/community/u/' + encodeURIComponent(who));
+    html = html.replace(/(<meta name="robots" content=")[^"]*(")/, (mm, a, b) => a + 'noindex, follow' + b); // a member profile is not a search result (2026-11-02)
   } else if ((m = url.pathname.match(/^\/community\/c\/([a-z-]{3,24})/))) {
     const nm = commCatName(m[1], request);
     setMeta(nm + ' - MarginPad Community', 'Latest ' + nm.toLowerCase() + ' posts and discussions from the MarginPad trading community.', 'https://marginpad.io/community/c/' + m[1]);

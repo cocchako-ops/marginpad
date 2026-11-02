@@ -61,12 +61,12 @@ run('Trading tools suite pages', 'node build/gen-tools-pages.js');
 
 // 3) blog (index + articles + flagship translations + related links)
 run('Blog', 'node build/gen-blog.js');
-run('Blog i18n (flagship translations)', 'node build/gen-blog-i18n.js');
-run('Blog i18n (MiCA/USDT news, EU langs)', 'node build/gen-news-mica-i18n.js');
-run('Blog i18n (exchanges)', 'node build/gen-blog-i18n-exchanges.js');
-run('Blog i18n (leverage)', 'node build/gen-blog-i18n-leverage.js');
-run('Blog i18n (pnl)', 'node build/gen-blog-i18n-pnl.js');
-run('Blog i18n (position size)', 'node build/gen-blog-i18n-size.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (flagship translations)', 'node build/gen-blog-i18n.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (MiCA/USDT news, EU langs)', 'node build/gen-news-mica-i18n.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (exchanges)', 'node build/gen-blog-i18n-exchanges.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (leverage)', 'node build/gen-blog-i18n-leverage.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (pnl)', 'node build/gen-blog-i18n-pnl.js');
+// retired 2026-11-02 (old blog translations 301 to the twins / English): run('Blog i18n (position size)', 'node build/gen-blog-i18n-size.js');
 run('Related-post links', 'node build/add-related.js');
 
 // 4) i18n assets - slim loader + per-language lazy packs (from build/i18n-master.js)
