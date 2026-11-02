@@ -41,6 +41,8 @@ const EXTRAS = [
   ['/practice-for-a-funded-account/', '1.0', D],
   ['/what-leverage-should-a-beginner-use/', '1.0', D],
   ['/why-is-bitcoin-down-today/', '1.0', D],
+  ['/liquidations/report/', '0.8', W],
+  ['/liquidations/report/2026-10/', '0.9', M],
   ['/leverage-report/', '1.0', D],
   ['/crypto-liquidations-today/', '0.9', D],
   ['/liquidations/by-exchange/', '0.9', D],

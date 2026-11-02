@@ -21,7 +21,7 @@ const DATA = [
   { href: '/funding/', t: 'Funding rates', d: 'Highest and most negative funding - crowded longs & shorts.', e: '\u{1F4CA}' },
   { href: '/open-interest/', t: 'Open interest', d: 'Where leverage is building and unwinding across coins.', e: '\u{1F4C8}' },
   { href: '/long-short/', t: 'Long / Short ratio', d: 'How the crowd is positioned on each coin.', e: '' },
-  { href: '/screener/', t: 'Market screener', d: 'Scored technical screener with entries and setups.', e: '\u{1F50D}' },
+  { href: '/screener', t: 'Market screener', d: 'Scored technical screener with entries and setups.', e: '\u{1F50D}' },
   { href: '/rekt/', t: 'Live liquidations feed', d: 'Real-time stream of every big liquidation as it happens.', e: '\u{1F480}' },
 ];
 

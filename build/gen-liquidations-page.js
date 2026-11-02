@@ -216,6 +216,7 @@ ${FAQ}
         <a href="/heatmap">Where the next stops are stacked <small>heatmap</small></a>
         <a href="/how-many-traders-liquidated-today/">How many traders were liquidated today <small>one answer</small></a>
         <a href="/liquidation-statistics/">Largest single hits, BTC and ETH <small>statistics</small></a>
+        <a href="/liquidations/report/">Monthly liquidation reports, with data <small>reports</small></a>
         <a href="/free-crypto-api/">This data as free JSON <small>API</small></a>
       </div></div>
     </div>

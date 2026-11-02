@@ -3920,6 +3920,8 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
         const probe = await env.ASSETS.fetch(new Request(url.origin + alt));
         if (probe.ok) return Response.redirect(url.origin + alt, 301);
       } catch (e) {}
+      // a pair we never wrote (/mexc-vs-bybit/ sat in GSC as a 404, 2026-11-02): the comparison hub answers it
+      if (asset.status === 404) return Response.redirect(url.origin + '/exchanges/', 301);
     }
     return asset;
   }
@@ -25355,6 +25357,7 @@ export default {
     { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); }
     // THE OLD BLOG TRANSLATIONS ARE RETIRED (2026-11-02): 62 pages under /blog/<slug>/<lang>/ in 15 languages, Google crawled them and refused to index
     // them (GSC 'crawled - currently not indexed'), 0 clicks in 3 months. German and Portuguese go to the full twins, the rest to the English original.
+    if (url.pathname === '/widgets/calendar/' || url.pathname === '/widgets/calendar') return Response.redirect(url.origin + '/calendar/', 301); // an old widget URL Google still asks for (2026-11-02)
     { const _ol = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/(ar|da|de|fi|fr|id|ja|ko|nl|no|pt|ru|sv|tr|zh)\/?$/); if (_ol) return Response.redirect(url.origin + ({ de: 1, pt: 1 }[_ol[2]] ? '/' + _ol[2] : '') + '/blog/' + _ol[1] + '/', 301); }
     // an app route with a trailing slash was a second URL for the same page (/screener/ sat in GSC beside /screener)
     { const _as = url.pathname.match(/^(\/(?:es|pt|de))?\/(screener|paper-trade|charts|heatmap|calculators|swap)\/$/); if (_as) return Response.redirect(url.origin + url.pathname.slice(0, -1) + url.search, 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
@@ -25387,7 +25390,7 @@ export default {
       const KEEP_COIN = { btc: 1, eth: 1, sol: 1, xrp: 1, bnb: 1, doge: 1 };
       const mCoin = url.pathname.match(/^\/(?:([a-z]{2})\/)?coin\/([a-z0-9]+)\/?$/);
       if (mCoin && !(mCoin[1] === undefined && KEEP_COIN[mCoin[2]])) return Response.redirect(url.origin + '/coins/', 301);
-      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname) && !/^\/liquidations\/recap\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301);
+      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname) && !/^\/liquidations\/(recap|report)\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301); // /liquidations/report/ = the monthly reports hub (2026-11-02)
       // The translated SEO subpages were removed the same day for the same reason: 1,008 pages
       // returning 47 pageviews and 7 Google visits in 90 days while multiplying every duplicate
       // signal twelvefold. Each 301s to its English original, which is an exact topical match.

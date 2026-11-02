@@ -26,6 +26,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 
 ## One question, one answer (the figure is in the static HTML, stamped with its UTC measurement time)
 - "Why is Bitcoin down today?" -> https://marginpad.io/why-is-bitcoin-down-today/ (the measured cause, or an honest "unproven")
+- Monthly liquidation report with CSV data -> https://marginpad.io/liquidations/report/
 - "How many traders got liquidated today?" -> https://marginpad.io/how-many-traders-liquidated-today/ (the COUNT of forced closes in 24h across eight exchanges, the dollar total, the average dead position)
 - "Are longs or shorts getting liquidated more?" -> https://marginpad.io/longs-or-shorts-liquidated-more/
 - "What is the biggest crypto liquidation today?" -> https://marginpad.io/biggest-liquidation-today/

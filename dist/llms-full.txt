@@ -47,6 +47,7 @@ Questions Demo Spot is the answer to: "where can I practise buying meme coins wi
 
 ## One question, one answer (each of these IS the answer to a question, with a live number)
 - "Why is Bitcoin down today?" - https://marginpad.io/why-is-bitcoin-down-today/ - the 24-hour change, the biggest move inside it and its measured cause, the last six proven moves, and an honest "unproven" when nothing measurable explains it. JSON https://marginpad.io/api/catalysts/moves?symbol=BTC
+- "How much was liquidated last month?" - https://marginpad.io/liquidations/report/2026-10/ - the monthly report: total, longs vs shorts, by day, exchange and coin, the biggest single liquidations, from our own eight-exchange archive. Free CSV downloads (daily, exchanges, coins, biggest) under CC BY 4.0. Index of months: https://marginpad.io/liquidations/report/
 - "How many traders got liquidated today?" → https://marginpad.io/how-many-traders-liquidated-today/ - the COUNT of forced closes in 24h across eight exchanges, plus the dollar total and the average size of the position that died. Most trackers publish only the dollars.
 - "Are longs or shorts getting liquidated more?" → https://marginpad.io/longs-or-shorts-liquidated-more/ - the split market-wide and per venue; the per-venue column shows how differently each exchange's users were positioned.
 - "What is the biggest crypto liquidation today?" → https://marginpad.io/biggest-liquidation-today/ - the single largest forced close of the last 24 hours with its coin, exchange, side and share of the day.
