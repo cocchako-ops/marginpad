@@ -110,6 +110,7 @@
   .you,.bd-note,.bybox2 .bd,.bh h2 small{text-wrap:pretty;}
   .bh h2 small.cx,.bybanner .r,.bybox2 .bt{text-wrap:balance;}
   /* VOLUME REWARDS (2026-10-30 evening): the meter between the board title and the you-box on the two volume boards */
+  .vm .vt a.q.vmreg,.vm .vt a.q.vmreg:visited{color:#fff !important;border:0;text-decoration:none;font-size:10.5px}.vm .vmreg{background:#2b54fc;border-radius:6px;padding:2px 8px;text-decoration:none;font-weight:600;white-space:nowrap}.vm .vmreg:hover{filter:brightness(1.15)}.vmp .vmrule a{color:#7d98ff}
   .vm{margin:12px 0 0;padding:10px 12px 9px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));cursor:pointer;position:relative;transition:border-color .15s;}
   .vm:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line2));}
   .vm .vt{display:flex;align-items:baseline;gap:4px 14px;font:700 10.5px 'Space Mono',monospace;letter-spacing:.04em;color:var(--dim);margin-bottom:8px;}
@@ -858,8 +859,8 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
      so the page never carries a second copy of either. The bar is linear to the last rung; the fill moves through WAAPI (the owner's
      Windows renders no @keyframes). A rung the board has passed is "unlocked"; the next one says how far. */
   var VM_DEF={tiers:[{at:1000000,usd:70},{at:3000000,usd:200},{at:4500000,usd:300},{at:8000000,usd:500}],split:[50,25,10,5,5,1,1,1,1,1]};
-  var vmOpen=false;
-  function vmData(){var D=LB||{},VR=D.volRewards||VM_DEF,tiers=(VR.tiers||VM_DEF.tiers).filter(function(t){return t.at>0&&t.usd>0;}),split=VR.split||VM_DEF.split;
+  var vmOpen=false,VM_BX_SPLIT=[50,30,10,5,5],VM_BX_URL='https://bingx.com/en/activity/contest/2862318612?themeType=2&ref=K5WJQO';
+  function vmData(){var D=LB||{},VR=D.volRewards||VM_DEF,tiers=(VR.tiers||VM_DEF.tiers).filter(function(t){return t.at>0&&t.usd>0;}),split=CUR==='bingx'?(VR.splitBingx||VM_BX_SPLIT):(VR.split||VM_DEF.split);
     var P=CUR==='bybit'?bybPool(D):bxPool(D),vol=+P.volUsd||0,top=tiers.length?tiers[tiers.length-1].at:8000000;
     var got=null,next=null;tiers.forEach(function(t){if(vol>=t.at)got=t;else if(!next)next=t;});
     return {tiers:tiers,split:split,vol:vol,top:top,got:got,next:next,pct:Math.min(100,vol/top*100)};}
@@ -874,9 +875,9 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
     var rg=d.tiers.map(function(t,i){var last=i===d.tiers.length-1;return '<span class="'+(d.vol>=t.at?'on':'')+(last?' end':'')+'" style="left:'+(t.at/d.top*100).toFixed(2)+'%"><em class="v">'+kUsd(t.at)+' · </em>$'+int(t.usd)+'</span>';}).join('');
     el.hidden=false;el.className='vm';el.style.setProperty('--c',col);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-expanded',vmOpen?'true':'false');
     var prev=el.querySelector('.bar i'),prevW=prev?prev.style.width:'0%';
-    el.innerHTML='<div class="vt"><span class="vl">'+left+'</span><span class="vr">'+right+'</span><span class="q">'+T("vmHow",'how it splits')+'</span></div><div class="bar"><i style="width:'+prevW+'"></i>'+ticks+'</div><div class="rg">'+rg+'</div>';
+    el.innerHTML='<div class="vt"><span class="vl">'+left+'</span><span class="vr">'+right+'</span>'+(CUR==='bingx'?'<a class="q vmreg" href="'+VM_BX_URL+'" target="_blank" rel="noopener sponsored" data-mpex="BingX">'+T("vmRegBx",'Register on BingX')+' &#8599;</a>':'<span class="q">'+T("vmHow",'how it splits')+'</span>')+'</div><div class="bar"><i style="width:'+prevW+'"></i>'+ticks+'</div><div class="rg">'+rg+'</div>';
     var fill=el.querySelector('.bar i');try{var a=fill.animate([{width:prevW||'0%'},{width:d.pct.toFixed(2)+'%'}],{duration:700,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});a.onfinish=function(){fill.style.width=d.pct.toFixed(2)+'%';};}catch(e){fill.style.width=d.pct.toFixed(2)+'%';}
-    if(!el._wired){el._wired=true;el.addEventListener('click',function(){vmOpen=!vmOpen;paintVolPop();});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vmOpen=!vmOpen;paintVolPop();}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&vmOpen){vmOpen=false;paintVolPop();}});}
+    if(!el._wired){el._wired=true;el.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.vmreg'))return;vmOpen=!vmOpen;paintVolPop();});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vmOpen=!vmOpen;paintVolPop();}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&vmOpen){vmOpen=false;paintVolPop();}});}
     paintVolPop();}
   function paintVolPop(){var pp=$('bVolP'),el=$('bVolM');if(!pp)return;if(!vmOpen||!LB||SEL||!(CUR==='bybit'||CUR==='bingx')){pp.hidden=true;if(el)el.setAttribute('aria-expanded','false');return;}
     var d=vmData(),col=CUR==='bybit'?'#f7a600':'#2b54fc',show=d.next||d.got,amt=show?show.usd:0,sp=vmSplit(amt,d.split),sum=d.split.reduce(function(a,x){return a+(+x||0);},0)||1;
@@ -884,7 +885,7 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
     var rl=d.tiers.map(function(t){var cls=d.got&&t.at===d.got.at?'on':(d.vol>=t.at?'got':'');return '<div class="'+cls+'">'+kUsd(t.at)+T("vmTradedS",' traded')+'<b>$'+int(t.usd)+'</b></div>';}).join('');
     var spH=d.split.map(function(w,i){return '<div><i>#'+(i+1)+'</i><em>'+(Math.round(w/sum*1000)/10)+'%</em><b>$'+(sp[i]%1?sp[i].toFixed(2):int(sp[i]))+'</b></div>';}).join('');
     pp.style.setProperty('--c',col);
-    pp.innerHTML='<h4>'+T("vmTitle",'Volume rewards')+'</h4><p class="vd">'+T("vmDesc1",'The board\'s total volume unlocks a reward rung ')+base+T("vmDesc2",'. A reached rung is split over the ten places by the same shares the fee rebate uses - every cent is paid, the rounding cents go to the top.')+'</p>'
+    pp.innerHTML='<h4>'+T("vmTitle",'Volume rewards')+'</h4>'+(CUR==='bingx'?'<p class="vd">'+T("vmBxDesc",'BingX pays these rewards itself, on its own contest leaderboard (from 9 Nov, one month), on top of our fixed $70. The total volume unlocks a rung, split over the top five: 50 / 30 / 10 / 5 / 5%.')+'</p><p class="vd vmrule"><b>'+T("vmBxRule1",'Your volume counts there only after you press Register on the BingX contest page.')+'</b> '+T("vmBxRule2",'If BingX asks to switch you to another event, decline - accepting moves your volume out of this contest.')+' <a href="'+VM_BX_URL+'" target="_blank" rel="noopener sponsored" data-mpex="BingX">'+T("vmBxOpen",'Open the contest page')+' &#8599;</a></p>':'<p class="vd">'+T("vmDesc1",'The board\'s total volume unlocks a reward rung ')+base+T("vmDesc2",'. A reached rung is split over the ten places by the same shares the fee rebate uses - every cent is paid, the rounding cents go to the top.')+'</p>')
       +'<div class="rl">'+rl+'</div><div class="sh">'+(show?(d.next&&show===d.next?T("vmNextSplit",'how $')+int(amt)+T("vmNextSplit2",' splits once ')+kUsd(show.at)+T("vmIsTraded",' is traded'):T("vmThisSplit",'how the unlocked $')+int(amt)+T("vmSplits",' splits')):'')+'</div><div class="sp">'+spH+'</div>';
     pp.hidden=false;if(el)el.setAttribute('aria-expanded','true');
     try{pp.animate([{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],{duration:220,easing:'ease-out'});}catch(e){}}
