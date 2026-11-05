@@ -5302,7 +5302,7 @@ async function handleCompetition(url, request, env, ctx) {
       requires: b.id === 'gold' ? { level: 'gold', xp: 12000, what: 'Gold - 12,000 XP' }
         : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
         : b.id === 'bingx' ? { link: 'bingx_uid', what: 'a BingX account opened through MarginPad, its UID registered here (verified against BingX)' }
-        : b.id === 'moon' ? { link: 'moon_signup', what: 'an approved Moon sign-up bonus claim - that is how we know which Moon account is yours' }
+        : b.id === 'moon' ? { link: 'moon_name', what: 'a Moon account opened through MarginPad, its username registered on /leaderboards/#moon (checked against our Moon referral list) or through an approved Moon sign-up bonus claim' }
         : b.id === 'call' ? { what: 'a username and at least one settled daily BTC call this season (calls close at ' + PRED_CUTOFF_H + ':00 UTC, the 00:00 UTC close settles them)' }
         : b.id === 'meme' ? { what: 'a username and a Demo Spot account holding a coin or with a trade this season (https://marginpad.io/spot/)' }
         : { what: 'a username and at least one closed trade this season' },
@@ -14673,7 +14673,7 @@ const CAMPAIGN_TPLS = [
     lead: 'The Moon wagering contest. Entry is an approved Moon sign-up bonus claim.',
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">King of the Moon is running, {name}.</p>'
       + '<p style="margin:0 0 12px">A prize pool of <b>$300</b> across the top five, decided by how much you trade on Moon while the contest is open. It is free to enter and it runs alongside the season boards you already play.</p>'
-      + '<p style="margin:0 0 12px">To take part: open your Moon account through MarginPad and claim the Moon sign-up bonus on the rewards page. That approved claim is the whole registration - there is nothing else to do.</p>',
+      + '<p style="margin:0 0 12px">To take part: open your Moon account through MarginPad and register its Moon username in the box on https://marginpad.io/leaderboards/#moon (an approved Moon sign-up bonus claim registers you too). That is the whole registration - there is nothing else to do.</p>',
     cta: ['See the board', 'https://marginpad.io/leaderboards/'] },
 
   { id: 'competition', name: 'Season competition - free to enter', group: 'Competitions', needs: [],
@@ -17733,63 +17733,71 @@ function bybitParseReport(text, pickCol) {
   diag.skippedN = diag.skipped.length; diag.skipped = diag.skipped.slice(0, 12);
   return { rows, diag };
 }
-// ---- King of the Moon (2026-09-17, owner: "unesem moon username ovako sa zvezdicama i wager ... da se odmah zna koji nalog je to")
-// Moon's affiliate dashboard masks every username (stars + a visible tail: the last character of a name up to 4 characters, the
-// last three otherwise) and reports LIFETIME figures only (Overall Wagered), so a contest is the DIFFERENCE of two pastes, one at
-// the start and one at the end. Only a member who claimed the Moon sign-up bonus has told us a full Moon username, so only those
-// can be resolved from a mask - and by the owner's rule only those compete. Total Deposits is a COUNT, never an amount.
-function moonParseDump(text) { // the raw dashboard dump (mask line, then label/value lines) AND compact "mask wager" lines
+// ---- King of the Moon (2026-09-17; rewritten 2026-11-05 when Moon unmasked its affiliate list)
+// Moon reports LIFETIME figures only (Overall Wagered), so a contest is the DIFFERENCE of two pastes, one at the start and one at
+// the end. Since 2026-11-05 the dashboard prints FULL usernames, so a row is matched to a member by name, exactly, and nothing
+// else: the masks, the pins and the "ambiguous" status are gone. Only a member who REGISTERED their Moon username competes -
+// through the $1 sign-up claim or the box on /leaderboards/ (owner rule). Total Deposits is a COUNT, never an amount.
+// A collapsed card in the dump carries the name and "Total Deposits" only: Moon prints no wager line for an account that has
+// wagered nothing, so a row with no wager is $0, never unknown.
+function moonNameOk(s) { return /^[A-Za-z0-9_.\-]{2,40}$/.test(String(s || '')); }
+function moonParseDump(text) { // the raw dashboard dump (name line, then label/value lines) AND compact "name wager" lines
   const lines = String(text || '').replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
   const rows = [], skipped = [];
   const money = v => { const m = String(v || '').replace(/[$,\s]/g, ''); return /^-?\d+(\.\d+)?$/.test(m) ? +m : null; };
-  const MASK = /^(\*+)([A-Za-z0-9_.\-]+)$/, LABEL = /^(total deposits:?|registered|vip level|last deposit date|overall wagered|overall commission)$/i;
+  const LABEL = /^(total deposits:?|registered|vip level|last deposit date|overall wagered|overall commission)$/i;
   let cur = null, expect = null;
   for (const l of lines) {
     let m;
-    if ((m = l.match(/^(\*+[A-Za-z0-9_.\-]+)[\s,;]+\$?([\d.,]+)$/))) { rows.push({ mask: m[1], wager: money(m[2]), dep: null, reg: '', lastDep: '', comm: null }); cur = null; expect = null; continue; }
-    if (MASK.test(l)) { cur = { mask: l, wager: null, dep: null, reg: '', lastDep: '', comm: null }; rows.push(cur); expect = null; continue; }
-    if (!cur) { if (!LABEL.test(l)) skipped.push(l); continue; }
-    if (LABEL.test(l)) { const k = l.toLowerCase(); expect = k.startsWith('total') ? 'dep' : k === 'registered' ? 'reg' : k === 'last deposit date' ? 'lastDep' : k === 'overall wagered' ? 'wager' : k === 'overall commission' ? 'comm' : 'vip'; continue; }
-    if (expect === 'dep') { const n = money(l); if (n != null) cur.dep = n; else skipped.push(l); }
-    else if (expect === 'reg' || expect === 'lastDep') cur[expect] = l;
-    else if (expect === 'wager' || expect === 'comm') { const n = money(l); if (n != null) cur[expect] = n; else skipped.push(l); }
-    else if (expect === 'vip') cur.vip = l;
-    else skipped.push(l);
-    expect = null;
+    if (LABEL.test(l)) { if (!cur) { skipped.push(l); continue; } const k = l.toLowerCase(); expect = k.startsWith('total') ? 'dep' : k === 'registered' ? 'reg' : k === 'last deposit date' ? 'lastDep' : k === 'overall wagered' ? 'wager' : k === 'overall commission' ? 'comm' : 'vip'; continue; }
+    if (expect && cur) {
+      if (expect === 'dep') { const n = money(l); if (n != null) cur.dep = n; else skipped.push(l); }
+      else if (expect === 'reg' || expect === 'lastDep') cur[expect] = l;
+      else if (expect === 'wager' || expect === 'comm') { const n = money(l); if (n != null) cur[expect] = n; else skipped.push(l); }
+      else if (expect === 'vip') cur.vip = l;
+      expect = null; continue;
+    }
+    if ((m = l.match(/^([A-Za-z0-9_.\-]{2,40})[\s,;]+\$?([\d.,]+)$/))) { rows.push({ moon: m[1], wager: money(m[2]), dep: null, reg: '', lastDep: '', comm: null }); cur = null; continue; }
+    if (moonNameOk(l)) { cur = { moon: l, wager: null, dep: null, reg: '', lastDep: '', comm: null }; rows.push(cur); continue; }
+    skipped.push(l);
   }
-  const seen = {}; for (const r of rows) { if (r.wager == null) r.wager = 0; const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; }
-  for (const r of rows) r.dupMask = seen[r.mask.toLowerCase()] > 1; // the same mask twice = two Moon accounts nobody can tell apart
-  return { rows, skipped: skipped.slice(0, 20), skippedN: skipped.length };
+  // Moon's list is paginated and a paste of several pages repeats the edges, so one name can arrive twice. A username is
+  // unique on Moon, so the copies are the SAME account: keep the one carrying the most information.
+  const by = new Map();
+  for (const r of rows) {
+    if (r.wager == null) r.wager = 0;
+    const k = r.moon.toLowerCase(), o = by.get(k);
+    const score = x => (x.reg ? 2 : 0) + (+x.wager > 0 ? 4 : 0) + (x.comm != null ? 1 : 0);
+    if (!o || score(r) > score(o) || (score(r) === score(o) && +r.wager > +o.wager)) by.set(k, r);
+  }
+  return { rows: [...by.values()], skipped: skipped.slice(0, 20), skippedN: skipped.length, repeats: rows.length - by.size };
 }
-function moonMaskOf(u) { u = String(u || ''); const k = u.length <= 4 ? 1 : 3; return u.length ? '*'.repeat(Math.max(0, u.length - k)) + u.slice(-k) : ''; }
-function moonMaskFits(u, mask) { const stars = (String(mask).match(/^\*+/) || [''])[0].length, suf = String(mask).slice(stars); return u.length === mask.length && suf.length > 0 && u.slice(-suf.length).toLowerCase() === suf.toLowerCase(); }
 async function moonMembers(env) { // every Moon sign-up row we hold: acct, full Moon username, MarginPad username, status
   let rows = [];
   try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/list?all=1')); const d = await r.json(); rows = [...(d.pending || []), ...(d.decided || [])].filter(x => x.exchange === 'moon').map(x => ({ ...x, acct: x.address || x.acct })); } catch (e) {} // the DO lists the account as 'address'
   let prof = {}; try { prof = await resolveProfiles(env, [...new Set(rows.map(x => x.acct).filter(Boolean))]); } catch (e) {}
   return rows.map(x => ({ id: x.id, acct: x.acct, moon: String(x.uid || ''), status: x.status, name: (prof[String(x.acct || '').slice(2)] && prof[String(x.acct || '').slice(2)].username) || '', ts: +x.decided_ts || +x.ts || 0 }));
 }
-// MOON MASKS COLLIDE, AND THE ONLY THING THAT SEPARATES TWO ROWS IS THE REGISTRATION DATE (2026-10-01).
-// Moon printed *****786 twice - two real members, salma786 and azmat786, both wagering, neither rankable,
-// because a mask alone cannot say which is which. Their Moon registration dates (22 and 25 Sep) matched their
-// $1 bonus claims on our side to the DAY, so the pair IS resolvable; it just needed somewhere to record it.
-// A pin is keyed on `mask|reg` for exactly that reason - the mask alone is the thing that is ambiguous.
-function moonPinKey(contest) { return 'moon:pin:' + String(contest || '').slice(0, 40); }
-function moonPinOf(row) { return String(row.mask || '') + '|' + String(row.reg || ''); }
-function moonResolve(rows, members, pins) { // each pasted mask -> the ONE approved member whose full Moon username fits it
-  const approved = members.filter(m => m.status === 'approved'), used = new Set();
+/* WHO IS REGISTERED FOR THE MOON BOARD: lowercased Moon username -> { acct, name, src, ts }.
+   Two ways in, both proving the member TOLD us the name: an APPROVED $1 sign-up claim ('signup') and the box on
+   /leaderboards/ ('registered', uprefs moon_name). One Moon name belongs to one account - the earliest wins, so a member
+   cannot register somebody else's name over them. Nothing else registers: a name that only appears in the pasted list is
+   somebody who never asked to compete (owner, 2026-11-05: "bez da dodajes clanove koji se nisu prijavili"). */
+async function moonRegistrations(env, members) {
+  const map = new Map();
+  const put = (moon, v) => { const k = String(moon || '').trim().toLowerCase(); if (!moonNameOk(k)) return; const o = map.get(k); if (!o || (v.ts || 0) < (o.ts || 0)) map.set(k, v); };
+  for (const m of members || await moonMembers(env)) if (m.status === 'approved') put(m.moon, { acct: m.acct, name: m.name, moon: m.moon, src: 'signup', ts: m.ts || 0 });
+  try { const r = await usersDO(env, '/bybitlinks', { venue: 'moon' }); for (const x of (r && r.rows) || []) put(x.buid, { acct: 'u:' + x.uid, name: x.name || '', moon: x.buid, src: 'registered', ts: +x.ts || 0 }); } catch (e) {}
+  return map;
+}
+function moonResolve(rows, regs) { // each pasted row -> the member who registered that exact Moon username, or nobody
+  const used = new Set();
   const out = rows.map(r => {
-    let c = approved.filter(m => moonMaskFits(m.moon, r.mask));
-    // a pin set by the owner decides a row the mask cannot: it names ONE of the candidates, so the row stops
-    // being ambiguous without the resolver ever guessing
-    const pinned = pins && pins[moonPinOf(r)];
-    if (pinned) { const p = c.filter(m => String(m.moon).toLowerCase() === String(pinned).toLowerCase()); if (p.length === 1) c = p; }
-    const other = c.length ? [] : members.filter(m => m.status !== 'approved' && moonMaskFits(m.moon, r.mask));
-    const status = c.length > 1 ? 'ambiguous' : (r.dupMask && !pinned) ? 'dup_mask' : c.length === 1 ? 'ok' : other.length ? 'not_approved' : 'unregistered';
-    if (status === 'ok') used.add(c[0].acct);
-    return { ...r, status, pinned: pinned || '', acct: c.length === 1 ? c[0].acct : '', name: c.length === 1 ? c[0].name : '', moon: c.length === 1 ? c[0].moon : '', cands: c.length > 1 ? c.map(m => m.moon + ' (' + (m.name || '?') + ')') : other.map(m => m.moon + ' (' + m.status + ')') };
+    const g = regs.get(String(r.moon || '').toLowerCase());
+    if (g) used.add(g.acct);
+    return { ...r, status: g ? 'ok' : 'unregistered', acct: g ? g.acct : '', name: g ? g.name : '', src: g ? g.src : '' };
   });
-  const missing = approved.filter(m => !used.has(m.acct)).map(m => ({ acct: m.acct, name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) }));
+  const missing = [...regs.values()].filter(g => !used.has(g.acct)).map(g => ({ acct: g.acct, name: g.name, moon: g.moon, src: g.src }));
   return { rows: out, missing };
 }
 function moonStandings(start, end) { // wagered during the contest = end - start, per resolved member; unrankable rows say why
@@ -17804,7 +17812,7 @@ function moonStandings(start, end) { // wagered during the contest = end - start
     else if (!start) note = 'no start snapshot';
     else if (regTs(r.reg) && regTs(r.reg) >= start.ts - 86400000) { from = 0; note = 'registered after the start'; }
     else note = 'not in the start snapshot';
-    out.push({ acct: r.acct, name: r.name, moon: r.moon, mask: r.mask, from, to: +r.wager || 0, delta: from == null ? null : Math.max(0, Math.round(((+r.wager || 0) - from) * 100) / 100), dep: r.dep, reg: r.reg, note });
+    out.push({ acct: r.acct, name: r.name, moon: r.moon, from, to: +r.wager || 0, delta: from == null ? null : Math.max(0, Math.round(((+r.wager || 0) - from) * 100) / 100), dep: r.dep, reg: r.reg, note });
   }
   out.sort((a, b) => (b.delta == null ? -1 : b.delta) - (a.delta == null ? -1 : a.delta) || String(a.name).localeCompare(String(b.name)));
   let rank = 0; for (const o of out) if (o.delta != null && o.delta > 0) o.rank = ++rank;
@@ -17979,7 +17987,7 @@ function signGateWhy(env, venue) {
     if (!BITGET_AFFILIATE_OK) return 'no_broker_access';
     return (env.BITGET_API_KEY && env.BITGET_API_SECRET && env.BITGET_API_PASSPHRASE) ? '' : 'no_key';
   }
-  return 'no_api';                     // Moon masks its usernames and publishes no API - it is checked by hand
+  return 'no_api';                     // Moon publishes no API - a claim is checked against the list the owner pastes (moon:list:last, shown on the desk)
 }
 function signGateReady(env, venue) { return !signGateWhy(env, venue); }
 async function signVerifySweep(env, venue, opts) {
@@ -18293,11 +18301,20 @@ function moonContestDays(start, end) { return Math.max(1, Math.round((end - star
 async function moonPubSnapshot(env, id) { // the public board of the ACTIVE contest (or a named one) - rows keep uid for the payout, /lb strips it
   try { id = id || (await env.STATS.get('moon:active')) || ''; if (!id) return null; return JSON.parse((await env.STATS.get('lb:moon:' + id)) || 'null'); } catch (e) { return null; }
 }
-async function moonBoardRebuild(env, id) { // START + END snapshots -> standings -> public rows; called after every desk save and clear
-  const start = await moonSnap(env, id, 'start'), end = await moonSnap(env, id, 'end');
+/* THE SNAPSHOTS ARE RE-READ AGAINST TODAY'S REGISTRATIONS, NEVER TRUSTED AS FROZEN. A member who registers their Moon
+   username on Wednesday must rank on the paste saved on Monday - the figures are Moon's, only "who is this" is ours, and
+   that answer changes whenever somebody registers. A row with no `moon` (a START pasted while Moon still masked names)
+   keeps the member it was resolved to at the time. */
+async function moonLive(env, id, regs) {
+  regs = regs || await moonRegistrations(env);
+  const fix = s => { if (!s || !Array.isArray(s.rows)) return s; const named = s.rows.filter(r => r.moon), old = s.rows.filter(r => !r.moon); const res = moonResolve(named, regs); const rows = [...res.rows, ...old]; return { ...s, rows, missing: res.missing, n: rows.length, ok: rows.filter(r => r.status === 'ok').length }; };
+  return { start: fix(await moonSnap(env, id, 'start')), end: fix(await moonSnap(env, id, 'end')), regs };
+}
+async function moonBoardRebuild(env, id) { // START + END snapshots -> standings -> public rows; called after every desk save, clear and registration
+  const live = await moonLive(env, id), start = live.start, end = live.end;
   if (!start) { try { await env.STATS.delete('lb:moon:' + id); } catch (e) {} try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {} return null; }
   const st = moonStandings(start, end) || [];
-  let membersN = 0; try { membersN = (await moonMembers(env)).filter(m => m.status === 'approved').length; } catch (e) {} // who can compete = every approved Moon sign-up
+  const membersN = live.regs.size; // who can compete = every registered Moon username (sign-up claim or the board's own box)
   const banned = {}; try { const bd = await bybitLedger(env, '/lbbans', {}); ((bd && bd.banned) || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
@@ -24649,7 +24666,7 @@ async function handleReward(url, request, env) {
   // owner got a ticket from "9070579908" that resolved to nobody - and worse, since both the reply path
   // (`sreply WHERE email=?`) and the member's own history (`/support/mine`) are keyed on that column, we
   // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
-  if (path === '/bybitlink' || path === '/bingxlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
+  if (path === '/bybitlink' || path === '/bingxlink' || path === '/moonlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
     if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
@@ -24658,6 +24675,7 @@ async function handleReward(url, request, env) {
        (2026-10-11). The board cannot rank anybody without an approved claim, and a member who has been
        withdrawing to their Moon account for a month is exactly the person who never files one. Same shape
        as POST /api/admin/bybitlinks. `?acct=` takes the full u:<uid>, `?uid=` the bare id. */
+    if (!acct && path === '/moonlink' && (adminOk || isAdminKey(env, adminKeyFrom(request, url)))) { const ov3 = url.searchParams.get('acct') || url.searchParams.get('uid'); if (ov3) acct = /^u:/.test(ov3) ? ov3 : 'u:' + ov3; } // support registers a Moon username for a member (2026-11-05)
     if (!acct && /sign\/submit$/.test(path) && SIGN_RE.test(path) && adminOk) {
       const ov2 = url.searchParams.get('acct') || url.searchParams.get('uid');
       if (ov2) acct = /^u:/.test(ov2) ? ov2 : 'u:' + ov2;
@@ -24862,6 +24880,30 @@ async function handleReward(url, request, env) {
     return jr({ ok: true, refundedUsd: rj.amountUsd, emailed });
   }
   // The leaderboard board (GET /lb) is polled by EVERY homepage visitor and only changes on a new submission - edge-cache it 20s so the flood collapses to ~one hit per colo per window. This is what was overloading the single `ledger` DO (all reward traffic shares it) and tripping the "storage operation exceeded timeout" reset.
+  if (path === '/moonlink') { // KING OF THE MOON (2026-11-05): register the Moon username of the account opened through our link; GET = status.
+    // Moon publishes no API, so a name is checked against the affiliate list the owner last pasted (KV moon:list:last).
+    if (!acct) return jr({ error: 'login_required' }, 401);
+    const uidM = String(acct).replace(/^u:/, '');
+    const regsM = await moonRegistrations(env);
+    let listM = null; try { listM = JSON.parse((await env.STATS.get('moon:list:last')) || 'null'); } catch (e) {}
+    const mine = [...regsM.values()].find(g => g.acct === acct) || null;
+    if (request.method === 'POST') {
+      const nm = String(b.name == null ? b.uid : b.name || '').trim().replace(/^@/, '');
+      if (!nm) { if (!isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'unlink_blocked', message: 'A registered Moon username stays with the account for the contest. If it is wrong, contact support and we will correct it.' }, 403); }
+      if (nm && !moonNameOk(nm)) return jr({ error: 'bad_name', hint: 'Type your Moon username exactly as Moon shows it: letters, numbers, _ . - only.' }, 400);
+      if (nm && mine && mine.src === 'signup' && mine.moon.toLowerCase() !== nm.toLowerCase() && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'already_registered', name: mine.moon, message: 'Your account is registered with the Moon username ' + mine.moon + ' from your sign-up bonus. If that is wrong, contact support.' }, 409);
+      if (nm) { const g = regsM.get(nm.toLowerCase()); if (g && g.acct !== acct) return jr({ error: 'name_taken', message: 'This Moon username is already registered by another MarginPad account. If it is yours, contact support.' }, 409); }
+      const e2eOk = /^e2e/i.test(uidM) && /^e2etest/i.test(nm);
+      if (nm && !e2eOk && listM && Array.isArray(listM.names) && listM.names.indexOf(nm.toLowerCase()) < 0) return jr({ error: 'not_ours', ref: 'https://moon.com/?offer=marginpad', hint: 'This Moon username is not on our referral list. Only an account opened through our Moon link can enter. If you opened it in the last day, our list may not include it yet - try again tomorrow.' }, 400);
+      const rM = await usersDO(env, '/bybitlink', { uid: uidM, buid: nm, venue: 'moon' });
+      if (!rM || rM.error) return jr({ error: (rM && rM.error) === 'uid_taken' ? 'name_taken' : ((rM && rM.error) || 'unavailable') }, rM && rM.error === 'uid_taken' ? 409 : 503);
+      try { await evPush(env, request, 'moonlink', nm ? 'registered Moon username for King of the Moon' : 'removed Moon username', '/leaderboards/#moon'); } catch (e) {}
+      try { const act = await env.STATS.get('moon:active'); if (act) await moonBoardRebuild(env, act); } catch (e) {}
+      return jr({ ok: true, name: nm, eligible: !!nm });
+    }
+    const inList = mine && listM && Array.isArray(listM.names) ? listM.names.indexOf(mine.moon.toLowerCase()) >= 0 : null;
+    return jr({ ok: true, name: mine ? mine.moon : '', eligible: !!mine, source: mine ? mine.src : '', inList, listTs: listM ? listM.ts : 0, ref: 'https://moon.com/?offer=marginpad' });
+  }
   if (path === '/bingxlink') { // BINGX VOLUME BOARD (2026-10-30): link the BingX UID of the account opened through our link; GET = status. Verified against BingX itself (inviteRelationCheck), no allowlist.
     if (!acct) return jr({ error: 'login_required' }, 401);
     const uidX = String(acct).replace(/^u:/, '');
@@ -25280,7 +25322,10 @@ async function handleReward(url, request, env) {
       if (Array.isArray(arr) && arr.length) {
         const prof = await resolveProfiles(env, arr.map(e => e.address).concat(...arr.map(e => Array.isArray(e.also) ? e.also : [])));
         arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } // faucet rows minted from an account carry no device/country of their own - borrow the user's
-          if (Array.isArray(e.also) && e.also.length) e.alsoNames = e.also.map(a => { const q = prof[String(a).replace(/^u:/, '')]; return (q && q.username) || String(a).replace(/^u:/, '').slice(0, 10); }); }); // the promo desk: who else posts from this X account
+          if (Array.isArray(e.also) && e.also.length) e.alsoNames = e.also.map(a => { const q = prof[String(a).replace(/^u:/, '')]; return (q && q.username) || String(a).replace(/^u:/, '').slice(0, 10); }); }); // the promo desk: who else posts from this X acc
+        // A MOON CLAIM IS CHECKED AGAINST THE LIST THE OWNER LAST PASTED (2026-11-05): Moon prints full usernames now, so a
+        // claimed name either is on our referral list or it is not - 35 approved claims named a Moon account that was not.
+        if (arr.some(e => e.exchange === 'moon')) { try { const ml = JSON.parse((await env.STATS.get('moon:list:last')) || 'null'); if (ml && Array.isArray(ml.names)) { const set = new Set(ml.names); arr.forEach(e => { if (e.exchange === 'moon') e.moonList = set.has(String(e.uid || '').trim().toLowerCase()) ? 'yes' : 'no'; }); data.moonListTs = ml.ts; } } catch (e) {} }ount
         // TEST ROWS NEVER REACH THE DESK BY DEFAULT (2026-10-27, owner: "users with balance" was a list of e2e accounts) - the
         // activity feed's rule applied here: hidden unless ?e2e=1; the purge route takes them out of the store, this keeps the
         // next suite's leftovers out of the owner's read in the meantime
@@ -25367,10 +25412,9 @@ function wdRiskOf(ev) {
   if ((p.ccN || 0) >= 3) add('look', 'cc_hop', (p.ccN) + ' countries in their own actions' + ((p.ccList || []).length ? ': ' + p.ccList.join(', ') : '') + ' - a VPN being switched, or a phone roaming', null);
   if ((p.sameIp || []).length) add('look', 'same_ip', names(p.sameIp) + ' share this exact IP - a household or a carrier NAT, never a verdict on its own', p.sameIp);
   if (t.unregistered && t.regKnown) add('look', 'reg_missing', 'They never registered this ' + (t.label || 'target') + ' with us' + (t.regOther ? ' - their claim names ' + t.regOther + ' instead' : ''), null);
-  if (t.inList === false) add('look', 'not_in_affiliate_list', 'No account matching ' + t.value + ' is in the ' + (t.venueName || 'partner') + ' affiliate list we hold (the list is pasted by hand, so it can also simply be stale)', null);
+  if (t.inList === false) add((t.listAgeDays != null && t.listAgeDays <= 3) ? 'strong' : 'look', 'not_in_affiliate_list', t.value + ' is not in the ' + (t.venueName || 'partner') + ' affiliate list we hold' + (t.listAgeDays != null ? ' (pasted ' + (t.listAgeDays ? t.listAgeDays + ' d ago' : 'today') + ')' : '') + ' - this account was not opened through our link', null);
   if (t.partnerIdle) add('look', 'partner_idle', 'Their ' + (t.venueName || 'partner') + ' account has never wagered or deposited - it earns us nothing', null);
   if ((h.targetsN || 0) > 1) add('look', 'target_changed', 'Has been paid to ' + h.targetsN + ' different targets', null);
-  if (t.maskCollision) add('look', 'mask_collision', 'The masked name ' + t.mask + ' fits more than one of our registrations, so the partner figures cannot be attributed to one person', null);
   const strongN = flags.filter(x => x.sev === 'strong').length, lookN = flags.length - strongN;
   /* A READ THAT FAILED IS NOT A CLEAN ACCOUNT AND IT IS NOT A FLAG EITHER. Found on this route's first live run:
      both stores were still serving the previous deploy, every profile came back empty, and `exsign` being absent
@@ -26796,8 +26840,8 @@ export default {
        listom ... mogu da abjuzaju tako sto prave kod nas i na moonu vise naloga"). A Bybit UID has had an allowlist
        gate since 2026-09-13 and Moon had NOTHING, so the two questions a Moon payout can be asked are asked:
        did this account register that exact name for its sign-up bonus, and does a mask fitting it exist in the
-       affiliate snapshot the owner pastes. Moon publishes masked names, so the second answer is MASK-level and can
-       collide - it informs, it never refuses, exactly as the Bybit list "may simply be stale" note already says. */
+       affiliate snapshot the owner pastes. Since 2026-11-05 Moon prints full names, so that answer is exact; a list
+       pasted within three days makes a miss EVIDENCE, an older one only informs. */
     if (url.pathname === '/api/admin/wdrisk' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const J3 = (o, s) => new Response(JSON.stringify(o), { status: s || 200, headers: jh3 });
@@ -26860,14 +26904,14 @@ export default {
         if (ven.k === 'moon') {
           const nm = ven.value.toLowerCase();
           t.ownedBy = members.filter(m => m.status === 'approved' && String(m.moon || '').toLowerCase() === nm && String(m.acct || '') !== acct).map(m => ({ uid: String(m.acct || '').slice(2), username: m.name || '', moon: m.moon }));
-          t.mask = moonMaskOf(ven.value);
-          const fitRows = snapRows.filter(r => moonMaskFits(ven.value, r.mask || ''));
-          if (snapRows.length) {
-            t.inList = fitRows.length > 0;
-            if (fitRows.length) { const best = fitRows.slice().sort((x, y) => (+y.wager || 0) - (+x.wager || 0))[0]; t.wagered = +best.wager || 0; t.deposits = +best.dep || 0; t.regDate = best.reg || ''; t.partnerIdle = !(+best.wager > 0) && !(+best.dep > 0); }
+          // Moon prints FULL usernames since 2026-11-05, so the check is exact: the name is in the affiliate list we hold, or
+          // it is not ours. A list pasted within three days is current enough to call that evidence; an older one only informs.
+          const named = snapRows.filter(r => r.moon);
+          if (named.length) {
+            const hit = named.find(r => String(r.moon).toLowerCase() === nm);
+            t.inList = !!hit; t.listAgeDays = Math.floor((Date.now() - (+snap.ts || 0)) / 86400000);
+            if (hit) { t.wagered = +hit.wager || 0; t.deposits = +hit.dep || 0; t.regDate = hit.reg || ''; t.partnerIdle = !(+hit.wager > 0) && !(+hit.dep > 0); }
           }
-          const ourFits = members.filter(m => m.status === 'approved' && moonMaskOf(m.moon) === t.mask);
-          t.maskCollision = ourFits.length > 1;
         }
         const ev = {
           profile: { known: !!up[acct.slice(2)], status: p.status, trades: p.trades, ccN: p.ccN, ccList: p.ccList, org: p.org, vpn: vi.vpn, devBanned: p.devBanned,
@@ -28418,85 +28462,78 @@ export default {
       const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       let activeId = ''; try { activeId = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
       const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || activeId || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1'; // no id = the live contest
-      // PIN A ROW TO A MEMBER (2026-10-01). Moon masks collide - *****786 was two real members - and the
-      // only field that separates two rows is the registration date, so a pin is keyed on mask|reg.
-      // {pin:{mask, reg, moon}} sets one, {pin:{mask, reg}} with no moon clears it, {pins:1} lists them.
-      if (mb && mb.pins && request.method === 'POST') { let pp = {}; try { pp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {} return J({ ok: true, contest, pins: pp }); }
-      if (mb && mb.pin && request.method === 'POST') {
-        const pk = String(mb.pin.mask || '') + '|' + String(mb.pin.reg || '');
-        if (!mb.pin.mask || !mb.pin.reg) return J({ error: 'need_mask_and_reg' }, 400);
-        let pp = {}; try { pp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
-        if (mb.pin.moon) pp[pk] = String(mb.pin.moon).slice(0, 40); else delete pp[pk];
-        try { await env.STATS.put(moonPinKey(contest), JSON.stringify(pp), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
-        let pub = null; try { pub = await moonBoardRebuild(env, contest); } catch (e) {} // the board must reflect it at once, not at the next paste
-        return J({ ok: true, contest, pins: pp, pub });
-      }
+      const keep = r => ({ moon: r.moon, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual });
+      const typedOf = s => moonParseDump(String(s || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
       if (request.method === 'POST') {
+        const members = await moonMembers(env), regs = await moonRegistrations(env, members);
         if (mb.reresolve === 'start' || mb.reresolve === 'end') {
-          /* Re-run the resolver over rows already stored, against today's approved members and pins. The verdict
-             is frozen into a snapshot when it is saved, so correcting a member's exchange username afterwards
-             would otherwise never reach the START side - and the START is where every delta is measured from. */
+          /* Re-run the resolver over rows already stored, against today's registrations. The verdict is frozen into a
+             snapshot when it is saved, so a member who registers later would otherwise never reach the START side - and the
+             START is where every delta is measured from. */
           const ph = mb.reresolve;
           const snapR = await moonSnap(env, contest, ph);
           if (!snapR || !Array.isArray(snapR.rows)) return J({ error: 'no_' + ph, hint: 'there is no ' + ph.toUpperCase() + ' snapshot stored for ' + contest }, 400);
-          const membersR = await moonMembers(env);
-          let pinsR = {}; try { pinsR = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
           const wasOk = snapR.rows.filter(r => r.status === 'ok').length;
-          const keepR = r => ({ mask: r.mask, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual, dupMask: !!r.dupMask });
-          const resR = moonResolve(snapR.rows.map(keepR), membersR, pinsR);
+          const resR = moonResolve(snapR.rows.filter(r => r.moon).map(keep), regs);
           snapR.rows = resR.rows; snapR.missing = resR.missing; snapR.n = resR.rows.length; snapR.ok = resR.rows.filter(r => r.status === 'ok').length;
           try { await env.STATS.put('moon:snap:' + contest + ':' + ph, JSON.stringify(snapR), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
           const pubR = await moonBoardRebuild(env, contest);
           const startR = await moonSnap(env, contest, 'start'), endR = await moonSnap(env, contest, 'end');
           return J({ ok: true, reresolved: ph, contest, rows: snapR.n, resolved_was: wasOk, resolved_now: snapR.ok, pub: pubR, standings: moonStandings(startR, endR) });
         }
+        if (mb.setRows === 'start' && Array.isArray(mb.rows)) {
+          /* REPLACE THE STORED START ROWS, KEEPING ITS TIME. One use: the kotm2 START was pasted while Moon still masked every
+             name, so it was rewritten once with full names (2026-11-05). The time is what dates the contest, so it stays. */
+          const st0 = await moonSnap(env, contest, 'start'); if (!st0) return J({ error: 'no_start' }, 400);
+          const rowsS = mb.rows.filter(r => r && moonNameOk(r.moon)).map(r => keep({ ...r, wager: +r.wager || 0 }));
+          const resS = moonResolve(rowsS, regs);
+          const snapS = { ...st0, rows: resS.rows, missing: resS.missing, n: resS.rows.length, ok: resS.rows.filter(r => r.status === 'ok').length, rewritten: Date.now() };
+          if (!mb.apply) return J({ ok: true, dry: true, n: snapS.n, okN: snapS.ok, standings: moonStandings(snapS, await moonSnap(env, contest, 'end')) });
+          try { await env.STATS.put('moon:snap:' + contest + ':start', JSON.stringify(snapS), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
+          const pubS = await moonBoardRebuild(env, contest);
+          return J({ ok: true, rewritten: 'start', n: snapS.n, okN: snapS.ok, pub: pubS });
+        }
         if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} const pubc = await moonBoardRebuild(env, contest); return J({ ok: true, cleared: mb.phase, contest, pub: pubc }); }
         if (mb.activate) { try { await env.STATS.put('moon:active', contest); } catch (e) {} const puba = await moonBoardRebuild(env, contest); return J({ ok: true, activated: contest, pub: puba }); }
-        if (mb.markFinal != null) { // flip the FINAL flag on the stored END without pasting anything (the Bybit panel carries final on the upload; here the owner may decide after the fact)
+        if (mb.markFinal != null) { // flip the FINAL flag on the stored END without pasting anything
           const endf = await moonSnap(env, contest, 'end'); if (!endf) return J({ error: 'no_end', hint: 'no END report is stored for ' + contest + ' yet - paste one first' }, 400);
           endf.final = mb.markFinal === true; try { await env.STATS.put('moon:snap:' + contest + ':end', JSON.stringify(endf), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
           const pubf = await moonBoardRebuild(env, contest); return J({ ok: true, final: endf.final, pub: pubf });
         }
-        if (mb.patch) { // TYPED PAIRS PATCH THE STORED END, NEVER REPLACE IT (same rule as the Bybit desk, 2026-09-15): Moon shows lifetime totals, so a
-          // typed "mask wager" is that account's new total; the mask is updated or added and everybody else keeps the figure of the last report.
-          const manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
-          if (!manual.rows.length) return J({ error: 'nothing_typed', hint: 'type at least one mask and its wagered total' }, 400);
+        if (mb.patch) { // TYPED PAIRS PATCH THE STORED END, NEVER REPLACE IT: a typed "username wager" is that account's new lifetime total;
+          // the name is updated or added and everybody else keeps the figure of the last report.
+          const manual = typedOf(mb.manual);
+          if (!manual.rows.length) return J({ error: 'nothing_typed', hint: 'type at least one Moon username and its wagered total' }, 400);
           const startp = await moonSnap(env, contest, 'start'); if (!startp) return J({ error: 'no_start', hint: 'the contest has no START yet - paste the opening Moon page and save it as START first' }, 400);
           const endp = await moonSnap(env, contest, 'end');
-          const keep = r => ({ mask: r.mask, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual });
-          const rows = ((endp ? endp.rows : startp.rows) || []).map(keep); // no END yet = the last known figures are the START ones
+          const rows = ((endp ? endp.rows : startp.rows) || []).filter(r => r.moon).map(keep); // no END yet = the last known figures are the START ones
           let updated = 0, added = 0;
-          for (const r of manual.rows) { const i = rows.findIndex(x => x.mask.toLowerCase() === r.mask.toLowerCase() && (!r.reg || !x.reg || x.reg === r.reg)); /* two accounts can share a mask (*****786): the registration date tells them apart, or a typed total lands on the wrong one (2026-10-29: azmat786 carried salma786's figure) */ if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, reg: rows[i].reg || r.reg || '', manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
-          const seenp = {}; for (const r of rows) { const k = r.mask.toLowerCase(); seenp[k] = (seenp[k] || 0) + 1; } for (const r of rows) r.dupMask = seenp[r.mask.toLowerCase()] > 1;
-          const membersp = await moonMembers(env);
-          let pinsp = {}; try { pinsp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
-          const resp = moonResolve(rows, membersp, pinsp);
+          for (const r of manual.rows) { const i = rows.findIndex(x => x.moon.toLowerCase() === r.moon.toLowerCase()); if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
+          const resp = moonResolve(rows, regs);
           const snapp = { ts: Date.now(), contest, final: !!(endp && endp.final), rows: resp.rows, missing: resp.missing, n: resp.rows.length, ok: resp.rows.filter(r => r.status === 'ok').length, diag: { pasted: 0, manual: manual.rows.length, skipped: [], skippedN: 0, patched: true } };
           try { await env.STATS.put('moon:snap:' + contest + ':end', JSON.stringify(snapp), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
           const pubp = await moonBoardRebuild(env, contest);
           return J({ ok: true, patch: true, updated, added, contest, n: snapp.n, okN: snapp.ok, rows: resp.rows, pub: pubp, standings: moonStandings(startp, snapp), final: snapp.final });
         }
-        const members = await moonMembers(env);
-        const pasted = moonParseDump(mb.text), manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
-        const typed = new Map(); for (const r of manual.rows) typed.set(r.mask.toLowerCase(), r); // a typed pair beats the paste; pasted duplicates are KEPT (two Moon accounts with one mask must stay visible)
-        const merged = [...pasted.rows.filter(r => !typed.has(r.mask.toLowerCase())), ...[...typed.values()].map(r => ({ ...r, manual: true }))]; const seen = {}; for (const r of merged) { const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; } for (const r of merged) r.dupMask = seen[r.mask.toLowerCase()] > 1 || !!r.dupMask;
-        let pins = {}; try { pins = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
-        const res = moonResolve(merged, members, pins);
-        const snap = { ts: Date.now(), contest, final: mb.phase === 'end' && mb.final === true, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
+        const pasted = moonParseDump(mb.text), manual = typedOf(mb.manual);
+        const typed = new Map(); for (const r of manual.rows) typed.set(r.moon.toLowerCase(), r); // a typed pair beats the paste
+        const merged = [...pasted.rows.filter(r => !typed.has(r.moon.toLowerCase())), ...[...typed.values()].map(r => ({ ...r, manual: true }))];
+        const res = moonResolve(merged, regs);
+        const snap = { ts: Date.now(), contest, final: mb.phase === 'end' && mb.final === true, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, repeats: pasted.repeats, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
         let saved = null;
         if (mb.save && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.put('moon:snap:' + contest + ':' + mb.phase, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); saved = mb.phase; if (mb.phase === 'start' && !/^e2e/i.test(contest)) { try { await env.STATS.put('moon:active', contest); } catch (e) {} } } catch (e) { return J({ error: 'kv' }, 500); } } // saving a START makes this the ACTIVE contest the public board reads
+        if (saved && !/^e2e/i.test(contest)) { try { await env.STATS.put('moon:list:last', JSON.stringify({ ts: snap.ts, contest, names: res.rows.map(r => r.moon.toLowerCase()) }), { expirationTtl: 400 * 86400 }); } catch (e) {} } // the roster the payout desk and the registration box check a name against
         const pub = saved ? await moonBoardRebuild(env, contest) : null;
         const start = mb.phase === 'start' ? snap : await moonSnap(env, contest, 'start'), end = mb.phase === 'end' ? snap : await moonSnap(env, contest, 'end');
-        return J({ ok: true, contest, phase: mb.phase || 'preview', saved, pub, rows: res.rows, missing: res.missing, diag: snap.diag, n: snap.n, okN: snap.ok, members: members.filter(m => m.status === 'approved').length, standings: moonStandings(start, end), startTs: start ? start.ts : 0, endTs: end ? end.ts : 0 });
+        return J({ ok: true, contest, phase: mb.phase || 'preview', saved, pub, rows: res.rows, missing: res.missing, diag: snap.diag, n: snap.n, okN: snap.ok, members: regs.size, standings: moonStandings(start, end), startTs: start ? start.ts : 0, endTs: end ? end.ts : 0 });
       }
-      const start = await moonSnap(env, contest, 'start'), end = await moonSnap(env, contest, 'end');
+      const live = await moonLive(env, contest), start = live.start, end = live.end, regs = live.regs;
       let contests = []; try { const l = await env.STATS.list({ prefix: 'moon:snap:' }); contests = [...new Set(l.keys.map(k => k.name.split(':')[2]))].filter(c => !/^e2e/i.test(c)); } catch (e) {} // the E2E's own contest never shows on the desk
-      const members = await moonMembers(env);
       const strip = x => x ? { ts: x.ts, n: x.n, ok: x.ok, final: !!x.final, rows: x.rows, missing: x.missing } : null;
       let active = ''; try { active = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
       const pub = await moonPubSnapshot(env, contest); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:moon:' + contest)); } catch (e) {}
       const cfgm = await rewardCfg(env);
-      return J({ contest, contests, active, isActive: active === contest, pub, paid: paidFlag, prizes: cfgm.lbMoon, days: pub ? moonContestDays(pub.start, pub.end) : MOON_CONTEST_DAYS, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
+      return J({ contest, contests, active, isActive: active === contest, pub, paid: paidFlag, prizes: cfgm.lbMoon, days: pub ? moonContestDays(pub.start, pub.end) : MOON_CONTEST_DAYS, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: regs.size, roster: [...regs.values()].map(g => ({ name: g.name, moon: g.moon, src: g.src })) });
     }
     if (url.pathname === '/api/admin/bybitlinks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let ab = {}; try { ab = await request.json(); } catch (e) {}
@@ -37684,17 +37721,17 @@ export class UserStore {
       return this.j({ positions, traders: rows.length + anonTraders, guests: anonTraders, signedIn: rows.length });
     }
     if (path === '/bybitlinks') { // BYBIT VOLUME BOARD: every registered Bybit UID (uid, name, buid, ts) - the worker joins the owner's report to it. {venue:'bingx'} reads the BingX key (2026-10-30)
-      const lk = b.venue === 'bingx' ? 'bingx_uid' : 'bybit_uid';
+      const lk = b.venue === 'bingx' ? 'bingx_uid' : b.venue === 'moon' ? 'moon_name' : 'bybit_uid';
       let rows = []; try { rows = this.rows("SELECT p.user_id uid, u.username name, p.v buid, p.ts ts FROM uprefs p LEFT JOIN users u ON u.id=p.user_id WHERE p.k=? AND p.v<>'' AND (u.status IS NULL OR u.status='active') ORDER BY p.ts ASC LIMIT 5000", lk); } catch (e) {}
       return this.j({ rows: rows.map(r => ({ uid: String(r.uid), name: r.name || '', buid: String(r.buid), ts: +r.ts || 0 })) });
     }
     if (path === '/bybitlink') { // {uid, buid}: link a Bybit UID to this account - one account per UID (the earliest link keeps it); '' unlinks
       const uid = String(b.uid || ''), buid = String(b.buid || '').trim(); const sql = this.state.storage.sql;
-      const lk = b.venue === 'bingx' ? 'bingx_uid' : 'bybit_uid'; // the BingX board (2026-10-30) keeps its own key - one account may hold both
+      const lk = b.venue === 'bingx' ? 'bingx_uid' : b.venue === 'moon' ? 'moon_name' : 'bybit_uid'; // the BingX board (2026-10-30) and the Moon board (2026-11-05) keep their own keys - one account may hold all three
       if (!uid) return this.j({ error: 'no_uid' }, 400);
       if (!buid) { try { sql.exec("DELETE FROM uprefs WHERE user_id=? AND k=?", uid, lk); } catch (e) {} return this.j({ ok: true, buid: '' }); }
-      if (!(lk === 'bingx_uid' ? /^[0-9]{4,20}$/ : /^[0-9]{5,15}$/).test(buid)) return this.j({ error: 'bad_buid' }, 400);
-      const other = this.rows("SELECT user_id FROM uprefs WHERE k=? AND v=? AND user_id<>?", lk, buid, uid)[0];
+      if (!(lk === 'bingx_uid' ? /^[0-9]{4,20}$/ : lk === 'moon_name' ? /^[A-Za-z0-9_.\-]{2,40}$/ : /^[0-9]{5,15}$/).test(buid)) return this.j({ error: 'bad_buid' }, 400);
+      const other = lk === 'moon_name' ? this.rows("SELECT user_id FROM uprefs WHERE k=? AND lower(v)=lower(?) AND user_id<>?", lk, buid, uid)[0] : this.rows("SELECT user_id FROM uprefs WHERE k=? AND v=? AND user_id<>?", lk, buid, uid)[0]; // a Moon username is case-insensitive
       if (other) return this.j({ error: 'uid_taken' }, 409);
       sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, lk, buid, Date.now());
       return this.j({ ok: true, buid });

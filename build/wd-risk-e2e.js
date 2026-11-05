@@ -90,8 +90,13 @@ chk('a Bybit UID off the affiliate allowlist is evidence', r.level === 'hold' &&
 
 ev = base(); ev.target = { venue: 'moon', venueName: 'Moon', value: 'ghost', label: 'Moon username', regKnown: true, regOk: true, inList: false };
 r = wdRiskOf(ev);
-chk('a Moon name absent from the affiliate list informs, it never refuses', r.flags.some(f => f.k === 'not_in_affiliate_list' && f.sev === 'look') && r.level !== 'hold');
-chk('...and it says the list may simply be stale', /stale/.test(r.flags.find(f => f.k === 'not_in_affiliate_list').text));
+chk('a Moon name absent from a list of unknown age only informs', r.flags.some(f => f.k === 'not_in_affiliate_list' && f.sev === 'look') && r.level !== 'hold');
+// since 2026-11-05 Moon prints full names: absent from a list pasted within three days is EVIDENCE, older still only informs
+ev = base(); ev.target = { venue: 'moon', venueName: 'Moon', value: 'ghost', label: 'Moon username', regKnown: true, regOk: true, inList: false, listAgeDays: 1 };
+r = wdRiskOf(ev);
+chk('...absent from a list pasted yesterday is evidence (hold)', r.level === 'hold' && r.flags.some(f => f.k === 'not_in_affiliate_list' && f.sev === 'strong'));
+ev.target.listAgeDays = 9; r = wdRiskOf(ev);
+chk('...absent from a nine-day-old list only informs', r.level !== 'hold' && r.flags.some(f => f.k === 'not_in_affiliate_list' && f.sev === 'look'));
 
 console.log('--- banned is a state, not a flag (25 of the 99 are already banned)');
 ev = base(); ev.account.banned = true; ev.profile.status = 'banned'; ev.profile.devBanned = true;
