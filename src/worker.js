@@ -30710,11 +30710,11 @@ export default {
       // Per-route <title>/description/canonical so each dedicated tool reads as its own keyword-matched page (Google Ads landing-page relevance + SEO). The page HTML is shared; only the head metadata is rewritten.
       const SPA_META = {
  '/paper-trade': { og: 'https://marginpad.io/assets/og/paper-trade.jpg',  title: 'Crypto Paper Trading - Free Simulator, No Sign-Up, Real Rewards | MarginPad', desc: 'Free crypto paper trading with no sign-up: live futures prices, leverage to 1000x, real fees and liquidation, plus stocks, forex and indices in one account. 14-day season leaderboards pay real USDT prizes and daily missions pay from day one - no deposit.', canon: 'https://marginpad.io/paper-trade', pt: true }, // desc 2026-11-05: the Bronze gate it named was retired 2026-10-23; GSC 1.183 impr / 3,2% CTR / poz 14
-        '/calculators': { og: 'https://marginpad.io/assets/og/calculators.jpg',  title: 'Crypto Liquidation Calculator, Position Size and PnL - Free, No Sign-Up | MarginPad', desc: 'Free crypto futures calculators: liquidation price by exchange (Bybit, Binance, OKX, Kraken, Hyperliquid), position size, profit and loss, take-profit and risk/reward. Instant, in your browser, no sign-up.', canon: 'https://marginpad.io/calculators' }, // 2026-11-05: GSC 372 impr / 0 clicks / poz 11,8 - the SERP queries name "liquidation calculator" + an exchange, the old title named neither
+        '/calculators': { og: 'https://marginpad.io/assets/og/calculators.jpg',  title: 'Crypto Liquidation Calculator, Position Size and PnL - Free, No Sign-Up | MarginPad', desc: 'Free crypto futures calculators: liquidation price by exchange (Bybit, Binance, OKX, Kraken, Hyperliquid), position size, profit and loss, take-profit and risk/reward. Instant, in your browser, no sign-up.', canon: 'https://marginpad.io/calculators', calc: true }, // 2026-11-05: GSC 372 impr / 0 clicks / poz 11,8 - the SERP queries name "liquidation calculator" + an exchange, the old title named neither
         '/charts': { og: 'https://marginpad.io/assets/og/charts.jpg',  title: 'Crypto Charts with Bar Replay, Compare and 27 Indicators | MarginPad', desc: 'Free live futures charts on desktop and phone: 27 indicators whose cards read their own state, bar replay, compare two coins candle for candle, sessions, daily levels, six chart styles, a broker-grade drawing kit and quick paper trades on one board.', canon: 'https://marginpad.io/charts' },
         '/screener': { og: 'https://marginpad.io/assets/og/screener.jpg',  sc: 1, title: 'Crypto Futures Screener - Scored Setups, Funding & OI | MarginPad', desc: 'Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups.', canon: 'https://marginpad.io/screener' },
  '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Crypto Liquidation Heatmap - Live Liquidity Map, Free, No Login | MarginPad', desc: 'Live liquidation heatmap for BTC, ETH and top alts: see where leveraged positions cluster, where the liquidity sits and where price hunts it - real liquidations from 8 exchanges, updated in real time. Free preview, no account.', canon: 'https://marginpad.io/heatmap', hm: true },
-        '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap Crypto Without an Account - 900+ Coins, No Sign-Up | MarginPad', desc: 'Swap 900+ cryptocurrencies without an account: no sign-up, no KYC, non-custodial, fast quotes across chains.', canon: 'https://marginpad.io/swap' }, // 2026-11-05: GSC "no account crypto swap" 46 impr poz 69, "swap crypto without account" 17 impr poz 29
+        '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap Crypto Without an Account - 900+ Coins, No Sign-Up | MarginPad', desc: 'Swap 900+ cryptocurrencies without an account: no sign-up, non-custodial, wallet to wallet across chains, rate shown before you send.', canon: 'https://marginpad.io/swap', swp: true }, // 2026-11-05: GSC "no account crypto swap" 46 impr poz 69, "swap crypto without account" 17 impr poz 29
       };
       // Spanish twins of the six tool routes (2026-09-12): own title/description/canonical/h1; the English SEO blocks (pt/sc/hm) stay off here.
       const SPA_META_ES = {
@@ -30770,6 +30770,28 @@ export default {
         // the six tool routes share dist/app.html, so their share card cannot live in the file either
         .on('meta[property="og:image"]', { element(e) { if (m.og) e.setAttribute('content', m.og); } })
         .on('meta[name="twitter:image"]', { element(e) { if (m.og) e.setAttribute('content', m.og); } });
+      /* @SPA_SEO_BLOCKS 2026-11-05 */
+      const PTS_CSS = '<style>'
+    + '.pt-seo::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.55),rgba(46,189,133,.35) 45%,rgba(96,165,250,.3));pointer-events:none}'
+    + '.pts-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}'
+    + '.pts-c{display:flex;gap:10px;align-items:flex-start;min-width:0;padding:10px 14px 8px}'
+    + '.pts-c+.pts-c{border-left:1px solid #1d232c}'
+    + '.pts-i{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(194,246,74,.1);color:#c2f64a;margin-top:1px}'
+    + '.pts-i svg{width:16px;height:16px;display:block}'
+    + '.pts-c.m .pts-i{background:rgba(46,189,133,.12);color:#2ebd85}.pts-c.w .pts-i{background:rgba(96,165,250,.12);color:#60a5fa}'
+    + '.pts-b{min-width:0;flex:1}'
+    + ".pts-k{display:block;font-family:'Space Mono',monospace;font-weight:400;font-size:9px;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:#4f5a66;margin-bottom:3px}"
+    + ".pts-h{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13.5px;line-height:1.15;letter-spacing:-.01em;color:#e6ebf0;margin-bottom:3px}"
+    + '.pts-p{margin:0;color:#8a94a0;font-size:11.5px;line-height:1.4}'
+    + '.pts-p a{color:#c2f64a;text-decoration:none;border-bottom:1px solid rgba(194,246,74,.35);transition:border-color .15s}.pts-p a:hover{border-bottom-color:#c2f64a}'
+    + '.pts-f{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:center;padding:6px 14px 7px;border-top:1px solid #1d232c;background:#0d1015}'
+    + '.pts-f a{display:inline-flex;align-items:center;gap:6px;color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px 2px 8px;font-size:10.5px;line-height:1.5;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}'
+    + '.pts-f a::before{content:"";width:5px;height:5px;border-radius:50%;background:#2a313c;flex:0 0 auto;transition:background .15s}'
+    + '.pts-f a:hover{color:#e6ebf0;border-color:#2f3742}.pts-f a:hover::before{background:#c2f64a}'
+    + ".pts-t{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;line-height:1.3;letter-spacing:.02em;color:#4a525c}"
+          /* a phone stacks the cells; the eyebrow and the tail line go, the chips become one scrolling row - that is what keeps it inside the 308px it took before */
+    + '@media(max-width:720px){.pts-g{grid-template-columns:1fr}.pts-c+.pts-c{border-left:0;border-top:1px solid #1d232c}.pts-c{padding:9px 13px}.pts-k,.pts-t{display:none}.pts-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:7px 13px 8px}.pts-f::-webkit-scrollbar{display:none}}'
+    + '</style>';
       if (m.pt) { // /paper-trade SEO push (2026-08-15, owner: own the paper-trading SERP - we are the only SOCIAL simulator that pays REAL rewards):
         // route-specific structured data (WebApplication + FAQPage with the rewards/social answers no competitor can copy) + a crawlable content block at the end of the body.
  const PT_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Paper Trading', url: 'https://marginpad.io/paper-trade', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Free crypto paper trading simulator with live prices, leverage to 1000x, paid 14-day season leaderboards, daily missions and a full social layer - the only paper trading platform where practice earns real rewards.', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, featureList: ['Live-price crypto futures paper trading', 'US stocks, forex, indices and commodities in the same account', 'Leverage up to 1000x with real liquidation math', 'Paid 14-day season leaderboards (real USDT for the top 5 on each board)', 'Daily missions that pay while you practice', 'Trader-vs-trader duels, chat, follows and profiles', 'XP levels and unlockable cosmetics', 'No signup needed to try, never a deposit'] }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
@@ -30797,27 +30819,7 @@ export default {
           mkt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3z"/></svg>'
         };
         const PT_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:0;background:#101318;border:1px solid #232a34;border-radius:14px;overflow:hidden;color:#8a94a0;font-size:11.5px;line-height:1.4">'
-          + '<style>'
-          + '.pt-seo::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.55),rgba(46,189,133,.35) 45%,rgba(96,165,250,.3));pointer-events:none}'
-          + '.pts-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}'
-          + '.pts-c{display:flex;gap:10px;align-items:flex-start;min-width:0;padding:10px 14px 8px}'
-          + '.pts-c+.pts-c{border-left:1px solid #1d232c}'
-          + '.pts-i{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(194,246,74,.1);color:#c2f64a;margin-top:1px}'
-          + '.pts-i svg{width:16px;height:16px;display:block}'
-          + '.pts-c.m .pts-i{background:rgba(46,189,133,.12);color:#2ebd85}.pts-c.w .pts-i{background:rgba(96,165,250,.12);color:#60a5fa}'
-          + '.pts-b{min-width:0;flex:1}'
-          + ".pts-k{display:block;font-family:'Space Mono',monospace;font-weight:400;font-size:9px;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:#4f5a66;margin-bottom:3px}"
-          + ".pts-h{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13.5px;line-height:1.15;letter-spacing:-.01em;color:#e6ebf0;margin-bottom:3px}"
-          + '.pts-p{margin:0;color:#8a94a0;font-size:11.5px;line-height:1.4}'
-          + '.pts-p a{color:#c2f64a;text-decoration:none;border-bottom:1px solid rgba(194,246,74,.35);transition:border-color .15s}.pts-p a:hover{border-bottom-color:#c2f64a}'
-          + '.pts-f{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:center;padding:6px 14px 7px;border-top:1px solid #1d232c;background:#0d1015}'
-          + '.pts-f a{display:inline-flex;align-items:center;gap:6px;color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px 2px 8px;font-size:10.5px;line-height:1.5;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}'
-          + '.pts-f a::before{content:"";width:5px;height:5px;border-radius:50%;background:#2a313c;flex:0 0 auto;transition:background .15s}'
-          + '.pts-f a:hover{color:#e6ebf0;border-color:#2f3742}.pts-f a:hover::before{background:#c2f64a}'
-          + ".pts-t{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;line-height:1.3;letter-spacing:.02em;color:#4a525c}"
-          /* a phone stacks the cells; the eyebrow and the tail line go, the chips become one scrolling row - that is what keeps it inside the 308px it took before */
-          + '@media(max-width:720px){.pts-g{grid-template-columns:1fr}.pts-c+.pts-c{border-left:0;border-top:1px solid #1d232c}.pts-c{padding:9px 13px}.pts-k,.pts-t{display:none}.pts-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:7px 13px 8px}.pts-f::-webkit-scrollbar{display:none}}'
-          + '</style>'
+          + PTS_CSS
           + '<div class="pts-g">'
           + '<div class="pts-c"><span class="pts-i">' + PT_ICO.pay + '</span><div class="pts-b"><span class="pts-k">Real rewards</span><b class="pts-h">Practice that pays</b><p class="pts-p">The only simulator where practice earns real USDT - <a href="/levels/">paid 14-day season leaderboards</a> and <a href="/rewards/">daily missions</a>, open from day one. Plus XP, duels and floor chat.</p></div></div>'
           + '<div class="pts-c m"><span class="pts-i">' + PT_ICO.mech + '</span><div class="pts-b"><span class="pts-k">Real mechanics</span><b class="pts-h">Real mechanics, zero risk</b><p class="pts-p">Live prices, leverage to 1000x, real isolated-margin liquidation, SL/TP and partial closes - P&amp;L exactly as a real account would show.</p></div></div>'
@@ -30834,6 +30836,25 @@ export default {
           + '</div>'
           + '</section>';
         rw = rw.on('head', { element(e) { e.append(PT_SCHEMA, { html: true }); } }).on('body', { element(e) { e.append(PT_SEO, { html: true }); } });
+      }
+      if (m.calc || m.swp) { // /* @SPA_SEO_BLOCKS 2026-11-05 */ - /calculators and /swap had no static text at all (GSC: 372 impressions, 0 clicks; "Crawled - currently not indexed")
+        const CALC_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:0;background:#101318;border:1px solid #232a34;border-radius:14px;overflow:hidden;color:#8a94a0;font-size:11.5px;line-height:1.4">'
+          + PTS_CSS + '<div class="pts-g">'
+          + '<div class="pts-c"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-6 4 3 7-8"/><path d="M4 21h16"/></svg></span><div class="pts-b"><span class="pts-k">Liquidation price</span><b class="pts-h">Where a position dies</b><p class="pts-p">Entry, leverage and the exchange&#39;s maintenance margin give the exact liquidation price - the formula Bybit, Binance and OKX use. 10x at 0.5% liquidates 9.45% from entry; <a href="/leverage-calculator/">see every leverage</a>.</p></div></div>'
+          + '<div class="pts-c m"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg></span><div class="pts-b"><span class="pts-k">Position size</span><b class="pts-h">Risk first, size second</b><p class="pts-p">Choose the dollars you can lose and the stop distance; the calculator returns the size and leverage that fit. The <a href="/risk-of-ruin-calculator/">risk-of-ruin calculator</a> says how long that survives.</p></div></div>'
+          + '<div class="pts-c w"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.6h3.6a1.8 1.8 0 0 1 0 3.6h-2.2a1.8 1.8 0 0 0 0 3.6H14.5"/></svg></span><div class="pts-b"><span class="pts-k">P&amp;L and R:R</span><b class="pts-h">What the trade pays</b><p class="pts-p">Profit, ROE and reward-to-risk at any exit with taker fees both sides - the same figures the <a href="/paper-trade">paper terminal</a> books on a real close.</p></div></div>'
+          + '</div>'
+          + '<div class="pts-f"><a href="/bybit-liquidation-calculator/">Bybit</a><a href="/binance-liquidation-calculator/">Binance</a><a href="/okx-liquidation-calculator/">OKX</a><a href="/kraken-liquidation-calculator/">Kraken</a><a href="/hyperliquid-liquidation-calculator/">Hyperliquid</a><a href="/bitget-liquidation-calculator/">Bitget</a><a href="/pivot-point-calculator/">Pivot points</a><a href="/crypto-correlation-matrix/">Correlation</a><span class="pts-t">Liquidation calculators per exchange - same formula, each venue&#39;s own maintenance margin.</span></div>'
+          + '</section>';
+        const SWAP_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:0;background:#101318;border:1px solid #232a34;border-radius:14px;overflow:hidden;color:#8a94a0;font-size:11.5px;line-height:1.4">'
+          + PTS_CSS + '<div class="pts-g">'
+          + '<div class="pts-c"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l2 2M13 9l2 2"/></svg></span><div class="pts-b"><span class="pts-k">No account</span><b class="pts-h">Swap without signing up</b><p class="pts-p">Pick the pair, paste the receiving address, send. No email, no password, no balance held here - swaps are processed by ChangeNOW and the rate is shown before you commit.</p></div></div>'
+          + '<div class="pts-c m"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.5 1.5"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.5"/></svg></span><div class="pts-b"><span class="pts-k">900+ coins</span><b class="pts-h">Chain to chain in one step</b><p class="pts-p">Bitcoin, Ethereum, Solana, stablecoins and long-tail tokens, across the major chains, without an exchange account in between.</p></div></div>'
+          + '<div class="pts-c w"><span class="pts-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg></span><div class="pts-b"><span class="pts-k">Non-custodial</span><b class="pts-h">Your keys stay yours</b><p class="pts-p">Funds move wallet to wallet and never touch MarginPad. New to the chains? Practise the whole flow with demo money on <a href="/spot/">Demo Spot</a> first.</p></div></div>'
+          + '</div>'
+          + '<div class="pts-f"><a href="/spot/">Demo Spot</a><a href="/paper-trade">Paper trade</a><a href="/screener">Screener</a><a href="/exchanges/">Exchanges compared</a><a href="/academy/">Academy</a><span class="pts-t">Swap crypto without an account - non-custodial, 900+ coins.</span></div>'
+          + '</section>';
+        rw = rw.on('body', { element(e) { e.append(m.calc ? CALC_SEO : SWAP_SEO, { html: true }); } });
       }
       // /screener - the scores themselves, server-rendered. The page had 2,148 words and one figure:
       // every scored setup was client-side, so "what looks bullish right now" was unanswerable from our
