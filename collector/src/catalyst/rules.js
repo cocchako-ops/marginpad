@@ -10,7 +10,7 @@ let SYMS = new Set(['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'A
 export function setSymbols(list) { if (Array.isArray(list) && list.length > 20) SYMS = new Set(list.map(s => String(s).toUpperCase())); }
 export function symbolsKnown() { return SYMS.size; }
 // English words that are also tickers: only counted when they wear a ticker shape ($X, XUSDT, (X), X/USDT).
-const WORDY = new Set(['THE', 'ONE', 'AND', 'FOR', 'ARE', 'NOT', 'ALL', 'NEW', 'NOW', 'YOU', 'OUT', 'BIG', 'TOP', 'HOT', 'SPOT', 'CT', 'US', 'AI', 'OP', 'ARB', 'APE', 'GAS', 'SAND', 'MOON', 'ROSE', 'BAT', 'CAT', 'DOG', 'FLOW', 'HBAR', 'ME', 'IO', 'ID', 'ON', 'IN', 'AT', 'UP', 'MEW', 'PEOPLE', 'GRASS', 'JUP', 'BAND', 'STORJ', 'LOOKS', 'PIXEL', 'WIN', 'FLOKI', 'DEGEN', 'ACT', 'TRUMP', 'MAGIC', 'ORDER', 'SUPER', 'ALPHA', 'ZERO', 'API', 'DATA', 'CASH', 'CORE', 'MET', 'PERP', 'FUND', 'SAFE', 'PUMP', 'HYPE', 'PRIME', 'TIME', 'SPACE', 'TOKEN', 'COIN', 'MARKET']);
+const WORDY = new Set(['UTC', 'KST', 'USD', 'KRW', 'EUR', 'JPY', 'GMT', 'THE', 'ONE', 'AND', 'FOR', 'ARE', 'NOT', 'ALL', 'NEW', 'NOW', 'YOU', 'OUT', 'BIG', 'TOP', 'HOT', 'SPOT', 'CT', 'US', 'AI', 'OP', 'ARB', 'APE', 'GAS', 'SAND', 'MOON', 'ROSE', 'BAT', 'CAT', 'DOG', 'FLOW', 'HBAR', 'ME', 'IO', 'ID', 'ON', 'IN', 'AT', 'UP', 'MEW', 'PEOPLE', 'GRASS', 'JUP', 'BAND', 'STORJ', 'LOOKS', 'PIXEL', 'WIN', 'FLOKI', 'DEGEN', 'ACT', 'TRUMP', 'MAGIC', 'ORDER', 'SUPER', 'ALPHA', 'ZERO', 'API', 'DATA', 'CASH', 'CORE', 'MET', 'PERP', 'FUND', 'SAFE', 'PUMP', 'HYPE', 'PRIME', 'TIME', 'SPACE', 'TOKEN', 'COIN', 'MARKET']);
 const NAMES = { HYPERLIQUID: 'HYPE', ASTER: 'ASTER', LIGHTER: 'LIGHTER', ZCASH: 'ZEC', MONERO: 'XMR', PEPE: 'PEPE', SHIBA: 'SHIB', WORLDCOIN: 'WLD', STARKNET: 'STRK', CELESTIA: 'TIA', INJECTIVE: 'INJ', SEI: 'SEI', JUPITER: 'JUP', RAYDIUM: 'RAY', PENDLE: 'PENDLE', ETHENA: 'ENA', ONDO: 'ONDO', RENDER: 'RENDER', FILECOIN: 'FIL', STELLAR: 'XLM', HEDERA: 'HBAR', ALGORAND: 'ALGO', COSMOS: 'ATOM', NEAR: 'NEAR', KASPA: 'KAS', MANTLE: 'MNT', BERACHAIN: 'BERA', MOVEMENT: 'MOVE', VIRTUALS: 'VIRTUAL', FARTCOIN: 'FARTCOIN', BONK: 'BONK', FLOKI: 'FLOKI', DOGWIFHAT: 'WIF', POPCAT: 'POPCAT', UNISWAP: 'UNI', AAVE: 'AAVE', MAKER: 'MKR', LIDO: 'LDO', EIGENLAYER: 'EIGEN', ARBITRUM: 'ARB', BITCOIN: 'BTC', ETHEREUM: 'ETH', ETHER: 'ETH', SOLANA: 'SOL', RIPPLE: 'XRP', DOGECOIN: 'DOGE', CARDANO: 'ADA', CHAINLINK: 'LINK', AVALANCHE: 'AVAX', LITECOIN: 'LTC', POLKADOT: 'DOT', TRON: 'TRX', POLYGON: 'POL', TONCOIN: 'TON', SUI: 'SUI', APTOS: 'APT', ARBITRUM: 'ARB', OPTIMISM: 'OP', PEPE: 'PEPE', SHIBA: 'SHIB', UNISWAP: 'UNI', AAVE: 'AAVE', MONERO: 'XMR', ZCASH: 'ZEC', STELLAR: 'XLM', NEAR: 'NEAR', FILECOIN: 'FIL', COSMOS: 'ATOM', TETHER: 'USDT', CIRCLE: 'USDC', WORLDCOIN: 'WLD', BALANCER: 'BAL', CURVE: 'CRV', LIDO: 'LDO', MAKER: 'MKR', COMPOUND: 'COMP', ARBITRUM: 'ARB', CELESTIA: 'TIA', INJECTIVE: 'INJ', RENDER: 'RENDER', ONDO: 'ONDO', ETHENA: 'ENA', JUPITER: 'JUP', PENDLE: 'PENDLE', STARKNET: 'STRK', ZKSYNC: 'ZK', IMMUTABLE: 'IMX', SANDBOX: 'SAND', DECENTRALAND: 'MANA', HEDERA: 'HBAR', ALGORAND: 'ALGO', KASPA: 'KAS', BITTENSOR: 'TAO', MANTLE: 'MNT', SEI: 'SEI', FANTOM: 'FTM', SONIC: 'S', THORCHAIN: 'RUNE', DYDX: 'DYDX', GMX: 'GMX', RAYDIUM: 'RAY', PUMPFUN: 'PUMP' };
 // EDGAR issuer -> the coin its filing is about (a filer that is a company, not a fund, maps to nothing)
 const ISSUER_SYM = [[/BITCOIN|ISHARES BITCOIN|GRAYSCALE BITCOIN|STRATEGY INC|MICROSTRATEGY|MARATHON|MARA HOLDINGS|RIOT|CLEANSPARK|CORE SCIENTIFIC|HUT 8|METAPLANET|SEMLER|BITCOIN DEPOT/i, 'BTC'], [/ETHEREUM|ETHER |ISHARES ETHEREUM|GRAYSCALE ETHEREUM|BITMINE|SHARPLINK|ETHZILLA/i, 'ETH'], [/SOLANA|SOL STRATEGIES|DEFI DEVELOPMENT|UPEXI|FORWARD INDUSTRIES/i, 'SOL'], [/XRP|RIPPLE/i, 'XRP'], [/LITECOIN/i, 'LTC'], [/DOGECOIN/i, 'DOGE'], [/AVALANCHE/i, 'AVAX'], [/CIRCLE INTERNET/i, 'USDC'], [/TETHER/i, 'USDT']];
@@ -22,7 +22,7 @@ export function extractSymbols(text, opts) {
   const any = !!(opts && opts.anyTicker); // an exchange announcement names a NEW symbol - it need not be on Bybit's list yet
   // ticker shapes: $BTC, BTCUSDT, BTC/USDT, (BTC), BTC-USDT, BTCUSD X-Perp
   for (const m of t.matchAll(/(?:\$|\b)([A-Z0-9]{2,10})(?:USDT|USDC|USD|\/USDT|-USDT|-USD)\b/g)) if (any || SYMS.has(m[1])) out.add(m[1]);
-  for (const m of t.matchAll(/\(([A-Z0-9]{2,10})\)/g)) if (any || SYMS.has(m[1])) out.add(m[1]);
+  for (const m of t.matchAll(/\(([A-Z0-9]{2,10})\)/g)) if ((any || SYMS.has(m[1])) && !WORDY.has(m[1])) out.add(m[1]);   // "(UTC)" in a listing time is not a coin
   for (const m of t.matchAll(/\$([A-Z0-9]{2,10})\b/g)) if (any || SYMS.has(m[1])) out.add(m[1]);
   // bare tickers (only the non-wordy ones)
   for (const m of t.matchAll(/\b([A-Z][A-Z0-9]{1,9})\b/g)) if (SYMS.has(m[1]) && !WORDY.has(m[1])) out.add(m[1]);
@@ -33,9 +33,9 @@ export function extractSymbols(text, opts) {
 
 const R = {
   promo: /\b(recap|round-?up|digest|weekly (listing|summary)|monthly|celebrate|invite (a )?friend|earn up to|prize pool|giveaway|rewards? hub|trading competition|token splash|launchpool|launchpad|bonus|airdrop campaign|refer(ral)?s?\b|cashback|VIP|learn (&|and) earn|quiz|AMA\b)/i,
-  pair: /\b(removal of (spot|margin|cross|isolated)( trading)? pairs?|(spot|margin) trading pairs?|adds? (new )?(spot|margin)( trading)? pairs?|trading pair updates?)\b/i,
+  pair: /\b(removal of (spot|margin|cross|isolated)( trading)? pairs?|(spot|margin) trading pairs?|adds? (new )?(spot|margin)( trading)? pairs?|trading pair updates?|copy trading (now )?supports?|adjust(s|ed)? (the )?funding rate|funding rate interval|as collateral|collateral (and|&) lending|lending (and|&) borrowing|margin (tier|ratio)s?|leverage (tier|adjustment)s?)\b/i,
   delisting: /\b(delist(s|ed|ing)?|removal of|will be removed|terminat(e|es|ed|ion) (of )?(the )?(perpetual|contract|trading)|cease trading)\b/i,
-  listing: /\b(list(s|ed|ing)?|launch(es|ed|ing)? (spot|perpetual|perps?|futures|pre-?market)|new (spot|perpetual|perps?|futures)( trading)? (pair|contract|market)|now (live|trading)|pre-?market perpetual)\b/i,
+  listing: /\b(list(s|ed|ing)?|launch(es|ed|ing)? (spot|perpetual|perps?|futures|pre-?market)|new (spot|perpetual|perps?|futures)( trading)? (pair|contract|market)|now (live|trading)|pre-?market perpetual|(won|krw|btc|usdt) market added|market added|trading support added|added to (the )?(krw|btc|usdt) market)\b/i,
   hack: /\b(hack(s|ed|er|ers)?|exploit(s|ed)?|drain(s|ed)?|stolen|breach(ed)?|rug(ged|-?pull)?|attack(s|ed|er)?|compromised|phishing|depeg(s|ged)?)\b/i,
   hackSoft: /\b(possible|potential|could|may|might|vulnerabilit(y|ies)|bug(s)?|patch(ed|es)?|fix(ed|es)?|warn(s|ed|ing)?|phishing|scam(s|mers)?|rumou?rs?|denies|denied|no (customer |user )?funds (at risk|lost|affected)|data (breach|leak)|exposed? (customer|user|personal)|test(s|ing)?|tips?|how to|guide|lessons?)\b/i,
   etf: /\b(ETF|ETFs|S-1|19b-4|spot (bitcoin|ether|ethereum|solana|xrp|litecoin|dogecoin|avalanche) (fund|trust)|iShares|Grayscale|net inflows?|net outflows?)\b/i,
@@ -61,9 +61,9 @@ export function marketOf(title) {
 export function classify(title, source) {
   const t = String(title || '');
   const src = String(source || '');
-  const exch = /^(bybit-ann|okx-ann|hl-meta|binance-ann|upbit-ann|tg:binance|tg:bybit|tg:okx|x:binance|x:Bybit_Official)/i.test(src);
+  const exch = /^(bybit-ann|okx-ann|hl-meta|binance-ann|upbit-ann|bitget-ann|kucoin-ann|coinbase-products|kraken-assets|gate-pairs|tokenearly|tg:binance|tg:bybit|tg:okx|x:binance|x:Bybit_Official)/i.test(src);
   let kind = 'news';
-  if (src === 'calendar') kind = 'macro';
+  if (src === 'calendar' || src === 'fed-press') kind = 'macro';   // the Fed's own press feed is read for the monetary items alone (sources-ex.js)
   else if (src === 'sec') kind = 'filing';
   else if (R.promo.test(t)) kind = 'promo';                       // a campaign, a recap, a contest: never an event
   else if (R.pair.test(t)) kind = 'pair';                         // a trading PAIR added or removed is housekeeping, not a listing

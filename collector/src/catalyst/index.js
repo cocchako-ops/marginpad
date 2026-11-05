@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { log } from '../logger.js';
 import * as S from './sources.js';
 import * as SX from './sources-x.js'; // X embed timelines (24 of the 30 requests a window), Binance CMS, Upbit notices (2026-10-29)
+import * as SE from './sources-ex.js'; // Bitget, KuCoin, Coinbase/Kraken/Gate listing diffs, the Fed's press feed, CMC's aggregator, Tokenearly relay (2026-11-05)
 import { classify, scoreOf, setSymbols, symbolsKnown, tokens, jaccard, SAME_STORY, stripEmoji } from './rules.js';
 
 const RING_MS = 48 * 3600000, CONF_MS = 6 * 3600000, KEEP_DAYS = 30, LATE_MAX_MS = 2 * 3600000;
@@ -86,6 +87,14 @@ export function startCatalyst(storage) {
   const upbit = async () => { await run('upbit-ann', SX.upbitAnn, 'primary'); };   // Cloudflare 1015s Upbit inside a minute: every two minutes, alone
   // X: one account per tick, round-robin, so the per-IP budget (30 / 15 min) is never exhausted by a burst
   let xi = 0; const xTick = async () => { const [h, tier] = SX.X_ACCOUNTS[xi % SX.X_ACCOUNTS.length]; xi++; await run('x:' + h, () => SX.xSynd(h), tier); };
+  // the exchanges' own feeds, first-hand (2026-11-05): announcements on a 20-s clock, the market diffs (a listing = trading switched on) each
+  // minute, Gate's 1 MB pair list every five; the Fed's press feed each minute; CMC's aggregator with the media; Tokenearly's relay each minute
+  const layer0c = async () => { await run('bitget-ann', SE.bitgetAnn, 'primary'); await run('kucoin-ann', SE.kucoinAnn, 'primary'); };
+  const diffs = async () => { await run('coinbase-products', SE.coinbaseProducts, 'primary'); await run('kraken-assets', SE.krakenAssets, 'primary'); };
+  const gateD = async () => { await run('gate-pairs', SE.gatePairs, 'primary'); };
+  const fed = async () => { await run('fed-press', SE.fedPress, 'primary'); };
+  const cmc = async () => { await run('cmc-news', SE.cmcNews, 'mediaB'); };
+  const te = async () => { await run('tokenearly', SE.tokenearly, 'mediaA'); };
   const gov = async () => { await run('sec', S.sec, 'primary'); };
   const govSlow = async () => { await run('fedreg', S.fedreg, 'primary'); await run('cftc', S.cftc, 'primary'); };
   const media = async () => { for (const [name, url, tier] of S.RSS) { await run('rss:' + name, () => S.rss(name, url), tier); await new Promise(r => setTimeout(r, 400)); } };
@@ -95,9 +104,15 @@ export function startCatalyst(storage) {
     try { const ev = await S.calendar(); const now = Date.now(); upcoming = ev.filter(e => e.ts > now && e.ts < now + 48 * 3600000).map(e => ({ ts: e.ts, title: e.title, type: e.meta && e.meta.type, impact: e.meta && e.meta.impact })); ingest(ev.filter(e => e.ts <= now && now - e.ts < 15 * 60000), 'calendar', 'primary'); status.sources.calendar = { ...(status.sources.calendar || {}), upcoming: upcoming.length, last: now }; }
     catch (e) { status.sources.calendar = { ...(status.sources.calendar || {}), lastErr: String(e.message || e).slice(0, 80) }; }
   };
-  (async () => { await syms(); await layer0(); await hl(); await layer0b(); await gov(); await cal(); await media(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
+  (async () => { await syms(); await layer0(); await layer0c(); await hl(); await layer0b(); await diffs(); await gateD(); await fed(); await gov(); await cal(); await media(); await cmc(); await te(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
   every(3600e3, syms);
   every(15e3, layer0);
+  every(20e3, layer0c);
+  every(60e3, diffs);
+  every(300e3, gateD);
+  every(60e3, fed);
+  every(30e3, cmc);
+  every(60e3, te);
   every(60e3, hl);
   every(60e3, layer0b);
   every(120e3, upbit);
