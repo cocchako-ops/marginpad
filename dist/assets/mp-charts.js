@@ -204,11 +204,52 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     fetch('/api/catalysts/moves?symbol='+encodeURIComponent(w.sym)+'&at='+lv.t0+'&pct='+lv.pct+'&n='+lv.n).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._cxLiveFetch=false;if(!w||w.dead)return;
       /* the SAME story the newest flag already carries is a continuation, not a new flag: the band extends to the live candle and the legend says so */
       var cont=false;try{var nm=(w._cx&&w._cx.moves||[])[0],ka=j&&j.catalyst?(j.catalyst.story?'s:'+j.catalyst.story.k:'c:'+j.catalyst.ts+'|'+j.catalyst.source):null,kb=nm&&nm.catalyst?(nm.catalyst.story?'s:'+nm.catalyst.story.k:'c:'+nm.catalyst.ts+'|'+nm.catalyst.source):null;cont=!!(ka&&kb&&ka===kb&&Date.now()-nm.t1<6*3600000&&(lv.pct>=0)===(nm.dir>0));}catch(e){cont=false;}
-      w._cxLive=j&&(j.sure||j.big)?{key:key,at:Date.now(),on:true,t0:lv.t0,pct:lv.pct,n:lv.n,a:j,cont:cont}:{key:key,at:Date.now(),on:false};try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
+      w._cxLive=j&&(j.sure||j.big)?{key:key,at:Date.now(),on:true,t0:lv.t0,pct:lv.pct,n:lv.n,a:j,cont:cont}:{key:key,at:Date.now(),on:false,a:j||null};try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   /* the live watch: every 20 s while the indicator is on, measure; a move that has ended clears the live line by itself */
   function cxWatch(w,on){if(!w)return;if(!on){if(w._cxIv){clearInterval(w._cxIv);w._cxIv=0;}w._cxLive=null;return;}
     if(w._cxIv)return;w._cxIv=setInterval(function(){if(w.dead||!w.inds||!w.inds.catalyst){clearInterval(w._cxIv);w._cxIv=0;return;}
-      var lv=cxLiveCheck(w);if(lv)cxLiveAsk(w,lv);else if(w._cxLive&&w._cxLive.on){w._cxLive=null;try{(w._reapply||function(){applyInds(w);})();}catch(e){}}},20000);}
+      try{loadCxEarly(w);}catch(e){}var lv=cxLiveCheck(w);if(lv)cxLiveAsk(w,lv);else if(w._cxLive&&w._cxLive.on){w._cxLive=null;try{(w._reapply||function(){applyInds(w);})();}catch(e){}}},20000);}
+  /* @CX_EARLY_CHART 2026-11-05 */
+  /* THE EARLY HALF: what LANDED on this coin (a listing, a delisting, a major story - drawn before any move), what is AHEAD (a scheduled
+     print inside 35 min) and what the server saw MOVING, from /api/catalysts/early; an hour later each record carries its outcome */
+  function loadCxEarly(w,force){if(!w||w.dead||!w.sym||w._cxeFetch)return;if(!force&&w._cxe&&w._cxeSym===w.sym&&Date.now()-(w._cxeT||0)<60000)return;w._cxeFetch=true;
+    fetch('/api/catalysts/early?symbol='+encodeURIComponent(w.sym)+'&h=24').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._cxeFetch=false;if(!w||w.dead)return;var was=w._cxe?w._cxe.n:-1;w._cxe=j||null;w._cxeSym=w.sym;w._cxeT=Date.now();if(j&&j.n!==was){try{(w._reapply||function(){applyInds(w);})();}catch(e){}}});}
+  function cxEarlyMarks(bars,cxe,sym){var out=[];if(!cxe||!cxe.items||!bars||!bars.length)return out;var now=Date.now();
+    cxe.items.forEach(function(r){if(r.type==='moving')return;/* a running move is the live flag's */
+      if(r.type==='ahead'){if(+r.ts>now-30*60000&&now-(+r.at||0)<3*3600000)out.push({ahead:true,r:r});return;}
+      if((r.syms||[]).indexOf(sym)<0&&r.sym!==sym)return;var i=barAtTs(bars,+r.seen);if(i<0)return;out.push({i:i,r:r});});
+    return out;}
+  function cxEarlySrc(r){return String(r.source||'').replace(/^(rss|tg|x):/,'').replace(/-ann$/,'');}
+  function cxEarlyKind(r){return r.kind==='listing'?__esT_mpcharts("listingWord",'listing'):r.kind==='delisting'?__esT_mpcharts("delistingWord",'delisting'):r.why==='major'?__esT_mpcharts("majorStory",'major story'):String(r.kind||'catalyst');}
+  function cxEarlyOut(r){var s=r.settled;if(!s||s.x60==null)return '';return (s.r60>=0?'+':'')+s.r60.toFixed(2)+'% '+__esT_mpcharts("afterWord",'after')+(s.big?'':' · '+__esT_mpcharts("noReaction",'no reaction'));}
+  function cxEarlyAgo(ms){var m=Math.max(0,Math.round((Date.now()-ms)/60000));return m>=120?Math.round(m/6)/10+' h':m+' min';}
+  /* one legend line per record (newest two), and the marks the painter draws */
+  function cxEarlyLegend(w,bars,legItems){var li=legItems||w.legItems;if(!li)return;var mk=cxEarlyMarks(bars,w._cxe,w.sym);w._cxeMarks=mk.length?mk:null;
+    mk.slice(0,2).forEach(function(k){var r=k.r,a=w._cxe&&w._cxe.accuracy&&w._cxe.accuracy[r.cell];
+      var acc=a&&a.n>=5?' · '+__esT_mpcharts("ourRecord",'our record')+' '+a.n+': '+(a.bigPct!=null?a.bigPct+'% '+__esT_mpcharts("movedWord",'moved'):'')+(a.hitPct!=null?', '+a.hitPct+'% '+__esT_mpcharts("rightWord",'right'):''):'';
+      if(k.ahead){li.push({raw:true,color:'#c2f64a',label:__esT_mpcharts("aheadWord",'AHEAD')+' · '+r.title+' '+__esT_mpcharts("inWord",'in')+' '+Math.max(0,Math.round((+r.ts-Date.now())/60000))+' min'+(r.exp&&r.exp.n>=12?' · '+r.exp.x15+'x '+__esT_mpcharts("usualBar",'usual bar'):''),title:r.text||''});return;}
+      var out=cxEarlyOut(r);
+      li.push({raw:true,color:'#c2f64a',label:__esT_mpcharts("landedWord",'LANDED')+' '+cxEarlyAgo(+r.seen)+' · '+cxEarlyKind(r)+' '+__esT_mpcharts("onWord",'on')+' '+cxEarlySrc(r)+(out?' · '+out:(r.exp&&r.exp.n>=12?' · '+(r.exp.x60!=null?r.exp.x60+'x '+__esT_mpcharts("usualHour",'usual hour'):r.exp.x15+'x '+__esT_mpcharts("usualBar",'usual bar'))+(r.exp.hit!=null?', '+Math.round(100*r.exp.hit)+'% '+__esT_mpcharts("rightWord",'right'):''):' · '+__esT_mpcharts("noRecordYet",'no record yet')))+acc,title:r.text||''});});}
+  function cxEarlyCardOpen(w,r,px,py){liqCardClose(w);
+    var body=w.el&&(w.el.querySelector('.cwin-body')||w.el.querySelector('.mfc-chart')||w.el);if(!body)return;
+    try{if(getComputedStyle(body).position==='static')body.style.position='relative';}catch(e){}
+    var esc=function(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');},hh=function(n){return (n<10?'0':'')+n;};
+    var a=w._cxe&&w._cxe.accuracy&&w._cxe.accuracy[r.cell],s=r.settled,d=new Date(r.type==='ahead'?+r.ts:+r.seen);
+    var head=r.type==='ahead'?__esT_mpcharts("aheadWord",'AHEAD')+' · '+esc(r.title):__esT_mpcharts("landedWord",'LANDED')+' · '+esc(cxEarlyKind(r))+' '+__esT_mpcharts("onWord",'on')+' '+esc(cxEarlySrc(r));
+    var el=document.createElement('div');el.className='cwin-liqc cwin-cxc';
+    el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
+      +'<div class="lqc-h" style="color:#c2f64a">'+head+'</div>'
+      +(r.type!=='ahead'?'<div class="cxc-cat"><b>'+esc(r.title)+'</b><span>'+esc(cxEarlySrc(r))+' · '+esc(r.kind)+(r.desks>1?' · '+r.desks+' '+__esT_mpcharts("desksWord",'desks'):'')+' · '+__esT_mpcharts("scoreWord",'score')+' '+(r.score||0)+(r.imp!=null?' · '+__esT_mpcharts("importanceWord",'importance')+' '+r.imp:'')+'</span>'+(r.url?'<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+__esT_mpcharts("openSource",'open the source')+'</a>':'')+(r.sum?'<em class="cxc-real">'+esc(r.sum)+'</em>':'')+'</div>':'')
+      +'<p class="cxc-note">'+esc(r.text||'')+'</p>'
+      +'<dl class="lqc-d"><dt>'+(r.type==='ahead'?__esT_mpcharts("printsAt",'Prints at'):__esT_mpcharts("seenAt",'Seen at'))+'</dt><dd>'+hh(d.getHours())+':'+hh(d.getMinutes())+' · '+d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+(r.p0?' · '+cwFmt(r.p0):'')+'</dd>'
+      +(s&&s.x60!=null?'<dt>'+__esT_mpcharts("whatHappened",'What happened')+'</dt><dd>'+(s.r15!=null?(s.r15>=0?'+':'')+s.r15.toFixed(2)+'% / 15 min · ':'')+(s.r60>=0?'+':'')+s.r60.toFixed(2)+'% / 60 min · '+__esT_mpcharts("rangeWord",'range')+' +'+s.up.toFixed(2)+'% / '+s.dn.toFixed(2)+'% · '+s.x60+'x '+__esT_mpcharts("usualHour",'usual hour')+(s.hit!=null?' · '+(s.hit?__esT_mpcharts("directionRight",'direction right'):__esT_mpcharts("directionWrong",'direction wrong')):'')+'</dd>':'<dt>'+__esT_mpcharts("outcomeWord",'Outcome')+'</dt><dd>'+__esT_mpcharts("settlesInAnHour",'settles an hour after, against 1-minute candles')+'</dd>')
+      +(a&&a.n?'<dt>'+__esT_mpcharts("ourRecordCap",'Our record')+'</dt><dd>'+a.n+' '+__esT_mpcharts("settledWord",'settled')+' · '+(a.bigPct!=null?a.bigPct+'% '+__esT_mpcharts("movedWord",'moved'):'-')+(a.hitPct!=null?' · '+a.hitPct+'% '+__esT_mpcharts("directionRightLc",'direction right')+' ('+a.nDir+')':'')+(a.muted?' · <b style="color:#ff6258">'+__esT_mpcharts("mutedWord",'muted')+'</b>':'')+'</dd>':'')
+      +'</dl>'
+      +'<p class="lqc-n">'+__esT_mpcharts("cxEarlyMethod",'An early mark is a first report that passed a measured gate (an exchange listing or delisting, a major story), drawn the minute it landed and before any move. The record under it is what events of that kind really did, never a forecast. A kind that keeps missing mutes itself.')+'</p>';
+    body.appendChild(el);
+    var bw=body.clientWidth||300,bh=body.clientHeight||200,cw=el.offsetWidth||220,ch=el.offsetHeight||170;
+    el.style.left=Math.max(6,Math.min(px-cw/2,bw-cw-6))+'px';el.style.top=Math.max(6,Math.min(py+18,bh-ch-6))+'px';
+    el.querySelector('.cwin-liqc-x').addEventListener('click',function(e){e.stopPropagation();liqCardClose(w);});}
   function cxCauseText(a){if(!a)return '';var c=a.catalyst;
     if(a.cause==='unknown')return a.note||__esT_mpcharts("noKnownCauseCx",'No known cause - no dated news inside 90 minutes and no liquidation cascade.');
     if((a.cause==='stocks'||a.cause==='flow'||a.cause==='btc'||a.cause==='lead'||a.cause==='whale'||a.cause==='liqs'||a.cause==='tech'||a.cause==='oi'||a.cause==='book'||a.cause==='volume'||a.cause==='gap')&&!a.catalyst){var fx=(a.factors||[]).filter(function(f){return f.k===a.cause;})[0];if(fx)return fx.text;}
@@ -297,6 +338,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{w.chart.subscribeClick(function(prm){
       if(!prm||!prm.point)return;var hits=w._liqHit;
       /* a "what moved it" flag is a rectangle; it is tested first because it sits over the candles the circles sit on */
+      var he=w._cxeHit;if(he&&he.length){var x3=prm.point.x,y3=prm.point.y;for(var q3=0;q3<he.length;q3++){var r3=he[q3];if(x3>=r3.x-3&&x3<=r3.x+r3.w+3&&y3>=r3.y-3&&y3<=r3.y+r3.h+3){cxEarlyCardOpen(w,r3.r,r3.x+r3.w/2,r3.y+r3.h);return;}}}
       var hc=w._cxHit;if(hc&&hc.length){var x2=prm.point.x,y2=prm.point.y;for(var q=0;q<hc.length;q++){var r2=hc[q];if(x2>=r2.x-3&&x2<=r2.x+r2.w+3&&y2>=r2.y-3&&y2<=r2.y+r2.h+3){cxCardOpen(w,r2.k.m,r2.x+r2.w/2,r2.y+r2.h);return;}}}
       if(!hits||!hits.length){liqCardClose(w);return;}
       var x=prm.point.x,y=prm.point.y,best=null,bd=1e9;
@@ -813,14 +855,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        painted by the draw layer (it already owns the projection, the repaint and the pixel space the chart's
        own click reports in); here we only decide WHICH events and which candle each belongs to. */
     /* WHAT MOVED IT: the route's month onto these bars, one legend line for the month and one for a move forming now */
-    w._cxMarks=null;if(!w.inds.catalyst){w._cxHit=null;cxWatch(w,false);}
+    w._cxMarks=null;w._cxeMarks=null;if(!w.inds.catalyst){w._cxHit=null;w._cxeHit=null;cxWatch(w,false);}
     if(w.inds.catalyst&&IA){
-      wireLiqClick(w);loadCx(w);cxWatch(w,true);
+      wireLiqClick(w);loadCx(w);loadCxEarly(w);cxWatch(w,true);
       var _cx=w._cx;
       if(_cx&&_cx.moves){
         var _cm=cxBuildMarks(bars,_cx);w._cxMarks=_cm.length?_cm:null;var _s=_cx.summary||{};
         var _onCh=(_cx.moves||[]).filter(function(m){return m.sure||m.big;}).length;var _lab2=__esT_mpcharts("whatMovedItShort",'WHAT MOVED IT')+' 30d · '+_onCh+' '+__esT_mpcharts("flaggedOf",'flagged of')+' '+(_s.n||0)+(_s.explainedPct!=null?' · '+_s.explainedPct+'% '+__esT_mpcharts("explainedLc",'explained'):'')+(_cx.collector!=='ok'?' · '+__esT_mpcharts("catalystsOffline",'catalysts offline'):'');
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab2,title:__esT_mpcharts("whatMovedItTitle",'Every abnormal move of the last 30 days on 15-minute candles, each with its most likely cause. A flag on the candle the move started on; tap it for the evidence. Scale: ')+_cx.scale+'% '+__esT_mpcharts("medianBarMove",'median 15m move, a move is at least ')+(+_cx.mult||4)+'x '+__esT_mpcharts("thatOrFloor",'that or ')+(+_cx.floorPct||0.6)+'%.'});
+        try{cxEarlyLegend(w,bars);}catch(e){}
         var _zl=(_cx.moves||[]).some(function(m){return m.live&&(m.sure||m.big);});var _lv=_zl?null:cxLiveCheck(w);if(_lv)cxLiveAsk(w,_lv);else if(_zl)w._cxLive=null;
         var _L=w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a,_col=_L.pct>=0?'#2ebd85':'#ff6258';
           if(_L.cont){var _nm=(w._cx&&w._cx.moves||[])[0];w.legItems.push({raw:true,color:_col,label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% · '+__esT_mpcharts("stillTheStory",'still the')+' '+_la.label+' '+__esT_mpcharts("storyWord",'story')+(_nm&&_nm.legs>1?' ('+_nm.legs+' '+__esT_mpcharts("legsWord",'legs')+')':''),title:cxCauseText(_la)});}else
@@ -2945,6 +2988,17 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.fillStyle=colL;ctx.textBaseline='middle';ctx.fillText(t2,bx2+7,by2+bh2/2+.5);ctx.restore();
         w._cxHit.push({x:bx2,y:by2,w:bw2,h:bh2,k:{m:Object.assign({t0:L.t0,t1:Date.now(),pct:L.pct,dir:upL?1:-1,z:0,p0:0,p1:+w.bars[lastI].close,hi:0,lo:0},a)}});}}
     }
+    /* the early marks: a lime NEW pill on the candle a catalyst was seen on (its outcome on it once settled), an AHEAD pill at the right edge */
+    function drawCxEarly(){var mk=w._cxeMarks;w._cxeHit=[];if(!mk||!mk.length||!(w.inds&&w.inds.catalyst))return;
+      var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th),W=w.dr.W||0,lastI=(w.bars||[]).length-1,row=0;
+      for(var i=0;i<mk.length;i++){var k=mk[i],r=k.r,txt,x;
+        if(k.ahead){x=xOf(lastI);if(x==null)continue;x=Math.min(W-6,x+26);txt=String(r.title||'').slice(0,22)+' '+__esT_mpcharts("inWord",'in')+' '+Math.max(0,Math.round((+r.ts-Date.now())/60000))+'m';}
+        else{x=xOf(k.i);if(x==null||x<-10||x>W+10)continue;var out=cxEarlyOut(r);txt=__esT_mpcharts("newWord",'NEW')+' \u00b7 '+cxEarlyKind(r)+(out?' \u00b7 '+out.replace(/ \u00b7 .*$/,''):'');}
+        ctx.save();ctx.font='800 10.5px "Space Mono",monospace';var tw=ctx.measureText(txt).width,bw=tw+14,bh=18,bx=Math.max(2,Math.min(W-bw-2,x-bw/2)),by=30+row*22;row=(row+1)%3;
+        if(!k.ahead){var yH=null;try{yH=yOf(+w.bars[k.i].high);}catch(e){}if(yH!=null){ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(194,246,74,.7)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,by+bh);ctx.lineTo(x,Math.max(by+bh,Math.min(plotH,yH)));ctx.stroke();ctx.setLineDash([]);}}
+        ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,6);else ctx.rect(bx,by,bw,bh);ctx.fillStyle='rgba(12,14,18,.95)';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#c2f64a';ctx.stroke();
+        ctx.fillStyle=r.settled&&r.settled.x60!=null&&!r.settled.big?'#aab5c4':'#e9edf3';ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText(txt,bx+7,by+bh/2+.5);ctx.restore();
+        w._cxeHit.push({x:bx,y:by,w:bw,h:bh,r:r});}}
     function drawLiqMarks(){var mk=w._liqMarks;if(!mk||!mk.length)return;
       var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th);
       w._liqHit=[];
@@ -2986,7 +3040,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.restore();
         inkTxt(x-(buy?12:14),buy?ty+1:ty-13,buy?'BUY':'SELL',col,11);
       }}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawCxMarks();}catch(e){}try{drawCxNote();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);try{drawAlBadges();}catch(e){}if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawCxMarks();}catch(e){}try{drawCxEarly();}catch(e){}try{drawCxNote();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);try{drawAlBadges();}catch(e){}if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
 
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
@@ -3335,7 +3389,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var stale=!w.lastBar||((nowS-w.lastBar.time)>iv*1.5+90);
       el.textContent=stale?'--:--':cdFmt(iv-(nowS%iv),iv>=3600);el.classList.toggle('stale',!!stale);}}
   function cdStart(){if(!_cdT){cdSkew();_cdT=setInterval(cdTick,1000);}}
-  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,loadCx:loadCx,cxBuildMarks:cxBuildMarks,cxLiveCheck:cxLiveCheck,cxLiveAsk:cxLiveAsk,cxWatch:cxWatch,cxCauseText:cxCauseText,cxCardOpen:cxCardOpen,liqSupported:liqSupported,clusterLiq:clusterLiq,liqNoDataMsg:liqNoDataMsg,LQ_NEEDFEED:LQ_NEEDFEED,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
+  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,loadCx:loadCx,cxBuildMarks:cxBuildMarks,cxLiveCheck:cxLiveCheck,cxLiveAsk:cxLiveAsk,cxWatch:cxWatch,cxCauseText:cxCauseText,cxCardOpen:cxCardOpen,loadCxEarly:loadCxEarly,cxEarlyMarks:cxEarlyMarks,cxEarlyLegend:cxEarlyLegend,liqSupported:liqSupported,clusterLiq:clusterLiq,liqNoDataMsg:liqNoDataMsg,LQ_NEEDFEED:LQ_NEEDFEED,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
   try{window.__mpAiContext=aiContext;window.__mpAi={stampReach:aiStampReach,reachOf:aiReachOf,reachMiss:aiReachMiss,stopTight:aiStopTight,ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,geom:aiGeom,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote,setSym:setWinSym,setTf:setWinTf,tradeQ:aiTradeQ};}catch(e){} // setSym/setTf are debug hooks for the offline vision harness (2026-10-04), same surface as the rest // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)

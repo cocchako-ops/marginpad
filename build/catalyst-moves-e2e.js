@@ -15,7 +15,7 @@
 const fs = require('fs'), path = require('path');
 const ARGS = process.argv.slice(2), has = k => ARGS.includes(k);
 const PURE = has('--pure'), BROWSER = has('--browser'), LOCAL = has('--local'), FALSIFY = has('--falsify');
-const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'tech', 'oi', 'book', 'unknown'];
+const CAUSES = ['news', 'cascade', 'news+cascade', 'btc', 'whale', 'stocks', 'flow', 'liqs', 'tech', 'oi', 'book', 'volume', 'gap', 'lead', 'index', 'unknown']; // volume/gap/lead/index joined on 2026-11-01
 const BASE = 'https://marginpad.io', DIST = path.join(__dirname, '..', 'dist'), A = path.join(DIST, 'assets');
 let pass = 0, fail = 0;
 const ok = (name, cond, note) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (note !== undefined ? '  -> ' + String(note).slice(0, 220) : '')); } };
@@ -307,7 +307,7 @@ async function prodLeg() {
   const mv = j.moves || [];
   ok('moves exist, newest first, each with a cause word', mv.length >= 10 && mv.every(m => CAUSES.includes(m.cause)) && mv.every((m, i) => i === 0 || m.t0 <= mv[i - 1].t0), mv.length);
   const s = j.summary || {};
-  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + (s.tech || 0) + (s.oi || 0) + (s.book || 0) + s.unknown === s.n, JSON.stringify(s));
+  ok('the summary adds up', s.n === mv.length && s.news + s.cascade + s.both + (s.btc || 0) + (s.whale || 0) + (s.stocks || 0) + (s.flow || 0) + (s.liqs || 0) + (s.tech || 0) + (s.oi || 0) + (s.book || 0) + (s.volume || 0) + (s.gap || 0) + (s.lead || 0) + s.unknown === s.n, JSON.stringify(s));
   ok('every named cause carries its evidence', mv.filter(m => m.cause !== 'unknown').every(m => (m.catalyst && m.catalyst.title && m.catalyst.source) || (m.cascade && m.liq && m.liq.usd > 0) || (m.factors || []).some(f => f.k === m.cause)));
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
@@ -351,7 +351,10 @@ async function premiumSession() {
   await adminJ('/api/admin/e2euser', { uid: E2E_UID, op: 'mk' });
   await adminJ('/api/admin/premium?add=e2e_' + E2E_UID + '&days=1');
   const s = await adminJ('/api/admin/e2euser', { uid: E2E_UID, op: 'sess' });
-  return (s.j && (s.j.token || s.j.sess || s.j.mp_sess)) || null;
+  const tok = (s.j && (s.j.token || s.j.sess || s.j.mp_sess)) || null;
+  // the one-day grant raises the one-time Premium celebration (#mpPgc) over the page, and the flag click lands on it: ack it first (the 2026-10-30 rule)
+  if (tok) { try { await fetch(BASE + '/api/auth/xp', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + tok }, body: JSON.stringify({ ack: 1 }) }); } catch (e) {} }
+  return tok;
 }
 async function browserLeg() {
   const { withBrowser, newPage, UA_MOBILE, UA_DESKTOP } = require('./e2e-browser.js');
@@ -403,11 +406,13 @@ async function browserLeg() {
         await page.keyboard.press('Escape'); await page.evaluate(() => { const c = document.querySelector('.cwin-cxc'); if (c) c.remove(); });
       } else ok('a flag to click', false, 'no hit rects');
       // the live path, injected: a -1.5% move starting ten minutes ago
-      const live = await page.evaluate(async () => { const w = window.__mpWinsDbg[0], S = window.__mpSig; S.cxLiveAsk(w, { t0: Date.now() - 10 * 60000, pct: -1.5, n: 2 }); for (let i = 0; i < 40; i++) { await new Promise(r => setTimeout(r, 250)); if (w._cxLive && w._cxLive.on) break; } try { w.dr.redraw(); } catch (e) {} return { on: !!(w._cxLive && w._cxLive.on), cause: w._cxLive && w._cxLive.a && w._cxLive.a.cause, leg: w.legEl ? w.legEl.textContent : '', hits: (w._cxHit || []).length }; });
-      ok('an injected live move gets a verdict from the route', live.on && live.cause, JSON.stringify(live).slice(0, 160));
-      ok('and the legend shows the LIVE line', /LIVE/.test(live.leg), live.leg.slice(0, 200));
+      // a LIVE flag is drawn only for a verdict that is sure or big (2026-10-29): the injected -1.5% on BTC is answered either way, and `on` must follow the answer
+      // the ask is dropped while the 20-s watch has its own fetch in flight (`_cxLiveFetch`), so it is re-issued until an answer with a cause lands
+      const live = await page.evaluate(async () => { const w = window.__mpWinsDbg[0], S = window.__mpSig; const lv = { t0: Date.now() - 10 * 60000, pct: -1.5, n: 2 }; let a = null; for (let i = 0; i < 80; i++) { if (i % 10 === 0) S.cxLiveAsk(w, lv); await new Promise(r => setTimeout(r, 250)); a = w._cxLive && w._cxLive.a; if (a && a.cause && w._cxLive.key === w.sym + '|' + lv.t0 + '|d') break; } try { w.dr.redraw(); } catch (e) {} return { on: !!(w._cxLive && w._cxLive.on), cause: a && a.cause, sure: !!(a && a.sure), big: !!(a && a.big), leg: w.legEl ? w.legEl.textContent : '', hits: (w._cxHit || []).length }; });
+      ok('an injected live move gets a verdict from the route', !!live.cause && CAUSES.includes(live.cause), JSON.stringify(live).slice(0, 160));
+      ok('and the LIVE line is on exactly when the verdict is sure or big', live.on === (live.sure || live.big) && (/LIVE/.test(live.leg) === live.on), JSON.stringify({ on: live.on, sure: live.sure, big: live.big, leg: live.leg.slice(0, 120) }));
       const brief = await page.evaluate(() => { try { const c = window.__mpAiContext(window.__mpWinsDbg[0]); return c && c.whatMovedIt ? { n: (c.whatMovedIt.recentMoves || []).length, live: !!c.whatMovedIt.live } : null; } catch (e) { return { err: String(e) }; } });
-      ok('Ask AI\'s brief carries the moves and the live verdict', brief && brief.n > 0 && brief.live, JSON.stringify(brief));
+      ok('Ask AI\'s brief carries the moves, and the live verdict when one is drawn', brief && brief.n > 0 && brief.live === live.on, JSON.stringify(brief));
       await page.evaluate(() => { const w = window.__mpWinsDbg[0]; w.inds.catalyst = false; window.__mpSig.cxWatch(w, false); });
     }
     ok('no page errors on the desktop', page._errors.length === 0, page._errors.join(' | ').slice(0, 200));

@@ -510,14 +510,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* THE SAME MARKS AS THE DESKTOP, drawn by the SAME engine: the phone runs the shared setupDraw over
        `p.w`, so the painter already knows how to project them - they only have to be put where it looks. */
     /* WHAT MOVED IT on the phone: the shared loader, marks builder, live check and painter - this half only places them */
-    if(p.w){p.w._cxMarks=null;if(!p.inds.catalyst&&S&&S.cxWatch){try{p.w._cxHit=null;S.cxWatch(p.w,false);}catch(e){}}}
+    /* @CX_EARLY_CHART 2026-11-05 */
+    if(p.w){p.w._cxMarks=null;p.w._cxeMarks=null;if(!p.inds.catalyst&&S&&S.cxWatch){try{p.w._cxHit=null;S.cxWatch(p.w,false);}catch(e){}}}
     if(p.inds.catalyst&&IA&&S&&S.loadCx&&p.w){
       p.w.sym=p.sym;p.w.bars=p.bars;p.w.inds=p.inds;p.w._reapply=function(){try{applyInds(p);}catch(e){}};
-      try{S.wireLiqClick(p.w);}catch(e){}try{S.loadCx(p.w);}catch(e){}try{S.cxWatch(p.w,true);}catch(e){}
+      try{S.wireLiqClick(p.w);}catch(e){}try{S.loadCx(p.w);}catch(e){}try{if(S.loadCxEarly)S.loadCxEarly(p.w);}catch(e){}try{S.cxWatch(p.w,true);}catch(e){}
       var _cx=p.w._cx;
       if(_cx&&_cx.moves){
         var _cm=S.cxBuildMarks(p.bars,_cx);p.w._cxMarks=_cm.length?_cm:null;var _s=_cx.summary||{};
         p.legItems.push({raw:true,color:'#c2f64a',label:__esT_mpmcharts("whatMovedItShortM",'WHAT MOVED IT')+' 30d · '+(_cx.moves||[]).filter(function(m){return m.sure||m.big;}).length+' '+__esT_mpmcharts("flaggedOf",'flagged of')+' '+(_s.n||0)+(_s.explainedPct!=null?' · '+_s.explainedPct+'%':'')+(_cx.collector!=='ok'?' · offline':'')});
+        try{if(S.cxEarlyLegend)S.cxEarlyLegend(p.w,p.bars,p.legItems);}catch(e){}
         var _zl=(_cx.moves||[]).some(function(m){return m.live&&(m.sure||m.big);});var _lv=_zl?null:S.cxLiveCheck(p.w);if(_lv)S.cxLiveAsk(p.w,_lv);else if(_zl)p.w._cxLive=null;
         var _L=p.w._cxLive;if(_L&&_L.on&&_L.a){var _la=_L.a;p.legItems.push({raw:true,color:_L.pct>=0?'#2ebd85':'#ff6258',label:'LIVE '+(_L.pct>=0?'+':'')+_L.pct+'% · '+(_la.cause==='unknown'?'?':_la.label)+(_la.catalyst?' ('+(_la.catalyst.after?__esT_mpmcharts("newsAfterWord",'news after'):_la.catalyst.leadMin+' min '+__esT_mpmcharts("beforeWord",'before'))+')':'')});}
       } else p.legItems.push({raw:true,color:'#8b95a3',label:__esT_mpmcharts("whatMovedItLoading",'WHAT MOVED IT · reading the month…')});
