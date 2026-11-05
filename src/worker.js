@@ -1532,7 +1532,7 @@ async function handleCatalystHealth(url, env) {
       const r = await __realFetch(base + '/api/v1/catalysts/status', { signal: ctl.signal });
       if (r.ok) {
         const st = await r.json(); const now = Date.now(); const src = (st && st.sources) || {};
-        const rows = Object.keys(src).map(k => { const s = src[k] || {}; const prim = /^(bybit|okx|hl-|binance|upbit|sec|fedreg|cftc|calendar)/.test(k); return { name: k, group: prim ? 'primary' : 'media', ok: +s.ok || 0, err: +s.err || 0, added: +s.added || 0, last: +s.last || 0, lateP50: s.lateP50 != null ? +s.lateP50 : null, lastErr: s.lastErr || '', online: !!(s.last && now - s.last < 600000 && (!s.lastErr || (s.ok || 0) > (s.err || 0))) }; });
+        const rows = Object.keys(src).map(k => { const s = src[k] || {}; const prim = /^(bybit|okx|hl-|binance|upbit|bitget|kucoin|coinbase|kraken|gate|fed-press|sec|fedreg|cftc|calendar)/.test(k); return { name: k, group: prim ? 'primary' : 'media', ok: +s.ok || 0, err: +s.err || 0, added: +s.added || 0, last: +s.last || 0, lateP50: s.lateP50 != null ? +s.lateP50 : null, lastErr: s.lastErr || '', online: !!(s.last && now - s.last < 600000 && (!s.lastErr || (s.ok || 0) > (s.err || 0))) }; });
         const med = v => { const a = v.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : null; };
         body = { ts: now, collector: 'ok', online: rows.filter(x => x.online).length, total: rows.length, lagPrimary: med(rows.filter(x => x.group === 'primary').map(x => x.lateP50)), lagMedia: med(rows.filter(x => x.group === 'media').map(x => x.lateP50)), ring: st.ring, uptimeSec: st.uptimeSec, labelsAt: null, sources: rows.sort((a, b) => b.added - a.added).slice(0, 60) };
         try { const lb = await cxLabelsGet(env); body.labelsAt = lb.at || null; body.labels = lb.n || Object.keys(lb.m || {}).length; } catch (e) {}
@@ -2111,17 +2111,30 @@ function cxEarlyDecide(c, now, acc) {
   if (c.story && c.story.n > 1 && (+c.ts_src - first) > 20 * 60000) return null;
   if (c.market === 'tradfi') return null;
   const prim = c.tier === 'primary' || c.tier === 'official';
-  const exch = (c.kind === 'listing' && (prim || c.tier === 'mediaA')) || (c.kind === 'delisting' && prim);
+  // THREE THINGS THE 30-DAY REPLAY CAUGHT (2026-11-05, scratchpad/cx-early-replay.js): a collateral or lending notice is not a delisting;
+  // "Upbit lists CARDS with KRW, BTC and USDT pairs" is about CARDS, not BTC - the quote coins are dropped when another is named;
+  // a listing through a desk whose only coin is BTC or ETH (a venue adding Bitcoin) moves nothing and is refused.
+  if (c.kind === 'delisting' && /\b(as collateral|collateral and lending|lending|borrow|margin tier|leverage)\b/i.test(String(c.title || ''))) return null;
+  const QUOTE = { BTC: 1, ETH: 1, USDT: 1, USDC: 1, USD: 1, KRW: 1 };
+  const own = syms.filter(s => !QUOTE[s]); const symsUse = (c.kind === 'listing' || c.kind === 'delisting') && own.length ? own : syms;
+  // a tokenized-stock or pre-IPO perp is not a coin event (the TradFi rows of the Bybit channel carried no `market` in older rows); and a
+  // desk listing counts only when the RULES read it as one - the model's kind override ("CZ attends Nasdaq bell-ringing" -> listing)
+  // is kept for attribution and refused here
+  if (/\b(tradfi|pre-?ipo|tokeni[sz]ed stocks?|xstock|stock index|equity perpetual)\b/i.test(String(c.title || ''))) return null;
+  const exch = (c.kind === 'listing' && (prim || (c.tier === 'mediaA' && !c.kind0))) || (c.kind === 'delisting' && prim);
+  if (exch && !prim && !own.length) return null;
   if ((seen - (+c.ts_src || seen)) > (exch ? 3 * CX_EARLY_LATE_MS : CX_EARLY_LATE_MS)) return null; // an exchange kind rides a slow RSS (CoinDesk 22 min on median): 30 min for those, 10 for the rest
   const major = !!c.major;
-  const strong = (+c.score >= 70) && c.kind !== 'whale' && c.kind !== 'news';
+  // the score path needs the model's own importance (60+): a $6.3B figure in a headline forces a hack to 80 by the money rule, and the replay
+  // let eleven follow-ups ("Grok predicts...", "Kim Jong-un's sister rejects...") through on that score while the model had read them at 25-40
+  const strong = (+c.score >= 70) && c.kind !== 'whale' && c.kind !== 'news' && !!(c.lbl && +c.lbl.imp >= 60);
   const why = exch ? 'exchange' : major ? 'major' : strong ? 'score' : null;
   if (!why) return null;
   if (c.kind === 'hack' && !((c.usd != null ? +c.usd : cxUsd(String(c.title || '') + ' ' + ((c.lbl && c.lbl.sum) || ''))) >= CX_HACK_MIN_USD)) return null;
   const cc = Object.assign({ why }, c); const cell = cxEarlyCell(cc);
   if (cxEarlyMuted(acc, cell)) return { muted: true, cell, id: c.id, kind: c.kind, syms };
   const im = cxImpactOf(c.kind, c.tier, false) || cxImpactOf(c.kind, c.tier, true);
-  return { type: 'landed', id: c.id, key: 'l:' + (c.story && c.story.k ? c.story.k : c.id), story: c.story ? c.story.k : null, cell, why, kind: c.kind, tier: c.tier, syms: syms.slice(0, 3), expect: +c.expect || 0, seen, src: +c.ts_src || seen, score: +c.score || 0, imp: c.lbl && c.lbl.imp != null ? +c.lbl.imp : null, title: String((c.story && c.story.firstTitle) || c.title || '').slice(0, 140), source: String((c.story && c.story.firstSource) || c.source || ''), url: String((c.story && c.story.firstUrl) || c.url || '').slice(0, 300), desks: c.story ? +c.story.n || 1 : 1, sum: String((c.lbl && c.lbl.sum) || '').slice(0, 120), exp: im ? { x15: im.x15, x60: im.x60 != null ? im.x60 : null, n: im.n, hit: im.hit15 } : null };
+  return { type: 'landed', id: c.id, key: 'l:' + (c.story && c.story.k ? c.story.k : c.id), story: c.story ? c.story.k : null, cell, why, kind: c.kind, tier: c.tier, syms: symsUse.slice(0, 3), expect: +c.expect || 0, seen, src: +c.ts_src || seen, score: +c.score || 0, imp: c.lbl && c.lbl.imp != null ? +c.lbl.imp : null, title: String((c.story && c.story.firstTitle) || c.title || '').slice(0, 140), source: String((c.story && c.story.firstSource) || c.source || ''), url: String((c.story && c.story.firstUrl) || c.url || '').slice(0, 300), desks: c.story ? +c.story.n || 1 : 1, sum: String((c.lbl && c.lbl.sum) || '').slice(0, 120), exp: im ? { x15: im.x15, x60: im.x60 != null ? im.x60 : null, n: im.n, hit: im.hit15 } : null };
 }
 // what the record says to a member and on the chart: the kind in words, then the measured record of that kind, never a forecast
 function cxEarlyText(r) {
@@ -25687,6 +25700,11 @@ export default {
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);
     if (url.pathname === '/api/catalysts/moves') return handleCatalystMoves(url, env);
+    // the model's labels (live 48 h + the 40-day archive), for a replay that re-runs the gate over past days with the readings it really had
+    if (url.pathname === '/api/admin/cxlabels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const lb = await cxLabelsGet(env), arch = await cxLabelsArch(env, true), m = Object.assign({}, arch, lb.m || {});
+      return new Response(JSON.stringify({ ts: Date.now(), n: Object.keys(m).length, live: lb.n || 0, m }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/cxcov' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const J = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
       if (url.searchParams.get('run')) return J(await cxCovTick(env, Math.min(12, +url.searchParams.get('run') || 6)));

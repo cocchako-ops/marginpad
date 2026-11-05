@@ -60,6 +60,13 @@ function pureLeg() {
   ok('a small hack never lands even as a major story', X.cxEarlyDecide(Object.assign(en(item({ kind: 'hack', title: 'Bridge drained of $4M', score: 80 })), { major: true }), now, {}) === null);
   const bigHack = Object.assign(en(item({ kind: 'hack', expect: -1, title: 'Exchange hacked for $120M, withdrawals halted', score: 85 })), { major: true });
   ok('a $120M hack lands with a down expectation', (X.cxEarlyDecide(bigHack, now, {}) || {}).expect === -1);
+  // the replay's three holes (2026-11-05)
+  const fu2 = X.cxEnrich([item({ id: 'h2', kind: 'hack', expect: -1, title: 'Grok AI predicts wild Bitcoin price amid $6.3B Binance hack', score: 85 })], { m: { h2: { imp: 30, sum: 'commentary on the hack', story: 'binance-hack-commentary', kind: 'hack', syms: ['BTC'], expect: 0 } } })[0];
+  ok('a headline that only MENTIONS a $6.3B hack (score 80 by the money rule, importance 30 by the model) is not an alert', X.cxEarlyDecide(fu2, now, {}) === null, JSON.stringify([fu2.score, fu2.lbl && fu2.lbl.imp]));
+  const cards = X.cxEarlyDecide(en(item({ source: 'rss:theblock', tier: 'mediaA', kind: 'listing', expect: 1, syms: 'BTC,CARDS,USDT', title: 'Upbit to list CARDS with KRW, BTC and USDT trading pairs', score: 50 })), now, {});
+  ok('a listing naming the quote coins is recorded on the coin being listed, not on BTC', !!cards && cards.syms[0] === 'CARDS' && cards.syms.indexOf('BTC') < 0, JSON.stringify(cards && cards.syms));
+  ok('a venue adding Bitcoin trading, reported by a desk, is not a listing alert on BTC', X.cxEarlyDecide(en(item({ source: 'rss:theblock', tier: 'mediaA', kind: 'listing', expect: 1, syms: 'BTC', title: 'Moscow Exchange to launch Bitcoin trading in December', score: 50 })), now, {}) === null);
+  ok('a collateral notice is not a delisting', X.cxEarlyDecide(en(item({ source: 'bybit-ann', tier: 'primary', kind: 'delisting', expect: -1, syms: 'BILL', title: 'Discontinuation of ZIG, BILL, SATS as Collateral and Lending', score: 65 })), now, {}) === null);
 
   console.log('[pure] the record settles against its own minute');
   const T = now - 70 * 60000; const bars = []; let p = 100;
@@ -77,7 +84,8 @@ function pureLeg() {
   let acc = {};
   for (let i = 0; i < X.CX_EARLY_MUTE_N; i++) acc = X.cxEarlyAccAdd(acc, { cell: 'news|mediaA|score', settled: { x60: 0.8, big: false, hit: i % 4 === 0 } });
   ok('twenty settled misses: the cell is muted', X.cxEarlyMuted(acc, 'news|mediaA|score') === true, JSON.stringify(acc));
-  ok('and the gate refuses it with muted:true, naming the cell', (X.cxEarlyDecide(Object.assign(en(item({ source: 'rss:theblock', kind: 'etf', expect: 1, score: 75, title: 'SEC approves XYZ ETF' })), {}), now, { 'etf|mediaA|score': acc['news|mediaA|score'] }) || {}).muted === true);
+  const etfIt = X.cxEnrich([item({ id: 'e1', source: 'rss:theblock', kind: 'etf', expect: 1, score: 75, title: 'SEC approves XYZ ETF' })], { m: { e1: { imp: 80, sum: 'SEC approves', story: 'xyz-etf', kind: 'etf', syms: ['SOL'], expect: 1 } } })[0];
+  ok('and the gate refuses it with muted:true, naming the cell', (X.cxEarlyDecide(etfIt, now, { 'etf|mediaA|score': acc['news|mediaA|score'] }) || {}).muted === true, JSON.stringify(X.cxEarlyDecide(etfIt, now, {})));
   let acc2 = {}; for (let i = 0; i < 25; i++) acc2 = X.cxEarlyAccAdd(acc2, { cell: 'delisting|primary|plain', settled: { x60: 2.1, big: i % 3 !== 0, hit: i % 10 !== 0 } });
   ok('a cell that moves price and is right is not muted', X.cxEarlyMuted(acc2, 'delisting|primary|plain') === false);
   const pub = X.cxEarlyAccPublic(Object.assign({}, acc, acc2));
