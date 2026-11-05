@@ -132,6 +132,11 @@ const PRACTICE_LINKS = [
   // 2026-09-21: the highest-intent destination in this block. Somebody reading a liquidation page is a trader, and a
   // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
   ['/practice-for-a-funded-account/', 'Practising for a funded account? Try the rules free first'],
+  // 2026-11-05 (GSC 28 d): /forex-trading-simulator/ had 1.173 impressions for 2 clicks at position 23 and
+  // /stock-trading-simulator/ 216 at 24, with 19-20 inbound links each and none from the pages that carry the
+  // crawl budget. Same subject (practise the move you just read about), two more markets.
+  ['/forex-trading-simulator/', 'Forex trading simulator - EUR/USD and majors, no sign-up'],
+  ['/stock-trading-simulator/', 'Stock trading simulator - Apple, Tesla, Nvidia at live prices'],
 ].filter(([h]) => h === '/paper-trade' || has(h.replace(/^\/|\/$/g, '')));
 // REGIONAL (2026-09-21). Measured before adding it: the two live LATAM pages were linked from eight pages - the
 // homepage, each other, and /free-crypto-api/ - and from NOTHING a crawler actually walks. Google's own report has
@@ -167,7 +172,8 @@ const REGIONAL_INTRO = 'The same live numbers, written for two markets that pric
    crawls to 39 assistant visits. Seven links chosen BY DEMAND, not alphabetically - a block of all 25 is dilution.
    The direction is resolved against what exists on disk: /kucoin-vs-kraken/ is a 301 to /kraken-vs-kucoin/, and a
    link must point at the destination, never at a hop (the 2026-09-21 lesson, one line above). */
-const VS_DEMAND = [['kucoin', 'kraken'], ['bybit', 'kraken'], ['kraken', 'binance'], ['kucoin', 'binance'], ['bybit', 'kucoin'], ['okx', 'kraken'], ['kucoin', 'bitget']];
+// 2026-11-05 (GSC 28 d, impressions): bitget-vs-kucoin 109, bitget-vs-binance 94, bitget-vs-okx 57 + okx-vs-bitget 48 joined the demand list.
+const VS_DEMAND = [['kucoin', 'kraken'], ['bybit', 'kraken'], ['kraken', 'binance'], ['kucoin', 'binance'], ['bybit', 'kucoin'], ['okx', 'kraken'], ['kucoin', 'bitget'], ['bitget', 'binance'], ['okx', 'bitget'], ['bybit', 'bitget']];
 const VS_LINKS = VS_DEMAND
   .map(([a, b]) => { const f = a + '-vs-' + b, r = b + '-vs-' + a; const d = has(f) ? f : (has(r) ? r : null); return d ? ['/' + d + '/', exName(a) + ' vs ' + exName(b) + ' for futures - fees, leverage, liquidation'] : null; })
   .filter(Boolean);
@@ -224,6 +230,9 @@ const ASK_TOPICS = [
   { re: /funding|basis|carry|perpetual-fee/i, links: [['/is-funding-positive-or-negative/', 'Is funding positive or negative right now'], ['/funding/', 'Live funding rates']] },
   { re: /\bbot\b|api|algo|automat|script|backtest|mcp/i, links: [['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot'], ['/mcp-server-for-crypto-trading/', 'MCP server for crypto trading'], ['/trading-api/', 'Free paper-trading API']] },
   { re: /paper|simulat|practice|demo|journal|beginner|learn|mistake/i, links: [['/paper-trade', 'Free paper trading, no sign-up'], ['/academy/', 'Trading academy']] },
+  // 2026-11-05: the two simulator pages with the most Google impressions and the fewest inbound links (see PRACTICE_LINKS)
+  { re: /forex|currenc|eur-?usd|dollar|fx-|yen|pound/i, links: [['/forex-trading-simulator/', 'Forex trading simulator, no sign-up']] },
+  { re: /stock|equit|nasdaq|s-?p-?500|tesla|nvidia|apple|etf|tradfi|wall-street/i, links: [['/stock-trading-simulator/', 'Stock trading simulator, live prices']] },
   { re: /leverage|position-siz|risk|stop-loss|liquidation-price/i, links: [['/calculators', 'Liquidation and position-size calculators']] },
   { re: /open-interest|long-short|sentiment|positioning/i, links: [['/open-interest/', 'Live open interest'], ['/long-short/', 'Long/short ratio']] },
 ];

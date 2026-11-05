@@ -18,8 +18,9 @@ const SHARED = {
 const STOCK = {
   en: {
     slug: 'stock-trading-simulator',
-    metaTitle: 'Free Stock Trading Simulator - Practice Stocks with $0 Risk',
-    metaDesc: 'Practice trading Apple, Tesla, Nvidia and 20+ real stocks with live prices and $0 real money. Free stock trading simulator - no sign-up, real charts, instant paper trades. Learn before you risk a cent.',
+    // 2026-11-05 snippet prepis (GSC: 216 impr / 4,6% CTR / poz 24; upiti sa "no sign up" imaju CTR 14-80%): upit prvi, "No Sign-Up" u title-u
+    metaTitle: 'Stock Trading Simulator - Free, No Sign-Up, Live Prices',
+    metaDesc: 'Free stock trading simulator with no sign-up: Apple, Tesla, Nvidia and 20+ real stocks at live prices, real charts, leverage, shorting and stop-loss on a virtual balance. Practice in your browser, nothing to download.',
     keywords: 'stock trading simulator, paper trade stocks free, practice stock trading, day trading simulator, virtual stock trading, free stock market simulator, learn stock trading',
     eyebrow: 'Free stock simulator', h1: 'Free Stock Trading Simulator',
     sub: 'Trade real stocks with live prices and zero real money. Apple, Tesla, Nvidia and 20 more - practice exactly the way you would trade for real, with charts, leverage and stop-losses. No sign-up, nothing to download.',
@@ -46,8 +47,9 @@ const STOCK = {
 const FOREX = {
   en: {
     slug: 'forex-trading-simulator',
-    metaTitle: 'Free Forex Trading Simulator - Practice EUR/USD & Majors, $0 Risk',
-    metaDesc: 'Practice forex trading free with live rates on EUR/USD, GBP/USD, USD/JPY and more. Real charts, leverage and stop-loss - a forex demo with no sign-up and no real money. Learn before you risk a cent.',
+    // 2026-11-05 snippet prepis (GSC: 1.173 impr / 2 klika / poz 23 - najveca ne-brend strana bez klikova): "forex trading simulator" + "forex simulator free" + "No Sign-Up"
+    metaTitle: 'Forex Trading Simulator - Free, No Sign-Up, Live Rates',
+    metaDesc: 'Free forex trading simulator with no sign-up: live EUR/USD, GBP/USD and USD/JPY rates, real charts, leverage, stop-loss and liquidation on a virtual balance. Practice forex in your browser, nothing to download.',
     keywords: 'forex trading simulator, forex demo account, practice forex trading free, forex paper trading, forex simulator, learn forex trading, eur usd demo, forex practice account',
     eyebrow: 'Free forex simulator', h1: 'Free Forex Trading Simulator',
     sub: 'Practice forex with live rates and zero real money. EUR/USD, GBP/USD, USD/JPY and more - trade exactly the way you would for real, with charts, leverage and stop-losses. No sign-up, no deposit, nothing to download.',
@@ -73,8 +75,8 @@ const FOREX = {
 const INDEX = {
   en: {
     slug: 'index-trading-simulator',
-    metaTitle: 'Free Index Trading Simulator - Practice S&P 500, Nasdaq & Dow, $0 Risk',
-    metaDesc: 'Practice trading the S&P 500, Nasdaq 100, Dow Jones and DAX with live prices and $0 real money. Free stock index simulator - real charts, leverage and stop-loss, no sign-up.',
+    metaTitle: 'Index Trading Simulator - Free, No Sign-Up, S&P 500 and Nasdaq Live',
+    metaDesc: 'Free index trading simulator with no sign-up: S&P 500, Nasdaq 100, Dow Jones and DAX at live prices, real charts, leverage and stop-loss on a virtual balance. Practice in your browser, nothing to download.',
     keywords: 'index trading simulator, S&P 500 trading simulator, nasdaq trading simulator, dow jones simulator, practice index trading, stock index demo, spx trading practice',
     eyebrow: 'Free index simulator', h1: 'Free Index Trading Simulator',
     sub: 'Practice the S&P 500, Nasdaq 100, Dow Jones and DAX with live prices and zero real money. Trade indices exactly the way you would for real - charts, leverage and stop-losses. No sign-up, nothing to download.',

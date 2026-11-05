@@ -63,6 +63,9 @@ const EXTRAS = [
   ['/dolar-cripto/', '0.9', D],
   ['/bitcoin-hoje/', '0.9', D],
   ['/calendar/', '0.8', D],
+  // 2026-11-05: was `hourly` from the upstream generator - 8,984 crawls in 30 days for 25 visits; the page's
+  // figures move once a day, so daily is what it does
+  ['/liquidation-statistics/', '0.7', D],
   ['/status/', '0.6', D],
   ['/support/', '0.5', M],
   // --- moves with the product ------------------------------------------------------------------------------
