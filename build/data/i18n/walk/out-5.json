@@ -1,0 +1,996 @@
+{
+ "plain": [
+  {
+   "en": "x2 desks",
+   "es": "x2 fuentes",
+   "pt": "x2 fontes",
+   "de": "x2 Quellen"
+  },
+  {
+   "en": "x3 desks",
+   "es": "x3 fuentes",
+   "pt": "x3 fontes",
+   "de": "x3 Quellen"
+  },
+  {
+   "en": "x4 desks",
+   "es": "x4 fuentes",
+   "pt": "x4 fontes",
+   "de": "x4 Quellen"
+  },
+  {
+   "en": "Any setup",
+   "es": "Cualquier setup",
+   "pt": "Qualquer setup",
+   "de": "Beliebiges Setup"
+  },
+  {
+   "en": "Best entry",
+   "es": "Mejor entrada",
+   "pt": "Melhor entrada",
+   "de": "Bester Einstieg"
+  },
+  {
+   "en": "Bollinger bands - volatility envelope around a 20 average",
+   "es": "Bandas de Bollinger - envolvente de volatilidad alrededor de una media de 20",
+   "pt": "Bandas de Bollinger - envelope de volatilidade em torno de uma média de 20",
+   "de": "Bollinger-Bänder - Volatilitätshülle um einen 20er-Durchschnitt"
+  },
+  {
+   "en": "Breakout and retest",
+   "es": "Ruptura y retest",
+   "pt": "Rompimento e reteste",
+   "de": "Ausbruch und Retest"
+  },
+  {
+   "en": "BTC now",
+   "es": "BTC ahora",
+   "pt": "BTC agora",
+   "de": "BTC jetzt"
+  },
+  {
+   "en": "Buy / Sell signals",
+   "es": "Señales de compra / venta",
+   "pt": "Sinais de compra / venda",
+   "de": "Kauf-/Verkaufssignale"
+  },
+  {
+   "en": "Buy / Sell signals (+ TP)",
+   "es": "Señales de compra / venta (+ TP)",
+   "pt": "Sinais de compra / venda (+ TP)",
+   "de": "Kauf-/Verkaufssignale (+ TP)"
+  },
+  {
+   "en": "Daily levels",
+   "es": "Niveles diarios",
+   "pt": "Níveis diários",
+   "de": "Tageslevels"
+  },
+  {
+   "en": "Drag between two candles",
+   "es": "Arrastra entre dos velas",
+   "pt": "Arraste entre duas velas",
+   "de": "Zwischen zwei Kerzen ziehen"
+  },
+  {
+   "en": "Fast exponential average - short-term trend",
+   "es": "Media exponencial rápida - tendencia de corto plazo",
+   "pt": "Média exponencial rápida - tendência de curto prazo",
+   "de": "Schneller exponentieller Durchschnitt - kurzfristiger Trend"
+  },
+  {
+   "en": "Hull MA 21 - a smooth, fast-turning average",
+   "es": "Hull MA 21 - una media suave que gira rápido",
+   "pt": "Hull MA 21 - uma média suave que vira rápido",
+   "de": "Hull MA 21 - ein glatter, schnell drehender Durchschnitt"
+  },
+  {
+   "en": "Learned 8-factor lean, -100 to +100",
+   "es": "Sesgo aprendido de 8 factores, de -100 a +100",
+   "pt": "Viés aprendido de 8 fatores, de -100 a +100",
+   "de": "Gelernte Tendenz aus 8 Faktoren, -100 bis +100"
+  },
+  {
+   "en": "Level",
+   "es": "Nivel",
+   "pt": "Nível",
+   "de": "Level"
+  },
+  {
+   "en": "Liquidity sweep reversal",
+   "es": "Reversión tras barrido de liquidez",
+   "pt": "Reversão após varredura de liquidez",
+   "de": "Umkehr nach Liquiditäts-Sweep"
+  },
+  {
+   "en": "Momentum scalp",
+   "es": "Scalp de momentum",
+   "pt": "Scalp de momentum",
+   "de": "Momentum-Scalp"
+  },
+  {
+   "en": "Moving averages",
+   "es": "Medias móviles",
+   "pt": "Médias móveis",
+   "de": "Gleitende Durchschnitte"
+  },
+  {
+   "en": "Oscillators & volume",
+   "es": "Osciladores y volumen",
+   "pt": "Osciladores e volume",
+   "de": "Oszillatoren & Volumen"
+  },
+  {
+   "en": "Pivot Points",
+   "es": "Puntos pivote",
+   "pt": "Pontos de pivô",
+   "de": "Pivot-Punkte"
+  },
+  {
+   "en": "Range mean reversion",
+   "es": "Reversión a la media en rango",
+   "pt": "Reversão à média em range",
+   "de": "Mean Reversion in der Range"
+  },
+  {
+   "en": "Signals & levels",
+   "es": "Señales y niveles",
+   "pt": "Sinais e níveis",
+   "de": "Signale & Levels"
+  },
+  {
+   "en": "Slow trend filter",
+   "es": "Filtro de tendencia lento",
+   "pt": "Filtro de tendência lento",
+   "de": "Langsamer Trendfilter"
+  },
+  {
+   "en": "Supply and demand",
+   "es": "Oferta y demanda",
+   "pt": "Oferta e demanda",
+   "de": "Angebot und Nachfrage"
+  },
+  {
+   "en": "Support / Resistance",
+   "es": "Soporte / Resistencia",
+   "pt": "Suporte / Resistência",
+   "de": "Unterstützung / Widerstand"
+  },
+  {
+   "en": "Swing with HTF structure",
+   "es": "Swing con estructura de temporalidad mayor",
+   "pt": "Swing com estrutura de timeframe maior",
+   "de": "Swing mit Struktur des höheren Zeitrahmens"
+  },
+  {
+   "en": "Three clicks: A, B, C",
+   "es": "Tres clics: A, B, C",
+   "pt": "Três cliques: A, B, C",
+   "de": "Drei Klicks: A, B, C"
+  },
+  {
+   "en": "Trend pullback",
+   "es": "Pullback en tendencia",
+   "pt": "Pullback na tendência",
+   "de": "Trend-Pullback"
+  },
+  {
+   "en": "Volume per candle",
+   "es": "Volumen por vela",
+   "pt": "Volume por vela",
+   "de": "Volumen pro Kerze"
+  },
+  {
+   "en": "VWAP reversion",
+   "es": "Reversión al VWAP",
+   "pt": "Reversão ao VWAP",
+   "de": "Rückkehr zum VWAP"
+  },
+  {
+   "en": "Williams %R - overbought / oversold",
+   "es": "Williams %R - sobrecompra / sobreventa",
+   "pt": "Williams %R - sobrecompra / sobrevenda",
+   "de": "Williams %R - überkauft / überverkauft"
+  },
+  {
+   "en": "Text size",
+   "es": "Tamaño del texto",
+   "pt": "Tamanho do texto",
+   "de": "Textgröße"
+  },
+  {
+   "en": "1m ago",
+   "es": "hace 1 min",
+   "pt": "há 1 min",
+   "de": "vor 1 Min."
+  },
+  {
+   "en": "3m ago",
+   "es": "hace 3 min",
+   "pt": "há 3 min",
+   "de": "vor 3 Min."
+  },
+  {
+   "en": "4m ago",
+   "es": "hace 4 min",
+   "pt": "há 4 min",
+   "de": "vor 4 Min."
+  },
+  {
+   "en": "5m ago",
+   "es": "hace 5 min",
+   "pt": "há 5 min",
+   "de": "vor 5 Min."
+  },
+  {
+   "en": "6m ago",
+   "es": "hace 6 min",
+   "pt": "há 6 min",
+   "de": "vor 6 Min."
+  },
+  {
+   "en": "7m ago",
+   "es": "hace 7 min",
+   "pt": "há 7 min",
+   "de": "vor 7 Min."
+  },
+  {
+   "en": "8m ago",
+   "es": "hace 8 min",
+   "pt": "há 8 min",
+   "de": "vor 8 Min."
+  },
+  {
+   "en": "38s ago",
+   "es": "hace 38 s",
+   "pt": "há 38 s",
+   "de": "vor 38 s"
+  },
+  {
+   "en": "39s ago",
+   "es": "hace 39 s",
+   "pt": "há 39 s",
+   "de": "vor 39 s"
+  },
+  {
+   "en": "40s ago",
+   "es": "hace 40 s",
+   "pt": "há 40 s",
+   "de": "vor 40 s"
+  },
+  {
+   "en": "41s ago",
+   "es": "hace 41 s",
+   "pt": "há 41 s",
+   "de": "vor 41 s"
+  },
+  {
+   "en": "42s ago",
+   "es": "hace 42 s",
+   "pt": "há 42 s",
+   "de": "vor 42 s"
+  },
+  {
+   "en": "43s ago",
+   "es": "hace 43 s",
+   "pt": "há 43 s",
+   "de": "vor 43 s"
+  },
+  {
+   "en": "44s ago",
+   "es": "hace 44 s",
+   "pt": "há 44 s",
+   "de": "vor 44 s"
+  },
+  {
+   "en": "45s ago",
+   "es": "hace 45 s",
+   "pt": "há 45 s",
+   "de": "vor 45 s"
+  },
+  {
+   "en": "46s ago",
+   "es": "hace 46 s",
+   "pt": "há 46 s",
+   "de": "vor 46 s"
+  },
+  {
+   "en": "47s ago",
+   "es": "hace 47 s",
+   "pt": "há 47 s",
+   "de": "vor 47 s"
+  },
+  {
+   "en": "48s ago",
+   "es": "hace 48 s",
+   "pt": "há 48 s",
+   "de": "vor 48 s"
+  },
+  {
+   "en": "49s ago",
+   "es": "hace 49 s",
+   "pt": "há 49 s",
+   "de": "vor 49 s"
+  },
+  {
+   "en": "50s ago",
+   "es": "hace 50 s",
+   "pt": "há 50 s",
+   "de": "vor 50 s"
+  },
+  {
+   "en": "51s ago",
+   "es": "hace 51 s",
+   "pt": "há 51 s",
+   "de": "vor 51 s"
+  },
+  {
+   "en": "52s ago",
+   "es": "hace 52 s",
+   "pt": "há 52 s",
+   "de": "vor 52 s"
+  },
+  {
+   "en": "53s ago",
+   "es": "hace 53 s",
+   "pt": "há 53 s",
+   "de": "vor 53 s"
+  },
+  {
+   "en": "54s ago",
+   "es": "hace 54 s",
+   "pt": "há 54 s",
+   "de": "vor 54 s"
+  },
+  {
+   "en": "55s ago",
+   "es": "hace 55 s",
+   "pt": "há 55 s",
+   "de": "vor 55 s"
+  },
+  {
+   "en": "56s ago",
+   "es": "hace 56 s",
+   "pt": "há 56 s",
+   "de": "vor 56 s"
+  },
+  {
+   "en": "57s ago",
+   "es": "hace 57 s",
+   "pt": "há 57 s",
+   "de": "vor 57 s"
+  },
+  {
+   "en": "58s ago",
+   "es": "hace 58 s",
+   "pt": "há 58 s",
+   "de": "vor 58 s"
+  },
+  {
+   "en": "59s ago",
+   "es": "hace 59 s",
+   "pt": "há 59 s",
+   "de": "vor 59 s"
+  },
+  {
+   "en": "BINANCE · 13h ago",
+   "es": "BINANCE · hace 13 h",
+   "pt": "BINANCE · há 13 h",
+   "de": "BINANCE · vor 13 Std."
+  },
+  {
+   "en": "fund +0.005%",
+   "es": "funding +0.005%",
+   "pt": "funding +0.005%",
+   "de": "Funding +0.005%"
+  },
+  {
+   "en": "fund +0.006%",
+   "es": "funding +0.006%",
+   "pt": "funding +0.006%",
+   "de": "Funding +0.006%"
+  },
+  {
+   "en": "fund +0.010%",
+   "es": "funding +0.010%",
+   "pt": "funding +0.010%",
+   "de": "Funding +0.010%"
+  },
+  {
+   "en": "fund +0.022%",
+   "es": "funding +0.022%",
+   "pt": "funding +0.022%",
+   "de": "Funding +0.022%"
+  },
+  {
+   "en": "fund +0.037%",
+   "es": "funding +0.037%",
+   "pt": "funding +0.037%",
+   "de": "Funding +0.037%"
+  },
+  {
+   "en": "fund 0.000%",
+   "es": "funding 0.000%",
+   "pt": "funding 0.000%",
+   "de": "Funding 0.000%"
+  },
+  {
+   "en": "Scan ticket - full details",
+   "es": "Escanea el ticket - detalles completos",
+   "pt": "Escaneie o ticket - detalhes completos",
+   "de": "Ticket scannen - alle Details"
+  },
+  {
+   "en": "/min · 5 liq",
+   "es": "/min · 5 liq.",
+   "pt": "/min · 5 liq.",
+   "de": "/Min. · 5 Liq."
+  },
+  {
+   "en": "/min · 6 liq",
+   "es": "/min · 6 liq.",
+   "pt": "/min · 6 liq.",
+   "de": "/Min. · 6 Liq."
+  },
+  {
+   "en": "24h volume",
+   "es": "Volumen 24h",
+   "pt": "Volume 24h",
+   "de": "24h-Volumen"
+  },
+  {
+   "en": "30.4% short",
+   "es": "30.4% en short",
+   "pt": "30.4% em short",
+   "de": "30.4% Short"
+  },
+  {
+   "en": "69.6% long",
+   "es": "69.6% en long",
+   "pt": "69.6% em long",
+   "de": "69.6% Long"
+  },
+  {
+   "en": "All-time high",
+   "es": "Máximo histórico",
+   "pt": "Máxima histórica",
+   "de": "Allzeithoch"
+  },
+  {
+   "en": "dated liquidation archive",
+   "es": "archivo de liquidaciones por fecha",
+   "pt": "arquivo de liquidações por data",
+   "de": "Liquidationsarchiv nach Datum"
+  },
+  {
+   "en": "Market cap",
+   "es": "Capitalización",
+   "pt": "Capitalização de mercado",
+   "de": "Marktkapitalisierung"
+  },
+  {
+   "en": "Market overview",
+   "es": "Resumen del mercado",
+   "pt": "Visão geral do mercado",
+   "de": "Marktüberblick"
+  },
+  {
+   "en": "Trader positioning · long vs short",
+   "es": "Posicionamiento de traders · long vs short",
+   "pt": "Posicionamento dos traders · long vs short",
+   "de": "Trader-Positionierung · Long vs. Short"
+  },
+  {
+   "en": "BingX Volume",
+   "es": "Volumen BingX",
+   "pt": "Volume BingX",
+   "de": "BingX-Volumen"
+  },
+  {
+   "en": "Daily BTC Call",
+   "es": "Predicción diaria de BTC",
+   "pt": "Palpite diário de BTC",
+   "de": "Täglicher BTC-Call"
+  },
+  {
+   "en": "Real money - $100 start + 52% of fees",
+   "es": "Dinero real - $100 de inicio + 52% de las comisiones",
+   "pt": "Dinheiro real - $100 de início + 52% das taxas",
+   "de": "Echtes Geld - $100 Start + 52% der Gebühren"
+  },
+  {
+   "en": "the most points from daily calls on where BTC closes - a closer call scores more, one call a day.",
+   "es": "la mayor cantidad de puntos en predicciones diarias sobre dónde cierra BTC - cuanto más cerca, más puntos; una predicción al día.",
+   "pt": "a maior pontuação em palpites diários sobre onde o BTC fecha - quanto mais perto, mais pontos; um palpite por dia.",
+   "de": "die meisten Punkte aus täglichen Calls darauf, wo BTC schließt - je näher, desto mehr Punkte, ein Call pro Tag."
+  },
+  {
+   "en": "the most REAL futures volume on a Bybit account opened through MarginPad; the pool is a rebate - a share of the affiliate commission the traders on the board generated this season.",
+   "es": "el mayor volumen REAL de futuros en una cuenta de Bybit abierta a través de MarginPad; la bolsa es un reembolso - una parte de la comisión de afiliado que generaron los traders de la tabla esta temporada.",
+   "pt": "o maior volume REAL de futuros em uma conta Bybit aberta pela MarginPad; o prêmio é um rebate - uma parte da comissão de afiliado gerada pelos traders da tabela nesta temporada.",
+   "de": "das meiste ECHTE Futures-Volumen auf einem über MarginPad eröffneten Bybit-Konto; der Pool ist ein Rebate - ein Anteil an der Affiliate-Provision, die die Trader auf dem Board in dieser Saison erzeugt haben."
+  },
+  {
+   "en": "the most REAL trading volume on a BingX account opened through MarginPad over a 28-day contest; $70 from MarginPad over ten places, and only accounts over $3,000 of volume are listed.",
+   "es": "el mayor volumen REAL de trading en una cuenta de BingX abierta a través de MarginPad durante un concurso de 28 días; $70 de MarginPad repartidos en diez puestos, y solo aparecen cuentas con más de $3,000 de volumen.",
+   "pt": "o maior volume REAL de trading em uma conta BingX aberta pela MarginPad em um concurso de 28 dias; $70 da MarginPad em dez posições, e só aparecem contas com mais de $3,000 de volume.",
+   "de": "das meiste ECHTE Trading-Volumen auf einem über MarginPad eröffneten BingX-Konto in einem 28-tägigen Wettbewerb; $70 von MarginPad über zehn Plätze, gelistet werden nur Konten mit mehr als $3,000 Volumen."
+  },
+  {
+   "en": "the most season profit in Demo Spot - buy and hold meme coins and majors with $10,000 of demo cash plus $100 a day; profit counts, the daily claim does not.",
+   "es": "la mayor ganancia de la temporada en Demo Spot - compra y mantén meme coins y majors con $10,000 de efectivo demo más $100 al día; cuenta la ganancia, no el reclamo diario.",
+   "pt": "o maior lucro da temporada no Demo Spot - compre e segure meme coins e majors com $10,000 em dinheiro demo mais $100 por dia; conta o lucro, não o resgate diário.",
+   "de": "der größte Saisongewinn in Demo Spot - kaufe und halte Meme-Coins und Majors mit $10,000 Demo-Geld plus $100 pro Tag; der Gewinn zählt, der tägliche Claim nicht."
+  },
+  {
+   "en": "/10 · Cheap",
+   "es": "/10 · Barato",
+   "pt": "/10 · Barato",
+   "de": "/10 · Günstig"
+  },
+  {
+   "en": "Aggregate crypto market sentiment.",
+   "es": "Sentimiento agregado del mercado cripto.",
+   "pt": "Sentimento agregado do mercado cripto.",
+   "de": "Aggregierte Stimmung am Kryptomarkt."
+  },
+  {
+   "en": "alts vs BTC · 90d",
+   "es": "alts vs BTC · 90 d",
+   "pt": "alts vs BTC · 90 d",
+   "de": "Alts vs. BTC · 90 T."
+  },
+  {
+   "en": "Blended risk",
+   "es": "Riesgo combinado",
+   "pt": "Risco combinado",
+   "de": "Kombiniertes Risiko"
+  },
+  {
+   "en": "Bottom zone",
+   "es": "Zona de suelo",
+   "pt": "Zona de fundo",
+   "de": "Bodenzone"
+  },
+  {
+   "en": "BTC ref",
+   "es": "Ref. BTC",
+   "pt": "Ref. BTC",
+   "de": "BTC-Ref."
+  },
+  {
+   "en": "crowd sentiment 0–100",
+   "es": "sentimiento del mercado 0–100",
+   "pt": "sentimento do mercado 0–100",
+   "de": "Marktstimmung 0–100"
+  },
+  {
+   "en": "cycle-bottom line",
+   "es": "línea de suelo del ciclo",
+   "pt": "linha de fundo do ciclo",
+   "de": "Zyklusboden-Linie"
+  },
+  {
+   "en": "DCA / value index",
+   "es": "Índice DCA / de valor",
+   "pt": "Índice DCA / de valor",
+   "de": "DCA-/Wertindex"
+  },
+  {
+   "en": "log-regression zone",
+   "es": "zona de regresión logarítmica",
+   "pt": "zona de regressão logarítmica",
+   "de": "Log-Regressionszone"
+  },
+  {
+   "en": "long-term floor/ceiling",
+   "es": "suelo/techo de largo plazo",
+   "pt": "piso/teto de longo prazo",
+   "de": "langfristiger Boden/Deckel"
+  },
+  {
+   "en": "miner revenue vs 1Y",
+   "es": "ingresos mineros vs 1 año",
+   "pt": "receita dos mineradores vs 1 ano",
+   "de": "Miner-Erlöse vs. 1 Jahr"
+  },
+  {
+   "en": "Models live",
+   "es": "Modelos en vivo",
+   "pt": "Modelos ao vivo",
+   "de": "Modelle live"
+  },
+  {
+   "en": "Near bottom line",
+   "es": "Cerca de la línea de suelo",
+   "pt": "Perto da linha de fundo",
+   "de": "Nahe der Bodenlinie"
+  },
+  {
+   "en": "Rainbow band",
+   "es": "Banda arcoíris",
+   "pt": "Faixa do arco-íris",
+   "de": "Regenbogenband"
+  },
+  {
+   "en": "Hyperliquid - perps",
+   "es": "Hyperliquid - perpetuos",
+   "pt": "Hyperliquid - perpétuos",
+   "de": "Hyperliquid - Perps"
+  },
+  {
+   "en": "max lev",
+   "es": "apal. máx.",
+   "pt": "alav. máx.",
+   "de": "max. Hebel"
+  },
+  {
+   "en": "Cycle indicators",
+   "es": "Indicadores de ciclo",
+   "pt": "Indicadores de ciclo",
+   "de": "Zyklusindikatoren"
+  },
+  {
+   "en": "Live market screener",
+   "es": "Screener de mercado en vivo",
+   "pt": "Screener de mercado ao vivo",
+   "de": "Live-Markt-Screener"
+  },
+  {
+   "en": "Now",
+   "es": "Ahora",
+   "pt": "Agora",
+   "de": "Jetzt"
+  },
+  {
+   "en": ", ETH at",
+   "es": ", ETH en",
+   "pt": ", ETH em",
+   "de": ", ETH bei"
+  },
+  {
+   "en": ". Holding $10,000 of that side costs about",
+   "es": ". Mantener $10,000 de ese lado cuesta unos",
+   "pt": ". Manter $10,000 desse lado custa cerca de",
+   "de": ". $10,000 auf dieser Seite zu halten kostet etwa"
+  },
+  {
+   "en": ". This is the price your liquidation is measured against - not the last trade on one venue.",
+   "es": ". Este es el precio contra el que se mide tu liquidación - no la última operación en un solo exchange.",
+   "pt": ". Este é o preço usado para medir a sua liquidação - não o último negócio em uma única exchange.",
+   "de": ". An diesem Preis wird deine Liquidation gemessen - nicht am letzten Trade auf einer einzelnen Börse."
+  },
+  {
+   "en": "$35 a day",
+   "es": "$35 al día",
+   "pt": "$35 por dia",
+   "de": "$35 pro Tag"
+  },
+  {
+   "en": "12 of 60",
+   "es": "12 de 60",
+   "pt": "12 de 60",
+   "de": "12 von 60"
+  },
+  {
+   "en": "16 of 60",
+   "es": "16 de 60",
+   "pt": "16 de 60",
+   "de": "16 von 60"
+  },
+  {
+   "en": "8 of 60",
+   "es": "8 de 60",
+   "pt": "8 de 60",
+   "de": "8 von 60"
+  },
+  {
+   "en": "60 terms",
+   "es": "60 términos",
+   "pt": "60 termos",
+   "de": "60 Begriffe"
+  },
+  {
+   "en": "BTC funding / 8h",
+   "es": "Funding de BTC / 8h",
+   "pt": "Funding do BTC / 8h",
+   "de": "BTC-Funding / 8h"
+  },
+  {
+   "en": "BTC funding is",
+   "es": "El funding de BTC está en",
+   "pt": "O funding do BTC está em",
+   "de": "Das BTC-Funding liegt bei"
+  },
+  {
+   "en": "BTC has moved",
+   "es": "BTC se ha movido",
+   "pt": "O BTC se moveu",
+   "de": "BTC hat sich bewegt um"
+  },
+  {
+   "en": "BTC liquidated / 24h",
+   "es": "BTC liquidado / 24h",
+   "pt": "BTC liquidado / 24h",
+   "de": "BTC liquidiert / 24h"
+  },
+  {
+   "en": "BTC long / short",
+   "es": "Long / short de BTC",
+   "pt": "Long / short do BTC",
+   "de": "BTC Long / Short"
+  },
+  {
+   "en": "BTC mark price",
+   "es": "Precio mark de BTC",
+   "pt": "Preço de marcação do BTC",
+   "de": "BTC Mark Price"
+  },
+  {
+   "en": "BTC marks at",
+   "es": "BTC marca",
+   "pt": "O BTC marca",
+   "de": "BTC notiert bei"
+  },
+  {
+   "en": "BTC open interest",
+   "es": "Interés abierto de BTC",
+   "pt": "Interesse aberto do BTC",
+   "de": "BTC Open Interest"
+  },
+  {
+   "en": "in 24 hours - leverage is being added.",
+   "es": "en 24 horas - se está sumando apalancamiento.",
+   "pt": "em 24 horas - alavancagem está sendo adicionada.",
+   "de": "in 24 Stunden - es wird Hebel aufgebaut."
+  },
+  {
+   "en": "last 24 hours",
+   "es": "últimas 24 horas",
+   "pt": "últimas 24 horas",
+   "de": "letzte 24 Stunden"
+  },
+  {
+   "en": "link",
+   "es": "enlace",
+   "pt": "link",
+   "de": "Link"
+  },
+  {
+   "en": "longs are paying shorts",
+   "es": "los longs pagan a los shorts",
+   "pt": "os longs estão pagando os shorts",
+   "de": "Longs zahlen an Shorts"
+  },
+  {
+   "en": "Longs were force-sold out of",
+   "es": "Longs vendidos a la fuerza por",
+   "pt": "Longs vendidos à força em",
+   "de": "Zwangsverkauft wurden Longs im Wert von"
+  },
+  {
+   "en": "Bitcoin (BTC) notiert aktuell bei $75,622, minus 6.05% in den letzten 24 Stunden. Nach Marktkapitalisierung liegt der Coin auf Platz #1 mit $1.52 Billionen, bei $44.57 Milliarden Handelsvolumen über alle Märkte am vergangenen Tag. Die aggregierte Funding-Rate ist mit +0.0012% praktisch flach - weder Longs noch Shorts zahlen gerade eine nennenswerte Prämie. Das Open Interest über die großen Börsen beträgt $5.18 Milliarden und blieb über 24 Stunden weitgehend stabil - rund 0.3% der gesamten Marktkapitalisierung steckt in offenen Perp-Positionen. $284.8 Millionen an BTC-Positionen wurde in den letzten 24 Stunden liquidiert - überwiegend Longs ($261.0 Millionen gegenüber $23.8 Millionen bei Shorts), der jüngste Schmerz kam also auf dem Weg nach unten. Die Positionierung neigt zur Long-Seite: 69.6% der Konten sind long, 30.4% short. Auf Wochensicht liegt BTC 3.0% im Minus, über 30 Tage 10.0% im Minus. Der Preis liegt 40% unter dem Allzeithoch von $126,080 (aufgestellt 2025). The heaviest band of BTC long liquidations sits near $75,200 - roughly 0.6% below the current price - where about $43.5 Millionen of leveraged positions would be forced out. On the other side, the largest short-liquidation band is around $83,150, about 10.0% above spot, holding roughly $54.9 Millionen. Long and short liquidation liquidity around BTC are close to balanced right now, with no obvious magnet in either direction. These levels come from MarginPad’s own liquidation collector, which reads forced-close events across eight exchanges and models where open leverage is concentrated. They move as positions do, so treat them as a map of pressure rather than a forecast. Over the last 7 days our collector recorded $1.19 Milliarden of BTC positions being force-closed across 56,089 individual liquidations. The heaviest single day was 4 November at $447.1 Millionen, overwhelmingly shorts. Across those 7 days the damage split roughly 56/44 between longs and shorts, with neither side clearly on the wrong foot. You can see the day-by-day figures, including the biggest single liquidation and the busiest hour, in our",
+   "es": "Bitcoin (BTC) cotiza ahora en $75,622, un 6.05% abajo en las últimas 24 horas. Ocupa el puesto #1 por capitalización de mercado con $1.52 billones, y se negociaron $44.57 mil millones en todos los mercados en el último día. La tasa de funding agregada está prácticamente plana en +0.0012% - ni los longs ni los shorts pagan una prima relevante ahora mismo. El interés abierto en los principales exchanges suma $5.18 mil millones y se mantuvo estable durante 24 horas - cerca del 0.3% de toda la capitalización está en posiciones perp abiertas. Se liquidaron $284.8 millones en posiciones de BTC en las últimas 24 horas - sobre todo longs ($261.0 millones frente a $23.8 millones de shorts): el dolor reciente llegó en la caída. El posicionamiento se inclina hacia el lado long: 69.6% de las cuentas en long frente a 30.4% en short. En la última semana BTC baja un 3.0%, y en 30 días un 10.0%. El precio está un 40% por debajo de su máximo histórico de $126,080 (marcado en 2025). La franja más pesada de liquidaciones de longs en BTC está cerca de $75,200 - aproximadamente 0.6% por debajo del precio actual - donde unos $43.5 millones en posiciones apalancadas se verían forzados a cerrar. Del otro lado, la mayor franja de liquidación de shorts está en torno a $83,150, alrededor de 10.0% por encima del spot, con aproximadamente $54.9 millones. La liquidez de liquidación de longs y shorts en BTC está casi equilibrada ahora mismo, sin un imán claro en ninguna dirección. Estos niveles vienen del propio colector de liquidaciones de MarginPad, que lee cierres forzados en ocho exchanges y modela dónde se concentra el apalancamiento abierto. Se mueven con las posiciones, así que tómalos como un mapa de presión y no como un pronóstico. En los últimos 7 días nuestro colector registró $1.19 mil millones en posiciones de BTC cerradas a la fuerza, en 56,089 liquidaciones individuales. El día más pesado fue el 4 de noviembre, con $447.1 millones, en su mayoría shorts. En esos 7 días el daño se repartió aproximadamente 56/44 entre longs y shorts, sin que ningún lado estuviera claramente equivocado. Puedes ver las cifras día a día, incluida la mayor liquidación individual y la hora más activa, en nuestro",
+   "pt": "O Bitcoin (BTC) é negociado agora a $75,622, 6.05% abaixo nas últimas 24 horas. Ocupa a posição #1 por capitalização de mercado, com $1.52 trilhão, e $44.57 bilhões negociados em todos os mercados no último dia. A taxa de funding agregada está praticamente estável em +0.0012% - nem longs nem shorts pagam um prêmio relevante agora. O interesse aberto nas principais exchanges soma $5.18 bilhões e se manteve estável ao longo de 24 horas - cerca de 0.3% de toda a capitalização está em posições perp abertas. $284.8 milhões em posições de BTC foram liquidados nas últimas 24 horas - sobretudo longs ($261.0 milhões contra $23.8 milhões de shorts): a dor recente veio na queda. O posicionamento pende para o lado long: 69.6% das contas em long contra 30.4% em short. Na última semana o BTC está 3.0% abaixo, e em 30 dias 10.0% abaixo. O preço está 40% abaixo da máxima histórica de $126,080 (registrada em 2025). A faixa mais pesada de liquidações de longs em BTC está perto de $75,200 - cerca de 0.6% abaixo do preço atual - onde aproximadamente $43.5 milhões em posições alavancadas seriam forçados a fechar. Do outro lado, a maior faixa de liquidação de shorts fica em torno de $83,150, cerca de 10.0% acima do spot, com aproximadamente $54.9 milhões. A liquidez de liquidação de longs e shorts em BTC está quase equilibrada agora, sem um ímã claro em nenhuma direção. Esses níveis vêm do coletor de liquidações da própria MarginPad, que lê eventos de fechamento forçado em oito exchanges e modela onde a alavancagem aberta está concentrada. Eles se movem junto com as posições, então trate-os como um mapa de pressão, não como uma previsão. Nos últimos 7 dias nosso coletor registrou $1.19 bilhão em posições de BTC fechadas à força, em 56,089 liquidações individuais. O dia mais pesado foi 4 de novembro, com $447.1 milhões, majoritariamente shorts. Nesses 7 dias o prejuízo se dividiu em cerca de 56/44 entre longs e shorts, sem que nenhum lado estivesse claramente do lado errado. Você pode ver os números dia a dia, incluindo a maior liquidação individual e a hora mais movimentada, no nosso",
+   "de": "Bitcoin (BTC) notiert aktuell bei $75,622, minus 6.05% in den letzten 24 Stunden. Nach Marktkapitalisierung liegt der Coin auf Platz #1 mit $1.52 Billionen, bei $44.57 Milliarden Handelsvolumen über alle Märkte am vergangenen Tag. Die aggregierte Funding-Rate ist mit +0.0012% praktisch flach - weder Longs noch Shorts zahlen gerade eine nennenswerte Prämie. Das Open Interest über die großen Börsen beträgt $5.18 Milliarden und blieb über 24 Stunden weitgehend stabil - rund 0.3% der gesamten Marktkapitalisierung steckt in offenen Perp-Positionen. $284.8 Millionen an BTC-Positionen wurden in den letzten 24 Stunden liquidiert - überwiegend Longs ($261.0 Millionen gegenüber $23.8 Millionen bei Shorts), der jüngste Schmerz kam also auf dem Weg nach unten. Die Positionierung neigt zur Long-Seite: 69.6% der Konten sind long, 30.4% short. Auf Wochensicht liegt BTC 3.0% im Minus, über 30 Tage 10.0% im Minus. Der Preis liegt 40% unter dem Allzeithoch von $126,080 (aufgestellt 2025). Das schwerste Band an BTC-Long-Liquidationen liegt bei $75,200 - etwa 0.6% unter dem aktuellen Preis - wo rund $43.5 Millionen an gehebelten Positionen zwangsweise geschlossen würden. Auf der anderen Seite liegt das größte Short-Liquidationsband bei etwa $83,150, rund 10.0% über dem Spotpreis, mit etwa $54.9 Millionen. Long- und Short-Liquidationsliquidität rund um BTC ist gerade nahezu ausgeglichen, ohne klaren Magneten in eine Richtung. Diese Levels stammen aus MarginPads eigenem Liquidations-Collector, der Zwangsschließungen an acht Börsen ausliest und modelliert, wo offener Hebel konzentriert ist. Sie bewegen sich mit den Positionen, also behandle sie als Druckkarte, nicht als Prognose. In den letzten 7 Tagen hat unser Collector $1.19 Milliarden an BTC-Positionen erfasst, die in 56,089 einzelnen Liquidationen zwangsweise geschlossen wurden. Der schwerste Einzeltag war der 4. November mit $447.1 Millionen, überwiegend Shorts. Über diese 7 Tage verteilte sich der Schaden etwa 56/44 zwischen Longs und Shorts, ohne dass eine Seite klar falsch lag. Die Zahlen Tag für Tag, inklusive der größten Einzelliquidation und der aktivsten Stunde, findest du in unserem"
+  },
+  {
+   "en": "Futuros Perpétuos de Bitcoin (BTC) é negociado agora a $75,622, 6.05% abaixo nas últimas 24 horas. Ocupa a posição #1 por capitalização de mercado, com $1.52 trilhões, e $44.57 bilhões negociados em todos os mercados no último dia. A taxa de funding agregada está praticamente estável em +0.0012% - nem comprados nem vendidos pagam um prémio relevante agora. O interesse em aberto nas principais bolsas soma $5.18 bilhões e manteve-se estável ao longo de 24 horas - cerca de 0.3% de toda a capitalização do coin está em posições perp abertas. $284.8 milhões em posições de BTC foram liquidados nas últimas 24 horas - sobretudo comprados ($261.0 milhões contra $23.8 milhões de vendidos): a dor recente veio na queda. O posicionamento pende para o lado comprado: 69.6% das contas compradas contra 30.4% vendidas. Na última semana BTC está 3.0% abaixo, e em 30 dias 10.0% abaixo. O preço está 40% abaixo do máximo histórico de $126,080 (registado em 2025). The heaviest band of BTC long liquidations sits near $75,200 - roughly 0.6% below the current price - where about $43.5 milhões of leveraged positions would be forced out. On the other side, the largest short-liquidation band is around $83,150, about 10.0% above spot, holding roughly $54.9 milhões. Long and short liquidation liquidity around BTC are close to balanced right now, with no obvious magnet in either direction. These levels come from MarginPad’s own liquidation collector, which reads forced-close events across eight exchanges and models where open leverage is concentrated. They move as positions do, so treat them as a map of pressure rather than a forecast. Over the last 7 days our collector recorded $1.19 bilhões of BTC positions being force-closed across 56,089 individual liquidations. The heaviest single day was 4 November at $447.1 milhões, overwhelmingly shorts. Across those 7 days the damage split roughly 56/44 between longs and shorts, with neither side clearly on the wrong foot. You can see the day-by-day figures, including the biggest single liquidation and the busiest hour, in our",
+   "es": "Bitcoin (BTC) cotiza ahora en $75,622, un 6.05% abajo en las últimas 24 horas. Ocupa el puesto #1 por capitalización de mercado con $1.52 billones, y se negociaron $44.57 mil millones en todos los mercados en el último día. La tasa de funding agregada está prácticamente plana en +0.0012% - ni los longs ni los shorts pagan una prima relevante ahora mismo. El interés abierto en los principales exchanges suma $5.18 mil millones y se mantuvo estable durante 24 horas - cerca del 0.3% de toda la capitalización está en posiciones perp abiertas. Se liquidaron $284.8 millones en posiciones de BTC en las últimas 24 horas - sobre todo longs ($261.0 millones frente a $23.8 millones de shorts): el dolor reciente llegó en la caída. El posicionamiento se inclina hacia el lado long: 69.6% de las cuentas en long frente a 30.4% en short. En la última semana BTC baja un 3.0%, y en 30 días un 10.0%. El precio está un 40% por debajo de su máximo histórico de $126,080 (marcado en 2025). La franja más pesada de liquidaciones de longs en BTC está cerca de $75,200 - aproximadamente 0.6% por debajo del precio actual - donde unos $43.5 millones en posiciones apalancadas se verían forzados a cerrar. Del otro lado, la mayor franja de liquidación de shorts está en torno a $83,150, alrededor de 10.0% por encima del spot, con aproximadamente $54.9 millones. La liquidez de liquidación de longs y shorts en BTC está casi equilibrada ahora mismo, sin un imán claro en ninguna dirección. Estos niveles vienen del propio colector de liquidaciones de MarginPad, que lee cierres forzados en ocho exchanges y modela dónde se concentra el apalancamiento abierto. Se mueven con las posiciones, así que tómalos como un mapa de presión y no como un pronóstico. En los últimos 7 días nuestro colector registró $1.19 mil millones en posiciones de BTC cerradas a la fuerza, en 56,089 liquidaciones individuales. El día más pesado fue el 4 de noviembre, con $447.1 millones, en su mayoría shorts. En esos 7 días el daño se repartió aproximadamente 56/44 entre longs y shorts, sin que ningún lado estuviera claramente equivocado. Puedes ver las cifras día a día, incluida la mayor liquidación individual y la hora más activa, en nuestro",
+   "pt": "O Bitcoin (BTC) é negociado agora a $75,622, 6.05% abaixo nas últimas 24 horas. Ocupa a posição #1 por capitalização de mercado, com $1.52 trilhão, e $44.57 bilhões negociados em todos os mercados no último dia. A taxa de funding agregada está praticamente estável em +0.0012% - nem longs nem shorts pagam um prêmio relevante agora. O interesse aberto nas principais exchanges soma $5.18 bilhões e se manteve estável ao longo de 24 horas - cerca de 0.3% de toda a capitalização está em posições perp abertas. $284.8 milhões em posições de BTC foram liquidados nas últimas 24 horas - sobretudo longs ($261.0 milhões contra $23.8 milhões de shorts): a dor recente veio na queda. O posicionamento pende para o lado long: 69.6% das contas em long contra 30.4% em short. Na última semana o BTC está 3.0% abaixo, e em 30 dias 10.0% abaixo. O preço está 40% abaixo da máxima histórica de $126,080 (registrada em 2025). A faixa mais pesada de liquidações de longs em BTC está perto de $75,200 - cerca de 0.6% abaixo do preço atual - onde aproximadamente $43.5 milhões em posições alavancadas seriam forçados a fechar. Do outro lado, a maior faixa de liquidação de shorts fica em torno de $83,150, cerca de 10.0% acima do spot, com aproximadamente $54.9 milhões. A liquidez de liquidação de longs e shorts em BTC está quase equilibrada agora, sem um ímã claro em nenhuma direção. Esses níveis vêm do coletor de liquidações da própria MarginPad, que lê eventos de fechamento forçado em oito exchanges e modela onde a alavancagem aberta está concentrada. Eles se movem junto com as posições, então trate-os como um mapa de pressão, não como uma previsão. Nos últimos 7 dias nosso coletor registrou $1.19 bilhão em posições de BTC fechadas à força, em 56,089 liquidações individuais. O dia mais pesado foi 4 de novembro, com $447.1 milhões, majoritariamente shorts. Nesses 7 dias o prejuízo se dividiu em cerca de 56/44 entre longs e shorts, sem que nenhum lado estivesse claramente do lado errado. Você pode ver os números dia a dia, incluindo a maior liquidação individual e a hora mais movimentada, no nosso",
+   "de": "Bitcoin (BTC) notiert aktuell bei $75,622, minus 6.05% in den letzten 24 Stunden. Nach Marktkapitalisierung liegt der Coin auf Platz #1 mit $1.52 Billionen, bei $44.57 Milliarden Handelsvolumen über alle Märkte am vergangenen Tag. Die aggregierte Funding-Rate ist mit +0.0012% praktisch flach - weder Longs noch Shorts zahlen gerade eine nennenswerte Prämie. Das Open Interest über die großen Börsen beträgt $5.18 Milliarden und blieb über 24 Stunden weitgehend stabil - rund 0.3% der gesamten Marktkapitalisierung steckt in offenen Perp-Positionen. $284.8 Millionen an BTC-Positionen wurden in den letzten 24 Stunden liquidiert - überwiegend Longs ($261.0 Millionen gegenüber $23.8 Millionen bei Shorts), der jüngste Schmerz kam also auf dem Weg nach unten. Die Positionierung neigt zur Long-Seite: 69.6% der Konten sind long, 30.4% short. Auf Wochensicht liegt BTC 3.0% im Minus, über 30 Tage 10.0% im Minus. Der Preis liegt 40% unter dem Allzeithoch von $126,080 (aufgestellt 2025). Das schwerste Band an BTC-Long-Liquidationen liegt bei $75,200 - etwa 0.6% unter dem aktuellen Preis - wo rund $43.5 Millionen an gehebelten Positionen zwangsweise geschlossen würden. Auf der anderen Seite liegt das größte Short-Liquidationsband bei etwa $83,150, rund 10.0% über dem Spotpreis, mit etwa $54.9 Millionen. Long- und Short-Liquidationsliquidität rund um BTC ist gerade nahezu ausgeglichen, ohne klaren Magneten in eine Richtung. Diese Levels stammen aus MarginPads eigenem Liquidations-Collector, der Zwangsschließungen an acht Börsen ausliest und modelliert, wo offener Hebel konzentriert ist. Sie bewegen sich mit den Positionen, also behandle sie als Druckkarte, nicht als Prognose. In den letzten 7 Tagen hat unser Collector $1.19 Milliarden an BTC-Positionen erfasst, die in 56,089 einzelnen Liquidationen zwangsweise geschlossen wurden. Der schwerste Einzeltag war der 4. November mit $447.1 Millionen, überwiegend Shorts. Über diese 7 Tage verteilte sich der Schaden etwa 56/44 zwischen Longs und Shorts, ohne dass eine Seite klar falsch lag. Die Zahlen Tag für Tag, inklusive der größten Einzelliquidation und der aktivsten Stunde, findest du in unserem"
+  }
+ ],
+ "patterns": [
+  {
+   "re": "^Whale ([\\d.]+%) · Support break ([\\d.]+%) · Deleveraging ([\\d.]+%)$",
+   "sample": "Whale 35% · Support break 35% · Deleveraging 30%",
+   "es": "Ballena {1} · Ruptura de soporte {2} · Desapalancamiento {3}",
+   "pt": "Baleia {1} · Rompimento de suporte {2} · Desalavancagem {3}",
+   "de": "Wal {1} · Unterstützungsbruch {2} · Deleveraging {3}"
+  },
+  {
+   "re": "^(\\d+) online$",
+   "sample": "9 online",
+   "es": "{1} en línea",
+   "pt": "{1} online",
+   "de": "{1} online"
+  },
+  {
+   "re": "^Simple (\\d+)-bar average$",
+   "sample": "Simple 20-bar average",
+   "es": "Media simple de {1} barras",
+   "pt": "Média simples de {1} barras",
+   "de": "Einfacher Durchschnitt über {1} Kerzen"
+  },
+  {
+   "re": "^(.+?) liquidation map$",
+   "sample": "BTC liquidation map",
+   "es": "Mapa de liquidaciones de {1}",
+   "pt": "Mapa de liquidações de {1}",
+   "de": "{1}-Liquidationskarte"
+  },
+  {
+   "re": "^(\\d\\d:\\d\\d) UTC · (\\d+) liq · longs ([$\\d.,]+[KMB]?) · shorts ([$\\d.,]+[KMB]?)$",
+   "sample": "00:00 UTC · 3297 liq · longs $1.9M · shorts $9.2M",
+   "es": "{1} UTC · {2} liq. · longs {3} · shorts {4}",
+   "pt": "{1} UTC · {2} liq. · longs {3} · shorts {4}",
+   "de": "{1} UTC · {2} Liq. · Longs {3} · Shorts {4}"
+  },
+  {
+   "re": "^([\\d.]+%) · ([$\\d.,]+[KMB]?) Shorts rekt$",
+   "sample": "10% · $94.7M Shorts rekt",
+   "es": "{1} · {2} en shorts liquidados",
+   "pt": "{1} · {2} em shorts liquidados",
+   "de": "{1} · {2} Shorts liquidiert"
+  },
+  {
+   "re": "^([\\d.]+%) Shorts rekt$",
+   "sample": "10% Shorts rekt",
+   "es": "{1} shorts liquidados",
+   "pt": "{1} shorts liquidados",
+   "de": "{1} Shorts liquidiert"
+  },
+  {
+   "re": "^Longs rekt ([\\d.]+%)$",
+   "sample": "Longs rekt 90%",
+   "es": "Longs liquidados {1}",
+   "pt": "Longs liquidados {1}",
+   "de": "Longs liquidiert {1}"
+  },
+  {
+   "re": "^Longs rekt ([\\d.]+%) · ([$\\d.,]+[KMB]?)$",
+   "sample": "Longs rekt 90% · $879.5M",
+   "es": "Longs liquidados {1} · {2}",
+   "pt": "Longs liquidados {1} · {2}",
+   "de": "Longs liquidiert {1} · {2}"
+  },
+  {
+   "re": "^Across the exchanges MarginPad streams, (\\$[\\d.,]+ \\S+) in leveraged positions has been liquidated over the past 24 hours - (.+?), over ([\\d.,]+) individual liquidations\\. Hardest hit right now: (.+?)\\. The single largest liquidation in that window was (\\$[\\d.,]+ \\S+) on (\\S+) at (\\S+) \\(a (long|short) position\\)\\. By venue: (.+?)\\. Longs are absorbing the damage, which is what a market grinding DOWN through liquidation levels looks like\\.$",
+   "sample": "Across the exchanges MarginPad streams, $986.3 millones in leveraged positions has been liquidated over the past 24 hours - $890.8 millones de longs y $95.6 millones de shorts, over 63,540 individual liquidations. Hardest hit right now: BTC ($282.5 millones), ETH ($180.6 millones), SNDK ($48.4 millones), SOXL ($46.1 millones). The single largest liquidation in that window was $10.9 millones on ETH at BINANCE (a long position). By venue: Binance $510.3 millones, Hyperliquid $160.7 millones, Okx $126.5 millones. Longs are absorbing the damage, which is what a market grinding DOWN through liquidation levels looks like.",
+   "es": "En los exchanges que MarginPad sigue en vivo se liquidaron {1} en posiciones apalancadas en las últimas 24 horas - {2}, en {3} liquidaciones individuales. Los más golpeados ahora mismo: {4}. La mayor liquidación individual en ese periodo fue de {5} en {6} en {7} (una posición {8}). Por exchange: {9}. Los longs están absorbiendo el daño, que es como se ve un mercado que baja atravesando niveles de liquidación.",
+   "pt": "Nas exchanges que a MarginPad acompanha ao vivo, {1} em posições alavancadas foram liquidados nas últimas 24 horas - {2}, em {3} liquidações individuais. Mais atingidos agora: {4}. A maior liquidação individual nesse período foi de {5} em {6} na {7} (uma posição {8}). Por exchange: {9}. Os longs estão absorvendo o prejuízo, que é como fica um mercado descendo através dos níveis de liquidação.",
+   "de": "An den Börsen, die MarginPad live erfasst, wurden in den letzten 24 Stunden {1} an gehebelten Positionen liquidiert - {2}, in {3} einzelnen Liquidationen. Am stärksten getroffen gerade: {4}. Die größte einzelne Liquidation in diesem Zeitraum waren {5} auf {6} bei {7} (eine {8}-Position). Nach Börse: {9}. Die Longs tragen den Schaden - so sieht ein Markt aus, der sich durch Liquidationslevels nach UNTEN schiebt."
+  },
+  {
+   "re": "^(\\S+) (LONG|SHORT) liquidated @ (\\$[\\d.,]+)$",
+   "sample": "ETH LONG liquidated @ $2,243.86",
+   "es": "{1} {2} liquidado @ {3}",
+   "pt": "{1} {2} liquidado @ {3}",
+   "de": "{1} {2} liquidiert @ {3}"
+  },
+  {
+   "re": "^LIVE LIQUIDATIONS · UPDATED (.+?) UTC$",
+   "sample": "LIVE LIQUIDATIONS · UPDATED 2026-11-06 05:23 UTC",
+   "es": "LIQUIDACIONES EN VIVO · ACTUALIZADO {1} UTC",
+   "pt": "LIQUIDAÇÕES AO VIVO · ATUALIZADO {1} UTC",
+   "de": "LIVE-LIQUIDATIONEN · AKTUALISIERT {1} UTC"
+  },
+  {
+   "re": "^LIVE FNG DATA · UPDATED (.+?) UTC$",
+   "sample": "LIVE FNG DATA · UPDATED 2026-11-06 05:38 UTC",
+   "es": "DATOS FNG EN VIVO · ACTUALIZADO {1} UTC",
+   "pt": "DADOS FNG AO VIVO · ATUALIZADO {1} UTC",
+   "de": "LIVE-FNG-DATEN · AKTUALISIERT {1} UTC"
+  },
+  {
+   "re": "^(\\d+) liq/min · (\\$[\\d.,]+[KMB]?)/min$",
+   "sample": "5 liq/min · $37K/min",
+   "es": "{1} liq./min · {2}/min",
+   "pt": "{1} liq./min · {2}/min",
+   "de": "{1} Liq./Min. · {2}/Min."
+  },
+  {
+   "re": "^Rank #(\\d+)$",
+   "sample": "Rank #1",
+   "es": "Puesto #{1}",
+   "pt": "Posição #{1}",
+   "de": "Rang #{1}"
+  },
+  {
+   "re": "^in live prize pools across (\\d+) boards$",
+   "sample": "in live prize pools across 10 boards",
+   "es": "en bolsas de premios en vivo en {1} tablas",
+   "pt": "em prêmios ao vivo em {1} tabelas",
+   "de": "in Live-Preispools über {1} Boards"
+  },
+  {
+   "re": "^Updated (\\d+ \\S+) · refreshes daily$",
+   "sample": "Updated 6 Nov · refreshes daily",
+   "es": "Actualizado {1} · se renueva a diario",
+   "pt": "Atualizado {1} · atualiza diariamente",
+   "de": "Aktualisiert {1} · täglich neu"
+  },
+  {
+   "re": "^- (.+?)\\. The middle, where it says least\\.$",
+   "sample": "- Fear. The middle, where it says least.",
+   "es": "- {1}. La zona media, donde menos dice.",
+   "pt": "- {1}. O meio, onde ele diz menos.",
+   "de": "- {1}. Die Mitte, wo er am wenigsten aussagt."
+  },
+  {
+   "re": "^\\. At (\\d+)x, a move that size against you is ([\\d.]+%) of your margin - the whole of it\\.$",
+   "sample": ". At 20x, a move that size against you is 121% of your margin - the whole of it.",
+   "es": ". Con {1}x, un movimiento así en tu contra es el {2} de tu margen - todo.",
+   "pt": ". Com {1}x, um movimento desse tamanho contra você é {2} da sua margem - ela inteira.",
+   "de": ". Bei {1}x ist eine solche Bewegung gegen dich {2} deiner Margin - die gesamte."
+  },
+  {
+   "re": "^(\\$[\\d.,]+[KMB]?) went on (\\S+) alone\\. A cascade is what it looks like when most of that lands in the same few minutes\\.$",
+   "sample": "$284.8M went on BTC alone. A cascade is what it looks like when most of that lands in the same few minutes.",
+   "es": "{1} se fueron solo en {2}. Una cascada es lo que pasa cuando la mayor parte cae en los mismos pocos minutos.",
+   "pt": "{1} foram só em {2}. Uma cascata é quando a maior parte disso cai nos mesmos poucos minutos.",
+   "de": "{1} entfielen allein auf {2}. Eine Kaskade ist, wenn das meiste davon in denselben wenigen Minuten passiert."
+  },
+  {
+   "re": "^([\\d.]+%) away · at ([\\d.]+%) maintenance margin$",
+   "sample": "4.50% away · at 0.5% maintenance margin",
+   "es": "a {1} · con {2} de margen de mantenimiento",
+   "pt": "a {1} · com {2} de margem de manutenção",
+   "de": "{1} entfernt · bei {2} Maintenance Margin"
+  },
+  {
+   "re": "^([\\d.]+%) of (\\S+) accounts are (long|short)$",
+   "sample": "69.6% of BTC accounts are long",
+   "es": "el {1} de las cuentas de {2} están en {3}",
+   "pt": "{1} das contas de {2} estão em {3}",
+   "de": "{1} der {2}-Konten sind {3}"
+  },
+  {
+   "re": "^against ([\\d.]+%) (short|long) - a crowded side, and the crowded side is the one with something to liquidate\\.$",
+   "sample": "against 30.4% short - a crowded side, and the crowded side is the one with something to liquidate.",
+   "es": "frente a {1} en {2} - un lado saturado, y el lado saturado es el que tiene algo que liquidar.",
+   "pt": "contra {1} em {2} - um lado lotado, e o lado lotado é o que tem algo a liquidar.",
+   "de": "gegenüber {1} {2} - eine überfüllte Seite, und die überfüllte Seite ist die, bei der es etwas zu liquidieren gibt."
+  }
+ ],
+ "outside": [
+  "whale_alert_io",
+  "What Is TraderTraitor, the Group Behind the $6B Binance Hack?",
+  "World Liberty's WLFI Buyback Could Draw on Stablecoin Reserve Income",
+  "wublockchainenglish",
+  "XRP Price to $2? Analyst Reveals Critical Levels to Watch",
+  "Zcash Activates NU7, Taking 60% of Transaction Fees Out of Circulation",
+  "Zcash's NU7 Upgrade Set to Activate, Cutting Block Times to 25 Seconds",
+  "ZetaChain Proposal Would Halt L1 Dec. 9, Burn 55M ZETA in Solana Move",
+  "ZetaChain proposes L1 halt Dec 9 with 55M ZETA burn on Solana; deflationary event",
+  "ZetaChain shutting down its L1 blockchain Dec 9, migrating ZETA token to Solana; holders must bridge or lose access",
+  "ZetaChain Targets Dec. 9 to Switch Off Its Blockchain and Move ZETA to Solana",
+  "Williams %R",
+  "Williams %R (14)",
+  "binance",
+  "okx",
+  "bybit",
+  "gate",
+  "htx",
+  "hyperliquid",
+  "binance-coin",
+  "BTC · $282.5M",
+  "PERP · BINANCE",
+  "PERP · BYBIT",
+  "PERP · GATE",
+  "PERP · OKX",
+  "PERP · HTX",
+  "rekt",
+  "Bitcoin hoje - preço, funding e liquidações (Português)",
+  "Dólar cripto - cotizaciones y brecha (Español, Argentina)",
+  "Long/Short",
+  "© MarginPad ·",
+  "× 200W MA",
+  "× 2Y MA",
+  "× 350DMA",
+  "Pi Cycle Top",
+  "USDT-perp · 125x",
+  "on-chain",
+  "altcoins",
+  "copy trading",
+  "day trading",
+  "scalping",
+  "screener",
+  "shorts",
+  "swing trading",
+  "Stop",
+  "Long squeeze",
+  "Margin call"
+ ]
+}

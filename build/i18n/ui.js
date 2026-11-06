@@ -69,6 +69,9 @@ function extract() {
 }
 const tableOf = (name, dicts, strings, l) => { const t = {}, d = dicts[name] || {}; for (const k of Object.keys(d)) { const v = (strings[d[k]] || {})[l]; if (v) t[k] = v; } return t; };
 function pageDict(name, lang) { const dicts = read(path.join(DATA, 'dicts.json'), {}), strings = read(path.join(DATA, 'strings.json'), {}); return tableOf(name, dicts, strings, lang); }
+/* every pattern row with its gate: the longest literal run of the English, checked with indexOf before the regex runs */
+function gateOf(re) { const lit = String(re).replace(/\\[dDsSwW]/g, '\u0000').replace(/\\(.)/g, '$1').split(/[()\[\]{}*+?|^$.\u0000]/); return lit.reduce((a, x) => (x.length > a.length ? x : a), '').trim(); }
+function patRows(l) { let walk = []; try { walk = JSON.parse(fs.readFileSync(path.join(DATA, 'patterns-walk.json'), 'utf8')); } catch (e) {} return require('./patterns.js').concat(walk).filter((p) => p[l]).map((p) => [p.re, p[l], gateOf(p.re)]); }
 function build() {
   const dicts = read(path.join(DATA, 'dicts.json'), {}), strings = read(path.join(DATA, 'strings.json'), {});
   const bundles = new Set(); for (const f of fs.readdirSync(path.join(DIST, 'assets'))) { if (!/\.js$/.test(f) || /^ui-/.test(f)) continue; const t = fs.readFileSync(path.join(DIST, 'assets', f), 'utf8'); for (const m of t.matchAll(/var __esD_(\w+)\s*=/g)) bundles.add(m[1]); }
@@ -76,7 +79,7 @@ function build() {
     const core = {}, app = {};
     for (const b of bundles) (CORE.indexOf(b) >= 0 ? core : app)[b] = tableOf(b, dicts, strings, l);
     const rt = fs.readFileSync(path.join(R, 'build/i18n/dom-runtime.js.txt'), 'utf8'), byEn = (n) => { const t = {}; for (const en of Object.keys(dicts[n] || {})) { const v = (strings[en] || {})[l]; if (v && v !== en) t[en] = v; } return t; };
-    fs.writeFileSync(path.join(DIST, 'assets', 'ui-' + l + '.js'), 'window.__mpUI=' + JSON.stringify(core) + ';window.__mpDom=' + JSON.stringify(Object.assign(byEn('dom'), byEn('domapp'))) + ';window.__mpDomRe=' + JSON.stringify(require('./patterns.js').map((p) => [p.re, p[l]])) + ';\n' + rt);
+    fs.writeFileSync(path.join(DIST, 'assets', 'ui-' + l + '.js'), 'window.__mpUI=' + JSON.stringify(core) + ';window.__mpDom=' + JSON.stringify(Object.assign(byEn('dom'), byEn('domapp'))) + ';window.__mpDomRe=' + JSON.stringify(patRows(l)) + ';\n' + rt);
     fs.writeFileSync(path.join(DIST, 'assets', 'ui-' + l + '-app.js'), 'Object.assign(window.__mpUI=window.__mpUI||{},' + JSON.stringify(app) + ');\n');
     console.log(l, 'core', fs.statSync(path.join(DIST, 'assets', 'ui-' + l + '.js')).size, 'app', fs.statSync(path.join(DIST, 'assets', 'ui-' + l + '-app.js')).size);
   }

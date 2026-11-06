@@ -1,0 +1,1143 @@
+[
+ {
+  "re": "^· (\\d+) setups · (.+?) in (\\d+) (h|min|d)$",
+  "sample": "· 4 setups · US jobs report (NFP) in 8 h",
+  "es": "· {1} setups · {2} en {3} {4}",
+  "pt": "· {1} setups · {2} em {3} {4}",
+  "de": "· {1} Setups · {2} in {3} {4}"
+ },
+ {
+  "re": "^([\\d,]+) XP to Bronze$",
+  "sample": "500 XP to Bronze",
+  "es": "{1} XP para Bronce",
+  "pt": "{1} XP para Bronze",
+  "de": "{1} XP bis Bronze"
+ },
+ {
+  "re": "^([\\d,]+) XP to Silver$",
+  "sample": "1,500 XP to Silver",
+  "es": "{1} XP para Plata",
+  "pt": "{1} XP para Prata",
+  "de": "{1} XP bis Silber"
+ },
+ {
+  "re": "^([\\d,]+) XP to Gold$",
+  "sample": "4,000 XP to Gold",
+  "es": "{1} XP para Oro",
+  "pt": "{1} XP para Ouro",
+  "de": "{1} XP bis Gold"
+ },
+ {
+  "re": "^([\\d,]+) XP to Platinum$",
+  "sample": "8,000 XP to Platinum",
+  "es": "{1} XP para Platino",
+  "pt": "{1} XP para Platina",
+  "de": "{1} XP bis Platin"
+ },
+ {
+  "re": "^([\\d,]+) XP to Diamond$",
+  "sample": "8,000 XP to Diamond",
+  "es": "{1} XP para Diamante",
+  "pt": "{1} XP para Diamante",
+  "de": "{1} XP bis Diamant"
+ },
+ {
+  "re": "^([\\d,]+) XP to Master$",
+  "sample": "8,000 XP to Master",
+  "es": "{1} XP para Master",
+  "pt": "{1} XP para Master",
+  "de": "{1} XP bis Master"
+ },
+ {
+  "re": "^([\\d,]+) XP to Legendary$",
+  "sample": "8,000 XP to Legendary",
+  "es": "{1} XP para Legendario",
+  "pt": "{1} XP para Lendário",
+  "de": "{1} XP bis Legendär"
+ },
+ {
+  "re": "^Bronze · ([\\d,]+) XP to Silver$",
+  "sample": "Bronze · 1,500 XP to Silver",
+  "es": "Bronce · {1} XP para Plata",
+  "pt": "Bronze · {1} XP para Prata",
+  "de": "Bronze · {1} XP bis Silber"
+ },
+ {
+  "re": "^Silver · ([\\d,]+) XP to Gold$",
+  "sample": "Silver · 1,500 XP to Gold",
+  "es": "Plata · {1} XP para Oro",
+  "pt": "Prata · {1} XP para Ouro",
+  "de": "Silber · {1} XP bis Gold"
+ },
+ {
+  "re": "^Gold · ([\\d,]+) XP to Platinum$",
+  "sample": "Gold · 1,500 XP to Platinum",
+  "es": "Oro · {1} XP para Platino",
+  "pt": "Ouro · {1} XP para Platina",
+  "de": "Gold · {1} XP bis Platin"
+ },
+ {
+  "re": "^Platinum · ([\\d,]+) XP to Diamond$",
+  "sample": "Platinum · 1,500 XP to Diamond",
+  "es": "Platino · {1} XP para Diamante",
+  "pt": "Platina · {1} XP para Diamante",
+  "de": "Platin · {1} XP bis Diamant"
+ },
+ {
+  "re": "^Diamond · ([\\d,]+) XP to Master$",
+  "sample": "Diamond · 1,500 XP to Master",
+  "es": "Diamante · {1} XP para Master",
+  "pt": "Diamante · {1} XP para Master",
+  "de": "Diamant · {1} XP bis Master"
+ },
+ {
+  "re": "^Master · ([\\d,]+) XP to Legendary$",
+  "sample": "Master · 1,500 XP to Legendary",
+  "es": "Master · {1} XP para Legendario",
+  "pt": "Master · {1} XP para Lendário",
+  "de": "Master · {1} XP bis Legendär"
+ },
+ {
+  "re": "^(\\d+) courses, (\\d+) lessons · earn XP$",
+  "sample": "17 courses, 147 lessons · earn XP",
+  "es": "{1} cursos, {2} lecciones · gana XP",
+  "pt": "{1} cursos, {2} lições · ganhe XP",
+  "de": "{1} Kurse, {2} Lektionen · sammle XP"
+ },
+ {
+  "re": "^(\\d+) tested strategies$",
+  "sample": "66 tested strategies",
+  "es": "{1} estrategias probadas",
+  "pt": "{1} estratégias testadas",
+  "de": "{1} getestete Strategien"
+ },
+ {
+  "re": "^(\\d+) online$",
+  "sample": "8 online",
+  "es": "{1} en línea",
+  "pt": "{1} online",
+  "de": "{1} online"
+ },
+ {
+  "re": "^(\\+\\$[\\d.,]+) balance$",
+  "sample": "+$0.05 balance",
+  "es": "{1} de saldo",
+  "pt": "{1} de saldo",
+  "de": "{1} Guthaben"
+ },
+ {
+  "re": "^(\\+[\\d,]+) XP / trade$",
+  "sample": "+38 XP / trade",
+  "es": "{1} XP / operación",
+  "pt": "{1} XP / trade",
+  "de": "{1} XP / Trade"
+ },
+ {
+  "re": "^(\\d+) trades$",
+  "sample": "20 trades",
+  "es": "{1} operaciones",
+  "pt": "{1} trades",
+  "de": "{1} Trades"
+ },
+ {
+  "re": "^(\\d+) lessons$",
+  "sample": "5 lessons",
+  "es": "{1} lecciones",
+  "pt": "{1} lições",
+  "de": "{1} Lektionen"
+ },
+ {
+  "re": "^(.+?) won this duel$",
+  "sample": "Mazruz won this duel",
+  "es": "{1} ganó este duelo",
+  "pt": "{1} venceu este duelo",
+  "de": "{1} hat dieses Duell gewonnen"
+ },
+ {
+  "re": "^liquidated · (-\\$[\\d.,]+[kKMB]?)$",
+  "sample": "liquidated · -$100.0k",
+  "es": "liquidado · {1}",
+  "pt": "liquidado · {1}",
+  "de": "liquidiert · {1}"
+ },
+ {
+  "re": "^Brain ([+-]?\\d+) ([—·]) strong bullish lean$",
+  "sample": "Brain +62 · strong bullish lean",
+  "es": "Brain {1} {2} fuerte inclinación alcista",
+  "pt": "Brain {1} {2} forte viés de alta",
+  "de": "Brain {1} {2} stark bullische Tendenz"
+ },
+ {
+  "re": "^Brain ([+-]?\\d+) ([—·]) strong bearish lean$",
+  "sample": "Brain -62 · strong bearish lean",
+  "es": "Brain {1} {2} fuerte inclinación bajista",
+  "pt": "Brain {1} {2} forte viés de baixa",
+  "de": "Brain {1} {2} stark bärische Tendenz"
+ },
+ {
+  "re": "^BRAIN driven by: (.+?)$",
+  "sample": "BRAIN driven by: liq flow + funding",
+  "es": "BRAIN impulsado por: {1}",
+  "pt": "BRAIN movido por: {1}",
+  "de": "BRAIN getrieben von: {1}"
+ },
+ {
+  "re": "^driven by: (.+?)$",
+  "sample": "driven by: liq flow + funding",
+  "es": "impulsado por: {1}",
+  "pt": "movido por: {1}",
+  "de": "getrieben von: {1}"
+ },
+ {
+  "re": "^LIQUIDATIONS (\\d+h) ([$\\d.,]+[KMB]?) · biggest ([$\\d.,]+[KMB]?) · (\\d+) marked$",
+  "sample": "LIQUIDATIONS 24h $6.7M · biggest $600K · 24 marked",
+  "es": "LIQUIDACIONES {1} {2} · mayor {3} · {4} marcadas",
+  "pt": "LIQUIDAÇÕES {1} {2} · maior {3} · {4} marcadas",
+  "de": "LIQUIDATIONEN {1} {2} · größte {3} · {4} markiert"
+ },
+ {
+  "re": "^Memory: (\\d+) analogs · (\\d+%) up$",
+  "sample": "Memory: 25 analogs · 72% up",
+  "es": "Memory: {1} análogos · {2} al alza",
+  "pt": "Memory: {1} análogos · {2} de alta",
+  "de": "Memory: {1} Analogien · {2} steigend"
+ },
+ {
+  "re": "^Memory: (\\d+) analogs · (\\d+%) down$",
+  "sample": "Memory: 25 analogs · 72% down",
+  "es": "Memory: {1} análogos · {2} a la baja",
+  "pt": "Memory: {1} análogos · {2} de baixa",
+  "de": "Memory: {1} Analogien · {2} fallend"
+ },
+ {
+  "re": "^Memory: (\\d+) analogs · (\\d+%) up · proj ([+-][\\d.]+%) / (\\d+) bars$",
+  "sample": "Memory: 25 analogs · 72% up · proj +1.40% / 6 bars",
+  "es": "Memory: {1} análogos · {2} al alza · proy. {3} / {4} velas",
+  "pt": "Memory: {1} análogos · {2} de alta · proj. {3} / {4} candles",
+  "de": "Memory: {1} Analogien · {2} steigend · Proj. {3} / {4} Kerzen"
+ },
+ {
+  "re": "^Memory: (\\d+) analogs · (\\d+%) down · proj ([+-][\\d.]+%) / (\\d+) bars$",
+  "sample": "Memory: 25 analogs · 72% down · proj -1.40% / 6 bars",
+  "es": "Memory: {1} análogos · {2} a la baja · proy. {3} / {4} velas",
+  "pt": "Memory: {1} análogos · {2} de baixa · proj. {3} / {4} candles",
+  "de": "Memory: {1} Analogien · {2} fallend · Proj. {3} / {4} Kerzen"
+ },
+ {
+  "re": "^WHAT MOVED IT (\\d+d) · (\\d+) moves · (\\d+) news · (\\d+) cascade · (\\d+) unknown \\((\\d+%) explained\\)$",
+  "sample": "WHAT MOVED IT 30d · 62 moves · 10 news · 26 cascade · 31 unknown (50% explained)",
+  "es": "WHAT MOVED IT {1} · {2} movimientos · {3} noticias · {4} cascada · {5} desconocidos ({6} explicado)",
+  "pt": "WHAT MOVED IT {1} · {2} movimentos · {3} notícias · {4} cascata · {5} desconhecidos ({6} explicados)",
+  "de": "WHAT MOVED IT {1} · {2} Moves · {3} News · {4} Kaskade · {5} unbekannt ({6} erklärt)"
+ },
+ {
+  "re": "^(\\d+) active$",
+  "sample": "0 active",
+  "es": "{1} activas",
+  "pt": "{1} ativos",
+  "de": "{1} aktiv"
+ },
+ {
+  "re": "^(\\d+) pending$",
+  "sample": "0 pending",
+  "es": "{1} pendientes",
+  "pt": "{1} pendentes",
+  "de": "{1} ausstehend"
+ },
+ {
+  "re": "^(\\d+) watched$",
+  "sample": "0 watched",
+  "es": "{1} vigiladas",
+  "pt": "{1} monitoradas",
+  "de": "{1} beobachtet"
+ },
+ {
+  "re": "^([\\d,]+) API calls served$",
+  "sample": "6,105,344 API calls served",
+  "es": "{1} llamadas a la API atendidas",
+  "pt": "{1} chamadas de API atendidas",
+  "de": "{1} API-Aufrufe bedient"
+ },
+ {
+  "re": "^(\\d+)% of the total$",
+  "sample": "10% of the total",
+  "es": "{1}% del total",
+  "pt": "{1}% do total",
+  "de": "{1}% des Gesamtwerts"
+ },
+ {
+  "re": "^Highest ROE - won (\\d+) times? \\((.+)\\)$",
+  "sample": "Highest ROE - won 2 times (12 Oct 2026, 14 Sept 2026)",
+  "es": "ROE más alto: ganado {1} veces ({2})",
+  "pt": "Maior ROE: venceu {1} vezes ({2})",
+  "de": "Höchster ROE - {1}-mal gewonnen ({2})"
+ },
+ {
+  "re": "^Season (\\d+)$",
+  "sample": "Season 3",
+  "es": "Temporada {1}",
+  "pt": "Temporada {1}",
+  "de": "Season {1}"
+ },
+ {
+  "re": "^Closed \\((\\d+)\\)$",
+  "sample": "Closed (0)",
+  "es": "Cerradas ({1})",
+  "pt": "Fechadas ({1})",
+  "de": "Geschlossen ({1})"
+ },
+ {
+  "re": "^Orders \\((\\d+)\\)$",
+  "sample": "Orders (0)",
+  "es": "Órdenes ({1})",
+  "pt": "Ordens ({1})",
+  "de": "Orders ({1})"
+ },
+ {
+  "re": "^([\\d,]+) chains$",
+  "sample": "289 chains",
+  "es": "{1} cadenas",
+  "pt": "{1} redes",
+  "de": "{1} Chains"
+ },
+ {
+  "re": "^([\\d,]+) online$",
+  "sample": "10 online",
+  "es": "{1} en línea",
+  "pt": "{1} online",
+  "de": "{1} online"
+ },
+ {
+  "re": "^([\\d,]+) items · highest score first$",
+  "sample": "131 items · highest score first",
+  "es": "{1} elementos · mayor puntuación primero",
+  "pt": "{1} itens · maior pontuação primeiro",
+  "de": "{1} Einträge · höchster Score zuerst"
+ },
+ {
+  "re": "^([\\d,]+) items · newest first$",
+  "sample": "131 items · newest first",
+  "es": "{1} elementos · más recientes primero",
+  "pt": "{1} itens · mais recentes primeiro",
+  "de": "{1} Einträge · neueste zuerst"
+ },
+ {
+  "re": "^([\\d,]+) items match$",
+  "sample": "131 items match",
+  "es": "{1} elementos coinciden",
+  "pt": "{1} itens correspondem",
+  "de": "{1} Einträge passen"
+ },
+ {
+  "re": "^([\\d,]+) stories · highest score first$",
+  "sample": "99 stories · highest score first",
+  "es": "{1} historias · mayor puntuación primero",
+  "pt": "{1} histórias · maior pontuação primeiro",
+  "de": "{1} Storys · höchster Score zuerst"
+ },
+ {
+  "re": "^([\\d,]+) stories · newest first$",
+  "sample": "99 stories · newest first",
+  "es": "{1} historias · más recientes primero",
+  "pt": "{1} histórias · mais recentes primeiro",
+  "de": "{1} Storys · neueste zuerst"
+ },
+ {
+  "re": "^([\\d,]+) mentions today$",
+  "sample": "153 mentions today",
+  "es": "{1} menciones hoy",
+  "pt": "{1} menções hoje",
+  "de": "{1} Erwähnungen heute"
+ },
+ {
+  "re": "^([\\d,]+) more desks$",
+  "sample": "4 more desks",
+  "es": "{1} medios más",
+  "pt": "mais {1} veículos",
+  "de": "{1} weitere Quellen"
+ },
+ {
+  "re": "^([\\d,]+) scored ([\\d]+)\\+$",
+  "sample": "6 scored 40+",
+  "es": "{1} con puntuación {2}+",
+  "pt": "{1} com pontuação {2}+",
+  "de": "{1} mit Score {2}+"
+ },
+ {
+  "re": "^(.+?) \\+([\\d,]+) desks · ([\\dhm]+) before$",
+  "sample": "bitcoinmagazine +3 desks · 42m before",
+  "es": "{1} +{2} medios · {3} antes",
+  "pt": "{1} +{2} veículos · {3} antes",
+  "de": "{1} +{2} Quellen · {3} vorher"
+ },
+ {
+  "re": "^confidence ([\\d.]+%)$",
+  "sample": "confidence 38%",
+  "es": "confianza {1}",
+  "pt": "confiança {1}",
+  "de": "Konfidenz {1}"
+ },
+ {
+  "re": "^Events of this kind moved price ([\\d.]+)x the usual ([\\d]+)-minute bar \\(([\\d,]+) measured, direction right ([\\d.]+%), placebo ([\\d.]+)x\\)$",
+  "sample": "Events of this kind moved price 0.74x the usual 15-minute bar (60 measured, direction right 50%, placebo 0.9x)",
+  "es": "Los eventos de este tipo movieron el precio {1}x la vela habitual de {2} minutos ({3} medidos, dirección acertada {4}, placebo {5}x)",
+  "pt": "Eventos deste tipo moveram o preço {1}x o candle habitual de {2} minutos ({3} medidos, direção certa {4}, placebo {5}x)",
+  "de": "Ereignisse dieser Art bewegten den Kurs um das {1}-Fache der üblichen {2}-Minuten-Kerze ({3} gemessen, Richtung richtig {4}, Placebo {5}x)"
+ },
+ {
+  "re": "^Events of this kind moved price ([\\d.]+)x the usual ([\\d]+)-minute bar \\(([\\d,]+) measured, placebo ([\\d.]+)x\\)$",
+  "sample": "Events of this kind moved price 0.89x the usual 15-minute bar (46 measured, placebo 1.18x)",
+  "es": "Los eventos de este tipo movieron el precio {1}x la vela habitual de {2} minutos ({3} medidos, placebo {4}x)",
+  "pt": "Eventos deste tipo moveram o preço {1}x o candle habitual de {2} minutos ({3} medidos, placebo {4}x)",
+  "de": "Ereignisse dieser Art bewegten den Kurs um das {1}-Fache der üblichen {2}-Minuten-Kerze ({3} gemessen, Placebo {4}x)"
+ },
+ {
+  "re": "^Forced closes ([\\d.]+%)$",
+  "sample": "Forced closes 21%",
+  "es": "Cierres forzados {1}",
+  "pt": "Fechamentos forçados {1}",
+  "de": "Zwangsschließungen {1}"
+ },
+ {
+  "re": "^Long liquidations ([\\d.]+%)$",
+  "sample": "Long liquidations 28%",
+  "es": "Liquidaciones de longs {1}",
+  "pt": "Liquidações de longs {1}",
+  "de": "Long-Liquidationen {1}"
+ },
+ {
+  "re": "^New positioning ([\\d.]+%)$",
+  "sample": "New positioning 15%",
+  "es": "Nuevo posicionamiento {1}",
+  "pt": "Novo posicionamento {1}",
+  "de": "Neue Positionierung {1}"
+ },
+ {
+  "re": "^Resistance break ([\\d.]+%)$",
+  "sample": "Resistance break 21%",
+  "es": "Ruptura de resistencia {1}",
+  "pt": "Rompimento de resistência {1}",
+  "de": "Widerstandsbruch {1}"
+ },
+ {
+  "re": "^Short squeeze ([\\d.]+%)$",
+  "sample": "Short squeeze 23%",
+  "es": "Short squeeze {1}",
+  "pt": "Short squeeze {1}",
+  "de": "Short Squeeze {1}"
+ },
+ {
+  "re": "^Support break ([\\d.]+%)$",
+  "sample": "Support break 19%",
+  "es": "Ruptura de soporte {1}",
+  "pt": "Rompimento de suporte {1}",
+  "de": "Unterstützungsbruch {1}"
+ },
+ {
+  "re": "^US stocks ([\\d.]+%)$",
+  "sample": "US stocks 31%",
+  "es": "Acciones de EE. UU. {1}",
+  "pt": "Ações dos EUA {1}",
+  "de": "US-Aktien {1}"
+ },
+ {
+  "re": "^Volume surge ([\\d.]+%)$",
+  "sample": "Volume surge 23%",
+  "es": "Pico de volumen {1}",
+  "pt": "Pico de volume {1}",
+  "de": "Volumenanstieg {1}"
+ },
+ {
+  "re": "^Long liquidations ([\\d.]+%) · Support break ([\\d.]+%) · Volume surge ([\\d.]+%)$",
+  "sample": "Long liquidations 28% · Support break 19% · Volume surge 19%",
+  "es": "Liquidaciones de longs {1} · Ruptura de soporte {2} · Pico de volumen {3}",
+  "pt": "Liquidações de longs {1} · Rompimento de suporte {2} · Pico de volume {3}",
+  "de": "Long-Liquidationen {1} · Unterstützungsbruch {2} · Volumenanstieg {3}"
+ },
+ {
+  "re": "^Politics ([\\d.]+%) · Forced closes ([\\d.]+%) · Resistance break ([\\d.]+%)$",
+  "sample": "Politics 21% · Forced closes 21% · Resistance break 21%",
+  "es": "Política {1} · Cierres forzados {2} · Ruptura de resistencia {3}",
+  "pt": "Política {1} · Fechamentos forçados {2} · Rompimento de resistência {3}",
+  "de": "Politik {1} · Zwangsschließungen {2} · Widerstandsbruch {3}"
+ },
+ {
+  "re": "^Politics ([\\d.]+%) · Whale ([\\d.]+%) · US stocks ([\\d.]+%)$",
+  "sample": "Politics 35% · Whale 34% · US stocks 31%",
+  "es": "Política {1} · Ballena {2} · Acciones de EE. UU. {3}",
+  "pt": "Política {1} · Baleia {2} · Ações dos EUA {3}",
+  "de": "Politik {1} · Wal {2} · US-Aktien {3}"
+ },
+ {
+  "re": "^Short squeeze ([\\d.]+%) · Whale ([\\d.]+%) · Resistance break ([\\d.]+%)$",
+  "sample": "Short squeeze 23% · Whale 16% · Resistance break 16%",
+  "es": "Short squeeze {1} · Ballena {2} · Ruptura de resistencia {3}",
+  "pt": "Short squeeze {1} · Baleia {2} · Rompimento de resistência {3}",
+  "de": "Short Squeeze {1} · Wal {2} · Widerstandsbruch {3}"
+ },
+ {
+  "re": "^Short squeeze ([\\d.]+%) · Volume surge ([\\d.]+%) · Whale ([\\d.]+%)$",
+  "sample": "Short squeeze 32% · Volume surge 23% · Whale 22%",
+  "es": "Short squeeze {1} · Pico de volumen {2} · Ballena {3}",
+  "pt": "Short squeeze {1} · Pico de volume {2} · Baleia {3}",
+  "de": "Short Squeeze {1} · Volumenanstieg {2} · Wal {3}"
+ },
+ {
+  "re": "^(.+?) ([\\d.]+%) · Long liquidations ([\\d.]+%) · Deleveraging ([\\d.]+%)$",
+  "sample": "Thailand Bitget Block 19% · Long liquidations 18% · Deleveraging 14%",
+  "es": "{1} {2} · Liquidaciones de longs {3} · Desapalancamiento {4}",
+  "pt": "{1} {2} · Liquidações de longs {3} · Desalavancagem {4}",
+  "de": "{1} {2} · Long-Liquidationen {3} · Hebelabbau {4}"
+ },
+ {
+  "re": "^Whale ([\\d.]+%) · Resistance break ([\\d.]+%) · Volume surge ([\\d.]+%)$",
+  "sample": "Whale 34% · Resistance break 34% · Volume surge 33%",
+  "es": "Ballena {1} · Ruptura de resistencia {2} · Pico de volumen {3}",
+  "pt": "Baleia {1} · Rompimento de resistência {2} · Pico de volume {3}",
+  "de": "Wal {1} · Widerstandsbruch {2} · Volumenanstieg {3}"
+ },
+ {
+  "re": "^of (\\d+) polled$",
+  "sample": "of 58 polled",
+  "es": "de {1} consultados",
+  "pt": "de {1} consultados",
+  "de": "von {1} befragten"
+ },
+ {
+  "re": "^(.+?) \\+(\\d+) desks · (\\d+[smh]) after$",
+  "sample": "WatcherGuru +4 desks · 19m after",
+  "es": "{1} +{2} medios · {3} después",
+  "pt": "{1} +{2} veículos · {3} depois",
+  "de": "{1} +{2} Quellen · {3} danach"
+ },
+ {
+  "re": "^Whale ([\\d.]+%) · Support break ([\\d.]+%) · Deleveraging ([\\d.]+%)$",
+  "sample": "Whale 35% · Support break 35% · Deleveraging 30%",
+  "es": "Ballena {1} · Ruptura de soporte {2} · Desapalancamiento {3}",
+  "pt": "Baleia {1} · Rompimento de suporte {2} · Desalavancagem {3}",
+  "de": "Wal {1} · Unterstützungsbruch {2} · Deleveraging {3}"
+ },
+ {
+  "re": "^Simple (\\d+)-bar average$",
+  "sample": "Simple 20-bar average",
+  "es": "Media simple de {1} barras",
+  "pt": "Média simples de {1} barras",
+  "de": "Einfacher Durchschnitt über {1} Kerzen"
+ },
+ {
+  "re": "^(.+?) liquidation map$",
+  "sample": "BTC liquidation map",
+  "es": "Mapa de liquidaciones de {1}",
+  "pt": "Mapa de liquidações de {1}",
+  "de": "{1}-Liquidationskarte"
+ },
+ {
+  "re": "^(\\d\\d:\\d\\d) UTC · (\\d+) liq · longs ([$\\d.,]+[KMB]?) · shorts ([$\\d.,]+[KMB]?)$",
+  "sample": "00:00 UTC · 3297 liq · longs $1.9M · shorts $9.2M",
+  "es": "{1} UTC · {2} liq. · longs {3} · shorts {4}",
+  "pt": "{1} UTC · {2} liq. · longs {3} · shorts {4}",
+  "de": "{1} UTC · {2} Liq. · Longs {3} · Shorts {4}"
+ },
+ {
+  "re": "^([\\d.]+%) · ([$\\d.,]+[KMB]?) Shorts rekt$",
+  "sample": "10% · $94.7M Shorts rekt",
+  "es": "{1} · {2} en shorts liquidados",
+  "pt": "{1} · {2} em shorts liquidados",
+  "de": "{1} · {2} Shorts liquidiert"
+ },
+ {
+  "re": "^([\\d.]+%) Shorts rekt$",
+  "sample": "10% Shorts rekt",
+  "es": "{1} shorts liquidados",
+  "pt": "{1} shorts liquidados",
+  "de": "{1} Shorts liquidiert"
+ },
+ {
+  "re": "^Longs rekt ([\\d.]+%)$",
+  "sample": "Longs rekt 90%",
+  "es": "Longs liquidados {1}",
+  "pt": "Longs liquidados {1}",
+  "de": "Longs liquidiert {1}"
+ },
+ {
+  "re": "^Longs rekt ([\\d.]+%) · ([$\\d.,]+[KMB]?)$",
+  "sample": "Longs rekt 90% · $879.5M",
+  "es": "Longs liquidados {1} · {2}",
+  "pt": "Longs liquidados {1} · {2}",
+  "de": "Longs liquidiert {1} · {2}"
+ },
+ {
+  "re": "^Across the exchanges MarginPad streams, (\\$[\\d.,]+ \\S+) in leveraged positions has been liquidated over the past 24 hours - (.+?), over ([\\d.,]+) individual liquidations\\. Hardest hit right now: (.+?)\\. The single largest liquidation in that window was (\\$[\\d.,]+ \\S+) on (\\S+) at (\\S+) \\(a (long|short) position\\)\\. By venue: (.+?)\\. Longs are absorbing the damage, which is what a market grinding DOWN through liquidation levels looks like\\.$",
+  "sample": "Across the exchanges MarginPad streams, $986.3 millones in leveraged positions has been liquidated over the past 24 hours - $890.8 millones de longs y $95.6 millones de shorts, over 63,540 individual liquidations. Hardest hit right now: BTC ($282.5 millones), ETH ($180.6 millones), SNDK ($48.4 millones), SOXL ($46.1 millones). The single largest liquidation in that window was $10.9 millones on ETH at BINANCE (a long position). By venue: Binance $510.3 millones, Hyperliquid $160.7 millones, Okx $126.5 millones. Longs are absorbing the damage, which is what a market grinding DOWN through liquidation levels looks like.",
+  "es": "En los exchanges que MarginPad sigue en vivo se liquidaron {1} en posiciones apalancadas en las últimas 24 horas - {2}, en {3} liquidaciones individuales. Los más golpeados ahora mismo: {4}. La mayor liquidación individual en ese periodo fue de {5} en {6} en {7} (una posición {8}). Por exchange: {9}. Los longs están absorbiendo el daño, que es como se ve un mercado que baja atravesando niveles de liquidación.",
+  "pt": "Nas exchanges que a MarginPad acompanha ao vivo, {1} em posições alavancadas foram liquidados nas últimas 24 horas - {2}, em {3} liquidações individuais. Mais atingidos agora: {4}. A maior liquidação individual nesse período foi de {5} em {6} na {7} (uma posição {8}). Por exchange: {9}. Os longs estão absorvendo o prejuízo, que é como fica um mercado descendo através dos níveis de liquidação.",
+  "de": "An den Börsen, die MarginPad live erfasst, wurden in den letzten 24 Stunden {1} an gehebelten Positionen liquidiert - {2}, in {3} einzelnen Liquidationen. Am stärksten getroffen gerade: {4}. Die größte einzelne Liquidation in diesem Zeitraum waren {5} auf {6} bei {7} (eine {8}-Position). Nach Börse: {9}. Die Longs tragen den Schaden - so sieht ein Markt aus, der sich durch Liquidationslevels nach UNTEN schiebt."
+ },
+ {
+  "re": "^(\\S+) (LONG|SHORT) liquidated @ (\\$[\\d.,]+)$",
+  "sample": "ETH LONG liquidated @ $2,243.86",
+  "es": "{1} {2} liquidado @ {3}",
+  "pt": "{1} {2} liquidado @ {3}",
+  "de": "{1} {2} liquidiert @ {3}"
+ },
+ {
+  "re": "^LIVE LIQUIDATIONS · UPDATED (.+?) UTC$",
+  "sample": "LIVE LIQUIDATIONS · UPDATED 2026-11-06 05:23 UTC",
+  "es": "LIQUIDACIONES EN VIVO · ACTUALIZADO {1} UTC",
+  "pt": "LIQUIDAÇÕES AO VIVO · ATUALIZADO {1} UTC",
+  "de": "LIVE-LIQUIDATIONEN · AKTUALISIERT {1} UTC"
+ },
+ {
+  "re": "^LIVE FNG DATA · UPDATED (.+?) UTC$",
+  "sample": "LIVE FNG DATA · UPDATED 2026-11-06 05:38 UTC",
+  "es": "DATOS FNG EN VIVO · ACTUALIZADO {1} UTC",
+  "pt": "DADOS FNG AO VIVO · ATUALIZADO {1} UTC",
+  "de": "LIVE-FNG-DATEN · AKTUALISIERT {1} UTC"
+ },
+ {
+  "re": "^(\\d+) liq/min · (\\$[\\d.,]+[KMB]?)/min$",
+  "sample": "5 liq/min · $37K/min",
+  "es": "{1} liq./min · {2}/min",
+  "pt": "{1} liq./min · {2}/min",
+  "de": "{1} Liq./Min. · {2}/Min."
+ },
+ {
+  "re": "^Rank #(\\d+)$",
+  "sample": "Rank #1",
+  "es": "Puesto #{1}",
+  "pt": "Posição #{1}",
+  "de": "Rang #{1}"
+ },
+ {
+  "re": "^in live prize pools across (\\d+) boards$",
+  "sample": "in live prize pools across 10 boards",
+  "es": "en bolsas de premios en vivo en {1} tablas",
+  "pt": "em prêmios ao vivo em {1} tabelas",
+  "de": "in Live-Preispools über {1} Boards"
+ },
+ {
+  "re": "^Updated (\\d+ \\S+) · refreshes daily$",
+  "sample": "Updated 6 Nov · refreshes daily",
+  "es": "Actualizado {1} · se renueva a diario",
+  "pt": "Atualizado {1} · atualiza diariamente",
+  "de": "Aktualisiert {1} · täglich neu"
+ },
+ {
+  "re": "^- (.+?)\\. The middle, where it says least\\.$",
+  "sample": "- Fear. The middle, where it says least.",
+  "es": "- {1}. La zona media, donde menos dice.",
+  "pt": "- {1}. O meio, onde ele diz menos.",
+  "de": "- {1}. Die Mitte, wo er am wenigsten aussagt."
+ },
+ {
+  "re": "^\\. At (\\d+)x, a move that size against you is ([\\d.]+%) of your margin - the whole of it\\.$",
+  "sample": ". At 20x, a move that size against you is 121% of your margin - the whole of it.",
+  "es": ". Con {1}x, un movimiento así en tu contra es el {2} de tu margen - todo.",
+  "pt": ". Com {1}x, um movimento desse tamanho contra você é {2} da sua margem - ela inteira.",
+  "de": ". Bei {1}x ist eine solche Bewegung gegen dich {2} deiner Margin - die gesamte."
+ },
+ {
+  "re": "^(\\$[\\d.,]+[KMB]?) went on (\\S+) alone\\. A cascade is what it looks like when most of that lands in the same few minutes\\.$",
+  "sample": "$284.8M went on BTC alone. A cascade is what it looks like when most of that lands in the same few minutes.",
+  "es": "{1} se fueron solo en {2}. Una cascada es lo que pasa cuando la mayor parte cae en los mismos pocos minutos.",
+  "pt": "{1} foram só em {2}. Uma cascata é quando a maior parte disso cai nos mesmos poucos minutos.",
+  "de": "{1} entfielen allein auf {2}. Eine Kaskade ist, wenn das meiste davon in denselben wenigen Minuten passiert."
+ },
+ {
+  "re": "^([\\d.]+%) away · at ([\\d.]+%) maintenance margin$",
+  "sample": "4.50% away · at 0.5% maintenance margin",
+  "es": "a {1} · con {2} de margen de mantenimiento",
+  "pt": "a {1} · com {2} de margem de manutenção",
+  "de": "{1} entfernt · bei {2} Maintenance Margin"
+ },
+ {
+  "re": "^([\\d.]+%) of (\\S+) accounts are (long|short)$",
+  "sample": "69.6% of BTC accounts are long",
+  "es": "el {1} de las cuentas de {2} están en {3}",
+  "pt": "{1} das contas de {2} estão em {3}",
+  "de": "{1} der {2}-Konten sind {3}"
+ },
+ {
+  "re": "^against ([\\d.]+%) (short|long) - a crowded side, and the crowded side is the one with something to liquidate\\.$",
+  "sample": "against 30.4% short - a crowded side, and the crowded side is the one with something to liquidate.",
+  "es": "frente a {1} en {2} - un lado saturado, y el lado saturado es el que tiene algo que liquidar.",
+  "pt": "contra {1} em {2} - um lado lotado, e o lado lotado é o que tem algo a liquidar.",
+  "de": "gegenüber {1} {2} - eine überfüllte Seite, und die überfüllte Seite ist die, bei der es etwas zu liquidieren gibt."
+ },
+ {
+  "re": "^of (.+?) positions were closed by the exchange, not by their owner - (\\$[\\d.,]+[KMB]?) long and (\\$[\\d.,]+[KMB]?) short\\.$",
+  "sample": "of BTC positions were closed by the exchange, not by their owner - $261.0M long and $23.8M short.",
+  "es": "de posiciones en {1} fueron cerradas por el exchange, no por su dueño: {2} en long y {3} en short.",
+  "pt": "de posições em {1} foram fechadas pela exchange, não pelo dono - {2} em long e {3} em short.",
+  "de": "an {1}-Positionen wurden von der Börse geschlossen, nicht vom Besitzer - {2} Long und {3} Short."
+ },
+ {
+  "re": "^of open (.+?) positions,$",
+  "sample": "of open BTC positions,",
+  "es": "de posiciones abiertas en {1},",
+  "pt": "de posições abertas em {1},",
+  "de": "an offenen {1}-Positionen,"
+ },
+ {
+  "re": "^on (.+?) - more than the shorts lost, which is the shape of a squeeze down\\.$",
+  "sample": "on BTC - more than the shorts lost, which is the shape of a squeeze down.",
+  "es": "en {1}: más de lo que perdieron los shorts, la forma típica de un squeeze bajista.",
+  "pt": "em {1} - mais do que os shorts perderam, o formato típico de um squeeze de baixa.",
+  "de": "bei {1} - mehr als die Shorts verloren, das typische Bild eines Squeeze nach unten."
+ },
+ {
+  "re": "^on (.+?), against (\\$[\\d.,]+[KMB]?) on the long side\\.$",
+  "sample": "on BTC, against $261.0M on the long side.",
+  "es": "en {1}, frente a {2} del lado long.",
+  "pt": "em {1}, contra {2} do lado long.",
+  "de": "bei {1}, gegenüber {2} auf der Long-Seite."
+ },
+ {
+  "re": "^(\\d+[smh]|[\\d.]+%) buyers$",
+  "sample": "15s buyers",
+  "es": "{1} compradores",
+  "pt": "{1} compradores",
+  "de": "{1} Käufer"
+ },
+ {
+  "re": "^(\\d+[smh]|[\\d.]+%) sellers$",
+  "sample": "15s sellers",
+  "es": "{1} vendedores",
+  "pt": "{1} vendedores",
+  "de": "{1} Verkäufer"
+ },
+ {
+  "re": "^(\\d+) / (\\d+) pulled$",
+  "sample": "22 / 24 pulled",
+  "es": "{1} / {2} retirados",
+  "pt": "{1} / {2} retirados",
+  "de": "{1} / {2} zurückgezogen"
+ },
+ {
+  "re": "^([\\d,.]+) · ([+-]?[\\d.]+%) · standing (\\w+) · (.+)$",
+  "sample": "75,500 · -0.03% · standing 5m · Binance + Bybit + OKX + Bitget",
+  "es": "{1} · {2} · en pie hace {3} · {4}",
+  "pt": "{1} · {2} · de pé há {3} · {4}",
+  "de": "{1} · {2} · steht seit {3} · {4}"
+ },
+ {
+  "re": "^BUYERS ([\\d.]+) : 1$",
+  "sample": "BUYERS 1.0 : 1",
+  "es": "COMPRADORES {1} : 1",
+  "pt": "COMPRADORES {1} : 1",
+  "de": "KÄUFER {1} : 1"
+ },
+ {
+  "re": "^SELLERS ([\\d.]+) : 1$",
+  "sample": "SELLERS 1.5 : 1",
+  "es": "VENDEDORES {1} : 1",
+  "pt": "VENDEDORES {1} : 1",
+  "de": "VERKÄUFER {1} : 1"
+ },
+ {
+  "re": "^tightest spread ([\\d.]+) bps$",
+  "sample": "tightest spread 0.01 bps",
+  "es": "spread más ajustado {1} bps",
+  "pt": "spread mais apertado {1} bps",
+  "de": "engster Spread {1} bps"
+ },
+ {
+  "re": "^(Highest ROE|Green Days|Best Win Rate|Season XP|The Gold Room|Bybit Volume|BingX Volume|King of the Moon|Daily BTC Call|Meme Spot|Demo Spot) - won 1 time \\((.+)\\)$",
+  "sample": "Bybit Volume - won 1 time (28 Sept 2026)",
+  "es": "{1} - ganó 1 vez ({2})",
+  "pt": "{1} - venceu 1 vez ({2})",
+  "de": "{1} - 1-mal gewonnen ({2})"
+ },
+ {
+  "re": "^(Highest ROE|Green Days|Best Win Rate|Season XP|The Gold Room|Bybit Volume|BingX Volume|King of the Moon|Daily BTC Call|Meme Spot|Demo Spot) - won (\\d+) times \\((.+)\\)$",
+  "sample": "Highest ROE - won 3 times (3 Aug 2026, 13 Jul 2026, 6 Jul 2026)",
+  "es": "{1} - ganó {2} veces ({3})",
+  "pt": "{1} - venceu {2} vezes ({3})",
+  "de": "{1} - {2}-mal gewonnen ({3})"
+ },
+ {
+  "re": "^Squad · (.+)$",
+  "sample": "Squad · ONE",
+  "es": "Squad · {1}",
+  "pt": "Squad · {1}",
+  "de": "Squad · {1}"
+ },
+ {
+  "re": "^\\$([\\d.]+)M longs$",
+  "sample": "$41.1M longs",
+  "es": "${1}M en longs",
+  "pt": "${1}M em longs",
+  "de": "${1}M Longs"
+ },
+ {
+  "re": "^\\$([\\d.]+)K longs$",
+  "sample": "$959K longs",
+  "es": "${1}K en longs",
+  "pt": "${1}K em longs",
+  "de": "${1}K Longs"
+ },
+ {
+  "re": "^\\$([\\d.]+)M shorts$",
+  "sample": "$7.3M shorts",
+  "es": "${1}M en shorts",
+  "pt": "${1}M em shorts",
+  "de": "${1}M Shorts"
+ },
+ {
+  "re": "^\\$([\\d.]+)K shorts$",
+  "sample": "$41K shorts",
+  "es": "${1}K en shorts",
+  "pt": "${1}K em shorts",
+  "de": "${1}K Shorts"
+ },
+ {
+  "re": "^([\\d.]+)% · (\\d+)% longs$",
+  "sample": "0.7% · 97% longs",
+  "es": "{1}% · {2}% en longs",
+  "pt": "{1}% · {2}% em longs",
+  "de": "{1}% · {2}% Longs"
+ },
+ {
+  "re": "^(\\d+)% longs$",
+  "sample": "90% longs",
+  "es": "{1}% en longs",
+  "pt": "{1}% em longs",
+  "de": "{1}% Longs"
+ },
+ {
+  "re": "^(\\d+)% shorts$",
+  "sample": "10% shorts",
+  "es": "{1}% en shorts",
+  "pt": "{1}% em shorts",
+  "de": "{1}% Shorts"
+ },
+ {
+  "re": "^across (\\d+) markets on (\\d+) exchanges$",
+  "sample": "across 300 markets on 9 exchanges",
+  "es": "en {1} mercados de {2} exchanges",
+  "pt": "em {1} mercados de {2} corretoras",
+  "de": "über {1} Märkte auf {2} Börsen"
+ },
+ {
+  "re": "^(binance|bybit|okx|hyperliquid|gate|htx|dydx|bitfinex|binance-coin) · (\\d+)([smhd]) ago$",
+  "sample": "binance · 44s ago",
+  "es": "{1} · hace {2}{3}",
+  "pt": "{1} · há {2}{3}",
+  "de": "{1} · vor {2}{3}"
+ },
+ {
+  "re": "^([A-Z0-9]+) (long|short) on (.+?) - one forced close$",
+  "sample": "ETH long on binance - one forced close",
+  "es": "{1} {2} en {3} - un cierre forzoso",
+  "pt": "{1} {2} na {3} - um fechamento forçado",
+  "de": "{1} {2} auf {3} - eine Zwangsschließung"
+ },
+ {
+  "re": "^updated (\\d\\d:\\d\\d) UTC · refreshes every minute$",
+  "sample": "updated 05:33 UTC · refreshes every minute",
+  "es": "actualizado {1} UTC · se renueva cada minuto",
+  "pt": "atualizado às {1} UTC · atualiza a cada minuto",
+  "de": "aktualisiert {1} UTC · jede Minute neu"
+ },
+ {
+  "re": "^As liquidações de futuros de cripto somam \\$([\\d.,]+) milhões nas últimas 24 horas: \\$([\\d.,]+) milhões de longs e \\$([\\d.,]+) milhões de shorts em (\\d+) moedas monitoradas\\. Most liquidated right now: (.+?)\\. BTC alone accounts for (\\d+)% of the 24-hour total \\(\\$([\\d.,]+) milhões longs against \\$([\\d.,]+) milhões shorts\\)\\. Longs are taking most of the damage - the market is moving down through their liquidation levels\\.$",
+  "sample": "As liquidações de futuros de cripto somam $977.5 milhões nas últimas 24 horas: $882.7 milhões de longs e $94.8 milhões de shorts em 63685 moedas monitoradas. Most liquidated right now: BTC ($284.8 milhões), ETH ($181.5 milhões), SNDK ($48.4 milhões). BTC alone accounts for 29% of the 24-hour total ($261.0 milhões longs against $23.8 milhões shorts). Longs are taking most of the damage - the market is moving down through their liquidation levels.",
+  "es": "Las liquidaciones de futuros cripto suman ${1} millones en las últimas 24 horas: ${2} millones en longs y ${3} millones en shorts en {4} monedas monitorizadas. Lo más liquidado ahora: {5}. Solo BTC representa el {6}% del total de 24 horas (${7} millones en longs frente a ${8} millones en shorts). Los longs se llevan la mayor parte del daño: el mercado está bajando a través de sus niveles de liquidación.",
+  "pt": "As liquidações de futuros de cripto somam ${1} milhões nas últimas 24 horas: ${2} milhões de longs e ${3} milhões de shorts em {4} moedas monitoradas. Mais liquidadas agora: {5}. Só o BTC responde por {6}% do total de 24 horas (${7} milhões em longs contra ${8} milhões em shorts). Os longs estão levando a maior parte do prejuízo: o mercado está caindo através dos níveis de liquidação deles.",
+  "de": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf ${1} Millionen: ${2} Millionen Longs und ${3} Millionen Shorts über {4} beobachtete Coins. Am stärksten liquidiert gerade: {5}. Allein BTC macht {6}% der 24-Stunden-Summe aus (${7} Millionen Longs gegenüber ${8} Millionen Shorts). Longs tragen den Großteil des Schadens: Der Markt fällt durch ihre Liquidationslevel."
+ },
+ {
+  "re": "^Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf \\$([\\d.,]+) Millionen: \\$([\\d.,]+) Millionen Longs und \\$([\\d.,]+) Millionen Shorts über (\\d+) beobachtete Coins\\. Most liquidated right now: (.+?)\\. BTC alone accounts for (\\d+)% of the 24-hour total \\(\\$([\\d.,]+) Millionen longs against \\$([\\d.,]+) Millionen shorts\\)\\. Longs are taking most of the damage - the market is moving down through their liquidation levels\\.$",
+  "sample": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf $977.5 Millionen: $882.7 Millionen Longs und $94.8 Millionen Shorts über 63685 beobachtete Coins. Most liquidated right now: BTC ($284.8 Millionen), ETH ($181.5 Millionen), SNDK ($48.4 Millionen). BTC alone accounts for 29% of the 24-hour total ($261.0 Millionen longs against $23.8 Millionen shorts). Longs are taking most of the damage - the market is moving down through their liquidation levels.",
+  "es": "Las liquidaciones de futuros cripto suman ${1} millones en las últimas 24 horas: ${2} millones en longs y ${3} millones en shorts en {4} monedas monitorizadas. Lo más liquidado ahora: {5}. Solo BTC representa el {6}% del total de 24 horas (${7} millones en longs frente a ${8} millones en shorts). Los longs se llevan la mayor parte del daño: el mercado está bajando a través de sus niveles de liquidación.",
+  "pt": "As liquidações de futuros de cripto somam ${1} milhões nas últimas 24 horas: ${2} milhões de longs e ${3} milhões de shorts em {4} moedas monitoradas. Mais liquidadas agora: {5}. Só o BTC responde por {6}% do total de 24 horas (${7} milhões em longs contra ${8} milhões em shorts). Os longs estão levando a maior parte do prejuízo: o mercado está caindo através dos níveis de liquidação deles.",
+  "de": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf ${1} Millionen: ${2} Millionen Longs und ${3} Millionen Shorts über {4} beobachtete Coins. Am stärksten liquidiert gerade: {5}. Allein BTC macht {6}% der 24-Stunden-Summe aus (${7} Millionen Longs gegenüber ${8} Millionen Shorts). Longs tragen den Großteil des Schadens: Der Markt fällt durch ihre Liquidationslevel."
+ },
+ {
+  "re": "^Las liquidaciones de futuros cripto suman \\$([\\d.,]+) millones en las últimas 24 horas: \\$([\\d.,]+) millones de largos y \\$([\\d.,]+) millones de cortos en (\\d+) monedas monitorizadas\\. Most liquidated right now: (.+?)\\. BTC alone accounts for (\\d+)% of the 24-hour total \\(\\$([\\d.,]+) millones longs against \\$([\\d.,]+) millones shorts\\)\\. Longs are taking most of the damage - the market is moving down through their liquidation levels\\.$",
+  "sample": "Las liquidaciones de futuros cripto suman $977.5 millones en las últimas 24 horas: $882.7 millones de largos y $94.8 millones de cortos en 63685 monedas monitorizadas. Most liquidated right now: BTC ($284.8 millones), ETH ($181.5 millones), SNDK ($48.4 millones). BTC alone accounts for 29% of the 24-hour total ($261.0 millones longs against $23.8 millones shorts). Longs are taking most of the damage - the market is moving down through their liquidation levels.",
+  "es": "Las liquidaciones de futuros cripto suman ${1} millones en las últimas 24 horas: ${2} millones en longs y ${3} millones en shorts en {4} monedas monitorizadas. Lo más liquidado ahora: {5}. Solo BTC representa el {6}% del total de 24 horas (${7} millones en longs frente a ${8} millones en shorts). Los longs se llevan la mayor parte del daño: el mercado está bajando a través de sus niveles de liquidación.",
+  "pt": "As liquidações de futuros de cripto somam ${1} milhões nas últimas 24 horas: ${2} milhões de longs e ${3} milhões de shorts em {4} moedas monitoradas. Mais liquidadas agora: {5}. Só o BTC responde por {6}% do total de 24 horas (${7} milhões em longs contra ${8} milhões em shorts). Os longs estão levando a maior parte do prejuízo: o mercado está caindo através dos níveis de liquidação deles.",
+  "de": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf ${1} Millionen: ${2} Millionen Longs und ${3} Millionen Shorts über {4} beobachtete Coins. Am stärksten liquidiert gerade: {5}. Allein BTC macht {6}% der 24-Stunden-Summe aus (${7} Millionen Longs gegenüber ${8} Millionen Shorts). Longs tragen den Großteil des Schadens: Der Markt fällt durch ihre Liquidationslevel."
+ },
+ {
+  "re": "^(\\d+) analogs · (\\d+)% up · proj ([+-][\\d.]+)% / (\\d+) bars$",
+  "sample": "25 analogs · 72% up · proj +1.4% / 6 bars",
+  "es": "{1} análogos · {2}% al alza · proy. {3}% / {4} velas",
+  "pt": "{1} análogos · {2}% de alta · proj. {3}% / {4} candles",
+  "de": "{1} Analoga · {2}% steigend · Proj. {3}% / {4} Kerzen"
+ },
+ {
+  "re": "^/min · (\\d+) liq$",
+  "sample": "/min · 17 liq",
+  "es": "/min · {1} liq.",
+  "pt": "/min · {1} liq.",
+  "de": "/min · {1} Liq."
+ },
+ {
+  "re": "^(\\d+) liq/min · ([$\\d.,]+[KMB]?)/min$",
+  "sample": "17 liq/min · $304K/min",
+  "es": "{1} liq./min · {2}/min",
+  "pt": "{1} liq./min · {2}/min",
+  "de": "{1} Liq./Min · {2}/Min"
+ },
+ {
+  "re": "^(\\d+) of (\\d+) needed$",
+  "sample": "0 of 8 needed",
+  "es": "{1} de {2} necesarios",
+  "pt": "{1} de {2} necessários",
+  "de": "{1} von {2} nötig"
+ },
+ {
+  "re": "^Close (\\d+) winning trades$",
+  "sample": "Close 2 winning trades",
+  "es": "Cierra {1} operaciones ganadoras",
+  "pt": "Feche {1} trades vencedores",
+  "de": "Schließe {1} Gewinn-Trades"
+ },
+ {
+  "re": "^· (\\d+) markets scoring bullish \\(60\\+\\) · (\\d+) scoring bearish \\(40 or below\\)\\.$",
+  "sample": "· 5 markets scoring bullish (60+) · 43 scoring bearish (40 or below).",
+  "es": "· {1} mercados con puntuación alcista (60+) · {2} con puntuación bajista (40 o menos).",
+  "pt": "· {1} mercados com pontuação de alta (60+) · {2} com pontuação de baixa (40 ou menos).",
+  "de": "· {1} Märkte bullisch bewertet (60+) · {2} bärisch bewertet (40 oder darunter)."
+ },
+ {
+  "re": "^· Bearish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Bearish · 24h -1.87% · RSI 55",
+  "es": "· Bajista · 24h {1}% · RSI {2}",
+  "pt": "· Baixista · 24h {1}% · RSI {2}",
+  "de": "· Bärisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Bullish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Bullish · 24h +13.31% · RSI 62",
+  "es": "· Alcista · 24h {1}% · RSI {2}",
+  "pt": "· Altista · 24h {1}% · RSI {2}",
+  "de": "· Bullisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Extremely Bearish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Extremely Bearish · 24h -3.18% · RSI 42",
+  "es": "· Muy bajista · 24h {1}% · RSI {2}",
+  "pt": "· Extremamente baixista · 24h {1}% · RSI {2}",
+  "de": "· Extrem bärisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Extremely Bullish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Extremely Bullish · 24h +9.12% · RSI 78",
+  "es": "· Muy alcista · 24h {1}% · RSI {2}",
+  "pt": "· Extremamente altista · 24h {1}% · RSI {2}",
+  "de": "· Extrem bullisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Neutral · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Neutral · 24h -7.96% · RSI 28",
+  "es": "· Neutral · 24h {1}% · RSI {2}",
+  "pt": "· Neutro · 24h {1}% · RSI {2}",
+  "de": "· Neutral · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Neutral Bullish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Neutral Bullish · 24h -1.86% · RSI 51",
+  "es": "· Neutral alcista · 24h {1}% · RSI {2}",
+  "pt": "· Neutro altista · 24h {1}% · RSI {2}",
+  "de": "· Neutral bullisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^· Neutral Bearish · 24h ([+-][\\d.]+)% · RSI (\\d+)$",
+  "sample": "· Neutral Bearish · 24h -2.10% · RSI 45",
+  "es": "· Neutral bajista · 24h {1}% · RSI {2}",
+  "pt": "· Neutro baixista · 24h {1}% · RSI {2}",
+  "de": "· Neutral bärisch · 24h {1}% · RSI {2}"
+ },
+ {
+  "re": "^\\((\\d+)% buys\\)$",
+  "sample": "(39% buys)",
+  "es": "({1}% compras)",
+  "pt": "({1}% compras)",
+  "de": "({1}% Käufe)"
+ },
+ {
+  "re": "^Every USDT perpetual with meaningful volume gets a 0-100 technical score from its 4-hour candles: trend direction, RSI, MACD, moving-average alignment and ATR-based volatility, combined into one number\\. Below is the current state, refreshed continuously\\. Measured at (\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d) UTC across (\\d+) scored markets\\.$",
+  "sample": "Every USDT perpetual with meaningful volume gets a 0-100 technical score from its 4-hour candles: trend direction, RSI, MACD, moving-average alignment and ATR-based volatility, combined into one number. Below is the current state, refreshed continuously. Measured at 2026-11-06 05:24 UTC across 50 scored markets.",
+  "es": "Cada perpetuo en USDT con volumen relevante recibe una puntuación técnica de 0 a 100 a partir de sus velas de 4 horas: dirección de la tendencia, RSI, MACD, alineación de medias móviles y volatilidad basada en ATR, combinadas en un solo número. Abajo está el estado actual, actualizado de forma continua. Medido el {1} UTC sobre {2} mercados puntuados.",
+  "pt": "Todo perpétuo em USDT com volume relevante recebe uma pontuação técnica de 0 a 100 a partir dos candles de 4 horas: direção da tendência, RSI, MACD, alinhamento das médias móveis e volatilidade baseada no ATR, combinados em um único número. Abaixo está o estado atual, atualizado continuamente. Medido em {1} UTC em {2} mercados pontuados.",
+  "de": "Jeder USDT-Perp mit nennenswertem Volumen bekommt aus seinen 4-Stunden-Kerzen einen technischen Score von 0-100: Trendrichtung, RSI, MACD, Ausrichtung der gleitenden Durchschnitte und ATR-basierte Volatilität, zu einer Zahl zusammengefasst. Unten steht der aktuelle Stand, laufend aktualisiert. Gemessen am {1} UTC über {2} bewertete Märkte."
+ },
+ {
+  "re": "^Market average: (\\d+)/100$",
+  "sample": "Market average: 26/100",
+  "es": "Promedio del mercado: {1}/100",
+  "pt": "Média do mercado: {1}/100",
+  "de": "Marktdurchschnitt: {1}/100"
+ },
+ {
+  "re": "^liquidated · ([+-]?\\$[\\d.,]+[kKMB]?)$",
+  "sample": "liquidated · -$10.0k",
+  "es": "liquidado · {1}",
+  "pt": "liquidado · {1}",
+  "de": "liquidiert · {1}"
+ },
+ {
+  "re": "^· (\\d+) min ago$",
+  "sample": "· 26 min ago",
+  "es": "· hace {1} min",
+  "pt": "· há {1} min",
+  "de": "· vor {1} Min."
+ },
+ {
+  "re": "^ends in (.+)$",
+  "sample": "ends in 2d 18h",
+  "es": "termina en {1}",
+  "pt": "termina em {1}",
+  "de": "endet in {1}"
+ },
+ {
+  "re": "^(.+?) added to your watchlist$",
+  "sample": "GAVELDROP added to your watchlist",
+  "es": "{1} añadido a tu lista de seguimiento",
+  "pt": "{1} adicionado à sua lista de observação",
+  "de": "{1} zu deiner Watchlist hinzugefügt"
+ },
+ {
+  "re": "^(\\d+) min ago$",
+  "sample": "1 min ago",
+  "es": "hace {1} min",
+  "pt": "há {1} min",
+  "de": "vor {1} Min."
+ },
+ {
+  "re": "^(\\d+) days measured$",
+  "sample": "56 days measured",
+  "es": "{1} días medidos",
+  "pt": "{1} dias medidos",
+  "de": "{1} Tage gemessen"
+ },
+ {
+  "re": "^checked (\\d{1,2}:\\d\\d) UTC$",
+  "sample": "checked 05:32 UTC",
+  "es": "comprobado {1} UTC",
+  "pt": "verificado {1} UTC",
+  "de": "geprüft {1} UTC"
+ },
+ {
+  "re": "^round trip, sampled (\\d+) min ago$",
+  "sample": "round trip, sampled 2 min ago",
+  "es": "ida y vuelta, medido hace {1} min",
+  "pt": "ida e volta, medido há {1} min",
+  "de": "Hin und zurück, gemessen vor {1} Min."
+ },
+ {
+  "re": "^(\\d{4}-\\d\\d-\\d\\d), (\\d+) of (\\d+) trades$",
+  "sample": "2024-04-14, 0 of 18 trades",
+  "es": "{1}, {2} de {3} trades",
+  "pt": "{1}, {2} de {3} trades",
+  "de": "{1}, {2} von {3} Trades"
+ },
+ {
+  "re": "^against ([+-]?[\\d.]+%) holding, (\\d+) days, (\\d+) trades\\. Commodities:$",
+  "sample": "against -4.43% holding, 5 days, 3 trades. Commodities:",
+  "es": "frente a {1} manteniendo, {2} días, {3} trades. Materias primas:",
+  "pt": "contra {1} só segurando, {2} dias, {3} trades. Commodities:",
+  "de": "gegenüber {1} beim Halten, {2} Tage, {3} Trades. Rohstoffe:"
+ },
+ {
+  "re": "^(\\d+) of (\\d+) collected$",
+  "sample": "0 of 177 collected",
+  "es": "{1} de {2} conseguidos",
+  "pt": "{1} de {2} coletados",
+  "de": "{1} von {2} gesammelt"
+ },
+ {
+  "re": "^(\\d+)/(\\d+) missions$",
+  "sample": "0/100 missions",
+  "es": "{1}/{2} misiones",
+  "pt": "{1}/{2} missões",
+  "de": "{1}/{2} Missionen"
+ },
+ {
+  "re": "^(\\d+)/(\\d+) closes$",
+  "sample": "0/500 closes",
+  "es": "{1}/{2} cierres",
+  "pt": "{1}/{2} fechamentos",
+  "de": "{1}/{2} Schließungen"
+ },
+ {
+  "re": "^([\\d.,]+) to Silver$",
+  "sample": "1,500 to Silver",
+  "es": "{1} para Plata",
+  "pt": "{1} para Prata",
+  "de": "{1} bis Silber"
+ },
+ {
+  "re": "^Freezes banked: (\\d+)/(\\d+)$",
+  "sample": "Freezes banked: 0/5",
+  "es": "Congelaciones guardadas: {1}/{2}",
+  "pt": "Congelamentos guardados: {1}/{2}",
+  "de": "Gesparte Freezes: {1}/{2}"
+ },
+ {
+  "re": "^([+-]?\\$[\\d.,]+[KMB]?) to ([+-]?\\$[\\d.,]+[KMB]?) · ([\\d.,]+) wallets$",
+  "sample": "$10K to $100K · 4,961 wallets",
+  "es": "{1} a {2} · {3} wallets",
+  "pt": "{1} a {2} · {3} carteiras",
+  "de": "{1} bis {2} · {3} Wallets"
+ },
+ {
+  "re": "^([+-]?\\$[\\d.,]+[KMB]?) and worse · ([\\d.,]+) wallets$",
+  "sample": "-$1M and worse · 211 wallets",
+  "es": "{1} o peor · {2} wallets",
+  "pt": "{1} ou pior · {2} carteiras",
+  "de": "{1} und schlechter · {2} Wallets"
+ },
+ {
+  "re": "^([+-]?\\$[\\d.,]+[KMB]?) and up · ([\\d.,]+) wallets$",
+  "sample": "+$1M and up · 573 wallets",
+  "es": "{1} o más · {2} wallets",
+  "pt": "{1} ou mais · {2} carteiras",
+  "de": "{1} und mehr · {2} Wallets"
+ },
+ {
+  "re": "^(\\$[\\d.,]+[KMB]?)\\+ equity · ([\\d.,]+) wallets$",
+  "sample": "$5M+ equity · 70 wallets",
+  "es": "{1}+ de capital · {2} wallets",
+  "pt": "{1}+ de patrimônio · {2} carteiras",
+  "de": "{1}+ Eigenkapital · {2} Wallets"
+ },
+ {
+  "re": "^under (\\$[\\d.,]+[KMB]?) · ([\\d.,]+) wallets$",
+  "sample": "under $10K · 24,284 wallets",
+  "es": "menos de {1} · {2} wallets",
+  "pt": "abaixo de {1} · {2} carteiras",
+  "de": "unter {1} · {2} Wallets"
+ },
+ {
+  "re": "^(\\d+)% short$",
+  "sample": "23% short",
+  "es": "{1}% short",
+  "pt": "{1}% short",
+  "de": "{1}% Short"
+ },
+ {
+  "re": "^(\\d+)% long$",
+  "sample": "26% long",
+  "es": "{1}% long",
+  "pt": "{1}% long",
+  "de": "{1}% Long"
+ },
+ {
+  "re": "^LIVE WHALE POSITIONS · UPDATED (.+) UTC$",
+  "sample": "LIVE WHALE POSITIONS · UPDATED 2026-11-06 05:28 UTC",
+  "es": "POSICIONES DE BALLENAS EN VIVO · ACTUALIZADO {1} UTC",
+  "pt": "POSIÇÕES DE BALEIAS AO VIVO · ATUALIZADO {1} UTC",
+  "de": "LIVE-WALPOSITIONEN · AKTUALISIERT {1} UTC"
+ },
+ {
+  "re": "^of ([\\d.,]+) wallets$",
+  "sample": "of 79,083 wallets",
+  "es": "de {1} wallets",
+  "pt": "de {1} carteiras",
+  "de": "von {1} Wallets"
+ }
+]

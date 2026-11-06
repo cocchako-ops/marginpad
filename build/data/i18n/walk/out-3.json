@@ -1,0 +1,628 @@
+{
+ "plain": [
+  {
+   "en": "Binance - 0.04% · 20% off",
+   "es": "Binance - 0.04% · 20% de descuento",
+   "pt": "Binance - 0.04% · 20% de desconto",
+   "de": "Binance - 0.04% · 20% Rabatt"
+  },
+  {
+   "en": "Bitget - 0.048% · 20% off",
+   "es": "Bitget - 0.048% · 20% de descuento",
+   "pt": "Bitget - 0.048% · 20% de desconto",
+   "de": "Bitget - 0.048% · 20% Rabatt"
+  },
+  {
+   "en": "Bybit - 0.044% · 20% off",
+   "es": "Bybit - 0.044% · 20% de descuento",
+   "pt": "Bybit - 0.044% · 20% de desconto",
+   "de": "Bybit - 0.044% · 20% Rabatt"
+  },
+  {
+   "en": "Gate - 0.04% · 20% off",
+   "es": "Gate - 0.04% · 20% de descuento",
+   "pt": "Gate - 0.04% · 20% de desconto",
+   "de": "Gate - 0.04% · 20% Rabatt"
+  },
+  {
+   "en": "Hyperliquid - 0.0432% · 4% off",
+   "es": "Hyperliquid - 0.0432% · 4% de descuento",
+   "pt": "Hyperliquid - 0.0432% · 4% de desconto",
+   "de": "Hyperliquid - 0.0432% · 4% Rabatt"
+  },
+  {
+   "en": "Crypto swap",
+   "es": "Swap cripto",
+   "pt": "Swap cripto",
+   "de": "Krypto-Swap"
+  },
+  {
+   "en": "engine defaults",
+   "es": "valores por defecto del motor",
+   "pt": "padrões do motor",
+   "de": "Standardwerte der Engine"
+  },
+  {
+   "en": "Fear",
+   "es": "Miedo",
+   "pt": "Medo",
+   "de": "Angst"
+  },
+  {
+   "en": "SK hynix (Korea)",
+   "es": "SK hynix (Corea)",
+   "pt": "SK hynix (Coreia)",
+   "de": "SK hynix (Korea)"
+  },
+  {
+   "en": "Limit",
+   "es": "Límite",
+   "pt": "Limite",
+   "de": "Limit"
+  },
+  {
+   "en": "Market Pulse",
+   "es": "Pulso del mercado",
+   "pt": "Pulso do mercado",
+   "de": "Marktpuls"
+  },
+  {
+   "en": "On-chain · Memecoins",
+   "es": "On-chain · Memecoins",
+   "pt": "On-chain · Memecoins",
+   "de": "On-chain · Memecoins"
+  },
+  {
+   "en": "Search…",
+   "es": "Buscar…",
+   "pt": "Buscar…",
+   "de": "Suchen…"
+  },
+  {
+   "en": "Share result",
+   "es": "Compartir resultado",
+   "pt": "Compartilhar resultado",
+   "de": "Ergebnis teilen"
+  },
+  {
+   "en": "Volume",
+   "es": "Volumen",
+   "pt": "Volume",
+   "de": "Volumen"
+  },
+  {
+   "en": "template",
+   "es": "plantilla",
+   "pt": "modelo",
+   "de": "Vorlage"
+  },
+  {
+   "en": "books on a real close.",
+   "es": "registra al cerrar de verdad.",
+   "pt": "registra num fechamento real.",
+   "de": "bei einem echten Close verbucht."
+  },
+  {
+   "en": "Choose the dollars you can lose and the stop distance; the calculator returns the size and leverage that fit. The",
+   "es": "Elige cuántos dólares puedes perder y la distancia del stop; la calculadora te da el tamaño y el apalancamiento que encajan. La",
+   "pt": "Escolha quantos dólares você pode perder e a distância do stop; a calculadora devolve o tamanho e a alavancagem que cabem. A",
+   "de": "Wähle, wie viele Dollar du verlieren kannst, und den Abstand zum Stop; der Rechner liefert die passende Größe und den Hebel. Der"
+  },
+  {
+   "en": "Entry, leverage and the exchange's maintenance margin give the exact liquidation price - the formula Bybit, Binance and OKX use. 10x at 0.5% liquidates 9.45% from entry;",
+   "es": "La entrada, el apalancamiento y el margen de mantenimiento del exchange dan el precio de liquidación exacto - la fórmula que usan Bybit, Binance y OKX. 10x al 0.5% se liquida a 9.45% de la entrada;",
+   "pt": "Entrada, alavancagem e a margem de manutenção da exchange dão o preço de liquidação exato - a fórmula que Bybit, Binance e OKX usam. 10x a 0.5% liquida a 9.45% da entrada;",
+   "de": "Einstieg, Hebel und die Maintenance Margin der Börse ergeben den exakten Liquidationspreis - die Formel, die Bybit, Binance und OKX verwenden. 10x bei 0.5% wird 9.45% vom Einstieg liquidiert;"
+  },
+  {
+   "en": "Liquidation calculators per exchange - same formula, each venue's own maintenance margin.",
+   "es": "Calculadoras de liquidación por exchange - la misma fórmula, con el margen de mantenimiento propio de cada plataforma.",
+   "pt": "Calculadoras de liquidação por exchange - a mesma fórmula, com a margem de manutenção de cada plataforma.",
+   "de": "Liquidationsrechner pro Börse - dieselbe Formel, jeweils mit der eigenen Maintenance Margin der Plattform."
+  },
+  {
+   "en": "P&L and R:R",
+   "es": "P&L y R:R",
+   "pt": "P&L e R:R",
+   "de": "P&L und R:R"
+  },
+  {
+   "en": "paper terminal",
+   "es": "terminal de Paper Trade",
+   "pt": "terminal de Paper Trade",
+   "de": "Paper-Trade-Terminal"
+  },
+  {
+   "en": "Profit, ROE and reward-to-risk at any exit with taker fees both sides - the same figures the",
+   "es": "Ganancia, ROE y relación recompensa/riesgo en cualquier salida, con comisiones taker en ambos lados - las mismas cifras que el",
+   "pt": "Lucro, ROE e relação retorno/risco em qualquer saída, com taxas taker nos dois lados - os mesmos números que o",
+   "de": "Gewinn, ROE und Chance-Risiko-Verhältnis bei jedem Ausstieg, mit Taker-Gebühren auf beiden Seiten - dieselben Zahlen, die das"
+  },
+  {
+   "en": "Risk first, size second",
+   "es": "Primero el riesgo, después el tamaño",
+   "pt": "Primeiro o risco, depois o tamanho",
+   "de": "Erst das Risiko, dann die Größe"
+  },
+  {
+   "en": "risk-of-ruin calculator",
+   "es": "calculadora de riesgo de ruina",
+   "pt": "calculadora de risco de ruína",
+   "de": "Risk-of-Ruin-Rechner"
+  },
+  {
+   "en": "says how long that survives.",
+   "es": "dice cuánto tiempo aguanta eso.",
+   "pt": "diz quanto tempo isso aguenta.",
+   "de": "zeigt, wie lange das hält."
+  },
+  {
+   "en": "see every leverage",
+   "es": "ver cada apalancamiento",
+   "pt": "ver cada alavancagem",
+   "de": "jeden Hebel ansehen"
+  },
+  {
+   "en": "What the trade pays",
+   "es": "Lo que paga el trade",
+   "pt": "O que o trade paga",
+   "de": "Was der Trade bringt"
+  },
+  {
+   "en": "Where a position dies",
+   "es": "Dónde muere una posición",
+   "pt": "Onde uma posição morre",
+   "de": "Wo eine Position stirbt"
+  },
+  {
+   "en": "+2 more",
+   "es": "+2 más",
+   "pt": "+2 mais",
+   "de": "+2 weitere"
+  },
+  {
+   "en": "Consumer Price Index, 8:30 AM ET. Hot print = risk-off, cool print = risk-on.",
+   "es": "Índice de Precios al Consumidor, 8:30 AM ET. Dato alto = risk-off, dato bajo = risk-on.",
+   "pt": "Índice de Preços ao Consumidor, 8:30 AM ET. Dado alto = risk-off, dado baixo = risk-on.",
+   "de": "Verbraucherpreisindex, 8:30 AM ET. Heißer Wert = Risk-off, kühler Wert = Risk-on."
+  },
+  {
+   "en": "Existing Home Sales",
+   "es": "Ventas de viviendas usadas",
+   "pt": "Vendas de imóveis usados",
+   "de": "Verkäufe bestehender Häuser"
+  },
+  {
+   "en": "FOMC rate decision",
+   "es": "Decisión de tasas del FOMC",
+   "pt": "Decisão de juros do FOMC",
+   "de": "FOMC-Zinsentscheid"
+  },
+  {
+   "en": "Housing Starts",
+   "es": "Inicios de construcción de viviendas",
+   "pt": "Início de construção de moradias",
+   "de": "Baubeginne"
+  },
+  {
+   "en": "in 7h 52m",
+   "es": "en 7h 52m",
+   "pt": "em 7h 52m",
+   "de": "in 7h 52m"
+  },
+  {
+   "en": "in 9h 22m",
+   "es": "en 9h 22m",
+   "pt": "em 9h 22m",
+   "de": "in 9h 22m"
+  },
+  {
+   "en": "in 8 h",
+   "es": "en 8 h",
+   "pt": "em 8 h",
+   "de": "in 8 h"
+  },
+  {
+   "en": "Jobs report (NFP)",
+   "es": "Informe de empleo (NFP)",
+   "pt": "Relatório de emprego (NFP)",
+   "de": "Arbeitsmarktbericht (NFP)"
+  },
+  {
+   "en": "Monthly BTC & ETH options expiry",
+   "es": "Vencimiento mensual de opciones de BTC y ETH",
+   "pt": "Vencimento mensal de opções de BTC e ETH",
+   "de": "Monatlicher Verfall der BTC- und ETH-Optionen"
+  },
+  {
+   "en": "Non-farm payrolls, 8:30 AM ET - usually the first Friday. Strong jobs = fewer rate cuts.",
+   "es": "Nóminas no agrícolas, 8:30 AM ET - normalmente el primer viernes. Empleo fuerte = menos recortes de tasas.",
+   "pt": "Payroll (folha de pagamento não agrícola), 8:30 AM ET - geralmente na primeira sexta-feira. Emprego forte = menos cortes de juros.",
+   "de": "Non-Farm Payrolls, 8:30 AM ET - meist am ersten Freitag. Starker Arbeitsmarkt = weniger Zinssenkungen."
+  },
+  {
+   "en": "Remind me ~30 min before:",
+   "es": "Recuérdamelo ~30 min antes:",
+   "pt": "Me lembre ~30 min antes:",
+   "de": "Erinnere mich ~30 Min. vorher:"
+  },
+  {
+   "en": "retail sales",
+   "es": "ventas minoristas",
+   "pt": "vendas no varejo",
+   "de": "Einzelhandelsumsätze"
+  },
+  {
+   "en": "The inflation measure the Fed actually targets. 8:30 AM ET.",
+   "es": "La medida de inflación que la Fed realmente tiene como objetivo. 8:30 AM ET.",
+   "pt": "A medida de inflação que o Fed realmente persegue. 8:30 AM ET.",
+   "de": "Das Inflationsmaß, auf das die Fed tatsächlich zielt. 8:30 AM ET."
+  },
+  {
+   "en": "Tuesday 10 November at 14:30",
+   "es": "martes 10 de noviembre a las 14:30",
+   "pt": "terça-feira, 10 de novembro, às 14:30",
+   "de": "Dienstag, 10. November um 14:30"
+  },
+  {
+   "en": "US Core PCE - the Fed's inflation gauge",
+   "es": "PCE subyacente de EE. UU. - el indicador de inflación de la Fed",
+   "pt": "PCE núcleo dos EUA - o termômetro de inflação do Fed",
+   "de": "US-Kern-PCE - das Inflationsmaß der Fed"
+  },
+  {
+   "en": "US CPI - October inflation",
+   "es": "CPI de EE. UU. - inflación de octubre",
+   "pt": "CPI dos EUA - inflação de outubro",
+   "de": "US-CPI - Inflation im Oktober"
+  },
+  {
+   "en": "US CPI - September inflation",
+   "es": "CPI de EE. UU. - inflación de septiembre",
+   "pt": "CPI dos EUA - inflação de setembro",
+   "de": "US-CPI - Inflation im September"
+  },
+  {
+   "en": "US Durable Goods Orders MoM",
+   "es": "Pedidos de bienes duraderos de EE. UU. (mensual)",
+   "pt": "Encomendas de bens duráveis dos EUA (mensal)",
+   "de": "US-Aufträge langlebiger Güter (MoM)"
+  },
+  {
+   "en": "US Existing Home Sales",
+   "es": "Ventas de viviendas usadas de EE. UU.",
+   "pt": "Vendas de imóveis usados dos EUA",
+   "de": "US-Verkäufe bestehender Häuser"
+  },
+  {
+   "en": "US growth print - strong = fewer rate cuts, weak = recession talk.",
+   "es": "Dato de crecimiento de EE. UU. - fuerte = menos recortes de tasas, débil = se habla de recesión.",
+   "pt": "Dado de crescimento dos EUA - forte = menos cortes de juros, fraco = conversa de recessão.",
+   "de": "US-Wachstumsdaten - stark = weniger Zinssenkungen, schwach = Rezessionsgerede."
+  },
+  {
+   "en": "US Housing Starts",
+   "es": "Inicios de construcción de viviendas de EE. UU.",
+   "pt": "Início de construção de moradias dos EUA",
+   "de": "US-Baubeginne"
+  },
+  {
+   "en": "US macro release - dollar liquidity moves crypto.",
+   "es": "Dato macro de EE. UU. - la liquidez en dólares mueve a las cripto.",
+   "pt": "Dado macro dos EUA - a liquidez em dólar move as cripto.",
+   "de": "US-Makrodaten - Dollar-Liquidität bewegt Krypto."
+  },
+  {
+   "en": "US PPI - producer prices",
+   "es": "PPI de EE. UU. - precios al productor",
+   "pt": "PPI dos EUA - preços ao produtor",
+   "de": "US-PPI - Erzeugerpreise"
+  },
+  {
+   "en": "US retail sales",
+   "es": "Ventas minoristas de EE. UU.",
+   "pt": "Vendas no varejo dos EUA",
+   "de": "US-Einzelhandelsumsätze"
+  },
+  {
+   "en": "usually",
+   "es": "normalmente",
+   "pt": "geralmente",
+   "de": "meist"
+  },
+  {
+   "en": "Wholesale inflation - a leading signal for CPI. 8:30 AM ET.",
+   "es": "Inflación mayorista - una señal adelantada del CPI. 8:30 AM ET.",
+   "pt": "Inflação no atacado - um sinal antecedente do CPI. 8:30 AM ET.",
+   "de": "Großhandelsinflation - ein Frühsignal für den CPI. 8:30 AM ET."
+  },
+  {
+   "en": "Worth watching",
+   "es": "Vale la pena seguir",
+   "pt": "Vale acompanhar",
+   "de": "Im Blick behalten"
+  },
+  {
+   "en": "$0k lost",
+   "es": "$0k perdidos",
+   "pt": "$0k perdidos",
+   "de": "$0k verloren"
+  },
+  {
+   "en": "$31M lost",
+   "es": "$31M perdidos",
+   "pt": "$31M perdidos",
+   "de": "$31M verloren"
+  },
+  {
+   "en": "$45M lost",
+   "es": "$45M perdidos",
+   "pt": "$45M perdidos",
+   "de": "$45M verloren"
+  },
+  {
+   "en": "$6.0B lost",
+   "es": "$6.0B perdidos",
+   "pt": "$6.0B perdidos",
+   "de": "$6.0B verloren"
+  },
+  {
+   "en": "$6.3B lost",
+   "es": "$6.3B perdidos",
+   "pt": "$6.3B perdidos",
+   "de": "$6.3B verloren"
+  },
+  {
+   "en": "4 Nov 04:45 · 2 legs",
+   "es": "4 nov 04:45 · 2 tramos",
+   "pt": "4 nov 04:45 · 2 pernas",
+   "de": "4. Nov. 04:45 · 2 Abschnitte"
+  },
+  {
+   "en": "5 Nov 15:30 · 2 legs",
+   "es": "5 nov 15:30 · 2 tramos",
+   "pt": "5 nov 15:30 · 2 pernas",
+   "de": "5. Nov. 15:30 · 2 Abschnitte"
+  },
+  {
+   "en": "barely moves price",
+   "es": "apenas mueve el precio",
+   "pt": "quase não mexe no preço",
+   "de": "bewegt den Kurs kaum"
+  }
+ ],
+ "patterns": [
+  {
+   "re": "^([\\d,]+) online$",
+   "sample": "10 online",
+   "es": "{1} en línea",
+   "pt": "{1} online",
+   "de": "{1} online"
+  },
+  {
+   "re": "^([\\d,]+) items · highest score first$",
+   "sample": "131 items · highest score first",
+   "es": "{1} elementos · mayor puntuación primero",
+   "pt": "{1} itens · maior pontuação primeiro",
+   "de": "{1} Einträge · höchster Score zuerst"
+  },
+  {
+   "re": "^([\\d,]+) items · newest first$",
+   "sample": "131 items · newest first",
+   "es": "{1} elementos · más recientes primero",
+   "pt": "{1} itens · mais recentes primeiro",
+   "de": "{1} Einträge · neueste zuerst"
+  },
+  {
+   "re": "^([\\d,]+) items match$",
+   "sample": "131 items match",
+   "es": "{1} elementos coinciden",
+   "pt": "{1} itens correspondem",
+   "de": "{1} Einträge passen"
+  },
+  {
+   "re": "^([\\d,]+) stories · highest score first$",
+   "sample": "99 stories · highest score first",
+   "es": "{1} historias · mayor puntuación primero",
+   "pt": "{1} histórias · maior pontuação primeiro",
+   "de": "{1} Storys · höchster Score zuerst"
+  },
+  {
+   "re": "^([\\d,]+) stories · newest first$",
+   "sample": "99 stories · newest first",
+   "es": "{1} historias · más recientes primero",
+   "pt": "{1} histórias · mais recentes primeiro",
+   "de": "{1} Storys · neueste zuerst"
+  },
+  {
+   "re": "^([\\d,]+) mentions today$",
+   "sample": "153 mentions today",
+   "es": "{1} menciones hoy",
+   "pt": "{1} menções hoje",
+   "de": "{1} Erwähnungen heute"
+  },
+  {
+   "re": "^([\\d,]+) more desks$",
+   "sample": "4 more desks",
+   "es": "{1} medios más",
+   "pt": "mais {1} veículos",
+   "de": "{1} weitere Quellen"
+  },
+  {
+   "re": "^([\\d,]+) scored ([\\d]+)\\+$",
+   "sample": "6 scored 40+",
+   "es": "{1} con puntuación {2}+",
+   "pt": "{1} com pontuação {2}+",
+   "de": "{1} mit Score {2}+"
+  },
+  {
+   "re": "^(.+?) \\+([\\d,]+) desks · ([\\dhm]+) before$",
+   "sample": "bitcoinmagazine +3 desks · 42m before",
+   "es": "{1} +{2} medios · {3} antes",
+   "pt": "{1} +{2} veículos · {3} antes",
+   "de": "{1} +{2} Quellen · {3} vorher"
+  },
+  {
+   "re": "^confidence ([\\d.]+%)$",
+   "sample": "confidence 38%",
+   "es": "confianza {1}",
+   "pt": "confiança {1}",
+   "de": "Konfidenz {1}"
+  },
+  {
+   "re": "^Events of this kind moved price ([\\d.]+)x the usual ([\\d]+)-minute bar \\(([\\d,]+) measured, direction right ([\\d.]+%), placebo ([\\d.]+)x\\)$",
+   "sample": "Events of this kind moved price 0.74x the usual 15-minute bar (60 measured, direction right 50%, placebo 0.9x)",
+   "es": "Los eventos de este tipo movieron el precio {1}x la vela habitual de {2} minutos ({3} medidos, dirección acertada {4}, placebo {5}x)",
+   "pt": "Eventos deste tipo moveram o preço {1}x o candle habitual de {2} minutos ({3} medidos, direção certa {4}, placebo {5}x)",
+   "de": "Ereignisse dieser Art bewegten den Kurs um das {1}-Fache der üblichen {2}-Minuten-Kerze ({3} gemessen, Richtung richtig {4}, Placebo {5}x)"
+  },
+  {
+   "re": "^Events of this kind moved price ([\\d.]+)x the usual ([\\d]+)-minute bar \\(([\\d,]+) measured, placebo ([\\d.]+)x\\)$",
+   "sample": "Events of this kind moved price 0.89x the usual 15-minute bar (46 measured, placebo 1.18x)",
+   "es": "Los eventos de este tipo movieron el precio {1}x la vela habitual de {2} minutos ({3} medidos, placebo {4}x)",
+   "pt": "Eventos deste tipo moveram o preço {1}x o candle habitual de {2} minutos ({3} medidos, placebo {4}x)",
+   "de": "Ereignisse dieser Art bewegten den Kurs um das {1}-Fache der üblichen {2}-Minuten-Kerze ({3} gemessen, Placebo {4}x)"
+  }
+ ],
+ "outside": [
+  "Home Depot",
+  "SK hynix",
+  "BTC · 4h · EMA + SMA",
+  "BTC multi-TF",
+  "Top 3",
+  "$74.57M inflow rebound signals renewed institutional demand; analyst bullish to $363K",
+  "00:28 unchained",
+  "01:05 cmc-news",
+  "02:31 cmc-news",
+  "03:24 cmc-news",
+  "03:36 cmc-news",
+  "03:46 unchained",
+  "03:51 whale_alert_io",
+  "04:00 whale_alert_io",
+  "04:02 whale_alert_io",
+  "04:22 cointelegraph",
+  "04:40 wublockchainenglish",
+  "04:55 whale_alert_io",
+  "05:01 cmc-news",
+  "06:07 cmc-news",
+  "06:07 cointelegraph",
+  "06:14 cmc-news",
+  "1 min",
+  "1,000 $BTC (75,881,233 USD) transferred from Coinbase Institutional to unknown wallet Details",
+  "1,000 BTC leaving Coinbase institutional custody to unknown wallet; typically bearish signal of accumulation or selling",
+  "1,694 $BTC (128,436,325 USD) transferred from #Kraken to unknown wallet Details",
+  "1,694 BTC (~$128M) moved from Kraken exchange to unknown wallet; potential sell pressure if destined for market",
+  "10-Q - Grayscale Ethereum Staking ETF (0001725210) (Filer)",
+  "10-Q - Grayscale XRP Trust ETF (0002037427) (Filer)",
+  "120,000,000 $USDT (119,895,600 USD) transferred from Tether Treasury to #Bitfinex Details",
+  "120,000,000 $USDT (119,922,600 USD) transferred from #Bitfinex to Tether Treasury Details",
+  "120M USDT returned to Tether Treasury from Bitfinex; routine capital management",
+  "2,000 $BTC (152,162,387 USD) transferred from unknown wallet to #Kraken Details",
+  "2,000 BTC moved to Kraken exchange; likely preparation for sale pressure markets.",
+  "20:27 cmc-news",
+  "20:38 cmc-news",
+  "20:38 cryptopotato",
+  "206,200,000 $USDT (206,076,795 USD) transferred from #Bitfinex to Tether Treasury Details",
+  "21:11 theblock",
+  "21:15 cmc-news",
+  "21:29 cmc-news",
+  "21:30 whale_alert_io",
+  "21:39 bitcoinmagazine",
+  "21:45 cmc-news",
+  "21:49 cmc-news",
+  "22:06 sec",
+  "22:07 sec",
+  "22:30 cmc-news",
+  "22m · coindesk",
+  "23:00 beincrypto",
+  "250,000,000 $USDC (250,092,250 USD) minted at USDC Treasury Details",
+  "250M USDC minted; routine supply expansion, neutral for price unless paired with exchange flows",
+  "30m · cmc-news",
+  "4 min",
+  "485BPOS - PROSHARES TRUST (0001174610) (Filer)",
+  "55m · cmc-news",
+  "903 $BTC (68,498,661 USD) transferred from unknown wallet to Coinbase Institutional Details",
+  "Aave’s Risk Manager Wants a Borrowing Speed Limit After Binance Hackers Took $44.6 Million",
+  "Already trading; no new catalyst",
+  "Already-known fund family; no forced buying unless new spot",
+  "ambcrypto",
+  "American Bitcoin’s $126M profit amid mining strain as rivals adopt AI",
+  "Amundi launches Ethereum-based share class for STOXX Europe 600 fund",
+  "Anchorage Digital Applies to Register as Swap Dealer With CFTC",
+  "Anchorage Digital Files With NFA to Offer Regulated Bitcoin…",
+  "Anti-crypto senator Warren gaining chair role may accelerate regulatory pressure on digital assets and exchanges",
+  "Attribution detail, not new loss or recovery",
+  "Base Activates Denim Upgrade, Cutting Block Times to 200ms",
+  "Base reduces block times from 2s to 200ms; marginal throughput gain already priced into L2 narratives",
+  "beincrypto",
+  "Ben Cowen Says After Nasdaq Fall, Bitcoin Could Head Back to $58,000",
+  "Binance Asks Arbitrum DAO to Release $31M in Crypto Frozen After Hack",
+  "Binance confirms $6.3B hack via social engineering; security breach of major exchange",
+  "Binance resumes withdrawals for more assets post-hack; recovery ongoing",
+  "Binance Says Fake Job Interview Opened the Door to $6.3B Hack",
+  "Binance seeks DAO release of $31M frozen after hack; recovery attempt, not new loss",
+  "binance_announcements",
+  "Bitcoin Drops Below $76K as Crypto Liquidations Top $1B",
+  "Bitcoin Drops To Its Lowest Level Since September As Stocks Erase Election Gains",
+  "Bitcoin erases post-election gains as Wall Street selloff triggers over $1 billion in crypto liquidations",
+  "Bitcoin Erases Post-Election Rally as Liquidations Top $1 Billion",
+  "Bitcoin ETF inflows rebound to $74.57 million, analyst eyes $363,000 target",
+  "Bitcoin falls 6% to $75,700 as AI stock selloff triggers $1.1 billion in liquidations",
+  "Bitcoin falls to $75,700 as AI stock rout triggers crypto liquidations",
+  "Bitcoin Price Crashes Over 5% to $76,000 as Tech Rout Wipes Out Leveraged Longs",
+  "Bitcoin Price Trades Near $76,000 as Nasdaq Tumbles into Correction",
+  "Bitcoin reclaims $80K – Why THESE signals threaten BTC’s price recovery",
+  "Bitcoin’s $74.6m ETF rebound meets a tougher US regulatory outlook",
+  "bitcoinmagazine",
+  "bitget",
+  "Bitget spot copy trade now supports rSOXX/USDT",
+  "BlackRock ETF sees $53M inflows; modest positive signal but already priced in",
+  "BREAKING: Democrats win both the US House and Senate, seizing control from Republicans. @WatcherGuru",
+  "BTC falls to Sept lows as post-election stock rally fades; macro headwind, not crypto-specific catalyst",
+  "BTC holding $76k as equities weaken; correlation play but no forced move yet",
+  "Cardano Price Under Pressure, Yet 58 Percent of All ADA Stays Staked",
+  "CFTC allows clearinghouses to use trust firms for settlement; procedural, not market-moving",
+  "CFTC forcing exchanges to ignore state rules on crypto trading; removes friction for national platforms",
+  "CFTC Staff Let Clearinghouses Use Trust Companies for Daily Settlement",
+  "Clears regulatory uncertainty, expands market access",
+  "cmc-news",
+  "coindesk",
+  "cointelegraph",
+  "Core Scientific (CORZ) to Exit Bitcoin Mining by Year-End as Colocation Hits $215 Million",
+  "Core Scientific exiting Bitcoin mining; minor supply-side event, AI reallocation",
+  "Core Scientific Plans to Exit Bitcoin Mining by Year-End as AI Growth Ramps Up",
+  "Core Scientific to Cease Bitcoin Mining, Focus Shifts to AI Infrastructure",
+  "Core Scientific to quit Bitcoin mining by year-end as AI business surges",
+  "Core Scientific’s Revenue Is Now 92% Colocation as Bitcoin Mining Shrinks",
+  "Crypto Has a New Enemy After Binance Hack, Michael Saylor Warns",
+  "Crypto Market Crash Sends BTC Below $76K as Liquidations Top $1B",
+  "cryptopotato",
+  "cryptoslate",
+  "Custodian applies for CFTC swap dealer status; expansion of institutional infrastructure",
+  "Custody provider seeks NFA registration to offer regulated Bitcoin futures; expands institutional on-ramp",
+  "defiant",
+  "Deflationary mechanism; already priced-in upgrade, slow roll",
+  "Democratic House control may trigger investigations into Trump crypto initiatives and CZ pardon, creating regulatory unc",
+  "Democrats exploring broader crypto market structure bill with enhanced SEC oversight; long-term regulatory uncertainty.",
+  "Democrats gain Congress; Nasdaq -5%, BTC -6%; $1B liquidated amid political shift",
+  "Democrats Take Control of the House; World Liberty Financial Likely Among First Investigation Targets, Trump’s Pardon of Zhao Changpeng Also to Be Reviewed Democrats have won control of the U.S. House",
+  "etf",
+  "ETF flows are priced-in but persistent outflows show weakeni",
+  "ETH down 7.9% after a week of ETF redemptions; outflows signal institutional selling pressure.",
+  "Ethereum L2 adopted for regulated institutional use; signals compliance path",
+  "Ethereum Layer 2 Becomes Zilliqa Plan for Regulated Institutions",
+  "Ethereum Price Eyes $2,460 as BlackRock Leads $53M ETF Inflows",
+  "Ethereum Price Falls 7.9 Percent to $2,237 After Seven Days of ETF Outflows",
+  "Exchange industry response to Binance hack; cold storage talk is defensive positioning, not new risk",
+  "Exchanges marketing security measures post-breach; no new loss figures or immediate systemic risk.",
+  "Fed and OCC review US banking security post-Binance; regulatory scrutiny on custody risk",
+  "Fed and OCC Review US Banks After Binance Breach; Experts Cite Security Gaps",
+  "Flow recap with macro headwind commentary, priced-in",
+  "Follow-up commentary; market already priced the hack itself.",
+  "Follow-up on confirmed $6.3B loss; impacts systemic confiden",
+  "Follow-up on known breach; regulatory reaction material",
+  "Follow-up profiling the attacker group; hack itself already priced in",
+  "Follow-up to existing incident, no new funds at risk",
+  "Follow-up to known event; market already priced in"
+ ]
+}

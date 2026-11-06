@@ -1,0 +1,1152 @@
+[
+ {
+  "s": "Mark price",
+  "seenOn": "glossary",
+  "lang": "pt"
+ },
+ {
+  "s": "of BTC positions were closed by the exchange, not by their owner - $261.0M long and $23.8M short.",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "of open BTC positions,",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "on BTC - more than the shorts lost, which is the shape of a squeeze down.",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "on BTC, against $261.0M on the long side.",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "on your margin",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "per 8 hours, so",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "Rate % / 8h",
+  "seenOn": "glossary",
+  "lang": "de"
+ },
+ {
+  "s": "Reward : Risk",
+  "seenOn": "glossary",
+  "lang": "de"
+ },
+ {
+  "s": "right now",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "Shorts were force-bought out of",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "slippage",
+  "seenOn": "glossary",
+  "lang": "espt"
+ },
+ {
+  "s": "Stop hunt",
+  "seenOn": "glossary",
+  "lang": "pt"
+ },
+ {
+  "s": "up 1.11%",
+  "seenOn": "glossary",
+  "lang": "esptde"
+ },
+ {
+  "s": "bitfinex",
+  "seenOn": "heatmap,liq,status",
+  "lang": "esptde"
+ },
+ {
+  "s": "dydx",
+  "seenOn": "heatmap,liq,status",
+  "lang": "esptde"
+ },
+ {
+  "s": "0.01 bps",
+  "seenOn": "heatmap,liqmap",
+  "lang": "esptde"
+ },
+ {
+  "s": "0.07 bps",
+  "seenOn": "heatmap,liqmap",
+  "lang": "esptde"
+ },
+ {
+  "s": "5 of 5",
+  "seenOn": "heatmap,squads",
+  "lang": "esptde"
+ },
+ {
+  "s": "$1 rows · finest",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$1.3M at 75,519",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$1.6M at 75,519",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$10 rows",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$15.4M below",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$2 rows",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$2.4M at 75,522",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$21.7M below",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$25 rows",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$250k costs",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$284.5M · 14,701 liqs",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$4.5M at 75,521",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$5 rows",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$564K at 75,535",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$568K at 75,534",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$603K at 75,502",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$762K at 75,525",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "$943K at 75,509",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "0.8 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "1 of 5",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "12h Long",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "12h rekt",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "12h Short",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "15s buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "1h Long",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "1h rekt",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "1h Short",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "2.9 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "22 / 24 pulled",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "23% buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "24 / 24 pulled",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "24h Long",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "24h rekt",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "24h Short",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "25% buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "25s buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "27% buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "3.4 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "3.7 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "35s buyers",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "401 coins",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "4h Long",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "4h rekt",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "4h Short",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "7.4 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "75,500 · -0.03% · standing 5m · Binance + Bybit + OKX + Bitget",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "75,500 · -0.04% · standing 5m · Binance + Bybit + OKX + Bitget",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Aggressive buying",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Aggressive selling",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "AML crackdown rumor + mining halt",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "as 30",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 18s · x2.9",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 1m · x7",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 2m · x6.1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 38s · x12.5",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 48s · x12.5",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 58s · x12.5",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 5m · x4.5",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 5m · x5.4",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "bid · 8s · x2.9",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "binance COIN-M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Both sides",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Building liquidation map…",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "BUYERS 1.0 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "BUYERS 1.2 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "BUYERS 2.2 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Buyers waiting",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Download",
+  "seenOn": "heatmap",
+  "lang": "de"
+ },
+ {
+  "s": "El Salvador BTC law launch dump",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "FLOW · last 15 min",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "for 32 coins and",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "for 76 coins.",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "Heaviest block",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Heaviest wall standing",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "how to read a liquidation heatmap",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "its usual pace.",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "led",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "liquidation calculators",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "live liquidations feed",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "Long $13.7M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Long $189.8M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Long $3.0M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Long $890.8M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "MarginPad's crypto liquidation heatmap maps estimated liquidation clusters on BTC, ETH and top altcoins in real time, built from our own eight-exchange liquidation feed rather than a third-party API. Anyone can read the live map for five minutes every 12 hours without an account; continuous access comes with Premium. Free and unmetered: a",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "New to reading it? Start with the guide:",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "offer · 23s · x2.8",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "offer · 33s · x2.8",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "offer · 33s · x3.1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Over-leveraged longs flushed",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Overheated rally correction",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "per $100",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "per-coin liquidation maps",
+  "seenOn": "heatmap",
+  "lang": "ptde"
+ },
+ {
+  "s": "quieter than usual",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Resting money",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.0 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.1 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.4 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.5 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.7 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "SELLERS 1.8 : 1",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Sellers waiting",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Short $35.3M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Short $7.0M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Short $788K",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Short $95.6M",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "span",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "split",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "spread 0.01 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "spread 0.13 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Tape speed",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Tesla stance reversal + regulatory tightening",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "They agree within",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "tightest spread 0.01 bps",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Turkey crypto-payment ban",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "U.S. capital-gains tax hike plan",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "unbroken",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "Yellen anti-BTC remarks",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "zoom",
+  "seenOn": "heatmap",
+  "lang": "es"
+ },
+ {
+  "s": "A 1% price move changes your margin by",
+  "seenOn": "levcalc",
+  "lang": "esptde"
+ },
+ {
+  "s": "Implied leverage",
+  "seenOn": "levcalc",
+  "lang": "esptde"
+ },
+ {
+  "s": "Liquidation distance (approx, long)",
+  "seenOn": "levcalc",
+  "lang": "esptde"
+ },
+ {
+  "s": "Margin (USD)",
+  "seenOn": "levcalc",
+  "lang": "de"
+ },
+ {
+  "s": "Move that wipes 50% of margin",
+  "seenOn": "levcalc",
+  "lang": "esptde"
+ },
+ {
+  "s": "Enlightening spirit",
+  "seenOn": "levels,squads",
+  "lang": "esptde"
+ },
+ {
+  "s": "achird",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "All love",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "behkou",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "bikazo0o",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Bybit Volume - won 1 time (28 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Bybit Volume - won 2 times (12 Oct 2026, 14 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "cslvr99",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Daily BTC Call - won 1 time (12 Oct 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Daily BTC Call - won 1 time (28 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Day trader",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Demo Spot - won 1 time (3 Aug 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Dios es bueno... Porque me ha dado este día.",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twarchartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twarcommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twdecommunit",
+  "seenOn": "levels",
+  "lang": "ptde"
+ },
+ {
+  "s": "e2e_e2e_twenchartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twencommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_tweschartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twescommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twfrchartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twfrcommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twfrliq",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twidchartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twidpaper",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twjachartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twjacommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twjapaper",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twkochartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twkocommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twkopaper",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twnlchartsd",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "e2e_e2e_twnlcommunit",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "follower",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "For everything you need to do in the market always make sure that, you are at the low risk management position to avoid huge loss....",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 1 time (17 Aug 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 1 time (20 Jul 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 1 time (28 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 1 time (29 Jun 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 1 time (31 Aug 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Highest ROE - won 3 times (3 Aug 2026, 13 Jul 2026, 6 Jul 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "I am a well disciplined person when it comes to trading...",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "I like Skunx.",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "imserious1000",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "ivy_smith",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Joker's wurld",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "King of the Moon - won 1 time (17 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Meme Spot - won 1 time (12 Oct 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "nurilove7",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "paper trades",
+  "seenOn": "levels",
+  "lang": "pt"
+ },
+ {
+  "s": "ruslantum",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "solo247",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Squad · ONE",
+  "seenOn": "levels",
+  "lang": "ptde"
+ },
+ {
+  "s": "Squad · PSS",
+  "seenOn": "levels",
+  "lang": "ptde"
+ },
+ {
+  "s": "Squad · RPR",
+  "seenOn": "levels",
+  "lang": "ptde"
+ },
+ {
+  "s": "Squad · ST08",
+  "seenOn": "levels",
+  "lang": "ptde"
+ },
+ {
+  "s": "stoffer",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "The Gold Room - won 1 time (14 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "The Gold Room - won 2 times (12 Oct 2026, 28 Sept 2026)",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "Why I am holding",
+  "seenOn": "levels",
+  "lang": "esptde"
+ },
+ {
+  "s": "$0 shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$10.0M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$10.2M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$114K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$12.1M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$12.4M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$14.1M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$14.2M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$14.6M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$142K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$15.4M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$15.4M shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$151K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$166.1M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$2.0M shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$2.7M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$218K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$23.8M shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$261.0M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$265K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$3.4M shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$312K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$33.6M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$374K shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$4.2M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$4.5M shorts",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$4.7M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ },
+ {
+  "s": "$4.8M longs",
+  "seenOn": "liq",
+  "lang": "esptde"
+ }
+]
