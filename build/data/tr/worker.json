@@ -1,0 +1,640 @@
+{
+ "susd": [
+  " trilyon",
+  " milyar",
+  " milyon"
+ ],
+ "ssr": {
+  "liqTotal": "Kripto vadeli işlem likidasyonları son 24 saatte toplam {t} oldu: takip edilen {n} coin'de {l} long ve {s} short.",
+  "whaleHold": "Hyperliquid balinaları şu anda takip edilen {n} cüzdanda toplam {t} değerinde açık pozisyon tutuyor - {s} short'a karşı {l} long, genel olarak {net}.",
+  "netLong": "net long",
+  "netShort": "net short",
+  "netFlat": "neredeyse dengede",
+  "fngNow": "Kripto Korku ve Açgözlülük Endeksi (Fear & Greed) şu anda {v} ({c}) seviyesinde",
+  "fngYday": ", dün {v} ({c})",
+  "fngWeek": " ve bir hafta önce {v}",
+  "fngRange": "Son {n} günde endeks {lo} ile {hi} arasında hareket etti.",
+  "fngCls": {
+   "Extreme Fear": "Aşırı Korku",
+   "Fear": "Korku",
+   "Neutral": "Nötr",
+   "Greed": "Açgözlülük",
+   "Extreme Greed": "Aşırı Açgözlülük"
+  }
+ },
+ "tbl": {
+  "MARKET STATE": "PİYASA DURUMU",
+  "Price": "Fiyat",
+  "Market cap": "Piyasa değeri",
+  "rank #": "sıra #",
+  "in 24h": "24 saatte",
+  "24h spot volume": "24 saatlik spot hacim",
+  "7-day change": "7 günlük değişim",
+  "30-day change": "30 günlük değişim",
+  "All-time high": "Tüm zamanların zirvesi",
+  "from here": "buradan",
+  "Funding rate": "Fonlama oranı",
+  "longs pay shorts": "long'lar short'lara öder",
+  "shorts pay longs": "short'lar long'lara öder",
+  "flat": "nötr",
+  "Open interest": "Open interest",
+  "Open interest / market cap": "Open interest / piyasa değeri",
+  "Liquidated in 24h": "24 saatte likide edilen",
+  "MarginPad collector, 8 exchanges": "MarginPad toplayıcısı, 8 borsa",
+  "- longs liquidated": "- likide olan long'lar",
+  "- shorts liquidated": "- likide olan short'lar",
+  "Accounts long / short": "Hesaplar long / short",
+  "our own daily records": "kendi günlük kayıtlarımız",
+  "Heaviest of those days": "Bu günlerin en ağırı",
+  "-day average": " günlük ortalama",
+  "Liquidations, ": "Likidasyonlar, ",
+  " / day": " / gün"
+ },
+ "mapPairs": [
+  [
+   " LIQUIDATION MAP &middot; UPDATED ",
+   " LİKİDASYON HARİTASI &middot; GÜNCELLENDİ "
+  ],
+  [
+   ">Price<",
+   ">Fiyat<"
+  ],
+  [
+   ">Liquidated 24h<",
+   ">24h likidasyon<"
+  ],
+  [
+   ">Long vs short<",
+   ">Long / short<"
+  ],
+  [
+   "Above &mdash; where shorts get liquidated",
+   "Yukarıda &mdash; short'ların likide olduğu yer"
+  ],
+  [
+   "Below &mdash; where longs get liquidated",
+   "Aşağıda &mdash; long'ların likide olduğu yer"
+  ],
+  [
+   ">trading now<",
+   ">şu anki fiyat<"
+  ],
+  [
+   "Zoom, hover a band, read the clusters",
+   "Yakınlaştır, bir bandın üzerine gel, kümeleri oku"
+  ],
+  [
+   "Deep perpetual liquidity",
+   "Derin perpetual likiditesi"
+  ],
+  [
+   "3.5% of your trading fees back",
+   "İşlem komisyonlarının 3.5%'i geri"
+  ],
+  [
+   " A $250,000 buy would really cost ",
+   " $250,000'lık bir alım gerçekte "
+  ],
+  [
+   " in slippage",
+   " slippage'a mal olur"
+  ],
+  [
+   "This is <strong",
+   "Bu <strong"
+  ],
+  [
+   "measured</strong>, not modelled: real limit orders standing on ",
+   "ölçülmüş</strong> veri, model değil: "
+  ],
+  [
+   " exchange order books a second ago. ",
+   " borsanın emir defterinde bir saniye önce bekleyen gerçek limit emirleri. "
+  ],
+  [
+   " exchange order books ",
+   " borsanın emir defterinde "
+  ],
+  [
+   " seconds ago. ",
+   " saniye önce bekleyen gerçek limit emirleri. "
+  ],
+  [
+   "The real book right now &middot; measured",
+   "Şu anki gerçek defter &middot; ölçülmüş"
+  ],
+  [
+   "Bids resting",
+   "Bekleyen alış emirleri"
+  ],
+  [
+   "Offers resting",
+   "Bekleyen satış emirleri"
+  ],
+  [
+   "within 0.25% of the price, summed across",
+   "fiyatın 0.25% yakınında, toplam"
+  ],
+  [
+   " venues",
+   " borsada"
+  ],
+  [
+   "A $250,000 buy would really cost",
+   "$250,000'lık bir alım gerçekte"
+  ],
+  [
+   "in slippage",
+   "slippage'a mal olur"
+  ],
+  [
+   " a $250,000 sell, ",
+   " $250,000'lık bir satış ise "
+  ],
+  [
+   "&middot; UPDATED ",
+   "&middot; GÜNCELLENDİ "
+  ],
+  [
+   "See it live:",
+   "Canlı izle:"
+  ],
+  [
+   "Practice risk-free with paper trading",
+   "Paper trading ile risksiz pratik yap"
+  ],
+  [
+   "Practice risk-free",
+   "Risksiz pratik yap"
+  ],
+  [
+   "Full liquidation calculator",
+   "Tam likidasyon hesaplayıcı"
+  ],
+  [
+   "24h liquidation totals",
+   "24 saatlik likidasyon toplamları"
+  ],
+  [
+   "Live liquidation feed",
+   "Canlı likidasyon akışı"
+  ],
+  [
+   "LIVE MARKET DATA",
+   "CANLI PİYASA VERİSİ"
+  ],
+  [
+   "It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ",
+   "Bu, yukarıdaki bölgelerden farklı bir soruyu yanıtlar ve aradaki fark akılda tutulmaya değer: defter, birinin koymayı <em>seçtiği</em> ve her an geri çekebileceği emirleri gösterir; likidasyon bölgesi ise sahibi istese de istemese de kaldıracın kapatıldığı yerdir &mdash; ve hiçbir emir defteri bunu, hangi mesafede olursa olsun göstermez. "
+  ],
+  [
+   "On top of which the deepest book we can read only reaches ",
+   "Üstelik okuyabildiğimiz en derin defter bile fiyattan yalnızca "
+  ],
+  [
+   " from the price",
+   " uzağa kadar uzanıyor"
+  ],
+  [
+   ", while the nearest zone above sits ",
+   "; oysa yukarıdaki en yakın bölge "
+  ],
+  [
+   "% away",
+   "% uzakta"
+  ],
+  [
+   ": past that, even the resting orders are out of sight.",
+   ": bunun ötesinde bekleyen emirler bile görünmez."
+  ],
+  [
+   "Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ",
+   "Çubuk uzunluğu, duran bir bölgenin bu listedeki diğerlerine göre ağırlığıdır; yanındaki sayı, fiyata yakın ortalama duran bandın kaç katını taşıdığını gösterir. Bunlar "
+  ],
+  [
+   "modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.",
+   "modellenmiş</strong> bölgelerdir, el değiştirmiş para değil &mdash; buradaki tek dolar rakamları yukarıdaki 24 saatlik toplamlardır ve toplayıcımız bunların gerçekleşmesini canlı izledi."
+  ],
+  [
+   ">measured<",
+   ">ölçülmüş<"
+  ],
+  [
+   ">modelled<",
+   ">modellenmiş<"
+  ],
+  [
+   " from longs and ",
+   " long'lardan ve "
+  ],
+  [
+   " from shorts",
+   " short'lardan"
+  ],
+  [
+   ", so the recent damage came on the way down",
+   "; yani son hasar düşüşte geldi"
+  ],
+  [
+   ", so shorts were squeezed on a move up",
+   "; yani short'lar bir yükselişte squeeze oldu"
+  ],
+  [
+   ", a fairly even two-sided battle",
+   "; iki taraf arasında oldukça dengeli bir savaş"
+  ],
+  [
+   "There is currently ",
+   "Şu anda piyasanın test edebileceği "
+  ],
+  [
+   " of open ",
+   " tutarında "
+  ],
+  [
+   " interest that the market can test",
+   " open interest bulunuyor"
+  ],
+  [
+   " (roughly steady over 24 hours)",
+   " (24 saatte yaklaşık sabit)"
+  ],
+  [
+   " (up ",
+   " (bir günde +"
+  ],
+  [
+   " (down ",
+   " (bir günde -"
+  ],
+  [
+   "% in a day)",
+   "%)"
+  ],
+  [
+   "Funding is flat right now - no crowded side for the market to hunt.",
+   "Funding şu anda nötr - piyasanın avlayacağı kalabalık bir taraf yok."
+  ],
+  [
+   "Funding is positive (",
+   "Funding pozitif ("
+  ],
+  [
+   ") - the crowd is long, and long clusters below the price are usually the first this map fills.",
+   ") - kalabalık long tarafında ve fiyatın altındaki long kümeleri genelde bu haritanın ilk doldurduğu yerlerdir."
+  ],
+  [
+   "Funding is negative (",
+   "Funding negatif ("
+  ],
+  [
+   ") - the crowd is short, and short clusters above the price are the first targets.",
+   ") - kalabalık short tarafında ve fiyatın üstündeki short kümeleri ilk hedeflerdir."
+  ],
+  [
+   " trades at ",
+   " fiyatı: "
+  ],
+  [
+   ", up ",
+   ", değişim +"
+  ],
+  [
+   ", down ",
+   ", değişim -"
+  ],
+  [
+   "% in 24 hours",
+   "% (24 saat)"
+  ],
+  [
+   "Live liquidation feed",
+   "Canlı likidasyon akışı"
+  ],
+  [
+   "24h totals by coin",
+   "Coin bazında 24 saatlik toplamlar"
+  ],
+  [
+   " billion",
+   " milyar"
+  ],
+  [
+   " million",
+   " milyon"
+  ]
+ ],
+ "mapFrag": {
+  "openHeatmap": "Canlı {c} ısı haritasını aç",
+  "tradeOn": "Bybit'te {c} işlemi yap",
+  "hitMap": "Son 24 saatte bu haritada {t} tutarında {c} pozisyonu likide oldu - ",
+  "quiet": "{c} haritası sakin geçti - son 24 saatte $50K'dan az likidasyon oldu."
+ },
+ "compPairs": [
+  [
+   ">Day of season<",
+   ">Sezonun günü<"
+  ],
+  [
+   "Right now it is <b>",
+   "Şu anda <b>"
+  ],
+  [
+   "</b>. This season ends <b>",
+   "</b>. Bu sezon <b>"
+  ],
+  [
+   "</b>, in ",
+   "</b> tarihinde, "
+  ],
+  [
+   " days, and the next one starts the same day - you can join on any day and still place.",
+   " gün sonra bitiyor ve bir sonraki aynı gün başlıyor - istediğin gün katılıp yine de derece alabilirsin."
+  ],
+  [
+   " hours, and the next one starts the same day - you can join on any day and still place.",
+   " saat sonra bitiyor ve bir sonraki aynı gün başlıyor - istediğin gün katılıp yine de derece alabilirsin."
+  ],
+  [
+   "<span>Entry <b>",
+   "<span>Katılım <b>"
+  ],
+  [
+   "<span>Deposit <b>none</b></span>",
+   "<span>Para yatırma <b>yok</b></span>"
+  ],
+  [
+   "</b> person is competing</span>",
+   "</b> kişi yarışıyor</span>"
+  ],
+  [
+   "</b> people are competing</span>",
+   "</b> kişi yarışıyor</span>"
+  ],
+  [
+   "</b> placements</span>",
+   "</b> ödüllü derece</span>"
+  ],
+  [
+   "<h2>The ten boards</h2>",
+   "<h2>On tablo</h2>"
+  ],
+  [
+   "Free - daily call",
+   "Ücretsiz - günlük tahmin"
+  ],
+  [
+   "Free - Demo Spot",
+   "Ücretsiz - Demo Spot"
+  ],
+  [
+   "<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>",
+   "<p>Her tablo farklı bir şeyi puanlar, yani tek bir trading tarzı hepsini birden kazanamaz. Her biri ilk sıralarına ödül öder ve birden fazla tabloda derece alabilirsin.</p>"
+  ],
+  [
+   ">Leading<",
+   ">Lider<"
+  ],
+  [
+   ">Open board<",
+   ">Açık tablo<"
+  ],
+  [
+   ">nobody has scored yet<",
+   ">henüz kimse puan almadı<"
+  ],
+  [
+   ">one qualifying trade puts you first<",
+   ">geçerli tek bir işlem seni birinci yapar<"
+  ],
+  [
+   " entered</div>",
+   " katılımcı</div>"
+  ],
+  [
+   "% win rate",
+   "% kazanma oranı"
+  ],
+  [
+   " green days",
+   " yeşil gün"
+  ],
+  [
+   " green day",
+   " yeşil gün"
+  ],
+  [
+   " wagered",
+   " bahis"
+  ],
+  [
+   ">Real money<",
+   ">Gerçek para<"
+  ],
+  [
+   ">Free - paper<",
+   ">Ücretsiz - paper<"
+  ],
+  [
+   ">Measured ",
+   ">Ölçüm zamanı "
+  ],
+  [
+   " UTC by MarginPad, from the same data that pays the prizes.",
+   " UTC - MarginPad, ödülleri ödeyen verinin aynısından ölçer."
+  ],
+  [
+   ">Highest ROE<",
+   ">En yüksek ROE<"
+  ],
+  [
+   ">Green Days<",
+   ">Yeşil Günler<"
+  ],
+  [
+   ">Best Win Rate<",
+   ">En iyi kazanma oranı<"
+  ],
+  [
+   ">Season XP<",
+   ">Sezon XP<"
+  ],
+  [
+   ">Bybit Volume<",
+   ">Bybit hacmi<"
+  ],
+  [
+   ">the best return on a single closed trade.<",
+   ">kapanmış tek bir işlemdeki en iyi getiri.<"
+  ],
+  [
+   ">the most days closed in profit.<",
+   ">kârla kapanan en çok gün.<"
+  ],
+  [
+   ">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",
+   ">şanslı bir seri kazanamasın diye Wilson skoruyla sıralanan en yüksek kazanma oranı.<"
+  ],
+  [
+   ">the most XP earned this season.<",
+   ">bu sezon kazanılan en çok XP.<"
+  ],
+  [
+   ">the best points score across wins and losses.<",
+   ">kazançlar ve kayıplar genelinde en iyi puan.<"
+  ],
+  [
+   ">the most REAL futures volume on a Bybit account opened through MarginPad.<",
+   ">MarginPad üzerinden açılan bir Bybit hesabındaki en yüksek GERÇEK vadeli işlem hacmi.<"
+  ],
+  [
+   ">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">iki sezonluk bir yarışmada, MarginPad üzerinden açılan bir Moon hesabıyla yapılan en yüksek GERÇEK bahis tutarı.<"
+  ],
+  [
+   ">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">iki sezonluk bir yarışmada, MarginPad üzerinden açılan bir Moon hesabıyla yapılan en yüksek GERÇEK bahis tutarı.<"
+  ]
+ ],
+ "compFrag": {
+  "dayOf": "{y} günün {x}. günü",
+  "onTheLine": "bu sezon ortada, katılım ücretsiz"
+ },
+ "cats": {
+  "ideas": "Trading fikirleri",
+  "analysis": "Teknik analiz",
+  "news": "Piyasa haberleri",
+  "education": "Eğitim",
+  "crypto": "Kripto",
+  "forex": "Forex",
+  "stocks": "Hisseler",
+  "futures": "Vadeli işlemler",
+  "strategies": "Stratejiler",
+  "psychology": "Psikoloji",
+  "risk": "Risk yönetimi",
+  "indicators": "Göstergeler",
+  "platform": "Platform güncellemeleri",
+  "thesis": "Tezler"
+ },
+ "ask": {
+  "Bitcoin is down ": "Bitcoin düşüşte: ",
+  "Bitcoin is up ": "Bitcoin yükselişte: ",
+  " in 24 hours": " (24 saat)",
+  "The biggest move of the last 24 hours was ": "Son 24 saatin en büyük hareketi ",
+  "No move in the last 24 hours was big enough to need an explanation. The last one was ": "Son 24 saatteki hiçbir hareket açıklama gerektirecek kadar büyük değildi. Sonuncusu ",
+  " at ": " ile ",
+  " UTC: ": " UTC'de yaşandı: ",
+  "we could not prove one cause for it": "tek bir nedenini kanıtlayamadık",
+  " Over 30 days we found ": " Son 30 günde ",
+  " abnormal Bitcoin moves and can name the cause of ": " anormal Bitcoin hareketi bulduk; nedenini açıklayabildiğimiz oran ",
+  " of them.": ".",
+  "When (UTC)": "Ne zaman (UTC)",
+  "Move": "Hareket",
+  "What moved it": "Ne hareket ettirdi",
+  "first report of the news, liquidations, whales and open interest measured at that minute": "haberin ilk bildirimi ile o dakikada ölçülen likidasyonlar, balinalar ve open interest",
+  "too few": "çok az",
+  "over 100x ": "100x üzeri ",
+  " closes": " kapanış",
+  "thin - no rate printed": "örnek az - oran gösterilmiyor",
+  "Here, free - under the same rules a paid challenge uses": "Burada, ücretsiz - ücretli bir challenge ile aynı kurallarla",
+  "Ten times or less - and here is the count behind that": "On kat veya daha az - arkasındaki sayılar da burada",
+  "Positive on Bitcoin: ": "Bitcoin'de pozitif: ",
+  "Negative on Bitcoin: ": "Bitcoin'de negatif: ",
+  "Flat on Bitcoin": "Bitcoin'de nötr",
+  "Positive across most of the market": "Piyasanın çoğunda pozitif",
+  "Negative across most of the market": "Piyasanın çoğunda negatif",
+  "<strong>longs are paying shorts</strong>": "<strong>long'lar short'lara ödüyor</strong>",
+  "<strong>shorts are paying longs</strong>": "<strong>short'lar long'lara ödüyor</strong>",
+  "neither side is paying a meaningful premium": "hiçbir taraf kayda değer bir prim ödemiyor",
+  "Bitcoin funding is {f}, so {who}. ": "Bitcoin funding'i {f}, yani {who}. ",
+  "longs pay": "long'lar öder",
+  "shorts pay": "short'lar öder",
+  "flat": "nötr",
+  "read from each exchange&#39;s own public funding endpoint": "her borsanın kendi herkese açık funding endpoint&#39;inden okunur",
+  "free JSON at": "ücretsiz JSON:",
+  "and": "ve",
+  "MarginPad&#39;s own collector, {ex} exchange websockets": "MarginPad&#39;in kendi toplayıcısı, {ex} borsa websocket&#39;i",
+  "Longs, {lp}% of the damage": "Long'lar: hasarın {lp}%",
+  "Shorts, {sp}% of the damage": "Short'lar: hasarın {sp}%",
+  "Close to even, {lp}% long": "Neredeyse eşit, {lp}% long",
+  "% long": "% long",
+  "% short": "% short",
+  "long": "long",
+  "short": "short",
+  " - {s} {side} on {ven}": " - {ven} borsasında {s} {side}",
+  "{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}": "{a1}: 100x üzerinde işlemlerin {a2} kadarı likidasyonla bitti - 1-2x'te {a3}",
+  "{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month": "{a1} kapanış &middot; medyan ROE {a2}% &middot; aydaki payı {a3}%",
+  "{a1} of {a2} finished runs passed - {a3}%": "Tamamlanan {a2} denemeden {a1} tanesi geçti - {a3}%",
+  "+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book": "+{a1}% hedef, {a2}% günlük zarar, {a3}% maksimum drawdown, en az {a4} işlem günü, ${a5} hesapta",
+  "{a1} closes &middot; median {a2}% ROE": "{a1} kapanış &middot; medyan ROE {a2}%",
+  "Bitcoin funding is {a1}, so {a2}. ": "Bitcoin funding'i {a1}, yani {a2}. ",
+  "Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative": "Takip ettiğimiz {a1} perpetual kontrattan {a2} tanesi pozitif, {a3} tanesi negatif",
+  ", with the widest spread running from {a1} on {a2} down to {a3} on {a4}": "; en geniş aralık {a1} ({a2}) ile {a3} ({a4}) arasında",
+  "{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.": "Son 24 saatte {a2} borsada {a1} kaldıraçlı pozisyon zorla kapatıldı; toplam değer {a3}, {a4} coin'e yayılmış durumda. Bu, likidasyon başına ortalama {a5} demek - yani tipik olarak silinen pozisyonun büyüklüğü; kaldıraçla kimin işlem yaptığını manşetteki dolar rakamından daha iyi anlatır.",
+  "{a1} in the last 24 hours": "son 24 saatte {a1}",
+  "MarginPad&#39;s own collector, {a1} exchange websockets": "MarginPad&#39;in kendi toplayıcısı, {a1} borsa websocket&#39;i",
+  "Longs, {a1}% of the damage": "Long'lar: hasarın {a1}%",
+  "Shorts, {a1}% of the damage": "Short'lar: hasarın {a1}%",
+  "Close to even, {a1}% long": "Neredeyse eşit, {a1}% long",
+  "Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}": "Son 24 saatte {a2} borsada likide edilen {a1} tutarın {a3} kadarı ({a4}%) long pozisyonlardan, {a5} kadarı ({a6}%) short'lardan geldi. {a7}",
+  "The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).": "Toplayıcımızın son 24 saatte gördüğü en büyük tekil zorunlu kapanış, {a3} borsasında {a2} için açılmış bir <strong>{a1}</strong> pozisyonuydu; kapandığı fiyattan değeri {a4}. Bu, aynı zaman aralığında piyasa genelinde likide edilen her şeyin {a5} kadarı ({a7} pozisyonda toplam {a6}).",
+  " - {a1} {a2} on {a3}": " - {a3} borsasında {a1} {a2}"
+ },
+ "spaMeta": {
+  "/paper-trade": {
+   "title": "Kripto Paper Trading - Ücretsiz Simülatör, Kayıt Yok, Gerçek Ödüller | MarginPad",
+   "desc": "Kayıt gerekmeden ücretsiz kripto paper trading: canlı vadeli fiyatlar, 1000x kaldıraç, gerçek komisyon ve likidasyon. 14 günlük sezonlar gerçek USDT ödülü verir."
+  },
+  "/calculators": {
+   "title": "Kripto Likidasyon Hesaplayıcı, Pozisyon Büyüklüğü ve PnL | MarginPad",
+   "desc": "Ücretsiz kripto vadeli hesaplayıcılar: borsaya göre likidasyon fiyatı (Bybit, Binance, OKX, Hyperliquid), pozisyon büyüklüğü, PnL ve risk/ödül. Kayıt gerekmez."
+  },
+  "/charts": {
+   "title": "Bar Replay, Karşılaştırma ve 27 Göstergeli Kripto Grafikleri | MarginPad",
+   "desc": "Masaüstü ve telefonda ücretsiz canlı vadeli grafikler: 27 gösterge, bar replay, iki coin'i mum mum karşılaştırma, çizim araçları ve tek panelde hızlı paper trade."
+  },
+  "/screener": {
+   "title": "Kripto Vadeli Screener - Puanlı Setup'lar, Funding ve OI | MarginPad",
+   "desc": "Ücretsiz kripto vadeli screener: önde gelen USDT perp'lerinde RSI, MACD, funding ve open interest ile 0-100 teknik puan, ayrıca hazır işlem setup'ları."
+  },
+  "/heatmap": {
+   "title": "Kripto Likidasyon Isı Haritası - Canlı, Ücretsiz, Girişsiz | MarginPad",
+   "desc": "BTC, ETH ve büyük altcoin'ler için canlı likidasyon ısı haritası: kaldıraçlı pozisyonların nerede kümelendiğini gör. 8 borsadan gerçek veri, ücretsiz önizleme."
+  },
+  "/swap": {
+   "title": "Hesapsız Kripto Swap - 900+ Coin, Kayıt Yok | MarginPad",
+   "desc": "Hesap açmadan 900+ kripto parayı swap et: kayıt yok, saklama yok, zincirler arası cüzdandan cüzdana; kur, göndermeden önce gösterilir."
+  }
+ },
+ "h1": {
+  "/paper-trade": "Canlı fiyatlarla kripto paper trading",
+  "/calculators": "Kripto vadeli işlem hesaplayıcıları",
+  "/charts": "Çoklu grafik kripto çalışma alanı",
+  "/screener": "Kripto vadeli işlem screener'ı",
+  "/heatmap": "Canlı kripto likidasyon ısı haritası",
+  "/swap": "Kripto swap"
+ },
+ "months": [
+  "Oca",
+  "Şub",
+  "Mar",
+  "Nis",
+  "May",
+  "Haz",
+  "Tem",
+  "Ağu",
+  "Eyl",
+  "Eki",
+  "Kas",
+  "Ara"
+ ],
+ "misc": {
+  "measured": "Ölçüm: ",
+  "highImpact": "YÜKSEK ETKİ",
+  "calUpcoming": "Sırada ne var",
+  "calSub": "Sıradaki {n} planlı etkinlik &middot; tüm saatler UTC &middot; güncellendi ",
+  "kickLev": "CANLI - ŞU AN {p}X",
+  "kickEx": "CANLI PİYASA VERİSİ",
+  "kickCoin": "CANLI {P} VERİSİ"
+ }
+}

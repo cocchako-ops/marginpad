@@ -1,0 +1,640 @@
+{
+ "susd": [
+  "兆",
+  "十億",
+  "百万"
+ ],
+ "ssr": {
+  "liqTotal": "暗号資産先物の清算は過去24時間で合計{t}です。内訳はロング{l}、ショート{s}で、対象は{n}銘柄です。",
+  "whaleHold": "Hyperliquidのクジラは現在、追跡中の{n}ウォレットで合計{t}のポジションを保有しています。ロング{l}に対してショート{s}で、全体では{net}です。",
+  "netLong": "ネットロング",
+  "netShort": "ネットショート",
+  "netFlat": "ほぼ均衡",
+  "fngNow": "Crypto Fear & Greed指数は現在{v}（{c}）",
+  "fngYday": "、昨日は{v}（{c}）",
+  "fngWeek": "、1週間前は{v}",
+  "fngRange": "過去{n}日間、指数は{lo}から{hi}の範囲で推移しました。",
+  "fngCls": {
+   "Extreme Fear": "極度の恐怖",
+   "Fear": "恐怖",
+   "Neutral": "中立",
+   "Greed": "強欲",
+   "Extreme Greed": "極度の強欲"
+  }
+ },
+ "tbl": {
+  "MARKET STATE": "市場の状況",
+  "Price": "価格",
+  "Market cap": "時価総額",
+  "rank #": "順位 #",
+  "in 24h": "24h",
+  "24h spot volume": "24h現物出来高",
+  "7-day change": "7日間の変動",
+  "30-day change": "30日間の変動",
+  "All-time high": "過去最高値",
+  "from here": "現在値から",
+  "Funding rate": "資金調達率",
+  "longs pay shorts": "ロングがショートに支払い",
+  "shorts pay longs": "ショートがロングに支払い",
+  "flat": "ほぼゼロ",
+  "Open interest": "未決済建玉",
+  "Open interest / market cap": "未決済建玉 / 時価総額",
+  "Liquidated in 24h": "24h清算額",
+  "MarginPad collector, 8 exchanges": "MarginPad独自コレクター、8取引所",
+  "- longs liquidated": "- ロングの清算",
+  "- shorts liquidated": "- ショートの清算",
+  "Accounts long / short": "口座比率 ロング / ショート",
+  "our own daily records": "当サイト独自の日次記録",
+  "Heaviest of those days": "そのうち最大の日",
+  "-day average": "日間平均",
+  "Liquidations, ": "清算、",
+  " / day": " / 日"
+ },
+ "mapPairs": [
+  [
+   " LIQUIDATION MAP &middot; UPDATED ",
+   " 清算マップ &middot; 更新 "
+  ],
+  [
+   ">Price<",
+   ">価格<"
+  ],
+  [
+   ">Liquidated 24h<",
+   ">24h清算額<"
+  ],
+  [
+   ">Long vs short<",
+   ">ロング vs ショート<"
+  ],
+  [
+   "Above &mdash; where shorts get liquidated",
+   "上側 &mdash; ショートが清算される価格帯"
+  ],
+  [
+   "Below &mdash; where longs get liquidated",
+   "下側 &mdash; ロングが清算される価格帯"
+  ],
+  [
+   ">trading now<",
+   ">現在の価格<"
+  ],
+  [
+   "Zoom, hover a band, read the clusters",
+   "ズームして帯にカーソルを合わせ、クラスターを読み解く"
+  ],
+  [
+   "Deep perpetual liquidity",
+   "厚い無期限先物の流動性"
+  ],
+  [
+   "3.5% of your trading fees back",
+   "取引手数料の3.5%をキャッシュバック"
+  ],
+  [
+   " A $250,000 buy would really cost ",
+   " $250,000の買い注文なら実際に "
+  ],
+  [
+   " in slippage",
+   " のスリッページ"
+  ],
+  [
+   "This is <strong",
+   "これは<strong"
+  ],
+  [
+   "measured</strong>, not modelled: real limit orders standing on ",
+   "実測値</strong>で、モデル推定ではありません。"
+  ],
+  [
+   " exchange order books a second ago. ",
+   "つの取引所のオーダーブックにたった今並んでいる、実際の指値注文です。"
+  ],
+  [
+   " exchange order books ",
+   "つの取引所のオーダーブックに"
+  ],
+  [
+   " seconds ago. ",
+   "秒前の時点で並んでいた、実際の指値注文です。"
+  ],
+  [
+   "The real book right now &middot; measured",
+   "現在の実際のオーダーブック &middot; 実測"
+  ],
+  [
+   "Bids resting",
+   "買い注文の残量"
+  ],
+  [
+   "Offers resting",
+   "売り注文の残量"
+  ],
+  [
+   "within 0.25% of the price, summed across",
+   "価格から0.25%以内の合計、集計対象："
+  ],
+  [
+   " venues",
+   "取引所"
+  ],
+  [
+   "A $250,000 buy would really cost",
+   "$250,000の買い注文なら実際に"
+  ],
+  [
+   "in slippage",
+   "のスリッページ"
+  ],
+  [
+   " a $250,000 sell, ",
+   " $250,000の売り注文なら "
+  ],
+  [
+   "&middot; UPDATED ",
+   "&middot; 更新 "
+  ],
+  [
+   "See it live:",
+   "リアルタイムで見る："
+  ],
+  [
+   "Practice risk-free with paper trading",
+   "ペーパートレードでリスクなしで練習"
+  ],
+  [
+   "Practice risk-free",
+   "リスクなしで練習"
+  ],
+  [
+   "Full liquidation calculator",
+   "清算価格計算ツール（詳細版）"
+  ],
+  [
+   "24h liquidation totals",
+   "24h清算合計"
+  ],
+  [
+   "Live liquidation feed",
+   "リアルタイム清算フィード"
+  ],
+  [
+   "LIVE MARKET DATA",
+   "リアルタイム市場データ"
+  ],
+  [
+   "It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ",
+   "これは上のゾーンとは別の問いに答えるもので、その違いは押さえておく価値があります。オーダーブックに表示されるのは、誰かが<em>自ら</em>出し、いつでも取り消せる注文です。一方、清算ゾーンは持ち主の意思に関係なくレバレッジが決済される場所です &mdash; そしてその水準は、どれだけ離れていても、どのオーダーブックにも表れません。"
+  ],
+  [
+   "On top of which the deepest book we can read only reaches ",
+   "さらに、読み取れる最も深いオーダーブックでも、届くのは価格から"
+  ],
+  [
+   " from the price",
+   "までです"
+  ],
+  [
+   ", while the nearest zone above sits ",
+   "。一方、上側で最も近いゾーンは"
+  ],
+  [
+   "% away",
+   "%先にあります"
+  ],
+  [
+   ": past that, even the resting orders are out of sight.",
+   "。その先では、未約定の注文すら見えません。"
+  ],
+  [
+   "Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ",
+   "バーの長さは、このリストの他のゾーンと比べた各ゾーンの重みを表し、横の数字は価格付近の平均的な帯の何倍の重みを持つかを示します。これらは"
+  ],
+  [
+   "modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.",
+   "モデル推定</strong>のゾーンであり、実際に取引された金額ではありません &mdash; ここでドル表示されているのは上の24h合計だけで、当サイトのコレクターが実際に観測した数字です。"
+  ],
+  [
+   ">measured<",
+   ">実測<"
+  ],
+  [
+   ">modelled<",
+   ">推定<"
+  ],
+  [
+   " from longs and ",
+   "がロング、"
+  ],
+  [
+   " from shorts",
+   "がショート"
+  ],
+  [
+   ", so the recent damage came on the way down",
+   "。直近の損失は下落局面で発生しました"
+  ],
+  [
+   ", so shorts were squeezed on a move up",
+   "。上昇局面でショートが踏み上げられました"
+  ],
+  [
+   ", a fairly even two-sided battle",
+   "で、ほぼ互角の攻防です"
+  ],
+  [
+   "There is currently ",
+   "現在、市場が試しうる"
+  ],
+  [
+   " of open ",
+   "の"
+  ],
+  [
+   " interest that the market can test",
+   "未決済建玉があります"
+  ],
+  [
+   " (roughly steady over 24 hours)",
+   "（24時間でほぼ横ばい）"
+  ],
+  [
+   " (up ",
+   "（前日比+"
+  ],
+  [
+   " (down ",
+   "（前日比-"
+  ],
+  [
+   "% in a day)",
+   "%）"
+  ],
+  [
+   "Funding is flat right now - no crowded side for the market to hunt.",
+   "資金調達率は現在ほぼゼロです。市場が狙うような偏った側はありません。"
+  ],
+  [
+   "Funding is positive (",
+   "資金調達率はプラス（"
+  ],
+  [
+   ") - the crowd is long, and long clusters below the price are usually the first this map fills.",
+   "）です。多数派はロングで、このマップでは通常、価格の下にあるロングのクラスターが最初に清算されます。"
+  ],
+  [
+   "Funding is negative (",
+   "資金調達率はマイナス（"
+  ],
+  [
+   ") - the crowd is short, and short clusters above the price are the first targets.",
+   "）です。多数派はショートで、価格の上にあるショートのクラスターが最初の標的になります。"
+  ],
+  [
+   " trades at ",
+   "の価格は"
+  ],
+  [
+   ", up ",
+   "、+"
+  ],
+  [
+   ", down ",
+   "、-"
+  ],
+  [
+   "% in 24 hours",
+   "%（24時間）"
+  ],
+  [
+   "Live liquidation feed",
+   "リアルタイム清算フィード"
+  ],
+  [
+   "24h totals by coin",
+   "銘柄別24h合計"
+  ],
+  [
+   " billion",
+   "十億"
+  ],
+  [
+   " million",
+   "百万"
+  ]
+ ],
+ "mapFrag": {
+  "openHeatmap": "{c}のリアルタイムヒートマップを開く",
+  "tradeOn": "Bybitで{c}を取引",
+  "hitMap": "過去24時間に、このマップで{c}のポジション{t}が清算されました。内訳は",
+  "quiet": "{c}のマップは静かです。過去24時間の清算額は$50K未満です。"
+ },
+ "compPairs": [
+  [
+   ">Day of season<",
+   ">シーズンの経過日数<"
+  ],
+  [
+   "Right now it is <b>",
+   "現在は<b>"
+  ],
+  [
+   "</b>. This season ends <b>",
+   "</b>です。今シーズンの終了は<b>"
+  ],
+  [
+   "</b>, in ",
+   "</b>、残り"
+  ],
+  [
+   " days, and the next one starts the same day - you can join on any day and still place.",
+   "日です。次のシーズンは同じ日に始まるので、いつ参加しても入賞を狙えます。"
+  ],
+  [
+   " hours, and the next one starts the same day - you can join on any day and still place.",
+   "時間です。次のシーズンは同じ日に始まるので、いつ参加しても入賞を狙えます。"
+  ],
+  [
+   "<span>Entry <b>",
+   "<span>参加費 <b>"
+  ],
+  [
+   "<span>Deposit <b>none</b></span>",
+   "<span>入金 <b>不要</b></span>"
+  ],
+  [
+   "</b> person is competing</span>",
+   "</b>人が参加中</span>"
+  ],
+  [
+   "</b> people are competing</span>",
+   "</b>人が参加中</span>"
+  ],
+  [
+   "</b> placements</span>",
+   "</b>枠の入賞</span>"
+  ],
+  [
+   "<h2>The ten boards</h2>",
+   "<h2>十種類のボード</h2>"
+  ],
+  [
+   "Free - daily call",
+   "無料 - デイリー予想"
+  ],
+  [
+   "Free - Demo Spot",
+   "無料 - Demo Spot"
+  ],
+  [
+   "<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>",
+   "<p>ボードごとに評価基準が異なるため、一つのトレードスタイルですべてを制することはできません。各ボードが上位入賞者に賞金を支払い、複数のボードで同時に入賞することもできます。</p>"
+  ],
+  [
+   ">Leading<",
+   ">首位<"
+  ],
+  [
+   ">Open board<",
+   ">首位は空席<"
+  ],
+  [
+   ">nobody has scored yet<",
+   ">まだスコアを記録した人はいません<"
+  ],
+  [
+   ">one qualifying trade puts you first<",
+   ">条件を満たすトレードを一件決めれば首位です<"
+  ],
+  [
+   " entered</div>",
+   "人がエントリー</div>"
+  ],
+  [
+   "% win rate",
+   "%の勝率"
+  ],
+  [
+   " green days",
+   "日のプラス収支日"
+  ],
+  [
+   " green day",
+   "日のプラス収支日"
+  ],
+  [
+   " wagered",
+   "をベット"
+  ],
+  [
+   ">Real money<",
+   ">リアルマネー<"
+  ],
+  [
+   ">Free - paper<",
+   ">無料 - ペーパー<"
+  ],
+  [
+   ">Measured ",
+   ">計測 "
+  ],
+  [
+   " UTC by MarginPad, from the same data that pays the prizes.",
+   " UTC（MarginPadが計測。賞金の支払いと同じデータに基づきます）。"
+  ],
+  [
+   ">Highest ROE<",
+   ">最高ROE<"
+  ],
+  [
+   ">Green Days<",
+   ">Green Days<"
+  ],
+  [
+   ">Best Win Rate<",
+   ">最高勝率<"
+  ],
+  [
+   ">Season XP<",
+   ">シーズンXP<"
+  ],
+  [
+   ">Bybit Volume<",
+   ">Bybit出来高<"
+  ],
+  [
+   ">the best return on a single closed trade.<",
+   ">決済済みトレード単体で最も高いリターン。<"
+  ],
+  [
+   ">the most days closed in profit.<",
+   ">利益で終えた日数が最も多い人。<"
+  ],
+  [
+   ">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",
+   ">最も高い勝率。偶然の連勝で勝てないよう、Wilsonスコアで順位を決めます。<"
+  ],
+  [
+   ">the most XP earned this season.<",
+   ">今シーズンに獲得したXPが最も多い人。<"
+  ],
+  [
+   ">the best points score across wins and losses.<",
+   ">的中と外れを合計したポイントが最も高い人。<"
+  ],
+  [
+   ">the most REAL futures volume on a Bybit account opened through MarginPad.<",
+   ">MarginPad経由で開設したBybit口座での、実際の先物出来高が最も多い人。<"
+  ],
+  [
+   ">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">MarginPad経由で開設したMoon口座での実際のベット額が最も多い人。シーズン二つ分にわたるコンテストです。<"
+  ],
+  [
+   ">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",
+   ">MarginPad経由で開設したMoon口座での実際のベット額が最も多い人。シーズン二つ分にわたるコンテストです。<"
+  ]
+ ],
+ "compFrag": {
+  "dayOf": "{y}日中{x}日目",
+  "onTheLine": "今シーズンの賞金総額・参加無料"
+ },
+ "cats": {
+  "ideas": "トレードアイデア",
+  "analysis": "テクニカル分析",
+  "news": "マーケットニュース",
+  "education": "学習",
+  "crypto": "暗号資産",
+  "forex": "FX",
+  "stocks": "株式",
+  "futures": "先物",
+  "strategies": "戦略",
+  "psychology": "メンタル",
+  "risk": "リスク管理",
+  "indicators": "インジケーター",
+  "platform": "プラットフォームの更新",
+  "thesis": "論拠"
+ },
+ "ask": {
+  "Bitcoin is down ": "Bitcoinは下落：-",
+  "Bitcoin is up ": "Bitcoinは上昇：+",
+  " in 24 hours": "（24時間）",
+  "The biggest move of the last 24 hours was ": "過去24時間で最大の値動きは",
+  "No move in the last 24 hours was big enough to need an explanation. The last one was ": "過去24時間に、説明が必要なほど大きな値動きはありませんでした。直近の値動きは",
+  " at ": "（",
+  " UTC: ": " UTC）：",
+  "we could not prove one cause for it": "単一の原因は特定できませんでした",
+  " Over 30 days we found ": " 過去30日間に検出したBitcoinの異常な値動きは",
+  " abnormal Bitcoin moves and can name the cause of ": "件で、そのうち",
+  " of them.": "は原因を特定できています。",
+  "When (UTC)": "日時（UTC）",
+  "Move": "値動き",
+  "What moved it": "What moved it",
+  "first report of the news, liquidations, whales and open interest measured at that minute": "ニュースの第一報、清算、クジラ、未決済建玉をその分単位で計測",
+  "too few": "サンプル不足",
+  "over 100x ": "100倍超 ",
+  " closes": "件の決済",
+  "thin - no rate printed": "サンプル不足 - 率は表示しません",
+  "Here, free - under the same rules a paid challenge uses": "ここなら無料 - 有料チャレンジと同じルールで",
+  "Ten times or less - and here is the count behind that": "十倍以下 - その根拠となる集計はこちら",
+  "Positive on Bitcoin: ": "Bitcoinはプラス：",
+  "Negative on Bitcoin: ": "Bitcoinはマイナス：",
+  "Flat on Bitcoin": "Bitcoinはほぼゼロ",
+  "Positive across most of the market": "市場の大半でプラス",
+  "Negative across most of the market": "市場の大半でマイナス",
+  "<strong>longs are paying shorts</strong>": "<strong>ロングがショートに支払っています</strong>",
+  "<strong>shorts are paying longs</strong>": "<strong>ショートがロングに支払っています</strong>",
+  "neither side is paying a meaningful premium": "どちらの側も目立ったプレミアムを支払っていません",
+  "Bitcoin funding is {f}, so {who}. ": "Bitcoinの資金調達率は{f}で、{who}。",
+  "longs pay": "ロングが支払い",
+  "shorts pay": "ショートが支払い",
+  "flat": "ほぼゼロ",
+  "read from each exchange&#39;s own public funding endpoint": "各取引所の公開資金調達率エンドポイントから直接取得",
+  "free JSON at": "無料JSON：",
+  "and": "および",
+  "MarginPad&#39;s own collector, {ex} exchange websockets": "MarginPad独自のコレクター、{ex}取引所のWebSocket",
+  "Longs, {lp}% of the damage": "ロング：損失の{lp}%",
+  "Shorts, {sp}% of the damage": "ショート：損失の{sp}%",
+  "Close to even, {lp}% long": "ほぼ互角、ロング{lp}%",
+  "% long": "%ロング",
+  "% short": "%ショート",
+  "long": "ロング",
+  "short": "ショート",
+  " - {s} {side} on {ven}": " - {ven}で{s}の{side}",
+  "{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}": "{a1}：100倍超では{a2}のトレードが清算で終了 - 1-2倍では{a3}",
+  "{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month": "決済{a1}件 &middot; ROE中央値{a2}% &middot; 月間の{a3}%",
+  "{a1} of {a2} finished runs passed - {a3}%": "完了した{a2}回中{a1}回が合格 - {a3}%",
+  "+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book": "目標+{a1}%、日次損失上限{a2}%、最大ドローダウン{a3}%、最低{a4}取引日、資金${a5}",
+  "{a1} closes &middot; median {a2}% ROE": "決済{a1}件 &middot; ROE中央値{a2}%",
+  "Bitcoin funding is {a1}, so {a2}. ": "Bitcoinの資金調達率は{a1}で、{a2}。",
+  "Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative": "追跡中の{a1}の無期限先物契約のうち、{a2}がプラス、{a3}がマイナス",
+  ", with the widest spread running from {a1} on {a2} down to {a3} on {a4}": "で、最も大きな開きは{a2}の{a1}から{a4}の{a3}まで",
+  "{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.": "過去24時間に{a2}の取引所で{a1}件のレバレッジポジションが強制決済されました。総額は{a3}で、{a4}銘柄に分散しています。清算ごとの平均は{a5}です。これは清算された典型的なポジションのサイズで、見出しのドル総額よりも、どんな人がレバレッジで取引しているかをよく表しています。",
+  "{a1} in the last 24 hours": "過去24時間で{a1}",
+  "MarginPad&#39;s own collector, {a1} exchange websockets": "MarginPad独自のコレクター、{a1}取引所のWebSocket",
+  "Longs, {a1}% of the damage": "ロング：損失の{a1}%",
+  "Shorts, {a1}% of the damage": "ショート：損失の{a1}%",
+  "Close to even, {a1}% long": "ほぼ互角、ロング{a1}%",
+  "Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}": "過去24時間に{a2}の取引所で清算された{a1}のうち、{a3}（{a4}%）がロング、{a5}（{a6}%）がショートでした。{a7}",
+  "The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).": "過去24時間に当サイトのコレクターが観測した単一の強制決済で最大のものは、{a3}での{a2}の<strong>{a1}</strong>ポジションで、決済価格ベースで{a4}でした。これは同じ期間に市場全体で清算された総額（{a7}ポジションで{a6}）の{a5}に当たります。",
+  " - {a1} {a2} on {a3}": " - {a3}で{a1}の{a2}"
+ },
+ "spaMeta": {
+  "/paper-trade": {
+   "title": "暗号資産ペーパートレード - 無料・登録不要のシミュレーター | MarginPad",
+   "desc": "登録不要で使える無料の暗号資産ペーパートレード。リアルタイムの先物価格、最大1000倍のレバレッジ、実際の手数料と清算を再現し、株式・FX・指数も1つのアカウントで取引できます。14日間のシーズンランキングでは実際のUSDT賞金、デイリーミッションも初日から報酬あり。入金不要です。"
+  },
+  "/calculators": {
+   "title": "暗号資産の清算価格・ポジションサイズ・損益計算ツール | MarginPad",
+   "desc": "無料の暗号資産先物計算ツール。取引所別（Bybit、Binance、OKX、Kraken、Hyperliquid）の清算価格、ポジションサイズ、損益、テイクプロフィット、リスクリワードを計算できます。ブラウザ上ですぐに計算、登録不要です。"
+  },
+  "/charts": {
+   "title": "バーリプレイ・比較・27種のインジケーター搭載の暗号資産チャート | MarginPad",
+   "desc": "PCでもスマホでも使える無料のリアルタイム先物チャート。状態を読み取るカード付きの27種類のインジケーター、バーリプレイ、2銘柄のローソク足比較、セッション、日次レベル、6種類のチャートスタイル、本格的な描画ツール、すばやいペーパートレードを1つの画面に集約。"
+  },
+  "/screener": {
+   "title": "暗号資産先物スクリーナー - スコア付きセットアップ・資金調達率・OI | MarginPad",
+   "desc": "無料の暗号資産先物スクリーナー。主要なUSDT無期限先物をRSI、MACD、資金調達率、未決済建玉をもとに0-100でスコア化し、すぐに使えるトレードセットアップも表示します。"
+  },
+  "/heatmap": {
+   "title": "暗号資産清算ヒートマップ - リアルタイム流動性マップ・無料 | MarginPad",
+   "desc": "BTC、ETH、主要アルトコインのリアルタイム清算ヒートマップ。レバレッジポジションが集中する価格帯、流動性の所在、価格が狙いに行く水準がわかります。8取引所の実際の清算データをリアルタイムで更新。無料プレビュー、アカウント不要です。"
+  },
+  "/swap": {
+   "title": "アカウント不要の暗号資産スワップ - 900以上の銘柄に対応 | MarginPad",
+   "desc": "900種類以上の暗号資産をアカウントなしでスワップ。登録不要のノンカストディアル方式で、チェーンをまたいでウォレット間で直接交換できます。送金前にレートを表示します。"
+  }
+ },
+ "h1": {
+  "/paper-trade": "リアルタイム価格で暗号資産ペーパートレード",
+  "/calculators": "暗号資産先物の計算ツール",
+  "/charts": "暗号資産マルチチャートワークスペース",
+  "/screener": "暗号資産先物スクリーナー",
+  "/heatmap": "リアルタイム暗号資産清算ヒートマップ",
+  "/swap": "暗号資産スワップ"
+ },
+ "months": [
+  "1月",
+  "2月",
+  "3月",
+  "4月",
+  "5月",
+  "6月",
+  "7月",
+  "8月",
+  "9月",
+  "10月",
+  "11月",
+  "12月"
+ ],
+ "misc": {
+  "measured": "計測 ",
+  "highImpact": "重要度：高",
+  "calUpcoming": "今後の予定",
+  "calSub": "今後の予定イベント{n}件 &middot; 時刻はすべてUTC &middot; 更新 ",
+  "kickLev": "ライブ - 現在{p}倍",
+  "kickEx": "リアルタイム市場データ",
+  "kickCoin": "{P}のリアルタイムデータ"
+ }
+}
