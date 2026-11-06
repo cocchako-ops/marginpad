@@ -3855,7 +3855,7 @@ async function handleSsrGlossary(request, url, env) {
 // The live answer block on /trading-competition/, rendered into the HTML itself so an assistant that
 // runs no JavaScript still reads the season, the pool, the leaders and the end date (2026-09-14).
 async function handleSsrComp(request, url, env, ctx) {
-  const ck = new Request('https://marginpad.io/__ssrpage/trading-competition/');
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname); // per URL: one fixed key served whichever twin rendered last to every language, the English page included (found 2026-11-06 serving German to everybody)
   if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
