@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/longs-or-shorts-liquidated-more/"><head>
+<meta charset="UTF-8">
+<script src="/assets/ui-es.js?v=26906256"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>¿Se liquidan más los longs o los shorts? - Desglose en vivo 24h | MarginPad</title>
+<meta name="description" content="Qué lado del mercado cripto está siendo cerrado a la fuerza ahora mismo: el desglose de liquidaciones long versus short en 24 horas, medido en ocho exchanges, con el detalle por exchange.">
+<link rel="canonical" href="https://marginpad.io/es/longs-or-shorts-liquidated-more/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/longs-or-shorts-liquidated-more/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/longs-or-shorts-liquidated-more/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/longs-or-shorts-liquidated-more/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/longs-or-shorts-liquidated-more/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/longs-or-shorts-liquidated-more/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="¿Se liquidan más los longs o los shorts? - Desglose en vivo 24h | MarginPad">
+<meta property="og:description" content="Qué lado del mercado cripto está siendo cerrado a la fuerza ahora mismo: el desglose de liquidaciones long versus short en 24 horas, medido en ocho exchanges, con el detalle por exchange.">
+<meta property="og:url" content="https://marginpad.io/es/longs-or-shorts-liquidated-more/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Liquidaciones cripto long versus short (24h)","description":"El reparto de dólares en liquidaciones forzadas entre posiciones long y short en una ventana móvil de 24 horas, a nivel de mercado y por exchange de derivados.","url":"https://marginpad.io/es/longs-or-shorts-liquidated-more/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"¿Se liquidan más a menudo los longs o los shorts?","acceptedAnswer":{"@type":"Answer","text":"En una ventana suficientemente larga, los longs, por un margen amplio, por una razón estructural simple: el mercado cripto pasa más tiempo en tendencia alcista que bajista, así que hay más apalancamiento del lado long y, por lo tanto, más disponible para ser liquidado. En un solo día puede ir para cualquier lado, por eso la cifra en la parte superior de esta página se mide en las últimas 24 horas en lugar de plantearse como una regla."}},{"@type":"Question","name":"¿Qué significa cuando las liquidaciones long se disparan?","acceptedAnswer":{"@type":"Answer","text":"Que los compradores apalancados estaban abarrotados y el precio cayó hasta sus niveles de liquidación, forzando ventas a mercado que empujan el precio aún más abajo - la cascada. La pregunta útil que sigue es si el interés abierto cayó junto con eso. Precio abajo con interés abierto abajo significa que el apalancamiento fue purgado; precio abajo con interés abierto plano significa que nuevos shorts reemplazaron a los longs liquidados."}},{"@type":"Question","name":"¿Un short squeeze aparece aquí?","acceptedAnswer":{"@type":"Answer","text":"Sí, como imagen especular: una racha de liquidaciones short, concentrada en una ventana corta, normalmente en los exchanges donde los shorts estaban más abarrotados. El feed en vivo en /rekt/ muestra la secuencia mientras ocurre, que es la forma más clara de distinguir un squeeze de un flujo estable en ambas direcciones."}},{"@type":"Question","name":"¿De dónde vienen estos datos?","acceptedAnswer":{"@type":"Answer","text":"El propio collector de MarginPad, suscrito directamente al websocket público de liquidaciones de ocho exchanges. Son cierres forzados observados, no estimaciones, y el conjunto de exchanges está publicado para que la cifra pueda verificarse contra su propia fuente."}},{"@type":"Question","name":"¿Puedo obtenerlo como API?","acceptedAnswer":{"@type":"Answer","text":"Sí, gratis y sin clave: /api/v1/liquidations para el desglose global y por moneda, /api/v1/venues para el mismo desglose por exchange. Ambos están documentados en la página de la API cripto gratis."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/longs-or-shorts-liquidated-more.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/longs-or-shorts-liquidated-more.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/heatmap">Mapa de calor</a><a href="/es/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Una pregunta, una respuesta</p>
+    <h1>¿Se están liquidando más los longs o los shorts ahora mismo?</h1>
+    <p class="lead">El lado que está perdiendo, medido y no adivinado, a partir de los feeds de liquidación propios de ocho exchanges.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Leyendo la cifra en vivo&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/es/rekt/">El feed de liquidaciones en vivo</a><a class="ask-cta alt" href="/es/liquidations/by-exchange/">Por exchange</a><a class="ask-cta alt" href="/es/long-short/">Ratios long/short de cuentas</a><a class="ask-cta alt" href="/es/heatmap">Mapa de calor de liquidaciones</a></p>
+
+    <h2>Lo que el desglose realmente te dice</h2>
+    <p>Te dice hacia qué lado se inclinaba la mayoría cuando llegó el movimiento, y eso suele ser más útil que el tamaño del movimiento en sí. Liquidaciones long fuertes significan que los compradores apalancados estaban abarrotados y el precio cayó sobre ellos. Liquidaciones short fuertes significan que el squeeze fue en la otra dirección. Cuando los dos lados están cerca de estar parejos, el mercado se movió lateral en vez de tender, y ambos lados pagaron por ello.</p><p>Lo único que el desglose no te dice es qué pasa después. Una ola de liquidaciones long muchas veces marca el final de una purga, porque la oferta apalancada ya fue eliminada - y con la misma frecuencia es solo el primer tramo de una más larga. Léelo como una descripción de lo que ya le pasó al posicionamiento, no como una señal.</p>
+
+    <h2>Por qué difiere tanto entre exchanges</h2>
+    <p>La tabla por exchange de arriba suele contradecirse a sí misma, y esa es la parte interesante. Un exchange cuyo flujo de 24 horas es noventa por ciento liquidaciones long mientras otro está cerca del cincuenta te está diciendo que sus propios usuarios estaban posicionados de forma distinta - a menudo un exchange con mucho retail frente a uno con flujo más profesional, o una base de usuarios regional que estaba en long ante una noticia que el resto del mercado no tenía en cuenta. La cifra global del mercado oculta eso; en la columna por exchange es donde se ve.</p>
+
+    <h2>El método, completo</h2>
+    <p>MarginPad ejecuta su propio colector suscrito al websocket público de liquidaciones de ocho exchanges: Binance (con margen en USD y en cripto), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX y Bitfinex. Cada cierre forzado se normaliza a símbolo, lado, precio de ejecución y valor nocional en dólares, y luego se agrega en una ventana móvil de 24 horas. Estos son eventos observados, no un modelo ni un feed de un proveedor. Nada se rellena cuando un exchange queda en silencio, y si el propio colector está caído, la página lo indica en lugar de mostrar las cifras de ayer como si fueran actuales.</p>
+
+    <h2>Toma los datos</h2>
+    <p>Gratis en JSON, sin clave: <code>GET https://marginpad.io/api/v1/liquidations</code> incluye <code>data.market.long</code> y <code>data.market.short</code> más el mismo desglose por moneda, y <code>GET https://marginpad.io/api/v1/venues</code> lo incluye por exchange con un campo <code>longPct</code>. Ambos marcan el momento de la medición en <code>ts</code>.</p>
+
+    <h2>Preguntas</h2>
+    <details><summary>¿Se liquidan más a menudo los longs o los shorts?</summary><p>En una ventana suficientemente larga, los longs, por un margen amplio, por una razón estructural simple: el mercado cripto pasa más tiempo en tendencia alcista que bajista, así que hay más apalancamiento del lado long y, por lo tanto, más disponible para ser liquidado. En un solo día puede ir para cualquier lado, por eso la cifra en la parte superior de esta página se mide en las últimas 24 horas en lugar de plantearse como una regla.</p></details>
+    <details><summary>¿Qué significa cuando las liquidaciones long se disparan?</summary><p>Que los compradores apalancados estaban abarrotados y el precio cayó hasta sus niveles de liquidación, forzando ventas a mercado que empujan el precio aún más abajo - la cascada. La pregunta útil que sigue es si el interés abierto cayó junto con eso. Precio abajo con interés abierto abajo significa que el apalancamiento fue purgado; precio abajo con interés abierto plano significa que nuevos shorts reemplazaron a los longs liquidados.</p></details>
+    <details><summary>¿Un short squeeze aparece aquí?</summary><p>Sí, como imagen especular: una racha de liquidaciones short, concentrada en una ventana corta, normalmente en los exchanges donde los shorts estaban más abarrotados. El feed en vivo en /rekt/ muestra la secuencia mientras ocurre, que es la forma más clara de distinguir un squeeze de un flujo estable en ambas direcciones.</p></details>
+    <details><summary>¿De dónde vienen estos datos?</summary><p>El propio collector de MarginPad, suscrito directamente al websocket público de liquidaciones de ocho exchanges. Son cierres forzados observados, no estimaciones, y el conjunto de exchanges está publicado para que la cifra pueda verificarse contra su propia fuente.</p></details>
+    <details><summary>¿Puedo obtenerlo como API?</summary><p>Sí, gratis y sin clave: /api/v1/liquidations para el desglose global y por moneda, /api/v1/venues para el mismo desglose por exchange. Ambos están documentados en la página de la API cripto gratis.</p></details>
+
+    <div class="sibs">
+      <h2>Otras preguntas que respondemos con un número en vivo</h2>
+      <ul><li><a href="/es/how-many-traders-liquidated-today/">¿Cuántos traders fueron liquidados hoy?</a></li><li><a href="/es/biggest-liquidation-today/">¿Cuál fue la mayor liquidación de hoy?</a></li><li><a href="/es/is-funding-positive-or-negative/">¿El funding es positivo o negativo ahora mismo?</a></li><li><a href="/es/where-can-i-test-a-trading-bot/">¿Dónde puedo probar un bot de trading gratis?</a></li><li><a href="/es/mcp-server-for-crypto-trading/">¿Existe un servidor MCP para trading de criptomonedas?</a></li><li><a href="/es/practice-for-a-funded-account/">¿Dónde puedo practicar para un reto de cuenta fondeada?</a></li><li><a href="/es/what-leverage-should-a-beginner-use/">¿Qué apalancamiento debería usar un principiante?</a></li><li><a href="/es/why-is-bitcoin-down-today/">¿Por qué baja Bitcoin hoy?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Relacionado: <a href="/es/rekt/">el feed de liquidaciones en vivo</a> &middot; <a href="/es/liquidations/by-exchange/">por exchange</a> &middot; <a href="/es/long-short/">ratios long/short de cuentas</a> &middot; <a href="/es/heatmap">mapa de calor de liquidaciones</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=64d91101"></script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/alerts/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=847cda1a"></script>
+<script src="/assets/ui-de.js?v=74cbb95a"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
@@ -396,7 +396,7 @@ function __esT_alertsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       +'<div class="fl"><span class="lab">'+T('posLiq','Warn me when liquidation is within')+'</span><span class="pin"><input type="number" id="paLiq" min="0.5" max="50" step="0.5" value="'+esc(c.liq!=null?c.liq:5)+'">%</span></div>'
       +'<div class="fl"><span class="lab">'+T('posSl','Warn me when a stop or target is within')+'</span><span class="pin"><input type="number" id="paSl" min="0.1" max="20" step="0.1" value="'+esc(c.sltp!=null?c.sltp:1)+'">%</span></div>'
       +'<div class="fl"><span class="lab">'+T('posOrd','Warn me when a limit order is within')+'</span><span class="pin"><input type="number" id="paOrd" min="0.1" max="20" step="0.1" value="'+esc(c.ord!=null?c.ord:1)+'">%</span></div>'
-      +'<div class="fl"><span class="lab">'+T('posCx','Catalysts on coins I hold')+'<small>'+T('posCxS','a listing, a hack, a macro print - scored 70+ or major')+'</small></span><input type="checkbox" class="sw" id="paCx"'+(c.cx!==0?' checked':'')+'></div>'
+      +'<div class="fl"><span class="lab">'+T('posCx','Catalysts on coins I hold')+'<small>'+T('posCxS','an exchange listing or delisting the minute it lands, a major story, a macro print 30 minutes ahead, an abnormal move while it runs - each with what events like it have done; a kind that keeps missing mutes itself')+'</small></span><input type="checkbox" class="sw" id="paCx"'+(c.cx!==0?' checked':'')+'></div>'
       +'<p class="note">'+T('posNote','Checked every few minutes. Each level is announced once every 6 hours, so a price hovering on your stop cannot turn into a siren.')+'</p><div class="msg" id="posMsg"></div>';
   }
   function zoneBody(c){

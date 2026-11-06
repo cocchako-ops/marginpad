@@ -10,7 +10,7 @@ const { extract, apply } = require('./lib');
 const ROOT = path.join(__dirname, '..', '..');
 const DIST = path.join(ROOT, 'dist');
 const LI = process.argv.indexOf('--lang'); const LANG = LI > 0 ? process.argv[LI + 1] : 'es'; // --lang pt: a second twin language from build/data/pt (2026-10-29)
-const LOCALE = { es: 'es_ES', pt: 'pt_BR', de: 'de_DE' }[LANG] || LANG;
+const LOCALE = (require('../i18n/langs.js').LANGS[LANG] || {}).locale || LANG;
 const CAT = path.join(ROOT, 'build', 'data', LANG, 'catalog.json');
 // An allowlist (build/data/<lang>/pages.txt) restricts a pass-1 language to the pages it was seeded with - a page that shares
 // 60% of its strings with a listed one (coin/bnb beside coin/btc) must not ship as a half-English twin (2026-10-29).

@@ -393,7 +393,7 @@ html[dir="rtl"] .node{text-align:right}
 
   /* ===== visuals engine ===== */
   var VIZ={};
-  function svgWrap(inner,vb,cap){var T=window.__vizT;function tv(x){return (T&&T[x])||x;}if(T)inner=inner.replace(/(<text[^>]*>)([^<]+)(<\/text>)/g,function(_,a,t,b){return a+tv(t)+b;});return '<div class="vz"><svg viewBox="'+(vb||'0 0 340 150')+'">'+inner+'</svg>'+(cap?'<div class="cap">'+tv(cap)+'</div>':'')+'</div>';}
+  function svgWrap(inner,vb,cap){var T=window.__vizT;function tv(x){if(!T)return x;if(T[x])return T[x];var P=window.__vizP;if(!P){P=window.__vizP=[];var SEG=/'\+[\s\S]+?\+'/g;Object.keys(T).forEach(function(k){if(k.indexOf("'+")<0)return;var parts=k.split(SEG);if(parts.length<2)return;var tp=String(T[k]).split(SEG);if(tp.length!==parts.length||!/[A-Za-z]{2}/.test(parts.join('')))return;P.push({re:new RegExp('^'+parts.map(function(p){return p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('(.+?)')+'$'),tp:tp,w:parts.join('').length});});P.sort(function(x,y){return y.w-x.w;});}for(var i=0;i<P.length;i++){var m=P[i].re.exec(x);if(m){var o=P[i].tp[0];for(var j=1;j<P[i].tp.length;j++)o+=m[j]+P[i].tp[j];return o;}}return x;}if(T)inner=inner.replace(/(<text[^>]*>)([^<]+)(<\/text>)/g,function(_,a,t,b){return a+tv(t)+b;});return '<div class="vz"><svg viewBox="'+(vb||'0 0 340 150')+'">'+inner+'</svg>'+(cap?'<div class="cap">'+tv(cap)+'</div>':'')+'</div>';}
   var GRID='<g stroke="#1b212b" stroke-width="1"><line x1="0" y1="38" x2="340" y2="38"/><line x1="0" y1="75" x2="340" y2="75"/><line x1="0" y1="112" x2="340" y2="112"/></g>';
 
   /* ===== start-here course visuals (build/add-academy-start.js) :start ===== */

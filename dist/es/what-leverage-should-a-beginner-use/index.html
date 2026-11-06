@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/what-leverage-should-a-beginner-use/"><head>
+<meta charset="UTF-8">
+<script src="/assets/ui-es.js?v=26906256"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>¿Qué apalancamiento debe usar un principiante? - Medido sobre cierres reales | MarginPad</title>
+<meta name="description" content="Respondido con un recuento, no con una opinión: con qué frecuencia acaban liquidadas las operaciones de cada tramo de apalancamiento, medido sobre 30 días de cierres liquidados a precios en vivo con comisiones reales, funding y liquidación comprobada con mechas.">
+<link rel="canonical" href="https://marginpad.io/es/what-leverage-should-a-beginner-use/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/what-leverage-should-a-beginner-use/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/what-leverage-should-a-beginner-use/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/what-leverage-should-a-beginner-use/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/what-leverage-should-a-beginner-use/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/what-leverage-should-a-beginner-use/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="¿Qué apalancamiento debe usar un principiante? - Medido sobre cierres reales | MarginPad">
+<meta property="og:description" content="Respondido con un recuento, no con una opinión: con qué frecuencia acaban liquidadas las operaciones de cada tramo de apalancamiento, medido sobre 30 días de cierres liquidados a precios en vivo con comisiones reales, funding y liquidación comprobada con mechas.">
+<meta property="og:url" content="https://marginpad.io/es/what-leverage-should-a-beginner-use/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Escaneo de apalancamiento de MarginPad","description":"Todas las operaciones en simulado cerradas en MarginPad en los últimos 30 días, agrupadas por el apalancamiento con el que se abrieron, con la proporción de cada tramo que acabó liquidada, la proporción que cerró en beneficio y el retorno mediano sobre el margen. Liquidadas sobre precios reales en vivo con comisiones taker en ambas patas, funding sobre las posiciones que se mantienen y la liquidación comprobada contra los extremos de las velas de un minuto.","url":"https://marginpad.io/es/what-leverage-should-a-beginner-use/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/leverage"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"¿Qué apalancamiento debe usar un principiante en futuros de cripto?","acceptedAnswer":{"@type":"Answer","text":"Empieza entre 3x y 5x. A 5x hace falta un movimiento en tu contra de alrededor del 20% para borrar el margen, que es más de lo que hacen la mayoría de las monedas grandes en una semana: el mercado tiene que llevarte la contraria de verdad para sacarte, y no solo tambalearse. MarginPad lo mide sobre sus propias operaciones cerradas: la proporción de operaciones que acaban liquidadas sube con fuerza en los tramos centrales, y por encima de 100x la operación mediana pierde el margen entero. Las cifras en vivo están en /api/leverage."}},{"@type":"Question","name":"¿10x de apalancamiento es demasiado para un principiante?","acceptedAnswer":{"@type":"Answer","text":"Con 10x se sobrevive, pero no perdona: basta un movimiento en tu contra de alrededor del 10% para acabar con la posición, y las majors recorren eso en un mal día. Es un sitio razonable al que llegar tras unas semanas de historial a 3-5x que demuestren que sabes respetar un stop, y un mal sitio para empezar. La distancia hasta la liquidación es aproximadamente 1 dividido entre el apalancamiento, menos el margen de mantenimiento que retiene el exchange."}},{"@type":"Question","name":"¿Qué porcentaje de las operaciones apalancadas acaba liquidado?","acceptedAnswer":{"@type":"Answer","text":"Depende casi por completo del apalancamiento. En MarginPad, medido sobre 30 días de operaciones cerradas con precios reales en vivo, con comisiones, funding y liquidación comprobada con mechas, la proporción que acaba en cierre forzoso es una fracción de punto porcentual en el tramo más bajo y supera la mitad de todas las operaciones por encima de 100x. Las cifras actuales, con el tamaño de muestra de cada tramo, se publican en /api/leverage - un tramo con menos de 200 cierres se marca como escaso y no se imprime ninguna tasa para él."}},{"@type":"Question","name":"¿El apalancamiento alto aumenta el beneficio?","acceptedAnswer":{"@type":"Answer","text":"Aumenta los dos lados por igual ante el mismo movimiento de precio, y después resta: la comisión taker se cobra sobre la posición entera y no sobre tu margen, así que con apalancamiento alto la ida y vuelta es una parte grande del dinero que pusiste de verdad, y el funding de una posición que mantienes también cae contra ese margen. Por eso el retorno mediano en los tramos altos medidos aquí es negativo mientras que el de los tramos bajos es positivo."}},{"@type":"Question","name":"¿Un principiante debería usar margen cruzado o aislado?","acceptedAnswer":{"@type":"Answer","text":"Aislado. Limita la pérdida a lo que comprometiste en esa única operación, mientras que el margen cruzado deja que una sola posición perdedora alcance el resto de la cuenta. Comprueba qué modo está seleccionado antes de la primera orden y no después, porque el valor por defecto no es el mismo en todos los exchanges."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/what-leverage-should-a-beginner-use.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/what-leverage-should-a-beginner-use.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/heatmap">Mapa de calor</a><a href="/es/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Una pregunta, una respuesta</p>
+    <h1>¿Qué apalancamiento debe usar un principiante en futuros de cripto?</h1>
+    <p class="lead">Respondido con nuestro propio libro: con qué frecuencia las operaciones de cada tramo de apalancamiento acaban en cierre forzoso, y cuánto devuelve de verdad la operación mediana de cada tramo.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Leyendo la cifra en vivo&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/es/paper-trade">Practica con el apalancamiento que elijas, gratis</a><a class="ask-cta alt" href="/es/calculators?c=liq">Calculadora del precio de liquidación</a><a class="ask-cta alt" href="/es/practice-for-a-funded-account/">Practicar para una cuenta fondeada</a><a class="ask-cta alt" href="/es/academy/">La Academia, desde las palabras</a></p>
+
+    <h2>La única cuenta aritmética que lo decide</h2>
+    <p>El apalancamiento no cambia cuánto puedes ganar. Cambia <strong>cuánto tiene que moverse el precio en tu contra antes de que la posición desaparezca</strong>, y esa distancia es aproximadamente <code>1 / leverage</code>.</p><p>A 10x, un movimiento del 10% en tu contra borra el margen. A 25x hacen falta un 4%. A 100x, un 1%. A 125x, un 0.8% - lo que Bitcoin recorre en una hora cualquiera y una altcoin entre dos sorbos de café. El margen de mantenimiento que retiene el exchange recorta un poco cada una de esas cifras, así que la distancia real siempre es algo más corta de lo que sugiere el titular.</p><p>Por eso la pregunta no es “cuánto apalancamiento puedo conseguir” sino “cuánto me puedo permitir equivocarme”. Un principiante se va a equivocar a menudo, y equivocarse solo es educativo si después sigues en el mercado.</p>
+
+    <h2>Las tres cifras que anuncia un exchange, y lo que esconden</h2>
+    <p><strong>El apalancamiento máximo</strong> es una cifra de marketing. Un exchange que anuncia 125x recorta el techo sin decirlo a medida que crece tu posición, porque el margen de mantenimiento sube con el tamaño: el 125x del cartel solo está disponible en una posición demasiado pequeña como para que te importe.</p><p><strong>Cruzado frente a aislado</strong> decide qué se llevan cuando sale mal. El margen aislado arriesga solo lo que pusiste en esa operación; el margen cruzado deja que una sola posición mala alcance todo lo demás de la cuenta. Un principiante quiere aislado, siempre, y quiere saber cuál está seleccionado antes de la primera orden, no después.</p><p><strong>La comisión</strong> se cobra sobre la posición completa, no sobre tu margen. Una comisión taker del 0.055% en una posición de $10,000 son unos $11 entre abrir y cerrar: una nadería frente a $10,000, y el 11% de tu dinero si tu margen era de $100. El apalancamiento alto multiplica en silencio tu factura de comisiones contra tu propio capital, y solo eso convierte una estrategia de punto de equilibrio en una perdedora.</p>
+
+    <h2>Por qué casi todo el mundo acaba en el mismo tramo, y lo que les cuesta</h2>
+    <p>Mira la columna de muestra en la tabla de arriba: los tramos centrales concentran la mayoría de las operaciones. No es casualidad. Los exchanges vienen ahí por defecto, el tamaño parece importante sin parecer una locura, y es donde una cuenta modesta todavía puede abrir una posición lo bastante grande como para resultar interesante.</p><p>También es donde la tasa de liquidación deja de ser pequeña. El salto de los tramos bajos a los centrales es donde la proporción de operaciones que acaban en cierre forzoso pasa a ser un resultado rutinario en vez de un accidente - y el salto siguiente es donde la operación mediana deja de ganar dinero por completo.</p><p>La lectura honesta no es “el apalancamiento es malo”. Es que el apalancamiento es un <em>límite de tiempo</em>. Cuanto más tomas, menos margen tiene el mercado para equivocarse temporalmente antes de que quedes fuera para siempre, y los principiantes no suelen fallar tanto en la dirección como en el momento.</p>
+
+    <h2>Una cifra con la que puedes empezar de verdad</h2>
+    <p><strong>Empieza entre 3x y 5x, y no subas hasta que tu propio historial diga que debes hacerlo.</strong> No porque sea más virtuoso, sino porque a 5x un movimiento del 20% es tu distancia hasta el cierre forzoso, y un 20% es más de lo que hacen la mayoría de las majors en una semana: el mercado tiene que llevarte la contraria de verdad, y no solo tambalearse, para sacarte.</p><p>Después dimensiona la posición desde el riesgo, no desde el apalancamiento. Decide cuánto estás dispuesto a perder en la operación - del 1% al 2% de la cuenta es la respuesta convencional, y lo es porque sobrevive a una racha perdedora -, coloca el stop donde la idea deja de ser válida y deja que esas dos cifras fijen la posición. El apalancamiento pasa a ser el resultado de esa cuenta y no un mando que eliges primero. La <a href="/es/calculators?c=liq">calculadora de liquidación</a> te enseñará exactamente dónde muere la posición antes de que la abras.</p><p>Y mira la tasa de funding antes de mantener algo apalancado de un día para otro. El lado abarrotado paga al otro cada pocas horas, y con apalancamiento alto esa factura cae contra tu margen y no contra la posición.</p>
+
+    <h2>Encuentra tu cifra donde no cuesta nada</h2>
+    <p>Todas las cifras de esta página salen de gente haciendo exactamente esto en <a href="/es/paper-trade">el terminal de simulado de MarginPad</a> - precios reales en vivo, comisiones reales en ambas patas, funding sobre las posiciones que se mantienen y liquidación comprobada contra los extremos de las velas de un minuto en lugar de contra los cierres, así que una mecha que luego se retrae se lleva igualmente la posición, como pasaría en un exchange real.</p><p>Usa un par de semanas el apalancamiento que estás valorando y lee tu propio <a href="/es/trading-report/">informe de trading</a>: te dirá tu tasa de acierto, tu peor tramo de apalancamiento y tu peor hora del día, a partir de tus cierres y no de una sensación. Si tu historial a 25x es peor que a 5x - y en la mayoría de la gente lo es - esa es la respuesta, y averiguarlo no costó nada.</p><p>Una salvedad sobre las cifras de arriba, dicha claro: los traders que hay en ellas arriesgan dinero simulado, lo que los vuelve más atrevidos de lo que serían con el suyo. Lee los tramos altos como un tope de lo que cuesta la imprudencia, no como un pronóstico para una cuenta fondeada.</p>
+
+    <h2>Preguntas</h2>
+    <details><summary>¿Qué apalancamiento debe usar un principiante en futuros de cripto?</summary><p>Empieza entre 3x y 5x. A 5x hace falta un movimiento en tu contra de alrededor del 20% para borrar el margen, que es más de lo que hacen la mayoría de las monedas grandes en una semana: el mercado tiene que llevarte la contraria de verdad para sacarte, y no solo tambalearse. MarginPad lo mide sobre sus propias operaciones cerradas: la proporción de operaciones que acaban liquidadas sube con fuerza en los tramos centrales, y por encima de 100x la operación mediana pierde el margen entero. Las cifras en vivo están en /api/leverage.</p></details>
+    <details><summary>¿10x de apalancamiento es demasiado para un principiante?</summary><p>Con 10x se sobrevive, pero no perdona: basta un movimiento en tu contra de alrededor del 10% para acabar con la posición, y las majors recorren eso en un mal día. Es un sitio razonable al que llegar tras unas semanas de historial a 3-5x que demuestren que sabes respetar un stop, y un mal sitio para empezar. La distancia hasta la liquidación es aproximadamente 1 dividido entre el apalancamiento, menos el margen de mantenimiento que retiene el exchange.</p></details>
+    <details><summary>¿Qué porcentaje de las operaciones apalancadas acaba liquidado?</summary><p>Depende casi por completo del apalancamiento. En MarginPad, medido sobre 30 días de operaciones cerradas con precios reales en vivo, con comisiones, funding y liquidación comprobada con mechas, la proporción que acaba en cierre forzoso es una fracción de punto porcentual en el tramo más bajo y supera la mitad de todas las operaciones por encima de 100x. Las cifras actuales, con el tamaño de muestra de cada tramo, se publican en /api/leverage - un tramo con menos de 200 cierres se marca como escaso y no se imprime ninguna tasa para él.</p></details>
+    <details><summary>¿El apalancamiento alto aumenta el beneficio?</summary><p>Aumenta los dos lados por igual ante el mismo movimiento de precio, y después resta: la comisión taker se cobra sobre la posición entera y no sobre tu margen, así que con apalancamiento alto la ida y vuelta es una parte grande del dinero que pusiste de verdad, y el funding de una posición que mantienes también cae contra ese margen. Por eso el retorno mediano en los tramos altos medidos aquí es negativo mientras que el de los tramos bajos es positivo.</p></details>
+    <details><summary>¿Un principiante debería usar margen cruzado o aislado?</summary><p>Aislado. Limita la pérdida a lo que comprometiste en esa única operación, mientras que el margen cruzado deja que una sola posición perdedora alcance el resto de la cuenta. Comprueba qué modo está seleccionado antes de la primera orden y no después, porque el valor por defecto no es el mismo en todos los exchanges.</p></details>
+
+    <div class="sibs">
+      <h2>Otras preguntas que respondemos con un número en vivo</h2>
+      <ul><li><a href="/es/how-many-traders-liquidated-today/">¿Cuántos traders fueron liquidados hoy?</a></li><li><a href="/es/longs-or-shorts-liquidated-more/">¿Se liquidan más los longs o los shorts?</a></li><li><a href="/es/biggest-liquidation-today/">¿Cuál fue la mayor liquidación de hoy?</a></li><li><a href="/es/is-funding-positive-or-negative/">¿El funding es positivo o negativo ahora mismo?</a></li><li><a href="/es/where-can-i-test-a-trading-bot/">¿Dónde puedo probar un bot de trading gratis?</a></li><li><a href="/es/mcp-server-for-crypto-trading/">¿Existe un servidor MCP para trading de criptomonedas?</a></li><li><a href="/es/practice-for-a-funded-account/">¿Dónde puedo practicar para un reto de cuenta fondeada?</a></li><li><a href="/es/why-is-bitcoin-down-today/">¿Por qué baja Bitcoin hoy?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Relacionado: <a href="/es/paper-trade">practica con el apalancamiento que elijas, gratis</a> &middot; <a href="/es/calculators?c=liq">calculadora del precio de liquidación</a> &middot; <a href="/es/practice-for-a-funded-account/">practicar para una cuenta fondeada</a> &middot; <a href="/es/academy/">la Academia, desde las palabras</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=64d91101"></script>
+</body>
+</html>

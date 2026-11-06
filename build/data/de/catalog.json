@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "de",
-  "generated": "2026-11-01T19:00:24.542Z",
-  "pages": 457,
-  "unique": 15784,
-  "words": 290696,
-  "untranslated": 1,
-  "untranslatedWords": 5,
-  "merged": "2026-11-01T19:02:19.708Z"
+  "generated": "2026-11-06T04:18:39.000Z",
+  "pages": 459,
+  "unique": 15834,
+  "words": 291246,
+  "untranslated": 5,
+  "untranslatedWords": 13,
+  "merged": "2026-11-06T04:34:59.638Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -33,7 +33,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 303,
+   "n": 305,
    "w": 2,
    "de": "<a class=\"brand\" href=\"/\">MARGIN<b>PAD</b></a>"
   },
@@ -101,7 +101,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 96,
+   "n": 103,
    "w": 1,
    "de": "Long"
   },
@@ -117,7 +117,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 96,
+   "n": 99,
    "w": 1,
    "de": "Short"
   },
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 2060,
+   "n": 2063,
    "w": 1,
    "de": "MarginPad"
   },
@@ -15443,9 +15443,9 @@
     "/app.html",
     "/hyperliquid-liquidations/",
     "/liquidation-statistics/",
-    "/trading-report/"
+    "/liquidations/report/2026-10/"
    ],
-   "n": 5,
+   "n": 7,
    "w": 1,
    "de": "Coin"
   },
@@ -21159,7 +21159,7 @@
     "/best-crypto-exchange-for-bitcoin-futures/",
     "/best-crypto-exchange-for-copy-trading/"
    ],
-   "n": 29,
+   "n": 31,
    "w": 1,
    "de": "Börse"
   },
@@ -21298,7 +21298,7 @@
     "/best-crypto-exchange-for-bitcoin-futures/",
     "/best-crypto-exchange-for-copy-trading/"
    ],
-   "n": 42,
+   "n": 43,
    "w": 1,
    "de": "Bybit"
   },
@@ -26261,7 +26261,7 @@
     "/leverage-trading-simulator/",
     "/liquidations/by-exchange/"
    ],
-   "n": 5,
+   "n": 6,
    "w": 1,
    "de": "Liquidationen"
   },
@@ -27298,7 +27298,7 @@
     "/bitget-liquidation-calculator/",
     "/bitget-vs-gate/"
    ],
-   "n": 23,
+   "n": 24,
    "w": 1,
    "de": "Gate"
   },
@@ -34553,35 +34553,6 @@
    "w": 4,
    "de": "<a class=\"cta\" href=\"/exchanges/\">Krypto-Futures-Börsen vergleichen →</a>"
   },
-  "N4eVtHaLSL": {
-   "en": "Read this guide in other languages",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/blog/best-crypto-futures-exchanges/",
-    "/blog/best-leverage-for-beginners/",
-    "/blog/how-to-calculate-liquidation-price/",
-    "/blog/how-to-calculate-pnl/"
-   ],
-   "n": 14,
-   "w": 6,
-   "de": "Diesen Guide in anderen Sprachen lesen"
-  },
-  "t7apeef8GR": {
-   "en": "<a href=\"/blog/best-crypto-futures-exchanges/da/\">Dansk</a><a href=\"/blog/best-crypto-futures-exchanges/de/\">Deutsch</a><a href=\"/blog/best-crypto-futures-exchanges/fi/\">Suomi</a><a href=\"/blog/best-crypto-futures-exchanges/fr/\">Français</a><a href=\"/blog/best-crypto-futures-exchanges/nl/\">Nederlands</a><a href=\"/blog/best-crypto-futures-exchanges/no/\">Norsk</a><a href=\"/blog/best-crypto-futures-exchanges/sv/\">Svenska</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/best-crypto-futures-exchanges/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "<a href=\"/blog/best-crypto-futures-exchanges/da/\">Dansk</a><a href=\"/blog/best-crypto-futures-exchanges/de/\">Deutsch</a><a href=\"/blog/best-crypto-futures-exchanges/fi/\">Suomi</a><a href=\"/blog/best-crypto-futures-exchanges/fr/\">Français</a><a href=\"/blog/best-crypto-futures-exchanges/nl/\">Nederlands</a><a href=\"/blog/best-crypto-futures-exchanges/no/\">Norsk</a><a href=\"/blog/best-crypto-futures-exchanges/sv/\">Svenska</a>",
-   "leaf": true
-  },
   "z2iWEV3eiZ": {
    "en": "<a href=\"/calculators\">Liquidation and position-size calculators</a>",
    "kind": [
@@ -34593,7 +34564,7 @@
     "/blog/crypto-futures-australia/",
     "/blog/crypto-futures-canada/"
    ],
-   "n": 18,
+   "n": 17,
    "w": 4,
    "de": "<a href=\"/calculators\">Liquidations- und Positionsgrößenrechner</a>"
   },
@@ -34941,19 +34912,6 @@
    "n": 1,
    "w": 32,
    "de": "<a class=\"rel-card\" href=\"/blog/how-to-avoid-liquidation/\"><span class=\"tag\">Risikomanagement</span><span class=\"rel-t\">Liquidation im Krypto-Handel vermeiden: 8 Regeln, die funktionieren</span></a><a class=\"rel-card\" href=\"/blog/crypto-position-sizing-risk-management/\"><span class=\"tag\">Risikomanagement</span><span class=\"rel-t\">Positionsgröße im Krypto-Handel: Die 1%-Risiko-Regel erklärt</span></a><a class=\"rel-card\" href=\"/blog/how-to-set-a-stop-loss/\"><span class=\"tag\">Risikomanagement</span><span class=\"rel-t\">So setzt du einen Stop-Loss im Krypto-Handel (richtig)</span></a>"
-  },
-  "EV6w0JTrRN": {
-   "en": "<a href=\"/blog/best-leverage-for-beginners/da/\">Dansk</a><a href=\"/blog/best-leverage-for-beginners/de/\">Deutsch</a><a href=\"/blog/best-leverage-for-beginners/fi/\">Suomi</a><a href=\"/blog/best-leverage-for-beginners/fr/\">Français</a><a href=\"/blog/best-leverage-for-beginners/nl/\">Nederlands</a><a href=\"/blog/best-leverage-for-beginners/no/\">Norsk</a><a href=\"/blog/best-leverage-for-beginners/sv/\">Svenska</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/best-leverage-for-beginners/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "<a href=\"/blog/best-leverage-for-beginners/da/\">Dansk</a><a href=\"/blog/best-leverage-for-beginners/de/\">Deutsch</a><a href=\"/blog/best-leverage-for-beginners/fi/\">Suomi</a><a href=\"/blog/best-leverage-for-beginners/fr/\">Français</a><a href=\"/blog/best-leverage-for-beginners/nl/\">Nederlands</a><a href=\"/blog/best-leverage-for-beginners/no/\">Norsk</a><a href=\"/blog/best-leverage-for-beginners/sv/\">Svenska</a>",
-   "leaf": true
   },
   "_ObeW1KSCI": {
    "en": "<a href=\"/how-many-traders-liquidated-today/\">How many traders were liquidated today</a><a href=\"/longs-or-shorts-liquidated-more/\">Longs or shorts - who lost more</a><a href=\"/biggest-liquidation-today/\">The biggest liquidation today</a><a href=\"/heatmap\">Live liquidation heatmap</a><a href=\"/paper-trade\">Free paper trading, no sign-up</a>",
@@ -36195,8 +36153,8 @@
    "w": 28,
    "de": "<b>Mach aus Signalen eine Fähigkeit.</b> Verfolge Makro-Ereignisse im <a href=\"/calendar/\">Krypto-Kalender</a> und übe das Lesen im <a href=\"/paper-trade\">Paper Trading</a> (ohne Anmeldung), bevor du echtes Geld riskierst. Keine Anlageberatung."
   },
-  "PF7Yw9Jibe": {
-   "en": "<a href=\"/why-is-bitcoin-down-today/\">Why is Bitcoin down today</a><a href=\"/catalysts/\">Crypto catalysts live</a><a href=\"/is-funding-positive-or-negative/\">Is funding positive or negative right now</a><a href=\"/funding/\">Live funding rates</a>",
+  "p45omcqern": {
+   "en": "<a href=\"/why-is-bitcoin-down-today/\">Why is Bitcoin down today</a><a href=\"/catalysts/\">Crypto catalysts live</a><a href=\"/is-funding-positive-or-negative/\">Is funding positive or negative right now</a><a href=\"/funding/\">Live funding rates</a><a href=\"/stock-trading-simulator/\">Stock trading simulator, live prices</a>",
    "kind": [
     "html"
    ],
@@ -36204,8 +36162,8 @@
     "/blog/bitcoin-etf-flows-explained/"
    ],
    "n": 1,
-   "w": 18,
-   "de": "<a href=\"/why-is-bitcoin-down-today/\">Warum fällt Bitcoin heute</a><a href=\"/catalysts/\">Krypto-Katalysatoren live</a><a href=\"/is-funding-positive-or-negative/\">Ist das Funding gerade positiv oder negativ</a><a href=\"/funding/\">Funding-Rates live</a>"
+   "w": 23,
+   "de": "<a href=\"/why-is-bitcoin-down-today/\">Warum fällt Bitcoin heute</a><a href=\"/catalysts/\">Krypto-Katalysatoren live</a><a href=\"/is-funding-positive-or-negative/\">Ist das Funding gerade positiv oder negativ</a><a href=\"/funding/\">Live-Funding-Rates</a><a href=\"/stock-trading-simulator/\">Aktien-Simulator mit Live-Preisen</a>"
   },
   "Bu7van_XqG": {
    "en": "US spot Bitcoin ETFs turned Wall Street into a daily driver of crypto price. What ETF flows actually measure, why net inflows and outflows move the market, how to read them, and where they fit alongside funding and open interest.",
@@ -39132,11 +39090,11 @@
    ],
    "ctx": [
     "/blog/cpi-week-crypto-playbook/",
-    "/blog/dxy-dollar-index-bitcoin/",
     "/blog/fomc-july-2026-bitcoin/",
-    "/blog/treasury-yields-bitcoin/"
+    "/blog/treasury-yields-bitcoin/",
+    "/blog/why-most-crypto-traders-lose-money/"
    ],
-   "n": 5,
+   "n": 4,
    "w": 12,
    "de": "<a href=\"/why-is-bitcoin-down-today/\">Warum fällt Bitcoin heute</a><a href=\"/catalysts/\">Krypto-Katalysatoren live</a><a href=\"/calculators\">Liquidations- und Positionsgrößen-Rechner</a>"
   },
@@ -50824,6 +50782,18 @@
    "w": 27,
    "de": "<b>Lies das Makro, dann übe es.</b> Verfolge die Ereignisse, die den Dollar bewegen, im <a href=\"/calendar/\">Krypto-Kalender</a> und übe im <a href=\"/paper-trade\">Paper Trading</a> (ohne Anmeldung). Keine Finanzberatung."
   },
+  "YWGu0FCaIq": {
+   "en": "<a href=\"/why-is-bitcoin-down-today/\">Why is Bitcoin down today</a><a href=\"/catalysts/\">Crypto catalysts live</a><a href=\"/forex-trading-simulator/\">Forex trading simulator, no sign-up</a><a href=\"/calculators\">Liquidation and position-size calculators</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/dxy-dollar-index-bitcoin/"
+   ],
+   "n": 1,
+   "w": 17,
+   "de": "<a href=\"/why-is-bitcoin-down-today/\">Warum fällt Bitcoin heute</a><a href=\"/catalysts/\">Krypto-Katalysatoren live</a><a href=\"/forex-trading-simulator/\">Forex-Simulator ohne Anmeldung</a><a href=\"/calculators\">Liquidations- und Positionsgrößen-Rechner</a>"
+  },
   "RH3ZYD4Tdn": {
    "en": "The US Dollar Index quietly steers risk assets, and Bitcoin usually trades inverse to it. What DXY measures, why the inverse correlation exists, when it breaks down, and how to use the dollar as a macro compass for crypto.",
    "kind": [
@@ -53780,19 +53750,6 @@
    "w": 29,
    "de": "<a class=\"rel-card\" href=\"/blog/liquidation-clusters-explained/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Liquidations-Cluster erklärt: So erkennst du Liquiditätsmagneten</span></a><a class=\"rel-card\" href=\"/blog/long-vs-short-liquidations/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Long- vs. Short-Liquidationen: Was das Verhältnis dir sagt</span></a><a class=\"rel-card\" href=\"/blog/liquidation-cascade-explained/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Liquidationskaskaden erklärt (und wie du nicht erwischt wirst)</span></a>"
   },
-  "cmltpoQyg0": {
-   "en": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/how-to-calculate-liquidation-price/"
-   ],
-   "n": 1,
-   "w": 16,
-   "de": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
-   "leaf": true
-  },
   "zfG7u1X4OC": {
    "en": "The exact formula exchanges use to set your liquidation price on isolated margin, why leverage moves it toward your entry, and worked examples for longs and shorts at 10x, 20x and 100x.",
    "kind": [
@@ -54076,19 +54033,6 @@
    "w": 15,
    "de": "Gib Einstieg, Ausstieg, Größe und Hebel ein - und erhalte PnL in Dollar und ROE mit einem Tipp."
   },
-  "gHy0Jh1TFW": {
-   "en": "<a href=\"/blog/how-to-calculate-pnl/da/\">Dansk</a><a href=\"/blog/how-to-calculate-pnl/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-pnl/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-pnl/fr/\">Français</a><a href=\"/blog/how-to-calculate-pnl/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-pnl/no/\">Norsk</a><a href=\"/blog/how-to-calculate-pnl/sv/\">Svenska</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/how-to-calculate-pnl/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "<a href=\"/blog/how-to-calculate-pnl/da/\">Dansk</a><a href=\"/blog/how-to-calculate-pnl/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-pnl/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-pnl/fr/\">Français</a><a href=\"/blog/how-to-calculate-pnl/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-pnl/no/\">Norsk</a><a href=\"/blog/how-to-calculate-pnl/sv/\">Svenska</a>",
-   "leaf": true
-  },
   "fQY2ZFftnE": {
    "en": "The crypto futures PnL formula for longs and shorts, with a worked example - and how PnL differs from ROE.",
    "kind": [
@@ -54348,19 +54292,6 @@
    "n": 1,
    "w": 43,
    "de": "<a class=\"rel-card\" href=\"/blog/what-is-a-trading-journal/\"><span class=\"tag\">Risiko</span><span class=\"rel-t\">Was ist ein Trading-Journal? Trades erfassen und den eigenen Vorteil finden (2026)</span></a><a class=\"rel-card\" href=\"/blog/what-is-a-trailing-stop/\"><span class=\"tag\">Risiko</span><span class=\"rel-t\">Was ist ein Trailing Stop? So sicherst du Gewinn, wenn der Preis läuft (2026)</span></a><a class=\"rel-card\" href=\"/blog/why-most-crypto-traders-lose-money/\"><span class=\"tag\">Risiko</span><span class=\"rel-t\">Warum 90% der Krypto-Futures-Trader Geld verlieren (und wie du zu den 10% gehörst)</span></a>"
-  },
-  "Mw3EErscBJ": {
-   "en": "<a href=\"/blog/how-to-calculate-position-size/da/\">Dansk</a><a href=\"/blog/how-to-calculate-position-size/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-position-size/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-position-size/fr/\">Français</a><a href=\"/blog/how-to-calculate-position-size/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-position-size/no/\">Norsk</a><a href=\"/blog/how-to-calculate-position-size/sv/\">Svenska</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/how-to-calculate-position-size/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "<a href=\"/blog/how-to-calculate-position-size/da/\">Dansk</a><a href=\"/blog/how-to-calculate-position-size/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-position-size/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-position-size/fr/\">Français</a><a href=\"/blog/how-to-calculate-position-size/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-position-size/no/\">Norsk</a><a href=\"/blog/how-to-calculate-position-size/sv/\">Svenska</a>",
-   "leaf": true
   },
   "oRbobNC29x": {
    "en": "The risk-based position-size formula every futures trader should use - set your risk per trade and your stop distance, and let the math decide your size.",
@@ -65049,19 +64980,6 @@
    "w": 33,
    "de": "<a class=\"rel-card\" href=\"/blog/fomc-july-2026-bitcoin/\"><span class=\"tag\">News</span><span class=\"rel-t\">FOMC-Sitzung am 29. Juli 2026: Wie die Fed-Entscheidung Bitcoin bewegt</span></a><a class=\"rel-card\" href=\"/blog/usdt-mica-eu-2026/\"><span class=\"tag\">News</span><span class=\"rel-t\">USDT und MiCA: Was sich für EU-Krypto-Trader ändert (2026)</span></a><a class=\"rel-card\" href=\"/blog/htx-sanctioned-what-us-traders-should-know/\"><span class=\"tag\">News</span><span class=\"rel-t\">HTX sanktioniert: Was US-Trader wissen müssen (2026)</span></a>"
   },
-  "QmxvSC1IlV": {
-   "en": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/mica-stablecoins-vs-usdt/"
-   ],
-   "n": 1,
-   "w": 10,
-   "de": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
-   "leaf": true
-  },
   "4KoSN7V2sm": {
    "en": "USDC, EURC and EUR pairs explained for EU traders. Which stablecoins are MiCA-authorised, how they differ from USDT, and how to switch without losing liquidity.",
    "kind": [
@@ -65422,6 +65340,18 @@
    "n": 1,
    "w": 38,
    "de": "<a class=\"rel-card\" href=\"/blog/crypto-cost-basis-fifo-lifo-hifo/\"><span class=\"tag\">Guides</span><span class=\"rel-t\">Krypto-Anschaffungskosten: FIFO vs LIFO vs HIFO erklärt (2026)</span></a><a class=\"rel-card\" href=\"/blog/crypto-tax-loss-harvesting/\"><span class=\"tag\">Guides</span><span class=\"rel-t\">Krypto Tax-Loss Harvesting: Der legale Weg, deine Steuerlast zu senken (2026)</span></a><a class=\"rel-card\" href=\"/blog/crypto-taxes-canada/\"><span class=\"tag\">Guides</span><span class=\"rel-t\">Krypto-Steuern in Kanada (2026): Kapitalgewinne, die 50%-Regel & was du schuldest</span></a>"
+  },
+  "ob8alSADDa": {
+   "en": "<a href=\"/forex-trading-simulator/\">Forex trading simulator, no sign-up</a><a href=\"/stock-trading-simulator/\">Stock trading simulator, live prices</a><a href=\"/calculators\">Liquidation and position-size calculators</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/moon-trading-platform-review/"
+   ],
+   "n": 1,
+   "w": 14,
+   "de": "<a href=\"/forex-trading-simulator/\">Forex-Simulator ohne Anmeldung</a><a href=\"/stock-trading-simulator/\">Aktien-Simulator mit Live-Preisen</a><a href=\"/calculators\">Liquidations- und Positionsgrößen-Rechner</a>"
   },
   "sF-WcKhiyo": {
    "en": "Moon is MarginPad's newest partner - a trading platform where you call markets up or down on crypto, stocks, forex and commodities, with leverage, around the clock, on one account. How it works, how it differs from perpetual futures, and how MarginPad members can cash rewards out straight to a Moon account.",
@@ -69716,19 +69646,6 @@
    "n": 1,
    "w": 33,
    "de": "<a class=\"rel-card\" href=\"/blog/fomc-july-2026-bitcoin/\"><span class=\"tag\">News</span><span class=\"rel-t\">FOMC-Meeting am 29. Juli 2026: Wie die Fed-Entscheidung Bitcoin bewegt</span></a><a class=\"rel-card\" href=\"/blog/mica-stablecoins-vs-usdt/\"><span class=\"tag\">News</span><span class=\"rel-t\">MiCA-konforme Stablecoins: Was EU-Trader statt USDT nutzen können</span></a><a class=\"rel-card\" href=\"/blog/htx-sanctioned-what-us-traders-should-know/\"><span class=\"tag\">News</span><span class=\"rel-t\">HTX sanktioniert: Was US-Trader wissen müssen (2026)</span></a>"
-  },
-  "biVElCbNBW": {
-   "en": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/usdt-mica-eu-2026/"
-   ],
-   "n": 1,
-   "w": 10,
-   "de": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
-   "leaf": true
   },
   "YrrAV3oVoG": {
    "en": "The EU's MiCA rules are reshaping stablecoin access. Why exchanges are restricting USDT for EU users, the mid-2026 transitional deadline, and what it means for your trading.",
@@ -80107,8 +80024,8 @@
    "w": 36,
    "de": "Lesen ist eine Sache. Üben kostet hier nichts: gehebelte Futures zu Live-Preisen oder Buy-and-Hold-Spot - Meme-Coins auf vier Chains und die Majors - mit $10,000 Demo-Guthaben und einem Board, das auszahlt."
   },
-  "JhLRuTNA1f": {
-   "en": "<a href=\"/paper-trade\">Paper trade these moves - futures, live prices, fake money</a><a href=\"/spot/\">Demo Spot - buy and hold memes and majors with $10,000 of demo cash</a><a href=\"/academy/\">Academy - 17 courses, from the words up</a><a href=\"/where-to-start/\">Not sure where to start?</a><a href=\"/trading-competition/\">Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account</a><a href=\"/squads/\">Squads - five traders, one logo, squad duels</a><a href=\"/practice-for-a-funded-account/\">Practising for a funded account? Try the rules free first</a>",
+  "ciAemTahMl": {
+   "en": "<a href=\"/paper-trade\">Paper trade these moves - futures, live prices, fake money</a><a href=\"/spot/\">Demo Spot - buy and hold memes and majors with $10,000 of demo cash</a><a href=\"/academy/\">Academy - 17 courses, from the words up</a><a href=\"/where-to-start/\">Not sure where to start?</a><a href=\"/trading-competition/\">Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account</a><a href=\"/squads/\">Squads - five traders, one logo, squad duels</a><a href=\"/practice-for-a-funded-account/\">Practising for a funded account? Try the rules free first</a><a href=\"/forex-trading-simulator/\">Forex trading simulator - EUR/USD and majors, no sign-up</a><a href=\"/stock-trading-simulator/\">Stock trading simulator - Apple, Tesla, Nvidia at live prices</a>",
    "kind": [
     "html"
    ],
@@ -80119,8 +80036,8 @@
     "/coin/eth/"
    ],
    "n": 8,
-   "w": 64,
-   "de": "<a href=\"/paper-trade\">Paper-Trade diese Moves - Futures, Live-Preise, Spielgeld</a><a href=\"/spot/\">Demo Spot - kaufe und halte Memes und Majors mit $10,000 Demo-Guthaben</a><a href=\"/academy/\">Akademie - 17 Kurse, von den Grundbegriffen an</a><a href=\"/where-to-start/\">Du weißt nicht, wo du anfangen sollst?</a><a href=\"/trading-competition/\">Live-Ranglisten - $150 auf fünf kostenlosen Paper-Boards, $200 mehr mit einem finanzierten Bybit-Konto</a><a href=\"/squads/\">Squads - fünf Trader, ein Logo, Squad-Duelle</a><a href=\"/practice-for-a-funded-account/\">Du übst für ein Funded Account? Probiere die Regeln zuerst kostenlos aus</a>"
+   "w": 81,
+   "de": "<a href=\"/paper-trade\">Trade diese Bewegungen auf Papier - Futures, Live-Preise, Spielgeld</a><a href=\"/spot/\">Demo Spot - Memes und Majors mit $10,000 Demo-Cash kaufen und halten</a><a href=\"/academy/\">Akademie - 17 Kurse, ab den Grundbegriffen</a><a href=\"/where-to-start/\">Nicht sicher, wo du anfangen sollst?</a><a href=\"/trading-competition/\">Live-Ranglisten - $150 auf fünf kostenlosen Paper-Boards, dazu $200 auf einem echten Bybit-Konto</a><a href=\"/squads/\">Squads - fünf Trader, ein Logo, Squad-Duelle</a><a href=\"/practice-for-a-funded-account/\">Du übst für ein Funded Account? Teste die Regeln erst kostenlos</a><a href=\"/forex-trading-simulator/\">Forex-Simulator - EUR/USD und Majors, ohne Anmeldung</a><a href=\"/stock-trading-simulator/\">Aktien-Simulator - Apple, Tesla, Nvidia zu Live-Preisen</a>"
   },
   "odf-cfk2V2": {
    "en": "Read it on a chart",
@@ -80199,8 +80116,8 @@
    "w": 27,
    "de": "Gebühren, maximaler Hebel, Maintenance Margin und wie jede Börse dich tatsächlich liquidiert, nebeneinander - gemessen an dem, was die Börsen veröffentlichen, mit dem Datum der Prüfung."
   },
-  "rRTEu8mZ7O": {
-   "en": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance for futures - fees, leverage, liquidation</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin for futures - fees, leverage, liquidation</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget for futures - fees, leverage, liquidation</a>",
+  "386bdQBW6Z": {
+   "en": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance for futures - fees, leverage, liquidation</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin for futures - fees, leverage, liquidation</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget for futures - fees, leverage, liquidation</a><a href=\"/bitget-vs-binance/\">Bitget vs Binance for futures - fees, leverage, liquidation</a><a href=\"/bitget-vs-okx/\">OKX vs Bitget for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-bitget/\">Bybit vs Bitget for futures - fees, leverage, liquidation</a>",
    "kind": [
     "html"
    ],
@@ -80211,8 +80128,8 @@
     "/coin/eth/"
    ],
    "n": 8,
-   "w": 56,
-   "de": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget für Futures - Gebühren, Hebel, Liquidation</a>"
+   "w": 80,
+   "de": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bitget-vs-binance/\">Bitget vs Binance für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bitget-vs-okx/\">OKX vs Bitget für Futures - Gebühren, Hebel, Liquidation</a><a href=\"/bybit-vs-bitget/\">Bybit vs Bitget für Futures - Gebühren, Hebel, Liquidation</a>"
   },
   "fsGeU00H25": {
    "en": "In another language",
@@ -100313,8 +100230,8 @@
    "w": 9,
    "de": "Floki (FLOKI) Liquidationskarte &amp; Heatmap - Live, kostenlos, ohne Login"
   },
-  "ZDdT9C0TA6": {
-   "en": "Free Forex Trading Simulator - Practice EUR/USD &amp; Majors, $0 Risk | MarginPad",
+  "HADaFmZZ5O": {
+   "en": "Forex Trading Simulator - Free, No Sign-Up, Live Rates | MarginPad",
    "kind": [
     "title"
    ],
@@ -100322,8 +100239,8 @@
     "/forex-trading-simulator/"
    ],
    "n": 1,
-   "w": 10,
-   "de": "Kostenloser Forex-Trading-Simulator - EUR/USD &amp; Majors üben, $0 Risiko | MarginPad"
+   "w": 9,
+   "de": "Forex-Simulator - kostenlos, ohne Anmeldung, Live-Kurse | MarginPad"
   },
   "j5d6shozZe": {
    "en": "<a href=\"/paper-trade\">Paper Trade</a><a href=\"/charts\">Charts</a><a href=\"/stock-trading-simulator/\">Stock simulator</a><a href=\"/index-trading-simulator/\">Index simulator</a><a href=\"/tools/\">Tools</a>",
@@ -101039,8 +100956,8 @@
    "w": 8,
    "de": "<a href=\"/stock-trading-simulator/\">Aktien-Simulator</a><a href=\"/forex-trading-simulator/\">Forex-Simulator</a><a href=\"/index-trading-simulator/\">Index-Simulator</a><a href=\"/paper-trade\">Paper Trade</a>"
   },
-  "nNZDbPL5O5": {
-   "en": "Practice forex trading free with live rates on EUR/USD, GBP/USD, USD/JPY and more. Real charts, leverage and stop-loss - a forex demo with no sign-up and no real money. Learn before you risk a cent.",
+  "6CksQ2JZ97": {
+   "en": "Free forex trading simulator with no sign-up: live EUR/USD, GBP/USD and USD/JPY rates, real charts, leverage, stop-loss and liquidation on a virtual balance. Practice forex in your browser, nothing to download.",
    "kind": [
     "attr:content",
     "ld"
@@ -101049,11 +100966,11 @@
     "/forex-trading-simulator/"
    ],
    "n": 4,
-   "w": 32,
-   "de": "Übe Forex-Trading kostenlos mit Live-Kursen für EUR/USD, GBP/USD, USD/JPY und mehr. Echte Charts, Hebel und Stop-Loss - eine Forex-Demo ohne Anmeldung und ohne echtes Geld. Lerne, bevor du einen Cent riskierst."
+   "w": 30,
+   "de": "Kostenloser Forex-Simulator ohne Anmeldung: Live-Kurse für EUR/USD, GBP/USD und USD/JPY, echte Charts, Hebel, Stop-Loss und Liquidation mit virtuellem Guthaben. Forex im Browser üben, ohne Download."
   },
-  "FMWEQ-UfFd": {
-   "en": "Free Forex Trading Simulator - Practice EUR/USD &amp; Majors, $0 Risk",
+  "Dy4URnSZU0": {
+   "en": "Forex Trading Simulator - Free, No Sign-Up, Live Rates",
    "kind": [
     "attr:content",
     "ld"
@@ -101062,8 +100979,8 @@
     "/forex-trading-simulator/"
    ],
    "n": 3,
-   "w": 9,
-   "de": "Kostenloser Forex-Trading-Simulator - EUR/USD &amp; Majors üben, $0 Risiko"
+   "w": 8,
+   "de": "Forex-Simulator - kostenlos, ohne Anmeldung, Live-Kurse"
   },
   "bHA8df3KYh": {
    "en": "Forex Trading Simulator",
@@ -107310,7 +107227,7 @@
     "/hyperliquid-liquidations/",
     "/liquidation-statistics/"
    ],
-   "n": 5,
+   "n": 6,
    "w": 1,
    "de": "Seite"
   },
@@ -115424,7 +115341,7 @@
     "/hyperliquid-vs-bitget/",
     "/hyperliquid-vs-bybit/"
    ],
-   "n": 11,
+   "n": 12,
    "w": 1,
    "de": "Hyperliquid"
   },
@@ -118543,8 +118460,8 @@
    "w": 19,
    "de": "Ungefähr 1/Hebel minus Maintenance Margin. Eine IMX-Position mit 10x wird nach etwa 9-10% Bewegung liquidiert; mit 100x nach etwa 1%."
   },
-  "9nxQlB5bbW": {
-   "en": "Free Index Trading Simulator - Practice S&amp;P 500, Nasdaq &amp; Dow, $0 Risk | MarginPad",
+  "r4e9mwbeQP": {
+   "en": "Index Trading Simulator - Free, No Sign-Up, S&amp;P 500 and Nasdaq Live | MarginPad",
    "kind": [
     "title"
    ],
@@ -118553,7 +118470,7 @@
    ],
    "n": 1,
    "w": 11,
-   "de": "Kostenloser Index-Trading-Simulator - S&amp;P 500, Nasdaq &amp; Dow, $0 Risiko | MarginPad"
+   "de": "Index-Simulator - kostenlos, ohne Anmeldung, S&amp;P 500 und Nasdaq live | MarginPad"
   },
   "omzntetc1C": {
    "en": "<a href=\"/paper-trade\">Paper Trade</a><a href=\"/charts\">Charts</a><a href=\"/stock-trading-simulator/\">Stock simulator</a><a href=\"/forex-trading-simulator/\">Forex simulator</a><a href=\"/tools/\">Tools</a>",
@@ -118928,8 +118845,8 @@
    "w": 24,
    "de": "Du kannst auch mit dem <a href=\"/stock-trading-simulator/\">Aktien-Simulator</a> und dem <a href=\"/forex-trading-simulator/\">Forex-Simulator</a> üben. MarginPad ist eine kostenlose Übungsplattform - keine Anlageberatung, und simulierte Ergebnisse garantieren keine realen Renditen."
   },
-  "9l6d_Bxqo_": {
-   "en": "Practice trading the S&amp;P 500, Nasdaq 100, Dow Jones and DAX with live prices and $0 real money. Free stock index simulator - real charts, leverage and stop-loss, no sign-up.",
+  "MKeb79xaYr": {
+   "en": "Free index trading simulator with no sign-up: S&amp;P 500, Nasdaq 100, Dow Jones and DAX at live prices, real charts, leverage and stop-loss on a virtual balance. Practice in your browser, nothing to download.",
    "kind": [
     "attr:content"
    ],
@@ -118937,11 +118854,11 @@
     "/index-trading-simulator/"
    ],
    "n": 3,
-   "w": 28,
-   "de": "Übe den Handel mit S&amp;P 500, Nasdaq 100, Dow Jones und DAX mit Live-Kursen und $0 echtem Geld. Kostenloser Aktienindex-Simulator - echte Charts, Hebel und Stop-Loss, ohne Anmeldung."
+   "w": 32,
+   "de": "Kostenloser Index-Simulator ohne Anmeldung: S&amp;P 500, Nasdaq 100, Dow Jones und DAX zu Live-Preisen, echte Charts, Hebel und Stop-Loss mit virtuellem Guthaben. Im Browser üben, ohne Download."
   },
-  "-Gy9YkjP52": {
-   "en": "Free Index Trading Simulator - Practice S&amp;P 500, Nasdaq &amp; Dow, $0 Risk",
+  "aeZXfDTJ0u": {
+   "en": "Index Trading Simulator - Free, No Sign-Up, S&amp;P 500 and Nasdaq Live",
    "kind": [
     "attr:content",
     "ld"
@@ -118951,7 +118868,7 @@
    ],
    "n": 3,
    "w": 10,
-   "de": "Kostenloser Index-Trading-Simulator - S&amp;P 500, Nasdaq &amp; Dow üben, $0 Risiko"
+   "de": "Index-Simulator - kostenlos, ohne Anmeldung, S&amp;P 500 und Nasdaq live"
   },
   "cUT7OOChqN": {
    "en": "Index Trading Simulator",
@@ -118967,8 +118884,8 @@
    "w": 3,
    "de": "Index-Trading-Simulator"
   },
-  "3eUO7d5p3G": {
-   "en": "Practice trading the S&P 500, Nasdaq 100, Dow Jones and DAX with live prices and $0 real money. Free stock index simulator - real charts, leverage and stop-loss, no sign-up.",
+  "2hVEmxTOks": {
+   "en": "Free index trading simulator with no sign-up: S&P 500, Nasdaq 100, Dow Jones and DAX at live prices, real charts, leverage and stop-loss on a virtual balance. Practice in your browser, nothing to download.",
    "kind": [
     "ld"
    ],
@@ -118976,8 +118893,8 @@
     "/index-trading-simulator/"
    ],
    "n": 1,
-   "w": 29,
-   "de": "Übe den Handel mit S&P 500, Nasdaq 100, Dow Jones und DAX mit Live-Kursen und $0 echtem Geld. Kostenloser Aktienindex-Simulator - echte Charts, Hebel und Stop-Loss, ohne Anmeldung."
+   "w": 33,
+   "de": "Kostenloser Index-Simulator ohne Anmeldung: S&P 500, Nasdaq 100, Dow Jones und DAX zu Live-Preisen, echte Charts, Hebel und Stop-Loss mit virtuellem Guthaben. Im Browser üben, ohne Download."
   },
   "pUpMm0Qzqe": {
    "en": "Major stock indices including the S&P 500, Nasdaq 100, Dow Jones, Germany's DAX 40, the UK FTSE 100 and Japan's Nikkei 225, with live prices and real candlestick charts.",
@@ -129690,9 +129607,10 @@
     "html"
    ],
    "ctx": [
-    "/liquidation-statistics/"
+    "/liquidation-statistics/",
+    "/liquidations/report/2026-10/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1,
    "de": "Größe"
   },
@@ -130346,12 +130264,14 @@
   "YME5AvGTIn": {
    "en": "By exchange",
    "kind": [
-    "ld"
+    "ld",
+    "html"
    ],
    "ctx": [
-    "/liquidations/by-exchange/"
+    "/liquidations/by-exchange/",
+    "/liquidations/report/2026-10/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 2,
    "de": "Nach Börse"
   },
@@ -130619,8 +130539,8 @@
    "w": 2,
    "de": "<span>Tiefer einsteigen</span>"
   },
-  "u9byBtLJmG": {
-   "en": "<a href=\"/rekt/\">Live feed, every event as it lands <small>/rekt</small></a> <a href=\"/heatmap\">Where the next stops are stacked <small>heatmap</small></a> <a href=\"/how-many-traders-liquidated-today/\">How many traders were liquidated today <small>one answer</small></a> <a href=\"/liquidation-statistics/\">Largest single hits, BTC and ETH <small>statistics</small></a> <a href=\"/free-crypto-api/\">This data as free JSON <small>API</small></a>",
+  "-5ltyfOjY7": {
+   "en": "<a href=\"/rekt/\">Live feed, every event as it lands <small>/rekt</small></a> <a href=\"/heatmap\">Where the next stops are stacked <small>heatmap</small></a> <a href=\"/how-many-traders-liquidated-today/\">How many traders were liquidated today <small>one answer</small></a> <a href=\"/liquidation-statistics/\">Largest single hits, BTC and ETH <small>statistics</small></a> <a href=\"/liquidations/report/\">Monthly liquidation reports, with data <small>reports</small></a> <a href=\"/free-crypto-api/\">This data as free JSON <small>API</small></a>",
    "kind": [
     "html"
    ],
@@ -130628,8 +130548,8 @@
     "/liquidations/"
    ],
    "n": 1,
-   "w": 36,
-   "de": "<a href=\"/rekt/\">Live-Feed, jedes Ereignis, sobald es eintrifft <small>/rekt</small></a> <a href=\"/heatmap\">Wo die nächsten Stops gestapelt sind <small>Heatmap</small></a> <a href=\"/how-many-traders-liquidated-today/\">Wie viele Trader heute liquidiert wurden <small>eine Antwort</small></a> <a href=\"/liquidation-statistics/\">Größte Einzeltreffer, BTC und ETH <small>Statistiken</small></a> <a href=\"/free-crypto-api/\">Diese Daten als kostenloses JSON <small>API</small></a>"
+   "w": 42,
+   "de": "<a href=\"/rekt/\">Live-Feed, jedes Ereignis in dem Moment, in dem es passiert <small>/rekt</small></a> <a href=\"/heatmap\">Wo sich die nächsten Stops stapeln <small>Heatmap</small></a> <a href=\"/how-many-traders-liquidated-today/\">Wie viele Trader heute liquidiert wurden <small>eine Antwort</small></a> <a href=\"/liquidation-statistics/\">Die größten Einzelliquidationen, BTC und ETH <small>Statistik</small></a> <a href=\"/liquidations/report/\">Monatliche Liquidationsberichte mit Daten <small>Berichte</small></a> <a href=\"/free-crypto-api/\">Diese Daten als kostenloses JSON <small>API</small></a>"
   },
   "d1Jy77PyGL": {
    "en": "<a class=\"go\" href=\"/paper-trade\">Practice with leverage, risk nothing →</a> <a href=\"/screener\">Market screener</a> <a href=\"/calculators?c=liq\">Liquidation price calculator</a>",
@@ -131138,6 +131058,709 @@
    "n": 1,
    "w": 24,
    "de": "Ja, ohne Key und mit CORS: /api/v1/liquidations für Marktsummen, /api/v1/venues für die Aufschlüsselung pro Börse, /api/v1/liquidations/live für einzelne aktuelle Ereignisse und /api/v1/clusters für die Heatmap-Bänder."
+  },
+  "Ij1EOAFGWe": {
+   "en": "Crypto Liquidations October 2026: $10.89B Report with Data | MarginPad",
+   "kind": [
+    "title"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 9,
+   "de": "Krypto-Liquidationen Oktober 2026: $10.89B, Bericht mit Daten | MarginPad"
+  },
+  "XjG3On0XTv": {
+   "en": "<a href=\"/liquidations/\">Liquidations</a><a href=\"/heatmap\">Heatmap</a><a href=\"/liquidations/report/\">Reports</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<a href=\"/liquidations/\">Liquidationen</a><a href=\"/heatmap\">Heatmap</a><a href=\"/liquidations/report/\">Berichte</a>"
+  },
+  "012BESmDJz": {
+   "en": "<a href=\"/liquidations/\">Liquidations</a> / <a href=\"/liquidations/report/\">Monthly reports</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<a href=\"/liquidations/\">Liquidationen</a> / <a href=\"/liquidations/report/\">Monatsberichte</a>"
+  },
+  "JzqnteMLex": {
+   "en": "Crypto liquidations in October 2026",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 2,
+   "w": 5,
+   "de": "Krypto-Liquidationen im Oktober 2026"
+  },
+  "dSInXcULMx": {
+   "en": "Leveraged crypto futures traders were forced out of <b>$10.89B</b> of positions in October 2026, counted event by event from eight exchanges. Long positions took 69.4% of it. Every figure below is a sum over our own archive, and the data is free to download.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 43,
+   "de": "Gehebelte Krypto-Futures-Trader wurden im Oktober 2026 aus Positionen im Wert von <b>$10.89B</b> gedrängt, Ereignis für Ereignis auf acht Börsen gezählt. Long-Positionen machten 69.4% davon aus. Jede Zahl unten ist eine Summe aus unserem eigenen Archiv, und die Daten kannst du kostenlos herunterladen."
+  },
+  "EjxxHd0msj": {
+   "en": "<span>Total liquidated</span><b>$10.89B</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<span>Liquidiert gesamt</span><b>$10.89B</b>"
+  },
+  "b_KYYK5xnT": {
+   "en": "<span>Longs</span><b>$7.55B</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span>Longs</span><b>$7.55B</b>",
+   "leaf": true
+  },
+  "HX7wPrXVo8": {
+   "en": "<span>Shorts</span><b>$3.34B</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span>Shorts</span><b>$3.34B</b>",
+   "leaf": true
+  },
+  "7cHQ3nPef2": {
+   "en": "<span>Events</span><b>2.45M</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span>Ereignisse</span><b>2.45M</b>"
+  },
+  "IxVN8vunHb": {
+   "en": "Day by day",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Tag für Tag"
+  },
+  "7DqwZWns7L": {
+   "en": "<i style=\"background:#ff5a4d\"></i>longs liquidated <i style=\"background:#2ebd85\"></i>shorts liquidated &middot; day of the month, UTC",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 9,
+   "de": "<i style=\"background:#ff5a4d\"></i>Longs liquidiert <i style=\"background:#2ebd85\"></i>Shorts liquidiert &middot; Tag des Monats, UTC"
+  },
+  "JmdhQSIA-u": {
+   "en": "An average day cleared $351.2M. The heaviest five days account for 40.6% of the month:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 15,
+   "de": "Ein durchschnittlicher Tag räumte $351.2M ab. Die fünf heftigsten Tage machen 40.6% des Monats aus:"
+  },
+  "NCmhRaQ7xW": {
+   "en": "<b>October 8</b>: $1.18B liquidated, 80.9% of it longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 7,
+   "de": "<b>8. Oktober</b>: $1.18B liquidiert, davon 80.9% Longs"
+  },
+  "8-3MytsiR5": {
+   "en": "<b>October 29</b>: $985.7M liquidated, 85.1% of it longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "<b>29. Oktober</b>: $985.7M liquidiert, davon 85.1% Longs"
+  },
+  "Vn-yvD4iww": {
+   "en": "<b>October 30</b>: $827.2M liquidated, 82.0% of it longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "<b>30. Oktober</b>: $827.2M liquidiert, davon 82.0% Longs"
+  },
+  "70MzwOH3RP": {
+   "en": "<b>October 15</b>: $800.4M liquidated, 74.9% of it longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "<b>15. Oktober</b>: $800.4M liquidiert, davon 74.9% Longs"
+  },
+  "HlZRi3fy7g": {
+   "en": "<b>October 7</b>: $624.6M liquidated, 78.8% of it longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 7,
+   "de": "<b>7. Oktober</b>: $624.6M liquidiert, davon 78.8% Longs"
+  },
+  "BxgZw6jo-8": {
+   "en": "The quietest day was October 31 with $48.9M. The busiest single hours:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 12,
+   "de": "Der ruhigste Tag war der 31. Oktober mit $48.9M. Die heftigsten einzelnen Stunden:"
+  },
+  "FdX7F0ETgz": {
+   "en": "October 29, 20:00 UTC: $579.9M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "29. Oktober, 20:00 UTC: $579.9M"
+  },
+  "OmAo7HcJBw": {
+   "en": "October 8, 15:00 UTC: $523.7M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "8. Oktober, 15:00 UTC: $523.7M"
+  },
+  "yj-o2Uvfew": {
+   "en": "October 15, 02:00 UTC: $483.3M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "15. Oktober, 02:00 UTC: $483.3M"
+  },
+  "SPkN041avf": {
+   "en": "October 30, 00:00 UTC: $346.6M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "30. Oktober, 00:00 UTC: $346.6M"
+  },
+  "-RA_tfteXb": {
+   "en": "October 7, 02:00 UTC: $292.9M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "7. Oktober, 02:00 UTC: $292.9M"
+  },
+  "myRafkkoYF": {
+   "en": "Liquidated",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 2,
+   "w": 1,
+   "de": "Liquidiert"
+  },
+  "CcpVylLSB_": {
+   "en": "Share",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Anteil"
+  },
+  "KPy3ZqSI2r": {
+   "en": "Binance USD-M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 11,
+   "w": 2,
+   "de": "Binance USD-M",
+   "leaf": true
+  },
+  "qTPF3ReEsl": {
+   "en": "Binance COIN-M",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Binance COIN-M",
+   "leaf": true
+  },
+  "KpqFEK33Pk": {
+   "en": "Bitfinex",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "Bitfinex"
+  },
+  "9PWUL7iIdZ": {
+   "en": "dYdX",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "dYdX"
+  },
+  "oC11Cajh53": {
+   "en": "By coin",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/",
+    "/trading-report/"
+   ],
+   "n": 2,
+   "w": 2,
+   "de": "Nach Coin"
+  },
+  "hhjRsFL9AB": {
+   "en": "The fifteen markets with the most liquidated value. Tokenised stocks and metals (for example SNDK, SOXL, XAU) trade as perpetual futures on the same venues and are counted like any other market.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 32,
+   "de": "Die fünfzehn Märkte mit dem höchsten liquidierten Wert. Tokenisierte Aktien und Metalle (zum Beispiel SNDK, SOXL, XAU) werden auf denselben Börsen als Perpetual Futures gehandelt und wie jeder andere Markt gezählt."
+  },
+  "1tOKmmVohT": {
+   "en": "Longs share",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Anteil Longs"
+  },
+  "gTo3o6uEmr": {
+   "en": "Biggest single liquidations",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Die größten Einzelliquidationen"
+  },
+  "AgNSBA8q_T": {
+   "en": "Time (UTC)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Zeit (UTC)"
+  },
+  "4T0f6XSB2D": {
+   "en": "Download the data",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "Daten herunterladen"
+  },
+  "j5OI-sLlTW": {
+   "en": "Free to use with attribution (CC BY 4.0).",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "Frei nutzbar mit Quellenangabe (CC BY 4.0)."
+  },
+  "mWFdirBN7c": {
+   "en": "<a href=\"daily.csv\" download>Daily totals (CSV)</a><a href=\"exchanges.csv\" download>By exchange (CSV)</a><a href=\"coins.csv\" download>Top 25 coins (CSV)</a><a href=\"biggest.csv\" download>Biggest liquidations (CSV)</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 13,
+   "de": "<a href=\"daily.csv\" download>Tagessummen (CSV)</a><a href=\"exchanges.csv\" download>Nach Börse (CSV)</a><a href=\"coins.csv\" download>Top 25 Coins (CSV)</a><a href=\"biggest.csv\" download>Größte Liquidationen (CSV)</a>"
+  },
+  "VhkIFvcPiC": {
+   "en": "How to cite:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "So zitierst du:"
+  },
+  "03KBgQwtFA": {
+   "en": "MarginPad, &quot;Crypto Liquidations October 2026&quot;, https://marginpad.io/liquidations/report/2026-10/",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "MarginPad, &quot;Krypto-Liquidationen Oktober 2026&quot;, https://marginpad.io/liquidations/report/2026-10/"
+  },
+  "RYc4Y0Pext": {
+   "en": "How these numbers are measured",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Wie diese Zahlen gemessen werden"
+  },
+  "xgTTQk3BM6": {
+   "en": "MarginPad runs its own collector subscribed to the public liquidation feeds of Binance (USD-M and COIN-M), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX and Bitfinex. Every event is stored with its time, exchange, market, side, price and size, and each day is archived and checked before it is written. Rows above a $50M sanity ceiling, which have only ever been duplicated exchange reports, are excluded.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 63,
+   "de": "MarginPad betreibt einen eigenen Collector, der die öffentlichen Liquidations-Feeds von Binance (USD-M und COIN-M), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX und Bitfinex abonniert. Jedes Ereignis wird mit Zeit, Börse, Markt, Seite, Preis und Größe gespeichert, und jeder Tag wird archiviert und geprüft, bevor er geschrieben wird. Zeilen über einer Plausibilitätsgrenze von $50M, bei denen es sich bisher immer nur um doppelte Börsenmeldungen handelte, werden ausgeschlossen."
+  },
+  "aM3W4UbvSy": {
+   "en": "Treat the totals as a floor rather than a complete count. Binance publishes at most one liquidation per market per second, so in the busiest minutes some events are never broadcast, and exchanges we do not collect (for example Bitget) are not included. For the same reason, totals from other data providers can differ.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 52,
+   "de": "Betrachte die Summen als Untergrenze, nicht als vollständige Zählung. Binance veröffentlicht höchstens eine Liquidation pro Markt und Sekunde, in den hektischsten Minuten werden also manche Ereignisse nie gesendet, und Börsen, die wir nicht erfassen (zum Beispiel Bitget), sind nicht enthalten. Aus demselben Grund können die Summen anderer Datenanbieter abweichen."
+  },
+  "39z8whNbUh": {
+   "en": "Live figures for today are on the <a href=\"/liquidations/\">liquidations tracker</a>, and where leverage is sitting right now is on the <a href=\"/heatmap\">liquidation heatmap</a>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 21,
+   "de": "Die Live-Zahlen für heute findest du im <a href=\"/liquidations/\">Liquidations-Tracker</a>, und wo der Hebel gerade sitzt, zeigt die <a href=\"/heatmap\">Liquidations-Heatmap</a>."
+  },
+  "pNUH2zE7rN": {
+   "en": "<span>&copy; 2026 MarginPad</span> <span><a href=\"/\">Home</a> &middot; <a href=\"/blog/\">Blog</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "<span>&copy; 2026 MarginPad</span> <span><a href=\"/\">Start</a> &middot; <a href=\"/blog/\">Blog</a> &middot; <a href=\"/terms/\">AGB</a> &middot; <a href=\"/privacy/\">Datenschutz</a></span>"
+  },
+  "AppE5X51dD": {
+   "en": "Crypto futures liquidations in October 2026: $10.89B across eight exchanges, 69.4% longs, the biggest days, coins and single liquidations. Free CSV downloads.",
+   "kind": [
+    "attr:content",
+    "ld"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 3,
+   "w": 22,
+   "de": "Krypto-Futures-Liquidationen im Oktober 2026: $10.89B über acht Börsen, 69.4% Longs, die größten Tage, Coins und Einzelliquidationen. Kostenlose CSV-Downloads."
+  },
+  "v4o-NWKdMe": {
+   "en": "Crypto Liquidations October 2026: $10.89B",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Krypto-Liquidationen Oktober 2026: $10.89B"
+  },
+  "phGHocZb1Z": {
+   "en": "Crypto futures liquidations, October 2026",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Krypto-Futures-Liquidationen, Oktober 2026"
+  },
+  "TFD85MTkuX": {
+   "en": "Monthly reports",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Monatsberichte"
+  },
+  "oCxvOnFCxb": {
+   "en": "October 2026",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Oktober 2026"
+  },
+  "6Dc5i-eB6b": {
+   "en": "Monthly Crypto Liquidation Reports with Free Data | MarginPad",
+   "kind": [
+    "title"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "Monatliche Krypto-Liquidationsberichte mit freien Daten | MarginPad"
+  },
+  "3L1q16Q-In": {
+   "en": "<a href=\"/liquidations/\">Liquidations</a><a href=\"/heatmap\">Heatmap</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<a href=\"/liquidations/\">Liquidationen</a><a href=\"/heatmap\">Heatmap</a>"
+  },
+  "nX1iIAu6ND": {
+   "en": "Monthly crypto liquidation reports",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Monatliche Krypto-Liquidationsberichte"
+  },
+  "gJwp1ZZwLC": {
+   "en": "One report per month, summed from every liquidation our collector recorded on eight exchanges. Each report has the daily totals, the exchanges, the coins and the biggest single liquidations, with the data as free CSV files.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 36,
+   "de": "Ein Bericht pro Monat, summiert aus jeder Liquidation, die unser Collector auf acht Börsen erfasst hat. Jeder Bericht enthält die Tagessummen, die Börsen, die Coins und die größten Einzelliquidationen, dazu die Daten als kostenlose CSV-Dateien."
+  },
+  "mrx2e1iCWT": {
+   "en": "<a href=\"/liquidations/report/2026-10/\">October 2026</a>: $10.89B liquidated, 69.4% longs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "<a href=\"/liquidations/report/2026-10/\">Oktober 2026</a>: $10.89B liquidiert, 69.4% Longs"
+  },
+  "vniiAqYC4a": {
+   "en": "For today's figures, see the <a href=\"/liquidations/\">live liquidations tracker</a>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "Die heutigen Zahlen findest du im <a href=\"/liquidations/\">Live-Liquidations-Tracker</a>."
+  },
+  "qNXj3nFRFo": {
+   "en": "<span>&copy; 2026 MarginPad</span><span><a href=\"/\">Home</a> &middot; <a href=\"/terms/\">Terms</a></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "<span>&copy; 2026 MarginPad</span><span><a href=\"/\">Start</a> &middot; <a href=\"/terms/\">AGB</a></span>"
+  },
+  "gqnugnCvB3": {
+   "en": "Monthly reports of crypto futures liquidations across eight exchanges: totals, longs vs shorts, biggest days, coins and single liquidations, with free CSV downloads.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 23,
+   "de": "Monatsberichte zu Krypto-Futures-Liquidationen über acht Börsen: Summen, Longs vs Shorts, größte Tage, Coins und Einzelliquidationen, mit kostenlosen CSV-Downloads."
+  },
+  "1YA7M8hTAN": {
+   "en": "Monthly Crypto Liquidation Reports",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/liquidations/report/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "Monatliche Krypto-Liquidationsberichte"
   },
   "q89Y3iABfd": {
    "en": "Crypto Long/Short Ratio - Live Trader Positioning | MarginPad",
@@ -147300,17 +147923,18 @@
    "w": 8,
    "de": "Live-Krypto-Liquidationen - Echtzeit-Feed, kostenlos, ohne Login"
   },
-  "JVs5V_u7E6": {
-   "en": "Free USDT Faucet - Welcome Bonus + Claim Every 5 Minutes | MarginPad",
+  "-bPMNNPVLX": {
+   "en": "Free USDT Faucet - Claim Every 5 Minutes, No Deposit | MarginPad",
    "kind": [
-    "title"
+    "title",
+    "attr:content"
    ],
    "ctx": [
     "/rewards/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 9,
-   "de": "Gratis USDT Faucet – Willkommensbonus + alle 5 Minuten abholen | MarginPad"
+   "de": "Gratis USDT-Faucet - alle 5 Minuten abholen, ohne Einzahlung | MarginPad"
   },
   "WJ30ba_Kxw": {
    "en": "<span class=\"pill\">● Free USDT · No deposit</span>",
@@ -149333,8 +149957,8 @@
    "w": 1,
    "de": "du@email.com"
   },
-  "Zm1kAj9BQW": {
-   "en": "Earn free USDT on MarginPad: sign in with just your email (no password), get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID or Moon account. No deposit.",
+  "2Au5fWCDyD": {
+   "en": "Claim free USDT every 5 minutes with no deposit: sign in with just your email, get a welcome bonus, complete daily missions and withdraw from $5 to Bybit, MEXC, BingX or Moon.",
    "kind": [
     "attr:content"
    ],
@@ -149342,35 +149966,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 37,
-   "de": "Verdiene gratis USDT auf MarginPad: Melde dich nur mit deiner E-Mail an (kein Passwort), hol dir einen sofortigen Willkommensbonus, hole alle 5 Minuten ab und erledige tägliche Missionen. Auszahlung ab $5 auf deine Bybit-UID oder dein Moon-Konto. Keine Einzahlung."
+   "w": 30,
+   "de": "Hol dir alle 5 Minuten gratis USDT ohne Einzahlung: Anmeldung nur mit E-Mail, Willkommensbonus, tägliche Missionen und Auszahlung ab $5 an Bybit, MEXC, BingX oder Moon."
   },
-  "47Yy1W3bLZ": {
-   "en": "Free USDT - Welcome Bonus + Claim Every 5 Minutes",
-   "kind": [
-    "attr:content"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 7,
-   "de": "Kostenlose USDT - Willkommensbonus + alle 5 Minuten abholen"
-  },
-  "2j21Y51PdS": {
-   "en": "Sign in with your email, get an instant welcome bonus, claim free USDT every 5 minutes and earn extra with daily missions. Withdraw from $5.",
-   "kind": [
-    "attr:content"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 24,
-   "de": "Melde dich mit deiner E-Mail an, erhalte sofort einen Willkommensbonus, hol alle 5 Minuten kostenlose USDT ab und verdiene extra mit täglichen Missionen. Auszahlung ab $5."
-  },
-  "GNR2e1NFzm": {
-   "en": "Free USDT - Welcome Bonus + Claim Every 5 Minutes | MarginPad",
+  "ChPRq4fWOz": {
+   "en": "Free USDT Faucet - Claim Every 5 Minutes, No Deposit",
    "kind": [
     "attr:content"
    ],
@@ -149379,7 +149979,19 @@
    ],
    "n": 1,
    "w": 8,
-   "de": "Gratis USDT – Willkommensbonus + alle 5 Minuten abholen | MarginPad"
+   "de": "Gratis USDT-Faucet - alle 5 Minuten abholen, ohne Einzahlung"
+  },
+  "hrLzGZooQW": {
+   "en": "Claim free USDT every 5 minutes with no deposit: email sign-in, welcome bonus, daily missions, withdraw from $5 to Bybit, MEXC, BingX or Moon.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 23,
+   "de": "Alle 5 Minuten gratis USDT ohne Einzahlung: Anmeldung per E-Mail, Willkommensbonus, tägliche Missionen, Auszahlung ab $5 an Bybit, MEXC, BingX oder Moon."
   },
   "v_eBYMZ2xi": {
    "en": "Sign in with your email, get a welcome bonus, claim free USDT every 5 minutes. Withdraw from $5. No deposit.",
@@ -155712,8 +156324,8 @@
    "w": 16,
    "de": "Bot API, Trading Store, Liquidations-Feed und Price Floor: Live-Checks und 90 Tage Uptime."
   },
-  "H08kEJmmdD": {
-   "en": "Free Stock Trading Simulator - Practice Stocks with $0 Risk | MarginPad",
+  "pHOTgPyhmK": {
+   "en": "Stock Trading Simulator - Free, No Sign-Up, Live Prices | MarginPad",
    "kind": [
     "title"
    ],
@@ -155721,8 +156333,8 @@
     "/stock-trading-simulator/"
    ],
    "n": 1,
-   "w": 10,
-   "de": "Kostenloser Aktien-Simulator - Aktien üben mit $0 Risiko | MarginPad"
+   "w": 9,
+   "de": "Aktien-Simulator - kostenlos, ohne Anmeldung, Live-Preise | MarginPad"
   },
   "UWdk6ezJ55": {
    "en": "<a href=\"/paper-trade\">Paper Trade</a><a href=\"/charts\">Charts</a><a href=\"/forex-trading-simulator/\">Forex simulator</a><a href=\"/index-trading-simulator/\">Index simulator</a><a href=\"/tools/\">Tools</a>",
@@ -156109,8 +156721,8 @@
    "w": 24,
    "de": "Du kannst auch den <a href=\"/forex-trading-simulator/\">Forex-Simulator</a> und den <a href=\"/index-trading-simulator/\">Index-Simulator</a> nutzen. MarginPad ist eine kostenlose Übungsplattform - keine Anlageberatung, und simulierte Ergebnisse garantieren keine echten Renditen."
   },
-  "oMjY3Y7pjc": {
-   "en": "Practice trading Apple, Tesla, Nvidia and 20+ real stocks with live prices and $0 real money. Free stock trading simulator - no sign-up, real charts, instant paper trades. Learn before you risk a cent.",
+  "8nJdDsXZq4": {
+   "en": "Free stock trading simulator with no sign-up: Apple, Tesla, Nvidia and 20+ real stocks at live prices, real charts, leverage, shorting and stop-loss on a virtual balance. Practice in your browser, nothing to download.",
    "kind": [
     "attr:content",
     "ld"
@@ -156119,11 +156731,11 @@
     "/stock-trading-simulator/"
    ],
    "n": 4,
-   "w": 32,
-   "de": "Übe den Handel mit Apple, Tesla, Nvidia und 20+ echten Aktien mit Live-Preisen und $0 echtem Geld. Kostenloser Aktien-Simulator - ohne Anmeldung, echte Charts, sofortige Paper-Trades. Lerne, bevor du einen Cent riskierst."
+   "w": 33,
+   "de": "Kostenloser Aktien-Simulator ohne Anmeldung: Apple, Tesla, Nvidia und 20+ echte Aktien zu Live-Preisen, echte Charts, Hebel, Short-Selling und Stop-Loss mit virtuellem Guthaben. Im Browser üben, ohne Download."
   },
-  "iA0LqYCQgW": {
-   "en": "Free Stock Trading Simulator - Practice Stocks with $0 Risk",
+  "6mxAqxFl6N": {
+   "en": "Stock Trading Simulator - Free, No Sign-Up, Live Prices",
    "kind": [
     "attr:content",
     "ld"
@@ -156132,8 +156744,8 @@
     "/stock-trading-simulator/"
    ],
    "n": 3,
-   "w": 9,
-   "de": "Kostenloser Aktien-Simulator - Aktien üben mit $0 Risiko"
+   "w": 8,
+   "de": "Aktien-Simulator - kostenlos, ohne Anmeldung, Live-Preise"
   },
   "w3jP9AHEHb": {
    "en": "Stock Trading Simulator",
@@ -183083,8 +183695,8 @@
    "w": 117,
    "de": "Zwei Boards sind anders. <b>Bybit-Volumen</b> rankt Mitglieder nach echtem Futures-Volumen auf einem über MarginPad eröffneten Bybit-Account und zahlt einen Pool, der jede Season bei $100 beginnt und 52% der Affiliate-Provision draufschlägt, die Bybit MarginPad für diese Trader zahlt - etwa $11.65 je $100,000 gehandelt - über zehn Ränge (50% / 25% / 10% / 5% / 5%, dann je 1%): $50 / $25 / $10 / $5 / $5 / $1 zum Start, etwa $79 für den ersten Platz bei $500,000 Season-Volumen. Der Pool wird von Bybit gelesen und wächst mit jedem Trade, zusätzlich zu jedem Gebührenrabatt, den die Börse selbst dir gibt. Registriere die UID dieses Accounts auf der <a href=\"/season/#boards\">Season-Seite</a>, um zu erscheinen. Bybit kann nicht überall Accounts eröffnen, darunter die Vereinigten Staaten."
   },
-  "2hIfxJLEEc": {
-   "en": "<b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one contest spanning two seasons (it ends when the season after the one it opened in ends), and pays the top five $300. Claiming the <a href=\"/rewards/\">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href=\"/leaderboards/#moon\">the leaderboards page</a>.",
+  "ToM03zZXEU": {
+   "en": "<b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one contest spanning two seasons (it ends when the season after the one it opened in ends), and pays the top five $300. To enter, register the Moon username of that account in the box on <a href=\"/leaderboards/#moon\">the King of the Moon board</a> (an approved <a href=\"/rewards/\">Moon sign-up bonus</a> claim registers it too); it is checked against our Moon referral list. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href=\"/leaderboards/#moon\">the leaderboards page</a>.",
    "kind": [
     "html"
    ],
@@ -183092,8 +183704,8 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 90,
-   "de": "<b>King of the Moon</b> rankt Mitglieder nach dem echten Einsatzvolumen auf einem über MarginPad eröffneten Moon-Account, über einen Wettbewerb, der zwei Seasons umspannt (er endet, wenn die Season nach der, in der er begann, endet), und zahlt den Top fünf $300. Der <a href=\"/rewards/\">Moon-Anmeldebonus</a> ist die Registrierung: Er teilt MarginPad deinen Moon-Usernamen mit, den Moon sonst maskiert meldet. Das Board startet bei dem, was jeder Account am Tag der Eröffnung eingesetzt hatte, und zählt nur, was danach dazukommt. Komplette Platzierungen und Regeln: <a href=\"/leaderboards/#moon\">die Ranglisten-Seite</a>."
+   "w": 107,
+   "de": "<b>King of the Moon</b> rankt Mitglieder nach dem echten Einsatz auf einem Moon-Konto, das über MarginPad eröffnet wurde, über einen Wettbewerb, der zwei Seasons umfasst (er endet, wenn die Season nach der, in der er begonnen hat, endet), und zahlt den Top fünf $300. Zur Teilnahme trägst du den Moon-Benutzernamen dieses Kontos in das Feld auf <a href=\"/leaderboards/#moon\">dem King-of-the-Moon-Board</a> ein (ein genehmigter <a href=\"/rewards/\">Moon-Anmeldebonus</a> registriert ihn ebenfalls); er wird mit unserer Moon-Referral-Liste abgeglichen. Das Board startet bei dem, was jedes Konto am Eröffnungstag des Wettbewerbs bereits eingesetzt hatte, und zählt nur, was danach dazukommt. Vollständige Platzierungen und Regeln: <a href=\"/leaderboards/#moon\">die Ranglisten-Seite</a>."
   },
   "mrXSYz21Lq": {
    "en": "Why the standings can be trusted",
@@ -184259,18 +184871,6 @@
    "n": 3,
    "w": 3,
    "de": "Rendite auf Margin"
-  },
-  "oC11Cajh53": {
-   "en": "By coin",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-report/"
-   ],
-   "n": 1,
-   "w": 2,
-   "de": "Nach Coin"
   },
   "zwace02phW": {
    "en": "By hour of day (UTC)",
@@ -188915,7 +189515,8 @@
    ],
    "n": 1,
    "w": 5,
-   "de": ""
+   "de": "MarginPad What moved it: Bitcoin",
+   "leaf": true
   },
   "aVw17LJSPZ": {
    "en": "Every abnormal Bitcoin move of the last 30 days with its measured cause: the first report of the news, liquidations, tracked whale trades and open interest at that minute.",

@@ -456,3 +456,5 @@
 /strategies/oi-washout-long/
 /trader-readiness-test/
 /why-is-bitcoin-down-today/
+/liquidations/report/
+/liquidations/report/2026-10/

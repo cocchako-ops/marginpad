@@ -14,7 +14,7 @@
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const R = path.join(__dirname, '..', '..'), DIST = path.join(R, 'dist'), DATA = path.join(R, 'build/data/i18n'), CH = path.join(DATA, 'chunks');
-const LANGS = ['es', 'pt', 'de'], CORE = ['mpnav', 'mpauth', 'mpprofile', 'mptrade'];
+const LANGS = require('./langs.js').TWINS, CORE = ['mpnav', 'mpauth', 'mpprofile', 'mptrade'];
 const SKIP = new Set(['assets', 'i18n', 'sdk', 'og', 'img', 'fonts', 'es', 'pt', 'de', 'fr', 'nl', 'ru', 'tr', 'id', 'zh', 'ja', 'ko', 'ar', 'sr']);
 const read = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const idOf = (en) => crypto.createHash('sha1').update(en).digest('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
@@ -23,7 +23,7 @@ function files() {
   const out = []; const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) { if (!(d === DIST && SKIP.has(e.name))) walk(p); } else if (/\.html$/.test(e.name)) out.push(p); } };
   walk(DIST);
   for (const f of fs.readdirSync(path.join(DIST, 'assets'))) if (/\.js$/.test(f) && !/^ui-/.test(f)) out.push(path.join(DIST, 'assets', f));
-  return out.filter((f) => !/[\\/]app-(es|pt|de)\.html$/.test(f));
+  return out.filter((f) => !/[\\/]app-[a-z]{2}\.html$/.test(f));
 }
 function objEnd(s, i) { let d = 0, q = false; for (let j = i; j < s.length; j++) { const c = s[j]; if (q) { if (c === '\\') j++; else if (c === '"') q = false; } else if (c === '"') q = true; else if (c === '{') d++; else if (c === '}') { d--; if (!d) return j + 1; } } return -1; }
 function unq(lit) { try { return new Function('return ' + lit)(); } catch (e) { return null; } }
@@ -119,7 +119,7 @@ const pads = (t) => [/^\s*/.exec(t)[0].length, /\s*$/.exec(t)[0].length].join();
 function merge() {
   const s = read(path.join(DATA, 'strings.json'), {}), byId = {}; for (const e of Object.keys(s)) byId[idOf(e)] = e; let ok = 0, bad = 0;
   for (const f of fs.readdirSync(CH)) {
-    const m = /^(es|pt|de)-\d+\.tr\.json$/.exec(f); if (!m) continue; const l = m[1];
+    const m = /^([a-z]{2})-\d+\.tr\.json$/.exec(f); if (!m) continue; const l = m[1];
     for (const x of read(path.join(CH, f), [])) {
       const en = byId[x.id]; if (!en || typeof x.t !== 'string' || !x.t.trim()) { bad++; continue; }
       const why = nums(en) !== nums(x.t) ? 'numbers' : tags(en) !== tags(x.t) ? 'tags' : (String(x.t).match(/\$\{|\{\w+\}/g) || []).sort().join() !== (en.match(/\$\{|\{\w+\}/g) || []).sort().join() ? 'placeholders' : '';

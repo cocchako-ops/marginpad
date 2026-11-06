@@ -1,0 +1,1321 @@
+{
+ "_note": "English source for the worker-written words on a twin page. Each field: en = what to translate (keys that are English ARE the source text), pt/de/es = existing translations for reference. ssr has no English source string - its pt/de/es values say the same sentence; {placeholders} must survive.",
+ "susd": {
+  "en": [
+   " trillion",
+   " billion",
+   " million"
+  ],
+  "pt": [
+   " trilhões",
+   " bilhões",
+   " milhões"
+  ],
+  "de": [
+   " Billionen",
+   " Milliarden",
+   " Millionen"
+  ],
+  "note": "magnitude words for 10^12, 10^9, 10^6 with a leading space - beware false friends (Spanish billon = 10^12)"
+ },
+ "ssr": {
+  "liqTotal": {
+   "es": "Las liquidaciones de futuros cripto suman {t} en las últimas 24 horas: {l} de largos y {s} de cortos en {n} monedas monitorizadas.",
+   "pt": "As liquidações de futuros de cripto somam {t} nas últimas 24 horas: {l} de longs e {s} de shorts em {n} moedas monitoradas.",
+   "de": "Krypto-Futures-Liquidationen summieren sich in den letzten 24 Stunden auf {t}: {l} Longs und {s} Shorts über {n} beobachtete Coins."
+  },
+  "whaleHold": {
+   "es": "Las ballenas de Hyperliquid mantienen ahora {t} en posiciones abiertas repartidas en {n} carteras monitorizadas - {l} en largos frente a {s} en cortos, {net} en conjunto.",
+   "pt": "As baleias da Hyperliquid mantêm agora {t} em posições abertas, distribuídas em {n} carteiras monitoradas - {l} em longs contra {s} em shorts, {net} no total.",
+   "de": "Hyperliquid-Wale halten derzeit {t} in offenen Positionen, verteilt auf {n} beobachtete Wallets - {l} in Longs gegenüber {s} in Shorts, insgesamt {net}."
+  },
+  "netLong": {
+   "es": "neto largo",
+   "pt": "net long",
+   "de": "netto Long"
+  },
+  "netShort": {
+   "es": "neto corto",
+   "pt": "net short",
+   "de": "netto Short"
+  },
+  "netFlat": {
+   "es": "prácticamente equilibrado",
+   "pt": "praticamente equilibrado",
+   "de": "nahezu ausgeglichen"
+  },
+  "fngNow": {
+   "es": "El índice Crypto Fear & Greed marca {v} ({c}) ahora mismo",
+   "pt": "O índice Crypto Fear & Greed está em {v} ({c}) agora",
+   "de": "Der Crypto Fear & Greed Index steht gerade bei {v} ({c})"
+  },
+  "fngYday": {
+   "es": ", frente a {v} ({c}) ayer",
+   "pt": ", contra {v} ({c}) ontem",
+   "de": ", gegenüber {v} ({c}) gestern"
+  },
+  "fngWeek": {
+   "es": " y {v} hace una semana",
+   "pt": " e {v} há uma semana",
+   "de": " und {v} vor einer Woche"
+  },
+  "fngRange": {
+   "es": "En los últimos {n} días el índice se ha movido entre {lo} y {hi}.",
+   "pt": "Nos últimos {n} dias, o índice oscilou entre {lo} e {hi}.",
+   "de": "In den letzten {n} Tagen bewegte sich der Index zwischen {lo} und {hi}."
+  },
+  "fngCls": {
+   "es": {
+    "Extreme Fear": "Miedo extremo",
+    "Fear": "Miedo",
+    "Neutral": "Neutral",
+    "Greed": "Codicia",
+    "Extreme Greed": "Codicia extrema"
+   },
+   "pt": {
+    "Extreme Fear": "Medo extremo",
+    "Fear": "Medo",
+    "Neutral": "Neutro",
+    "Greed": "Ganância",
+    "Extreme Greed": "Ganância extrema"
+   },
+   "de": {
+    "Extreme Fear": "Extreme Angst",
+    "Fear": "Angst",
+    "Neutral": "Neutral",
+    "Greed": "Gier",
+    "Extreme Greed": "Extreme Gier"
+   }
+  }
+ },
+ "tbl": {
+  "MARKET STATE": {
+   "pt": "ESTADO DO MERCADO",
+   "de": "MARKTSTATUS",
+   "es": "ESTADO DEL MERCADO"
+  },
+  "Price": {
+   "pt": "Preço",
+   "de": "Preis",
+   "es": "Precio"
+  },
+  "Market cap": {
+   "pt": "Valor de mercado",
+   "de": "Marktkapitalisierung",
+   "es": "Capitalización"
+  },
+  "rank #": {
+   "pt": "posição #",
+   "de": "Rang #",
+   "es": "puesto #"
+  },
+  "in 24h": {
+   "pt": "em 24 h",
+   "de": "in 24 Std.",
+   "es": "en 24 h"
+  },
+  "24h spot volume": {
+   "pt": "Volume spot 24 h",
+   "de": "Spot-Volumen 24 Std.",
+   "es": "Volumen spot 24 h"
+  },
+  "7-day change": {
+   "pt": "Variação em 7 dias",
+   "de": "Veränderung 7 Tage",
+   "es": "Cambio en 7 días"
+  },
+  "30-day change": {
+   "pt": "Variação em 30 dias",
+   "de": "Veränderung 30 Tage",
+   "es": "Cambio en 30 días"
+  },
+  "All-time high": {
+   "pt": "Máxima histórica",
+   "de": "Allzeithoch",
+   "es": "Máximo histórico"
+  },
+  "from here": {
+   "pt": "a partir daqui",
+   "de": "von hier",
+   "es": "desde aquí"
+  },
+  "Funding rate": {
+   "pt": "Taxa de funding",
+   "de": "Funding-Rate",
+   "es": "Tasa de funding"
+  },
+  "longs pay shorts": {
+   "pt": "longs pagam shorts",
+   "de": "Longs zahlen an Shorts",
+   "es": "los largos pagan a los cortos"
+  },
+  "shorts pay longs": {
+   "pt": "shorts pagam longs",
+   "de": "Shorts zahlen an Longs",
+   "es": "los cortos pagan a los largos"
+  },
+  "flat": {
+   "pt": "neutra",
+   "de": "neutral",
+   "es": "plana"
+  },
+  "Open interest": {
+   "pt": "Interesse aberto",
+   "de": "Open Interest",
+   "es": "Interés abierto"
+  },
+  "Open interest / market cap": {
+   "pt": "Interesse aberto / valor de mercado",
+   "de": "Open Interest / Marktkapitalisierung",
+   "es": "Interés abierto / capitalización"
+  },
+  "Liquidated in 24h": {
+   "pt": "Liquidado em 24 h",
+   "de": "Liquidiert in 24 Std.",
+   "es": "Liquidado en 24 h"
+  },
+  "MarginPad collector, 8 exchanges": {
+   "pt": "coletor da MarginPad, 8 exchanges",
+   "de": "MarginPad-Collector, 8 Exchanges",
+   "es": "colector de MarginPad, 8 exchanges"
+  },
+  "- longs liquidated": {
+   "pt": "- longs liquidados",
+   "de": "- Longs liquidiert",
+   "es": "- largos liquidados"
+  },
+  "- shorts liquidated": {
+   "pt": "- shorts liquidados",
+   "de": "- Shorts liquidiert",
+   "es": "- cortos liquidados"
+  },
+  "Accounts long / short": {
+   "pt": "Contas long / short",
+   "de": "Konten Long / Short",
+   "es": "Cuentas largas / cortas"
+  },
+  "our own daily records": {
+   "pt": "nossos próprios registros diários",
+   "de": "unsere eigenen Tagesdaten",
+   "es": "nuestros propios registros diarios"
+  },
+  "Heaviest of those days": {
+   "pt": "O mais pesado desses dias",
+   "de": "Der schwerste dieser Tage",
+   "es": "El más fuerte de esos días"
+  },
+  "-day average": {
+   "pt": " dias de média",
+   "de": "-Tage-Durchschnitt",
+   "es": " días de media"
+  },
+  "Liquidations, ": {
+   "pt": "Liquidações, ",
+   "de": "Liquidationen, ",
+   "es": "Liquidaciones, "
+  },
+  " / day": {
+   "pt": " / dia",
+   "de": " / Tag",
+   "es": " / día"
+  }
+ },
+ "mapPairs": [
+  {
+   "en": " LIQUIDATION MAP &middot; UPDATED ",
+   "pt": " MAPA DE LIQUIDAÇÕES &middot; ATUALIZADO ",
+   "de": " LIQUIDATIONSKARTE &middot; AKTUALISIERT "
+  },
+  {
+   "en": ">Price<",
+   "pt": ">Preço<",
+   "de": ">Preis<"
+  },
+  {
+   "en": ">Liquidated 24h<",
+   "pt": ">Liquidado 24h<",
+   "de": ">Liquidiert 24h<"
+  },
+  {
+   "en": ">Long vs short<",
+   "pt": ">Longs vs shorts<",
+   "de": ">Long vs. Short<"
+  },
+  {
+   "en": "Above &mdash; where shorts get liquidated",
+   "pt": "Acima &mdash; onde os shorts são liquidados",
+   "de": "Darüber &mdash; wo Shorts liquidiert werden"
+  },
+  {
+   "en": "Below &mdash; where longs get liquidated",
+   "pt": "Abaixo &mdash; onde os longs são liquidados",
+   "de": "Darunter &mdash; wo Longs liquidiert werden"
+  },
+  {
+   "en": ">trading now<",
+   "pt": ">negociando agora<",
+   "de": ">wird jetzt gehandelt<"
+  },
+  {
+   "en": "Zoom, hover a band, read the clusters",
+   "pt": "Dê zoom, passe o mouse sobre uma faixa, leia os clusters",
+   "de": "Zoomen, ein Band anfahren, die Cluster lesen"
+  },
+  {
+   "en": "Deep perpetual liquidity",
+   "pt": "Liquidez profunda em perpétuos",
+   "de": "Tiefe Perpetual-Liquidität"
+  },
+  {
+   "en": "3.5% of your trading fees back",
+   "pt": "3.5% das suas taxas de trading de volta",
+   "de": "3.5% deiner Trading-Gebühren zurück"
+  },
+  {
+   "en": " A $250,000 buy would really cost ",
+   "pt": " Uma compra de $250,000 custaria de verdade ",
+   "de": " Ein Kauf über $250,000 würde dich real "
+  },
+  {
+   "en": " in slippage",
+   "pt": " de slippage",
+   "de": " Slippage kosten"
+  },
+  {
+   "en": "This is <strong",
+   "pt": "Isto é <strong",
+   "de": "Das ist <strong"
+  },
+  {
+   "en": "measured</strong>, not modelled: real limit orders standing on ",
+   "pt": "medido</strong>, não modelado: ordens limite reais nos livros de ordens de ",
+   "de": "gemessen</strong>, nicht modelliert: echte Limit-Orders in den Orderbüchern von "
+  },
+  {
+   "en": " exchange order books a second ago. ",
+   "pt": " exchanges, de um segundo atrás. ",
+   "de": " Exchanges vor einer Sekunde. "
+  },
+  {
+   "en": " exchange order books ",
+   "pt": " exchanges, de ",
+   "de": " Exchanges vor "
+  },
+  {
+   "en": " seconds ago. ",
+   "pt": " segundos atrás. ",
+   "de": " Sekunden. "
+  },
+  {
+   "en": "The real book right now &middot; measured",
+   "pt": "O livro real agora &middot; medido",
+   "de": "Das echte Orderbuch jetzt &middot; gemessen"
+  },
+  {
+   "en": "Bids resting",
+   "pt": "Compras pendentes",
+   "de": "Offene Kaufgebote"
+  },
+  {
+   "en": "Offers resting",
+   "pt": "Vendas pendentes",
+   "de": "Offene Verkaufsangebote"
+  },
+  {
+   "en": "within 0.25% of the price, summed across",
+   "pt": "a menos de 0.25% do preço, somado entre",
+   "de": "innerhalb von 0.25% des Preises, summiert über"
+  },
+  {
+   "en": " venues",
+   "pt": " exchanges",
+   "de": " Exchanges"
+  },
+  {
+   "en": "A $250,000 buy would really cost",
+   "pt": "Uma compra de $250,000 custaria de verdade",
+   "de": "Ein Kauf über $250,000 würde dich real"
+  },
+  {
+   "en": "in slippage",
+   "pt": "de slippage",
+   "de": "Slippage kosten"
+  },
+  {
+   "en": " a $250,000 sell, ",
+   "pt": " uma venda de $250,000, ",
+   "de": " ein Verkauf über $250,000 "
+  },
+  {
+   "en": "&middot; UPDATED ",
+   "pt": "&middot; ATUALIZADO ",
+   "de": "&middot; AKTUALISIERT "
+  },
+  {
+   "en": "See it live:",
+   "pt": "Veja ao vivo:",
+   "de": "Live ansehen:"
+  },
+  {
+   "en": "Practice risk-free with paper trading",
+   "pt": "Pratique sem risco com paper trading",
+   "de": "Übe risikofrei mit Paper Trading"
+  },
+  {
+   "en": "Practice risk-free",
+   "pt": "Pratique sem risco",
+   "de": "Übe risikofrei"
+  },
+  {
+   "en": "Full liquidation calculator",
+   "pt": "Calculadora de liquidação completa",
+   "de": "Vollständiger Liquidationsrechner"
+  },
+  {
+   "en": "24h liquidation totals",
+   "pt": "Totais de liquidações 24h",
+   "de": "Liquidationen gesamt (24h)"
+  },
+  {
+   "en": "Live liquidation feed",
+   "pt": "Feed de liquidações ao vivo",
+   "de": "Live-Liquidations-Feed"
+  },
+  {
+   "en": "LIVE MARKET DATA",
+   "pt": "DADOS DE MERCADO AO VIVO",
+   "de": "LIVE-MARKTDATEN"
+  },
+  {
+   "en": "It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ",
+   "pt": "Ele responde a uma pergunta diferente da das zonas acima, e vale guardar a diferença: um livro mostra ordens que alguém <em>escolheu</em> colocar e pode retirar a qualquer momento, enquanto uma zona de liquidação é onde a alavancagem é encerrada, quer o dono queira ou não &mdash; e nenhum livro de ordens mostra isso, a distância nenhuma. ",
+   "de": "Es beantwortet eine andere Frage als die Zonen oben, und der Unterschied ist wichtig: Ein Orderbuch zeigt Orders, die jemand <em>freiwillig</em> platziert hat und jederzeit zurückziehen kann, während eine Liquidationszone dort liegt, wo Hebel geschlossen wird, ob der Besitzer will oder nicht &mdash; und das zeigt kein Orderbuch der Welt, in keiner Entfernung. "
+  },
+  {
+   "en": "On top of which the deepest book we can read only reaches ",
+   "pt": "Além disso, o livro mais profundo que conseguimos ler só chega a ",
+   "de": "Hinzu kommt: Das tiefste Orderbuch, das wir lesen können, reicht nur bis "
+  },
+  {
+   "en": " from the price",
+   "pt": " do preço",
+   "de": " vom Preis"
+  },
+  {
+   "en": ", while the nearest zone above sits ",
+   "pt": ", enquanto a zona mais próxima acima fica a ",
+   "de": ", während die nächste Zone darüber "
+  },
+  {
+   "en": "% away",
+   "pt": "% de distância",
+   "de": "% entfernt liegt"
+  },
+  {
+   "en": ": past that, even the resting orders are out of sight.",
+   "pt": ": além disso, nem as ordens pendentes ficam visíveis.",
+   "de": ": dahinter sind selbst die offenen Orders nicht mehr sichtbar."
+  },
+  {
+   "en": "Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ",
+   "pt": "O comprimento da barra é o peso de uma zona ativa em relação às demais desta lista; o número ao lado indica quantas vezes ela carrega a faixa ativa média perto do preço. Estas são zonas ",
+   "de": "Die Balkenlänge ist das Gewicht einer bestehenden Zone im Vergleich zu den anderen in dieser Liste; die Zahl daneben zeigt, wie oft sie das durchschnittliche bestehende Band nahe am Preis enthält. Das sind "
+  },
+  {
+   "en": "modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.",
+   "pt": "modeladas</strong>, não dinheiro que trocou de mãos &mdash; os únicos valores em dólar aqui são os totais de 24h acima, que nosso coletor viu acontecer.",
+   "de": "modellierte</strong> Zonen, kein Geld, das den Besitzer gewechselt hat &mdash; die einzigen Dollar-Zahlen hier sind die 24h-Summen oben, die unser Collector live miterlebt hat."
+  },
+  {
+   "en": ">measured<",
+   "pt": ">medido<",
+   "de": ">gemessen<"
+  },
+  {
+   "en": ">modelled<",
+   "pt": ">modelado<",
+   "de": ">modelliert<"
+  },
+  {
+   "en": " from longs and ",
+   "pt": " de longs e ",
+   "de": " aus Longs und "
+  },
+  {
+   "en": " from shorts",
+   "pt": " de shorts",
+   "de": " aus Shorts"
+  },
+  {
+   "en": ", so the recent damage came on the way down",
+   "pt": ", então o estrago recente veio na queda",
+   "de": ", der jüngste Schaden kam also beim Rückgang"
+  },
+  {
+   "en": ", so shorts were squeezed on a move up",
+   "pt": ", então os shorts foram esmagados numa alta",
+   "de": ", Shorts wurden also bei einem Anstieg ausgequetscht"
+  },
+  {
+   "en": ", a fairly even two-sided battle",
+   "pt": ", uma batalha bem equilibrada entre os dois lados",
+   "de": ", ein recht ausgeglichener Kampf auf beiden Seiten"
+  },
+  {
+   "en": "There is currently ",
+   "pt": "Atualmente há ",
+   "de": "Aktuell gibt es "
+  },
+  {
+   "en": " of open ",
+   "pt": " de interesse aberto em ",
+   "de": " an Open Interest in "
+  },
+  {
+   "en": " interest that the market can test",
+   "pt": " que o mercado pode testar",
+   "de": ", den der Markt testen kann"
+  },
+  {
+   "en": " (roughly steady over 24 hours)",
+   "pt": " (praticamente estável em 24 horas)",
+   "de": " (über 24 Stunden ungefähr stabil)"
+  },
+  {
+   "en": " (up ",
+   "pt": " (alta de ",
+   "de": " (plus "
+  },
+  {
+   "en": " (down ",
+   "pt": " (queda de ",
+   "de": " (minus "
+  },
+  {
+   "en": "% in a day)",
+   "pt": "% em um dia)",
+   "de": "% an einem Tag)"
+  },
+  {
+   "en": "Funding is flat right now - no crowded side for the market to hunt.",
+   "pt": "O funding está neutro agora: não há um lado lotado para o mercado caçar.",
+   "de": "Das Funding ist gerade neutral - keine überfüllte Seite, die der Markt jagen könnte."
+  },
+  {
+   "en": "Funding is positive (",
+   "pt": "O funding está positivo (",
+   "de": "Das Funding ist positiv ("
+  },
+  {
+   "en": ") - the crowd is long, and long clusters below the price are usually the first this map fills.",
+   "pt": "): a maioria está em long, e os clusters de longs abaixo do preço costumam ser os primeiros que este mapa preenche.",
+   "de": ") - die Masse ist Long, und Long-Cluster unter dem Preis sind meist die ersten, die diese Karte füllt."
+  },
+  {
+   "en": "Funding is negative (",
+   "pt": "O funding está negativo (",
+   "de": "Das Funding ist negativ ("
+  },
+  {
+   "en": ") - the crowd is short, and short clusters above the price are the first targets.",
+   "pt": "): a maioria está em short, e os clusters de shorts acima do preço são os primeiros alvos.",
+   "de": ") - die Masse ist Short, und Short-Cluster über dem Preis sind die ersten Ziele."
+  },
+  {
+   "en": " trades at ",
+   "pt": " é negociado a ",
+   "de": " notiert bei "
+  },
+  {
+   "en": ", up ",
+   "pt": ", alta de ",
+   "de": ", plus "
+  },
+  {
+   "en": ", down ",
+   "pt": ", queda de ",
+   "de": ", minus "
+  },
+  {
+   "en": "% in 24 hours",
+   "pt": "% em 24 horas",
+   "de": "% in 24 Stunden"
+  },
+  {
+   "en": "Live liquidation feed",
+   "pt": "Feed de liquidações ao vivo",
+   "de": "Live-Liquidations-Feed"
+  },
+  {
+   "en": "24h totals by coin",
+   "pt": "Totais de 24h por moeda",
+   "de": "24h-Summen je Coin"
+  },
+  {
+   "en": " billion",
+   "pt": " bilhões",
+   "de": " Milliarden"
+  },
+  {
+   "en": " million",
+   "pt": " milhões",
+   "de": " Millionen"
+  }
+ ],
+ "mapFrag": {
+  "openHeatmap": {
+   "en": "Open the live {c} heatmap",
+   "pt": "Abra o mapa de calor de {c} ao vivo",
+   "de": "Öffne die Live-{c}-Heatmap"
+  },
+  "tradeOn": {
+   "en": "Trade {c} on Bybit",
+   "pt": "Opere {c} na Bybit",
+   "de": "{c} auf Bybit traden"
+  },
+  "hitMap": {
+   "en": "{t} of {c} positions hit this map in the past 24 hours - ",
+   "pt": "{t} em posições de {c} foram liquidados neste mapa nas últimas 24 horas: ",
+   "de": "{t} an {c}-Positionen wurden in den letzten 24 Stunden auf dieser Karte liquidiert - "
+  },
+  "quiet": {
+   "en": "The {c} map has been quiet - under $50K liquidated in the past 24 hours.",
+   "pt": "O mapa de {c} ficou calmo: menos de $50K liquidados nas últimas 24 horas.",
+   "de": "Die {c}-Karte war ruhig - unter $50K in den letzten 24 Stunden liquidiert."
+  }
+ },
+ "compPairs": [
+  {
+   "en": ">Day of season<",
+   "pt": ">Dia da temporada<",
+   "de": ">Tag der Season<"
+  },
+  {
+   "en": "Right now it is <b>",
+   "pt": "Agora é o <b>",
+   "de": "Gerade ist <b>"
+  },
+  {
+   "en": "</b>. This season ends <b>",
+   "pt": "</b>. Esta temporada termina em <b>",
+   "de": "</b>. Diese Season endet am <b>"
+  },
+  {
+   "en": "</b>, in ",
+   "pt": "</b>, em ",
+   "de": "</b>, in "
+  },
+  {
+   "en": " days, and the next one starts the same day - you can join on any day and still place.",
+   "pt": " dias, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar.",
+   "de": " Tagen, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."
+  },
+  {
+   "en": " hours, and the next one starts the same day - you can join on any day and still place.",
+   "pt": " horas, e a próxima começa no mesmo dia - você pode entrar em qualquer dia e ainda assim se classificar.",
+   "de": " Stunden, und die nächste startet am selben Tag - du kannst an jedem Tag einsteigen und trotzdem eine Platzierung erreichen."
+  },
+  {
+   "en": "<span>Entry <b>",
+   "pt": "<span>Entrada <b>",
+   "de": "<span>Teilnahme <b>"
+  },
+  {
+   "en": "<span>Deposit <b>none</b></span>",
+   "pt": "<span>Depósito <b>nenhum</b></span>",
+   "de": "<span>Einzahlung <b>keine</b></span>"
+  },
+  {
+   "en": "</b> person is competing</span>",
+   "pt": "</b> pessoa está competindo</span>",
+   "de": "</b> Person tritt an</span>"
+  },
+  {
+   "en": "</b> people are competing</span>",
+   "pt": "</b> pessoas estão competindo</span>",
+   "de": "</b> Personen treten an</span>"
+  },
+  {
+   "en": "</b> placements</span>",
+   "pt": "</b> colocações</span>",
+   "de": "</b> Plätze</span>"
+  },
+  {
+   "en": "<h2>The ten boards</h2>",
+   "pt": "<h2>As nove tabelas</h2>",
+   "de": "<h2>Die neun Boards</h2>"
+  },
+  {
+   "en": "Free - daily call",
+   "pt": "Grátis - palpite diário",
+   "de": "Gratis - Tagestipp"
+  },
+  {
+   "en": "Free - Demo Spot",
+   "pt": "Grátis - Demo Spot",
+   "de": "Gratis - Demo Spot"
+  },
+  {
+   "en": "<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>",
+   "pt": "<p>Cada tabela pontua algo diferente, então um único estilo de trading não leva todas. Cada uma paga seus primeiros colocados, e você pode se classificar em mais de uma.</p>",
+   "de": "<p>Jedes Board bewertet etwas anderes, daher gewinnt ein einziger Trading-Stil nicht alle. Jedes zahlt seine Top-Plätze aus, und du kannst auf mehreren platziert sein.</p>"
+  },
+  {
+   "en": ">Leading<",
+   "pt": ">Líder<",
+   "de": ">Führt<"
+  },
+  {
+   "en": ">Open board<",
+   "pt": ">Tabela aberta<",
+   "de": ">Offenes Board<"
+  },
+  {
+   "en": ">nobody has scored yet<",
+   "pt": ">ninguém pontuou ainda<",
+   "de": ">noch niemand hat gepunktet<"
+  },
+  {
+   "en": ">one qualifying trade puts you first<",
+   "pt": ">um trade válido coloca você em primeiro<",
+   "de": ">ein gültiger Trade bringt dich auf Platz 1<"
+  },
+  {
+   "en": " entered</div>",
+   "pt": " inscritos</div>",
+   "de": " angemeldet</div>"
+  },
+  {
+   "en": "% win rate",
+   "pt": "% de taxa de acerto",
+   "de": "% Trefferquote"
+  },
+  {
+   "en": " green days",
+   "pt": " dias verdes",
+   "de": " grüne Tage"
+  },
+  {
+   "en": " green day",
+   "pt": " dia verde",
+   "de": " grüner Tag"
+  },
+  {
+   "en": " wagered",
+   "pt": " apostados",
+   "de": " eingesetzt"
+  },
+  {
+   "en": ">Real money<",
+   "pt": ">Dinheiro real<",
+   "de": ">Echtgeld<"
+  },
+  {
+   "en": ">Free - paper<",
+   "pt": ">Grátis - paper<",
+   "de": ">Gratis - Paper<"
+  },
+  {
+   "en": ">Measured ",
+   "pt": ">Medido ",
+   "de": ">Gemessen "
+  },
+  {
+   "en": " UTC by MarginPad, from the same data that pays the prizes.",
+   "pt": " UTC pela MarginPad, com os mesmos dados que pagam os prêmios.",
+   "de": " UTC von MarginPad, aus denselben Daten, die die Preise auszahlen."
+  },
+  {
+   "en": ">Highest ROE<",
+   "pt": ">Maior ROE<",
+   "de": ">Höchster ROE<"
+  },
+  {
+   "en": ">Green Days<",
+   "pt": ">Dias verdes<",
+   "de": ">Grüne Tage<"
+  },
+  {
+   "en": ">Best Win Rate<",
+   "pt": ">Melhor taxa de acerto<",
+   "de": ">Beste Trefferquote<"
+  },
+  {
+   "en": ">Season XP<",
+   "pt": ">XP da temporada<",
+   "de": ">Season XP<"
+  },
+  {
+   "en": ">Bybit Volume<",
+   "pt": ">Volume na Bybit<",
+   "de": ">Bybit-Volumen<"
+  },
+  {
+   "en": ">the best return on a single closed trade.<",
+   "pt": ">o melhor retorno em um único trade encerrado.<",
+   "de": ">die beste Rendite auf einen einzelnen geschlossenen Trade.<"
+  },
+  {
+   "en": ">the most days closed in profit.<",
+   "pt": ">mais dias encerrados no lucro.<",
+   "de": ">die meisten im Gewinn geschlossenen Tage.<"
+  },
+  {
+   "en": ">the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<",
+   "pt": ">a maior taxa de acerto, ordenada pela pontuação de Wilson para que uma sequência de sorte não a vença.<",
+   "de": ">die höchste Trefferquote, gereiht nach Wilson-Score, damit eine Glückssträhne sie nicht gewinnen kann.<"
+  },
+  {
+   "en": ">the most XP earned this season.<",
+   "pt": ">mais XP ganho nesta temporada.<",
+   "de": ">die meisten in dieser Season verdienten XP.<"
+  },
+  {
+   "en": ">the best points score across wins and losses.<",
+   "pt": ">a melhor pontuação somando ganhos e perdas.<",
+   "de": ">die beste Punktzahl über Gewinne und Verluste.<"
+  },
+  {
+   "en": ">the most REAL futures volume on a Bybit account opened through MarginPad.<",
+   "pt": ">mais volume REAL de futuros em uma conta Bybit aberta pela MarginPad.<",
+   "de": ">das meiste ECHTE Futures-Volumen auf einem über MarginPad eröffneten Bybit-Konto.<"
+  },
+  {
+   "en": ">the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<",
+   "pt": ">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<",
+   "de": ">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"
+  },
+  {
+   "en": ">the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<",
+   "pt": ">o maior valor REAL apostado em uma conta Moon aberta pela MarginPad, em um torneio de duas temporadas.<",
+   "de": ">der höchste ECHTE Einsatz auf einem über MarginPad eröffneten Moon-Konto, über einen Wettbewerb von zwei Seasons.<"
+  }
+ ],
+ "compFrag": {
+  "dayOf": {
+   "en": "day {x} of {y}",
+   "pt": "dia {x} de {y}",
+   "de": "Tag {x} von {y}"
+  },
+  "onTheLine": {
+   "en": "on the line this season, free to enter",
+   "pt": "em jogo nesta temporada, entrada grátis",
+   "de": "in dieser Season im Spiel, kostenlose Teilnahme"
+  }
+ },
+ "cats": {
+  "ideas": {
+   "en": "Trading Ideas",
+   "pt": "Ideias de trading",
+   "de": "Trading-Ideen"
+  },
+  "analysis": {
+   "en": "Technical Analysis",
+   "pt": "Análise técnica",
+   "de": "Technische Analyse"
+  },
+  "news": {
+   "en": "Market News",
+   "pt": "Notícias do mercado",
+   "de": "Marktnachrichten"
+  },
+  "education": {
+   "en": "Education",
+   "pt": "Educação",
+   "de": "Bildung"
+  },
+  "crypto": {
+   "en": "Crypto",
+   "pt": "Crypto",
+   "de": "Krypto"
+  },
+  "forex": {
+   "en": "Forex",
+   "pt": "Forex",
+   "de": "Forex"
+  },
+  "stocks": {
+   "en": "Stocks",
+   "pt": "Ações",
+   "de": "Aktien"
+  },
+  "futures": {
+   "en": "Futures",
+   "pt": "Futuros",
+   "de": "Futures"
+  },
+  "strategies": {
+   "en": "Strategies",
+   "pt": "Estratégias",
+   "de": "Strategien"
+  },
+  "psychology": {
+   "en": "Psychology",
+   "pt": "Psicologia",
+   "de": "Psychologie"
+  },
+  "risk": {
+   "en": "Risk Management",
+   "pt": "Gestão de risco",
+   "de": "Risikomanagement"
+  },
+  "indicators": {
+   "en": "Indicators",
+   "pt": "Indicadores",
+   "de": "Indikatoren"
+  },
+  "platform": {
+   "en": "Platform Updates",
+   "pt": "Novidades da plataforma",
+   "de": "Plattform-Updates"
+  },
+  "thesis": {
+   "en": "Theses",
+   "pt": "Teses",
+   "de": "Thesen"
+  }
+ },
+ "ask": {
+  "Bitcoin is down ": {
+   "pt": "Bitcoin está em queda de ",
+   "de": "Bitcoin liegt im Minus: "
+  },
+  "Bitcoin is up ": {
+   "pt": "Bitcoin está em alta de ",
+   "de": "Bitcoin liegt im Plus: "
+  },
+  " in 24 hours": {
+   "pt": " em 24 horas",
+   "de": " in 24 Stunden"
+  },
+  "The biggest move of the last 24 hours was ": {
+   "pt": "O maior movimento das últimas 24 horas foi ",
+   "de": "Die größte Bewegung der letzten 24 Stunden war "
+  },
+  "No move in the last 24 hours was big enough to need an explanation. The last one was ": {
+   "pt": "Nenhum movimento das últimas 24 horas foi grande o bastante para pedir explicação. O último foi ",
+   "de": "Keine Bewegung der letzten 24 Stunden war groß genug für eine Erklärung. Die letzte war "
+  },
+  " at ": {
+   "pt": " às ",
+   "de": " um "
+  },
+  " UTC: ": {
+   "pt": " UTC: ",
+   "de": " UTC: "
+  },
+  "we could not prove one cause for it": {
+   "pt": "não conseguimos provar uma causa",
+   "de": "eine einzelne Ursache ließ sich nicht belegen"
+  },
+  " Over 30 days we found ": {
+   "pt": " Em 30 dias encontramos ",
+   "de": " In 30 Tagen fanden wir "
+  },
+  " abnormal Bitcoin moves and can name the cause of ": {
+   "pt": " movimentos anormais do Bitcoin e sabemos nomear a causa de ",
+   "de": " ungewöhnliche Bitcoin-Bewegungen und können die Ursache von "
+  },
+  " of them.": {
+   "pt": " deles.",
+   "de": " davon benennen."
+  },
+  "When (UTC)": {
+   "pt": "Quando (UTC)",
+   "de": "Wann (UTC)"
+  },
+  "Move": {
+   "pt": "Movimento",
+   "de": "Bewegung"
+  },
+  "What moved it": {
+   "pt": "O que moveu",
+   "de": "Was es bewegt hat"
+  },
+  "first report of the news, liquidations, whales and open interest measured at that minute": {
+   "pt": "primeira notícia, liquidações, baleias e open interest medidos naquele minuto",
+   "de": "Erstmeldung, Liquidationen, Wale und Open Interest, gemessen in dieser Minute"
+  },
+  "too few": {
+   "pt": "poucas",
+   "de": "zu wenige"
+  },
+  "over 100x ": {
+   "pt": "acima de 100x ",
+   "de": "über 100x "
+  },
+  " closes": {
+   "pt": " encerramentos",
+   "de": " Closes"
+  },
+  "thin - no rate printed": {
+   "pt": "amostra pequena - sem taxa exibida",
+   "de": "dünne Datenbasis - keine Quote angezeigt"
+  },
+  "Here, free - under the same rules a paid challenge uses": {
+   "pt": "Aqui, grátis - com as mesmas regras de um desafio pago",
+   "de": "Hier kostenlos - mit denselben Regeln wie bei einer kostenpflichtigen Challenge"
+  },
+  "Ten times or less - and here is the count behind that": {
+   "pt": "Dez vezes ou menos - e aqui está a contagem por trás disso",
+   "de": "Zehnfach oder weniger - und hier die Zahlen dahinter"
+  },
+  "Positive on Bitcoin: ": {
+   "pt": "Positivo no Bitcoin: ",
+   "de": "Positiv bei Bitcoin: "
+  },
+  "Negative on Bitcoin: ": {
+   "pt": "Negativo no Bitcoin: ",
+   "de": "Negativ bei Bitcoin: "
+  },
+  "Flat on Bitcoin": {
+   "pt": "Neutro no Bitcoin",
+   "de": "Neutral bei Bitcoin"
+  },
+  "Positive across most of the market": {
+   "pt": "Positivo na maior parte do mercado",
+   "de": "Positiv im Großteil des Marktes"
+  },
+  "Negative across most of the market": {
+   "pt": "Negativo na maior parte do mercado",
+   "de": "Negativ im Großteil des Marktes"
+  },
+  "<strong>longs are paying shorts</strong>": {
+   "pt": "<strong>os longs estão pagando os shorts</strong>",
+   "de": "<strong>Longs zahlen an Shorts</strong>"
+  },
+  "<strong>shorts are paying longs</strong>": {
+   "pt": "<strong>os shorts estão pagando os longs</strong>",
+   "de": "<strong>Shorts zahlen an Longs</strong>"
+  },
+  "neither side is paying a meaningful premium": {
+   "pt": "nenhum dos lados paga um prêmio relevante",
+   "de": "keine Seite zahlt eine nennenswerte Prämie"
+  },
+  "Bitcoin funding is {f}, so {who}. ": {
+   "pt": "O funding do Bitcoin está em {f}, então {who}. "
+  },
+  "longs pay": {
+   "pt": "longs pagam",
+   "de": "Longs zahlen"
+  },
+  "shorts pay": {
+   "pt": "shorts pagam",
+   "de": "Shorts zahlen"
+  },
+  "flat": {
+   "pt": "neutro",
+   "de": "neutral"
+  },
+  "read from each exchange&#39;s own public funding endpoint": {
+   "pt": "lido do endpoint público de funding de cada exchange",
+   "de": "direkt aus dem öffentlichen Funding-Endpoint jeder Börse gelesen"
+  },
+  "free JSON at": {
+   "pt": "JSON gratuito em",
+   "de": "kostenloses JSON unter"
+  },
+  "and": {
+   "pt": "e",
+   "de": "und"
+  },
+  "MarginPad&#39;s own collector, {ex} exchange websockets": {
+   "pt": "coletor próprio da MarginPad, {ex} websockets de exchanges"
+  },
+  "Longs, {lp}% of the damage": {
+   "pt": "Longs, {lp}% do estrago"
+  },
+  "Shorts, {sp}% of the damage": {
+   "pt": "Shorts, {sp}% do estrago"
+  },
+  "Close to even, {lp}% long": {
+   "pt": "Quase empatado, {lp}% long"
+  },
+  "% long": {
+   "pt": "% long",
+   "de": "% Long"
+  },
+  "% short": {
+   "pt": "% short",
+   "de": "% Short"
+  },
+  "long": {
+   "pt": "long",
+   "de": "Long"
+  },
+  "short": {
+   "pt": "short",
+   "de": "Short"
+  },
+  " - {s} {side} on {ven}": {
+   "pt": " - {s}, posição {side} na {ven}"
+  },
+  "{a1}: over 100x, {a2} of trades ended in liquidation - at 1-2x, {a3}": {
+   "pt": "{a1}: acima de 100x, {a2} dos trades terminaram em liquidação - com 1-2x, {a3}",
+   "de": "{a1}: Über 100x endeten {a2} der Trades in der Liquidation - bei 1-2x waren es {a3}"
+  },
+  "{a1} closes &middot; median {a2}% ROE &middot; {a3}% of the month": {
+   "pt": "{a1} fechamentos &middot; ROE mediano de {a2}% &middot; {a3}% do mês",
+   "de": "{a1} Closes &middot; Median {a2}% ROE &middot; {a3}% des Monats"
+  },
+  "{a1} of {a2} finished runs passed - {a3}%": {
+   "pt": "{a1} de {a2} execuções concluídas aprovadas - {a3}%",
+   "de": "{a1} von {a2} abgeschlossenen Durchläufen bestanden - {a3}%"
+  },
+  "+{a1}% target, {a2}% daily loss, {a3}% max drawdown, {a4} trading days minimum, on a ${a5} book": {
+   "pt": "meta de +{a1}%, perda diária de {a2}%, drawdown máximo de {a3}%, mínimo de {a4} dias de trading, em uma conta de ${a5}",
+   "de": "+{a1}% Ziel, {a2}% Tagesverlust, {a3}% maximaler Drawdown, mindestens {a4} Handelstage, auf einem Konto von ${a5}"
+  },
+  "{a1} closes &middot; median {a2}% ROE": {
+   "pt": "{a1} fechamentos &middot; ROE mediano de {a2}%",
+   "de": "{a1} Closes &middot; Median {a2}% ROE"
+  },
+  "Bitcoin funding is {a1}, so {a2}. ": {
+   "pt": "O funding do Bitcoin está {a1}, então {a2}. ",
+   "de": "Das Bitcoin-Funding liegt bei {a1}, daher gilt: {a2}. "
+  },
+  "Across the {a1} perpetual contracts we track, {a2} are positive and {a3} are negative": {
+   "pt": "Entre os {a1} contratos perpétuos que acompanhamos, {a2} estão positivos e {a3} estão negativos",
+   "de": "Von den {a1} Perpetual-Kontrakten, die wir beobachten, sind {a2} positiv und {a3} negativ"
+  },
+  ", with the widest spread running from {a1} on {a2} down to {a3} on {a4}": {
+   "pt": ", com a maior diferença indo de {a1} em {a2} até {a3} em {a4}",
+   "de": ", mit der größten Spanne von {a1} bei {a2} bis hinunter zu {a3} bei {a4}"
+  },
+  "{a1} leveraged positions were force-closed across {a2} exchanges in the last 24 hours, worth {a3} in total and spread over {a4} coins. That averages {a5} per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.": {
+   "pt": "{a1} posições alavancadas foram fechadas à força em {a2} exchanges nas últimas 24 horas, somando {a3} e distribuídas em {a4} moedas. Isso dá uma média de {a5} por liquidação - o tamanho da posição típica que morreu, o que descreve quem opera com alavancagem melhor do que o valor total em dólares.",
+   "de": "{a1} gehebelte Positionen wurden in den letzten 24 Stunden auf {a2} Exchanges zwangsgeschlossen, im Gesamtwert von {a3} und verteilt auf {a4} Coins. Das ergibt durchschnittlich {a5} pro Liquidation - die Größe der typischen Position, die es erwischt hat. Sie sagt besser als die Schlagzeilen-Dollarzahl, wer mit Hebel handelt."
+  },
+  "{a1} in the last 24 hours": {
+   "pt": "{a1} nas últimas 24 horas",
+   "de": "{a1} in den letzten 24 Stunden"
+  },
+  "MarginPad&#39;s own collector, {a1} exchange websockets": {
+   "pt": "Coletor próprio da MarginPad, {a1} websockets de exchanges",
+   "de": "Eigener Collector von MarginPad, {a1} Exchange-Websockets"
+  },
+  "Longs, {a1}% of the damage": {
+   "pt": "Longs, {a1}% do prejuízo",
+   "de": "Longs, {a1}% des Schadens"
+  },
+  "Shorts, {a1}% of the damage": {
+   "pt": "Shorts, {a1}% do prejuízo",
+   "de": "Shorts, {a1}% des Schadens"
+  },
+  "Close to even, {a1}% long": {
+   "pt": "Quase empatado, {a1}% long",
+   "de": "Nahezu ausgeglichen, {a1}% Long"
+  },
+  "Of the {a1} liquidated across {a2} exchanges in the last 24 hours, {a3} ({a4}%) was long positions and {a5} ({a6}%) was shorts. {a7}": {
+   "pt": "Dos {a1} liquidados em {a2} exchanges nas últimas 24 horas, {a3} ({a4}%) eram posições long e {a5} ({a6}%) eram shorts. {a7}",
+   "de": "Von den {a1}, die in den letzten 24 Stunden auf {a2} Exchanges liquidiert wurden, entfielen {a3} ({a4}%) auf Long-Positionen und {a5} ({a6}%) auf Shorts. {a7}"
+  },
+  "The largest single forced close our collector has seen in the last 24 hours was a <strong>{a1}</strong> position in {a2} on {a3}, worth {a4} at the price it was closed at. It is {a5} of everything liquidated market-wide in the same window ({a6} across {a7} positions).": {
+   "pt": "O maior fechamento forçado individual que nosso coletor viu nas últimas 24 horas foi uma posição <strong>{a1}</strong> em {a2} em {a3}, no valor de {a4} ao preço em que foi fechada. Isso representa {a5} de tudo o que foi liquidado no mercado inteiro na mesma janela ({a6} em {a7} posições).",
+   "de": "Die größte einzelne Zwangsschließung, die unser Collector in den letzten 24 Stunden gesehen hat, war eine <strong>{a1}</strong>-Position in {a2} auf {a3}, im Wert von {a4} zum Schlusskurs. Das sind {a5} von allem, was im selben Zeitraum marktweit liquidiert wurde ({a6} über {a7} Positionen)."
+  },
+  " - {a1} {a2} on {a3}": {
+   "pt": " - {a1} {a2} em {a3}",
+   "de": " - {a1} {a2} auf {a3}"
+  }
+ },
+ "spaMeta": {
+  "/paper-trade": {
+   "en": {
+    "title": "Crypto Paper Trading - Free Simulator, No Sign-Up, Real Rewards | MarginPad",
+    "desc": "Free crypto paper trading with no sign-up: live futures prices, leverage to 1000x, real fees and liquidation, plus stocks, forex and indices in one account. 14-day season leaderboards pay real USDT prizes and daily missions pay from day one - no deposit."
+   },
+   "pt": {
+    "title": "Paper Trading de Cripto - Simulador grátis, sem cadastro, recompensas reais | MarginPad",
+    "desc": "A única plataforma social de paper trading: pratique futuros cripto a preço real com alavancagem de até 1000x, suba nos rankings de temporadas de 14 dias com prêmios, complete missões e ganhe USDT de verdade enquanto aprende. Grátis, sem cadastro, sem depósito: cripto, ações e forex em uma só conta."
+   },
+   "de": {
+    "title": "Krypto Paper Trading - Kostenloser Simulator, ohne Anmeldung, echte Belohnungen | MarginPad",
+    "desc": "Die einzige soziale Paper-Trading-Plattform: übe Krypto-Futures zum Live-Preis mit bis zu 1000x Hebel, klettere in 14-Tage-Seasons mit Preisen nach oben, erledige Missionen und verdiene echte USDT beim Lernen. Kostenlos, ohne Anmeldung, ohne Einzahlung: Krypto, Aktien und Forex in einem Konto."
+   }
+  },
+  "/calculators": {
+   "en": {
+    "title": "Crypto Liquidation Calculator, Position Size and PnL - Free, No Sign-Up | MarginPad",
+    "desc": "Free crypto futures calculators: liquidation price by exchange (Bybit, Binance, OKX, Kraken, Hyperliquid), position size, profit and loss, take-profit and risk/reward. Instant, in your browser, no sign-up."
+   },
+   "pt": {
+    "title": "Calculadoras de futuros cripto - Liquidação, PnL e tamanho | MarginPad",
+    "desc": "Calculadoras grátis de futuros cripto: preço de liquidação, lucro e prejuízo, tamanho da posição, take-profit e risco/retorno. Instantâneas, privadas, sem cadastro."
+   },
+   "de": {
+    "title": "Krypto-Futures-Rechner - Liquidation, PnL und Positionsgröße | MarginPad",
+    "desc": "Kostenlose Rechner für Krypto-Futures: Liquidationspreis, Gewinn und Verlust, Positionsgröße, Take-Profit und Chance-Risiko-Verhältnis. Sofort, privat, ohne Anmeldung."
+   }
+  },
+  "/charts": {
+   "en": {
+    "title": "Crypto Charts with Bar Replay, Compare and 27 Indicators | MarginPad",
+    "desc": "Free live futures charts on desktop and phone: 27 indicators whose cards read their own state, bar replay, compare two coins candle for candle, sessions, daily levels, six chart styles, a broker-grade drawing kit and quick paper trades on one board."
+   },
+   "pt": {
+    "title": "Gráficos cripto com replay de candles, comparação e 27 indicadores | MarginPad",
+    "desc": "Gráficos de futuros ao vivo, grátis, no computador e no celular: 27 indicadores com cartões que leem o próprio estado, replay de candles, comparação de duas moedas candle a candle, sessões, níveis diários, seis estilos de gráfico, ferramentas de desenho profissionais e trades simulados rápidos em um só painel."
+   },
+   "de": {
+    "title": "Krypto-Charts mit Kerzen-Replay, Vergleich und 27 Indikatoren | MarginPad",
+    "desc": "Kostenlose Live-Futures-Charts am Desktop und am Handy: 27 Indikatoren mit Karten, die ihren eigenen Zustand lesen, Kerzen-Replay, Vergleich zweier Coins Kerze für Kerze, Sessions, Tageslevels, sechs Chartstile, professionelle Zeichenwerkzeuge und schnelle Simulations-Trades in einem Board."
+   }
+  },
+  "/screener": {
+   "en": {
+    "title": "Crypto Futures Screener - Scored Setups, Funding & OI | MarginPad",
+    "desc": "Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups."
+   },
+   "pt": {
+    "title": "Screener de futuros cripto - Setups pontuados, funding e OI | MarginPad",
+    "desc": "Screener grátis de futuros cripto: pontuações técnicas de 0 a 100 com RSI, MACD, funding e interesse aberto nos principais perpétuos USDT, mais setups prontos para operar."
+   },
+   "de": {
+    "title": "Krypto-Futures-Screener - Bewertete Setups, Funding und OI | MarginPad",
+    "desc": "Kostenloser Krypto-Futures-Screener: technische Scores von 0 bis 100 mit RSI, MACD, Funding und Open Interest auf den wichtigsten USDT-Perpetuals, plus handelsfertige Setups."
+   }
+  },
+  "/heatmap": {
+   "en": {
+    "title": "Crypto Liquidation Heatmap - Live Liquidity Map, Free, No Login | MarginPad",
+    "desc": "Live liquidation heatmap for BTC, ETH and top alts: see where leveraged positions cluster, where the liquidity sits and where price hunts it - real liquidations from 8 exchanges, updated in real time. Free preview, no account."
+   },
+   "pt": {
+    "title": "Mapa de calor de liquidações cripto - Mapa de liquidez ao vivo, grátis | MarginPad",
+    "desc": "Mapa de calor de liquidações ao vivo para BTC, ETH e as principais alts: veja onde as posições alavancadas se concentram, onde está a liquidez e onde o preço a caça - liquidações reais de 8 corretoras, em tempo real. Prévia grátis, sem conta."
+   },
+   "de": {
+    "title": "Krypto-Liquidations-Heatmap - Live-Liquiditätskarte, kostenlos | MarginPad",
+    "desc": "Live-Liquidations-Heatmap für BTC, ETH und die wichtigsten Alts: sieh, wo sich gehebelte Positionen ballen, wo die Liquidität liegt und wo der Preis sie jagt - echte Liquidationen von 8 Börsen, in Echtzeit. Kostenlose Vorschau, ohne Konto."
+   }
+  },
+  "/swap": {
+   "en": {
+    "title": "Swap Crypto Without an Account - 900+ Coins, No Sign-Up | MarginPad",
+    "desc": "Swap 900+ cryptocurrencies without an account: no sign-up, non-custodial, wallet to wallet across chains, rate shown before you send."
+   },
+   "pt": {
+    "title": "Swap de cripto - Mais de 900 moedas, sem conta | MarginPad",
+    "desc": "Troque mais de 900 criptomoedas na hora, sem conta e sem cadastro. Swaps rápidos e sem custódia."
+   },
+   "de": {
+    "title": "Krypto-Swap - Über 900 Coins, ohne Konto | MarginPad",
+    "desc": "Tausche über 900 Kryptowährungen sofort, ohne Konto und ohne Anmeldung. Schnelle Swaps ohne Verwahrung."
+   }
+  }
+ },
+ "h1": {
+  "/paper-trade": {
+   "en": "Crypto paper trading at live prices",
+   "pt": "Paper trading de cripto a preço real",
+   "de": "Krypto Paper Trading zu Live-Preisen"
+  },
+  "/calculators": {
+   "en": "Crypto futures calculators",
+   "pt": "Calculadoras de futuros cripto",
+   "de": "Krypto-Futures-Rechner"
+  },
+  "/charts": {
+   "en": "Multi-chart crypto workspace",
+   "pt": "Espaço multigráfico de cripto",
+   "de": "Multi-Chart-Workspace für Krypto"
+  },
+  "/screener": {
+   "en": "Crypto futures screener",
+   "pt": "Screener de futuros cripto",
+   "de": "Krypto-Futures-Screener"
+  },
+  "/heatmap": {
+   "en": "Live crypto liquidation heatmap",
+   "pt": "Mapa de calor de liquidações ao vivo",
+   "de": "Live-Liquidations-Heatmap für Krypto"
+  },
+  "/swap": {
+   "en": "Swap crypto",
+   "pt": "Swap de cripto",
+   "de": "Krypto tauschen"
+  }
+ },
+ "months": {
+  "en": [
+   "Jan",
+   "Feb",
+   "Mar",
+   "Apr",
+   "May",
+   "Jun",
+   "Jul",
+   "Aug",
+   "Sep",
+   "Oct",
+   "Nov",
+   "Dec"
+  ],
+  "pt": [
+   "jan",
+   "fev",
+   "mar",
+   "abr",
+   "mai",
+   "jun",
+   "jul",
+   "ago",
+   "set",
+   "out",
+   "nov",
+   "dez"
+  ],
+  "de": [
+   "Jan",
+   "Feb",
+   "Mär",
+   "Apr",
+   "Mai",
+   "Jun",
+   "Jul",
+   "Aug",
+   "Sep",
+   "Okt",
+   "Nov",
+   "Dez"
+  ]
+ },
+ "misc": {
+  "measured": {
+   "en": "Measured ",
+   "pt": "Medido ",
+   "de": "Gemessen "
+  },
+  "highImpact": {
+   "en": "HIGH IMPACT",
+   "pt": "ALTO IMPACTO",
+   "de": "HOHE AUSWIRKUNG"
+  },
+  "calUpcoming": {
+   "en": "What is coming up",
+   "pt": "O que vem por aí",
+   "de": "Was als Nächstes kommt"
+  },
+  "calSub": {
+   "en": "Next {n} scheduled events &middot; all times UTC &middot; updated ",
+   "pt": "Próximos {n} eventos programados &middot; horários em UTC &middot; atualizado ",
+   "de": "Nächste {n} geplante Termine &middot; alle Zeiten in UTC &middot; aktualisiert "
+  },
+  "kickLev": {
+   "en": "LIVE - {p}X RIGHT NOW",
+   "pt": "AO VIVO - {p}X AGORA",
+   "de": "LIVE - {p}X JETZT"
+  },
+  "kickEx": {
+   "en": "LIVE MARKET DATA",
+   "pt": "DADOS DE MERCADO AO VIVO",
+   "de": "LIVE-MARKTDATEN"
+  },
+  "kickCoin": {
+   "en": "LIVE {P} DATA",
+   "pt": "DADOS DE {P} AO VIVO",
+   "de": "{P} LIVE-DATEN"
+  }
+ }
+}

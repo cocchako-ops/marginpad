@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/mcp-server-for-crypto-trading/"><head>
+<meta charset="UTF-8">
+<script src="/assets/ui-es.js?v=26906256"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>¿Existe un servidor MCP para trading cripto? - Gratis, 28 herramientas | MarginPad</title>
+<meta name="description" content="Sí. MarginPad ejecuta un servidor MCP remoto en https://marginpad.io/mcp: datos de mercado cripto en vivo sin clave API, además de una cuenta completa de futuros en paper trading para Claude, ChatGPT o Cursor. Nada de esto puede tocar dinero real.">
+<link rel="canonical" href="https://marginpad.io/es/mcp-server-for-crypto-trading/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/mcp-server-for-crypto-trading/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/mcp-server-for-crypto-trading/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/mcp-server-for-crypto-trading/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/mcp-server-for-crypto-trading/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/mcp-server-for-crypto-trading/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="¿Existe un servidor MCP para trading cripto? - Gratis, 28 herramientas | MarginPad">
+<meta property="og:description" content="Sí. MarginPad ejecuta un servidor MCP remoto en https://marginpad.io/mcp: datos de mercado cripto en vivo sin clave API, además de una cuenta completa de futuros en paper trading para Claude, ChatGPT o Cursor. Nada de esto puede tocar dinero real.">
+<meta property="og:url" content="https://marginpad.io/es/mcp-server-for-crypto-trading/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Servidor MCP de MarginPad (catálogo de herramientas)","description":"Las herramientas que un cliente de Model Context Protocol recibe de https://marginpad.io/mcp en tools/list: herramientas de datos de mercado sin clave para precio, velas, funding, interés abierto, liquidaciones, el screener y el calendario económico, además de herramientas de paper trading que operan una cuenta de futuros simulada tras una clave API gratuita.","url":"https://marginpad.io/es/mcp-server-for-crypto-trading/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/.well-known/mcp.json"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"¿Existe un servidor MCP para trading de criptomonedas?","acceptedAnswer":{"@type":"Answer","text":"Sí. MarginPad ofrece un servidor MCP remoto en https://marginpad.io/mcp mediante Streamable HTTP, con 31 herramientas. Las herramientas de datos de mercado (precio, klines, funding, interés abierto, liquidaciones, el screener y el calendario económico) no necesitan ninguna clave API. Las de paper trading operan una cuenta de futuros simulada y piden una clave gratuita en la cabecera X-API-Key. Nada de eso puede tocar dinero real."}},{"@type":"Question","name":"¿Cómo lo agrego a Claude, ChatGPT o Cursor?","acceptedAnswer":{"@type":"Answer","text":"Agrégalo como un servidor MCP remoto con la URL https://marginpad.io/mcp. En un archivo de configuración eso es {\"mcpServers\":{\"marginpad\":{\"url\":\"https://marginpad.io/mcp\"}}}. No hay nada que instalar ni ningún proceso local que ejecutar. Hay un descriptor para herramientas que descubren servidores automáticamente en https://marginpad.io/.well-known/mcp.json."}},{"@type":"Question","name":"¿Puede un agente de IA colocar operaciones reales a través de esto?","acceptedAnswer":{"@type":"Answer","text":"No, y es intencional. MarginPad no acepta depósitos, no tiene custodia y nunca pide una clave API de un exchange, así que no hay ninguna ruta desde este servidor hacia dinero real. Las posiciones son dólares simulados liquidados contra precios reales en vivo, lo que hace seguro dejar que un agente opere mientras todavía estás descubriendo cómo se comporta."}},{"@type":"Question","name":"¿Cuesta algo?","acceptedAnswer":{"@type":"Answer","text":"No. Los datos de mercado son gratuitos y sin clave, y el plan API gratuito incluye todo el motor de paper trading: 120 peticiones por minuto por clave, tres claves, cincuenta posiciones abiertas, el stream de WebSocket y la repetición. Los planes de pago ($29, $79 y $159 al mes) elevan esos límites y añaden webhooks y lecturas de mercado con IA."}},{"@type":"Question","name":"¿Qué tan actualizados están los datos?","acceptedAnswer":{"@type":"Answer","text":"Se obtienen en el momento en que se llama a la herramienta, no cuando una página fue rastreada por última vez. Los precios vienen del mismo feed multi-exchange en vivo sobre el que funcionan nuestros gráficos, y las liquidaciones de nuestro propio recolector suscrito a los websockets públicos de ocho exchanges. Pide a get_economic_calendar las fechas de eventos en lugar de responder de memoria."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/mcp-server-for-crypto-trading.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/mcp-server-for-crypto-trading.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/heatmap">Mapa de calor</a><a href="/es/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Una pregunta, una respuesta</p>
+    <h1>¿Existe un servidor MCP para trading de criptomonedas?</h1>
+    <p class="lead">Respondido desde la propia tabla de herramientas del servidor: qué es el endpoint MCP, qué herramientas necesitan una clave y qué puede y no puede hacer un agente conectado a él.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Leyendo la cifra en vivo&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/es/trading-api/">La referencia completa del Bot API</a><a class="ask-cta alt" href="/es/where-can-i-test-a-trading-bot/">Dónde probar un bot de trading</a><a class="ask-cta alt" href="/es/free-crypto-api/">La API de datos de mercado sin clave</a><a class="ask-cta alt" href="/es/api-docs/">Prueba las llamadas en vivo</a></p>
+
+    <h2>A qué te conectas en realidad</h2>
+    <p>El Model Context Protocol permite que un asistente llame herramientas en un servidor en lugar de adivinar a partir de datos de entrenamiento. MarginPad ejecuta uno en <code>https://marginpad.io/mcp</code> sobre Streamable HTTP, así que no hay nada que instalar, nada que alojar ni ningún proceso local que mantener activo. En un cliente que acepta servidores MCP remotos, toda la configuración es un solo objeto:</p><p><code>{"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}</code></p><p>Hay un descriptor legible por máquina en <a href="/.well-known/mcp.json">/.well-known/mcp.json</a> por si tus herramientas prefieren descubrirlo en lugar de que se les indique.</p>
+
+    <h2>Dos mitades: leer el mercado y operar una cuenta de paper trading</h2>
+    <p>La mitad de datos de mercado <strong>no necesita ninguna clave</strong>. Un asistente puede pedir el precio de BTC, la última hora de velas, el funding actual en varios exchanges, el interés abierto, la división long/short, las liquidaciones de hoy, un screener con puntuación o el calendario económico, y recibe un número medido. Esas llamadas no requieren clave porque los datos son nuestros para dar: las liquidaciones vienen de nuestro propio recolector suscrito a los websockets públicos de ocho exchanges, no revendidas por un proveedor.</p><p>La mitad de trading opera una <strong>cuenta de futuros en paper trading</strong>: abrir una posición apalancada al precio en vivo, cerrar parte de ella, mover un stop, dejar una orden límite o stop pendiente, leer el saldo, el libro abierto y el informe de trading. Esas herramientas usan una clave API gratuita en un encabezado <code>X-API-Key</code>, generada desde <a href="/es/trading-api/">la página del Bot API</a> con solo un correo electrónico.</p><p>Esta división importa para la confianza. A un agente se le puede dar la mitad de lectura sin ninguna credencial, y la mitad de trading solo cuando realmente quieres que coloque órdenes.</p>
+
+    <h2>Lo que un agente conectado a esto no puede hacer</h2>
+    <p>No puede depositar, retirar ni tocar una cuenta de exchange, porque no hay ninguna ruta hacia una: MarginPad no tiene custodia, no acepta depósitos y no pide claves API de ningún exchange. Las posiciones se liquidan en nuestros servidores en dólares simulados contra precios reales en vivo.</p><p>Esa es toda la razón para darle a un agente este endpoint en lugar de una clave real de exchange. Un agente que interpreta mal una señal, se queda en bucle con una orden o dimensiona una posición diez veces demasiado grande te cuesta una línea de registro aquí. El mismo error en una cuenta financiada te cuesta la cuenta. Haz forward-testing del agente donde las consecuencias se eliminan pero los precios no.</p>
+
+    <h2>Por qué estas respuestas valen más que un scrape</h2>
+    <p>Un asistente que responde desde una página raspada está citando lo que quedó en caché la última vez que pasó un rastreador. Estas herramientas devuelven la cifra en el momento de la consulta, con marca de tiempo, desde el mismo feed sobre el que funcionan nuestros propios gráficos y la terminal de paper trading.</p><p>Vale la pena incorporar dos hábitos en cualquier agente que use esto: llamar a <code>get_economic_calendar</code> para las fechas de eventos en lugar de responder de memoria, ya que la idea de un modelo sobre cuándo llega el CPI suele estar desactualizada por un año, y llamar a <code>get_markets</code> antes de dimensionar una operación, porque los límites de apalancamiento y las tasas de comisión varían según el símbolo y la clase de activo.</p>
+
+    <h2>Si prefieres no usar MCP</h2>
+    <p>Todo lo que hace el servidor MCP también es una simple llamada HTTP. Se puede acceder a la misma cuenta por REST, la especificación OpenAPI 3.1 está en <a href="/openapi.json">/openapi.json</a>, las posiciones pueden transmitirse por WebSocket en lugar de consultarse por polling, y los webhooks firmados envían ejecuciones y liquidaciones a una URL que tú controlas. Los clientes oficiales, sin dependencias, se instalan con <code>pip install marginpad</code> o <code>npm install marginpad</code>.</p><p>El plan gratuito incluye todo esto: 120 peticiones por minuto por clave, tres claves, cincuenta posiciones abiertas, el stream de WebSocket, la repetición de un día pasado y todos los endpoints de datos de mercado sin clave. Los planes de pago elevan los límites y añaden webhooks y lecturas de mercado con IA - no desbloquean el producto.</p>
+
+    <h2>Preguntas</h2>
+    <details><summary>¿Existe un servidor MCP para trading de criptomonedas?</summary><p>Sí. MarginPad ofrece un servidor MCP remoto en https://marginpad.io/mcp mediante Streamable HTTP, con 31 herramientas. Las herramientas de datos de mercado (precio, klines, funding, interés abierto, liquidaciones, el screener y el calendario económico) no necesitan ninguna clave API. Las de paper trading operan una cuenta de futuros simulada y piden una clave gratuita en la cabecera X-API-Key. Nada de eso puede tocar dinero real.</p></details>
+    <details><summary>¿Cómo lo agrego a Claude, ChatGPT o Cursor?</summary><p>Agrégalo como un servidor MCP remoto con la URL https://marginpad.io/mcp. En un archivo de configuración eso es {"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}. No hay nada que instalar ni ningún proceso local que ejecutar. Hay un descriptor para herramientas que descubren servidores automáticamente en https://marginpad.io/.well-known/mcp.json.</p></details>
+    <details><summary>¿Puede un agente de IA colocar operaciones reales a través de esto?</summary><p>No, y es intencional. MarginPad no acepta depósitos, no tiene custodia y nunca pide una clave API de un exchange, así que no hay ninguna ruta desde este servidor hacia dinero real. Las posiciones son dólares simulados liquidados contra precios reales en vivo, lo que hace seguro dejar que un agente opere mientras todavía estás descubriendo cómo se comporta.</p></details>
+    <details><summary>¿Cuesta algo?</summary><p>No. Los datos de mercado son gratuitos y sin clave, y el plan API gratuito incluye todo el motor de paper trading: 120 peticiones por minuto por clave, tres claves, cincuenta posiciones abiertas, el stream de WebSocket y la repetición. Los planes de pago ($29, $79 y $159 al mes) elevan esos límites y añaden webhooks y lecturas de mercado con IA.</p></details>
+    <details><summary>¿Qué tan actualizados están los datos?</summary><p>Se obtienen en el momento en que se llama a la herramienta, no cuando una página fue rastreada por última vez. Los precios vienen del mismo feed multi-exchange en vivo sobre el que funcionan nuestros gráficos, y las liquidaciones de nuestro propio recolector suscrito a los websockets públicos de ocho exchanges. Pide a get_economic_calendar las fechas de eventos en lugar de responder de memoria.</p></details>
+
+    <div class="sibs">
+      <h2>Otras preguntas que respondemos con un número en vivo</h2>
+      <ul><li><a href="/es/how-many-traders-liquidated-today/">¿Cuántos traders fueron liquidados hoy?</a></li><li><a href="/es/longs-or-shorts-liquidated-more/">¿Se liquidan más los longs o los shorts?</a></li><li><a href="/es/biggest-liquidation-today/">¿Cuál fue la mayor liquidación de hoy?</a></li><li><a href="/es/is-funding-positive-or-negative/">¿El funding es positivo o negativo ahora mismo?</a></li><li><a href="/es/where-can-i-test-a-trading-bot/">¿Dónde puedo probar un bot de trading gratis?</a></li><li><a href="/es/practice-for-a-funded-account/">¿Dónde puedo practicar para un reto de cuenta fondeada?</a></li><li><a href="/es/what-leverage-should-a-beginner-use/">¿Qué apalancamiento debería usar un principiante?</a></li><li><a href="/es/why-is-bitcoin-down-today/">¿Por qué baja Bitcoin hoy?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Relacionado: <a href="/es/trading-api/">la referencia completa del Bot API</a> &middot; <a href="/es/where-can-i-test-a-trading-bot/">dónde probar un bot de trading</a> &middot; <a href="/es/free-crypto-api/">la API de datos de mercado sin clave</a> &middot; <a href="/es/api-docs/">prueba las llamadas en vivo</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=64d91101"></script>
+</body>
+</html>

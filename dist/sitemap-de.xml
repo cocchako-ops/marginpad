@@ -288,6 +288,8 @@
   <url><loc>https://marginpad.io/de/liquidation-statistics/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/de/liquidations/by-exchange/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/de/liquidations/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/de/liquidations/report/2026-10/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/de/liquidations/report/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/de/long-short/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/de/longs-or-shorts-liquidated-more/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/de/lowest-fee-crypto-exchange/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

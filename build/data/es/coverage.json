@@ -392,13 +392,13 @@
  {
   "rel": "blog/best-crypto-futures-exchanges/index.html",
   "cover": 1,
-  "hit": 61,
+  "hit": 58,
   "missing": 0
  },
  {
   "rel": "blog/best-leverage-for-beginners/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -704,19 +704,19 @@
  {
   "rel": "blog/how-to-calculate-liquidation-price/index.html",
   "cover": 1,
-  "hit": 86,
+  "hit": 83,
   "missing": 0
  },
  {
   "rel": "blog/how-to-calculate-pnl/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 45,
   "missing": 0
  },
  {
   "rel": "blog/how-to-calculate-position-size/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 51,
   "missing": 0
  },
  {
@@ -848,7 +848,7 @@
  {
   "rel": "blog/mica-stablecoins-vs-usdt/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 45,
   "missing": 0
  },
  {
@@ -944,7 +944,7 @@
  {
   "rel": "blog/usdt-mica-eu-2026/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 50,
   "missing": 0
  },
  {
@@ -1785,6 +1785,18 @@
   "rel": "liquidations/index.html",
   "cover": 1,
   "hit": 94,
+  "missing": 0
+ },
+ {
+  "rel": "liquidations/report/2026-10/index.html",
+  "cover": 1,
+  "hit": 88,
+  "missing": 0
+ },
+ {
+  "rel": "liquidations/report/index.html",
+  "cover": 1,
+  "hit": 10,
   "missing": 0
  },
  {
@@ -2665,9 +2677,9 @@
  },
  {
   "rel": "why-is-bitcoin-down-today/index.html",
-  "cover": 0.9827586206896551,
-  "hit": 57,
-  "missing": 1
+  "cover": 1,
+  "hit": 58,
+  "missing": 0
  },
  {
   "rel": "widgets/index.html",
