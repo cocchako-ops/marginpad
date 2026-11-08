@@ -15,6 +15,9 @@ const EN_WORDS = /\b(the|and|with|your|you|for|from|this|that|are|is|when|how|wh
 const PT_HINT = /[ãõçâêôáéíóú]|(o|a|os|as|de|do|da|dos|das|um|uma|que|com|para|por|sem|seu|sua|se|em|ao|mais|como|preço|posição|margem|alavancagem|liquidação|calculadora|grátis|você|não|são|está|cada|quando|onde|aqui|agora|também|entre|sobre|até|todos|todas)/i;
 const DE_HINT = /[äöüß]|(der|die|das|und|mit|dein|deine|für|von|bei|nicht|ist|sind|wird|werden|auf|ein|eine|einen|oder|wenn|wie|was|auch|nur|mehr|Preis|Position|Hebel|Liquidation|Rechner|kostenlos|Gebühr|Gebühren|Börse|Margin|Konto|jetzt|hier|ohne)/i;
 const _LT = require('../i18n/langs.js').LANGS[LANG] || {};
+// Indonesian's code is "id", the same word as the segment's id field: in its chunks the seeder overwrote the id with the empty
+// translation slot, and its sidecars carry the segment id as "key". So the translation is read into TF and the id recovered by text.
+const TF = LANG === 'id' ? '_tr' : LANG;
 const ES_HINT = LANG === 'pt' ? PT_HINT : LANG === 'de' ? DE_HINT : LANG !== 'es' && _LT.hint ? _LT.hint : /[áéíóúñ¿¡]|\b(el|la|los|las|de|del|un|una|que|con|para|por|sin|tu|tus|se|es|en|al|más|cómo|qué|precio|posición|margen|apalancamiento|liquidación|calculadora|gratis|operación|operaciones|abrir|cerrar|sobre|cada|solo|también|porque|entre|mercado|orden|órdenes)\b/i;
 
 function placeholders(s) { return (s.match(/\{[a-zA-Z0-9_]+\}|%[sd]|\$\{[^}]+\}/g) || []).sort().join('|'); }
@@ -22,7 +25,7 @@ function codeBits(s) { return (s.match(/<code[^>]*>[\s\S]*?<\/code>/g) || []).so
 function numbers(s) { return (s.match(/\d(?:[\d,.]*\d)?%?|\d+×/g) || []).sort().join('|'); } // a trailing "." or "," after a number is sentence punctuation, not part of it
 
 function validate(it) {
-  const en = it.en, es = (it[LANG] || '').trim();
+  const en = it.en, es = (it[TF] || '').trim();
   if (!es) return 'empty';
   if (tagSig(en) !== tagSig(es)) return 'tags';
   if (placeholders(en) !== placeholders(es)) return 'placeholders';
@@ -52,13 +55,15 @@ function main() {
     const base = f.replace(/\.json$/, '');
     for (const sc of fs.readdirSync(CH).filter(x => x.startsWith(base + '.' + LANG) && x.endsWith('.json')).sort()) {
       let side; try { side = JSON.parse(fs.readFileSync(path.join(CH, sc), 'utf8')); } catch (e) { perChunk.push(sc + ' INVALID JSON'); continue; }
+      if (LANG === 'id') { const byEn = new Map(side.filter(x => x.key).map(x => [x.en, x])); for (const it of arr) { const s = byEn.get(it.en); if (s) { if (!it.id) it.id = s.key; if (s.id) it[TF] = s.id; } } continue; }
       const m = new Map(side.map(x => [x.id, x[LANG]])); for (const it of arr) if (m.has(it.id) && m.get(it.id)) it[LANG] = m.get(it.id);
     }
+    if (LANG === 'id') for (const it of arr) if (!it.id) { const k = Object.keys(cat.items).find(k => cat.items[k].en === it.en); if (k) it.id = k; }
     const bad = [];
     for (const it of arr) {
       const why = validate(it);
-      if (why) { bad.push({ id: it.id, why, en: it.en.slice(0, 70), es: (it[LANG] || '').slice(0, 70) }); badKinds[why] = (badKinds[why] || 0) + 1; }
-      else if (merge && cat.items[it.id]) { cat.items[it.id][LANG] = it[LANG].trim(); ok++; }
+      if (why) { bad.push({ id: it.id, why, en: it.en.slice(0, 70), es: (it[TF] || '').slice(0, 70) }); badKinds[why] = (badKinds[why] || 0) + 1; }
+      else if (merge && cat.items[it.id]) { cat.items[it.id][LANG] = it[TF].trim(); ok++; }
       else if (!merge) ok++;
     }
     badN += bad.length;
