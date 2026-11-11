@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path');
 const R = path.join(__dirname, '..', '..');
 const D = JSON.parse(fs.readFileSync(path.join(R, 'dist/strategies/data/index.json'), 'utf8'));
 const dec = (s) => String(s).replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
-for (const l of ['es', 'pt', 'de']) {
+for (const l of require('../i18n/langs.js').TWINS.filter((x) => require('fs').existsSync(path.join(R, 'build/data/' + x + '/catalog.json')))) {
   const c = JSON.parse(fs.readFileSync(path.join(R, `build/data/${l}/catalog.json`), 'utf8')).items, by = {};
   for (const it of Object.values(c)) if (it[l]) by[dec(it.en)] = dec(it[l]);
   const out = { styles: {}, names: {} }; let miss = 0;
