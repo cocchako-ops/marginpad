@@ -1,0 +1,258 @@
+{
+ "Fell through ([$\\d.,]+[KMB]?), a support that held ([\\d.,]+) times over the last ([\\d.,]+) days": {
+  "fr": "A cassé {1}, un support qui a tenu {2} fois sur les {3} derniers jours",
+  "id": "Menembus ke bawah {1}, support yang bertahan {2} kali dalam {3} hari terakhir"
+ },
+ "Broke above ([$\\d.,]+[KMB]?), a resistance that held ([\\d.,]+) times over the last ([\\d.,]+) days": {
+  "fr": "A franchi {1}, une résistance qui a tenu {2} fois sur les {3} derniers jours",
+  "id": "Menembus ke atas {1}, resistance yang bertahan {2} kali dalam {3} hari terakhir"
+ },
+ "Printed a new ([\\d.,]+)-day low at ([$\\d.,]+[KMB]?) with no level left under it": {
+  "fr": "Nouveau plus bas sur {1} jours à {2}, sans aucun niveau en dessous",
+  "id": "Mencetak level terendah {1} hari baru di {2} tanpa level lagi di bawahnya"
+ },
+ "Printed a new ([\\d.,]+)-day high at ([$\\d.,]+[KMB]?) with no level left above it": {
+  "fr": "Nouveau plus haut sur {1} jours à {2}, sans aucun niveau au-dessus",
+  "id": "Mencetak level tertinggi {1} hari baru di {2} tanpa level lagi di atasnya"
+ },
+ "Reached ([$\\d.,]+[KMB]?), a resistance touched ([\\d.,]+) times before, and closed back under it": {
+  "fr": "A atteint {1}, une résistance touchée {2} fois auparavant, puis a clôturé en dessous",
+  "id": "Menyentuh {1}, resistance yang sudah disentuh {2} kali, lalu tutup kembali di bawahnya"
+ },
+ "Stopped at ([$\\d.,]+[KMB]?), a support touched ([\\d.,]+) times before": {
+  "fr": "S'est arrêté à {1}, un support touché {2} fois auparavant",
+  "id": "Tertahan di {1}, support yang sudah disentuh {2} kali"
+ },
+ "volume ([\\d.,]+)x the usual bar": {
+  "fr": "volume {1}x la bougie habituelle",
+  "id": "volume {1}x candle biasa"
+ },
+ "Volume ([\\d.,]+)x the usual bar": {
+  "fr": "Volume {1}x la bougie habituelle",
+  "id": "Volume {1}x candle biasa"
+ },
+ "Open interest fell ([\\d.,]+)% as price fell - longs were closed or liquidated, not sold by new shorts": {
+  "fr": "L'open interest a baissé de {1}% pendant que le prix baissait - des longs ont été fermés ou liquidés, pas vendus par de nouveaux shorts",
+  "id": "Open interest turun {1}% saat harga turun - posisi long ditutup atau dilikuidasi, bukan dijual short baru"
+ },
+ "Open interest fell ([\\d.,]+)% as price rose - shorts closing, not fresh buying": {
+  "fr": "L'open interest a baissé de {1}% pendant que le prix montait - des shorts se ferment, pas de nouveaux achats",
+  "id": "Open interest turun {1}% saat harga naik - short ditutup, bukan pembelian baru"
+ },
+ "Open interest rose ([\\d.,]+)% with the move - fresh longs were opened into it": {
+  "fr": "L'open interest a augmenté de {1}% avec le mouvement - de nouveaux longs ont été ouverts",
+  "id": "Open interest naik {1}% bersama pergerakan - long baru dibuka ke dalamnya"
+ },
+ "Open interest rose ([\\d.,]+)% as price fell - fresh shorts pressed it": {
+  "fr": "L'open interest a augmenté de {1}% pendant que le prix baissait - de nouveaux shorts l'ont poussé",
+  "id": "Open interest naik {1}% saat harga turun - short baru menekannya"
+ },
+ "The feed liquidated ([$\\d.,]+[KMB]?) while the move ran - forced closes drove it": {
+  "fr": "Notre flux a enregistré {1} de liquidations pendant le mouvement - les fermetures forcées l'ont porté",
+  "id": "Feed mencatat likuidasi {1} selama pergerakan - penutupan paksa yang mendorongnya"
+ },
+ "The feed liquidated ([$\\d.,]+[KMB]?) \\(([\\d.,]+)x the typical bucket\\) while the move ran": {
+  "fr": "Notre flux a enregistré {1} de liquidations ({2}x le volume typique) pendant le mouvement",
+  "id": "Feed mencatat likuidasi {1} ({2}x bucket biasa) selama pergerakan"
+ },
+ "The feed liquidated ([\\d.,]+)x its typical 5-minute amount \\(([$\\d.,]+[KMB]?)\\) as the move ran - not a cascade, but forced closes were in it": {
+  "fr": "Notre flux a enregistré {1}x son montant typique sur 5 minutes ({2}) pendant le mouvement - pas une cascade, mais des fermetures forcées y ont pris part",
+  "id": "Feed mencatat likuidasi {1}x jumlah 5 menit biasanya ({2}) selama pergerakan - bukan cascade, tapi ada penutupan paksa"
+ },
+ "The S&P 500 moved ([+-]?[\\d.]+)% in the same quarter hour - risk assets moved together": {
+  "fr": "Le S&P 500 a bougé de {1}% dans le même quart d'heure - les actifs risqués ont bougé ensemble",
+  "id": "S&P 500 bergerak {1}% di seperempat jam yang sama - aset berisiko bergerak bersama"
+ },
+ "([\\d.,]+) tracked whale trades? in this direction, ([\\d.,]+)M USD, as the move ran": {
+  "fr": "{1} trades de baleines suivis dans ce sens, {2}M USD, pendant le mouvement",
+  "id": "{1} trade whale terlacak ke arah ini, {2}M USD, selama pergerakan"
+ },
+ "([\\d.,]+)M USD of market sells hit the book in ([\\d.,]+) prints as the move ran \\(([\\d.,]+)% one-sided\\) - flow, not a headline": {
+  "fr": "{1}M USD de ventes au marché ont frappé le carnet en {2} exécutions pendant le mouvement ({3}% d'un seul côté) - du flux, pas une actualité",
+  "id": "{1}M USD market sell menghantam order book dalam {2} transaksi selama pergerakan ({3}% satu arah) - flow, bukan berita"
+ },
+ "([\\d.,]+)M USD of market buys hit the book in ([\\d.,]+) prints as the move ran \\(([\\d.,]+)% one-sided\\) - flow, not a headline": {
+  "fr": "{1}M USD d'achats au marché ont frappé le carnet en {2} exécutions pendant le mouvement ({3}% d'un seul côté) - du flux, pas une actualité",
+  "id": "{1}M USD market buy menghantam order book dalam {2} transaksi selama pergerakan ({3}% satu arah) - flow, bukan berita"
+ },
+ "No dated catalyst inside the 90 minutes before this move and no liquidation cascade \\(([\\d.,]+)x the typical 5-minute bucket\\)": {
+  "fr": "Aucun catalyseur daté dans les 90 minutes avant ce mouvement et aucune cascade de liquidations ({1}x le volume typique sur 5 minutes)",
+  "id": "Tidak ada katalis terjadwal dalam 90 menit sebelum pergerakan ini dan tidak ada rentetan likuidasi ({1}x bucket 5 menit biasa)"
+ },
+ "No dated catalyst inside the 90 minutes before this move": {
+  "fr": "Aucun catalyseur daté dans les 90 minutes avant ce mouvement",
+  "id": "Tidak ada katalis terjadwal dalam 90 menit sebelum pergerakan ini"
+ },
+ "Bitcoin was not moving the same way, so this was the coin's own flow": {
+  "fr": "Bitcoin ne bougeait pas dans le même sens, c'était donc le flux propre de ce coin",
+  "id": "Bitcoin tidak bergerak searah, jadi ini flow koin itu sendiri"
+ },
+ "read it as positioning being worked through the book rather than a headline": {
+  "fr": "lis-le comme un positionnement qui se déroule dans le carnet plutôt qu'une actualité",
+  "id": "anggap ini positioning yang bergerak lewat order book, bukan berita"
+ },
+ "([\\d.,]+) desks reported this story, the first at (\\d\\d:\\d\\d) UTC": {
+  "fr": "{1} médias ont publié cette histoire, le premier à {2} UTC",
+  "id": "{1} media memberitakan ini, yang pertama pukul {2} UTC"
+ },
+ "Funding sat at the ([\\d.,]+)th percentile of its last ([\\d.,]+) days and open interest at the ([\\d.,]+)th - crowded longs were there to be flushed": {
+  "fr": "Le funding était au {1}e percentile de ses {2} derniers jours et l'open interest au {3}e - des longs surchargés étaient prêts à être purgés",
+  "id": "Funding ada di persentil ke-{1} dari {2} hari terakhir dan open interest di ke-{3} - long yang menumpuk siap disapu"
+ },
+ "Funding sat at the ([\\d.,]+)th percentile of its last ([\\d.,]+) days - crowded longs were there to be flushed": {
+  "fr": "Le funding était au {1}e percentile de ses {2} derniers jours - des longs surchargés étaient prêts à être purgés",
+  "id": "Funding ada di persentil ke-{1} dari {2} hari terakhir - long yang menumpuk siap disapu"
+ },
+ "Funding sat at the ([\\d.,]+)th percentile of its last ([\\d.,]+) days with open interest at the ([\\d.,]+)th - crowded shorts were there to be squeezed": {
+  "fr": "Le funding était au {1}e percentile de ses {2} derniers jours avec l'open interest au {3}e - des shorts surchargés étaient prêts à être squeezés",
+  "id": "Funding ada di persentil ke-{1} dari {2} hari terakhir dengan open interest di ke-{3} - short yang menumpuk siap di-squeeze"
+ },
+ "Funding sat at the ([\\d.,]+)th percentile of its last ([\\d.,]+) days - crowded shorts were there to be squeezed": {
+  "fr": "Le funding était au {1}e percentile de ses {2} derniers jours - des shorts surchargés étaient prêts à être squeezés",
+  "id": "Funding ada di persentil ke-{1} dari {2} hari terakhir - short yang menumpuk siap di-squeeze"
+ },
+ "The book within 1% is ([\\d.,]+)% bids across ([\\d.,]+) venues - buyers hold the depth": {
+  "fr": "Le carnet à 1% est à {1}% de bids sur {2} exchanges - les acheteurs tiennent la profondeur",
+  "id": "Order book dalam 1% berisi {1}% bid di {2} exchange - pembeli memegang kedalaman"
+ },
+ "The book within 1% is ([\\d.,]+)% asks across ([\\d.,]+) venues - sellers hold the depth": {
+  "fr": "Le carnet à 1% est à {1}% d'asks sur {2} exchanges - les vendeurs tiennent la profondeur",
+  "id": "Order book dalam 1% berisi {1}% ask di {2} exchange - penjual memegang kedalaman"
+ },
+ "The book within 1% leans ([\\d.,]+)% bids against the move - it ran into resting size": {
+  "fr": "Le carnet à 1% penche à {1}% côté bids contre le mouvement - il a buté sur des ordres en attente",
+  "id": "Order book dalam 1% condong {1}% bid melawan pergerakan - harga menabrak order yang menunggu"
+ },
+ "The book within 1% leans ([\\d.,]+)% asks against the move - it ran into resting size": {
+  "fr": "Le carnet à 1% penche à {1}% côté asks contre le mouvement - il a buté sur des ordres en attente",
+  "id": "Order book dalam 1% condong {1}% ask melawan pergerakan - harga menabrak order yang menunggu"
+ },
+ "Bitcoin moved ([+-]?[\\d.]+)% at the same time": {
+  "fr": "Bitcoin a bougé de {1}% au même moment",
+  "id": "Bitcoin bergerak {1}% di waktu yang sama"
+ },
+ " - this coin followed": {
+  "fr": " - ce coin a suivi",
+  "id": " - koin ini mengikuti"
+ },
+ "Events like this \\((.+?)\\) moved price ([\\d.,]+)x the usual 15-minute bar across ([\\d.,]+) measured, direction right ([\\d.,]+)% \\(placebo ([\\d.,]+)x\\)": {
+  "fr": "Les événements de ce type ({1}) ont bougé le prix de {2}x la bougie habituelle de 15 minutes sur {3} mesurés, bonne direction {4}% (placebo {5}x)",
+  "id": "Event seperti ini ({1}) menggerakkan harga {2}x candle 15 menit biasa dari {3} yang diukur, arah benar {4}% (placebo {5}x)"
+ },
+ "Events like this \\((.+?)\\) moved price ([\\d.,]+)x the usual 15-minute bar across ([\\d.,]+) measured \\(placebo ([\\d.,]+)x\\)": {
+  "fr": "Les événements de ce type ({1}) ont bougé le prix de {2}x la bougie habituelle de 15 minutes sur {3} mesurés (placebo {4}x)",
+  "id": "Event seperti ini ({1}) menggerakkan harga {2}x candle 15 menit biasa dari {3} yang diukur (placebo {4}x)"
+ },
+ " - this move is bigger than that kind usually produces, so the headline is only part of it": {
+  "fr": " - ce mouvement est plus grand que ce que ce type produit d'habitude, l'actualité n'en explique donc qu'une partie",
+  "id": " - pergerakan ini lebih besar dari yang biasa dihasilkan event sejenis, jadi berita hanya sebagian penyebabnya"
+ },
+ "One move of ([+-]?[\\d.]+)% from (\\d\\d:\\d\\d) to (\\d\\d:\\d\\d) UTC": {
+  "fr": "Un mouvement de {1}% de {2} à {3} UTC",
+  "id": "Satu pergerakan {1}% dari {2} sampai {3} UTC"
+ },
+ ", then price recovered": {
+  "fr": ", puis le prix s'est repris",
+  "id": ", lalu harga pulih"
+ },
+ ", ([\\d.,]+) smaller moves? inside it": {
+  "fr": ", {1} mouvements plus petits à l'intérieur",
+  "id": ", {1} pergerakan kecil di dalamnya"
+ },
+ "started at 08:30 New York, the minute US economic releases print": {
+  "fr": "a commencé à 08:30 heure de New York, la minute où sortent les statistiques économiques américaines",
+  "id": "dimulai pukul 08:30 New York, menit rilis data ekonomi AS"
+ },
+ "started at a funding settlement \\(every 8 hours\\), when crowded positions are re-priced": {
+  "fr": "a commencé à un règlement du funding (toutes les 8 heures), quand les positions surchargées sont réévaluées",
+  "id": "dimulai saat settlement funding (tiap 8 jam), ketika posisi yang menumpuk dihargai ulang"
+ },
+ "started at the 00:00 UTC daily open, when funding settles and the day books reset": {
+  "fr": "a commencé à l'ouverture quotidienne de 00:00 UTC, quand le funding est réglé et les comptes du jour remis à zéro",
+  "id": "dimulai di pembukaan harian 00:00 UTC, saat funding diselesaikan dan pembukuan harian direset"
+ },
+ "started at the Friday 08:00 UTC Deribit options expiry": {
+  "fr": "a commencé à l'expiration des options Deribit du vendredi à 08:00 UTC",
+  "id": "dimulai saat expiry opsi Deribit Jumat pukul 08:00 UTC"
+ },
+ "started at the New York cash close \\(16:00\\)": {
+  "fr": "a commencé à la clôture du marché au comptant de New York (16:00)",
+  "id": "dimulai saat penutupan sesi reguler New York (16:00)"
+ },
+ "started at the New York cash open \\(09:30\\), when US equity and ETF flow lands": {
+  "fr": "a commencé à l'ouverture du marché au comptant de New York (09:30), quand arrive le flux des actions et ETF américains",
+  "id": "dimulai saat pembukaan sesi reguler New York (09:30), ketika flow saham dan ETF AS masuk"
+ },
+ "^New ([\\d.,]+)-day low$": {
+  "fr": "Nouveau plus bas sur {1} jours",
+  "id": "Terendah {1} hari baru"
+ },
+ "^New ([\\d.,]+)-day high$": {
+  "fr": "Nouveau plus haut sur {1} jours",
+  "id": "Tertinggi {1} hari baru"
+ },
+ "Events of this kind moved price ([\\d.,]+)x the usual 15-minute bar \\(([\\d.,]+) measured, direction right ([\\d.,]+)%, placebo ([\\d.,]+)x\\)": {
+  "fr": "Les événements de ce type ont bougé le prix de {1}x la bougie habituelle de 15 minutes ({2} mesurés, bonne direction {3}%, placebo {4}x)",
+  "id": "Event sejenis menggerakkan harga {1}x candle 15 menit biasa ({2} diukur, arah benar {3}%, placebo {4}x)"
+ },
+ "Events of this kind moved price ([\\d.,]+)x the usual 15-minute bar \\(([\\d.,]+) measured, direction right ([\\d.,]+)%\\)": {
+  "fr": "Les événements de ce type ont bougé le prix de {1}x la bougie habituelle de 15 minutes ({2} mesurés, bonne direction {3}%)",
+  "id": "Event sejenis menggerakkan harga {1}x candle 15 menit biasa ({2} diukur, arah benar {3}%)"
+ },
+ "Events of this kind moved price ([\\d.,]+)x the usual 15-minute bar \\(([\\d.,]+) measured\\)": {
+  "fr": "Les événements de ce type ont bougé le prix de {1}x la bougie habituelle de 15 minutes ({2} mesurés)",
+  "id": "Event sejenis menggerakkan harga {1}x candle 15 menit biasa ({2} diukur)"
+ },
+ "Needs ([\\d.,]+) closed trades in a window before any habit can be measured; ([\\d.,]+) so far in the last ([\\d.,]+) days\\.": {
+  "fr": "Il faut {1} trades clôturés sur une période avant de pouvoir mesurer une habitude ; {2} pour l'instant sur les {3} derniers jours.",
+  "id": "Butuh {1} trade tertutup dalam satu periode sebelum kebiasaan bisa diukur; baru {2} dalam {3} hari terakhir."
+ },
+ "A mirror of behaviour, not a prediction\\. Each habit needs ([\\d.,]+) trades in the window to count; the weekly change compares the last 7 days with the 7 before, each on its own trades\\.": {
+  "fr": "Un miroir du comportement, pas une prédiction. Chaque habitude a besoin de {1} trades sur la période pour compter ; la variation hebdomadaire compare les 7 derniers jours aux 7 précédents, chacun sur ses propres trades.",
+  "id": "Cermin perilaku, bukan prediksi. Tiap kebiasaan butuh {1} trade dalam periode itu agar dihitung; perubahan mingguan membandingkan 7 hari terakhir dengan 7 hari sebelumnya, masing-masing dengan trade-nya sendiri."
+ },
+ "^updated ([\\d.,]+) min ago$": {
+  "fr": "mis à jour il y a {1} min",
+  "id": "diperbarui {1} menit lalu"
+ },
+ "^updated ([\\d.,]+) h ago$": {
+  "fr": "mis à jour il y a {1} h",
+  "id": "diperbarui {1} jam lalu"
+ },
+ "^Yesterday ([\\d.,]+)( [▲▼])$": {
+  "fr": "Hier {1}{2}",
+  "id": "Kemarin {1}{2}"
+ },
+ "(\\S+) \\+([\\d.,]+) desks · ([\\d.,]+)m before · this kind ([\\d.,]+)x usual": {
+  "fr": "{1} +{2} médias · {3} min avant · ce type {4}x l'habituel",
+  "id": "{1} +{2} media · {3} mnt sebelum · jenis ini {4}x biasa"
+ },
+ "(\\S+) \\+([\\d.,]+) desks · ([\\d.,]+)m after · this kind ([\\d.,]+)x usual": {
+  "fr": "{1} +{2} médias · {3} min après · ce type {4}x l'habituel",
+  "id": "{1} +{2} media · {3} mnt sesudah · jenis ini {4}x biasa"
+ },
+ " · ([\\d.,]+) seasons$": {
+  "fr": " · {1} saisons",
+  "id": " · {1} musim"
+ },
+ "^([\\d.,]+) on the chart · ([\\d.,]+)% explained · ([\\d.,]+) moves · ([\\d.,]+) with 2\\+ causes$": {
+  "fr": "{1} sur le graphique · {2}% expliqués · {3} mouvements · {4} avec 2+ causes",
+  "id": "{1} di chart · {2}% terjelaskan · {3} pergerakan · {4} dengan 2+ penyebab"
+ },
+ "^(\\S+) leads with ([\\d.,]+)$": {
+  "fr": "{1} en tête avec {2}",
+  "id": "{1} memimpin dengan {2}"
+ },
+ "^(\\S+) leads$": {
+  "fr": "{1} en tête",
+  "id": "{1} memimpin"
+ },
+ " at ([\\d.,]+) claims · ": {
+  "fr": " à {1} réclamations · ",
+  "id": " dengan {1} klaim · "
+ },
+ "If the stop hits you lose ([\\d.,]+)% of margin · levels from 4h ATR · simulation, not advice": {
+  "fr": "Si le stop est touché, tu perds {1}% de ta marge · niveaux selon l'ATR 4h · simulation, pas un conseil",
+  "id": "Kalau stop kena, kamu rugi {1}% margin · level dari ATR 4h · simulasi, bukan saran"
+ }
+}

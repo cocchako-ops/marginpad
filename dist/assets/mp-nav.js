@@ -562,7 +562,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
      page that translates itself (Demo Spot, the app shell's i18n loader) still gets __mpSetLang / its own listener.
      esRedirect: a reader who chose Spanish and lands on an English URL is sent to the twin once per path per session
      (sessionStorage mp_es_miss stops the bounce when the worker answers 302 because no twin exists). */
-  /* @TWINS */ var _TWIN = { es: 1, pt: 1, de: 1 }; // the live twin languages - written by build/i18n/twin-on.js, nowhere else
+  /* @TWINS */ var _TWIN = { es: 1, pt: 1, de: 1, fr: 1, id: 1 }; // the live twin languages - written by build/i18n/twin-on.js, nowhere else
   var _LANG_HOME = {}; ['es', 'pt', 'de', 'fr', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'].forEach(function (l) { if (!_TWIN[l]) _LANG_HOME[l] = 1; }); // a language with only a homepage
   function _twinOf(p) { var m = p.match(/^\/([a-z]{2})(\/|$)/); return m && _TWIN[m[1]] ? m[1] : ''; }
   function langCode(v) { v = String(v || ''); if (!v || v === '/') return v === '/' ? 'en' : ''; var m = v.match(/^\/([a-z]{2})\/?$/); return m ? m[1] : (/^[a-z]{2}$/.test(v) ? v : ''); }

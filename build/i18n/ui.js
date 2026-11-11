@@ -71,7 +71,10 @@ const tableOf = (name, dicts, strings, l) => { const t = {}, d = dicts[name] || 
 function pageDict(name, lang) { const dicts = read(path.join(DATA, 'dicts.json'), {}), strings = read(path.join(DATA, 'strings.json'), {}); return tableOf(name, dicts, strings, lang); }
 /* every pattern row with its gate: the longest literal run of the English, checked with indexOf before the regex runs */
 function gateOf(re) { const lit = String(re).replace(/\\[dDsSwW]/g, '\u0000').replace(/\\(.)/g, '$1').split(/[()\[\]{}*+?|^$.\u0000]/); return lit.reduce((a, x) => (x.length > a.length ? x : a), '').trim(); }
-function patRows(l) { let walk = []; try { walk = JSON.parse(fs.readFileSync(path.join(DATA, 'patterns-walk.json'), 'utf8')); } catch (e) {} return require('./patterns.js').concat(walk).filter((p) => p[l]).map((p) => [p.re, p[l], gateOf(p.re)]); }
+function patRows(l) { let walk = []; try { walk = JSON.parse(fs.readFileSync(path.join(DATA, 'patterns-walk.json'), 'utf8')); } catch (e) {}
+  // translations of the hand-written patterns.js rows into the newer twin languages live in data, keyed by the row's own regex
+  let more = {}; try { more = JSON.parse(fs.readFileSync(path.join(DATA, 'patterns-more.json'), 'utf8')); } catch (e) {}
+  return require('./patterns.js').map((p) => (more[p.re] ? Object.assign({}, p, more[p.re]) : p)).concat(walk).filter((p) => p[l]).map((p) => [p.re, p[l], gateOf(p.re)]); }
 function build() {
   const dicts = read(path.join(DATA, 'dicts.json'), {}), strings = read(path.join(DATA, 'strings.json'), {});
   const bundles = new Set(); for (const f of fs.readdirSync(path.join(DIST, 'assets'))) { if (!/\.js$/.test(f) || /^ui-/.test(f)) continue; const t = fs.readFileSync(path.join(DIST, 'assets', f), 'utf8'); for (const m of t.matchAll(/var __esD_(\w+)\s*=/g)) bundles.add(m[1]); }

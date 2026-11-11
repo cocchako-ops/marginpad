@@ -20,6 +20,7 @@ const LANG_DIR = /^(es|pt|fr|de|ru|tr|zh|ja|ko|ar|id|nl|sv|no|da|fi)$/;
 const SKIP_DIRS = new Set(['assets', 'demo-home', 'i18n', 'sdk', 'og', 'img', 'fonts', 'widget']);
 const SKIP_PAGES = new Set(['dolar-cripto/index.html', 'bitcoin-hoje/index.html', 'simulador-trading-cripto-argentina/index.html',
   'simulador-trading-cripto-brasil/index.html', 'app.html' /* → app-es.html, handled apart */, 'app-es.html', 'app-pt.html', 'app-de.html' /* our own output */]);
+for (const l of ['fr', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl']) SKIP_PAGES.add('app-' + l + '.html'); // every twin's tool shell is our own output, never a source
 const NOINDEX_OK = true; // a noindex English page gets a noindex Spanish twin (same meta) - nothing to decide here
 const TOOL_ROUTES = ['/paper-trade', '/charts', '/calculators', '/screener', '/heatmap', '/swap'];
 const MIN_COVER = 0.6; // a twin with less than 60% of its text in Spanish is not published (English fallback would read as a broken page)

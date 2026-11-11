@@ -154,4 +154,6 @@ run('Portuguese site (/pt/ twins)', 'node build/es/gen-pages.js --lang pt');
 // 16) GERMAN TWINS (2026-10-29): the whole site under /de/ (build/data/de/pages.txt), catalog build/data/de/catalog.json.
 run('German site (/de/ twins)', 'node build/es/gen-pages.js --lang de');
 
+run('French site (/fr/ twins)', 'node build/es/gen-pages.js --lang fr');
+run('Indonesian site (/id/ twins)', 'node build/es/gen-pages.js --lang id');
 process.stdout.write('\n Build complete. Review dist/, then: npm run deploy\n');
