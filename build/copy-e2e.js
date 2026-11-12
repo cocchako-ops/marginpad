@@ -28,6 +28,7 @@ chk('pure: Ticks, XP, personal records, promos and the season counters skip a co
 chk('pure: the fan-out runs only on a server-authoritative, non-copy, non-replay per-op sync and the mirrored row is src srv + copy:1', /srvAuth && via !== 'copy' && via !== 'replay' && ops\.length && ops\.length <= 8 && this\._copiedSet\(\)\.has\(uid\)\) this\._copyFanOut\(uid, ops\)/.test(WS) && /status: 'open', pnl: null, src: 'srv', swT: now, copy: 1, copyOf: String\(leader\), copyName: ln, copyTid: String\(e\.id \|\| ''\)/.test(WS));
 chk('pure: the mirror closes at the LEADER exit with the one P&L formula and sc:1, and the SL/TP edit follows', /closeTs: now, sc: 1, liquidated: !!e\.liquidated/.test(WS) && /_copySltp\(uid, String\(t\.id\), sl, tp\)/.test(WS) && /q \* \(exit - en\) \* dir - q \* \(en \+ exit\) \* \(\+x\.feeRate \|\| 0\) - \(\+x\.fund \|\| 0\)/.test(WS));
 chk('pure: /api/lb/copy exists and the public card carries copiers + iCopy', /if \(sub === 'copy'\)/.test(WS) && /iFollow, followsMe, mutual, requested, copiers, iCopy,/.test(WS));
+chk('pure: no DO route writes through `this.sql` - the stores hold SQL at this.state.storage.sql (four new writes threw on production for an hour on 2026-11-12, every GET beside them fine; two older xpboost writes had been dead inside a try for weeks)', !/this\.sql\./.test(WS));
 chk('pure: both drawer bundles draw the COPY badge', /class="pp-copy"/.test(fs.readFileSync(path.join(ROOT, 'dist/assets/home.js'), 'utf8')) && /class="pp-copy"/.test(fs.readFileSync(path.join(ROOT, 'dist/assets/mp-trade.js'), 'utf8')) && /\.pp-copy\{/.test(fs.readFileSync(path.join(ROOT, 'dist/assets/home.css'), 'utf8')) && /\.pp-copy\{/.test(fs.readFileSync(path.join(ROOT, 'dist/assets/mp-trade.css'), 'utf8')));
 if (PURE) { console.log('\ncopy-e2e: ' + okN + ' passed, ' + failN + ' failed [pure]'); process.exit(failN ? 1 : 0); }
 const { withBrowser, newPage, UA_DESKTOP } = require('./e2e-browser');
@@ -135,16 +136,16 @@ async function openCard(page, name) { await page.waitForFunction(() => !!window.
     const aRow = op.j && (op.j.raw || op.j.position || op.j.trade || op.j); const aId = aRow && (aRow.id || (op.j.raw && op.j.raw.id));
     chk('prod: A opened a BTC long on the server', op.st === 200 && !!aId, op.j && Object.keys(op.j));
     await sleep(2500);
-    const jb = await fetch(BASE + '/api/auth/user?uid=' + encodeURIComponent(B) + '&cb=' + Date.now(), { headers: { 'x-admin-key': KEY } }).then(r => r.json()).catch(() => null);
-    const bJ = (jb && (jb.journal || (jb.tradeSummary && jb.tradeSummary.journal))) || [];
+    // the member's own journal pull: GET /api/auth/trades keyed on the mp_uid COOKIE (the admin /api/auth/user carries only a journal COUNT)
+    const pullJ = async () => { const j = await fetch(BASE + '/api/auth/trades?cb=' + Date.now(), { headers: { cookie: 'mp_sess=' + tok[B] + '; mp_uid=' + B } }).then(r => r.json()).catch(() => null); return (j && j.journal) || []; };
+    const bJ = await pullJ();
     const mirror = bJ.find(x => x && x.copy && String(x.copyTid) === String(aId));
     chk('prod: B holds ONE mirrored row - same side and leverage, entry equal to A, margin 50, naming A, src srv', !!mirror && mirror.side === 'long' && +mirror.lev === 5 && +mirror.margin === 50 && mirror.src === 'srv' && Math.abs(+mirror.entry - +aRow.entry) < 1e-9 && mirror.copyName === 'e2e_' + A && bJ.filter(x => x && x.copy).length === 1, mirror && { side: mirror.side, lev: mirror.lev, margin: mirror.margin, entry: mirror.entry, aEntry: aRow.entry, name: mirror.copyName });
     // A closes; B's mirror closes at A's exit
     const cl = await as(A, '/api/trade/close', { method: 'POST', body: JSON.stringify({ id: aId }) });
     chk('prod: A closed the position', cl.st === 200 && cl.j && (cl.j.ok || cl.j.position), cl.j && Object.keys(cl.j));
     await sleep(2500);
-    const jb2 = await fetch(BASE + '/api/auth/user?uid=' + encodeURIComponent(B) + '&cb=' + Date.now(), { headers: { 'x-admin-key': KEY } }).then(r => r.json()).catch(() => null);
-    const bJ2 = (jb2 && (jb2.journal || (jb2.tradeSummary && jb2.tradeSummary.journal))) || []; const m2 = bJ2.find(x => x && x.copy && String(x.copyTid) === String(aId));
+    const bJ2 = await pullJ(); const m2 = bJ2.find(x => x && x.copy && String(x.copyTid) === String(aId));
     const aExit = cl.j && ((cl.j.position && (cl.j.position.exit_price || cl.j.position.exit)) || cl.j.exit);
     chk('prod: the mirror is closed by the server (sc) at A exit', !!m2 && (m2.status === 'win' || m2.status === 'loss') && m2.sc === 1 && (aExit == null || Math.abs(+m2.exit - +aExit) < 1e-6), m2 && { st: m2.status, exit: m2.exit, aExit, sc: m2.sc, pnl: m2.pnl });
     const bc = await fetch(BASE + '/api/lb/user?name=e2e_' + B + '&cb=' + Date.now()).then(r => r.json());

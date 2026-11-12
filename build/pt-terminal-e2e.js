@@ -53,7 +53,7 @@ async function open(browser, m, vp) {
       } catch (e) { req.continue(); }
     });
   }
-  await p.goto(O + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+  await p.goto(O + '/paper-trade?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
   await wait(8500);
   return p;
 }

@@ -26099,7 +26099,7 @@ export default {
       const KEEP_COIN = { btc: 1, eth: 1, sol: 1, xrp: 1, bnb: 1, doge: 1 };
       const mCoin = url.pathname.match(/^\/(?:([a-z]{2})\/)?coin\/([a-z0-9]+)\/?$/);
       if (mCoin && !(mCoin[1] === undefined && KEEP_COIN[mCoin[2]])) return Response.redirect(url.origin + '/coins/', 301);
-      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname) && !/^\/liquidations\/(recap|report)\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301); // /liquidations/report/ = the monthly reports hub (2026-11-02)
+      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname) && !/^\/liquidations\/(recap|report|records)\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301); // /liquidations/report/ = the monthly reports hub (2026-11-02); /records/ = the record book (2026-11-12 - this catch-all 301'd it to the hub on the first deploy, found by curl, not by the suite)
       // The translated SEO subpages were removed the same day for the same reason: 1,008 pages
       // returning 47 pageviews and 7 Google visits in 90 days while multiplying every duplicate
       // signal twelvefold. Each 301s to its English original, which is an exact topical match.
@@ -36213,14 +36213,14 @@ export class UserStore {
         const leader = String(b.leader || '').replace(/^u:/, ''), margin = +b.margin || 0;
         if (!leader) return this.j({ error: 'bad' });
         if (leader === uid) return this.j({ error: 'self' });
-        if (margin === 0) { this.sql.exec('DELETE FROM copies WHERE uid=? AND leader=?', uid, leader); this._copiedBust(); return this.j({ ok: true, copying: 0 }); } // stop: the open mirrored rows stay the copier's to close
+        if (margin === 0) { this.state.storage.sql.exec('DELETE FROM copies WHERE uid=? AND leader=?', uid, leader); this._copiedBust(); return this.j({ ok: true, copying: 0 }); } // stop: the open mirrored rows stay the copier's to close
         if (COPY_MARGINS.indexOf(margin) < 0) return this.j({ error: 'bad_margin', margins: COPY_MARGINS });
         const lu = this.rows("SELECT username, status FROM users WHERE id=?", leader)[0];
         if (!lu || !lu.username) return this.j({ error: 'no_leader' });
         if (lu.status && lu.status !== 'active') return this.j({ error: 'leader_restricted' });
         const have = this.rows('SELECT 1 FROM copies WHERE uid=? AND leader=?', uid, leader)[0];
         if (!have && (this.rows('SELECT COUNT(*) c FROM copies WHERE uid=?', uid)[0] || { c: 0 }).c >= COPY_MAX_LEADERS) return this.j({ error: 'too_many', max: COPY_MAX_LEADERS });
-        this.sql.exec('INSERT INTO copies(uid,leader,margin,ts) VALUES(?,?,?,?) ON CONFLICT(uid,leader) DO UPDATE SET margin=excluded.margin', uid, leader, margin, Date.now());
+        this.state.storage.sql.exec('INSERT INTO copies(uid,leader,margin,ts) VALUES(?,?,?,?) ON CONFLICT(uid,leader) DO UPDATE SET margin=excluded.margin', uid, leader, margin, Date.now());
         this._copiedBust();
         if (!have) { try { const me = (this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {}).username || 'A trader'; this._pushNotif(leader, 'copy', '@' + me + ' is copying your trades ($' + margin + ' a trade)', me ? 'profile:' + me : ''); } catch (e) {} } // the leader is told the fact, with no control over it - these are paper positions in somebody else's book
         return this.j({ ok: true, copying: margin, leader: 'u:' + leader, name: lu.username, isNew: !have });
@@ -36241,7 +36241,7 @@ export class UserStore {
         if (!uid || !id) return this.j({ error: 'no_uid' });
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=?', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one nomination a day per member
-        this.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts) VALUES(?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now());
+        this.state.storage.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts) VALUES(?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now());
         return this.j({ ok: true, ...board(uid) });
       }
       if (path === '/totd/vote') {
@@ -36249,7 +36249,7 @@ export class UserStore {
         const c = this.rows('SELECT uid FROM totdc WHERE day=? AND id=?', day, id)[0];
         if (!c) return this.j({ error: 'not_candidate', ...board(uid) });
         if (String(c.uid) === String(uid)) return this.j({ error: 'own', ...board(uid) }); // the member who nominated it does not vote for it
-        this.sql.exec('INSERT OR REPLACE INTO totdv(day,uid,id,ts) VALUES(?,?,?,?)', day, uid, id, Date.now()); // one vote a day, the newer one stands
+        this.state.storage.sql.exec('INSERT OR REPLACE INTO totdv(day,uid,id,ts) VALUES(?,?,?,?)', day, uid, id, Date.now()); // one vote a day, the newer one stands
         return this.j({ ok: true, ...board(uid) });
       }
       if (path === '/totd/settle') { // the winner: most votes, a tie to the bigger ROE; nobody with zero votes
@@ -37887,7 +37887,7 @@ export class UserStore {
     }
     if (path === '/xpboostev') { // minute-cron drain: unseen XP boost/HH hits -> ops live feed (who hit the boost)
       const evs = this.rows('SELECT e.user_id uid, e.ts, e.xp, e.note, u.username FROM xpboost_ev e LEFT JOIN users u ON u.id = e.user_id WHERE e.seen = 0 ORDER BY e.ts LIMIT 40');
-      try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 7 * 86400000); } catch (e) {}
+      try { this.state.storage.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.state.storage.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 7 * 86400000); } catch (e) {}
       return this.j({ events: evs });
     }
     if (path === '/names') { // id -> username for public boards (chunked: a large IN() silently returns 0 rows at scale)

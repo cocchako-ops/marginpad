@@ -66,7 +66,13 @@ withBrowser(async (browser) => {
     await page.evaluateOnNewDocument(() => { try { localStorage.removeItem('mp_ai_mode'); localStorage.removeItem('mp_ai_strat'); } catch (e) {} });
     await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForFunction('!!document.getElementById("cwsAdd") || (window.__mpWinsDbg && window.__mpWinsDbg.length)', { timeout: 30000 }).catch(() => {});
-    await page.evaluate(() => { if (!(window.__mpWinsDbg && window.__mpWinsDbg.length)) { const a = document.getElementById('cwsAdd'); a && a.click(); } });
+    /* domcontentloaded lands BEFORE the rail has bound its handlers (the ai-chart-e2e pattern since 2026-10-29) - click until a window exists */
+    for (let tries = 0; tries < 12; tries++) {
+      const has = await page.evaluate(() => !!(window.__mpWinsDbg && window.__mpWinsDbg.length));
+      if (has) break;
+      await page.evaluate(() => { const a = document.getElementById('cwsAdd') || document.querySelector('[data-cws-add]'); a && a.click(); });
+      await sleep(1500);
+    }
     await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50', { timeout: 40000 });
     await page.evaluate(() => { const w = window.__mpWinsDbg[0]; w.el.style.left = '0px'; w.el.style.top = '0px'; w.el.style.width = '760px'; w.el.style.height = '520px'; });
     await sleep(500); await killToasts(page);
@@ -106,6 +112,9 @@ withBrowser(async (browser) => {
     ok('the second window\'s panel opens clean while the first window\'s read is still running', b2.shown && !b2.streaming && b2.first, b2);
     await page.waitForFunction('!window.__mpWinsDbg[0]._aiRun', { timeout: 20000 }).catch(() => {});
     await sleep(500);
+    // ONE notice at a time since 2026-10-28: the "done" toast WAITS behind whatever is showing (an XP card on production, the stale-version
+    // Reload card on --local), so it is read when it reaches the screen, not at a fixed instant (the check was red on working code twice)
+    await page.waitForFunction(() => { const t = document.getElementById('mpxpT'); return !!(t && /Ask AI is done/.test(t.textContent)); }, { timeout: 12000 }).catch(() => {});
     const b3 = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const t = document.getElementById('mpxpT'); const h = JSON.parse(localStorage.getItem('mp_ai_s_' + w.sym) || '[]'); return { done: w.el.querySelector('.cwin-ai').classList.contains('done'), toast: !!(t && /Ask AI is done/.test(t.textContent)), answers: h.filter(m => m.role === 'ai').length, st: (w._aiSt || {}).st }; });
     ok('the first read finished in the background: its thread holds both answers, the window\'s button lights up and a toast says so', b3.answers === 2 && b3.done && b3.toast && b3.st === 'done', b3);
     await page.evaluate(() => { window.__mpWinsDbg[0].el.querySelector('.cwin-ai').click(); }); await sleep(400);
