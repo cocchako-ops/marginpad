@@ -26,8 +26,8 @@ const PROBE = /\bprobe\b/i;
   const CK = { cookie: 'mp_sadm=' + sess.token };
   let removedMsgs = 0, removedAccts = 0;
 
-  // ── the public rooms: global, and the Welcome room since 2026-10-22 (chat-welcome-e2e posts there) ───────────
-  for (const room of ['global', 'WELCOME']) {
+  // ── the public room (the Welcome room existed 2026-10-22 to 2026-11-12 and is retired) ───────────────────────
+  for (const room of ['global']) {
     const h = await (await fetch(O + '/chat/admin/history?key=' + K + '&room=' + room)).json().catch(() => ({}));
     const msgs = h.messages || [];
     const junk = msgs.filter(m => ACCT.test(String(m.u || '')) || PROBE.test(String(m.t || '')) || /Welcome @e2e_/i.test(String(m.t || '')));

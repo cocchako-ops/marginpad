@@ -1029,14 +1029,6 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     + '.ct-tk-rxb i:empty{display:none}.ct-tk-rxb.on i{color:var(--tkc)}'
     + '.ct-tk-rxlbl{margin-left:auto;padding-left:6px;font-family:"Space Mono",monospace;font-weight:700;font-size:8.5px;line-height:1;letter-spacing:.1em;color:#4f5c70;text-transform:uppercase;flex:none}'
     + '.ct-msg.ct-hastk>.ct-body>.ct-rx,.ct-msg.ct-hastk .ct-body>.ct-rx{display:none}'
-    + '.ct-welc{display:block;margin:6px 0 3px;max-width:360px;border:1px solid #2a3b2a;border-radius:12px;padding:11px 13px 12px;background:linear-gradient(160deg,rgba(194,246,74,.11) 0,#0d1118 55%);color:#dbe4f5;font-size:12.5px;line-height:1.5}'
-    + '.ct-welc-h{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}'
-    + '.ct-welc-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:#f3f4f0;letter-spacing:-.01em}'
-    + '.ct-welc-eye{font:800 9px/1 "Space Mono",monospace;letter-spacing:.1em;color:#c2f64a}'
-    + '.ct-welc p{margin:5px 0}.ct-welc ol{margin:4px 0 6px;padding-left:18px}.ct-welc li{margin:4px 0}.ct-welc li b{color:#f3f4f0}'
-    + '.ct-welc a{color:#c2f64a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(194,246,74,.45)}.ct-welc a:hover{border-bottom-color:#c2f64a}'
-    + '.ct-welc-x{display:inline-block;margin-top:6px;padding:7px 14px;border-radius:8px;border:1px solid #c2f64a;background:#c2f64a;color:#0a0b0d;font-family:inherit;font-weight:700;font-size:12px;line-height:1;cursor:pointer}'
-    + '.ct-welc-x:hover{background:#d4ff6a}'
     + '.ct-ricwel{color:#c2f64a}'
     /* ── the composer autocomplete, the mention chip, the "you were named" row and the new-message pill ──
        All four are chat furniture, and they live HERE rather than in home.css + mp-trade.css for the reason the
@@ -1079,7 +1071,48 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     + '.ctp-r{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #1c2230;font-size:13px}.ctp-c{display:inline-flex;gap:5px}'
     + '.ctp-c button{font:700 11px Space Mono,monospace;letter-spacing:.04em;padding:5px 10px;border-radius:999px;border:1px solid #2a3140;background:transparent;color:#aab2bd;cursor:pointer}.ctp-c button.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.55);color:#d6f78a}'
     + '.ctp-n{font-size:11px;color:#6c7682;margin-top:6px;line-height:1.45}'
-    + '#chatBox.ct-fs-s .ct-msg{font-size:12px}#chatBox.ct-fs-l .ct-msg{font-size:15.5px}#chatBox.ct-fs-l .ct-tk{font-size:1.06em}';
+    + '#chatBox.ct-fs-s .ct-msg{font-size:12px}#chatBox.ct-fs-l .ct-msg{font-size:15.5px}#chatBox.ct-fs-l .ct-tk{font-size:1.06em}'
+    /* SUPPORT IN THE CHAT WINDOW (2026-11-12) - see window.mpChatSupport below */
+    + '.ct-sup-btn{position:relative;background:none;border:none;color:#7c8794;cursor:pointer;padding:2px 6px;line-height:1;display:inline-flex;align-items:center}.ct-sup-btn:hover,.ct-sup-btn.on{color:#c2f64a}'
+    + '.ct-sup-btn svg{width:17px;height:17px}.ct-sup-btn .dot{position:absolute;top:-1px;right:1px;width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 7px #c2f64a}'
+    + '#chatBox.ct-supmode>:not(.ct-head):not(.ct-sup){display:none!important}'
+    + '.ct-head.ct-suphead .ct-roomsel,.ct-head.ct-suphead .ct-online,.ct-head.ct-suphead .ct-gear,.ct-head.ct-suphead .ct-title{display:none!important}'
+    + '.ct-sup-ttl{display:none;align-items:center;gap:7px;font:600 15px "Bricolage Grotesque",sans-serif;color:#e9e7df;min-width:0;white-space:nowrap}.ct-head.ct-suphead .ct-sup-ttl{display:inline-flex}.ct-sup-ttl svg{width:18px;height:18px;color:#c2f64a;flex:none}'
+    + '.ct-sup-ttl i{font:700 10px "Space Mono",monospace;font-style:normal;letter-spacing:.06em;color:#8b97a5;padding:2px 7px;border:1px solid #2a3140;border-radius:999px}'
+    + '.ct-sup{flex:1;min-height:0;display:flex;flex-direction:column;background:radial-gradient(120% 60% at 100% 0,rgba(194,246,74,.07),transparent 60%),#0d1014;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}'
+    + '.cts-hero{padding:13px 15px 12px;border-bottom:1px solid #1c2230;display:flex;gap:12px;align-items:center}'
+    + '.cts-ring{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(from 200deg,#c2f64a,#2ebd85,#38bdf8,#c2f64a);padding:2px}.cts-ring span{width:100%;height:100%;border-radius:50%;background:#0d1014;display:grid;place-items:center}.cts-ring svg{width:20px;height:20px;color:#c2f64a}'
+    + '.cts-hero b{display:block;font:700 15px "Bricolage Grotesque",sans-serif;color:#f3f4f0}.cts-hero small{display:block;font-size:11.5px;color:#8b97a5;line-height:1.4;margin-top:2px}'
+    + '.cts-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #1c2230}.cts-cnt{font:700 10.5px "Space Mono",monospace;letter-spacing:.06em;color:#8b97a5;text-transform:uppercase}.cts-cnt i{color:#c2f64a;font-style:normal}'
+    + '.cts-new{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.1);color:#d6f78a;font:700 11.5px "Space Mono",monospace;cursor:pointer}.cts-new:hover{background:rgba(194,246,74,.18)}.cts-new svg{width:13px;height:13px}'
+    + '.cts-list{flex:1;min-height:0;overflow-y:auto;padding:8px 10px 12px;display:flex;flex-direction:column;gap:6px}'
+    + '.cts-row{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:0 10px;align-items:center;width:100%;text-align:left;background:#12161d;border:1px solid #1e2634;border-radius:11px;padding:9px 11px 9px 9px;color:#dbe4f5;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s}.cts-row:hover{border-color:#38506a;background:#151b24}'
+    + '.cts-row .rail{width:4px;align-self:stretch;min-height:30px;border-radius:3px;background:#2a3140}.cts-row.open .rail{background:#c2f64a;box-shadow:0 0 8px rgba(194,246,74,.5)}'
+    + '.cts-row>.c{display:block;min-width:0}.cts-tag{flex:none;font:700 9px "Space Mono",monospace;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:5px;background:rgba(56,189,248,.14);color:#7fd0f6;border:1px solid rgba(56,189,248,.3)}.cts-tb .cts-tag{margin-right:2px}'
+    + '.cts-row .t{font-weight:700;font-size:13px;color:#f3f4f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}.cts-row .t>span{min-width:0;overflow:hidden;text-overflow:ellipsis}'
+    + '.cts-row .l{display:block;font-size:11.5px;color:#8b97a5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.cts-row .l b{color:#c2f64a;font-weight:700}'
+    + '.cts-row .m{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.cts-st{font:700 9px "Space Mono",monospace;letter-spacing:.08em;padding:3px 7px;border-radius:999px;border:1px solid #2a3140;color:#8b97a5}.cts-row.open .cts-st{border-color:rgba(194,246,74,.5);color:#c2f64a}.cts-row .ago{font:500 10.5px "Space Mono",monospace;color:#5c6b84}'
+    + '.cts-row.unread .t::after{content:"";display:inline-block;flex:none;width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:0 0 7px #38bdf8}'
+    + '.cts-empty{padding:26px 18px;text-align:center;color:#8b97a5;font-size:13px;line-height:1.5}.cts-empty b{color:#f3f4f0}'
+    + '.cts-tb{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid #1c2230}.cts-back{background:none;border:none;color:#9fb0c0;cursor:pointer;padding:4px;display:inline-flex;border-radius:8px}.cts-back:hover{color:#e9e7df;background:rgba(255,255,255,.05)}.cts-back svg{width:16px;height:16px}'
+    + '.cts-tb .t{flex:1;min-width:0;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f3f4f0}.cts-tb .id{font:500 10px "Space Mono",monospace;color:#5c6b84}'
+    + '.cts-msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 8px;display:flex;flex-direction:column;gap:8px}.cts-day{align-self:center;font:600 9.5px "Space Mono",monospace;letter-spacing:.08em;color:#5c6b84;text-transform:uppercase;padding:2px 0}'
+    + '.cts-bub{max-width:86%;padding:8px 11px;border-radius:13px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}'
+    + '.cts-bub.in{align-self:flex-end;background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.28);color:#eef5d8;border-bottom-right-radius:5px}.cts-bub.out{align-self:flex-start;background:#161b23;border:1px solid #232b3a;color:#dbe4f5;border-bottom-left-radius:5px}'
+    + '.cts-bub .who{display:flex;align-items:center;gap:6px;font:700 10px "Space Mono",monospace;letter-spacing:.06em;color:#c2f64a;margin-bottom:4px;text-transform:uppercase}.cts-bub .who i{width:14px;height:14px;border-radius:4px;background:#c2f64a;color:#0a0b0d;display:inline-grid;place-items:center;font:800 9px "Bricolage Grotesque",sans-serif;font-style:normal}'
+    + '.cts-bub img{display:block;max-width:100%;border-radius:8px;margin:4px 0 6px}.cts-bub .ts{display:block;font:500 9.5px "Space Mono",monospace;color:#5c6b84;margin-top:4px;text-align:right}'
+    + '.cts-note{margin:0 12px 6px;padding:7px 10px;border-radius:9px;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.3);color:#ffd49a;font-size:11.5px}'
+    + '.cts-form{display:flex;align-items:flex-end;gap:7px;padding:9px 10px;border-top:1px solid #1c2230;background:#0f1216}.cts-form textarea{flex:1;min-width:0;resize:none;max-height:96px;background:#0a0d12;border:1px solid #2a3140;border-radius:11px;padding:9px 11px;color:#e9e7df;font:400 16px/1.35 "Familjen Grotesk",system-ui,sans-serif}.cts-form textarea:focus{outline:none;border-color:rgba(194,246,74,.5)}'
+    + '.cts-ic{flex:none;width:36px;height:36px;border-radius:10px;border:1px solid #2a3140;background:transparent;color:#9fb0c0;cursor:pointer;display:inline-grid;place-items:center}.cts-ic:hover{color:#e9e7df;border-color:#38506a}.cts-ic svg{width:16px;height:16px}'
+    + '.cts-send{flex:none;width:36px;height:36px;border-radius:10px;border:none;background:#c2f64a;color:#0a0b0d;cursor:pointer;display:inline-grid;place-items:center}.cts-send:disabled{opacity:.5;cursor:default}.cts-send svg{width:15px;height:15px}'
+    + '.cts-prev{display:flex;align-items:center;gap:8px;padding:6px 12px 0;font-size:11.5px;color:#8b97a5}.cts-prev img{height:40px;border-radius:6px}.cts-prev button{background:none;border:none;color:#ff8a80;cursor:pointer;font:inherit;font-size:11.5px;padding:0}'
+    + '.cts-st2{min-height:16px;padding:0 12px 6px;font-size:11.5px;color:#8b97a5}'
+    + '.cts-newv{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 10px;display:flex;flex-direction:column;gap:9px}.cts-newv p{margin:0;font-size:12.5px;color:#9fb0c0;line-height:1.5}'
+    + '.cts-chips{display:flex;flex-wrap:wrap;gap:6px}.cts-chips button{font:700 10.5px "Space Mono",monospace;letter-spacing:.04em;padding:5px 10px;border-radius:999px;border:1px solid #2a3140;background:transparent;color:#aab2bd;cursor:pointer}.cts-chips button.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.55);color:#d6f78a}'
+    + '.cts-newv textarea{width:100%;box-sizing:border-box;min-height:118px;resize:vertical;background:#0a0d12;border:1px solid #2a3140;border-radius:11px;padding:10px 12px;color:#e9e7df;font:400 16px/1.4 "Familjen Grotesk",system-ui,sans-serif}.cts-newv textarea:focus{outline:none;border-color:rgba(194,246,74,.5)}'
+    + '.cts-tips{font-size:11px;color:#6c7682;line-height:1.5}.cts-tips b{color:#9fb0c0}'
+    + '.cts-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;border-radius:11px;border:none;background:#c2f64a;color:#0a0b0d;font:700 13px "Space Mono",monospace;cursor:pointer}.cts-primary:disabled{opacity:.55;cursor:default}.cts-primary svg{width:14px;height:14px}'
+    + '.cts-gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 18px;gap:10px;color:#9fb0c0;font-size:13px;line-height:1.5}.cts-gate b{color:#f3f4f0;font-size:15px}.cts-gate .cts-primary{width:auto;padding:10px 18px}';
   css += '#chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}'; // KEYBOARD ON iOS (2026-10-22) - see build/add-keyboard-diag2.js
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -3962,18 +3995,17 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
    window.mpLongPress(container, rowSelector, onPick)  - 480 ms hold, or right-click; cancels on a 10 px drag, and
      never fires on a link, a username or a button, because those already do something.
    window.mpMsgSheet({row, reactions, canEdit, canDelete, onReact, onEdit, onDelete, onCopy, text})               */
-/* ── A SHARED TRADE IS A CARD, AND A NEWCOMER GETS A WORD (2026-10-22, owner) ───────────────────────────────────
+/* ── A SHARED TRADE IS A CARD (2026-10-22, owner) ──────────────────────────────────────────────────────────────
    window.mpTradeCard.hydrate(root)  - every `trade:<id>` link inside root becomes a ticket card: the result, the
      coin, ROE as the hero figure, the dollar P&L on the margin it was made on, how long it ran, a sparkline of the
      price over the trade (baked into the share at share time - see handleTshare) or the entry-to-exit rail when
      there is none, and the entry/exit prices on a tear-off foot. The card KEEPS `.ct-trade[data-trade]`, so the chat's
      one delegated click still opens the full ticket and the long-press still reaches it. The wire format is
      untouched: the message is still the text `trade:<id>`, so history, edits and old bundles all keep working.
-   window.mpWelcomeCard  - the personal welcome a NEW member sees once, in the Welcome room, as a local row that is
-     never a message (nobody else can see it, it cannot be reacted to, it is not in any history). `defaultRoom(me)`
-     is where the chat opens: the Welcome room for an account under a week old with no remembered choice.
-   Both live HERE, the every-page bundle, because the chat exists twice (home.js + mp-trade.js) and a third copy of
-   either would be the same drift this file has already paid for three times. */
+   It lives HERE, the every-page bundle, because the chat exists twice (home.js + mp-trade.js) and a third copy
+   would be the same drift this file has already paid for three times. (The newcomer's greeting card and the
+   newcomers' room default lived beside it from 2026-10-22 to 2026-11-12 and were retired on the owner's order:
+   "to ne treba da postoji". The chat opens in the remembered room (mp_ctroom) or All.) */
 (function () {
   if (window.mpTradeCard) return;
   var memo = {}, seq = 0;
@@ -4111,50 +4143,6 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   }
   window.mpTradeCard = { hydrate: hydrate, unhydrate: unhydrate, html: html, res: resOf };
   try { hydrate(document); } catch (e) {} // a chat that rendered before this bundle parsed
-})();
-(function () {
-  if (window.mpWelcomeCard) return;
-  var NEW_MS = 7 * 86400000, CARD_MS = 14 * 86400000;
-  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
-  function ageOf(me) { var c = me && +me.created; return c > 0 ? Date.now() - c : -1; }
-  function key(me) { return 'mp_welc_x:' + String((me && me.id) || ''); }
-  function want(me) {
-    if (!me || !me.id) return false;
-    var age = ageOf(me); if (age < 0 || age > CARD_MS) return false;
-    try { if (localStorage.getItem(key(me))) return false; } catch (e) {}
-    return true;
-  }
-  function dismiss(me) { try { localStorage.setItem(key(me), String(Date.now())); } catch (e) {} }
-  function defaultRoom(me) {
-    var pick = ''; try { pick = localStorage.getItem('mp_ctroom') || ''; } catch (e) {}
-    if (pick) return pick;
-    var age = ageOf(me); return (age >= 0 && age < NEW_MS) ? 'WELCOME' : 'global';
-  }
-  function html(me) {
-    var name = esc(String((me && me.username) || 'trader').slice(0, 24)), xp = Math.max(0, +(me && me.xp) || 0);
-    var toB = Math.max(0, 500 - xp), lessons = Math.ceil(toB / 25);
-    var step2 = xp >= 500 ? __esT_mpauth("youAreAlreadyBronze",'<b>You are already Bronze</b> - your first level badge is on your card; the next levels unlock frames and The Gold Room.')
-      : '<b>Earn ' + toB.toLocaleString('en-US') + __esT_mpauth("moreXpToReach",' more XP to reach Bronze</b>') + (xp ? __esT_mpauth("youHave",' (you have ') + xp.toLocaleString('en-US') + ')' : '') + __esT_mpauth("yourFirstLevelBadge",' - your first level badge. Every Academy lesson pays 25 XP, so about ') + lessons + ' lesson' + (lessons === 1 ? '' : 's') + __esT_mpauth("doesItAndEvery",' does it, and every trade and daily check-in adds to it.');
-    return '<div class="ct-welc" data-welcrow>'
-      + __esT_mpauth("onlyYouSeeThis",'<div class="ct-welc-h"><span class="ct-welc-eye">ONLY YOU SEE THIS</span><b>Hey @') + name + ', welcome in.</b></div>'
-      + __esT_mpauth("threeThingsThatGet",'<p>Three things that get you going here:</p>')
-      + '<ol>'
-      + __esT_mpauth("openYourFirstPaper",'<li><b>Open your first paper trade.</b> $10,000 of practice money on real live prices - nothing to lose, and every close counts for XP. <a href="/paper-trade">Paper Trade</a></li>')
-      + '<li>' + step2 + ' <a href="/academy/">Academy</a></li>'
-      + __esT_mpauth("theMoneyIsOpen",'<li><b>The money is open from day one:</b> the season leaderboards, the Season Pass, promo codes and partner sign-up bonuses - no level needed. Daily missions pay Ticks and XP. <a href="/rewards/">Rewards</a> · <a href="/season/">Season</a></li>')
-      + '</ol>'
-      + __esT_mpauth("thisRoomIsFor",'<p>This room is for newcomers - say hi, ask anything. Trade talk lives in <b>All</b>, and a trade you share from any ticket lands there as a card.</p>')
-      + __esT_mpauth("gotIt",'<button type="button" class="ct-welc-x" data-welcx>Got it</button>')
-      + '</div>';
-  }
-  document.addEventListener('click', function (e) {
-    var b = e.target && e.target.closest && e.target.closest('[data-welcx]'); if (!b) return;
-    e.preventDefault(); e.stopPropagation();
-    var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null; dismiss(me);
-    var row = b.closest('.ct-msg') || b.closest('[data-welcrow]');
-    if (row && row.parentNode) { try { row.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = function () { if (row.parentNode) row.parentNode.removeChild(row); }; } catch (err) { row.parentNode.removeChild(row); } }
-  }, true);
-  window.mpWelcomeCard = { want: want, dismiss: dismiss, defaultRoom: defaultRoom, html: html, remember: function (r) { try { localStorage.setItem('mp_ctroom', String(r || '')); } catch (e) {} } };
 })();
 (function () {
   if (window.mpMsgSheet) return;
@@ -4909,6 +4897,210 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   })();
   window.addEventListener('mp-auth-change', function () { gear(); });
   window.mpChatPrefs = { get: get, set: set, apply: apply, open: open, close: close };
+})();
+
+/* SUPPORT LIVES IN THE CHAT WINDOW (2026-11-12, owner: "ubacicemo na prozoru chat-a mesto za button za support, koji ce
+   klikom da pretvori chat u support ticket prostor i da mozes da se dopisujes sa supportom kao i da pregledas tvoje
+   tikete od pre").
+   One button in the chat header (the lifebuoy, inserted beside the gear the same way mpChatPrefs inserts its own) turns
+   the box into the support desk: #chatBox.ct-supmode hides everything but the header and the .ct-sup panel, so the room
+   stream, the socket and the composer are untouched underneath and come back the moment the button is pressed again.
+   Three views - the ticket LIST (every conversation this account ever had, open ones first, a blue dot where support
+   answered since the reader last looked), the THREAD (bubbles, ours lime on the right, support's on the left under a
+   MarginPad mark, day separators, a composer with a screenshot attach) and NEW (topic chips + the message) - plus a
+   sign-in gate for a guest. Everything goes through the routes the account panel's Support section already uses:
+   GET /api/reward/support/mine (conversations, identity resolved server-side) and POST /api/reward/support
+   ({message, conv?, img?}); a message with no conv starts a conversation, a reply reopens a closed one. The desk and
+   the ledger were not touched. "Seen" is a device mark (localStorage mp_sup_seen:<conv>) - the server keeps no read
+   state for tickets and a wrong unread dot costs a glance, not money. The list is fetched when the panel opens and
+   every 20 s while a thread is on screen, never on page load: /support/mine is a ledger DO read and most readers
+   never open support. Lives HERE, the every-page bundle, because the chat exists twice (home.js + mp-trade.js). */
+(function () {
+  if (window.mpChatSupport) return;
+  var T = function (k, en) { try { return (typeof __esT_mpauth === 'function') ? __esT_mpauth(k, en) : en; } catch (e) { return en; } };
+  var panel = null, view = 'list', convs = null, cur = '', busy = false, img = '', poll = null, topic = '', drafts = {};
+  var I_LIFE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6"/><path d="m5.6 5.6 3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/></svg>';
+  var I_CHAT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.6-4.6A8 8 0 1 1 21 12z"/><path d="M8 10h8M8 13.5h5"/></svg>';
+  var I_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>';
+  var I_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  var I_SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+  var I_CLIP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-8.5 8.5a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>';
+  var TOPICS = [['payout', 'Payout'], ['trade', 'Trade'], ['account', 'Account'], ['api', 'Bot API'], ['other', 'Other']];
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
+  function me() { return (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || (window.mpMe && window.mpMe.in ? window.mpMe.user : null) || null; }
+  function signedIn() { var li = false; try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {} return li || !!me(); }
+  function box() { return document.getElementById('chatBox'); }
+  function head() { var b = box(); return b ? b.querySelector('.ct-head') : null; }
+  function ago(ts) { var s = Math.round((Date.now() - ts) / 1000); if (s < 60) return T('justNow', 'just now'); var m = Math.floor(s / 60); if (m < 60) return m + 'm'; var h = Math.floor(m / 60); if (h < 24) return h + 'h'; var d = Math.floor(h / 24); if (d < 30) return d + 'd'; try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return d + 'd'; } }
+  function hm(ts) { var x = new Date(ts), p = function (n) { return n < 10 ? '0' + n : '' + n; }; return p(x.getHours()) + ':' + p(x.getMinutes()); }
+  function dayOf(ts) { var x = new Date(ts); return x.getFullYear() + '-' + x.getMonth() + '-' + x.getDate(); }
+  function dayLabel(ts) { var d = dayOf(ts), now = Date.now(); if (d === dayOf(now)) return T('today', 'Today'); if (d === dayOf(now - 86400000)) return T('yesterday', 'Yesterday'); try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return ''; } }
+  function seenKey(c) { return 'mp_sup_seen:' + c; }
+  function lastOut(c) { for (var i = c.messages.length - 1; i >= 0; i--) if (c.messages[i].dir === 'out') return +c.messages[i].ts || 0; return 0; }
+  function unread(c) { var lo = lastOut(c); if (!lo) return false; var s = 0; try { s = +localStorage.getItem(seenKey(c.conv)) || 0; } catch (e) {} return lo > s; }
+  function markSeen(c) { try { localStorage.setItem(seenKey(c.conv), String(Math.max(+c.lastTs || 0, Date.now()))); } catch (e) {} }
+  function byConv(id) { return (convs || []).filter(function (c) { return c.conv === id; })[0] || null; }
+  /* a ticket opened from the desk carries its topic as a "[Payout] " prefix on the first message (the ledger stores plain
+     text and the desk reads it as is); the list and the thread draw that prefix as a chip and keep the text clean */
+  function splitTopic(s) { s = String(s || ''); var m = s.match(/^\[([A-Za-z][A-Za-z ]{1,14})\]\s*/); return m ? { tag: m[1], text: s.slice(m[0].length) } : { tag: '', text: s }; }
+  function tagHtml(tag) { return tag ? '<i class="cts-tag">' + esc(tag) + '</i>' : ''; }
+  function dot() { var b = head() && head().querySelector('.ct-sup-btn'); if (!b) return; var has = (convs || []).some(unread); var d = b.querySelector('.dot'); if (has && !d) { d = document.createElement('span'); d.className = 'dot'; b.appendChild(d); } else if (!has && d) d.remove(); }
+  function load(cb) {
+    if (!signedIn()) { convs = []; if (cb) cb(false); return; }
+    fetch('/api/reward/support/mine', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      convs = (d && Array.isArray(d.conversations)) ? d.conversations : []; dot(); if (cb) cb(true);
+    }).catch(function () { if (!convs) convs = []; if (cb) cb(false); });
+  }
+  /* ---- views ---- */
+  function paint() {
+    if (!panel) return;
+    if (!signedIn()) { view = 'gate'; }
+    if (view === 'gate') { panel.innerHTML = '<div class="cts-gate"><span class="cts-ring"><span>' + I_LIFE + '</span></span><b>' + T('supportGateH', 'Talk to a person') + '</b><span>' + T('supportGateP', 'Sign in and your tickets - old and new - live right here, beside the chat.') + '</span><button type="button" class="cts-primary" data-cts="signin">' + T('signInToContinue', 'Sign in') + '</button></div>'; return; }
+    if (view === 'thread') { paintThread(); return; }
+    if (view === 'new') { paintNew(); return; }
+    paintList();
+  }
+  function paintList() {
+    var list = convs || [], open = list.filter(function (c) { return !c.closed; }).length;
+    var rows = convs === null ? '<div class="cts-empty">' + T('loadingYourTickets', 'Loading your tickets...') + '</div>'
+      : !list.length ? '<div class="cts-empty"><b>' + T('noTicketsYet', 'No tickets yet.') + '</b><br>' + T('noTicketsYetP', 'Something wrong with a trade, a payout or your account? Open a ticket and a person answers - here and by email.') + '</div>'
+      : list.map(function (c) {
+        var last = c.messages[c.messages.length - 1] || {}, who = last.dir === 'out' ? '<b>MarginPad</b>' : T('youColon', 'You') + '';
+        var tt = splitTopic(c.title || T('conversation', 'Conversation')), lb = splitTopic(String(last.body || (last.img ? T('screenshot', 'screenshot') : ''))).text;
+        return '<button type="button" class="cts-row' + (c.closed ? '' : ' open') + (unread(c) ? ' unread' : '') + '" data-cts="open" data-conv="' + esc(c.conv) + '"><span class="rail"></span><span class="c"><span class="t">' + tagHtml(tt.tag) + '<span>' + esc(tt.text || T('conversation', 'Conversation')) + '</span></span><span class="l">' + who + ': ' + esc(lb.replace(/\s+/g, ' ').slice(0, 80)) + '</span></span><span class="m"><span class="cts-st">' + (c.closed ? T('ticketClosed', 'CLOSED') : T('ticketOpen', 'OPEN')) + '</span><span class="ago">' + ago(+c.lastTs || 0) + '</span></span></button>';
+      }).join('');
+    panel.innerHTML = '<div class="cts-hero"><span class="cts-ring"><span>' + I_LIFE + '</span></span><div><b>' + T('supportDesk', 'Support desk') + '</b><small>' + T('supportDeskP', 'A person reads every ticket. Replies land here and in your email.') + '</small></div></div>'
+      + '<div class="cts-bar"><span class="cts-cnt">' + (convs === null ? '' : '<i>' + list.length + '</i> ' + (list.length === 1 ? T('ticketWord', 'ticket') : T('ticketsWord', 'tickets')) + (open ? ' · <i>' + open + '</i> ' + T('openWord', 'open') : '')) + '</span><button type="button" class="cts-new" data-cts="new">' + I_PLUS + T('newTicket', 'New ticket') + '</button></div>'
+      + '<div class="cts-list">' + rows + '</div>';
+  }
+  function paintThread() {
+    var c = byConv(cur); if (!c) { view = 'list'; paintList(); return; }
+    var out = '', lastDay = '';
+    c.messages.forEach(function (m) {
+      var d = dayOf(+m.ts || 0); if (d !== lastDay) { lastDay = d; out += '<div class="cts-day">' + esc(dayLabel(+m.ts || 0)) + '</div>'; }
+      var ours = m.dir !== 'out';
+      out += '<div class="cts-bub ' + (ours ? 'in' : 'out') + '">' + (ours ? '' : '<span class="who"><i>M</i>' + T('marginpadSupport', 'MarginPad support') + '</span>') + (m.img ? '<img src="' + esc(m.img) + '" alt="">' : '') + esc(splitTopic(m.body || '').text) + '<span class="ts">' + hm(+m.ts || 0) + '</span></div>';
+    });
+    var tt = splitTopic(c.title || T('conversation', 'Conversation'));
+    panel.innerHTML = '<div class="cts-tb"><button type="button" class="cts-back" data-cts="back" aria-label="' + T('allTickets', 'All tickets') + '">' + I_BACK + '</button>' + tagHtml(tt.tag) + '<span class="t">' + esc(tt.text || T('conversation', 'Conversation')) + '</span><span class="cts-st' + (c.closed ? '' : ' open') + '"' + (c.closed ? '' : ' style="border-color:rgba(194,246,74,.5);color:#c2f64a"') + '>' + (c.closed ? T('ticketClosed', 'CLOSED') : T('ticketOpen', 'OPEN')) + '</span><span class="id">#' + esc(String(c.conv).slice(-6)) + '</span></div>'
+      + '<div class="cts-msgs">' + out + '</div>'
+      + (c.closed ? '<div class="cts-note">' + T('closedReopens', 'This ticket is closed - sending a message reopens it.') + '</div>' : '')
+      + '<div class="cts-prev" data-prev' + (img ? '' : ' hidden') + '>' + (img ? '<img src="' + esc(img) + '" alt=""><span>' + T('screenshotAttached', 'screenshot attached') + '</span><button type="button" data-cts="rmimg">' + T('remove', 'remove') + '</button>' : '') + '</div>'
+      + '<div class="cts-st2" data-st></div>'
+      + '<div class="cts-form"><button type="button" class="cts-ic" data-cts="pick" title="' + T('attachScreenshot', 'Attach a screenshot') + '" aria-label="' + T('attachScreenshot', 'Attach a screenshot') + '">' + I_CLIP + '</button><textarea rows="1" maxlength="1000" placeholder="' + T('replyPh', 'Reply...') + '" data-reply>' + esc(drafts[cur] || '') + '</textarea><button type="button" class="cts-send" data-cts="send" aria-label="' + T('send', 'Send') + '">' + I_SEND + '</button><input type="file" accept="image/*" data-file hidden></div>';
+    var ms = panel.querySelector('.cts-msgs'); if (ms) ms.scrollTop = ms.scrollHeight;
+    markSeen(c); dot();
+    var ta = panel.querySelector('[data-reply]'); if (ta) grow(ta);
+  }
+  function paintNew() {
+    panel.innerHTML = '<div class="cts-tb"><button type="button" class="cts-back" data-cts="back" aria-label="' + T('allTickets', 'All tickets') + '">' + I_BACK + '</button><span class="t">' + T('newTicket', 'New ticket') + '</span></div>'
+      + '<div class="cts-newv"><p>' + T('newTicketP', 'What is it about?') + '</p><div class="cts-chips">' + TOPICS.map(function (t) { return '<button type="button" data-cts="topic" data-t="' + t[0] + '"' + (topic === t[0] ? ' class="on"' : '') + '>' + T('topic_' + t[0], t[1]) + '</button>'; }).join('') + '</div>'
+      + '<textarea maxlength="900" placeholder="' + T('newTicketPh', 'Tell us what happened...') + '" data-msg>' + esc(drafts._new || '') + '</textarea>'
+      + '<div class="cts-tips">' + T('newTicketTips', '<b>What helps us answer in one go:</b> your username, the trade id or the coin, what you expected and what happened, and the time (UTC). A screenshot can be added once the ticket is open.') + '</div>'
+      + '<div class="cts-st2" data-st></div>'
+      + '<button type="button" class="cts-primary" data-cts="create">' + I_SEND + T('openTicket', 'Open the ticket') + '</button></div>';
+  }
+  function grow(ta) { try { ta.style.height = 'auto'; ta.style.height = Math.min(96, ta.scrollHeight) + 'px'; } catch (e) {} }
+  function st(t, warn) { var el = panel && panel.querySelector('[data-st]'); if (el) el.innerHTML = t ? '<span style="color:' + (warn ? '#ffb347' : '#8b97a5') + '">' + t + '</span>' : ''; }
+  /* a screenshot is shrunk in the browser before it is sent (the ledger caps an image at 90 KB) */
+  function shrink(file, cb) { try { var r = new FileReader(); r.onload = function () { var im = new Image(); im.onload = function () { var mx = 900, w = im.width, h = im.height; if (w > mx || h > mx) { if (w > h) { h = Math.round(h * mx / w); w = mx; } else { w = Math.round(w * mx / h); h = mx; } } var cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.getContext('2d').drawImage(im, 0, 0, w, h); var out = ''; try { out = cv.toDataURL('image/webp', 0.7); } catch (e) {} if (!out || out.indexOf('data:image/webp') !== 0) { try { out = cv.toDataURL('image/jpeg', 0.7); } catch (e) {} } if (out.length > 90000) { try { out = cv.toDataURL('image/jpeg', 0.5); } catch (e) {} } cb(out.length <= 90000 ? out : ''); }; im.onerror = function () { cb(''); }; im.src = r.result; }; r.onerror = function () { cb(''); }; r.readAsDataURL(file); } catch (e) { cb(''); } }
+  function post(body, cb) {
+    fetch('/api/reward/support', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).then(function (d) { cb(d && d.ok ? d : null); }).catch(function () { cb(null); });
+  }
+  function sendReply() {
+    if (busy || !panel) return; var ta = panel.querySelector('[data-reply]'), v = ta ? ta.value.trim() : '';
+    if (!v && !img) return; busy = true; var sb = panel.querySelector('[data-cts="send"]'); if (sb) sb.disabled = true; st(T('sending', 'Sending...'));
+    var m = me(), conv = cur;
+    post({ email: (m && m.email) || '', message: v, conv: conv, img: img }, function (d) {
+      busy = false; if (sb) sb.disabled = false;
+      if (!d) { st(T('failedTryAgain', 'Failed - try again.'), true); return; }
+      img = ''; delete drafts[conv]; load(function () { if (view === 'thread' && cur === conv) paintThread(); });
+    });
+  }
+  function create() {
+    if (busy || !panel) return; var ta = panel.querySelector('[data-msg]'), v = ta ? ta.value.trim() : '';
+    if (!v) { st(T('writeSomethingFirst2', 'Write something first.'), true); return; }
+    var tl = TOPICS.filter(function (t) { return t[0] === topic; })[0]; if (tl && topic !== 'other') v = '[' + tl[1] + '] ' + v;
+    busy = true; var cb = panel.querySelector('[data-cts="create"]'); if (cb) cb.disabled = true; st(T('sending', 'Sending...'));
+    var m = me();
+    post({ email: (m && m.email) || '', message: v }, function (d) {
+      busy = false; if (cb) cb.disabled = false;
+      if (!d) { st(T('failedTryAgain', 'Failed - try again.'), true); return; }
+      delete drafts._new; topic = '';
+      load(function () { if (d.conv && byConv(d.conv)) { cur = d.conv; view = 'thread'; } else { view = 'list'; } paint(); });
+    });
+  }
+  /* ---- mode ---- */
+  function headTitle() { var h = head(); if (!h || h.querySelector('.ct-sup-ttl')) return; var s = document.createElement('span'); s.className = 'ct-sup-ttl'; s.innerHTML = I_LIFE + '<span>' + T('support', 'Support') + '</span>'; var ttl = h.querySelector('.ct-title'); if (ttl && ttl.parentNode === h) h.insertBefore(s, ttl); else h.insertBefore(s, h.firstChild); }
+  function startPoll() { stopPoll(); poll = setInterval(function () { if (document.hidden || !panel) return; var was = cur; load(function (ok) { if (!ok || !panel) return; if (view === 'thread' && cur === was) { var c = byConv(cur); var ms = panel.querySelector('.cts-msgs'); if (c && ms && ms.children.length !== c.messages.length + ms.querySelectorAll('.cts-day').length) paintThread(); } else if (view === 'list') paintList(); }); }, 20000); }
+  function stopPoll() { if (poll) { clearInterval(poll); poll = null; } }
+  function open(conv) {
+    var b = box(), h = head(); if (!b || !h) return;
+    if (!panel) { panel = document.createElement('div'); panel.className = 'ct-sup'; panel.setAttribute('role', 'region'); panel.setAttribute('aria-label', T('support', 'Support')); h.parentNode.insertBefore(panel, h.nextSibling); wire(); }
+    headTitle(); b.classList.add('ct-supmode'); h.classList.add('ct-suphead');
+    var btn = h.querySelector('.ct-sup-btn'); if (btn) { btn.classList.add('on'); btn.innerHTML = I_CHAT + (btn.querySelector('.dot') ? '<span class="dot"></span>' : ''); btn.title = T('backToChat', 'Back to the chat'); btn.setAttribute('aria-label', btn.title); }
+    try { if (window.mpChatPrefs) window.mpChatPrefs.close(); } catch (e) {}
+    if (conv) { cur = String(conv); view = 'thread'; } else if (view === 'thread' && !cur) view = 'list';
+    paint();
+    try { panel.animate([{ opacity: 0, transform: 'translateX(14px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {}
+    /* A REPAINT NEVER LANDS ON A FORM THE READER IS TYPING INTO (the mp-ops "simple() repainted over the owner's cursor"
+       lesson): the list is refreshed, an open thread is redrawn (its draft survives in `drafts`), the new-ticket form is
+       left alone. */
+    load(function () { if (!panel) return; if (view === 'thread' && !byConv(cur)) view = 'list'; if (view === 'list') paintList(); else if (view === 'thread') paintThread(); });
+    startPoll();
+    try { window.__mpTrack && window.__mpTrack('support', 'chat:open'); } catch (e) {}
+  }
+  function close() {
+    var b = box(), h = head(); stopPoll();
+    if (b) b.classList.remove('ct-supmode'); if (h) h.classList.remove('ct-suphead');
+    var btn = h && h.querySelector('.ct-sup-btn'); if (btn) { btn.classList.remove('on'); btn.innerHTML = I_LIFE + (btn.querySelector('.dot') ? '<span class="dot"></span>' : ''); btn.title = T('support', 'Support'); btn.setAttribute('aria-label', btn.title); }
+    if (panel) { var p = panel; panel = null; try { p.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140 }).onfinish = function () { if (p.parentNode) p.parentNode.removeChild(p); }; } catch (e) { if (p.parentNode) p.parentNode.removeChild(p); } }
+  }
+  function isOpen() { var b = box(); return !!(b && b.classList.contains('ct-supmode')); }
+  function toggle() { if (isOpen()) close(); else open(); }
+  function wire() {
+    panel.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-cts]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+      var k = b.getAttribute('data-cts');
+      if (k === 'signin') { try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (err) {} return; }
+      if (k === 'new') { view = 'new'; paint(); return; }
+      if (k === 'back') { var ta0 = panel.querySelector('[data-reply]'), tn = panel.querySelector('[data-msg]'); if (ta0 && cur) drafts[cur] = ta0.value; if (tn) drafts._new = tn.value; view = 'list'; img = ''; paint(); return; }
+      if (k === 'open') { cur = b.getAttribute('data-conv') || ''; view = 'thread'; paint(); return; }
+      if (k === 'topic') { topic = b.getAttribute('data-t') || ''; var tn2 = panel.querySelector('[data-msg]'); if (tn2) drafts._new = tn2.value; paintNew(); return; }
+      if (k === 'create') { create(); return; }
+      if (k === 'send') { sendReply(); return; }
+      if (k === 'pick') { var f = panel.querySelector('[data-file]'); if (f) f.click(); return; }
+      if (k === 'rmimg') { img = ''; var f2 = panel.querySelector('[data-file]'); if (f2) f2.value = ''; paintThread(); return; }
+    });
+    panel.addEventListener('keydown', function (e) { var ta = e.target; if (!ta || !ta.hasAttribute || !ta.hasAttribute('data-reply')) return; if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReply(); } });
+    panel.addEventListener('input', function (e) { var ta = e.target; if (ta && ta.hasAttribute && ta.hasAttribute('data-reply')) { grow(ta); drafts[cur] = ta.value; } });
+    panel.addEventListener('change', function (e) {
+      var f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute('data-file')) return; var file = f.files && f.files[0]; if (!file) return;
+      st(T('processingImage', 'Processing image...'));
+      shrink(file, function (d) { if (!d) { st(T('imageTooBig', 'Image too big or unsupported.'), true); return; } img = d; st(''); paintThread(); });
+    });
+  }
+  /* the button goes into whichever chat header the page has - the app shell carries it in its markup, every other page
+     gets it from mp-nav, both DEFERRED alongside this bundle, so it is looked for a few times (the gear's own pattern) */
+  function button() {
+    var h = head(); if (!h || h.querySelector('.ct-sup-btn')) return !!h;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'ct-sup-btn'; b.title = T('support', 'Support'); b.setAttribute('aria-label', b.title); b.innerHTML = I_LIFE;
+    var g = h.querySelector('.ct-gear'), x = h.querySelector('.ct-x'); h.insertBefore(b, g || x || null);
+    b.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+    /* an unread dot when the chat OPENS: one read, never on page load */
+    try { new MutationObserver(function () { var bx = box(); if (bx && !bx.hidden && signedIn() && convs === null) load(); }).observe(box(), { attributes: true, attributeFilter: ['hidden'] }); } catch (e) {}
+    var bx0 = box(); if (bx0 && !bx0.hidden && signedIn()) load();
+    return true;
+  }
+  (function () {
+    if (button()) return;
+    var mo = null, stop = function () { try { mo.disconnect(); } catch (e) {} };
+    try { mo = new MutationObserver(function () { if (document.getElementById('chatBox') && button()) stop(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+    var t = 0; (function look() { if (button()) { stop(); return; } if (++t > 240) return; setTimeout(look, 500); })();
+  })();
+  window.addEventListener('mp-auth-change', function () { button(); if (panel && (view === 'gate' || view === 'list')) { convs = null; view = 'list'; load(function () { if (panel && view === 'list') paintList(); }); } });
+  window.mpChatSupport = { open: open, close: close, toggle: toggle, isOpen: isOpen, refresh: function (cb) { load(function (ok) { if (panel) paint(); if (cb) cb(ok); }); }, state: function () { return { open: isOpen(), view: view, conv: cur, n: convs ? convs.length : null }; } };
 })();
 
 /* THE WAITING MARK (2026-10-24) - the app icon over a sliding bar, the same mark the Demo Spot splash shows.
