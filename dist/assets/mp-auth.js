@@ -5131,3 +5131,45 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
 })();
 
 /* The APP DIAGNOSTIC v2 instrument (2026-10-25) lived here and was removed on 2026-11-12: it had answered (the dock and the picker were both measured from the owner's phone), cost 34-66 ms on every page load, and its rows made up the whole "broken pages" alarm. */
+
+/* THE REPORT CARD SHARE (2026-11-12, owner-approved feature #8). The drawer header carries #jrShare on every page that has the drawer
+   (app shell, /rekt/, /rewards/ and their twins); this is the ONE handler, here because mp-auth is the bundle every page loads and the
+   one that knows who is signed in. It fetches the member's own card (GET /api/report/card.svg?u=<name>), rasterises it to a PNG in a
+   canvas and hands it to navigator.share with the profile link, or downloads it where sharing files is not possible. A guest is sent to
+   sign in. window.mpReportShare({name}) is the same door for any other button. */
+(function () {
+  if (window.mpReportShare) return;
+  function toast(m, k) { try { if (window.mpToast) window.mpToast({ msg: m, kind: k || 'info', ms: 4500 }); } catch (e) {} }
+  function pngOf(svgText) {
+    return new Promise(function (res, rej) {
+      try {
+        var blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' }), url = URL.createObjectURL(blob), img = new Image();
+        img.onload = function () { try { var c = document.createElement('canvas'); c.width = 1200; c.height = 630; var x = c.getContext('2d'); x.fillStyle = '#0a0b0d'; x.fillRect(0, 0, 1200, 630); x.drawImage(img, 0, 0, 1200, 630); URL.revokeObjectURL(url); c.toBlob(function (b) { b ? res(b) : rej(new Error('no_blob')); }, 'image/png'); } catch (e) { rej(e); } };
+        img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('svg_load')); };
+        img.src = url;
+      } catch (e) { rej(e); }
+    });
+  }
+  var busy = false;
+  function share(opts) {
+    opts = opts || {};
+    var me = window.mpAuth && window.mpAuth.me && window.mpAuth.me();
+    var name = opts.name || (me && me.username) || '';
+    if (!name) { try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (e) {} toast('Sign in to share your report card.'); window.__mpReportShareLast = { ok: false, why: 'guest' }; return Promise.resolve(window.__mpReportShareLast); }
+    if (busy) return Promise.resolve({ ok: false, why: 'busy' });
+    busy = true;
+    var link = 'https://marginpad.io/community/u/' + encodeURIComponent(name), text = 'My MarginPad paper-trading report card - ' + link;
+    var btn = opts.btn; if (btn) btn.classList.add('busy');
+    return fetch('/api/report/card.svg?u=' + encodeURIComponent(name) + '&nc=1', { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error('card_' + r.status); return r.text(); }).then(pngOf).then(function (png) {
+      var file = null; try { file = new File([png], 'marginpad-report-' + name + '.png', { type: 'image/png' }); } catch (e) {}
+      var can = !!(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
+      if (can) return navigator.share({ files: [file], text: text, title: 'MarginPad report card' }).then(function () { return { ok: true, how: 'share' }; }).catch(function (e) { if (e && e.name === 'AbortError') return { ok: false, why: 'cancelled' }; return dl(png, name).then(function () { return { ok: true, how: 'download' }; }); });
+      return dl(png, name).then(function () { return { ok: true, how: 'download' }; });
+    }).then(function (r) { if (r && r.ok && r.how === 'download') { toast('Report card saved as PNG. The link to your profile is on your clipboard.'); try { if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {} } return r; })
+      .catch(function (e) { toast('Could not build the report card right now.', 'warn'); return { ok: false, why: String(e && e.message || e) }; })
+      .then(function (r) { busy = false; if (btn) btn.classList.remove('busy'); window.__mpReportShareLast = r; return r; });
+  }
+  function dl(png, name) { return new Promise(function (res) { var u = URL.createObjectURL(png), a = document.createElement('a'); a.href = u; a.download = 'marginpad-report-' + name + '.png'; a.rel = 'noopener'; a.setAttribute('data-mp-dl', '1'); document.body.appendChild(a); a.click(); setTimeout(function () { try { a.remove(); URL.revokeObjectURL(u); } catch (e) {} res(); }, 300); }); }
+  window.mpReportShare = share;
+  document.addEventListener('click', function (ev) { var b = ev.target && ev.target.closest && ev.target.closest('#jrShare, [data-jrshare]'); if (!b) return; ev.preventDefault(); share({ btn: b }); });
+})();

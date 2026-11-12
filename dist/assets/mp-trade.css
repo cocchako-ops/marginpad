@@ -286,6 +286,7 @@ a.jrw-lesson{display:flex;align-items:center;justify-content:space-between;gap:1
 .mpss-warn{font-size:12.5px;color:#ffb347;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.35);border-radius:9px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
 
 /* My Trades → full stats page */
+.jr-share{flex:0 0 auto;display:inline-flex;align-items:center;margin-left:auto;margin-right:8px;background:rgba(194,246,74,.08);border:1px solid rgba(194,246,74,.38);color:#c2f64a;border-radius:9px;padding:7px 11px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:.12s}.jr-share:hover{background:rgba(194,246,74,.16)}.jr-share.busy{opacity:.55;pointer-events:none}.jr-share+.jr-stats-lnk{margin-left:0}
 .jr-stats-lnk{margin-left:auto;margin-right:10px;flex:0 0 auto;display:inline-flex;align-items:center;background:rgba(63,216,230,.09);border:1px solid rgba(63,216,230,.4);color:#3fd8e6;text-decoration:none;border-radius:9px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .jr-head{display:flex;align-items:center}
 .jr-head .jr-x{flex:0 0 auto}

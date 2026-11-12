@@ -9122,6 +9122,52 @@ function botWidgetSvg(d, err) {
     + (d ? '<text x="306" y="43" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="16" font-weight="700" fill="' + col + '">' + esc(pnl) + '</text><text x="306" y="56" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="8.5" fill="#5d6b7f">season P&amp;L · paper</text>' : '')
     + '</svg>';
 }
+/* THE REPORT CARD (2026-11-12, owner-approved feature #8): GET /api/report/card.svg?u=<name> is a 1200x630 SVG of a member's season as
+   the public card already states it (/lbuser: season trades, win rate, realized P&L, best ROE, best trade, the level, the 30-day curve
+   of server-settled closes). PURE - the suite lifts it. System fonts on purpose: an SVG drawn into a canvas on the member's phone
+   cannot load a webfont, and a card that renders two ways is worse than one that renders plainly. No figure under its own floor:
+   the curve needs three closes, the card itself needs one. A name is [A-Za-z0-9_] by construction and still escaped. */
+function reportCardSvg(d, name) {
+  const esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+  const money = v => { v = +v || 0; const a = Math.abs(v); const s = a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e5 ? (a / 1e3).toFixed(1) + 'K' : a.toLocaleString('en-US', { maximumFractionDigits: a >= 1000 ? 0 : 2 }); return (v < 0 ? '-$' : '+$') + s; };
+  const MONO = 'Menlo,Consolas,monospace', SANS = 'Segoe UI,system-ui,-apple-system,sans-serif', GREEN = '#2ebd85', RED = '#ff5a4d', LIME = '#c2f64a';
+  const day = new Date().toISOString().slice(0, 10);
+  const head = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="' + esc((d && d.exists ? d.name : name) + ' - MarginPad trading report card') + '">'
+    + '<defs><radialGradient id="g" cx="0.85" cy="0.1" r="0.8"><stop offset="0" stop-color="' + LIME + '" stop-opacity=".16"/><stop offset="1" stop-color="' + LIME + '" stop-opacity="0"/></radialGradient></defs>'
+    + '<rect width="1200" height="630" fill="#0a0b0d"/><rect width="1200" height="630" fill="url(#g)"/><rect x="1" y="1" width="1198" height="628" rx="28" fill="none" stroke="#232932" stroke-width="2"/>'
+    + '<text x="76" y="86" font-family="' + MONO + '" font-size="22" font-weight="700" letter-spacing="2.6" fill="#e8eaed">MARGIN<tspan fill="' + LIME + '">PAD</tspan></text>'
+    + '<text x="1124" y="86" text-anchor="end" font-family="' + MONO + '" font-size="18" font-weight="700" letter-spacing="3" fill="' + LIME + '">TRADING REPORT CARD</text>';
+  const foot = '<text x="76" y="574" font-family="' + MONO + '" font-size="17" fill="#5d6b7f">paper trading on marginpad.io · season figures, server-settled · ' + esc(day) + '</text></svg>';
+  if (!d || !d.exists) return head + '<text x="76" y="330" font-family="' + SANS + '" font-size="54" font-weight="800" fill="#fff">No trader called ' + esc(name) + '</text>' + foot;
+  const s = d.stats || {}, L = d.level || {}, c = d.curve, closed = +s.closed || 0, realized = +s.realized || 0;
+  const lvl = '<rect x="' + (76 + Math.min(900, Math.max(180, String(d.name).length * 56)) + 24) + '" y="128" width="' + (String(L.name || '').length * 15 + 40) + '" height="44" rx="12" fill="' + esc(L.col || '#8b93a0') + '" fill-opacity=".18" stroke="' + esc(L.col || '#8b93a0') + '" stroke-opacity=".6"/>'
+    + '<text x="' + (76 + Math.min(900, Math.max(180, String(d.name).length * 56)) + 44) + '" y="159" font-family="' + MONO + '" font-size="19" font-weight="700" letter-spacing="1.5" fill="' + esc(L.col || '#dfe4ec') + '">' + esc(String(L.name || '').toUpperCase()) + '</text>';
+  let body = '<text x="76" y="176" font-family="' + SANS + '" font-size="' + (String(d.name).length > 14 ? 56 : 76) + '" font-weight="800" letter-spacing="-2" fill="#fff">@' + esc(d.name) + '</text>' + lvl;
+  if (closed < 1) return head + body + '<text x="76" y="330" font-family="' + SANS + '" font-size="40" font-weight="700" fill="#aab4be">No settled trades this season yet.</text><text x="76" y="384" font-family="' + MONO + '" font-size="20" fill="#5d6b7f">The card fills in with the first close.</text>' + foot;
+  const tile = (x, y, label, val, col) => '<rect x="' + x + '" y="' + y + '" width="250" height="118" rx="18" fill="#12151b" stroke="#232932"/><text x="' + (x + 22) + '" y="' + (y + 36) + '" font-family="' + MONO + '" font-size="15" font-weight="700" letter-spacing="2" fill="#7a8592">' + esc(label) + '</text><text x="' + (x + 22) + '" y="' + (y + 88) + '" font-family="' + SANS + '" font-size="' + (String(val).length > 9 ? 34 : 44) + '" font-weight="800" letter-spacing="-1.5" fill="' + col + '">' + esc(val) + '</text>';
+  body += tile(76, 232, 'WIN RATE', (+s.winRate || 0) + '%', (+s.winRate || 0) >= 50 ? GREEN : '#fff')
+    + tile(346, 232, 'REALIZED P&L', money(realized), realized >= 0 ? GREEN : RED)
+    + tile(76, 372, 'BEST ROE', s.bestRoe == null ? '-' : ((+s.bestRoe >= 0 ? '+' : '') + Math.round(+s.bestRoe) + '%'), +s.bestRoe > 0 ? GREEN : '#fff')
+    + tile(346, 372, 'BEST TRADE', s.bestPnl == null ? '-' : money(s.bestPnl), +s.bestPnl > 0 ? GREEN : '#fff')
+    + '<text x="76" y="528" font-family="' + MONO + '" font-size="19" fill="#9aa3ad">' + esc(String(+s.trades || closed)) + ' trades this season · ' + esc(String(closed)) + ' closed · ' + esc(String(+s.wins || 0)) + ' won</text>';
+  // the 30-day curve, on the right - the line of a record, with its zero
+  if (c && Array.isArray(c.cum) && c.cum.length > 1 && +c.n >= 3) {
+    const X0 = 660, Y0 = 232, W = 464, H = 258, v = c.cum.map(Number), lo = Math.min(0, Math.min(...v)), hi0 = Math.max(0, Math.max(...v)), hi = hi0 - lo < 1e-9 ? lo + 1 : hi0;
+    const X = i => X0 + W * i / (v.length - 1), Y = p => Y0 + H * (1 - (p - lo) / (hi - lo));
+    let pth = 'M' + X(0).toFixed(1) + ' ' + Y(0).toFixed(1); for (let i = 0; i < v.length; i++) pth += ' L' + X(i).toFixed(1) + ' ' + Y(v[i]).toFixed(1);
+    const last = v[v.length - 1], col = last >= 0 ? GREEN : RED;
+    body += '<rect x="' + (X0 - 24) + '" y="' + (Y0 - 46) + '" width="' + (W + 48) + '" height="' + (H + 96) + '" rx="22" fill="#0f1216" stroke="#232932"/>'
+      + '<text x="' + (X0) + '" y="' + (Y0 - 14) + '" font-family="' + MONO + '" font-size="15" font-weight="700" letter-spacing="2" fill="#7a8592">30 DAYS · REALIZED P&amp;L</text>'
+      + '<text x="' + (X0 + W) + '" y="' + (Y0 - 12) + '" text-anchor="end" font-family="' + SANS + '" font-size="30" font-weight="800" letter-spacing="-1" fill="' + col + '">' + esc(money(last)) + '</text>'
+      + '<line x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + Y(0).toFixed(1) + '" y2="' + Y(0).toFixed(1) + '" stroke="#2a313c" stroke-dasharray="4 4"/>'
+      + '<path d="' + pth + ' L' + X(v.length - 1).toFixed(1) + ' ' + Y(0).toFixed(1) + ' Z" fill="' + col + '" fill-opacity=".14"/>'
+      + '<path d="' + pth + '" fill="none" stroke="' + col + '" stroke-width="3.5" stroke-linejoin="round"/>'
+      + '<text x="' + X0 + '" y="' + (Y0 + H + 36) + '" font-family="' + MONO + '" font-size="15" fill="#5d6b7f">' + esc(String(c.n)) + ' server-settled closes</text>';
+  } else {
+    body += '<rect x="636" y="186" width="512" height="354" rx="22" fill="#0f1216" stroke="#232932"/><text x="892" y="356" text-anchor="middle" font-family="' + SANS + '" font-size="26" font-weight="700" fill="#5d6b7f">30-day curve from the third settled close</text><text x="892" y="392" text-anchor="middle" font-family="' + MONO + '" font-size="17" fill="#3e4857">' + esc(String((c && c.n) || 0)) + ' of 3 so far</text>';
+  }
+  return head + body + foot;
+}
 // Test sink: POST anything to /api/whsink/<token> and read it back with GET - the last 20 bodies, 15 minutes. Lets a
 // developer (and our E2E) see exactly what a webhook delivers before pointing it at their own server. No auth: the
 // token is the secret, bodies are capped at 8 KB, and nothing here is ever executed or forwarded.
@@ -10306,7 +10352,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8c9bdcd8" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3e0b6eb4" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -22777,7 +22823,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '3da507e5';
+const ASSET_V = 'd4c6733e';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26625,6 +26671,18 @@ export default {
         await env.STATS.put('botwidget:u:' + uid, tk); await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ uid, un, ts: Date.now() }));
       } else { try { const rec = JSON.parse((await env.STATS.get('botwidget:t:' + tk)) || 'null'); if (rec && rec.un !== un && un) await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ ...rec, un })); } catch (e) {} } // a rename follows the token
       return new Response(JSON.stringify({ ok: true, token: tk, username: un, iframe: 'https://marginpad.io/widget/bot/?t=' + tk, badge: 'https://marginpad.io/api/widget/bot.svg?t=' + tk, json: 'https://marginpad.io/api/widget/bot?t=' + tk }), { headers: JHW });
+    }
+    if (url.pathname === '/api/report/card.svg') { // THE REPORT CARD (feature #8): public, by username, edge 300 s; `?nc=1` renders past the copy
+      const nm = String(url.searchParams.get('u') || '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 24);
+      const SH = { 'content-type': 'image/svg+xml; charset=utf-8', ...CORS };
+      if (!nm) return new Response(reportCardSvg(null, '?'), { status: 400, headers: { ...SH, 'cache-control': 'no-store' } });
+      const ck = new Request('https://marginpad.io/__repcard_v1/' + nm.toLowerCase());
+      if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+      let d = null; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(nm))); d = await r.json(); } catch (e) { d = null; }
+      if (!d) return new Response(reportCardSvg(null, nm), { status: 503, headers: { ...SH, 'cache-control': 'no-store' } });
+      const resp = new Response(reportCardSvg(d, nm), { status: d.exists ? 200 : 404, headers: { ...SH, 'cache-control': d.exists ? 'public, max-age=300' : 'public, max-age=60' } });
+      if (d.exists) { try { await caches.default.put(ck, resp.clone()); } catch (e) {} }
+      return resp;
     }
     if (url.pathname === '/api/widget/bot' || url.pathname === '/api/widget/bot.svg') {
       const tk = String(url.searchParams.get('t') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40), svg = url.pathname.endsWith('.svg');
