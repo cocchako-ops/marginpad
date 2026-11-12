@@ -7466,13 +7466,16 @@ async function fetchPrice(sym) {
      crypto cascade would come back as whatever coin wears that name on Bybit, which is the exact trap the comment
      below this one records for tokenized equities. No `state` field: that is what marks a market with HOURS, and
      this one never closes. */
-  if (mpadIs(s)) {
-    const lp = MP_ENV ? await mpadPrice(MP_ENV) : null; if (!lp) return null;
-    let p24 = 0; try { const b = await mpadBars(MP_ENV, 86400, 2, 0); if (b.length) p24 = b[0].o; } catch (e) {}
-    return { sym: MPAD.sym, price: lp.px, chg: p24 > 0 ? Math.round((lp.px - p24) / p24 * 10000) / 100 : 0, /* BOTH NAMES, DELIBERATELY: `house` is the internal asset class every mirror keys on, `rng` is the SECTION the
-          owner named. Nothing on the client reads either (the class comes from `window.mpRngSyms`), so carrying the
-          two costs nothing and leaves no reader of one of them wrong. */
-      house: true, rng: true, src: 'mpad', anchorMin: lp.anchorMin, lagMin: lp.lagMin };
+  { let rc = rngCoinSync(s); // MPAD, or a squad coin the registry knows
+    if (!rc && MP_ENV && /^[A-Z]{3,5}$/.test(s) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(MP_ENV); } catch (e) {} rc = rngCoinSync(s); } // a fresh isolate: one KV read before a 3-5 letter symbol is sent to the crypto cascade
+    if (rc) {
+      const lp = MP_ENV ? await mpadPrice(MP_ENV, rc) : null; if (!lp) return null;
+      let p24 = 0; try { const b = await mpadBars(MP_ENV, rc, 86400, 2, 0); if (b.length) p24 = b[0].o; } catch (e) {}
+      return { sym: rc.sym, price: lp.px, chg: p24 > 0 ? Math.round((lp.px - p24) / p24 * 10000) / 100 : 0, /* BOTH NAMES, DELIBERATELY: `house` is the internal asset class every mirror keys on, `rng` is the SECTION the
+            owner named. Nothing on the client reads either (the class comes from `window.mpRngSyms`), so carrying the
+            two costs nothing and leaves no reader of one of them wrong. */
+        house: true, rng: true, src: rc === MPAD ? 'mpad' : 'rng', anchorMin: lp.anchorMin, lagMin: lp.lagMin };
+    }
   }
   // Stocks/forex/indices (real data via Yahoo Finance) - resolve here; NEVER fall through to the crypto cascade
   // (Bybit lists tokenized equity perps AAPLUSDT etc. that would return a mismatched 24/7 price).
@@ -7598,14 +7601,15 @@ async function handleKlines(url, env, klSrc, ctx) {
      cache: there is no upstream to protect and no two callers to share a fetch between, so caching would only add a
      way for the chart and the settlement sweep to read different candles for the same minute. `no-store` for the
      same reason - this is the series the sweep settles a liquidation from. */
-  if (mpadIs(sym)) {
-    const bars = await mpadBars(env, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
+  { let rcK = rngCoinSync(sym); if (!rcK && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} rcK = rngCoinSync(sym); }
+  if (rcK) {
+    const bars = await mpadBars(env, rcK, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
     if (!bars || !bars.length) return J({ error: 'no data' }, 404);
     // THE BARE ARRAY, with `vol`, exactly as every other source answers - the first cut wrapped it in {symbol,bars}
     // and would have broken the chart, the sweep and leanKlines at once (caught by comparing against the live route)
     return new Response(JSON.stringify(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c, vol: 0 }))),
-      { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-src': 'mpad', ...CORS } });
-  }
+      { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-src': rcK === MPAD ? 'mpad' : 'rng', ...CORS } });
+  } }
   // Edge-cache the assembled response: identical for every user for a given symbol/interval, so polling clients
   // and chart loads share one upstream fetch instead of hammering Gate/Bybit on every request.
   const cacheKey = new Request('https://marginpad.io/__klines_v2_' + pair + '_' + iv + '_' + (hasEnd ? end : 'live'));
@@ -7805,10 +7809,11 @@ async function leanKlines(sym, ivMin, n, env, opts) {
      liquidation, so it must answer the SAME candle the chart drew - which it does by construction, both calling
      mpadBars. Deliberately NOT cached: the stored series IS the cache, and a second copy is one more way for the
      settlement and the chart to disagree about one minute. */
-  if (mpadIs(sym)) {
-    const bars = await mpadBars(env, (+iv || 1) * 60, N, 0);
-    return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
-  }
+  { let rcL = rngCoinSync(sym); if (!rcL && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} rcL = rngCoinSync(sym); }
+    if (rcL) {
+      const bars = await mpadBars(env, rcL, (+iv || 1) * 60, N, 0);
+      return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
+    } }
   const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N + (bOnly ? '_b' : '') + ((opts && opts.pair) ? '_' + opts.pair : ''));
   try { const hit = await caches.default.match(ckey); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 10000) { return await hit.json(); } } } catch (e) {}
   const t0 = Date.now();
@@ -10418,7 +10423,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a80bfe3a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e2cda3b7" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -10530,6 +10535,30 @@ async function liqRecordsCron(env) { // once a UTC day, after the recap of yeste
   if ((await env.STATS.get('liqrecords:day')) === today) return;
   if (new Date().getUTCHours() < 1) return; // the recap builder needs the archive pull first (settle hour 01:00)
   await liqRecordsBuild(env);
+}
+/* A SQUAD COIN'S PAGE (the Foundry, 2026-11-12): /rng/<sym>/ - what the coin is, who cast it and when, the mix with its weights, the live
+   price and the 24h move, the two guards, and the rule in one sentence (it ranks nowhere, pays nothing). Rendered from the same JSON as
+   /api/rng/<SYM>; a coin the registry does not hold is a 404 page in the same shell. Cached 60 s at the edge. */
+async function handleRngPage(env, symIn) {
+  const H = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60' };
+  let c = null; try { await rngCoins(env); c = rngCoinSync(symIn); } catch (e) {}
+  if (!c || c === MPAD) return new Response(_rcShell('No such RNG coin | MarginPad', 'No squad has cast a coin under that ticker.', 'https://marginpad.io/squads/', '<h1>No such RNG coin</h1><p class="lead">No squad has cast a coin under that ticker. The squads that could are on <a href="/squads/">/squads/</a>.</p>'), { status: 404, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  let o = null; try { o = await rngCoinJson(env, c, false); } catch (e) {}
+  const e = (s) => String(s == null ? '' : s).replace(/[<>&"]/g, ch => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[ch]));
+  const sq = c.squad || {}, px = o && o.price != null ? o.price : null, chg = o && o.chg24 != null ? o.chg24 : null;
+  const fp = (v) => v == null ? '-' : ('$' + (+v).toLocaleString('en-US', { minimumFractionDigits: Math.min(4, c.dp), maximumFractionDigits: c.dp }));
+  const mixRows = (o ? o.mix : []).map(m => '<tr><td>' + e(m.of) + '</td><td class="r"><b>' + m.weightPct + '%</b></td><td>' + e(m.from || '') + '</td></tr>').join('');
+  const title = e(c.sym) + ' - ' + e(c.name) + ', the RNG coin of ' + e(sq.name || 'a squad') + ' | MarginPad';
+  const desc = e(c.name) + ' (' + e(c.sym) + ') is a squad-cast RNG coin on MarginPad: launched at $' + c.start + ' on ' + e(c.dayLaunch) + ' by ' + e(sq.name || 'a squad') + ', priced once a minute from a published mix and never rewritten. It ranks on no leaderboard and pays no XP or Ticks.';
+  const body = '<p class="eyebrow">RNG SECTION &middot; SQUAD COIN</p><h1>' + e(c.sym) + ' <small>' + e(c.name) + '</small></h1>'
+    + '<p class="lead">Cast by <a href="/squads/?sid=' + encodeURIComponent(sq.sid || c.sid || '') + '">' + e(sq.name || 'a squad') + (sq.tag ? ' [' + e(String(sq.tag).toUpperCase()) + ']' : '') + '</a> on ' + e(c.dayLaunch) + ' at <b>$' + c.start + '</b>. It is an index recorded once a minute from the mix below; the recorded series is the only copy, so a past candle is never rewritten.</p>'
+    + '<div class="tiles"><div class="tile"><span>Price now</span><b>' + fp(px) + '</b></div><div class="tile"><span>24h</span><b style="color:' + (chg == null ? '#8fa3c4' : chg >= 0 ? '#2ebd85' : '#ff5a4d') + '">' + (chg == null ? '-' : (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%') + '</b></div><div class="tile"><span>Launch</span><b>$' + c.start + '</b></div><div class="tile"><span>Max leverage</span><b>' + c.lev + 'x</b></div></div>'
+    + '<h2>The mix</h2><table><thead><tr><th>Driver</th><th class="r">Weight</th><th>Read from</th></tr></thead><tbody>' + mixRows + '</tbody></table>'
+    + '<p class="note">Each driver contributes its own log-return every minute; one input may move the index by at most ' + (c.clampIn * 100) + '% in a minute and the whole step by at most ' + (c.clampStep * 100) + '%. A driver we could not read contributes nothing, never a jump. The "pure chance" part is a bounded seeded level, so it can never run away.</p>'
+    + '<h2>The rule</h2><p>' + e(c.sym) + ' trades like any other symbol on <a href="/paper-trade?coin=' + encodeURIComponent(c.sym) + '">Paper Trade</a> (the RNG tab of the market window) and on <a href="/charts">Charts</a>, but it <b>ranks on no leaderboard, enters no duel or raid, and pays no XP or Ticks</b> - it is the squad\'s own market, cast from parts the squad earned by trading, learning, raiding, holding and showing up together. Only a squad at level ' + FOUNDRY.minLevel + '+ with ' + FOUNDRY.minMembers + '+ members can cast one, and one living coin per squad.</p>'
+    + '<p class="note">JSON: <a href="/api/rng/' + e(c.sym) + '">/api/rng/' + e(c.sym) + '</a> &middot; every RNG coin: <a href="/api/mpad">/api/mpad</a> &middot; the house coin: <a href="/paper-trade?coin=MPAD">MPAD</a></p>';
+  const extraHead = '<meta name="robots" content="index,follow"><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebPage', name: c.sym + ' - ' + c.name, description: desc, url: 'https://marginpad.io/rng/' + c.sym.toLowerCase() + '/', isAccessibleForFree: true }) + '</script>';
+  return new Response(_rcShell(title, desc, 'https://marginpad.io/rng/' + c.sym.toLowerCase() + '/', body, extraHead), { headers: H });
 }
 async function handleLiqRecords(url, env, request) {
   let rec = null; try { rec = JSON.parse(await env.STATS.get('liqrecords') || 'null'); } catch (e) {}
@@ -15267,6 +15296,55 @@ const MPAD = {
     { k: 'rand', w: 0.15, label: 'pure chance', src: 'a seeded walk, nothing external' },
   ],
 };
+/* THE FOUNDRY (2026-11-12, owner: "Squad foundry mi se svidja i moze da se uradi, ali treba da bude jako jako tesko da se mintuje svoj
+   RNG coin"). A squad's coin is THIS engine with a row of its own: its own seed, launch price and mix over the drivers below, recorded
+   minute by minute into OpsLog `rngpx` exactly as MPAD is into `mpadpx`. Every engine function takes the coin config `c`; MPAD is one
+   such config, and foundry-e2e holds golden values proving its series did not move by a digit through the generalisation. */
+const RNG_DRIVERS = {
+  dom:  { label: 'Bitcoin dominance', src: 'our own /api/gecko/global' },
+  hype: { label: 'Hyperliquid (HYPE)', src: 'Bybit perp', px: 'HYPE' },
+  zec:  { label: 'Zcash (ZEC)', src: 'Bybit perp', px: 'ZEC' },
+  btc:  { label: 'Bitcoin (BTC)', src: 'Bybit perp', px: 'BTC' },
+  eth:  { label: 'Ethereum (ETH)', src: 'Bybit perp', px: 'ETH' },
+  sol:  { label: 'Solana (SOL)', src: 'Bybit perp', px: 'SOL' },
+  doge: { label: 'Dogecoin (DOGE)', src: 'Bybit perp', px: 'DOGE' },
+  xau:  { label: 'Gold (XAU)', src: 'Bybit linear', px: 'XAU' },
+  fng:  { label: 'Fear & Greed index', src: 'our own /api/fng' },
+  rand: { label: 'pure chance', src: 'a seeded walk, nothing external' },
+};
+const RNG_PICK = ['dom', 'hype', 'zec', 'btc', 'eth', 'sol', 'doge', 'xau', 'fng']; // what a squad may put in its mix (rand is forced in)
+const RNG_DEF_KEYS = ['dp', 'lev', 'fineAmp', 'tick', 'mid', 'modFloor', 'modScale', 'tickFloor', 'tickScale', 'randAmp', 'clampIn', 'clampStep'];
+function rngCfg(o) { // a coin config with MPAD's measured amplitudes wherever the row says nothing - the character of the tape is the house's, the mix and the seed are the squad's
+  if (!o) return null; if (o === MPAD) return MPAD;
+  const c = {}; for (const k of RNG_DEF_KEYS) c[k] = (o[k] != null) ? o[k] : MPAD[k];
+  c.sym = String(o.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); c.name = String(o.name || c.sym).slice(0, 24);
+  c.start = +o.start > 0 ? +o.start : 10; c.seed = (+o.seed >>> 0) || 1; c.dayLaunch = o.dayLaunch || ''; c.squad = o.squad || null; c.sid = o.sid || '';
+  const mix = Array.isArray(o.mix) ? o.mix : []; c.mix = mix.map(m => ({ k: String(m.k || ''), w: +m.w || 0, label: (RNG_DRIVERS[m.k] || {}).label || String(m.k || ''), src: (RNG_DRIVERS[m.k] || {}).src || '' })).filter(m => RNG_DRIVERS[m.k] && m.w > 0);
+  return c;
+}
+/* THE REGISTRY of squad coins: KV `rng:coins` (written by the worker after a cast, from the store's own list), a 60-second per-isolate
+   memo, and `globalThis.__rngSyms` for the sync readers (lbExcluded, assetClassOf, maxLevFor). The UserStore isolate fills the same
+   globals from its own `sqcoin` table (`_rngSyncExcl`), so a squad coin earns nothing and ranks nowhere in BOTH isolates. */
+const RNG_REG = { at: 0, coins: [] };
+function rngApplyReg(list) {
+  RNG_REG.coins = (Array.isArray(list) ? list : []).map(rngCfg).filter(c => c && c.sym && c.sym !== MPAD.sym);
+  RNG_REG.at = Date.now();
+  globalThis.__rngSyms = new Set(RNG_REG.coins.map(c => c.sym));
+  try { LB_EXCL_SQL = lbExclSqlBuild(); } catch (e) {}
+}
+function rngCoinSync(sym) { const s = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (s === MPAD.sym) return MPAD; for (const c of RNG_REG.coins) if (c.sym === s) return c; return null; }
+async function rngCoins(env, force) {
+  if (!force && Date.now() - RNG_REG.at < 60000) return RNG_REG.coins;
+  let list = null; try { list = JSON.parse(await env.STATS.get('rng:coins') || 'null'); } catch (e) {}
+  if (Array.isArray(list)) rngApplyReg(list); else if (!RNG_REG.at) rngApplyReg([]);
+  RNG_REG.at = Date.now();
+  return RNG_REG.coins;
+}
+async function rngRegistryRefresh(env) { // after a cast: the store's list is the truth, KV is its copy for every other isolate
+  let list = []; try { const r = await usersDO(env, '/foundry/coins', {}); list = (r && r.coins) || []; } catch (e) {}
+  try { await env.STATS.put('rng:coins', JSON.stringify(list)); } catch (e) {}
+  rngApplyReg(list); return list;
+}
 function _mpH(a, b) { // counter-based integer hash -> [0,1)
   let h = (a ^ 0x9e3779b9) >>> 0;
   h = Math.imul(h ^ ((b + 0x85ebca6b) >>> 0), 0xcc9e2d51) >>> 0;
@@ -15288,56 +15366,57 @@ function _mpNoise(seed, x) { const i = Math.floor(x), f = x - i, a = _mpH(seed, 
    volatility factor would have been the obvious way to make the size breathe and it is wrong here: a weighted walk
    has unbounded total variation, i.e. the 2026-10-28 runaway drift all over again. Modulating a fine octave INSIDE
    the level buys the same breathing with the bound intact. */
-function mpadRandLevel(minute) {
-  const mod = MPAD.modFloor + (1 - MPAD.modFloor) * (0.5 + 0.5 * _mpNoise(MPAD.seed + 909, minute / MPAD.modScale));
-  return (0.55 * _mpNoise(MPAD.seed + 1440, minute / 1440)
-    + 0.30 * _mpNoise(MPAD.seed + 240, minute / 240)
-    + 0.15 * _mpNoise(MPAD.seed + 45, minute / 45)
-    + mod * MPAD.mid[0] * _mpNoise(MPAD.seed + 311, minute / MPAD.mid[1])) / (1 + MPAD.mid[0]);
+function mpadRandLevel(c, minute) {
+  const mod = c.modFloor + (1 - c.modFloor) * (0.5 + 0.5 * _mpNoise(c.seed + 909, minute / c.modScale));
+  return (0.55 * _mpNoise(c.seed + 1440, minute / 1440)
+    + 0.30 * _mpNoise(c.seed + 240, minute / 240)
+    + 0.15 * _mpNoise(c.seed + 45, minute / 45)
+    + mod * c.mid[0] * _mpNoise(c.seed + 311, minute / c.mid[1])) / (1 + c.mid[0]);
 }
 // the sub-minute wiggle: continuous in absolute seconds and bounded, so a 1m candle built from it is exact
 /* A SMOOTH ARC PLUS A TICK LAYER. The arc is the within-minute drift; the tick layer is what makes the number a
    reader is watching move like a tape instead of sliding. Both are deterministic in ABSOLUTE seconds, so a 1m candle
    is still the exact aggregate of its own sixty and recomputes from the stored anchor alone - the property the
    settlement sweep depends on. The whole wiggle is bounded by fineAmp + tick. */
-function mpadFine(tSec) {
-  const a = 0.55 * _mpNoise(MPAD.seed + 7, tSec / 180) + 0.30 * _mpNoise(MPAD.seed + 11, tSec / 40) + 0.15 * _mpNoise(MPAD.seed + 13, tSec / 11);
-  const tm = MPAD.tickFloor + (1 - MPAD.tickFloor) * (0.5 + 0.5 * _mpNoise(MPAD.seed + 707, tSec / MPAD.tickScale));
-  const tk = tm * (0.62 * _mpNoise(MPAD.seed + 17, tSec / 2.6) + 0.38 * _mpNoise(MPAD.seed + 19, tSec / 0.85));
-  return MPAD.fineAmp * a + MPAD.tick * tk;
+function mpadFine(c, tSec) {
+  const a = 0.55 * _mpNoise(c.seed + 7, tSec / 180) + 0.30 * _mpNoise(c.seed + 11, tSec / 40) + 0.15 * _mpNoise(c.seed + 13, tSec / 11);
+  const tm = c.tickFloor + (1 - c.tickFloor) * (0.5 + 0.5 * _mpNoise(c.seed + 707, tSec / c.tickScale));
+  const tk = tm * (0.62 * _mpNoise(c.seed + 17, tSec / 2.6) + 0.38 * _mpNoise(c.seed + 19, tSec / 0.85));
+  return c.fineAmp * a + c.tick * tk;
 }
-function mpadRound(p) { const m = Math.pow(10, MPAD.dp); return Math.round(p * m) / m; }
-function mpadPxAt(anchor, tSec) { return mpadRound(anchor * Math.exp(mpadFine(tSec))); }
+function mpadRound(c, p) { const m = Math.pow(10, c.dp); return Math.round(p * m) / m; }
+function mpadPxAt(c, anchor, tSec) { return mpadRound(c, anchor * Math.exp(mpadFine(c, tSec))); }
 /* THE ONE STEP, PURE so a test can drive the function that ships. `cur`/`prev` carry the raw input levels; a
    component missing from either side contributes nothing. Returns the parts too, so the desk can show WHY the coin
    moved - a composite nobody can decompose is a number nobody trusts. */
-function mpadStep(prevPx, cur, prev, minute) {
+function mpadStep(c, prevPx, cur, prev, minute) {
   const parts = {}; let step = 0;
-  for (const c of MPAD.mix) {
+  for (const d of c.mix) {
     let r = 0;
-    if (c.k === 'rand') r = (mpadRandLevel(minute) - mpadRandLevel(minute - 1)) * MPAD.randAmp;
-    else { const a = +(cur || {})[c.k], b = +(prev || {})[c.k]; if (a > 0 && b > 0) r = Math.log(a / b); }
+    if (d.k === 'rand') r = (mpadRandLevel(c, minute) - mpadRandLevel(c, minute - 1)) * c.randAmp;
+    else { const a = +(cur || {})[d.k], b = +(prev || {})[d.k]; if (a > 0 && b > 0) r = Math.log(a / b); }
     if (!isFinite(r)) r = 0;
-    r = Math.max(-MPAD.clampIn, Math.min(MPAD.clampIn, r));
-    parts[c.k] = Math.round(r * 1e6) / 1e6;
-    step += c.w * r;
+    r = Math.max(-c.clampIn, Math.min(c.clampIn, r));
+    parts[d.k] = Math.round(r * 1e6) / 1e6;
+    step += d.w * r;
   }
   if (!isFinite(step)) step = 0;
-  step = Math.max(-MPAD.clampStep, Math.min(MPAD.clampStep, step));
-  return { px: mpadRound(Math.max(0.0001, prevPx) * Math.exp(step)), step: Math.round(step * 1e6) / 1e6, parts };
+  step = Math.max(-c.clampStep, Math.min(c.clampStep, step));
+  return { px: mpadRound(c, Math.max(0.0001, prevPx) * Math.exp(step)), step: Math.round(step * 1e6) / 1e6, parts };
 }
 function mpadIs(sym) { return String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '') === MPAD.sym; }
 function mpadDO(env) { return env.OPSLOG.get(env.OPSLOG.idFromName('main')); }
-async function mpadCall(env, path, body) {
-  const r = await mpadDO(env).fetch(new Request('https://do/mpad/' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {}));
+async function mpadCall(env, path, body, sym) { // sym: a squad coin's series (rngpx); none or MPAD = the house series (mpadpx)
+  const q = (sym && sym !== MPAD.sym) ? ((path.indexOf('?') >= 0 ? '&' : '?') + 'sym=' + encodeURIComponent(sym)) : '';
+  const r = await mpadDO(env).fetch(new Request('https://do/mpad/' + path + q, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({}, body, (sym && sym !== MPAD.sym) ? { sym } : {})) } : {}));
   return r.json();
 }
-// the head, cached per isolate for a few seconds: every price read on the site goes through here
-async function mpadHead(env) {
-  const g = globalThis.__mpadHead;
+// the head, cached per isolate per coin for a few seconds: every price read on the site goes through here
+async function mpadHead(env, c) {
+  c = c || MPAD; const H = globalThis.__rngHead || (globalThis.__rngHead = {}); const g = H[c.sym];
   if (g && Date.now() - g.at < 4000) return g.v;
-  let v = null; try { const d = await mpadCall(env, 'head'); if (d && d.ok && d.px > 0) v = { m: +d.m, px: +d.px }; } catch (e) {}
-  if (v) globalThis.__mpadHead = { at: Date.now(), v };
+  let v = null; try { const d = await mpadCall(env, 'head', null, c.sym); if (d && d.ok && d.px > 0) v = { m: +d.m, px: +d.px }; } catch (e) {}
+  if (v) H[c.sym] = { at: Date.now(), v };
   return v;
 }
 /* READ THE INPUTS. Every one is OUR OWN cached route or a venue we already depend on, and every failure is a zero
@@ -15347,8 +15426,10 @@ async function mpadHead(env) {
 async function mpadInputs(env) {
   const out = {};
   const dom = (async () => { try { const r = await handleGeckoGlobal(env); const j = await r.json(); const v = +(((j || {}).data || {}).market_cap_percentage || {}).btc; if (v > 0) out.dom = v; } catch (e) {} })();
-  const px = (async () => { try { const [z, h] = await Promise.all([fetchPriceCached('ZEC'), fetchPriceCached('HYPE')]); if (z && z.price > 0) out.zec = z.price; if (h && h.price > 0) out.hype = h.price; } catch (e) {} })();
-  await Promise.all([dom, px]);
+  /* every priced driver in one pass (the Foundry, 2026-11-12): a squad's mix may name any of them, and one read serves every coin */
+  const px = (async () => { try { const keys = Object.keys(RNG_DRIVERS).filter(k => RNG_DRIVERS[k].px); const rs = await Promise.all(keys.map(k => fetchPriceCached(RNG_DRIVERS[k].px).catch(() => null))); keys.forEach((k, i) => { const p = rs[i]; if (p && p.price > 0) out[k] = p.price; }); } catch (e) {} })();
+  const fng = (async () => { try { const r = await handleFng(env); const j = await r.json(); const v = +((((j || {}).data || [])[0] || {}).value); if (v > 0) out.fng = v; } catch (e) {} })();
+  await Promise.all([dom, px, fng]);
   return out;
 }
 /* THE MINUTE WRITER (on the every-minute cron). It reads the head, prices one step and appends. A gap - a missed
@@ -15357,29 +15438,62 @@ async function mpadInputs(env) {
 async function mpadTick(env) {
   if (!env.OPSLOG) return { ok: false, why: 'no_store' };
   const now = Date.now(), m = Math.floor(now / 60000);
-  let head = null; try { const d = await mpadCall(env, 'head'); if (d && d.ok && d.px > 0) head = { m: +d.m, px: +d.px, inputs: d.inputs || null }; } catch (e) {}
   const cur = await mpadInputs(env);
-  if (!head) { // genesis: the owner's launch price, and the first inputs become the baseline
-    const r = await mpadCall(env, 'put', { m, px: MPAD.start, step: 0, parts: {}, inputs: cur });
-    return { ok: !!(r && r.ok), seeded: true, m, px: MPAD.start };
-  }
-  if (m <= head.m) return { ok: true, skipped: 'already', m: head.m };
-  const st = mpadStep(head.px, cur, head.inputs || cur, m);
-  const r = await mpadCall(env, 'put', { m, px: st.px, step: st.step, parts: st.parts, inputs: cur, gap: m - head.m });
-  try { globalThis.__mpadHead = { at: Date.now(), v: { m, px: st.px } }; } catch (e) {}
-  return { ok: !!(r && r.ok), m, px: st.px, step: st.step, parts: st.parts, gap: m - head.m };
+  const one = async (c) => {
+    let head = null; try { const d = await mpadCall(env, 'head', null, c.sym); if (d && d.ok && d.px > 0) head = { m: +d.m, px: +d.px, inputs: d.inputs || null }; } catch (e) {}
+    if (!head) { // genesis: the launch price, and the first inputs become the baseline
+      const r = await mpadCall(env, 'put', { m, px: c.start, step: 0, parts: {}, inputs: cur }, c.sym);
+      return { ok: !!(r && r.ok), seeded: true, m, px: c.start, sym: c.sym };
+    }
+    if (m <= head.m) return { ok: true, skipped: 'already', m: head.m, sym: c.sym };
+    const st = mpadStep(c, head.px, cur, head.inputs || cur, m);
+    const r = await mpadCall(env, 'put', { m, px: st.px, step: st.step, parts: st.parts, inputs: cur, gap: m - head.m }, c.sym);
+    try { (globalThis.__rngHead || (globalThis.__rngHead = {}))[c.sym] = { at: Date.now(), v: { m, px: st.px } }; } catch (e) {}
+    return { ok: !!(r && r.ok), m, px: st.px, step: st.step, parts: st.parts, gap: m - head.m, sym: c.sym };
+  };
+  const out = await one(MPAD);
+  /* THE SQUAD COINS TICK ON THE SAME MINUTE WITH THE SAME INPUTS (the Foundry, 2026-11-12). Each is its own head read and append; a
+     failing coin never stops the house series or the next coin. */
+  let coins = []; try { coins = await rngCoins(env, true); } catch (e) {}
+  const others = []; for (const c of coins) { try { others.push(await one(c)); } catch (e) { others.push({ ok: false, sym: c.sym }); } }
+  if (others.length) out.coins = others;
+  return out;
+}
+/* ONE COIN'S PUBLIC SHAPE (the Foundry): what /api/rng/<SYM>, the catalogue and the coin page all print. `lean` leaves the head and
+   inputs out (the catalogue lists every coin on every terminal open). */
+async function rngCoinJson(env, c, lean) {
+  const lp = await mpadPrice(env, c);
+  let p24 = 0; try { const bb = await mpadBars(env, c, 86400, 2, 0); if (bb.length) p24 = bb[bb.length - 1].o; } catch (e) {}
+  const o = { ok: true, symbol: c.sym, name: c.name, category: 'RNG', assetClass: 'house', squadCoin: true, squad: c.squad || null,
+    price: lp ? lp.px : null, chg24: (lp && p24 > 0) ? Math.round((lp.px - p24) / p24 * 10000) / 100 : null,
+    launchPrice: c.start, launchDay: c.dayLaunch, dp: c.dp, maxLeverage: c.lev, feePctPerSide: Math.round(feeRateFor(1, c.sym) * 1e6) / 1e4,
+    ranksOnLeaderboards: false, earnsXpOrTicks: false,
+    mix: c.mix.map(d => ({ part: d.k, weightPct: Math.round(d.w * 100), of: d.label, from: d.src })),
+    guards: { maxInputMovePerMinutePct: c.clampIn * 100, maxIndexMovePerMinutePct: c.clampStep * 100 }, lagMin: lp ? lp.lagMin : null };
+  if (!lean) { try { const h = await mpadCall(env, 'head', null, c.sym); if (h && h.ok) { o.head = { minute: +h.m, anchor: +h.px }; o.inputs = h.inputs || null; } } catch (e) {} }
+  return o;
+}
+/* A TICKER A SQUAD MAY NOT TAKE: anything that is a market somewhere on this site - a Bybit perp, a stock, an FX pair, an index, a
+   commodity, the house coin or another squad's coin. A squad coin wearing a real ticker would be answered by this engine for ever
+   (the RNG branch is first and never falls through). */
+async function rngSymTaken(env, sym) {
+  const s = String(sym || '').toUpperCase();
+  if (!s || s === MPAD.sym || rngCoinSync(s) || MAXLEV[s] || STOCKS[s] || FX_SYMS[s] || IDX_SYMS[s] || COMMOD[s] || BYBIT_EQ[s]) return true;
+  try { const ls = await bybitLinSet(env); const set = ls && (ls.set || ls.syms || ls); if (set && typeof set.has === 'function' && (set.has(s) || set.has(s + 'USDT'))) return true; if (set && !set.has && set[s + 'USDT']) return true; } catch (e) {}
+  return false;
 }
 // the live price: the current minute's anchor (carried forward if the writer is behind) plus the sub-minute wiggle
-async function mpadPrice(env) {
-  const h = await mpadHead(env); if (!h) return null;
+async function mpadPrice(env, c) {
+  c = c || MPAD; const h = await mpadHead(env, c); if (!h) return null;
   const nowS = Math.floor(Date.now() / 1000);
-  return { px: mpadPxAt(h.px, nowS), anchorMin: h.m, anchor: h.px, lagMin: Math.max(0, Math.floor(nowS / 60) - h.m) };
+  return { px: mpadPxAt(c, h.px, nowS), anchorMin: h.m, anchor: h.px, lagMin: Math.max(0, Math.floor(nowS / 60) - h.m) };
 }
 /* CANDLES FROM THE STORED ANCHORS. A 1m candle walks every second of its own minute (that one is contractual - it
    is what the sweep settles from); a longer candle walks a 10-second grid inside each of its minutes, which is
    where the wiggle's extremes sit. Nothing is invented for a minute the writer never recorded: the span simply
    holds fewer minutes, and a span with none produces no candle at all. */
-async function mpadBars(env, spanSec, n, endMs) {
+async function mpadBars(env, c, spanSec, n, endMs) {
+  c = c || MPAD;
   const span = Math.max(60, Math.floor(spanSec / 60) * 60), N = Math.max(1, Math.min(1000, Math.floor(n || 500)));
   const endS = Math.floor((endMs || Date.now()) / 1000);
   const lastStart = Math.floor(endS / span) * span;
@@ -15391,7 +15505,7 @@ async function mpadBars(env, spanSec, n, endMs) {
      settlement sweep reads it (stride is 1 whenever a bucket is one minute wide), and above 1m a high or a low is
      taken from every Nth anchor rather than every one - a chart, not a money path. */
   const stride = span <= 60 ? 1 : Math.max(1, Math.ceil((toM - fromM) / 6000));
-  let rows = []; try { const d = await mpadCall(env, 'range?from=' + fromM + '&to=' + toM + '&every=' + stride); rows = (d && d.rows) || []; } catch (e) {}
+  let rows = []; try { const d = await mpadCall(env, 'range?from=' + fromM + '&to=' + toM + '&every=' + stride, null, c.sym); rows = (d && d.rows) || []; } catch (e) {}
   if (!rows.length) return [];
   /* THE WALK IS OVER THE RECORDED ROWS, NEVER OVER EVERY MINUTE OF EVERY SPAN. The first cut iterated the N spans
      and each minute inside them, which at `interval=240&limit=1000` is 240,000 minutes and ~1.4M sub-minute samples
@@ -15408,8 +15522,8 @@ async function mpadBars(env, spanSec, n, endMs) {
     if (st < first || st > lastStart) continue;
     let b = buckets.get(st); if (!b) { b = { t: st, o: null, c: null, h: -Infinity, l: Infinity }; buckets.set(st, b); }
     const s0 = Math.max(st, mS), s1 = Math.min(st + span - 1, mS + 59);
-    for (let s = s0; s <= s1; s += step) { const p = mpadPxAt(a, s); if (b.o === null) b.o = p; b.c = p; if (p > b.h) b.h = p; if (p < b.l) b.l = p; }
-    const pEnd = mpadPxAt(a, s1); b.c = pEnd; if (pEnd > b.h) b.h = pEnd; if (pEnd < b.l) b.l = pEnd;
+    for (let s = s0; s <= s1; s += step) { const p = mpadPxAt(c, a, s); if (b.o === null) b.o = p; b.c = p; if (p > b.h) b.h = p; if (p < b.l) b.l = p; }
+    const pEnd = mpadPxAt(c, a, s1); b.c = pEnd; if (pEnd > b.h) b.h = pEnd; if (pEnd < b.l) b.l = pEnd;
   }
   return Array.from(buckets.values()).filter(b => b.o !== null).sort((x, y) => x.t - y.t);
 }
@@ -15418,8 +15532,12 @@ const LB_EXCL_SET = new Set('FRA40 EU50 HK50 AUS200 ESP35 SWI20 US2000 VIX OIL B
 // ranks nowhere" across its 12 call sites - the four symbol boards, _lbBest, trade XP, trade Ticks, personal records
 // and duel/raid scoring - so one add covers every one of them and a second house market would too.
 LB_EXCL_SET.add(MPAD.sym);
-const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
-function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
+/* `let`, REBUILT when the squad-coin registry loads (rngApplyReg): a squad coin is excluded from every board exactly as MPAD is, and the
+   board SQL reads this variable at CALL time (string concatenation), so no query had to change. A squad ticker is 3-5 letters A-Z by
+   validation, so the inlined list stays free of user input. */
+function lbExclSqlBuild() { const extra = (globalThis.__rngSyms ? [...globalThis.__rngSyms] : []).filter(s => /^[A-Z0-9]{2,8}$/.test(s)); return "'" + [...LB_EXCL_SET].concat(extra).join("','") + "'"; }
+let LB_EXCL_SQL = lbExclSqlBuild();
+function lbExcluded(sym) { const s = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return LB_EXCL_SET.has(s) || !!(globalThis.__rngSyms && (globalThis.__rngSyms.has(s) || globalThis.__rngSyms.has(s.replace(/USDT$/, '')))); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
 async function leaderboard(env) {
   if (!env.USERS) return 'Leaderboard temporarily unavailable.';
@@ -15637,7 +15755,7 @@ const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + 
 const CARD_TAG = { chako: 'FOUNDER', gladijator: 'CO FOUNDER' };
 // Per-coin max leverage - mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
 const MAXLEV = { FRA40: 20, EU50: 20, HK50: 20, AUS200: 20, ESP35: 20, SWI20: 20, US2000: 20, VIX: 10, OIL: 20, BRENT: 20, NATGAS: 20, COPPER: 20, USDCHF: 50, NZDUSD: 50, EURGBP: 50, EURJPY: 50, GBPJPY: 50, AUDJPY: 50, EURCHF: 50, USDMXN: 20, USDSEK: 20, USDNOK: 20, BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
-function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (sym === MPAD.sym) return MPAD.lev; return MAXLEV[sym] || 50; } // an RNG coin carries its own cap in the table
+function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); { const rc = rngCoinSync(sym); if (rc) return rc.lev; } return MAXLEV[sym] || 50; } // an RNG coin carries its own cap in the table
 // Asset class of a symbol - MIRROR of window.mpAssetClass in dist/assets/home.js (STOCKS here == that file's STK).
 // The class drives the per-market fee below. Both copies must agree: the client DISPLAYS the fee, the server
 // CHARGES it. They didn't (server hardcoded the crypto rate) - measured 2026-08-19: a server-filled EURUSD trade
@@ -15655,7 +15773,7 @@ const BYBIT_EQ = { MU: 'Micron', SNDK: 'SanDisk', KLAC: 'KLA', CRCL: 'Circle', S
 const COMMOD = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 }; // metals AND energy - one table, because `sym === 'XAU' || sym === 'XAG'` was a table of two written as an expression
 // 'rng' goes FIRST and is its own class: it must never read as 'crypto', or the client would subscribe to a Bybit
 // socket for a symbol no exchange lists and the venue fee override would price a market that has no venue (2026-10-28).
-function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (sym === MPAD.sym) return 'house'; /* the house market is its own class - never 'crypto' (no venue, no socket). A // comment here commented out the REST OF THE FUNCTION, closing brace included, and the error surfaced 16,000 lines later as "Unexpected export" - this is a one-line function. */ if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
+function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (sym === MPAD.sym || (globalThis.__rngSyms && globalThis.__rngSyms.has(sym))) return 'house'; /* the house market is its own class - never 'crypto' (no venue, no socket). A // comment here commented out the REST OF THE FUNCTION, closing brace included, and the error surfaced 16,000 lines later as "Unexpected export" - this is a one-line function. */ if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
 // Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
 // Real-world cost by class: crypto perp taker ~0.055% | stocks ~0.02% | forex majors ~0.008% | metals & indices ~0.015%.
 // Clamped so the round-trip fee can never exceed ~10% of margin at extreme leverage. Mirror of window.mpFeeRate.
@@ -16375,6 +16493,23 @@ const SQUAD_METRICS = {
 // the WHOLE squad, which every member may then wear. It can never be bought, gifted or withdrawn - the only way
 // in is playing as a squad, which is the entire point of a squad-exclusive look. No real money touches it.
 const SQUAD_VALOR = { duelWin: 40, raidClear: 60, level: 50, mvp: 30 };
+/* THE FOUNDRY (2026-11-12, owner: "treba da bude jako jako tesko da se mintuje svoj RNG coin"). A squad collects five kinds of PARTS
+   out of what its members already do - every kind from a different corner of the site, on purpose, so one member cannot carry a
+   squad and a squad has to trade, learn, raid, hold and show up. Parts are not Ticks, cannot be bought and live only in the squad's
+   treasury. The cost is deliberately a long campaign: measured against a full five-member squad at the caps, the Spark alone is 35
+   days of everybody checking in, the Alloy is ~$60M of closed notional and the Ore is eight cleared raids - weeks of play together,
+   never a weekend. `cap` is per member per UTC day; Ore is credited to the SQUAD per raid, so it has no member cap. */
+const FOUNDRY = {
+  minLevel: 5, minMembers: 4,
+  cost: { alloy: 2500, signal: 400, ore: 300, flux: 250, spark: 350 },
+  cap: { alloy: 20, signal: 10, flux: 5, spark: 2 },
+  rate: { alloyPerUsd: 1 / 25000, fluxPerUsd: 1 / 500, lesson: 1, exam: 3, thesis: 5, raidClear: 40, raidFail: 10, spark: 1, sparkStreak7: 1 },
+  kinds: ['alloy', 'signal', 'ore', 'flux', 'spark'],
+  labels: { alloy: 'Alloy', signal: 'Signal', ore: 'Ore', flux: 'Flux', spark: 'Spark' },
+  from: { alloy: 'closed paper trades, 1 per $25k of notional (20 a day each)', signal: 'Academy lessons (1) and passed exams (3), 10 a day each', ore: 'raids - 40 for a cleared raid, 10 for a failed one', flux: 'Demo Spot buys, 1 per $500 (5 a day each), and 5 per published thesis', spark: 'the daily check-in, 1 each, 2 on a 7-day streak' },
+  startMin: 1, startMax: 100, mixN: 3, randMin: 15, wMin: 10, symRe: /^[A-Z]{3,5}$/,
+  reserved: ['MPAD', 'USDT', 'USDC', 'USD', 'BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE', 'HYPE', 'ZEC', 'XAU', 'XAG', 'SPX', 'NAS', 'RNG', 'SQUAD', 'TEST', 'NULL', 'ADMIN', 'MOON', 'FOMO', 'MEXC', 'BYBIT', 'OKX', 'GATE', 'BINGX', 'SEX', 'NIGGA', 'NAZI', 'HITLER'],
+};
 // The Squad Shop. Borders ride the existing profile-card FRAME slot (so one border shows wherever a card is drawn,
 // with zero new render wiring) and are gated to squad ownership at equip; badges are a NEW card slot (users.sqbadge).
 // These are deliberately HEAVIER and darker than any player frame (owner: "dosta napucaniji ... crna vatra ... shadow")
@@ -16900,6 +17035,11 @@ async function redeemCode(env, request, user, codeRaw) {
   try { await evPush(env, request, 'code', code + ' -> ' + gave, '/season/', { code, kind: d.kind, amt: d.amt, give: d.give }); } catch (e) {}
   try { await tgAdmin(env, '<b>Code redeemed</b> ' + code + ' by @' + (user.username || user.id) + ': ' + gave, { kind: 'code-redeemed', sev: 'info' }); } catch (e) {}
   return { status: 200, body: d };
+}
+/* ONE HOUSE LINE INTO ONE ROOM (the Foundry, 2026-11-12): the room DO's own /post, CHAT_MSG_MAX respected, never thrown. */
+async function houseLine(env, roomName, text) {
+  try { if (!env.CHAT) return false; const t = String(text || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, CHAT_MSG_MAX); if (!t) return false;
+    const r = await env.CHAT.get(env.CHAT.idFromName(roomName)).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: t }) })); return r.ok; } catch (e) { return false; }
 }
 async function announceGift(env, ctx, fromUn, toUn, itemId) {
   try {
@@ -22993,7 +23133,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'ffe8c979';
+const ASSET_V = '96363fb9';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -24679,7 +24819,8 @@ async function handleSpot(url, request, env) {
       let d = null; try { d = await sdo('/s2/trade', { uid, side: 'buy', key, usdC, price, meta }); } catch (e) { return spotFail(env, jr, path); }
       if (d && d.none) return jr({ error: 'no_account' }, 404);
       if (d && d.ok) { d.sym = meta.sym || key.replace(/^cex:/, ''); d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + d.sym + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', d.sym);
-        try { const tc = await thesisBuyCredit(env, uid, d.sym, usdC, ''); if (tc && tc.credited && tc.credited.length) d.thesis = tc.credited; } catch (e) {} } // a buy of a coin somebody wrote a thesis about pays that author (2026-10-26)
+        try { const tc = await thesisBuyCredit(env, uid, d.sym, usdC, ''); if (tc && tc.credited && tc.credited.length) d.thesis = tc.credited; } catch (e) {}
+        try { usersDO(env, '/foundry/add', { uid, kind: 'flux', amt: (usdC / 100) * FOUNDRY.rate.fluxPerUsd, why: 'spot buy ' + String(d.sym || '').toUpperCase() }).catch(() => {}); } catch (e) {} } // the Foundry: Flux from a Demo Spot buy // a buy of a coin somebody wrote a thesis about pays that author (2026-10-26)
       return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
     }
     // sell: the hold decides the exact qty (100% = the stored qty) and, for a meme, the pool
@@ -25989,6 +26130,7 @@ export default {
      The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
     colBase(env); mpEnvArm(env); // arm the collector circuit breaker + the house-coin store for this isolate (see the top of the file)
+    if (request.url.indexOf('/api/') > 0 && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} } // the squad-coin registry (the Foundry): one KV read per isolate per minute, so assetClassOf / maxLevFor / lbExcluded know a cast coin before any trade route asks
     const res = await this._fetchInner(request, env, ctx);
     return secureResponse(res, request);
   },
@@ -26323,13 +26465,22 @@ export default {
       for (let i = 0; i < pts.length; i += 5000) { const r = await mpadCall(env, 'seed', { points: pts.slice(i, i + 5000) }); written += (r && r.written) || 0; rows = (r && r.rows) || rows; }
       return J(Object.assign(out, { written, rows }));
     }
+    /* ONE SQUAD COIN, as JSON (/api/rng/<SYM>) and as a page (/rng/<sym>/ is served from the SSR block): the mix, the squad that cast it,
+       the launch, the live price and the rule that it ranks nowhere. */
+    { const _mR = url.pathname.match(/^\/api\/rng\/([A-Za-z]{3,5})\/?$/);
+      if (_mR) { const c = (await rngCoins(env), rngCoinSync(_mR[1])); if (!c || c === MPAD) return J({ error: 'not_found' }, 404); const o = await rngCoinJson(env, c); return J(o); } }
     if (url.pathname === '/api/mpad' || url.pathname === '/api/rng') {
       const lp = await mpadPrice(env);
       let day = null, inputs = null, head = null;
       try { const h = await mpadCall(env, 'head'); if (h && h.ok) { head = { minute: +h.m, anchor: +h.px }; inputs = h.inputs || null; } } catch (e) {}
-      try { const bb = await mpadBars(env, 86400, 2, 0); if (bb.length) day = bb[bb.length - 1]; } catch (e) {}
+      try { const bb = await mpadBars(env, MPAD, 86400, 2, 0); if (bb.length) day = bb[bb.length - 1]; } catch (e) {}
       const p24 = (day && day.o > 0) ? day.o : 0;
+      /* THE CATALOGUE LISTS EVERY RNG COIN (the Foundry, 2026-11-12): MPAD first, then each squad's coin - the terminal's RNG group, the
+         asset-class mirror and the chart engines read this one list, and a cast reaches them inside a minute. */
+      let coins = []; try { const sc = await rngCoins(env); const m0 = { symbol: MPAD.sym, name: MPAD.name, price: lp ? lp.px : null, chg24: (lp && p24 > 0) ? Math.round((lp.px - p24) / p24 * 10000) / 100 : null, dp: MPAD.dp, maxLeverage: MPAD.lev, launchPrice: MPAD.start, launchDay: MPAD.dayLaunch, squad: null, mix: MPAD.mix.map(c => ({ part: c.k, weightPct: Math.round(c.w * 100), of: c.label })) };
+        coins = [m0]; for (const c of sc) { try { coins.push(await rngCoinJson(env, c, true)); } catch (e) {} } } catch (e) {}
       return J({
+        coins,
         /* THE CATEGORY IS RNG AND THE COIN INSIDE IT IS MarginPad (owner, 2026-10-28: "sekcija treba da se zove
            RNG") - the market window's group label was briefly the coin's own name, which left the site with a
            section named after a single symbol. `assetClass` stays the internal 'house' every mirror keys on. */
@@ -26639,6 +26790,15 @@ export default {
       const s8 = +url.searchParams.get('season') || 0;
       const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...(s8 ? { season: s8 } : {}), ...(url.searchParams.get('verify') ? { verify: 1 } : {}) }) }));
       return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/foundry' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // THE FOUNDRY desk + E2E hook: GET ?sid= reads a treasury, ?tick=1 runs the minute writer, ?refresh=1 reloads the registry; POST {sid, parts, sxp, uncast} SETS a treasury (a test's way to a cast)
+      if (request.method === 'POST') { let fb = {}; try { fb = await request.json(); } catch (e) {}
+        let dropped = null; if (fb.uncast && fb.sid) { try { const r0 = await usersDO(env, '/foundry/grant', { sid: fb.sid }); const cs = r0 && r0.state && r0.state.coin && r0.state.coin.sym; if (cs) { await mpadCall(env, 'drop', {}, cs); dropped = cs; } } catch (e) {} } // the series goes with the coin
+        const r = await usersDO(env, '/foundry/grant', fb); if (fb.uncast) { try { await rngRegistryRefresh(env); } catch (e) {} if (r) r.dropped = dropped; } return J(r || { error: 'unavailable' }, r && r.ok ? 200 : 400); }
+      if (url.searchParams.get('tick') === '1') { const t = await mpadTick(env); return J({ ok: true, tick: t }); }
+      if (url.searchParams.get('refresh') === '1') { const l = await rngRegistryRefresh(env); return J({ ok: true, coins: l }); }
+      const sid = String(url.searchParams.get('sid') || ''); if (sid) { const r = await usersDO(env, '/foundry/grant', { sid }); return J(r || { error: 'unavailable' }); }
+      return J({ ok: true, coins: await rngCoins(env, true), cost: FOUNDRY.cost, cap: FOUNDRY.cap, rate: FOUNDRY.rate, minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers });
     }
     if (url.pathname === '/api/admin/say' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one line into the global room as MarginPad (the house voice announceGift uses) - owner notices, e.g. the 2026-09-25 liquidation-formula change
       /* TWO CAPS THAT DISAGREED, AND THE ROUTE REPORTED THE ONE IT DID NOT KEEP (2026-10-25, owner: "poruka u
@@ -31250,6 +31410,26 @@ export default {
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       if (sub === 'live') return call('/squad/live', { uid: su.id });
       if (sub === 'shop') return call('/squad/shop', { uid: su.id });
+      if (sub === 'foundry') return call('/foundry/state', { uid: su.id });
+      if (sub === 'forge') { // THE FOUNDRY (2026-11-12): the leader casts the squad's coin
+        if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
+        let fb = {}; try { fb = await request.json(); } catch (e) {}
+        const fsym = String(fb.sym || '').toUpperCase().replace(/[^A-Z]/g, '');
+        if (!/^[A-Z]{3,5}$/.test(fsym)) return new Response('{"error":"bad_sym"}', { status: 400, headers: jh });
+        if (await rngSymTaken(env, fsym)) return new Response(JSON.stringify({ error: 'sym_taken', why: 'that ticker is a market somewhere on the site' }), { status: 409, headers: jh });
+        let r = null; try { r = await usersDO(env, '/foundry/cast', { uid: su.id, sym: fsym, name: fb.name, start: fb.start, mix: fb.mix }); } catch (e) {}
+        if (r && r.ok && r.coin) {
+          try { await rngRegistryRefresh(env); } catch (e) {}
+          try { ctx.waitUntil(mpadTick(env).catch(() => {})); } catch (e) {} // the first minute is recorded now, not at the next cron
+          const c = r.coin, sqn = (c.squad && c.squad.name) || 'A squad';
+          const line = sqn + ' cast its own coin: ' + c.sym + ' (' + c.name + ') launched at $' + c.start + ' in the RNG section - ' + c.mix.filter(x => x.k !== 'rand').map(x => Math.round(x.w * 100) + '% ' + ((RNG_DRIVERS[x.k] || {}).label || x.k)).join(', ') + ', the rest chance. It ranks nowhere and pays nothing; it is theirs.';
+          try { ctx.waitUntil(houseLine(env, 'global2', line)); } catch (e) {}
+          try { if (c.sid) ctx.waitUntil(houseLine(env, 'room_' + String(c.sid).toUpperCase(), 'Your coin is live: ' + c.sym + ' at $' + c.start + '. Trade it from the RNG tab of the market window.')); } catch (e) {}
+          try { ctx.waitUntil(tgAdmin(env, '<b>Foundry: a coin was cast</b> - ' + sqn + ' -> ' + c.sym + ' (' + c.name + ') at $' + c.start, { kind: 'foundry-cast', sev: 'info' })); } catch (e) {}
+          try { ctx.waitUntil(evPush(env, request, 'squad', sqn + ' cast ' + c.sym + ' at $' + c.start, '/squads/', {}, su.id)); } catch (e) {}
+        }
+        return new Response(JSON.stringify(r || { error: 'unavailable' }), { status: r && r.ok ? 200 : (r && r.error ? 400 : 503), headers: jh });
+      }
       if (sub === 'raid') {
         if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
         let rb = {}; try { rb = await request.json(); } catch (e) {}
@@ -31695,6 +31875,7 @@ export default {
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match - 'recap' must never be parsed as a coin slug
       if (url.pathname === '/liquidations/records' || url.pathname === '/liquidations/records/') return handleLiqRecords(url, env, request); // the record book over the archive (feature #14) - same rule, before the coin match
+      { const _mRp = url.pathname.match(/^\/rng\/([A-Za-z]{3,5})\/?$/); if (_mRp) return handleRngPage(env, _mRp[1]); } // a squad coin's own page (the Foundry, 2026-11-12)
       if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env, request);
       const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
       if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
@@ -32159,7 +32340,13 @@ export class OpsLog {
       // `sql` and the parsed body are per-route in this class (see /upsample below) - they are NOT fetch-level locals
       const sub = path.slice(6), sql = this.state.storage.sql;
       let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
-      if (sub === 'head') { const r = this.rows('SELECT m, px, inputs FROM mpadpx ORDER BY m DESC LIMIT 1')[0]; if (!r) return this.j({ ok: false, empty: true }); let inp = null; try { inp = JSON.parse(r.inputs || 'null'); } catch (e) {} return this.j({ ok: true, m: +r.m, px: +r.px, inputs: inp }); }
+      /* A SQUAD COIN'S SERIES (the Foundry, 2026-11-12) lives in `rngpx`, keyed (sym, m) - the same shape, the same INSERT OR IGNORE
+         rule, one table for every squad coin. `sym` absent or MPAD = the house series in `mpadpx`, exactly as before. */
+      const rsym = String(url.searchParams.get('sym') || b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const isSq = !!(rsym && rsym !== 'MPAD');
+      if (isSq) { try { sql.exec('CREATE TABLE IF NOT EXISTS rngpx(sym TEXT, m INTEGER, px REAL NOT NULL, step REAL DEFAULT 0, parts TEXT, inputs TEXT, ts INTEGER, PRIMARY KEY(sym,m))'); } catch (e) {} }
+      const T = isSq ? 'rngpx' : 'mpadpx', SW = isSq ? ' sym=? AND' : '', sa = isSq ? [rsym] : []; // every WHERE below starts with `WHERE<SW>` and its args with `...sa`
+      if (sub === 'head') { const r = this.rows('SELECT m, px, inputs FROM ' + T + ' WHERE' + SW + ' 1=1 ORDER BY m DESC LIMIT 1', ...sa)[0]; if (!r) return this.j({ ok: false, empty: true }); let inp = null; try { inp = JSON.parse(r.inputs || 'null'); } catch (e) {} return this.j({ ok: true, m: +r.m, px: +r.px, inputs: inp, sym: rsym || 'MPAD' }); }
       if (sub === 'range') {
         const f = Math.max(0, +url.searchParams.get('from') || 0), t = Math.max(f, +url.searchParams.get('to') || f);
         /* A WIDE WINDOW IS DECIMATED, NEVER REFUSED. The 200,000-minute refusal here is what made 4h and 1D charts
@@ -32171,13 +32358,13 @@ export class OpsLog {
         /* READ DESC AND REVERSE: a LIMIT on an ASCENDING read of a growing table keeps the OLDEST rows, which on a
            chart means a window that silently drops the newest candles (the 2026-10-12 DM-thread bug, same shape). */
         const rows = (every > 1
-          ? this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? AND m % ? = 0 ORDER BY m DESC LIMIT 8000', f, t, every)
-          : this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? ORDER BY m DESC LIMIT 8000', f, t)).reverse();
+          ? this.rows('SELECT m, px FROM ' + T + ' WHERE' + SW + ' m>=? AND m<=? AND m % ? = 0 ORDER BY m DESC LIMIT 8000', ...sa, f, t, every)
+          : this.rows('SELECT m, px FROM ' + T + ' WHERE' + SW + ' m>=? AND m<=? ORDER BY m DESC LIMIT 8000', ...sa, f, t)).reverse();
         /* THE NEWEST ANCHOR IN THE WINDOW IS ALWAYS CARRIED, whatever the stride. Without it a 1D candle at stride
            240 closed on a sample up to four hours old, so the chart's forming candle disagreed with the live price
            readout beside it - two numbers for one quantity, which is worse than either being coarse. */
         if (every > 1) {
-          const last = this.rows('SELECT m, px FROM mpadpx WHERE m>=? AND m<=? ORDER BY m DESC LIMIT 1', f, t)[0];
+          const last = this.rows('SELECT m, px FROM ' + T + ' WHERE' + SW + ' m>=? AND m<=? ORDER BY m DESC LIMIT 1', ...sa, f, t)[0];
           if (last && (!rows.length || +rows[rows.length - 1].m !== +last.m)) rows.push(last);
         }
         return this.j({ ok: true, every, rows });
@@ -32189,21 +32376,23 @@ export class OpsLog {
       if (sub === 'day') {
         const f = Math.max(0, Math.floor(+url.searchParams.get('from') || 0)), t = Math.floor(+url.searchParams.get('to') || 0);
         if (!(t > f) || t - f > 1500) return this.j({ ok: false, error: 'bad_range' }, 400);
-        const rows = this.rows('SELECT m, px, step, parts, inputs FROM mpadpx WHERE m>=? AND m<? ORDER BY m ASC', f, t);
+        const rows = this.rows('SELECT m, px, step, parts, inputs FROM ' + T + ' WHERE' + SW + ' m>=? AND m<? ORDER BY m ASC', ...sa, f, t);
         return this.j({ ok: true, from: f, to: t, rows });
       }
       if (sub === 'put') {
         const m = Math.floor(+b.m || 0), px = +b.px;
         if (!(m > 0) || !(px > 0)) return this.j({ ok: false, error: 'bad_point' }, 400);
         // INSERT OR IGNORE: a minute already written is never moved, whatever retried the write
-        sql.exec('INSERT OR IGNORE INTO mpadpx(m,px,step,parts,inputs,ts) VALUES(?,?,?,?,?,?)', m, px, +b.step || 0, JSON.stringify(b.parts || {}), JSON.stringify(b.inputs || {}), Date.now());
-        if (Math.random() < 0.01) { try { sql.exec('DELETE FROM mpadpx WHERE m < ?', m - 576000); } catch (e) {} } // ~400 days
-        return this.j({ ok: true, m, px, rows: (this.rows('SELECT COUNT(*) c FROM mpadpx')[0] || {}).c || 0 });
+        if (isSq) sql.exec('INSERT OR IGNORE INTO rngpx(sym,m,px,step,parts,inputs,ts) VALUES(?,?,?,?,?,?,?)', rsym, m, px, +b.step || 0, JSON.stringify(b.parts || {}), JSON.stringify(b.inputs || {}), Date.now());
+        else sql.exec('INSERT OR IGNORE INTO mpadpx(m,px,step,parts,inputs,ts) VALUES(?,?,?,?,?,?)', m, px, +b.step || 0, JSON.stringify(b.parts || {}), JSON.stringify(b.inputs || {}), Date.now());
+        if (Math.random() < 0.01) { try { sql.exec('DELETE FROM ' + T + ' WHERE m < ?', m - 576000); } catch (e) {} } // ~400 days
+        return this.j({ ok: true, m, px, rows: (this.rows('SELECT COUNT(*) c FROM ' + T + ' WHERE' + SW + ' 1=1', ...sa)[0] || {}).c || 0 });
       }
       /* A BACKFILLED MINUTE SAYS SO IN ITS OWN ROW (`parts` = MPAD.seedTag), because the only safe way to redo a
          reconstruction is to delete exactly what the last one wrote - never a range, which would take the live
          minutes inside it with it. A live tick's `parts` is the real per-component breakdown, so the two can never
          be confused, and `clearseed` can only ever reach rows this route created. */
+      if (sub === 'drop' && isSq) { sql.exec('DELETE FROM rngpx WHERE sym=?', rsym); return this.j({ ok: true, sym: rsym }); } // an uncast coin's series (the E2E's cleanup; never the house table)
       if (sub === 'clearseed') {
         const before = (this.rows('SELECT COUNT(*) c FROM mpadpx')[0] || {}).c || 0;
         /* The second clause is the LEGACY shape: the first reconstruction wrote '{}' into both columns, before the
@@ -34785,6 +34974,12 @@ export class UserStore {
     for (const col of ['entry REAL', 'exit REAL']) { try { s.exec('ALTER TABLE tradeev ADD COLUMN ' + col); } catch (e) {} } // 2026-10-23: the fill prices, so the Following feed can open the same trade sheet (Copy / Chart / AI analyze) the push does
     try { s.exec('ALTER TABLE tradeev ADD COLUMN cp INTEGER DEFAULT 0'); } catch (e) {} // PAPER COPY (2026-11-12, feature #2): 1 on a mirrored trade - every board, duel, raid, report, mission and record reads cp=0
     try { s.exec('CREATE TABLE IF NOT EXISTS copies(uid TEXT, leader TEXT, margin INTEGER, ts INTEGER, PRIMARY KEY(uid,leader))'); s.exec('CREATE INDEX IF NOT EXISTS copies_leader ON copies(leader)'); } catch (e) {} // who copies whom, at what margin per trade
+    // THE FOUNDRY (2026-11-12): the squad treasury of parts, its log, the per-member daily caps, and the coin a squad cast
+    try { s.exec('CREATE TABLE IF NOT EXISTS sqparts(sid TEXT PRIMARY KEY, alloy REAL DEFAULT 0, signal REAL DEFAULT 0, ore REAL DEFAULT 0, flux REAL DEFAULT 0, spark REAL DEFAULT 0, upd INTEGER)');
+      s.exec('CREATE TABLE IF NOT EXISTS sqpartlog(sid TEXT, ts INTEGER, uid TEXT, kind TEXT, amt REAL, why TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS sqpartlog_sid ON sqpartlog(sid, ts)');
+      s.exec('CREATE TABLE IF NOT EXISTS sqpartday(uid TEXT, day TEXT, kind TEXT, n REAL, PRIMARY KEY(uid,day,kind))');
+      s.exec('CREATE TABLE IF NOT EXISTS sqcoin(sid TEXT PRIMARY KEY, sym TEXT UNIQUE, name TEXT, start REAL, mix TEXT, seed INTEGER, created INTEGER, status TEXT)');
+      this._rngSyncExcl(); } catch (e) {}
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     try { s.exec('ALTER TABLE duels ADD COLUMN xp_paid INTEGER DEFAULT 0'); } catch (e) {}
@@ -35183,6 +35378,7 @@ export class UserStore {
       : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Try again in a day.');
     for (const uid of this._squadUids(r.sid)) this._pushNotif(uid, 'squad', line, '/squads/');
     if (cleared) this._sqAddValor(r.sid, SQUAD_VALOR.raidClear, 'raid cleared'); // Valor for clearing a raid (2026-10-01)
+    try { this._fdAddSquad(r.sid, 'ore', cleared ? FOUNDRY.rate.raidClear : FOUNDRY.rate.raidFail, this._squadLeader(r.sid) || '', 'raid ' + r.coin + (cleared ? ' cleared' : ' failed')); } catch (e) {} // the Foundry: Ore per raid, to the squad
     try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target), '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
     return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
   }
@@ -35378,6 +35574,49 @@ export class UserStore {
      copies of one leader, a leader open over COPY_LEADER_MAX_MARGIN is not mirrored. A copier whose account is not active gets nothing. */
   _copiedSet() { if (this._cpSet) return this._cpSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT leader FROM copies')) s.add(String(r.leader)); } catch (e) {} this._cpSet = s; return s; }
   _copiedBust() { this._cpSet = null; }
+  /* THE FOUNDRY (2026-11-12): parts accrue into the SQUAD's treasury from what members already do. `_fdAdd` is per member (it applies
+     the member's daily cap for the kind); `_fdAddSquad` credits the squad directly (Ore per raid). Both refuse quietly for anybody
+     in no squad - the hook sites pay one Set lookup, the way _sqShare does. */
+  _fdDay() { return new Date().toISOString().slice(0, 10); }
+  _fdAdd(uid, kind, amt, why) {
+    try {
+      uid = String(uid || '').replace(/^u:/, ''); amt = +amt || 0;
+      if (!uid || !(amt > 0) || FOUNDRY.kinds.indexOf(kind) < 0 || !this._sqUids().has(uid)) return 0;
+      const m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; if (!m) return 0;
+      const sql = this.state.storage.sql, day = this._fdDay(), cap = FOUNDRY.cap[kind];
+      if (cap != null) {
+        const had = +((this.rows('SELECT n FROM sqpartday WHERE uid=? AND day=? AND kind=?', uid, day, kind)[0] || {}).n || 0);
+        amt = Math.min(amt, Math.max(0, cap - had)); if (!(amt > 1e-9)) return 0;
+        sql.exec('INSERT INTO sqpartday(uid,day,kind,n) VALUES(?,?,?,?) ON CONFLICT(uid,day,kind) DO UPDATE SET n=n+excluded.n', uid, day, kind, amt);
+      }
+      return this._fdAddSquad(m.sid, kind, amt, uid, why);
+    } catch (e) { return 0; }
+  }
+  _fdAddSquad(sid, kind, amt, uid, why) {
+    try {
+      amt = Math.round((+amt || 0) * 1000) / 1000; if (!sid || !(amt > 0) || FOUNDRY.kinds.indexOf(kind) < 0) return 0; // kind is validated against the table, so it may name the column
+      const sql = this.state.storage.sql, now = Date.now();
+      sql.exec('INSERT OR IGNORE INTO sqparts(sid,upd) VALUES(?,?)', sid, now);
+      sql.exec('UPDATE sqparts SET ' + kind + '=COALESCE(' + kind + ',0)+?, upd=? WHERE sid=?', amt, now, sid);
+      sql.exec('INSERT INTO sqpartlog(sid,ts,uid,kind,amt,why) VALUES(?,?,?,?,?,?)', sid, now, String(uid || ''), kind, amt, String(why || '').slice(0, 60));
+      if (Math.random() < 0.05) { try { sql.exec('DELETE FROM sqpartlog WHERE sid=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM sqpartlog WHERE sid=? ORDER BY ts DESC LIMIT 200))', sid, sid); } catch (e) {} }
+      return amt;
+    } catch (e) { return 0; }
+  }
+  _fdState(sid) {
+    const p = this.rows('SELECT * FROM sqparts WHERE sid=?', sid)[0] || {};
+    const parts = {}, pct = {}; let ready = true;
+    for (const k of FOUNDRY.kinds) { const v = Math.floor((+p[k] || 0) * 10) / 10, need = FOUNDRY.cost[k]; parts[k] = v; pct[k] = Math.min(100, Math.round(v / need * 100)); if (v < need) ready = false; }
+    const log = this.rows('SELECT ts, uid, kind, amt, why FROM sqpartlog WHERE sid=? ORDER BY ts DESC LIMIT 12', sid).map(r => { const u = r.uid ? this.rows('SELECT username FROM users WHERE id=?', r.uid)[0] : null; return { ts: +r.ts, who: (u && u.username) || '', kind: r.kind, amt: +r.amt, why: r.why || '' }; });
+    return { parts, cost: FOUNDRY.cost, cap: FOUNDRY.cap, labels: FOUNDRY.labels, from: FOUNDRY.from, pct, ready, coin: this._fdCoin(sid), log, minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers };
+  }
+  _fdCoin(sid) { const c = this.rows('SELECT * FROM sqcoin WHERE sid=?', sid)[0]; return c ? this._fdCoinPub(c) : null; }
+  _fdCoinPub(c) {
+    let mix = []; try { mix = JSON.parse(c.mix || '[]'); } catch (e) {}
+    const sq = this.rows('SELECT id, name, tag, crest FROM squads WHERE id=?', c.sid)[0] || {};
+    return { sym: c.sym, name: c.name, start: +c.start, mix, seed: +c.seed, created: +c.created, dayLaunch: new Date(+c.created).toISOString().slice(0, 10), status: c.status || 'live', sid: c.sid, squad: { sid: sq.id || c.sid, name: sq.name || '', tag: sq.tag || '', crest: crestNorm(sq.crest) } };
+  }
+  _rngSyncExcl() { try { const rows = this.rows("SELECT sym FROM sqcoin WHERE status='live'"); globalThis.__rngSyms = new Set(rows.map(r => String(r.sym))); LB_EXCL_SQL = lbExclSqlBuild(); } catch (e) {} } // this isolate's own copy of "which symbols rank nowhere" - the worker's comes from KV
   _copyFanOut(leader, ops) {
     const now = Date.now();
     let copiers = []; try { copiers = this.rows("SELECT c.uid, c.margin FROM copies c JOIN users u ON u.id=c.uid WHERE c.leader=? AND (u.status IS NULL OR u.status='active') LIMIT 200", leader); } catch (e) { copiers = []; }
@@ -35397,6 +35636,10 @@ export class UserStore {
           const m = Math.max(1, Math.min(10000, +c.margin || 100)), fr = +e.feeRate || 0, qty = m * lev / entry, long = e.side !== 'short';
           const t = { id: 'srv' + now.toString(36) + 'c' + Math.random().toString(36).slice(2, 7), ts: now, sym: String(e.sym || '').toUpperCase().slice(0, 12), side: long ? 'long' : 'short', entry, stop: (e.stop != null && +e.stop > 0) ? +e.stop : null, tp: (e.tp != null && +e.tp > 0) ? +e.tp : null, lev, qty, notional: m * lev, margin: m, riskAmt: m, feeOpen: _feeOpen(m, lev, fr), liq: (+e.liq > 0) ? +e.liq : mpcLiq(entry, lev, +e.mmr || 0.005, long, fr), mmr: +e.mmr || 0.005, feeRate: fr, feeVenue: e.feeVenue || '', rz: e.rz || '', status: 'open', pnl: null, src: 'srv', swT: now, copy: 1, copyOf: String(leader), copyName: ln, copyTid: String(e.id || '') };
           try { this._syncJournal(cu, [t], null, true, 'copy'); } catch (e2) {}
+          /* THE LEADER EARNS 1 XP PER COPIED TRADE (2026-11-12, owner: "1xp za svaki kopirani trejd coveku od koga se kopira") - one grant per
+             mirrored row, through the ordinary XP path with its own day cap (100: three copiers on a 50-trade day is 150, and an alt
+             farming a main through copies is the shape the cap is for). The copier earns nothing - the trade was not theirs. */
+          try { this._grantXp(String(leader), 'copy', 1, { dayCap: 100, note: 'copied by ' + cu.slice(0, 8) }); } catch (e3) {}
         }
       } else if (kind === 'close') {
         const exit = +e.exit; if (!(exit > 0)) continue;
@@ -35793,6 +36036,7 @@ export class UserStore {
         // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
         // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
+        try { if (kind === 'close' && srvAuth && !lbExcluded(e.sym) && !e.copy && (e.status === 'win' || e.status === 'loss')) this._fdAdd(uid, 'alloy', ((+e.notional > 0) ? +e.notional : (+e.qty || 0) * (+e.entry || 0)) * FOUNDRY.rate.alloyPerUsd, 'closed ' + String(e.sym || '').toUpperCase()); } catch (eA) {} // the Foundry: Alloy from a server-settled close
         try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
         try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
         try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null && !e.copy) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
@@ -36201,6 +36445,49 @@ export class UserStore {
       }
       out.sort((a, c) => a.ts - c.ts);
       return this.j({ ok: true, users, rows: out });
+    }
+    if (path.indexOf('/foundry/') === 0) { // THE FOUNDRY (2026-11-12): the treasury, the cast, the registry list
+      if (path === '/foundry/coins') return this.j({ ok: true, coins: this.rows("SELECT * FROM sqcoin WHERE status='live' ORDER BY created ASC").map(c => this._fdCoinPub(c)) });
+      if (path === '/foundry/add') { const n = this._fdAdd(b.uid, String(b.kind || ''), +b.amt || 0, String(b.why || '')); return this.j({ ok: true, added: n }); }
+      if (path === '/foundry/state') { const uid = String(b.uid || '').replace(/^u:/, ''); const m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; if (!m) return this.j({ error: 'no_squad' }); return this.j({ ok: true, state: this._fdState(m.sid) }); }
+      if (path === '/foundry/grant') { // the owner's / E2E hook - the worker guards it with the admin key; it SETS the treasury (and the squad XP) so a cast can be driven end to end
+        const sid = String(b.sid || ''); if (!sid || !this.rows('SELECT 1 FROM squads WHERE id=?', sid)[0]) return this.j({ error: 'no_squad' });
+        const sql = this.state.storage.sql; sql.exec('INSERT OR IGNORE INTO sqparts(sid,upd) VALUES(?,?)', sid, Date.now());
+        for (const k of FOUNDRY.kinds) if (b.parts && b.parts[k] != null) sql.exec('UPDATE sqparts SET ' + k + '=? WHERE sid=?', +b.parts[k] || 0, sid);
+        if (b.sxp != null) sql.exec('UPDATE squads SET sxp=? WHERE id=?', +b.sxp || 0, sid);
+        if (b.uncast) { sql.exec('DELETE FROM sqcoin WHERE sid=?', sid); this._rngSyncExcl(); }
+        return this.j({ ok: true, state: this._fdState(sid) });
+      }
+      if (path === '/foundry/cast') {
+        const uid = String(b.uid || '').replace(/^u:/, ''); const m = this.rows('SELECT sid, role FROM squadm WHERE uid=?', uid)[0]; if (!m) return this.j({ error: 'no_squad' });
+        const sq = this.rows('SELECT * FROM squads WHERE id=?', m.sid)[0]; if (!sq) return this.j({ error: 'no_squad' });
+        if (String(sq.leader) !== uid) return this.j({ error: 'leader_only' });
+        if (this.rows('SELECT 1 FROM sqcoin WHERE sid=?', m.sid)[0]) return this.j({ error: 'has_coin' }); // one living coin per squad
+        const lv = squadLevel(+sq.sxp || 0).lv; if (lv < FOUNDRY.minLevel) return this.j({ error: 'level', need: FOUNDRY.minLevel, have: lv });
+        const n = (this.rows('SELECT COUNT(*) c FROM squadm WHERE sid=?', m.sid)[0] || {}).c || 0; if (n < FOUNDRY.minMembers) return this.j({ error: 'members', need: FOUNDRY.minMembers, have: n });
+        const st = this._fdState(m.sid); if (!st.ready) return this.j({ error: 'parts', state: st });
+        // EVERY FREE CHECK BEFORE THE ONE THAT SPENDS (the squad-create rule): the ticker, the price and the mix are judged before a part moves
+        const sym = String(b.sym || '').toUpperCase().replace(/[^A-Z]/g, ''); if (!FOUNDRY.symRe.test(sym)) return this.j({ error: 'bad_sym' });
+        if (FOUNDRY.reserved.indexOf(sym) >= 0 || (Array.isArray(b.taken) && b.taken.indexOf(sym) >= 0) || this.rows('SELECT 1 FROM sqcoin WHERE sym=?', sym)[0]) return this.j({ error: 'sym_taken' });
+        const name = String(b.name || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24) || sym;
+        const start = Math.round((+b.start || 0) * 100) / 100; if (!(start >= FOUNDRY.startMin && start <= FOUNDRY.startMax)) return this.j({ error: 'bad_start', min: FOUNDRY.startMin, max: FOUNDRY.startMax });
+        const mixIn = Array.isArray(b.mix) ? b.mix : [], seen = {}, mix = []; let sum = 0;
+        for (const x of mixIn) { const k = String((x && x.k) || ''), w = Math.round(+((x && x.w) || 0)); if (RNG_PICK.indexOf(k) < 0 || seen[k] || w < FOUNDRY.wMin) return this.j({ error: 'bad_mix', drivers: RNG_PICK, wMin: FOUNDRY.wMin }); seen[k] = 1; sum += w; mix.push({ k, w }); }
+        if (mix.length !== FOUNDRY.mixN) return this.j({ error: 'bad_mix', need: FOUNDRY.mixN });
+        const randW = 100 - sum; if (randW < FOUNDRY.randMin) return this.j({ error: 'rand_min', min: FOUNDRY.randMin, have: randW });
+        mix.push({ k: 'rand', w: randW });
+        const sql = this.state.storage.sql, now = Date.now();
+        for (const k of FOUNDRY.kinds) sql.exec('UPDATE sqparts SET ' + k + '=COALESCE(' + k + ',0)-? WHERE sid=?', FOUNDRY.cost[k], m.sid);
+        const seed = (Math.floor(Math.random() * 4294967295) >>> 0) || 7;
+        sql.exec('INSERT INTO sqcoin(sid,sym,name,start,mix,seed,created,status) VALUES(?,?,?,?,?,?,?,?)', m.sid, sym, name, start, JSON.stringify(mix.map(x => ({ k: x.k, w: x.w / 100 }))), seed, now, 'live');
+        sql.exec('INSERT INTO sqpartlog(sid,ts,uid,kind,amt,why) VALUES(?,?,?,?,?,?)', m.sid, now, uid, 'cast', 0, 'cast ' + sym + ' at $' + start);
+        this._rngSyncExcl();
+        for (const mu of this._squadUids(m.sid)) { try { this._pushNotif(mu, 'squad', (sq.name || 'Your squad') + ' cast its own coin: ' + sym + ' (' + name + ') at $' + start + ' - it trades in the RNG section now', '/squads/'); } catch (e) {} }
+        try { this._sqAddValor(m.sid, SQUAD_VALOR.level, 'coin cast'); } catch (e) {}
+        try { this._opsEv(uid, 'squad', (sq.name || 'squad') + ' cast ' + sym + ' at $' + start, '/squads/', { act: 'cast', sym }); } catch (e) {}
+        return this.j({ ok: true, coin: this._fdCoin(m.sid), state: this._fdState(m.sid) });
+      }
+      return this.j({ error: 'not_found' });
     }
     if (path.indexOf('/copy/') === 0) { // PAPER COPY (2026-11-12, feature #2): who copies whom, at what margin per trade
       const uid = String(b.uid || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' });
@@ -36975,6 +37262,7 @@ export class UserStore {
               if (st === 7 || st === 30 || st === 100) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, 'streak' + st, now, 'streak'); this._grantXp(uid, 'streak', 50, { note: st + '-day streak frame unlocked' }); } catch (eS) {} } // THE VAULT: milestone frames - earn-only, never buyable
               this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' });
               this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
+              try { this._fdAdd(uid, 'spark', FOUNDRY.rate.spark + (st >= 7 ? FOUNDRY.rate.sparkStreak7 : 0), st + '-day check-in'); } catch (eF) {} // the Foundry: Spark from showing up
               // Ticks: the check-in is the single biggest source, and it scales with the streak. Retention is
               // the north star, so the currency should be won mostly by coming back rather than by grinding.
               this._grantTicks(uid, 'checkin', 10 + Math.min(30, st), { dayCap: TICK_CAP.checkin, note: st + '-day streak check-in' });
@@ -37212,7 +37500,13 @@ export class UserStore {
       for (const d of defs) {
         let c = 0;
         try {
-          if (d.vt === 'ev') { c = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type=?', uid, dayStart, String(d.va))[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'ev:' + String(d.va))[0] || {}).n || 0; if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
+          if (d.vt === 'ev') { c = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type=?', uid, dayStart, String(d.va))[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'ev:' + String(d.va))[0] || {}).n || 0;
+            /* A TRADE MISSION IS VERIFIED FROM THE BOOK, NOT ONLY FROM THE BEACON (2026-11-12, ibrar0805: "I opened more than 12 trades but the
+               mission of open 10 trades is still not completing"). The `paper` event is the BROWSER's beacon (home.js and the /charts quick trade
+               send it; the phone chart engine never did, and a tracker-blocking extension drops /api/track outright), so a member's own
+               server-filled opens went uncounted. The journal is the fact: every row opened today that is the member's own (never a mirrored
+               copy) counts, and the larger of the two readings stands. */
+            if (String(d.va) === 'paper') { try { const jo = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart).length; if (jo > c) c = jo; } catch (e9) {} } if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
           else if (d.vt === 'pv') { c = (this.rows("SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type='pageview' AND path LIKE ?", uid, dayStart, String(d.va) + '%')[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'pv:' + String(d.va))[0] || {}).n || 0; }
           // social/academy missions - verified against the real tables (not client-trusted); uid stored without the 'u:' prefix
           else if (d.vt === 'follow') { c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; try { c += (this.rows('SELECT COUNT(*) n FROM followreq WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; } catch (e) {} } // follow is request-based now - a pending request counts as taking the action (else the mission is uncompletable by the user alone)
@@ -37467,7 +37761,7 @@ export class UserStore {
       const prev = this._examState(uid)[row.course] || {}, passed = score >= ACAD_EXAM.pass, perfect = score === ids.length;
       sql.exec('UPDATE acadexam SET status=?, score=?, sub=?, wrong=? WHERE id=?', passed ? 'pass' : 'fail', score, now, JSON.stringify(wrong), id);
       let xp = 0, perfectXp = 0, ticks = 0;
-      if (passed && !prev.passed) { xp = this._grantXp(uid, 'academy_exam', ACAD_EXAM.xp, { note: 'final exam ' + row.course + ' passed ' + score + '/' + ids.length }); try { ticks = this._grantTicks(uid, 'exam', ACAD_EXAM.ticks, { dayCap: TICK_CAP.exam, note: 'final exam' }) || 0; } catch (e) {} }
+      if (passed && !prev.passed) { xp = this._grantXp(uid, 'academy_exam', ACAD_EXAM.xp, { note: 'final exam ' + row.course + ' passed ' + score + '/' + ids.length }); try { ticks = this._grantTicks(uid, 'exam', ACAD_EXAM.ticks, { dayCap: TICK_CAP.exam, note: 'final exam' }) || 0; } catch (e) {} try { this._fdAdd(uid, 'signal', FOUNDRY.rate.exam, 'exam ' + row.course); } catch (e) {} }
       if (perfect && !prev.perfect) perfectXp = this._grantXp(uid, 'academy_exam', ACAD_EXAM.perfectXp, { note: 'final exam ' + row.course + ' perfect' });
       const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
       return this.j({ ok: true, score, n: ids.length, pass: ACAD_EXAM.pass, passed, perfect, xp, perfectXp, ticks, first: passed && !prev.passed, review: Object.keys(review), next: perfect ? 0 : now + ACAD_EXAM.cooldownH * 36e5, level: xpLevelOf(u ? u.xp : 0) });
@@ -37501,6 +37795,7 @@ export class UserStore {
         sql.exec('INSERT INTO academy(user_id,lesson,ts,best,tries) VALUES(?,?,?,?,1)', uid, lesson, now, mistakes); fresh = true;
         granted = this._grantXp(uid, 'academy', 25, { lifeCap: 6000, note: 'lesson ' + lesson });
         try { this._grantTicks(uid, 'academy', 6, { dayCap: TICK_CAP.academy, note: 'academy lesson' }); } catch (ae) {}
+        try { this._fdAdd(uid, 'signal', FOUNDRY.rate.lesson, 'lesson ' + lesson); } catch (af) {} // the Foundry: Signal from a first completion
         if (mistakes === 0) { improved = true; up = this._grantXp(uid, 'academy_up', 5, { dayCap: 25, note: 'perfect run ' + lesson }); }
       } else if (mistakes != null) {
         const prev = row.best == null ? null : +row.best;
@@ -39222,9 +39517,12 @@ export class UserStore {
       let curve = null;
       try {
         const from30 = Math.floor(now / 86400000) * 86400000 - 29 * 86400000;
-        const cr = this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(via,'')<>'client' AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY ts ASC LIMIT 5000", u.id, from30);
+        /* aggregated PER DAY in SQL - no row cap. The first cut pulled rows with LIMIT 5000 and a heavy account's card read
+           "5000 server-settled closes" with the oldest days missing (owner, 2026-11-12: "ne treba da ima cap"). Thirty sums
+           cost the store nothing whatever the volume. */
+        const cr = this.rows("SELECT CAST((ts - ?) / 86400000 AS INTEGER) di, SUM(pnl) s, COUNT(*) c FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(via,'')<>'client' AND COALESCE(cp,0)=0 AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY di", from30, u.id, from30);
         const days = []; for (let i = 0; i < 30; i++) days.push([from30 + i * 86400000, 0, 0]);
-        let cn = 0; for (const r of cr) { const i = Math.floor((+r.ts - from30) / 86400000); if (i >= 0 && i < 30 && isFinite(+r.pnl)) { days[i][1] += +r.pnl; days[i][2]++; cn++; } }
+        let cn = 0; for (const r of cr) { const i = +r.di; if (i >= 0 && i < 30 && isFinite(+r.s)) { days[i][1] += +r.s; days[i][2] += +r.c || 0; cn += +r.c || 0; } }
         let acc = 0; const cum = days.map(d => { acc += d[1]; return +acc.toFixed(2); });
         curve = { from: from30, days: days.map(d => [d[0], +d[1].toFixed(2), d[2]]), cum, n: cn, serverOnly: true };
       } catch (e) { curve = null; }
@@ -39779,7 +40077,9 @@ export class UserStore {
       const _rlv = squadLevel(+sq.sxp || 0).lv, _rcap = raidsPerDayCap(_rlv);
       const _rday = (function () { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
       const _rToday = {}; try { for (const row of this.rows('SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND created>=? GROUP BY coin', m.sid, _rday)) _rToday[String(row.coin).toUpperCase()] = +row.c || 0; } catch (e) {}
-      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday,
+      let foundry = null; try { foundry = this._fdState(m.sid); } catch (e) {}
+      const forge = { drivers: RNG_PICK.map(k => ({ k, label: RNG_DRIVERS[k].label })), mixN: FOUNDRY.mixN, randMin: FOUNDRY.randMin, wMin: FOUNDRY.wMin, startMin: FOUNDRY.startMin, startMax: FOUNDRY.startMax, minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, level: squadLevel(+sq.sxp || 0).lv, members: sq.n };
+      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday, foundry, forge,
         duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
     if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
@@ -39849,6 +40149,7 @@ export class UserStore {
       const sid = String((b && b.sid) || url.searchParams.get('sid') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
       const sq = sid ? this._squadPub(sid, true) : null;
       if (sq && sq.hidden) return this.j({ error: 'not_found' }, 404); // a hidden squad (MP-One) cannot be opened by anyone - only its own members see it, via /squad/mine
+      if (sq) { try { sq.coin = this._fdCoin(sid); } catch (e) {} } // the Foundry: the squad's coin on the public sheet
       return sq ? this.j({ squad: sq }) : this.j({ error: 'not_found' }, 404);
     }
     if (path === '/squad/browse') { // EVERY squad, with the state of each - the only public view there is
@@ -41222,6 +41523,7 @@ async function handleComm(url, request, env, ctx) {
       try { await evPush(env, request, 'thesis', author, '/spot/'); } catch (e) {}
       // index it under every coin it names: a Demo Spot buy of that coin by somebody else pays this author (2026-10-26)
       try { const pb2 = JSON.parse(rawBody || '{}'); await thesisIndexAdd(env, { pid: _pd.id, uid, un: author, syms: pb2.syms || '', title: pb2.title || '', ts: Date.now() }); } catch (e) {}
+      try { usersDO(env, '/foundry/add', { uid, kind: 'flux', amt: FOUNDRY.rate.thesis, why: 'thesis published' }).catch(() => {}); } catch (e) {} // the Foundry: Flux from a thesis
       try { await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n5')); await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n30')); } catch (e) {}
       _pd.reward = rw; txt = JSON.stringify(_pd);
     }

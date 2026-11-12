@@ -134,9 +134,10 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
        kog datuma"). One medal PER BOARD, 24px, in the same row as the Premium tag so it costs no row of its own -
        the old one was a 34x43 medal plus a SEASON WINNER caption in a padded pill, about 150x55 on its own line. */
     + '.lbm-toprow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 10px;padding-right:34px}.lbm-toprow .lbm-premtag{margin-bottom:0}'
-    + '.lbm-meds{display:inline-flex;align-items:center;gap:5px}'
+    + '.lbm-meds{display:inline-flex;align-items:center;gap:5px;flex-wrap:nowrap}'
+    + '.lbm-medrow{display:flex;align-items:center;height:32px;margin:6px 0 0;padding:0 2px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;position:relative}.lbm-medrow::-webkit-scrollbar{display:none}'
     + '.lbm-med1{width:24px;height:30px;padding:0;border:0;background:none;cursor:pointer;line-height:0;border-radius:6px;transition:transform .14s,filter .14s}'
-    + '.lbm-med1.real{width:26px;height:32px}'
+    + '.lbm-med1.real{width:24px;height:30px}' /* one box for every medal since 2026-11-12 - the real-money ones keep their bezel and glow, not two extra pixels that made the row ragged */
     + '.lbm-med1:hover,.lbm-med1.on{transform:translateY(-1px) scale(1.06)}.lbm-med1:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}'
     + '.lbm-med1 svg{display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}'
     + '.lbm-med1.real svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.55)) drop-shadow(0 0 5px var(--mc,#fff))}'
@@ -371,8 +372,10 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
         + '<button type="button" class="lbm-port" data-lbport="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '" title="' + esc(portTtl) + '" aria-label="' + esc(portTtl) + '">' + PORT_SVG + '</button>'
         + copyBtn + folBtn + dmBtn + '</div>';
       var av = d.avatar ? (/^data:image\//.test(d.avatar) ? '<img class="lbm-av lbm-av-img" src="' + esc(d.avatar) + '" alt="">' : '<span class="lbm-av">' + esc(d.avatar) + '</span>') : '';
-      var bioHtml = d.bio ? '<div class="lbm-bio"' + '' + '>' + esc(d.bio) + '</div>' : '';
-      var coinsHtml = (d.coins && d.coins.length) ? '<div class="lbm-coins">' + d.coins.map(function (c) { return '<span class="lbm-coin"' + '' + '>' + esc(c) + '</span>'; }).join('') + '</div>' : '';
+      /* THE BIO AND THE FAVOURITE COINS ARE GONE FROM THE CARD (2026-11-12, owner: "izbaci svuda ovo da se nalepi kao coin text i neki tekst
+         custom na profil karticama, to nam ne treba") - the settings that wrote them left mp-auth the same day; the payload fields stay
+         (an older bundle may still read them) and are simply not drawn. */
+      var bioHtml = '', coinsHtml = '';
       // The squad badge lives IN the squad row, at its right end (2026-10-17). Its first home was the top-left corner, where it sat
       // on the FOUNDER tag; its second was top-right at right:50px, which is exactly where the follow icon went on 10-16, so a
       // badge covered the button. The row is the one place that is the squad's own, and a 22px sigil there costs no height.
@@ -384,9 +387,16 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
          A member with neither gets no row at all. */
       var tagHtml = (d.otag ? '<div class="lbm-premtag lbm-ownertag">' + d.otag + '</div>' : d.owner ? '<div class="lbm-premtag lbm-ownertag">OWNER</div>' : d.premium ? (function(){var tc=TAGC[String(d.frame||'').replace(/[^a-z0-9_]/g,'')]||TAGC['default'];return '<div class="lbm-premtag" data-sheen style="background:linear-gradient(100deg,'+tc[0]+' 0%,'+tc[1]+' 42%,#ffffff 50%,'+tc[1]+' 58%,'+tc[0]+' 100%);background-size:280% 100%;background-position:120% 0;box-shadow:0 0 16px -6px '+tc[0]+'">' + (d.plus ? 'PREMIUM PLUS' : __esT_mpprofile("premiumMember",'PREMIUM MEMBER')) + '</div>';})() : '');
       var medHtml = medalsHtml(d.wins);
-      var topRow = (tagHtml || medHtml) ? ('<div class="lbm-toprow">' + tagHtml + medHtml + '</div><div class="lbm-medp" id="lbmMedP" hidden></div>') : '';
+      /* THE MEDALS HAVE ONE PLACE (2026-11-12, owner: "medalje mora da imaju svoje mesto, skacu svuda po kartici i skoro svakom razlicito
+         prikazane"): they shared the top row with the Premium tag, which wraps - so a Premium winner's medals sat beside the tag, a
+         free member's at the top-left corner, a long list wrapped onto a second line under the X. They are a row of their OWN now,
+         `.lbm-medrow`, directly under the name and level on every card, one 24px tile each, never wrapping (the row scrolls sideways
+         past ten). The top row keeps the tag alone. */
+      var topRow = tagHtml ? ('<div class="lbm-toprow">' + tagHtml + '</div>') : '';
+      var medRow = medHtml ? ('<div class="lbm-medrow">' + medHtml + '</div><div class="lbm-medp" id="lbmMedP" hidden></div>') : '';
       body.innerHTML = topRow
         + '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + '<span class="lbm-nm">' + av + (d.premium ? '<span class="mp-progold">' + esc(d.name) + '</span>' : esc(d.name)) + '</span>' + (d.mutual ? '<span class="lbm-friend" title="You follow each other">★ Friends</span>' : (d.followsMe ? __esT_mpprofile("followsYou",'<span class="lbm-fw" title="Follows you">Follows you</span>') : '')) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.stars && window.mpPrestigeSvg ? window.mpPrestigeSvg(L.stars, lc) : '') + (L.next ? ' · ' + (L.pct || 0) + __esT_mpprofile("pctTo", '% to ') + esc(L.next) : __esT_mpprofile("maxTier", ' · max tier')) + '</div></div></div>'
+        + medRow
         + bioHtml + coinsHtml
         // The squad logo on every member's card is the whole point of the feature (owner 2026-09-29). The
         // renderer lives in mp-auth.js; if that has somehow not parsed the row is skipped rather than drawn

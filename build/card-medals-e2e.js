@@ -126,9 +126,10 @@ const WINS = {
         const r = b.getBoundingClientRect();
         return { cls: b.className, w: Math.round(r.width), h: Math.round(r.height), top: Math.round(r.top), txt: b.textContent.replace(/\s+/g, ''), label: b.getAttribute('aria-label') || b.getAttribute('title') || '' };
       }));
-      ok(tag + ': all four actions are in the one row - Portfolio, Follow, message, duel', acts.length === 4 && /lbm-port/.test(acts[0].cls) && /lbm-folb/.test(acts[1].cls) && /lbm-dm/.test(acts[2].cls) && /lbm-duel/.test(acts[3].cls), acts.map(a => a.cls));
-      ok(tag + ': they are the same size', acts.length === 4 && acts.every(a => a.w === acts[0].w && a.h === acts[0].h) && acts[0].w >= 30 && acts[0].w <= 40, acts.map(a => a.w + 'x' + a.h));
-      ok(tag + ': and on the same line', acts.length === 4 && acts.every(a => Math.abs(a.top - acts[0].top) <= 1), acts.map(a => a.top));
+      // FIVE since 2026-11-12 (paper copy, feature #2): Portfolio, Copy, Follow, message, duel - one row of equal tiles
+      ok(tag + ': all five actions are in the one row - Portfolio, Copy, Follow, message, duel', acts.length === 5 && /lbm-port/.test(acts[0].cls) && /lbm-copyb/.test(acts[1].cls) && /lbm-folb/.test(acts[2].cls) && /lbm-dm/.test(acts[3].cls) && /lbm-duel/.test(acts[4].cls), acts.map(a => a.cls));
+      ok(tag + ': they are the same size', acts.length === 5 && acts.every(a => a.w === acts[0].w && a.h === acts[0].h) && acts[0].w >= 28 && acts[0].w <= 40, acts.map(a => a.w + 'x' + a.h));
+      ok(tag + ': and on the same line', acts.length === 5 && acts.every(a => Math.abs(a.top - acts[0].top) <= 1), acts.map(a => a.top));
       ok(tag + ': Portfolio carries no text, only the coins - but it is still named', acts.length && acts[0].txt === '' && /portfolio/i.test(acts[0].label), acts[0]);
       ok(tag + ': Follow is no longer parked beside the close button', await page.evaluate(() => { const f = document.querySelector('.lbm.on .lbm-folb'), x = document.querySelector('.lbm.on .lbm-x'); if (!f || !x) return false; const fr = f.getBoundingClientRect(), xr = x.getBoundingClientRect(); return fr.top - xr.top > 40; }));
       ok(tag + ': every tile is reachable at its own centre', await page.evaluate(() => [...document.querySelectorAll('.lbm.on .lbm-acts > button')].every(b => { const r = b.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!el && b.contains(el); })));

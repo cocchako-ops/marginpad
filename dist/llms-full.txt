@@ -8,6 +8,8 @@ Last updated: 2026-11-12
 The dated changelog lives in its own file: https://marginpad.io/llms-changelog.txt (newest first, one entry per shipped
 change, back to June 2026). Everything below is the CURRENT state and already reflects every entry there.
 ## RNG section (paper trading)
+
+The Foundry (2026-11-12): a squad (https://marginpad.io/squads/) can cast its OWN RNG coin. Five kinds of parts accrue into the squad's treasury from what members already do (Alloy: server-settled paper closes; Signal: Academy lessons and exams; Ore: raids; Flux: Demo Spot buys and theses; Spark: the daily check-in); a squad at level 5 with four members and a full treasury (2,500 / 400 / 300 / 250 / 350) casts a 3-5 letter ticker, a name, a launch price ($1-$100) and a mix of three drivers plus at least 15% chance. The coin is priced once a minute with MPAD's engine and guards, recorded and never rewritten, traded on the terminal and charted; its page is https://marginpad.io/rng/<sym>/ and its JSON /api/rng/<SYM>; every RNG coin is listed at /api/mpad (`coins`). A squad coin ranks on no leaderboard and pays no XP or Ticks. One living coin per squad.
 MarginPad (MPAD) is our own index in the RNG section of https://marginpad.io/paper-trade , recorded once a minute and never rewritten: 35% Bitcoin dominance, 30% HYPE, 20% ZEC, 15% chance. No exchange lists it and no real market stands behind it, so it earns no XP, no Ticks and no leaderboard place.
 
 ## Whale cohorts

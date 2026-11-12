@@ -397,6 +397,9 @@ function bkSelect(cls, opts, cur) {
     '.hm-tgb{position:relative;overflow:hidden}.hm-tgb i .w{font-size:inherit;color:#8fa3c4}.hm-tgb em{font:9px "Space Mono",monospace;font-style:normal;color:#8fa3c4;margin-left:5px;flex:none}.hm-tgb u{position:absolute;left:0;bottom:0;height:2px;background:#5c6b84;opacity:.9;text-decoration:none}.hm-tgb.l u{background:#2ebd85}.hm-tgb.s u{background:#ff6258}' +
     '.hm-legend{order:4;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin:0!important;padding:6px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;font:10.5px "Space Mono",monospace;color:#8fa3c4;overflow:visible!important;white-space:normal!important}.hm-legend>span{white-space:normal;min-width:0;max-width:100%}.hm-legend b{color:#e9e7df;white-space:nowrap}' +
     '.hm-btn.hm-rp.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.08)}' +
+    '.hm-rps{display:none;align-items:center;gap:3px;margin-left:2px}.hm-rp.on+.hm-rps{display:inline-flex}.hm-rps button{height:25px;min-width:25px;padding:0 6px;border-radius:7px;border:1px solid #232b3a;background:#12161d;color:#8fa3c4;font:700 10px "Space Mono",monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}.hm-rps button svg{width:12px;height:12px}.hm-rps button.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.08)}' +
+    '.hm-rpsc{-webkit-appearance:none;appearance:none;width:72px;height:4px;margin:0 2px 0 4px;border-radius:2px;background:#232b3a;outline:none}.hm-rpsc::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer}.hm-rpsc::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer}' +
+    '@media(max-width:600px){.hm-rpsc{width:48px}}' +
     '@media(max-width:980px){.hm-read{font-size:12px;margin-bottom:7px;padding-bottom:7px}.hm-tgb i .w{display:none}.hm-legend{font-size:10px;gap:3px 10px}.hm-ls{justify-content:flex-start}}' +
     '.hm-mcw{order:4;margin:0!important;min-height:34px}@media(max-width:620px){.hm-mcw{min-height:58px}.hm-mc em{display:none}.hm-mc{gap:3px 10px;padding:7px 10px}}.hm-wrap:has(.hm-mcw:not([style*=none])) .hm-stage{border-radius:0}.hm-mc{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:7px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;font:11px "Space Mono",monospace;color:#8fa3c4}.hm-mc b{color:#e9e7df}.hm-mc .k{color:#c9d4e6;font-weight:700;letter-spacing:.06em;font-size:10px}.hm-mc em{font-style:normal;color:#5c6b84}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
@@ -554,11 +557,17 @@ function bkSelect(cls, opts, cur) {
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
       // tsw is the server telling us WHICH candle took it; crossAt is the fallback for a pool the live
       // price has just passed between two server runs.
-      var cx = s.tsw || (s._gone ? crossAt(s) : 0);
-      // A zone the live price has passed but the candles on screen never reached was crossed before this
-      // window; its whole line is history, so it ends at the right edge of what we can see rather than
-      // being drawn as if it were still standing.
-      var isGone = s.dead || s._gone;
+      /* THE CANDLES DECIDE THE CUT FROM THE FIRST FRAME (2026-11-12, owner's photo: "neke bocne svece nisu bile isprekidane pa posle
+         kad sam usao su bile isprekidane"). The cut used to wait for the SERVER to mark the band dead (the next pools refresh, up
+         to a minute) or for the live price to sit past it; a band the candles on screen had already gone through was drawn standing
+         until then and cut on the next open. crossAt reads the loaded candles, so the same frame is drawn whichever arrives first. */
+      var cx = s.tsw || crossAt(s);
+      var isGone = s.dead || s._gone || !!cx;
+      // A band the live price has just passed between two candles is cut at the newest candle; a band the SERVER says is gone
+      // while no loaded candle ever reached it was swept before the candles we hold - that is history off the left edge, and a
+      // line across the whole map read as "liquidated here" over a price the view never touched.
+      if (!cx && s._gone && bars.length) cx = bars[bars.length - 1].time;
+      if (!cx && s.dead) continue;
       var x1 = isGone ? (cx ? X(cx) : W) : W;
       if (S._rpT) { if (s.t0 > S._rpT) continue; var xr = X(S._rpT); if (x1 > xr) { x1 = xr; isGone = false; cx = 0; } } // replay: nothing past the cursor exists yet, and a band is cut only once the cursor reaches its candle
       if (x1 <= x0 + 0.5) continue;
@@ -582,7 +591,7 @@ function bkSelect(cls, opts, cur) {
         ctx.fillStyle = g; ctx.fillRect(x0, dy, fw, dh);
         ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')'; ctx.fillRect(x0 + fw, dy, x1 - x0 - fw, dh);
       } else ctx.fillRect(x0, dy, x1 - x0, dh);
-      S.bandRects.push({ s: s, x0: x0, x1: x1, y: y, h: bh, al: al });
+      S.bandRects.push({ s: s, x0: x0, x1: x1, y: y, h: bh, al: al, cut: !!(isGone && cx) });
       if (S._flash && S._flash.until > Date.now() && Math.abs(S._flash.price - s.price) < 1e-9 && S._flash.long === s.long) { var fl = 0.35 + 0.55 * Math.abs(Math.sin((S._flash.until - Date.now()) / 160)); ctx.strokeStyle = 'rgba(255,255,255,' + fl.toFixed(2) + ')'; ctx.lineWidth = 1.6; ctx.strokeRect(x0 + 0.5, y - 2.5, Math.max(2, x1 - x0) - 1, bh + 5); if (!S._flashT) { S._flashT = setTimeout(function () { S._flashT = 0; sched(); }, 70); } }
       // The cut itself is marked, so "this line stops" reads as an event rather than as a rendering bug.
       if (isGone && cx && x1 > x0 + 2) {
@@ -591,16 +600,27 @@ function bkSelect(cls, opts, cur) {
       }
     }
     // candles
-    var n = 0; for (i = 0; i < bars.length; i++) if (bars[i].time >= v.t0 && bars[i].time <= v.t1) n++;
-    var cw = Math.max(1.5, Math.min(11, W / (n || 1) * 0.62));
+    /* THE CANDLE WIDTH FOLLOWS THE NARROWEST GAP ON SCREEN, NOT THE AVERAGE (2026-11-12, owner's photo: "svece se preklapaju jedna sa
+       drugom, samo kad gledam iz odredjenog ugla"). W / n is the mean spacing; a back-paginated set with a finer interval, a gap in the
+       series or a partial first and last candle makes real neighbours closer than that mean, and at 62% of the mean two of them share
+       pixels. The smallest distance between two visible neighbours is what no body may exceed. */
+    var n = 0, minDx = Infinity, prevX = null; for (i = 0; i < bars.length; i++) { if (bars[i].time < v.t0 || bars[i].time > v.t1) continue; n++; var xx0 = X(bars[i].time); if (prevX !== null && xx0 - prevX > 0.01) minDx = Math.min(minDx, xx0 - prevX); prevX = xx0; }
+    var cw = Math.max(1.5, Math.min(11, (isFinite(minDx) ? minDx : W / (n || 1)) * 0.62));
     var rpLast = null;
+    /* REPLAY FORMS THE CANDLE UNDER THE CURSOR (2026-11-12, owner: "replay moze mnogo vise smooth, svece da imaju neke animacije"): the
+       newest candle the cursor has reached grows from its open - close, high and low walk out from the open as the cursor crosses
+       the candle's own interval - instead of appearing whole the instant the cursor touches its left edge. A finished candle is
+       drawn as it is. The interval is the gap to the next bar (the last bar uses the gap before it). */
+    var rpIvl = bars.length > 1 ? Math.max(1, bars[1].time - bars[0].time) : 60;
     for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue;
-      if (S._rpT && b.time > S._rpT) continue; if (S._rpT) rpLast = b;
-      var x = X(b.time), up = b.close >= b.open;
+      if (S._rpT && b.time > S._rpT) continue;
+      var bd = b;
+      if (S._rpT) { var nxt = bars[i + 1], iv = nxt ? Math.max(1, nxt.time - b.time) : rpIvl; if (!nxt || nxt.time > S._rpT) { var ef = Math.max(0, Math.min(1, (S._rpT - b.time) / iv)); ef = ef < 1 ? 1 - Math.pow(1 - ef, 2) : 1; bd = { time: b.time, open: b.open, close: b.open + (b.close - b.open) * ef, high: b.open + (b.high - b.open) * ef, low: b.open + (b.low - b.open) * ef }; } rpLast = bd; }
+      var x = X(bd.time), up = bd.close >= bd.open;
       ctx.strokeStyle = up ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, Y(b.high)); ctx.lineTo(x, Y(b.low)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, Y(bd.high)); ctx.lineTo(x, Y(bd.low)); ctx.stroke();
       ctx.fillStyle = up ? '#2ebd85' : '#ff6258';
-      var yO = Y(b.open), yC = Y(b.close), yT = Math.min(yO, yC), bH = Math.max(1.2, Math.abs(yC - yO));
+      var yO = Y(bd.open), yC = Y(bd.close), yT = Math.min(yO, yC), bH = Math.max(1.2, Math.abs(yC - yO));
       if (cw >= 3) { ctx.fillStyle = 'rgba(7,9,12,.9)'; ctx.fillRect(x - cw / 2 - 1, yT - 1, cw + 2, bH + 2); ctx.fillStyle = up ? '#2ebd85' : '#ff6258'; } // the candle keeps an edge over a bright band
       ctx.fillRect(x - cw / 2, yT, cw, bH);
     }
@@ -682,7 +702,17 @@ function bkSelect(cls, opts, cur) {
     if (S._rpT) { // the cursor and the price of that moment
       var rx = X(S._rpT); ctx.strokeStyle = 'rgba(194,246,74,.55)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, PH); ctx.stroke(); ctx.setLineDash([]);
       if (rpLast) { var ry = Y(rpLast.close); ctx.fillStyle = '#c2f64a'; ctx.beginPath(); ctx.arc(rx, ry, 3.5, 0, 6.2832); ctx.fill(); }
-      ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'left'; var rt = __esT_mpheatmap('rpLabel', 'REPLAY') + ' ' + tlabel(S._rpT) + (rpLast ? '  ' + fpx(rpLast.close) : ''); var rw = ctx.measureText(rt).width; ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W / 2 - rw / 2 - 8, 26, rw + 16, 17); ctx.fillStyle = '#c2f64a'; ctx.fillText(rt, W / 2 - rw / 2, 38);
+      /* THE REPLAY KEEPS A RUNNING TALLY (2026-11-12, owner: "nesto korisno iz opcije replay dok on tece"): what has been liquidated up to
+         the cursor inside this window - dollars, longs against shorts, and how many bands the price has already gone through -
+         from the events this page already holds. It is the one figure a replay can add that the still map cannot. */
+      var tUsd = 0, tLong = 0, tN = 0, tCut = 0, rtMs = S._rpT * 1000, v0Ms = v.t0 * 1000;
+      if (S.events) for (var ti = 0; ti < S.events.length; ti++) { var te = S.events[ti]; if (te.ts < v0Ms || te.ts > rtMs) continue; var tv = +te.notional || 0; tUsd += tv; tN++; if (String(te.side || '').indexOf('long') === 0 || te.long === true) tLong += tv; } // the feed says side: 'long_liquidated'
+      for (var bi = 0; bi < S.bandRects.length; bi++) if (S.bandRects[bi].cut) tCut++;
+      ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'left';
+      var rt = __esT_mpheatmap('rpLabel', 'REPLAY') + (S._rpSpeed && S._rpSpeed !== 1 ? ' ' + S._rpSpeed + 'x' : '') + (S._rpPaused ? ' · ' + __esT_mpheatmap('rpPaused', 'paused') : '') + ' · ' + tlabel(S._rpT) + (rpLast ? '  ' + fpx(rpLast.close) : '');
+      var nar2 = W < 520;
+      var rt2 = tN ? (usdShort(tUsd) + ' ' + __esT_mpheatmap('rpSoFar', 'liquidated so far') + (nar2 ? '' : ' · ' + __esT_mpheatmap('rpLongs', 'longs') + ' ' + usdShort(tLong) + ' · ' + __esT_mpheatmap('rpShorts', 'shorts') + ' ' + usdShort(tUsd - tLong)) + (tCut ? ' · ' + tCut + ' ' + __esT_mpheatmap(tCut === 1 ? 'rpBand1' : 'rpBandN', tCut === 1 ? 'band swept' : 'bands swept') : '')) : __esT_mpheatmap('rpNothingYet', 'nothing liquidated yet');
+      var rw = Math.max(ctx.measureText(rt).width, ctx.measureText(rt2).width); ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W / 2 - rw / 2 - 8, 26, rw + 16, 31); ctx.fillStyle = '#c2f64a'; ctx.fillText(rt, W / 2 - rw / 2, 38); ctx.fillStyle = '#aab5c4'; ctx.fillText(rt2, W / 2 - rw / 2, 52);
     }
     if (S.whales && S.whales.length && !S._rpT) {
       ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'right';
@@ -694,10 +724,15 @@ function bkSelect(cls, opts, cur) {
         // position's liquidation price RIGHT NOW; its length means nothing, so it gets a fixed one beside its label.
         var wl = Math.max(90, Math.min(220, W * 0.18)), wx0 = Math.max(0, W - wl), whSel = !!(S.sel && S.sel.type === 'whale' && S.sel.ref === wh);
         if (whSel) { ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke(); }
+        /* A WHALE MARK SAYS WHAT IT IS (2026-11-12, owner's photo, green circle: "$26.0M LONG LIQ 70,588 - cena nije ni dosla do njih a
+           prozor kaze da je tu likvidirano toliko"). The old label read as a measurement at a price the candles never touched. It is a
+           real position that WOULD be liquidated there, nothing has happened yet - so the line is dotted (a band is solid, the live
+           price dashed), the label leads with WHALE and says "liq at". */
+        ctx.save(); ctx.setLineDash([2, 3]);
         ctx.strokeStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke();
-        ctx.fillStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.beginPath(); ctx.arc(wx0, wy, 2.2, 0, 6.2832); ctx.fill();
-        var wt = usdShort(wh.val) + ' ' + (wh.long ? 'LONG' : 'SHORT') + ' ' + __esT_mpheatmap('whLiqHere', 'LIQ') + ' ' + fpx(wq);
+        ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke(); ctx.restore();
+        ctx.fillStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.beginPath(); ctx.moveTo(wx0 - 3.5, wy); ctx.lineTo(wx0, wy - 3.5); ctx.lineTo(wx0 + 3.5, wy); ctx.lineTo(wx0, wy + 3.5); ctx.closePath(); ctx.fill();
+        var wt = __esT_mpheatmap('whMark', 'WHALE') + ' ' + usdShort(wh.val) + ' ' + (wh.long ? 'LONG' : 'SHORT') + ' · ' + __esT_mpheatmap('whLiqAt', 'liq at') + ' ' + fpx(wq);
         var ww = ctx.measureText(wt).width;
         ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - ww - 11, wy - 13, ww + 8, 12);
         ctx.fillStyle = wh.long ? '#66d3a5' : '#ff8f86'; ctx.fillText(wt, W - 7, wy - 4);
@@ -979,7 +1014,7 @@ function bkSelect(cls, opts, cur) {
   // the hover read the collector's complete aggregate at this price over the window, the box read only the orders this browser downloaded around the crossing, which on
   // a long view are the biggest ones alone. The complete figure is the answer on both; the named orders are a detail under it, labelled as what they are. The crossing
   // figure stands in only when it is the larger, i.e. the crossing is older than the window on screen.
-  function zoneDead(z) { return !!(z.dead || z._gone || poolGone(z)); }
+  function zoneDead(z) { return !!(z.dead || z._gone || poolGone(z) || crossAt(z)); } // + a band the loaded candles went through (2026-11-12): the targets row, the frame and the readouts agree with the map's own cut from the first frame
   function zoneUsd(z) {
     var obs = +z.obs || 0, cx = zoneDead(z) ? (z.tsw || crossAt(z)) : 0, su = cx ? sweptUsd(z, cx) : null, named = su && su.usd ? su.usd : 0;
     if (obs > 0 && obs >= named) return { usd: obs, win: obsWinTxt(), su: su, cx: cx };
@@ -3388,7 +3423,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
        candles were PREPENDED to the new coin's (loadAll keeps back-paginated history by time alone), its bands, whales, OI and
        funding stayed on screen under the new name until the fetch landed - and for good if the fetch failed. Every async
        answer now carries the generation it was asked in and is dropped when the reader has moved on. */
-    function resetFor(kind) { S.gen = (S.gen || 0) + 1; S._rpT = 0; if (S._rpRaf) { cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; } S.obs = null; S.obsWin = 0; S.view = null; S.yView = null; S.sel = null; S.bars = []; S._noMore = 0; S._lm = 0; S._flash = null; if (S.showSel) S.showSel();
+    function resetFor(kind) { S.gen = (S.gen || 0) + 1; try { if (S._rpOn && window.__mpHmRpStop) window.__mpHmRpStop(); } catch (e) {} S._rpT = 0; S._rpOn = false; if (S._rpRaf) { cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; } S.obs = null; S.obsWin = 0; S.view = null; S.yView = null; S.sel = null; S.bars = []; S._noMore = 0; S._lm = 0; S._flash = null; if (S.showSel) S.showSel();
       if (kind === 'coin') { S.pools = { alive: [], pMin: 0, pMax: 1, binH: 0 }; S.events = []; S.whales = []; S.whaleNear = null; S.oi = null; S.calib = null; S.funding = null; S._fr = 0; S.moves = null; S.vis = []; S.bandRects = []; }
       if (S.loadEl) S.loadEl.style.display = 'flex'; if (S.tgEl) S.tgEl.innerHTML = ''; try { var c2 = S.cv.getContext('2d'); c2.clearRect(0, 0, S.cv.width, S.cv.height); var c3 = S.pf.getContext('2d'); c3.clearRect(0, 0, S.pf.width, S.pf.height); } catch (e) {} }
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; if (S.syncTop) S.syncTop(); resetFor('coin'); updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
@@ -3512,17 +3547,47 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     // REPLAY (2026-11-12): the window from its first candle to now in about nine seconds. Candles appear as the cursor passes, every band
     // is drawn only up to the cursor and a swept band is cut the moment the cursor reaches its candle, the price tag follows the last
     // visible close. Nothing is fetched and no state is changed: draw() reads S._rpT and nothing else. Press again to stop.
-    function rpStop() { if (!S) return; S._rpT = 0; S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; rpBtn.classList.remove('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>'; sched(); }
+    /* REPLAY v2 (2026-11-12): the cursor moves on a clock of its own (a fraction S._rpF advanced per frame by dt / duration), so it can be
+       PAUSED, run at 1x / 2x / 4x and SCRUBBED without the position jumping; 14 s at 1x. The chips (`.hm-rps`) exist only while it
+       runs. draw() still reads S._rpT and nothing else. */
+    var RP_DUR = 14000, rpT0 = 0, rpT1 = 0;
+    var rpOpts = el('span', 'hm-rps'); rpOpts.setAttribute('role', 'group'); rpOpts.setAttribute('aria-label', 'Replay controls');
+    rpOpts.innerHTML = '<button type="button" data-rps="p" title="' + __esT_mpheatmap('rpPauseT', 'Pause / resume') + '"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>'
+      + '<button type="button" data-rps="1" class="on">1x</button><button type="button" data-rps="2">2x</button><button type="button" data-rps="4">4x</button>'
+      + '<input type="range" class="hm-rpsc" min="0" max="1000" value="0" aria-label="' + __esT_mpheatmap('rpScrubT', 'Scrub the replay') + '">';
+    rpBtn.parentNode.insertBefore(rpOpts, rpBtn.nextSibling);
+    var rpScrub = rpOpts.querySelector('.hm-rpsc');
+    function rpPaint() { rpOpts.querySelectorAll('[data-rps]').forEach(function (b) { var k = b.getAttribute('data-rps'); if (k === 'p') b.classList.toggle('on', !!(S && S._rpPaused)); else b.classList.toggle('on', +k === ((S && S._rpSpeed) || 1)); }); if (S && !rpScrub.matches(':active')) rpScrub.value = String(Math.round((S._rpF || 0) * 1000)); }
+    function rpStop() { if (!S) return; S._rpT = 0; S._rpF = 0; S._rpOn = false; S._rpPaused = false; S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; rpBtn.classList.remove('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>'; sched(); }
+    window.__mpHmRpStop = rpStop; // resetFor (a coin or window change) stops a running replay through this
+    function rpTick() {
+      if (!S || !S._rpOn) return;
+      var last = performance.now();
+      var step = function (now) {
+        if (!S || !S._rpOn) return;
+        var dt = Math.min(100, now - last); last = now;
+        if (!S._rpPaused) S._rpF = Math.min(1, (S._rpF || 0) + dt / (RP_DUR / (S._rpSpeed || 1)));
+        S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); draw();
+        if (S._rpF < 1 || S._rpPaused) S._rpRaf = requestAnimationFrame(step);
+        else { S._rpRaf = 0; setTimeout(function () { if (S && S._rpOn && S._rpF >= 1 && !S._rpPaused) rpStop(); }, 1400); }
+      };
+      S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = requestAnimationFrame(step);
+    }
     function rpStart() {
       if (!S || !S.view || !S.bars.length) return;
-      var v0 = S.view, t0 = Math.max(v0.t0, S.bars[0].time), t1 = Math.min(v0.t1, S.bars[S.bars.length - 1].time), dur = 9000, st = performance.now();
-      if (!(t1 > t0)) return;
+      var v0 = S.view; rpT0 = Math.max(v0.t0, S.bars[0].time); rpT1 = Math.min(v0.t1, S.bars[S.bars.length - 1].time);
+      if (!(rpT1 > rpT0)) return;
+      S._rpOn = true; S._rpF = 0; S._rpPaused = false; S._rpSpeed = S._rpSpeed || 1; S._rpT = rpT0;
       rpBtn.classList.add('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
       try { window.mpHaptic && window.mpHaptic('tap'); } catch (e) {}
-      var step = function (now) { if (!S) return; var f = Math.min(1, (now - st) / dur); S._rpT = t0 + (t1 - t0) * (f < 1 ? f * f * (3 - 2 * f) : 1); draw(); if (f < 1) S._rpRaf = requestAnimationFrame(step); else { S._rpRaf = 0; setTimeout(function () { if (S && S._rpT) rpStop(); }, 900); } };
-      S._rpRaf = requestAnimationFrame(step);
+      rpPaint(); rpTick();
     }
-    rpBtn.addEventListener('click', function () { if (S && S._rpT) rpStop(); else rpStart(); });
+    rpBtn.addEventListener('click', function () { if (S && S._rpOn) rpStop(); else rpStart(); });
+    rpOpts.addEventListener('click', function (ev) { var b = ev.target.closest('[data-rps]'); if (!b || !S || !S._rpOn) return; var k = b.getAttribute('data-rps');
+      if (k === 'p') { S._rpPaused = !S._rpPaused; if (!S._rpPaused && !S._rpRaf) rpTick(); } else { S._rpSpeed = +k || 1; }
+      rpPaint(); if (!S._rpRaf) rpTick(); });
+    rpScrub.addEventListener('input', function () { if (!S || !S._rpOn) return; S._rpF = Math.max(0, Math.min(1, (+rpScrub.value || 0) / 1000)); S._rpPaused = true; S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); if (!S._rpRaf) rpTick(); else draw(); });
+    window.__mpHmReplay = { start: rpStart, stop: rpStop, state: function () { return S ? { on: !!S._rpOn, f: S._rpF || 0, t: S._rpT || 0, speed: S._rpSpeed || 1, paused: !!S._rpPaused } : null; } }; // read-only mirror for the probe
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
     function shotX() { // 1200x675 (16:9) - the exact card X shows uncropped in the timeline
       var W = 1200, H = 675, out = document.createElement('canvas'); out.width = W; out.height = H;

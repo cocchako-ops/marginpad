@@ -1810,10 +1810,8 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
         + '<div class="mpa-frhead"><p class="mpa-sub" style="margin:0">Frames you own are first.</p><span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>'
         + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
       + '</div>'
-      + '<label class="mpa-pl" style="margin-top:14px">Bio <span style="color:#5c656f">(160 characters)</span></label>'
-      + '<textarea class="mpa-in" id="mpaPbio" maxlength="160" rows="3" placeholder="Swing trader. BTC maxi. Risk 1% per trade." style="resize:vertical;min-height:62px">' + esc(S.bio) + '</textarea>'
-      + '<label class="mpa-pl" style="margin-top:12px">Favourite coins <span style="color:#5c656f">(up to 6, comma-separated)</span></label>'
-      + '<input class="mpa-in" id="mpaPco" placeholder="BTC, ETH, SOL" value="' + esc(S.coins) + '">'
+      /* the Bio and Favourite coins fields are RETIRED (2026-11-12, owner) - the card no longer draws either; S keeps the two keys so an
+         untouched value never reads as a change */
       + '<div class="mpa-du-msg" id="mpaPmsg"></div>'
       + '<button class="mpa-btn" id="mpaPsave" type="button" disabled>Saved</button>'
       + '<button class="mpa-link" id="mpaPback" type="button">← Back</button>';
@@ -1852,10 +1850,6 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     if (prev) prev.addEventListener('click', function () { fileIn.click(); });
     if (fileIn) fileIn.addEventListener('change', function () { if (fileIn.files && fileIn.files[0]) onFile(fileIn.files[0]); fileIn.value = ''; });
     if (clr) clr.addEventListener('click', function () { S.av = ''; clr.hidden = true; paintPrev(); });
-    // ---- bio + coins
-    var bioEl = bodyEl.querySelector('#mpaPbio'), coEl = bodyEl.querySelector('#mpaPco');
-    if (bioEl) bioEl.addEventListener('input', function () { S.bio = bioEl.value; reflectSave(); });
-    if (coEl) coEl.addEventListener('input', function () { S.coins = coEl.value; reflectSave(); });
     // ---- frame, behind a disclosure so 30-odd tiles do not become the panel
     var frBtn = bodyEl.querySelector('#mpaCdFrBtn'), frBox = bodyEl.querySelector('#mpaCdFrBox'), grid = bodyEl.querySelector('#mpaFrGrid');
     var gridLoaded = false;
@@ -1923,7 +1917,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       var was = JSON.parse(BASE), jobs = [];
       sv.disabled = true; sv.textContent = 'Saving…'; if (msg) msg.innerHTML = '';
       // the frame is already saved - it writes on click, see the grid handler
-      if (S.av !== was.av || S.bio !== was.bio || S.coins !== was.coins)
+      if (S.av !== was.av) // the avatar is the one personalisation left here (bio + coins retired 2026-11-12); the stored bio/coins are sent back unchanged
         jobs.push(fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ bio: S.bio, avatar: S.av, coins: S.coins }) })
           .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error('Could not save - try again.'); if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.coins = d.coins; } }));
       Promise.all(jobs).then(function () {
