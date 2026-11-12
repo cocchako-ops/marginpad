@@ -23,7 +23,10 @@ module.exports = {
        into an OOM at the limit, which is the one signal that names it. */
     node_args: '--max-old-space-size=360',
     kill_timeout: 4000,           // give graceful SIGTERM shutdown time to flush aggregates
-    env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite' },
+    // MALLOC_ARENA_MAX (2026-11-12): RSS kept climbing ~110 MB/h with the V8 heap FLAT at ~150 MB - memory outside the isolates, which on
+    // glibc is the per-thread malloc arenas (the reader worker, libuv's pool, the sockets) each keeping freed pages. Two arenas is the
+    // standard Node setting for a long-running box; it costs nothing measurable in throughput here.
+    env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite', MALLOC_ARENA_MAX: '2' },
     out_file: 'logs/out.log',
     error_file: 'logs/err.log',
     time: true,

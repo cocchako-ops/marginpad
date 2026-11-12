@@ -2198,7 +2198,7 @@ async function handleCatalystMoves(url, env) {
       // `since` on the minute and a 60 s edge TTL (2026-11-12): this 8-day read is ~1 MB from the droplet and the live path asked it
       // for every move start with a 15 s TTL - measured 90 pulls an hour of the same few URLs; the catalyst table itself moves on a
       // 2-minute labeller, so a minute of staleness decides nothing
-      colFetch('/api/v1/catalysts?since=' + (Math.floor((at - 8 * 86400000) / 60000) * 60000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 60),
+      colFetch('/api/v1/catalysts?since=' + (Math.floor((at - 8 * 86400000) / 600000) * 600000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 120), // 10-minute grid: every move starting inside the same ten minutes shares ONE url (measured 14:50 UTC: four distinct `since` values, 26 pulls of 1.9 MB in ten minutes, on a minute grid)
       hasLiq ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.max(1440, Math.ceil((now - at) / 60000) + 60), 2500, 20) : Promise.resolve(null),
     ]);
     const cats = cxEnrich(((cj && cj.items) || []).concat(await cxEqCats(env, sym, cls)), await cxLabelsGet(env));

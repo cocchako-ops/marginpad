@@ -592,6 +592,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // CATALYST ENGINE (2026-10-29, phase 1): dated events from exchange announcements, filings, media and the
   // official channels, classified by rules and scored. Read off the 48-hour memory ring, never the database.
   //   ?sym=BTC&since=<ms>&min=<score>&kind=listing&limit=100   ·   /status = per-source health and lateness
+  const catHistMemo = new Map(); // the 30-day catalyst window, serialised once per 60 s per exact query (see the hist branch below)
   app.get('/api/v1/catalysts', async (req, res) => {
     try {
       const q = { sym: String(req.query.sym || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12), since: +req.query.since || 0, min: +req.query.min || 0, kind: String(req.query.kind || '').replace(/[^a-z]/g, '').slice(0, 16), limit: Math.min(5000, Math.max(1, +req.query.limit || 100)) };
@@ -599,9 +600,20 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       // it" indicator). The two answers share one shape so a caller never needs to know which one it got.
       if (q.since > 0 && q.since < Date.now() - 46 * 3600000) {
         const until = +req.query.until || Date.now();
+        /* THE SAME WINDOW IS SERVED FROM ONE SERIALISED STRING FOR 60 s (2026-11-12). A month of catalysts is ~5,000 rows: each
+           read is the rows on the reader thread, a structured clone of them into this heap, and a 2-3 MB JSON string - and the
+           Worker asked for the same few windows ~300 times an hour from several edge colos (nginx, 14:50 UTC: four urls, 26 pulls
+           of 1.9 MB in ten minutes). That churn, not any leak, is what walked this process's RSS to pm2's ceiling once a day since
+           10-30. The memo keeps the STRING (one object, cheap to hold, no re-serialisation) for 60 s per exact query, 40 entries. */
+        const hk = q.since + '|' + until + '|' + q.sym + '|' + q.min + '|' + q.kind + '|' + q.limit, hNow = Date.now();
+        const hit = catHistMemo.get(hk);
+        if (hit && hNow - hit.ts < 60000) { res.set('Cache-Control', 'public, max-age=120'); res.set('X-Memo', 'hit'); return res.type('application/json').send(hit.str); }
         const rows = await storage.async.catalystRange(q.since, until, q.sym, q.min, q.kind, q.limit);
+        const str = JSON.stringify({ ts: hNow, n: rows.length, hist: true, items: rows, upcoming: [] });
+        catHistMemo.set(hk, { ts: hNow, str });
+        if (catHistMemo.size > 40) { const oldest = catHistMemo.keys().next().value; catHistMemo.delete(oldest); }
         res.set('Cache-Control', 'public, max-age=120');
-        return res.json({ ts: Date.now(), n: rows.length, hist: true, items: rows, upcoming: [] });
+        return res.type('application/json').send(str);
       }
       res.set('Cache-Control', 'public, max-age=20');
       res.json(getCatalysts(q));

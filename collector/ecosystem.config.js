@@ -15,7 +15,7 @@ module.exports = {
     max_memory_restart: '700M',
     node_args: '--max-old-space-size=360', // V8 collects before pm2 kills - the reasoning is in ecosystem.config.cjs (2026-11-12); the two files MUST agree, pm2 reads whichever it was started with
     kill_timeout: 4000,           // give graceful SIGTERM shutdown time to flush aggregates
-    env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite' },
+    env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite', MALLOC_ARENA_MAX: '2' }, // mirrors ecosystem.config.cjs (2026-11-12)
     out_file: 'logs/out.log',
     error_file: 'logs/err.log',
     time: true,
