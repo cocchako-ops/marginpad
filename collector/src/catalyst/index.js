@@ -8,6 +8,7 @@ import { log } from '../logger.js';
 import * as S from './sources.js';
 import * as SX from './sources-x.js'; // X embed timelines (24 of the 30 requests a window), Binance CMS, Upbit notices (2026-10-29)
 import * as SE from './sources-ex.js'; // Bitget, KuCoin, Coinbase/Kraken/Gate listing diffs, the Fed's press feed, CMC's aggregator, Tokenearly relay (2026-11-05)
+import * as SM from './sources-mk.js'; // the venues' own MARKET LISTS as diffs (Binance spot+futures, Bybit, OKX, Upbit, Bithumb, HL spot, MEXC, Bitget), status pages, Google News (2026-11-12)
 import { classify, scoreOf, setSymbols, symbolsKnown, tokens, jaccard, SAME_STORY, stripEmoji } from './rules.js';
 
 const RING_MS = 48 * 3600000, CONF_MS = 6 * 3600000, KEEP_DAYS = 30, LATE_MAX_MS = 2 * 3600000;
@@ -97,6 +98,14 @@ export function startCatalyst(storage) {
   const te = async () => { await run('tokenearly', SE.tokenearly, 'mediaA'); };
   const gov = async () => { await run('sec', S.sec, 'primary'); };
   const govSlow = async () => { await run('fedreg', S.fedreg, 'primary'); await run('cftc', S.cftc, 'primary'); };
+  // THE MARKET LISTS THEMSELVES (2026-11-12): a listing is caught the second trading is on, at the venues whose listings move a coin.
+  // Small payloads (Binance ticker lists, Upbit) every 20 s; the instrument lists (Bybit, OKX, Bithumb, HL spot) each minute; the two
+  // multi-megabyte ones (MEXC 2.3 MB, Bitget 0.7 MB) every two minutes. Each poller diffs on its own state; a failed read never prints.
+  const mkFast = async () => { await run('binance-mk', SM.binanceSpot, 'primary'); await run('binance-fut', SM.binanceFut, 'primary'); await run('upbit-mk', SM.upbitMarkets, 'primary'); };
+  const mkMin = async () => { await run('bybit-mk', SM.bybitMarkets, 'primary'); await run('okx-mk', SM.okxMarkets, 'primary'); await run('bithumb-mk', SM.bithumbMarkets, 'primary'); await run('hl-spot', SM.hlSpot, 'primary'); };
+  const mkSlow = async () => { await run('mexc-fut', SM.mexcFut, 'primary'); await run('bitget-fut', SM.bitgetFut, 'primary'); };
+  const statusP = async () => { for (const [n, u, label, sym] of SM.STATUS) { await run('status:' + n, () => SM.statusFeed(n, u, label, sym), 'official'); await new Promise(r => setTimeout(r, 300)); } };
+  const gn = async () => { for (const [n, q] of SM.GNEWS) { await run('gnews:' + n, () => SM.gnews(n, q), 'mediaB'); await new Promise(r => setTimeout(r, 400)); } };
   const media = async () => { for (const [name, url, tier] of S.RSS) { await run('rss:' + name, () => S.rss(name, url), tier); await new Promise(r => setTimeout(r, 400)); } };
   const tgs = async () => { for (const [ch, tier] of S.TG) { await run('tg:' + ch, () => S.tg(ch), tier); await new Promise(r => setTimeout(r, 500)); } };
   const red = async () => { await run('reddit:CryptoCurrency', () => S.reddit('CryptoCurrency'), 'social'); };
@@ -104,19 +113,28 @@ export function startCatalyst(storage) {
     try { const ev = await S.calendar(); const now = Date.now(); upcoming = ev.filter(e => e.ts > now && e.ts < now + 48 * 3600000).map(e => ({ ts: e.ts, title: e.title, type: e.meta && e.meta.type, impact: e.meta && e.meta.impact })); ingest(ev.filter(e => e.ts <= now && now - e.ts < 15 * 60000), 'calendar', 'primary'); status.sources.calendar = { ...(status.sources.calendar || {}), upcoming: upcoming.length, last: now }; }
     catch (e) { status.sources.calendar = { ...(status.sources.calendar || {}), lastErr: String(e.message || e).slice(0, 80) }; }
   };
-  (async () => { await syms(); await layer0(); await layer0c(); await hl(); await layer0b(); await diffs(); await gateD(); await fed(); await gov(); await cal(); await media(); await cmc(); await te(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
+  (async () => { await syms(); await layer0(); await layer0c(); await hl(); await layer0b(); await diffs(); await gateD(); await mkFast(); await mkMin(); await mkSlow(); await fed(); await gov(); await cal(); await statusP(); await media(); await gn(); await cmc(); await te(); await tgs(); await govSlow(); await red(); trim(); status.warm = true; log.info('[catalyst] first pass', { ring: ring.length, symbols: status.symbols, clusters: clusters.length }); })().catch(e => { status.warm = true; log.warn('[catalyst] first pass failed', { e: String(e.message || e) }); });
   every(3600e3, syms);
   every(15e3, layer0);
   every(20e3, layer0c);
   every(60e3, diffs);
   every(300e3, gateD);
+  every(20e3, mkFast);
+  every(60e3, mkMin);
+  every(120e3, mkSlow);
+  every(60e3, statusP);
+  every(60e3, gn);
   every(60e3, fed);
   every(30e3, cmc);
   every(60e3, te);
   every(60e3, hl);
   every(60e3, layer0b);
-  every(120e3, upbit);
-  every(SX.X_INTERVAL_MS, xTick);
+  // RETIRED 2026-11-12 unless switched back on by env: Upbit's notice API answered 429 to every call for a week (its market list is read
+  // instead, upbit-mk) and all eight X embed timelines answered 429 for two weeks straight - 0 items, 42 errors each. A dead poller is
+  // noise on the health strip and a request budget spent on nothing; the paid X API is the owner's decision (memory: X budget).
+  if (process.env.CX_UPBIT_ANN === '1') every(120e3, upbit);
+  if (process.env.CX_X === '1') every(SX.X_INTERVAL_MS, xTick);
+  status.off = { 'upbit-ann': 'retired 2026-11-12 (429 for a week; upbit-mk reads the market list instead)', x: 'retired 2026-11-12 (429 for two weeks, 0 items; paid API is the owner\'s call)' };
   every(60e3, gov);
   every(600e3, govSlow);
   every(30e3, media);

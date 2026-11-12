@@ -41,12 +41,15 @@ const R = {
   etf: /\b(ETF|ETFs|S-1|19b-4|spot (bitcoin|ether|ethereum|solana|xrp|litecoin|dogecoin|avalanche) (fund|trust)|iShares|Grayscale|net inflows?|net outflows?)\b/i,
   regulation: /\b(SEC|CFTC|DOJ|FCA|ESMA|MiCA|regulat(or|ion|ory|e|es|ed)|lawsuit|sue[sd]?|charg(e|es|ed) (with|by)|indict(ed|ment)|fine[ds]?|penalt(y|ies)|settle(s|d|ment)|court|judge|ruling|ban(s|ned)?|licen[cs]e[sd]?|approv(al|ed|es)|reject(s|ed|ion)|sanction(s|ed)?|subpoena|executive order|stablecoin (bill|act)|GENIUS Act|CLARITY Act)\b/i,
   unlock: /\b(token )?unlock(s|ed|ing)?\b/i,
-  protocol: /\b(outage|halt(s|ed|ing)?|paus(e|es|ed)|downtime|upgrade|hard ?fork|mainnet|testnet|airdrop|migration|network (is )?down|chain (is )?(halted|stalled)|validator)\b/i,
+  protocol: /\b(outage|halt(s|ed|ing)?|paus(e|es|ed)|downtime|upgrade|hard ?fork|mainnet|testnet|airdrop|migration|network (is )?down|chain (is )?(halted|stalled)|validator|degraded|incident|investigating|partial outage|major outage|elevated (error|latency))\b/i,
+  // an exchange's own risk designation (Upbit's investment-warning / trading-caution flags, read off its market list since 2026-11-12):
+  // not a delisting yet, but the step it takes hours before one
+  warning: /\b(investment warning asset|trading caution asset|designated as (a |an )?(investment )?(warning|caution)|monitoring tag|seed tag)\b/i,
   whale: /\b(whale|large transfer|moves? \$?[0-9]|transferred|minted|burned|mint(s|ed)?|burn(s|ed)?)\b/i,
   politics: /\b(Trump|White House|tariff(s)?|Powell|Federal Reserve|Fed (rate|cut|hike|chair)|rate (cut|hike)|Congress|Senate|Treasury Secretary|Bessent|election|Truth Social)\b/i,
   adoption: /\b(partner(s|ed|ship)?|integrat(es|ed|ion)|adopt(s|ed|ion)|accept(s|ing)? (bitcoin|crypto|BTC|USDT)|treasury (buys?|purchase|adds)|acqui(res?|sition)|invest(s|ed|ment) in)\b/i,
 };
-const KIND_EXPECT = { listing: 1, delisting: -1, hack: -1, etf: 0, regulation: 0, unlock: -1, protocol: 0, whale: 0, politics: 0, adoption: 1, macro: 0, filing: 0, pair: 0, promo: 0, news: 0 };
+const KIND_EXPECT = { listing: 1, delisting: -1, hack: -1, etf: 0, regulation: 0, unlock: -1, protocol: 0, whale: 0, politics: 0, adoption: 1, macro: 0, filing: 0, pair: 0, promo: 0, news: 0, warning: -1 };
 
 // what the exchange announcement is about (perp / spot / pre-market / tradfi); tradfi listings are kept but scored low
 export function marketOf(title) {
@@ -61,10 +64,14 @@ export function marketOf(title) {
 export function classify(title, source) {
   const t = String(title || '');
   const src = String(source || '');
-  const exch = /^(bybit-ann|okx-ann|hl-meta|binance-ann|upbit-ann|bitget-ann|kucoin-ann|coinbase-products|kraken-assets|gate-pairs|tokenearly|tg:binance|tg:bybit|tg:okx|x:binance|x:Bybit_Official)/i.test(src);
+  // the market-list diffs (sources-mk.js, 2026-11-12) are exchange sources too: binance-mk, binance-fut, bybit-mk:*, okx-mk:*, upbit-mk,
+  // bithumb-mk, hl-spot, mexc-fut, bitget-fut - their titles name a NEW ticker in brackets exactly as the announcement sources do
+  const exch = /^(bybit-ann|okx-ann|hl-meta|hl-spot|binance-ann|upbit-ann|bitget-ann|kucoin-ann|coinbase-products|kraken-assets|gate-pairs|tokenearly|tg:binance|tg:bybit|tg:okx|x:binance|x:Bybit_Official|[a-z]+-mk(:|$)|binance-fut|mexc-fut|bitget-fut)/i.test(src);
   let kind = 'news';
   if (src === 'calendar' || src === 'fed-press') kind = 'macro';   // the Fed's own press feed is read for the monetary items alone (sources-ex.js)
   else if (src === 'sec') kind = 'filing';
+  else if (/^status:/.test(src)) kind = 'protocol';                  // a status page speaks only of incidents (maintenance is filtered at the source)
+  else if (exch && R.warning.test(t)) kind = 'warning';              // Upbit's own risk flag on a coin it lists
   else if (R.promo.test(t)) kind = 'promo';                       // a campaign, a recap, a contest: never an event
   else if (R.pair.test(t)) kind = 'pair';                         // a trading PAIR added or removed is housekeeping, not a listing
   else if (R.delisting.test(t)) kind = 'delisting';
@@ -99,7 +106,7 @@ export function clusterKey(title) {
 }
 
 export const TIER_CRED = { primary: 1.0, official: 0.9, mediaA: 0.7, mediaB: 0.5, social: 0.25 };
-export const KIND_BASE = { macro: 25, hack: 25, listing: 20, delisting: 20, etf: 20, regulation: 12, unlock: 12, filing: 12, protocol: 10, politics: 10, whale: 8, adoption: 8, pair: 0, promo: 0, news: 0 };
+export const KIND_BASE = { macro: 25, hack: 25, listing: 20, delisting: 20, etf: 20, warning: 15, regulation: 12, unlock: 12, filing: 12, protocol: 10, politics: 10, whale: 8, adoption: 8, pair: 0, promo: 0, news: 0 };
 // v0 score: documented, replaced by the F0 event-study priors (build/data/catalyst/report.json) once each cell has n >= 30
 export function scoreOf({ tier, kind, conf, market, syms }) {
   if (kind === 'promo') return 0;
