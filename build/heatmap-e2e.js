@@ -151,6 +151,22 @@ const LAYOUT = () => {
 (async () => {
   console.log('heatmap-e2e ' + (LOCAL ? '(local bundle)' : '(production)') + '\n');
 
+  /* REPLAY v3 (2026-11-12, owner: "ova traka razbije formu i download i X probijaju sajt"): pressing Replay must change NOTHING about
+     the page's frame - the top row keeps its height, no control leaves the wrap, the document does not scroll sideways - because the
+     transport is an overlay inside the stage, over the plot and left of the zones column. And it must MOVE: the cursor time advances
+     between two samples 400 ms apart, the candle under it is forming (rpForm's close differs from the real bar's). Stopped afterwards. */
+  const RP_CHECK = async () => {
+    const before = { topH: (document.querySelector('.hm-top') || {}).offsetHeight || 0, sx: document.documentElement.scrollWidth };
+    document.querySelector('.hm-rp').click(); await new Promise(r => setTimeout(r, 450));
+    const r0 = window.__mpHmReplay.state(); await new Promise(r => setTimeout(r, 400)); const r1 = window.__mpHmReplay.state();
+    const wrap = document.querySelector('.hm-wrap').getBoundingClientRect(), st = document.querySelector('.hm-stage').getBoundingClientRect(), pf = document.querySelector('.hm-prof').getBoundingClientRect();
+    const c = document.querySelector('.hm-rpc'), cr = c ? c.getBoundingClientRect() : null;
+    const over = [...document.querySelectorAll('.hm-bar-b > *')].filter(k => k.getBoundingClientRect().width > 0 && k.getBoundingClientRect().right > wrap.right + 1).map(k => k.className);
+    const pp = c && c.querySelector('.hm-rpc-pp'), pr = pp && pp.getBoundingClientRect(), under = pp ? (function () { const e = document.elementFromPoint(pr.x + pr.width / 2, pr.y + pr.height / 2); return e === pp || pp.contains(e); })() : false;
+    const form = window.__mpRpForm ? window.__mpRpForm({ time: 1, open: 100, high: 110, low: 95, close: 106 }, 0.5) : null;
+    window.__mpHmReplay.stop(); await new Promise(r => setTimeout(r, 120));
+    return { before, after: { topH: (document.querySelector('.hm-top') || {}).offsetHeight || 0, sx: document.documentElement.scrollWidth }, on: r0 && r0.on, moved: r0 && r1 && r1.t > r0.t, over, overlay: cr ? { inStage: cr.left >= st.left - 1 && cr.right <= pf.left + 1 && cr.bottom <= st.bottom + 1, h: Math.round(cr.height) } : null, under, form: form ? { lowFirst: form.low === 95, highLater: form.high < 110, closeMoving: form.close !== 106 } : null, stopped: !window.__mpHmReplay.state().on && c.hidden };
+  };
   // ---- desktop ------------------------------------------------------------------------------------------
   await withBrowser(async (browser) => {
     console.log('desktop 1366x768');
@@ -160,6 +176,10 @@ const LAYOUT = () => {
 
     ok('no page or console errors', errs.length === 0, errs.join(' | '));
     ok('the map renders standing bands', S.bands > 5, 'bands=' + S.bands);
+    const RP = await page.evaluate(RP_CHECK);
+    ok('REPLAY: the top row keeps its height and nothing leaves the wrap while it runs', RP.on && RP.after.topH === RP.before.topH && RP.over.length === 0 && RP.after.sx === RP.before.sx, JSON.stringify(RP));
+    ok('REPLAY: the transport is an overlay inside the plot, under the finger, and the cursor moves', !!RP.overlay && RP.overlay.inStage && RP.under && RP.moved && RP.stopped, JSON.stringify(RP.overlay) + ' moved=' + RP.moved);
+    ok('REPLAY: the candle forms along its path (the low is visited before the high on an up candle)', !!RP.form && RP.form.lowFirst && RP.form.highLater && RP.form.closeMoving, JSON.stringify(RP.form));
 
     // ── THE HEADLINE TOTAL IS A MEASUREMENT, NOT THIS BROWSER'S SAMPLE (2026-10-09) ──────────────────
     // It used to be the sum of the liquidation rows the page had managed to download, and
@@ -369,6 +389,8 @@ const LAYOUT = () => {
     ok('no page or console errors', errs.length === 0, errs.join(' | '));
     ok('the map gets the screen (canvas >= 300px of 390)', L.cv.w >= 300, 'canvas=' + L.cv.w);
     ok('the stage runs edge to edge', L.stage.x <= 1 && L.stage.w >= L.vw - 1, JSON.stringify(L.stage));
+    const RPm = await page.evaluate(RP_CHECK);
+    ok('REPLAY on a phone: Download and Share stay inside the screen, no sideways scroll, the transport sits inside the plot', RPm.on && RPm.over.length === 0 && RPm.after.sx <= 390 && !!RPm.overlay && RPm.overlay.inStage && RPm.under && RPm.moved && RPm.stopped, JSON.stringify(RPm));
     ok('the whole map clears the fixed tab bar', L.stage.bottom <= L.vh - L.navH, 'bottom=' + L.stage.bottom + ' limit=' + (L.vh - L.navH));
     ok('TARGETS stays compact on a phone', L.tgH > 0 && L.tgH <= 170, 'targets=' + L.tgH + 'px');
     ok('every control is at least 29px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 29), JSON.stringify(L.taps.filter(t => t.h < 29)));

@@ -199,6 +199,14 @@
   .seats i.on{background:var(--sq,var(--lime));border-color:var(--sq,var(--lime));box-shadow:0 0 8px -1px var(--sq,var(--lime))}
   .seats i.open{border-style:dashed;border-color:var(--faint)}
   .seats i.lk{opacity:.28}
+  /* THE FOUNDRY (2026-11-12): the treasury bars, the cast form, the coin card */
+  .fd{margin-top:10px}.fd-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}.fd-h b{font-size:15px;font-weight:800}.fd-req{font-size:12px;color:var(--dim)}.fd-req i{font-style:normal;color:#c2f64a}.fd-req i.no{color:#ff7b72}
+  .fd-row{display:grid;grid-template-columns:150px minmax(0,1fr) 96px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #1f2936}.fd-row.first{border-top:0}.fd-l b{display:block;font-size:13px;color:var(--fc)}.fd-l span{display:block;font-size:11px;color:var(--dim);line-height:1.35}
+  .fd-bar{height:8px;border-radius:4px;background:#161b22;overflow:hidden}.fd-bar i{display:block;height:100%;background:var(--fc);border-radius:4px;transition:width .4s}.fd-n{font:700 12px "Space Mono",monospace;text-align:right;color:#dfe4ec;white-space:nowrap}.fd-n.ok{color:#c2f64a}
+  @media(max-width:620px){.fd-row{grid-template-columns:minmax(0,1fr) 84px}.fd-row .fd-bar{grid-column:1/-1}}
+  .fd-form .bfield{margin-top:10px}.fd-drv{display:flex;flex-wrap:wrap;gap:6px}.fd-drv .chip.on{border-color:#c2f64a;color:#c2f64a}.fd-w{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.fd-wi{display:flex;align-items:center;gap:6px;border:1px solid #2c3849;border-radius:9px;padding:4px 6px;font-size:12px}.fd-wi b{font:700 12px "Space Mono",monospace;min-width:36px;text-align:center}.fd-wi button{width:26px;height:26px;border-radius:7px;border:1px solid #2c3849;background:#12161d;color:#dfe4ec;cursor:pointer;font-weight:800}.fd-rand{font-size:12px;color:var(--dim);margin-top:8px}.fd-rand.no{color:#ff7b72}
+  .fd-coin{display:flex;gap:12px 16px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.fd-coin .sym{font:800 24px "Bricolage Grotesque",sans-serif;color:#c2f64a;line-height:1}.fd-coin .sym small{display:block;font:600 12px "Familjen Grotesk",sans-serif;color:var(--dim);margin-top:3px}.fd-coin .px{font:700 17px "Space Mono",monospace}.fd-coin .px small{display:block;font-size:11px;font-weight:700}.fd-mix{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 10px}.fd-mix span{font-size:11px;border:1px solid #2c3849;border-radius:6px;padding:2px 7px;color:#aab6c4}
+  .fd-log{margin-top:10px;font-size:12px;color:var(--dim)}.fd-log div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-top:1px dashed #1f2936}.fd-log b{color:#dfe4ec;font-weight:700}
   .rec3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
   .rec3>div{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center}
   .rec3 b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:22px;font-weight:700;line-height:1;letter-spacing:-.02em}
@@ -725,6 +733,63 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     }).join('') + '</div>';
     return h + '</div>';
   }
+  /* THE FOUNDRY (2026-11-12, owner: "svidja mi se i moze da se uradi, ali treba da bude jako jako tesko da se mintuje svoj RNG coin").
+     The treasury of five parts against the cost, where each kind comes from, the cast form for the leader once everything is there,
+     the coin card once it exists. Every figure comes from /squad/mine (`foundry` + `forge`); the page decides nothing. */
+  var FDK = ['alloy', 'signal', 'ore', 'flux', 'spark'], FDC = { alloy: '#f0c35a', signal: '#5ec6ff', ore: '#c98a5a', flux: '#a06bff', spark: '#c2f64a' };
+  function fdDraft() { if (!S.fd) S.fd = { sym: '', name: '', start: 10, mix: [{ k: 'btc', w: 40 }, { k: 'fng', w: 25 }, { k: 'xau', w: 20 }] }; return S.fd; }
+  function fdRand(d) { return 100 - d.mix.reduce(function (a, m) { return a + (+m.w || 0); }, 0); }
+  function foundrySection(s, isL) {
+    var f = S.me.foundry, g = S.me.forge || {};
+    var h = '<div class="sect"><h2>' + __esT_squadsindex("foundryH", 'Foundry') + '</h2>'
+      + '<p class="sub">' + __esT_squadsindex("foundrySub", "Collect parts out of what the squad already does - trading, learning, raiding, holding and showing up - and cast the squad's own RNG coin: its own ticker, launch price and mix, priced once a minute and traded on the terminal like any other market. It ranks nowhere and pays nothing; it is yours. Casting is meant to take weeks of playing together.") + '</p>';
+    if (!f) return h + '<div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div>';
+    if (f.coin) { h += fdCoinCard(f.coin); setTimeout(fdPrice, 80); } // the live price lands after the panel is in the DOM
+    var lvOk =(+g.level || 0) >= (+g.minLevel || 5), nOk = (+g.members || 0) >= (+g.minMembers || 4);
+    h += '<div class="card fd"><div class="fd-h"><b>' + __esT_squadsindex("fdTreasury", 'Treasury') + '</b><span class="fd-req">' + __esT_squadsindex("fdLevel", 'level') + ' <i class="' + (lvOk ? '' : 'no') + '">' + (+g.level || 0) + '/' + (g.minLevel || 5) + '</i> &middot; ' + __esT_squadsindex("fdMembers", 'members') + ' <i class="' + (nOk ? '' : 'no') + '">' + (+g.members || 0) + '/' + (g.minMembers || 4) + '</i>' + (f.coin ? ' &middot; ' + __esT_squadsindex("fdOneCoin", 'one living coin per squad') : '') + '</span></div>'
+      + FDK.map(function (k, i) { var have = +((f.parts || {})[k] || 0), need = +((f.cost || {})[k] || 1), pct = Math.min(100, Math.round(have / need * 100)); return '<div class="fd-row' + (i === 0 ? ' first' : '') + '" style="--fc:' + FDC[k] + '"><div class="fd-l"><b>' + esc((f.labels || {})[k] || k) + '</b><span>' + esc((f.from || {})[k] || '') + '</span></div><div class="fd-bar"><i style="width:' + pct + '%"></i></div><div class="fd-n' + (have >= need ? ' ok' : '') + '">' + nfm(Math.floor(have)) + ' / ' + nfm(need) + '</div></div>'; }).join('')
+      + '</div>';
+    if (!f.coin) {
+      if (isL) h += fdCastForm(f, g, lvOk && nOk);
+      else h += '<div class="note">' + __esT_squadsindex("fdLeaderCasts", 'When the treasury is full, your leader casts the coin - the ticker, the launch price and the mix are chosen then.') + '</div>';
+    }
+    if (f.log && f.log.length) h += '<div class="fd-log"><b>' + __esT_squadsindex("fdRecent", 'Recent parts') + '</b>' + f.log.map(function (r) { return '<div><span>' + (r.who ? '@' + esc(r.who) + ' ' : '') + esc(r.why || r.kind) + '</span><span><b>' + (r.kind === 'cast' ? 'CAST' : '+' + (Math.round(r.amt * 10) / 10) + ' ' + esc((f.labels || {})[r.kind] || r.kind)) + '</b> &middot; ' + ago(r.ts) + '</span></div>'; }).join('') + '</div>';
+    return h + '</div>';
+  }
+  function fdCoinCard(c) {
+    var mix = (c.mix || []).map(function (m) { var lab = ((S.me.forge || {}).drivers || []).filter(function (d) { return d.k === m.k; })[0]; return '<span>' + Math.round(m.w * 100) + '% ' + esc(m.k === 'rand' ? __esT_squadsindex("fdChance", 'chance') : (lab ? lab.label : m.k)) + '</span>'; }).join('');
+    return '<div class="card" id="fdCoin" data-sym="' + esc(c.sym) + '"><div class="fd-coin"><div class="sym">' + esc(c.sym) + '<small>' + esc(c.name) + ' &middot; ' + __esT_squadsindex("fdLaunched", 'launched') + ' ' + esc(c.dayLaunch) + ' ' + __esT_squadsindex("fdAt", 'at') + ' $' + c.start + '</small></div><div class="px" id="fdPx">&nbsp;<small>&nbsp;</small></div></div><div class="fd-mix">' + mix + '</div>'
+      + '<div class="row"><a class="btn p sm" href="/pt/paper-trade?coin=' + encodeURIComponent(c.sym) + '">' + __esT_squadsindex("tradeSp", 'Trade') + ' ' + esc(c.sym) + '</a><a class="btn sm" href="/rng/' + encodeURIComponent(String(c.sym).toLowerCase()) + '/">' + __esT_squadsindex("fdCoinPage", 'Coin page') + '</a></div></div>';
+  }
+  function fdCastForm(f, g, gateOk) {
+    var d = fdDraft(), drivers = g.drivers || [], rand = fdRand(d), randOk = rand >= (g.randMin || 15), ready = !!f.ready;
+    var can = ready && gateOk && randOk && /^[A-Z]{3,5}$/.test(d.sym) && d.mix.length === (g.mixN || 3) && d.mix.every(function (m) { return m.w >= (g.wMin || 10); }) && +d.start >= (g.startMin || 1) && +d.start <= (g.startMax || 100);
+    var why = !ready ? __esT_squadsindex("fdNotFull", 'The treasury is not full yet.') : !gateOk ? __esT_squadsindex("fdGate", 'The squad needs the level and the members above.') : '';
+    return '<div class="card fd-form"><h3 style="font-size:15px;font-weight:800;margin-bottom:4px">' + __esT_squadsindex("fdCastH", 'Cast the coin') + '</h3><p class="sub" style="margin-bottom:6px">' + __esT_squadsindex("fdCastSub", 'A 3-5 letter ticker nobody else trades, a name, a launch price, and three drivers with their weights - the rest is pure chance, at least 15%. A coin with half gold is calm; a coin with half HYPE is wild. The character is yours, and it cannot be changed after the cast.') + '</p>'
+      + '<div class="row"><div class="bfield grow"><label class="fl" for="fdSym">' + __esT_squadsindex("fdTicker", 'Ticker') + '</label><input type="text" id="fdSym" maxlength="5" autocomplete="off" placeholder="OWLS" value="' + esc(d.sym) + '" style="text-transform:uppercase"></div><div class="bfield grow"><label class="fl" for="fdName">' + __esT_squadsindex("fdName", 'Name') + '</label><input type="text" id="fdName" maxlength="24" autocomplete="off" placeholder="Night Owls" value="' + esc(d.name) + '"></div><div class="bfield" style="width:110px"><label class="fl" for="fdStart">' + __esT_squadsindex("fdStart", 'Launch $') + '</label><input type="number" id="fdStart" min="' + (g.startMin || 1) + '" max="' + (g.startMax || 100) + '" step="0.01" value="' + d.start + '"></div></div>'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("fdDrivers", 'Three drivers') + '</label><div class="fd-drv">' + drivers.map(function (dr) { var on = d.mix.some(function (m) { return m.k === dr.k; }); return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-fdk="' + esc(dr.k) + '">' + esc(dr.label) + '</button>'; }).join('') + '</div>'
+      + '<div class="fd-w">' + d.mix.map(function (m) { var lab = drivers.filter(function (x) { return x.k === m.k; })[0]; return '<span class="fd-wi"><span>' + esc(lab ? lab.label : m.k) + '</span><button type="button" data-fdw="' + esc(m.k) + '" data-d="-5">-</button><b>' + m.w + '%</b><button type="button" data-fdw="' + esc(m.k) + '" data-d="5">+</button></span>'; }).join('') + '</span></div>'
+      + '<div class="fd-rand' + (randOk ? '' : ' no') + '">' + __esT_squadsindex("fdRandLine", 'Pure chance:') + ' <b>' + rand + '%</b>' + (randOk ? '' : ' - ' + __esT_squadsindex("fdRandMin", 'at least') + ' ' + (g.randMin || 15) + '%') + '</div></div>'
+      + '<button class="btn p" id="fdGo" type="button"' + (can ? '' : ' disabled') + '>' + __esT_squadsindex("fdCastBtn", 'Cast') + (d.sym ? ' ' + esc(d.sym) : '') + '</button>' + (why ? '<span class="note" style="margin-left:10px">' + why + '</span>' : '') + '<div class="msg" id="fdMsg"></div></div>';
+  }
+  function fdRepaint() { var p = document.querySelector('[data-panel="foundry"]'); if (p && S.me && S.me.squad) { p.innerHTML = foundrySection(S.me.squad, S.me.isLeader); fdPrice(); } }
+  function fdPrice() { var el = document.getElementById('fdCoin'), px = document.getElementById('fdPx'); if (!el || !px) return; fetch('/api/rng/' + encodeURIComponent(el.getAttribute('data-sym')), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (c) { if (!c || !c.ok || !px.isConnected) return; var chg = c.chg24; px.innerHTML = (c.price != null ? '$' + (+c.price).toLocaleString('en-US', { maximumFractionDigits: c.dp || 4 }) : '-') + '<small style="color:' + (chg == null ? '#8fa3c4' : chg >= 0 ? '#2ebd85' : '#ff5a4d') + '">' + (chg == null ? '' : (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% 24h') + '</small>'; }).catch(function () {}); }
+  document.addEventListener('click', function (e) {
+    var k = e.target.closest && e.target.closest('[data-fdk]'); if (k) { var d = fdDraft(), key = k.getAttribute('data-fdk'), i = d.mix.findIndex(function (m) { return m.k === key; }); if (i >= 0) d.mix.splice(i, 1); else if (d.mix.length < ((S.me.forge || {}).mixN || 3)) d.mix.push({ k: key, w: 20 }); fdRepaint(); return; }
+    var w = e.target.closest && e.target.closest('[data-fdw]'); if (w) { var d2 = fdDraft(), m2 = d2.mix.filter(function (m) { return m.k === w.getAttribute('data-fdw'); })[0]; if (m2) { m2.w = Math.max((S.me.forge || {}).wMin || 10, Math.min(85, m2.w + (+w.getAttribute('data-d') || 0))); } fdRepaint(); return; }
+    if (e.target.closest && e.target.closest('#fdGo')) {
+      var d3 = fdDraft(), btn = document.getElementById('fdGo'), msg = document.getElementById('fdMsg'); if (!btn || btn.disabled) return;
+      btn.disabled = true; btn.textContent = __esT_squadsindex("fdCasting", 'Casting…');
+      fetch('/api/squad/forge', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sym: d3.sym, name: d3.name, start: +d3.start, mix: d3.mix }) }).then(function (r) { return r.json(); }).then(function (j) {
+        window.__mpForgeLast = j;
+        if (j && j.ok) { toast(__esT_squadsindex("fdCastOk", 'Cast. Your coin is live in the RNG section.'), 'good'); S.fd = null; load(); return; }
+        var E = { sym_taken: __esT_squadsindex("fdErrTaken", 'That ticker is taken - it is a market somewhere on the site.'), bad_sym: __esT_squadsindex("fdErrSym", 'A ticker is 3 to 5 letters.'), parts: __esT_squadsindex("fdNotFull", 'The treasury is not full yet.'), level: __esT_squadsindex("fdErrLevel", 'The squad level is too low.'), members: __esT_squadsindex("fdErrMembers", 'Not enough members.'), leader_only: __esT_squadsindex("fdErrLeader", 'Only the leader casts.'), has_coin: __esT_squadsindex("fdErrHas", 'Your squad already has its coin.'), rand_min: __esT_squadsindex("fdErrRand", 'Leave at least 15% to chance.'), bad_mix: __esT_squadsindex("fdErrMix", 'Three drivers, each at least 10%.'), bad_start: __esT_squadsindex("fdErrStart", 'The launch price is $1 to $100.') };
+        if (msg) say(msg, { error: E[(j && j.error) || ''] || ((j && j.error) || __esT_squadsindex("fdErrGeneric", 'Could not cast right now.')) }, false);
+        fdRepaint();
+      }).catch(function () { if (msg) say(msg, { error: __esT_squadsindex("fdErrGeneric", 'Could not cast right now.') }, false); fdRepaint(); });
+    }
+  });
+  document.addEventListener('input', function (e) { var t = e.target; if (!t || !t.id) return; var d = fdDraft(); if (t.id === 'fdSym') { d.sym = String(t.value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5); if (t.value !== d.sym) t.value = d.sym; } else if (t.id === 'fdName') d.name = String(t.value || '').slice(0, 24); else if (t.id === 'fdStart') d.start = +t.value || 0; else return; var go = document.getElementById('fdGo'), f = S.me && S.me.foundry, g = (S.me && S.me.forge) || {}; if (go && f) { var lvOk = (+g.level || 0) >= (+g.minLevel || 5) && (+g.members || 0) >= (+g.minMembers || 4); go.disabled = !(f.ready && lvOk && fdRand(d) >= (g.randMin || 15) && /^[A-Z]{3,5}$/.test(d.sym) && +d.start >= (g.startMin || 1) && +d.start <= (g.startMax || 100)); go.textContent = __esT_squadsindex("fdCastBtn", 'Cast') + (d.sym ? ' ' + d.sym : ''); } });
   function raidPicker(coins, s) {
     var tgt = Math.round((S.me.raidTargetHint) || 350);
     var cap = S.me.raidDailyCap || 1, today = S.me.raidToday || {};
@@ -807,15 +872,18 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     // ── The activity lives in TABS, not stacked (owner 2026-10-01: "da se neki elementi kao raids otvaraju na klik,
     //    ne da trpamo sve na stranicu"). Hero + members stay; Raids / Shop / Duels / Settings are one tap apart and
     //    the choice is remembered. Panels are rendered once and shown/hidden on tab click, so no tab switch refetches.
-    var tab = S._tab; if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) tab = 'raids'; }
+    var TABL = ['raids', 'foundry', 'shop', 'duels', 'settings'];
+    var tab = S._tab; if (TABL.indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (TABL.indexOf(tab) < 0) tab = 'raids'; }
     S._tab = tab;
     var liveN = live.length, nBadge = function (n) { return n ? ' <span class="tabn">' + n + '</span>' : ''; };
-    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
+    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['foundry', __esT_squadsindex("foundryH", 'Foundry') + ((S.me.foundry && S.me.foundry.coin) ? ' <span class="tabn">' + esc(S.me.foundry.coin.sym) + '</span>' : '')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
     var pan = function (id, body) { return '<div class="sqpanel" data-panel="' + id + '"' + (id === tab ? '' : ' hidden') + '>' + body + '</div>'; };
     h += '<div class="sqtabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" class="sqtab' + (t[0] === tab ? ' on' : '') + '" data-tab="' + t[0] + '" role="tab">' + t[1] + '</button>'; }).join('') + '</div>';
 
     // RAIDS
     h += pan('raids', raidSection(s, isL));
+    // THE FOUNDRY (2026-11-12)
+    h += pan('foundry', foundrySection(s, isL));
 
     // SHOP
     h += pan('shop', '<div class="sect"><h2>' + __esT_squadsindex("squadShop", 'Squad shop') + '</h2><p class="sub">' + (isL ? __esT_squadsindex("shopSubLeader", "Spend the squad's Valor on exclusive borders and badges - earned only by playing together. You buy; every member can then wear what the squad owns.") : __esT_squadsindex("shopSubMember", "Borders and badges bought with the squad's Valor. The leader unlocks them; you equip any the squad owns.")) + '</p><div id="sqShop"><div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div></div>');

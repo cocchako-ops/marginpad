@@ -650,18 +650,44 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{if(w.el)w.el.classList.add('replaying');}catch(e){}
     replaySeek(w,rp.i);try{window.__mpTrack&&window.__mpTrack('ind','replay');}catch(e){}
     try{if(window.mpToast)window.mpToast({msg:o.phone?__esT_mpcharts("replayDragTheSlider",'Replay: drag the slider to pick a start, play or step one candle at a time.'):__esT_mpcharts("replaySpacePlaysThe",'Replay: Space plays, the arrow keys step one candle. The live feed waits until you exit.'),kind:'info',mark:'i',ms:5000,key:'replay-hint'});}catch(e){}return true;}
-  function replaySeek(w,i){var rp=w._rp;if(!rp)return;i=Math.max(40,Math.min(rp.all.length,Math.round(i)));rp.i=i;w.bars=rp.all.slice(0,i);w.lastBar=w.bars[w.bars.length-1];w._lgp=+w.lastBar.close||0;
+  function replaySeek(w,i){var rp=w._rp;if(!rp)return;i=Math.max(40,Math.min(rp.all.length,Math.round(i)));if(i!==rp.i)rp.f=0;rp.i=i;w.bars=rp.all.slice(0,i);w.lastBar=w.bars[w.bars.length-1];w._lgp=+w.lastBar.close||0;
     try{w.candle.setData(w.bars);}catch(e){}try{rp.apply();}catch(e){}
     try{if(w._rpCall&&window.__mpAiReplayJudge)window.__mpAiReplayJudge(w);}catch(e){}/* an Ask AI plan given inside this replay is judged as the reader steps forward (2026-10-29) */
     try{var vr=w.chart.timeScale().getVisibleLogicalRange();if(!vr||vr.to<i-1||vr.to>i+8)w.chart.timeScale().scrollToPosition(6,false);}catch(e){}
     var lb=rp.ui.querySelector('.rp-lbl'),ps=rp.ui.querySelector('.rp-pos'),sl=rp.ui.querySelector('.rp-sl');var t=+w.lastBar.time;if(t>2e10)t/=1000;var d=new Date(t*1000);
     if(lb)lb.textContent='REPLAY  '+d.toISOString().slice(0,16).replace('T',' ')+' UTC';if(ps)ps.textContent=i+' / '+rp.all.length;if(sl&&+sl.value!==i)sl.value=i;
     if(i>=rp.all.length&&rp.playing)replayPlay(w,false);}
-  function replayPlay(w,on){var rp=w._rp;if(!rp)return;if(rp.t){clearInterval(rp.t);rp.t=null;}rp.playing=!!on;var pb=rp.ui.querySelector('.rp-play');if(pb){pb.innerHTML=on?RP_IC.pause:RP_IC.play;pb.setAttribute('aria-label',on?'Pause':'Play');}
-    if(on){if(rp.i>=rp.all.length)replaySeek(w,Math.max(40,rp.all.length-100));rp.t=setInterval(function(){if(!w._rp||w.dead){if(rp.t)clearInterval(rp.t);return;}replaySeek(w,rp.i+1);},Math.max(60,Math.round(700/rp.speed)));}}
-  function replayExit(w){var rp=w._rp;if(!rp)return;if(rp.t)clearInterval(rp.t);w._rp=null;w.bars=rp.all;w.lastBar=w.bars[w.bars.length-1];w._lgp=+w.lastBar.close||0;try{w.candle.setData(w.bars);}catch(e){}try{rp.apply();}catch(e){}
+  /* THE REPLAY FORMS A CANDLE THE WAY A CANDLE FORMS (2026-11-12, owner: "najsmooth replay ikad ... isti replay za Charts"). The same rpForm
+     the heatmap runs (mp-heatmap.js carries its own copy - the two bundles never load together; keep them identical): open, down to the low,
+     up to the high, back to the close for an up candle (the high first for a down one), every leg taking time in proportion to the distance
+     it covers, floored at 12% and eased inside the leg; high and low are what the path has visited, close is where the price is now. At
+     f = 1 the bar is the real bar to the digit. Play is a rAF loop now, not a 700 ms setInterval: the forming bar is pushed through the
+     series' own update() every frame (so Heikin Ashi / line / area styles follow through styleWrap) and the whole step - setData, the
+     indicators, the Ask AI judge - runs once per candle exactly as before. Indicators are not recomputed mid-candle on purpose. */
+  var RP_CANDLE_MS=700;
+  function rpForm(b,f){var o=+b.open,h=+b.high,l=+b.low,c=+b.close,up=c>=o;f=f<=0?0:f>=1?1:f;var pts=up?[o,l,h,c]:[o,h,l,c];
+    var d=[Math.abs(pts[1]-pts[0]),Math.abs(pts[2]-pts[1]),Math.abs(pts[3]-pts[2])],tot=d[0]+d[1]+d[2];
+    if(!(tot>0)||f>=1)return {time:b.time,open:o,high:f>=1?h:o,low:f>=1?l:o,close:f>=1?c:o};
+    var w=d.map(function(x){return Math.max(0.12,x/tot);}),ws=w[0]+w[1]+w[2];w=w.map(function(x){return x/ws;});
+    var acc=0,seg=0,u=0;for(seg=0;seg<3;seg++){if(f<acc+w[seg]||seg===2){u=(f-acc)/w[seg];break;}acc+=w[seg];}
+    u=u<0?0:u>1?1:u;u=u*u*(3-2*u);var p=pts[seg]+(pts[seg+1]-pts[seg])*u,hi=o,lo=o,k;
+    for(k=1;k<=seg;k++){if(pts[k]>hi)hi=pts[k];if(pts[k]<lo)lo=pts[k];}if(p>hi)hi=p;if(p<lo)lo=p;
+    return {time:b.time,open:o,high:hi,low:lo,close:p};}
+  function replayForm(w,f){var rp=w._rp;if(!rp||!w.candle)return;var b=rp.all[rp.i];if(!b)return;var fb=rpForm(b,f);
+    try{if(window.mpBarOk?window.mpBarOk(fb,'rpform'):true)w.candle.update(fb);}catch(e){}
+    try{var lb=rp.ui.querySelector('.rp-lbl');if(lb){var t=+b.time;if(t>2e10)t/=1000;lb.textContent='REPLAY  '+new Date(t*1000).toISOString().slice(0,16).replace('T',' ')+' UTC';}}catch(e){}}
+  function replayPlay(w,on){var rp=w._rp;if(!rp)return;if(rp.t){clearInterval(rp.t);rp.t=null;}if(rp.raf){cancelAnimationFrame(rp.raf);rp.raf=0;}rp.playing=!!on;var pb=rp.ui.querySelector('.rp-play');if(pb){pb.innerHTML=on?RP_IC.pause:RP_IC.play;pb.setAttribute('aria-label',on?'Pause':'Play');}
+    if(!on)return;if(rp.i>=rp.all.length)replaySeek(w,Math.max(40,rp.all.length-100));
+    var last=performance.now(),lastDraw=0;if(!(rp.f>0&&rp.f<1))rp.f=0;
+    var step=function(now){if(!w._rp||w.dead||!rp.playing)return;if(now-lastDraw<7.5){rp.raf=requestAnimationFrame(step);return;}/* ~120 fps ceiling (the 11-01 rule: a 239 Hz screen must not mean 239 updates a second) */
+      var dt=Math.min(100,now-last);last=now;lastDraw=now;var per=Math.max(60,RP_CANDLE_MS/(rp.speed||1));rp.f=(rp.f||0)+dt/per;
+      var guard=0;while(rp.f>=1&&rp.playing&&guard++<50){rp.f-=1;replaySeek(w,rp.i+1);if(rp.i>=rp.all.length){rp.f=0;break;}}
+      if(rp.playing&&rp.i<rp.all.length&&rp.f>0)replayForm(w,rp.f);
+      if(rp.playing)rp.raf=requestAnimationFrame(step);};
+    rp.raf=requestAnimationFrame(step);}
+  function replayExit(w){var rp=w._rp;if(!rp)return;if(rp.t)clearInterval(rp.t);if(rp.raf)cancelAnimationFrame(rp.raf);w._rp=null;w.bars=rp.all;w.lastBar=w.bars[w.bars.length-1];w._lgp=+w.lastBar.close||0;try{w.candle.setData(w.bars);}catch(e){}try{rp.apply();}catch(e){}
     try{rp.ui.remove();}catch(e){}try{if(w.el)w.el.classList.remove('replaying');}catch(e){}try{w.chart.timeScale().scrollToPosition(6,false);}catch(e){}try{rp.onExit();}catch(e){}}
-  try{window.__mpReplay={start:replayStart,seek:replaySeek,play:replayPlay,exit:replayExit};window.__mpIcons=RP_IC;}catch(e){}
+  try{window.__mpReplay={start:replayStart,seek:replaySeek,play:replayPlay,exit:replayExit,form:rpForm,candleMs:RP_CANDLE_MS};window.__mpIcons=RP_IC;}catch(e){}
 
   /* TAP A CARD AND THE INDICATOR EXPLAINS ITSELF (2026-10-08): the strip's cards carry data-ix; a tap opens one popover
      (a bottom sheet on the phone) in the /ai-indicators/ shape - what you see, what it means, before a long, before a short -

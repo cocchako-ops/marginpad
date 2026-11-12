@@ -397,9 +397,14 @@ function bkSelect(cls, opts, cur) {
     '.hm-tgb{position:relative;overflow:hidden}.hm-tgb i .w{font-size:inherit;color:#8fa3c4}.hm-tgb em{font:9px "Space Mono",monospace;font-style:normal;color:#8fa3c4;margin-left:5px;flex:none}.hm-tgb u{position:absolute;left:0;bottom:0;height:2px;background:#5c6b84;opacity:.9;text-decoration:none}.hm-tgb.l u{background:#2ebd85}.hm-tgb.s u{background:#ff6258}' +
     '.hm-legend{order:4;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin:0!important;padding:6px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;font:10.5px "Space Mono",monospace;color:#8fa3c4;overflow:visible!important;white-space:normal!important}.hm-legend>span{white-space:normal;min-width:0;max-width:100%}.hm-legend b{color:#e9e7df;white-space:nowrap}' +
     '.hm-btn.hm-rp.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.08)}' +
-    '.hm-rps{display:none;align-items:center;gap:3px;margin-left:2px}.hm-rp.on+.hm-rps{display:inline-flex}.hm-rps button{height:25px;min-width:25px;padding:0 6px;border-radius:7px;border:1px solid #232b3a;background:#12161d;color:#8fa3c4;font:700 10px "Space Mono",monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}.hm-rps button svg{width:12px;height:12px}.hm-rps button.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.08)}' +
-    '.hm-rpsc{-webkit-appearance:none;appearance:none;width:72px;height:4px;margin:0 2px 0 4px;border-radius:2px;background:#232b3a;outline:none}.hm-rpsc::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer}.hm-rpsc::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer}' +
-    '@media(max-width:600px){.hm-rpsc{width:48px}}' +
+    /* REPLAY TRANSPORT (2026-11-12): an overlay INSIDE the stage, over the plot's bottom edge, the way a video player carries its controls.
+       It used to be a span of chips in the top bar, which doubled the bar's height on a desktop (61 -> 106px) and pushed Download and
+       Share 48px past the right edge of a phone. The bar keeps the one Replay button; everything else lives here, only while it runs. */
+    '.hm-rpc{position:absolute;left:10px;bottom:30px;z-index:6;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:11px;background:rgba(10,13,17,.92);border:1px solid rgba(194,246,74,.28);box-shadow:0 10px 30px rgba(0,0,0,.5)}.hm-rpc[hidden]{display:none}' + /* no backdrop-filter: a blur over a canvas that repaints every frame is re-blurred every frame (measured 237 -> 27 fps) */
+    '.hm-rpc button{height:28px;min-width:28px;padding:0 7px;border-radius:8px;border:1px solid #232b3a;background:#12161d;color:#8fa3c4;font:700 10.5px "Space Mono",monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none}.hm-rpc button svg{width:13px;height:13px;display:block}.hm-rpc button.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.1)}.hm-rpc button.hm-rpc-pp{color:#c2f64a;border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.1)}' +
+    '.hm-rpc-t{font:700 11px "Space Mono",monospace;color:#c9d4e6;min-width:44px;text-align:center;flex:none;font-variant-numeric:tabular-nums}.hm-rpc-sp{display:inline-flex;gap:3px;flex:none}' +
+    '.hm-rpsc{-webkit-appearance:none;appearance:none;flex:1 1 120px;min-width:80px;height:4px;margin:0 4px;border-radius:2px;background:#232b3a;outline:none;cursor:pointer}.hm-rpsc::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer;box-shadow:0 0 0 3px rgba(194,246,74,.18)}.hm-rpsc::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#c2f64a;border:0;cursor:pointer}' +
+    '@media(max-width:600px){.hm-rpc{left:6px;bottom:22px;gap:4px;padding:5px 6px}.hm-rpc button{height:30px;min-width:30px}.hm-rpc-t{display:none}.hm-rpsc{min-width:50px}}' +
     '@media(max-width:980px){.hm-read{font-size:12px;margin-bottom:7px;padding-bottom:7px}.hm-tgb i .w{display:none}.hm-legend{font-size:10px;gap:3px 10px}.hm-ls{justify-content:flex-start}}' +
     '.hm-mcw{order:4;margin:0!important;min-height:34px}@media(max-width:620px){.hm-mcw{min-height:58px}.hm-mc em{display:none}.hm-mc{gap:3px 10px;padding:7px 10px}}.hm-wrap:has(.hm-mcw:not([style*=none])) .hm-stage{border-radius:0}.hm-mc{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:7px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;font:11px "Space Mono",monospace;color:#8fa3c4}.hm-mc b{color:#e9e7df}.hm-mc .k{color:#c9d4e6;font-weight:700;letter-spacing:.06em;font-size:10px}.hm-mc em{font-style:normal;color:#5c6b84}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
@@ -460,6 +465,29 @@ function bkSelect(cls, opts, cur) {
     var L = Math.max(1, +lev || 1), im = Math.max(1e-6, 1 / L), me = Math.min(Math.max(0, mmr), im / 2);
     return long ? entry * (1 - im + me) : entry * (1 + im - me);
   }
+  /* THE REPLAY FORMS A CANDLE THE WAY A CANDLE FORMS (2026-11-12, owner: "jos vise smooth sa wicks"): a bar has four prices and the first cut
+     scaled all three of close, high and low out of the open together, so the wicks were there from the first frame and only grew longer. A real
+     candle is a PATH - open, down to the low, up to the high, back to the close (an up candle; an down candle visits the high first) - and the
+     wick only exists once the price has been there. rpForm walks that path for a fraction f of the candle's interval: every segment takes time
+     in proportion to the distance it covers (floored at 12% so a flat leg still reads as a leg), eased with a smoothstep inside the segment so
+     the price slows into each turn; high and low are what the path has visited so far, close is where it is right now. At f = 1 the bar is the
+     real bar to the digit, so the hand-off to the finished candle is seamless. Pure; the charts replay runs the same function. */
+  function rpForm(b, f) {
+    var o = +b.open, h = +b.high, l = +b.low, c = +b.close, up = c >= o;
+    f = f <= 0 ? 0 : f >= 1 ? 1 : f;
+    var pts = up ? [o, l, h, c] : [o, h, l, c];
+    var d = [Math.abs(pts[1] - pts[0]), Math.abs(pts[2] - pts[1]), Math.abs(pts[3] - pts[2])], tot = d[0] + d[1] + d[2];
+    if (!(tot > 0) || f >= 1) return { time: b.time, open: o, high: f >= 1 ? h : o, low: f >= 1 ? l : o, close: f >= 1 ? c : o, p: f >= 1 ? c : o };
+    var w = d.map(function (x) { return Math.max(0.12, x / tot); }), ws = w[0] + w[1] + w[2]; w = w.map(function (x) { return x / ws; });
+    var acc = 0, seg = 0, u = 0;
+    for (seg = 0; seg < 3; seg++) { if (f < acc + w[seg] || seg === 2) { u = (f - acc) / w[seg]; break; } acc += w[seg]; }
+    u = u < 0 ? 0 : u > 1 ? 1 : u; u = u * u * (3 - 2 * u);
+    var p = pts[seg] + (pts[seg + 1] - pts[seg]) * u, hi = o, lo = o, k;
+    for (k = 1; k <= seg; k++) { if (pts[k] > hi) hi = pts[k]; if (pts[k] < lo) lo = pts[k]; }
+    if (p > hi) hi = p; if (p < lo) lo = p;
+    return { time: b.time, open: o, high: hi, low: lo, close: p, p: p };
+  }
+  try { window.__mpRpForm = rpForm; } catch (e) {}
   function tlabel(t) { var d = new Date(t * 1000); var w = S && WINS[S.win].mins >= 4320; return w ? (d.getDate() + '.' + (d.getMonth() + 1) + '.') : (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2)); }
 
   // pool model: only what still STANDS is returned (consumed pools vanish - that is the whole point)
@@ -553,6 +581,7 @@ function bkSelect(cls, opts, cur) {
     // EVERY RECTANGLE THIS LOOP FILLS IS RECORDED, and the click test reads nothing else (2026-09-24).
     // It is rebuilt on every frame, so a zoom, a pan or a side filter can never leave a stale hit box behind.
     S.bandRects = [];
+    var rpIv0 = bars.length > 1 ? Math.max(1, bars[bars.length - 1].time - bars[bars.length - 2].time) : 60, rpFl = []; // replay: the candle interval, and the bands cut inside the last ~2 candles (flashed below)
     for (i = vis.length - 1; i >= 0; i--) { var s = vis[i]; // P.alive is sorted desc, so this paints weak first, heavy on top
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
       // tsw is the server telling us WHICH candle took it; crossAt is the fallback for a pool the live
@@ -569,7 +598,8 @@ function bkSelect(cls, opts, cur) {
       if (!cx && s._gone && bars.length) cx = bars[bars.length - 1].time;
       if (!cx && s.dead) continue;
       var x1 = isGone ? (cx ? X(cx) : W) : W;
-      if (S._rpT) { if (s.t0 > S._rpT) continue; var xr = X(S._rpT); if (x1 > xr) { x1 = xr; isGone = false; cx = 0; } } // replay: nothing past the cursor exists yet, and a band is cut only once the cursor reaches its candle
+      if (S._rpT) { if (s.t0 > S._rpT) continue; var xr = X(S._rpT); if (x1 > xr) { x1 = xr; isGone = false; cx = 0; } // replay: nothing past the cursor exists yet, and a band is cut only once the cursor reaches its candle
+        else if (isGone && cx) { var rpAg = S._rpT - cx, rpPl = rpIv0 * 2.2; if (rpAg >= 0 && rpAg < rpPl) rpFl.push({ s: s, x: x1, y: y, h: bh, a: 1 - rpAg / rpPl, col: heatCol(s._h), al: heatAlpha(s._h), cx: cx }); } } // a band the cursor has just cut flashes for about two candles - the sweep is an EVENT, not a rendering change
       if (x1 <= x0 + 0.5) continue;
       // CLIP TO THE PLOT (2026-10-09). A swept band whose cut candle sits outside the visible time range came
       // back with x0 past the canvas width after a time-zoom, was painted off-canvas (harmless) and RECORDED in
@@ -615,7 +645,8 @@ function bkSelect(cls, opts, cur) {
     for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue;
       if (S._rpT && b.time > S._rpT) continue;
       var bd = b;
-      if (S._rpT) { var nxt = bars[i + 1], iv = nxt ? Math.max(1, nxt.time - b.time) : rpIvl; if (!nxt || nxt.time > S._rpT) { var ef = Math.max(0, Math.min(1, (S._rpT - b.time) / iv)); ef = ef < 1 ? 1 - Math.pow(1 - ef, 2) : 1; bd = { time: b.time, open: b.open, close: b.open + (b.close - b.open) * ef, high: b.open + (b.high - b.open) * ef, low: b.open + (b.low - b.open) * ef }; } rpLast = bd; }
+      var rpAge = 1; // 0..1 how far into its own interval the replay cursor sits for the forming candle (1 = finished)
+      if (S._rpT) { var nxt = bars[i + 1], iv = nxt ? Math.max(1, nxt.time - b.time) : rpIvl; if (!nxt || nxt.time > S._rpT) { rpAge = Math.max(0, Math.min(1, (S._rpT - b.time) / iv)); bd = rpForm(b, rpAge); } rpLast = bd; }
       var x = X(bd.time), up = bd.close >= bd.open;
       ctx.strokeStyle = up ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x, Y(bd.high)); ctx.lineTo(x, Y(bd.low)); ctx.stroke();
@@ -623,6 +654,21 @@ function bkSelect(cls, opts, cur) {
       var yO = Y(bd.open), yC = Y(bd.close), yT = Math.min(yO, yC), bH = Math.max(1.2, Math.abs(yC - yO));
       if (cw >= 3) { ctx.fillStyle = 'rgba(7,9,12,.9)'; ctx.fillRect(x - cw / 2 - 1, yT - 1, cw + 2, bH + 2); ctx.fillStyle = up ? '#2ebd85' : '#ff6258'; } // the candle keeps an edge over a bright band
       ctx.fillRect(x - cw / 2, yT, cw, bH);
+      if (rpAge < 1) { // the forming candle carries a soft glow so the eye finds the one bar that is alive
+        var gl = 0.22 + 0.18 * Math.sin(rpAge * 6.283), gw = Math.max(cw + 6, 9);
+        ctx.fillStyle = up ? 'rgba(46,189,133,' + gl.toFixed(3) + ')' : 'rgba(255,98,88,' + gl.toFixed(3) + ')';
+        ctx.fillRect(x - gw / 2, Math.min(Y(bd.high), yT) - 3, gw, Math.max(Y(bd.low), yT + bH) - Math.min(Y(bd.high), yT) + 6);
+      }
+    }
+    if (S._rpT && rpFl.length) { // the bands the cursor has just gone through: a fading ring and, on the heaviest three, what really liquidated there
+      rpFl.sort(function (p, q) { return q.al - p.al; });
+      for (i = 0; i < rpFl.length; i++) { var ff = rpFl[i], fa = ff.a * ff.a;
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.9 * fa).toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.strokeRect(Math.max(0, ff.x - 26 - 40 * (1 - ff.a)) + 0.5, ff.y - 3, Math.min(ff.x, 26 + 40 * (1 - ff.a)) - 1, ff.h + 6);
+        ctx.fillStyle = 'rgba(' + ff.col + ',' + (0.35 * fa).toFixed(3) + ')'; ctx.fillRect(Math.max(0, ff.x - 90), ff.y - 1, Math.min(ff.x, 90), ff.h + 2);
+        if (i < 3 && ff.a > 0.15) { var su = sweptUsd(ff.s, ff.cx), lab = __esT_mpheatmap('rpSwept', 'SWEPT') + (su && su.usd ? ' ' + usdShort(su.usd) : '') + ' ' + (ff.s.long ? __esT_mpheatmap('rpLongs', 'longs') : __esT_mpheatmap('rpShorts', 'shorts'));
+          ctx.font = '700 10px "Space Mono",monospace'; var lw = ctx.measureText(lab).width, lx = ff.x + 8 + lw + 8 < W ? ff.x + 8 : ff.x - lw - 16, ly = Math.max(10, Math.min(PH - 10, ff.y + ff.h / 2));
+          ctx.fillStyle = 'rgba(7,9,12,' + (0.9 * ff.a).toFixed(3) + ')'; ctx.fillRect(lx - 4, ly - 8, lw + 8, 16); ctx.fillStyle = 'rgba(255,255,255,' + ff.a.toFixed(3) + ')'; ctx.textAlign = 'left'; ctx.fillText(lab, lx, ly + 4); }
+      }
     }
     // real liquidations - subtle dots; only sizeable ones get an outline (toggleable via the Dots button)
     // Measured 2026-09-18 on live BTC: of the 1000 newest events the MEDIAN notional is $994 and 506 of them are
@@ -651,6 +697,7 @@ function bkSelect(cls, opts, cur) {
       if (!tp) return;
       var ly = Y(tp.price);
       if (ly < 12 || ly > PH - 12) return;
+      if (S._rpT && (ly < 64 || ly > PH - 58)) return; // the replay's tally box (top) and transport (bottom) own those rows while it runs - a label under either was unreadable on a phone
       var nar = W < 520;
       var txt = (tp.long ? (nar ? 'LONGS ' : 'LONGS LIQUIDATE ') : (nar ? 'SHORTS ' : 'SHORTS LIQUIDATE ')) + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
       ctx.font = '700 ' + (nar ? 10 : 11) + 'px "Space Mono",monospace';
@@ -701,7 +748,11 @@ function bkSelect(cls, opts, cur) {
     // REAL whale liquidation prices (measured, from Hyperliquid's own position data - no model in them)
     if (S._rpT) { // the cursor and the price of that moment
       var rx = X(S._rpT); ctx.strokeStyle = 'rgba(194,246,74,.55)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, PH); ctx.stroke(); ctx.setLineDash([]);
-      if (rpLast) { var ry = Y(rpLast.close); ctx.fillStyle = '#c2f64a'; ctx.beginPath(); ctx.arc(rx, ry, 3.5, 0, 6.2832); ctx.fill(); }
+      if (rpLast) { var ry = Y(rpLast.close); // the running price: a dot on the cursor, a faint guide to the price axis and the figure beside it
+        ctx.strokeStyle = 'rgba(194,246,74,.28)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(W, ry); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(194,246,74,.22)'; ctx.beginPath(); ctx.arc(rx, ry, 8, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = '#c2f64a'; ctx.beginPath(); ctx.arc(rx, ry, 3.5, 0, 6.2832); ctx.fill();
+        ctx.font = '700 10.5px "Space Mono",monospace'; var pxt = fpx(rpLast.close), pxw = ctx.measureText(pxt).width; ctx.fillStyle = 'rgba(7,9,12,.9)'; ctx.fillRect(W - pxw - 10, ry - 8, pxw + 8, 16); ctx.fillStyle = '#c2f64a'; ctx.textAlign = 'right'; ctx.fillText(pxt, W - 6, ry + 4); }
       /* THE REPLAY KEEPS A RUNNING TALLY (2026-11-12, owner: "nesto korisno iz opcije replay dok on tece"): what has been liquidated up to
          the cursor inside this window - dollars, longs against shorts, and how many bands the price has already gone through -
          from the events this page already holds. It is the one figure a replay can add that the still map cannot. */
@@ -1131,7 +1182,7 @@ function bkSelect(cls, opts, cur) {
   }
   var COARSE = (function () { try { return window.matchMedia && window.matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } })();
   var rafP = false;
-  function sched() { if (rafP) return; rafP = true; requestAnimationFrame(function () { rafP = false; try { draw(); } catch (e) {} }); }
+  function sched() { if (rafP) return; rafP = true; requestAnimationFrame(function () { rafP = false; try { var _t0 = performance.now(); draw(); if (S) S._drawMs = performance.now() - _t0; } catch (e) {} }); }
 
   // Yesterday's liquidations never reached the chart (owner 2026-08-20). Cause, measured: /liquidations/live
   // returns the NEWEST rows up to a hard cap of 1000 with no time filter, so on a busy symbol that whole budget
@@ -3494,6 +3545,11 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       if (!S || coinMenu || ev.metaKey || ev.ctrlKey || ev.altKey) return;
       var t = ev.target, tg = t && t.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT' || (t && t.isContentEditable)) return;
       var k = ev.key, ks = Object.keys(WINS);
+      if (S._rpOn && window.__mpHmReplay) { // the replay owns Space, the arrows and Escape while it runs
+        if (k === ' ') { ev.preventDefault(); window.__mpHmReplay.toggle(); return; }
+        if (k === 'ArrowLeft' || k === 'ArrowRight') { ev.preventDefault(); S._rpPaused = true; window.__mpHmReplay.seek((S._rpF || 0) + (k === 'ArrowRight' ? 0.02 : -0.02)); return; }
+        if (k === 'Escape') { ev.preventDefault(); window.__mpHmReplay.stop(); return; }
+      }
       if (k === '[' || k === ']') { var i = ks.indexOf(S.win) + (k === ']' ? 1 : -1); if (i >= 0 && i < ks.length) { ev.preventDefault(); selW.value = ks[i]; selW.dispatchEvent(new Event('change')); } }
       else if (k === 'a' || k === 'l' || k === 's') { var b = seg.querySelector('[data-s="' + (k === 'a' ? 'all' : k === 'l' ? 'long' : 'short') + '"]'); if (b) b.click(); }
       else if (k === 'c') { ev.preventDefault(); coinMenuOpen(); }
@@ -3550,26 +3606,40 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     /* REPLAY v2 (2026-11-12): the cursor moves on a clock of its own (a fraction S._rpF advanced per frame by dt / duration), so it can be
        PAUSED, run at 1x / 2x / 4x and SCRUBBED without the position jumping; 14 s at 1x. The chips (`.hm-rps`) exist only while it
        runs. draw() still reads S._rpT and nothing else. */
-    var RP_DUR = 14000, rpT0 = 0, rpT1 = 0;
-    var rpOpts = el('span', 'hm-rps'); rpOpts.setAttribute('role', 'group'); rpOpts.setAttribute('aria-label', 'Replay controls');
-    rpOpts.innerHTML = '<button type="button" data-rps="p" title="' + __esT_mpheatmap('rpPauseT', 'Pause / resume') + '"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>'
-      + '<button type="button" data-rps="1" class="on">1x</button><button type="button" data-rps="2">2x</button><button type="button" data-rps="4">4x</button>'
-      + '<input type="range" class="hm-rpsc" min="0" max="1000" value="0" aria-label="' + __esT_mpheatmap('rpScrubT', 'Scrub the replay') + '">';
-    rpBtn.parentNode.insertBefore(rpOpts, rpBtn.nextSibling);
-    var rpScrub = rpOpts.querySelector('.hm-rpsc');
-    function rpPaint() { rpOpts.querySelectorAll('[data-rps]').forEach(function (b) { var k = b.getAttribute('data-rps'); if (k === 'p') b.classList.toggle('on', !!(S && S._rpPaused)); else b.classList.toggle('on', +k === ((S && S._rpSpeed) || 1)); }); if (S && !rpScrub.matches(':active')) rpScrub.value = String(Math.round((S._rpF || 0) * 1000)); }
-    function rpStop() { if (!S) return; S._rpT = 0; S._rpF = 0; S._rpOn = false; S._rpPaused = false; S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; rpBtn.classList.remove('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>'; sched(); }
+    /* REPLAY v3 (2026-11-12, owner: "ova traka razbije formu ... download i X probijaju sajt ... zelim najsmooth replay ikad"): the transport
+       is an OVERLAY inside the stage (`.hm-rpc`: pause, the cursor's clock, the scrub, 1x/2x/4x, stop) - the chips it replaces sat in the top
+       bar and doubled it on a desktop / pushed Download and Share off a phone. The clock is the same (S._rpF per frame by dt / duration, 18 s
+       at 1x so a candle has time to form); the draw is capped at ~120 frames a second (a 239 Hz monitor would otherwise redraw the whole map
+       239 times a second for no visible gain - the 11-01 rule); the forming candle walks its own path (rpForm). Space pauses, the arrows scrub
+       by 2%, Escape stops. */
+    var RP_DUR = 18000, rpT0 = 0, rpT1 = 0;
+    var rpOpts = el('div', 'hm-rpc'); rpOpts.hidden = true; rpOpts.setAttribute('role', 'group'); rpOpts.setAttribute('aria-label', 'Replay controls');
+    var RP_SVG_P = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>', RP_SVG_G = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>';
+    rpOpts.innerHTML = '<button type="button" class="hm-rpc-pp" data-rps="p" title="' + __esT_mpheatmap('rpPauseT', 'Pause / resume') + '" aria-label="Pause">' + RP_SVG_P + '</button>'
+      + '<span class="hm-rpc-t" aria-live="off"></span>'
+      + '<input type="range" class="hm-rpsc" min="0" max="1000" value="0" aria-label="' + __esT_mpheatmap('rpScrubT', 'Scrub the replay') + '">'
+      + '<span class="hm-rpc-sp"><button type="button" data-rps="1" class="on">1x</button><button type="button" data-rps="2">2x</button><button type="button" data-rps="4">4x</button></span>'
+      + '<button type="button" data-rps="x" title="' + __esT_mpheatmap('rpStopT', 'Stop the replay') + '" aria-label="Stop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
+    stage.appendChild(rpOpts);
+    var rpScrub = rpOpts.querySelector('.hm-rpsc'), rpClock = rpOpts.querySelector('.hm-rpc-t'), rpPP = rpOpts.querySelector('.hm-rpc-pp');
+    function rpPlace() { try { rpOpts.style.right = (pf.offsetWidth + 10) + 'px'; } catch (e) {} } // over the plot, never over the zones column
+    function rpPaint() { if (!S) return; rpOpts.querySelectorAll('.hm-rpc-sp [data-rps]').forEach(function (b) { b.classList.toggle('on', +b.getAttribute('data-rps') === (S._rpSpeed || 1)); });
+      rpPP.innerHTML = S._rpPaused ? RP_SVG_G : RP_SVG_P; rpPP.setAttribute('aria-label', S._rpPaused ? 'Resume' : 'Pause');
+      if (!rpScrub.matches(':active')) rpScrub.value = String(Math.round((S._rpF || 0) * 1000));
+      if (S._rpT) rpClock.textContent = tlabel(S._rpT); }
+    function rpStop() { if (!S) return; S._rpT = 0; S._rpF = 0; S._rpOn = false; S._rpPaused = false; S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; rpOpts.hidden = true; rpBtn.classList.remove('on'); rpBtn.innerHTML = RP_SVG_G; sched(); }
     window.__mpHmRpStop = rpStop; // resetFor (a coin or window change) stops a running replay through this
     function rpTick() {
       if (!S || !S._rpOn) return;
-      var last = performance.now();
+      var last = performance.now(), lastDraw = 0;
       var step = function (now) {
         if (!S || !S._rpOn) return;
-        var dt = Math.min(100, now - last); last = now;
+        if (now - lastDraw < 7.5) { S._rpRaf = requestAnimationFrame(step); return; } // ~120 fps ceiling: smooth on any screen, not a full redraw per refresh on a 239 Hz one
+        var dt = Math.min(100, now - last); last = now; lastDraw = now;
         if (!S._rpPaused) S._rpF = Math.min(1, (S._rpF || 0) + dt / (RP_DUR / (S._rpSpeed || 1)));
-        S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); draw();
+        S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); var _d0 = performance.now(); draw(); S._drawMs = performance.now() - _d0;
         if (S._rpF < 1 || S._rpPaused) S._rpRaf = requestAnimationFrame(step);
-        else { S._rpRaf = 0; setTimeout(function () { if (S && S._rpOn && S._rpF >= 1 && !S._rpPaused) rpStop(); }, 1400); }
+        else { S._rpRaf = 0; S._rpPaused = true; rpPaint(); } // at the end the replay HOLDS on the finished window, paused - press play to run it again, X or the bar button to leave
       };
       S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = requestAnimationFrame(step);
     }
@@ -3579,15 +3649,21 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       if (!(rpT1 > rpT0)) return;
       S._rpOn = true; S._rpF = 0; S._rpPaused = false; S._rpSpeed = S._rpSpeed || 1; S._rpT = rpT0;
       rpBtn.classList.add('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
+      rpOpts.hidden = false; rpPlace();
       try { window.mpHaptic && window.mpHaptic('tap'); } catch (e) {}
       rpPaint(); rpTick();
     }
+    function rpSeekF(f) { if (!S || !S._rpOn) return; S._rpF = Math.max(0, Math.min(1, f)); S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); if (!S._rpRaf) rpTick(); else draw(); }
+    function rpToggle() { if (!S || !S._rpOn) return; if (S._rpF >= 1 && S._rpPaused) S._rpF = 0; S._rpPaused = !S._rpPaused; rpPaint(); if (!S._rpRaf) rpTick(); }
     rpBtn.addEventListener('click', function () { if (S && S._rpOn) rpStop(); else rpStart(); });
     rpOpts.addEventListener('click', function (ev) { var b = ev.target.closest('[data-rps]'); if (!b || !S || !S._rpOn) return; var k = b.getAttribute('data-rps');
-      if (k === 'p') { S._rpPaused = !S._rpPaused; if (!S._rpPaused && !S._rpRaf) rpTick(); } else { S._rpSpeed = +k || 1; }
-      rpPaint(); if (!S._rpRaf) rpTick(); });
-    rpScrub.addEventListener('input', function () { if (!S || !S._rpOn) return; S._rpF = Math.max(0, Math.min(1, (+rpScrub.value || 0) / 1000)); S._rpPaused = true; S._rpT = rpT0 + (rpT1 - rpT0) * S._rpF; rpPaint(); if (!S._rpRaf) rpTick(); else draw(); });
-    window.__mpHmReplay = { start: rpStart, stop: rpStop, state: function () { return S ? { on: !!S._rpOn, f: S._rpF || 0, t: S._rpT || 0, speed: S._rpSpeed || 1, paused: !!S._rpPaused } : null; } }; // read-only mirror for the probe
+      if (k === 'x') { rpStop(); return; }
+      if (k === 'p') { rpToggle(); return; }
+      S._rpSpeed = +k || 1; rpPaint(); if (!S._rpRaf) rpTick(); });
+    rpOpts.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); }); // the stage's own drag/pan listeners must not see a tap on the transport
+    rpScrub.addEventListener('input', function () { if (!S || !S._rpOn) return; S._rpPaused = true; rpSeekF((+rpScrub.value || 0) / 1000); });
+    window.addEventListener('resize', rpPlace);
+    window.__mpHmReplay = { start: rpStart, stop: rpStop, seek: rpSeekF, toggle: rpToggle, state: function () { return S ? { on: !!S._rpOn, f: S._rpF || 0, t: S._rpT || 0, speed: S._rpSpeed || 1, paused: !!S._rpPaused, dur: RP_DUR } : null; } }; // read-only mirror for the probe
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
     function shotX() { // 1200x675 (16:9) - the exact card X shows uncropped in the timeline
       var W = 1200, H = 675, out = document.createElement('canvas'); out.width = W; out.height = H;
@@ -3769,7 +3845,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       var mid = 0, faint = 0, strong = 0, mx = 0, mn = 9, i;
       for (i = 0; i < h.length; i++) { if (h[i] > mx) mx = h[i]; if (h[i] < mn) mn = h[i]; if (h[i] > 0.5) strong++; else if (h[i] > 0.12) mid++; else faint++; }
       return {
-        coin: S.coin, win: S.win, side: S.sideF, dotMin: S.dotMin, showDots: !!S.showDots,
+        coin: S.coin, win: S.win, side: S.sideF, dotMin: S.dotMin, showDots: !!S.showDots, drawMs: S._drawMs || 0,
         hitRadius: function (notional) { return Math.max(16, dotR({ notional: notional }) + (COARSE ? 16 : 10)); },
         lastHits: S._lastHits || 0,
         // EVERY RECTANGLE THE LAST FRAME FILLED, which is the whole definition of what can be clicked

@@ -646,15 +646,15 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
 
     <section class="rkh">
       <div class="rkh-glow" aria-hidden="true"></div>
-      <div class="rkh-eyebrow"><i></i>Ao vivo · todas as grandes corretoras · últimas 24 horas</div>
+      <div class="rkh-eyebrow"><i></i>Live · every major exchange · today, UTC</div>
       <div class="rkh-grid">
         <div>
-          <div class="rkh-tot"><span id="rkhTot">-</span><small> liquidados</small></div>
+          <div class="rkh-tot"><span id="rkhTot">-</span><small> liquidated today</small></div>
           <p class="rkh-sub">Toda liquidação forçada de long e de short de 8 corretoras, transmitida segundos depois de acontecer - tamanho, preço, lado e horário, <b>grátis e sem login</b>. Quando a alavancagem fica sem margem, aparece aqui: <b>veja quem está sendo rekt, em tempo real</b>. Combine com o <a href="/pt/heatmap" style="color:#c2f64a">mapa de calor de liquidações</a> gratuito e os <a href="/pt/btc-liquidation-map/" style="color:#c2f64a">mapas de liquidações por moeda</a>.</p>
           <div class="rkh-src" id="rkhSrc"><span class="t">Transmitindo ao vivo de</span><span class="chip" data-x="binance"><i></i>Binance</span><span class="chip" data-x="bybit"><i></i>Bybit</span><span class="chip" data-x="okx"><i></i>OKX</span><span class="chip" data-x="hyperliquid"><i></i>Hyperliquid</span><span class="chip" data-x="gate"><i></i>Gate</span><span class="chip" data-x="htx"><i></i>HTX</span><span class="chip" data-x="dydx"><i></i>dYdX</span><span class="chip" data-x="bitfinex"><i></i>Bitfinex</span></div>
         </div>
         <div class="rkh-tiles">
-          <div class="rkh-tile"><div class="l">Posições rekt · 24h</div><div class="v" id="rkhCnt">-</div></div>
+          <div class="rkh-tile"><div class="l">Positions rekt · today</div><div class="v" id="rkhCnt">-</div></div>
           <div class="rkh-tile"><div class="l">Mais rekt · 24h</div><div class="v" id="rkhBig">-</div></div>
           <div class="rkh-tile pace"><div class="l">Ritmo · média de 5 min</div><div class="v" id="rkhPace">-</div></div>
           <div class="rkh-tile"><div class="l" id="rkhRecL">Maior baque · 24h</div><div class="v" id="rkhRec">-</div></div>
@@ -664,8 +664,8 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     </section>
 
     <div class="rk-stats">
-      <div class="rk-stat tot"><div class="l">Liquidado<span class="ls"> · últimas 24h</span></div><div class="v" id="rkTot">-</div></div>
-      <div class="rk-stat cnt"><div class="l">Posições<span class="ls"> · últimas 24h</span></div><div class="v" id="rkCnt">-</div></div>
+      <div class="rk-stat tot"><div class="l">Liquidated<span class="ls"> · today, UTC</span></div><div class="v" id="rkTot">-</div></div>
+      <div class="rk-stat cnt"><div class="l">Positions<span class="ls"> · today, UTC</span></div><div class="v" id="rkCnt">-</div></div>
       <div class="rk-stat big"><div class="l">Mais rekt<span class="ls"> · últimas 24h</span></div><div class="v" id="rkBig">-</div></div>
     </div>
 
@@ -780,13 +780,14 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   }
   function loadDaySeries(force){if(REKT_MAINT)return;
     if(!force&&Date.now()-dayAt<60000)return;dayAt=Date.now();
+    dayMid=(function(){var d=new Date();d.setUTCHours(0,0,0,0);return d.getTime();})(); // a tab left open past midnight asks for the NEW day, never yesterday plus today
     fetch('/api/v1/liqseries?symbol=ALL&minutes='+dayMins()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       if(!j||!Array.isArray(j.buckets)||!j.buckets.length)return; // keep whatever we had; paintHits falls back to the local store
       var H=[],i;for(i=0;i<24;i++)H.push({l:0,s:0,n:0});var tot=0,n=0;
       j.buckets.forEach(function(b){if(+b.t<dayMid)return;var hh=new Date(+b.t).getUTCHours();if(hh<0||hh>23)return;
         var l=+b.long||0,s=+b.short||0,c=(+b.longN||0)+(+b.shortN||0);
         H[hh].l+=l;H[hh].s+=s;H[hh].n+=c;tot+=l+s;n+=c;});
-      dayH=H;dayTot=tot;dayN=n;try{paintHits(true);}catch(_e){}
+      dayH=H;dayTot=tot;dayN=n;try{paintDayHero();}catch(_e){}try{paintHits(true);}catch(_e){}
     });}
   function loadTopDay(force){if(REKT_MAINT)return;
     if(!force&&Date.now()-topAt<120000)return;topAt=Date.now();
@@ -909,24 +910,37 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     var _ck=fKey()+'|'+fSide;if(_ck!==mobKey){mobKey=_ck;mobCap=60;}
     var _full=list.length;list=list.slice(0,mobCap);
     feed.innerHTML=list.length?(list.map(row).join('')+(_full>mobCap?'<button class="rk-more" type="button" data-more>'+__esT_rektindex("loadOlder",'Load older')+' <small>'+(_full-mobCap).toLocaleString('en-US')+'</small></button>':'')):__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');
-    // 24h headline stats now come from Coinglass (aggregated across ALL exchanges) via loadLiqStats() - not the partial session feed.
+    // the biggest coin + the record come from the 24h aggregate (loadLiqStats); the total, count and split are the day series (paintDayHero)
   }
   function matchF(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;if(fSym&&String(e.symbol).toUpperCase().indexOf(fSym)<0)return false;return true;}
   function deskOn(){return window.matchMedia&&matchMedia('(min-width:861px)').matches;}
   // accurate, all-exchange 24h liquidation totals from Coinglass (the live ticket feed above is the real-time stream; these are the true aggregates)
-  function liqStatsDown(){ // aggregate source unavailable: show nothing rather than a fabricated zero
-    ['rkTot','rkCnt','rkBig','rkhTot','rkhCnt','rkhBig'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='\u2014';});
-    ['rkML','rkMS','rkhML','rkhMS'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.width='0%';});
-    [['rkMLl','Longs rekt \u2014'],['rkMSl','\u2014 Shorts rekt'],['rkhMLl','Longs rekt \u2014'],['rkhMSl','\u2014 Shorts rekt']].forEach(function(p){var e=document.getElementById(p[0]);if(e)e.textContent=p[1];});
+  function liqStatsDown(){ // aggregate source unavailable: show nothing rather than a fabricated zero (the total, the count and the split are the DAY's and are not touched here)
+    ['rkBig','rkhBig'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='\u2014';});
   }
-  function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market){liqStatsDown();return;}var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'-';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'-');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'-')+' Shorts rekt';
-    // desktop hero mirrors the same 24h aggregates at full size
-    var hT=document.getElementById('rkhTot');if(hT)hT.textContent='$'+money(m.total||0);
-    var hC=document.getElementById('rkhCnt');if(hC)hC.textContent=(+m.count||0).toLocaleString('en-US');
+  /* THE HEADLINE IS TODAY, AND IT NEVER GOES DOWN (2026-11-12, owner: "vidim da se cifra smanjuje ... moramo da napisemo koliko je danas
+     likvidirano. Broj nikako ne sme da se smanjuje u toku dana"). The total, the position count and the long/short split used to come from the
+     rolling 24h aggregate, so every quiet hour that replaced a busy one from yesterday made the figure FALL while the reader watched. They come
+     from the collector's own day series now (/api/v1/liqseries?symbol=ALL - every liquidation since 00:00 UTC, the same source the By-hour
+     chart reads), and paintDayHero keeps the larger of what it holds and what arrived, per UTC day: a late or partial answer can never print
+     a smaller number, and at midnight the day key changes and the count starts again from zero, which is what "today" means. The biggest
+     coin and the biggest hit stay rolling 24h and say so - a record is a record whatever the clock. */
+  var _dh={day:0,tot:0,n:0,l:0,s:0};
+  function paintDayHero(){if(!dayH)return;if(_dh.day!==dayMid)_dh={day:dayMid,tot:0,n:0,l:0,s:0};
+    var l=0,s=0;dayH.forEach(function(x){l+=x.l;s+=x.s;});
+    if(dayTot>=_dh.tot){_dh.tot=dayTot;_dh.l=l;_dh.s=s;}if(dayN>_dh.n)_dh.n=dayN;
+    var tot=_dh.tot,n=_dh.n;l=_dh.l;s=_dh.s;
+    ['rkTot','rkhTot'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='$'+money(tot);});
+    ['rkCnt','rkhCnt'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n.toLocaleString('en-US');});
+    var sum=l+s||1,lp=Math.round(l/sum*100);
+    ['rkML','rkhML'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.width=lp+'%';});['rkMS','rkhMS'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.width=(100-lp)+'%';});
+    var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'-');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'-')+' Shorts rekt';
+    var hmll=document.getElementById('rkhMLl');if(hmll)hmll.textContent='Longs rekt '+(sum>1?lp+'% \u00b7 $'+money(l):'-');var hmsl=document.getElementById('rkhMSl');if(hmsl)hmsl.textContent=(sum>1?(100-lp)+'% \u00b7 $'+money(s):'-')+' Shorts rekt';
+    window.__rkDay={tot:tot,n:n,l:l,s:s,day:dayMid}; // read-only mirror for the suite
+  }
+  function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market){liqStatsDown();return;}var m=d.market,coins=d.coins||[];var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'-';
+    // the hero's coin + record tiles mirror the same 24h aggregates (the total, count and split are the DAY's - paintDayHero)
     var hB=document.getElementById('rkhBig');if(hB)hB.innerHTML=top?(esc(top.s)+' <small>$'+money(top.liq)+'</small>'):'-';
-    var hml=document.getElementById('rkhML'),hms=document.getElementById('rkhMS');if(hml)hml.style.width=lp+'%';if(hms)hms.style.width=(100-lp)+'%';
-    var hmll=document.getElementById('rkhMLl');if(hmll)hmll.textContent='Longs rekt '+(sum>1?lp+'% · $'+money(l):'-');
-    var hmsl=document.getElementById('rkhMSl');if(hmsl)hmsl.textContent=(sum>1?(100-lp)+'% · $'+money(s):'-')+' Shorts rekt';
     if(d.big&&+d.big.usd>0){var hb=document.getElementById('rkhRec'),hl=document.getElementById('rkhRecL');if(hb&&(!sessBig||+d.big.usd>+sessBig.notional)){hb.innerHTML='<span style="color:'+(String(d.big.side).indexOf('long')>=0?'#ff8a80':'#41e3a3')+'">$'+money(d.big.usd)+'</span> <small>'+esc(d.big.s||'')+'</small>';if(hl)hl.textContent=__esT_rektindex("biggestHit24h",'Biggest hit · 24h');}}
     window.__cgLast=d;try{deskCoins(d);loadFunding();}catch(_e){} // feed the terminal rail's "Most rekt coins" + funding enrichment
   }).catch(function(){liqStatsDown();});}
