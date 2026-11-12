@@ -123,7 +123,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,margin:margin,stale:_st9};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live'+(m.stale?' stale':'')+'">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_mptrade("priceStale",'stale'):'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(e.copy?'<span class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'">COPY'+(e.copyName?' · @'+esc(e.copyName):'')+'</span>':'')+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live'+(m.stale?' stale':'')+'">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_mptrade("priceStale",'stale'):'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -243,7 +243,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   var _glIdx=-1; // index (within the visible list) of the newest winning close - set by render(), read by closedCard
   function closedCard(e,_i){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(e.copy?'<span class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'">COPY'+(e.copyName?' · @'+esc(e.copyName):'')+'</span>':'')+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'

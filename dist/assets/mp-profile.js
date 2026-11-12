@@ -104,6 +104,10 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     + '.lbm-port.open{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}'
     + '.lbm-port svg{display:block;color:#c2f64a}.lbm-port b{background:linear-gradient(90deg,#c2f64a,#a06bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}'
     + '.lbm-portp{margin-top:12px;padding:12px 12px 10px;border-radius:12px;background:rgba(160,107,255,.05);border:1px solid rgba(160,107,255,.22)}'
+    + '.lbm-copyb.on{color:#c2f64a;border-color:rgba(194,246,74,.55);background:rgba(194,246,74,.1)}.lbm-copyb.open{border-color:#c2f64a}'
+    + '.lbm-copyp{margin-top:12px;padding:12px 12px 10px;border-radius:12px;background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22)}.lbm-cph{font:700 13px "Bricolage Grotesque",sans-serif;color:#fff;margin-bottom:8px}.lbm-cpr{display:flex;gap:6px;flex-wrap:wrap}'
+    + '.lbm-cpc{height:30px;padding:0 12px;border-radius:9px;border:1px solid #2c3849;background:rgba(255,255,255,.04);color:#dfe4ec;font:700 12px "Space Mono",monospace;cursor:pointer}.lbm-cpc.on{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.12)}.lbm-cpc.stop{color:#ff7b72;border-color:rgba(255,123,114,.4);margin-left:auto}.lbm-copyp[data-busy] .lbm-cpc{opacity:.5;pointer-events:none}'
+    + '.lbm-cpn{margin-top:8px;font-size:11px;line-height:1.45;color:#8b97a5}.lbm-cps{margin-top:7px;font-size:12px;color:#c2f64a}'
     + '.lbm-portp[hidden]{display:none}'
     + '.lbm-pph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font:700 10px "Space Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8b97a5;margin-bottom:8px}.lbm-pph b{font:800 15px "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;color:#fff;text-transform:none;letter-spacing:0}.lbm-pph .up{color:#34d99a}.lbm-pph .dn{color:#ff6c5c}'
     + '.lbm-ppr{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:5px 0;font-size:12.5px}'
@@ -357,9 +361,15 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
          word - it is a tile like the other three, and the word is in its title and aria-label so it is still named
          for a screen reader and on hover. Follow comes down from the top-right corner it held for one day. */
       var portTtl = __esT_mpprofile("portfolioTitle", 'Portfolio - what they hold on Demo Spot');
+      /* PAPER COPY (2026-11-12, feature #2): a fifth tile, Copy - the server mirrors this trader's server-filled opens into the viewer's
+         journal at a fixed margin per trade. Lit while the viewer copies them (payload `iCopy` = the margin), never on your own card.
+         A copied trade never ranks anywhere - the panel says so. */
+      var COPY_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg>';
+      var copyTtl = (+d.iCopy > 0) ? __esT_mpprofile("copyOnTitle", 'Copying this trader - $' + '{m} a trade').split('{m}').join(String(+d.iCopy)) : __esT_mpprofile("copyTitle", 'Copy their trades on paper');
+      var copyBtn = (folSt === 'self') ? '' : ('<button type="button" class="lbm-copyb' + (+d.iCopy > 0 ? ' on' : '') + '" data-lbcopy="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '"' + (folSt === 'guest' ? ' data-auth-open' : '') + ' title="' + esc(copyTtl) + '" aria-label="' + esc(copyTtl) + '">' + COPY_SVG + '</button>');
       var mBtn = '<div class="lbm-acts">' + (isSelf ? __esT_mpprofile("thisIsYou",'<div class="lbm-self">This is you</div>') : '')
         + '<button type="button" class="lbm-port" data-lbport="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '" title="' + esc(portTtl) + '" aria-label="' + esc(portTtl) + '">' + PORT_SVG + '</button>'
-        + folBtn + dmBtn + '</div>';
+        + copyBtn + folBtn + dmBtn + '</div>';
       var av = d.avatar ? (/^data:image\//.test(d.avatar) ? '<img class="lbm-av lbm-av-img" src="' + esc(d.avatar) + '" alt="">' : '<span class="lbm-av">' + esc(d.avatar) + '</span>') : '';
       var bioHtml = d.bio ? '<div class="lbm-bio"' + '' + '>' + esc(d.bio) + '</div>' : '';
       var coinsHtml = (d.coins && d.coins.length) ? '<div class="lbm-coins">' + d.coins.map(function (c) { return '<span class="lbm-coin"' + '' + '>' + esc(c) + '</span>'; }).join('') + '</div>' : '';
@@ -397,8 +407,9 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
         + curveHtml(d.curve)
         // The "Records" card was removed from the profile card on 2026-10-01 (owner). The server still sends d.records; it is simply not rendered.
         + ''
-        + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + '</span>' + mBtn + '</div>'
-        + '<div class="lbm-portp" id="lbmPortP" hidden></div>';
+        + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + (+d.copiers > 0 ? ' <i class="lbm-cpn2">· <b>' + (+d.copiers) + '</b> ' + __esT_mpprofile("copying", 'copying') + '</i>' : '') + '</span>' + mBtn + '</div>'
+        + '<div class="lbm-portp" id="lbmPortP" hidden></div>'
+        + '<div class="lbm-copyp" id="lbmCopyP" hidden data-copying="' + (+d.iCopy || 0) + '" data-uid="' + esc(d.uid) + '" data-name="' + esc(d.name) + '"></div>';
       try { folPaint(body.querySelector('.lbm-folb'), folSt, folFm); } catch (e) {}
       fitName(body); // own card has no follow button, so folPaint returns early and never fits it
       try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitName(body); }); } catch (e) {}
@@ -462,6 +473,38 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
       }
     } catch (x2) {}
     try { window.__mpTrack && window.__mpTrack('profile', 'medal:' + mb.getAttribute('data-lbmed')); } catch (x) {}
+  });
+  /* PAPER COPY panel (feature #2): the tile opens it under the foot - three margins and Stop; every press asks the server and repaints
+     from what came back (the copying margin rides back on the answer). A guest tile carries data-auth-open and mp-auth's own handler
+     opens sign-in before this runs. */
+  var COPY_MARGINS = [50, 100, 250];
+  function renderCopy(el, st) {
+    var m = +el.getAttribute('data-copying') || 0, name = el.getAttribute('data-name') || '';
+    var chips = COPY_MARGINS.map(function (v) { return '<button type="button" class="lbm-cpc' + (m === v ? ' on' : '') + '" data-lbcopyset="' + v + '">$' + v + '</button>'; }).join('');
+    el.innerHTML = '<div class="lbm-cph">' + (m > 0 ? __esT_mpprofile("copyingAt", 'Copying @{u} at ${m} a trade').split('{u}').join(esc(name)).split('{m}').join(String(m)) : __esT_mpprofile("copyAsk", 'Copy @{u} on paper').split('{u}').join(esc(name))) + '</div>'
+      + '<div class="lbm-cpr">' + chips + (m > 0 ? '<button type="button" class="lbm-cpc stop" data-lbcopyset="0">' + __esT_mpprofile("copyStop", 'Stop') + '</button>' : '') + '</div>'
+      + '<div class="lbm-cpn">' + __esT_mpprofile("copyNote", 'Every server-filled trade they open is mirrored into your My Trades at that margin, at their entry, with their stop and target; their close and partials mirror too. Copied trades never count on any leaderboard, pay no XP or Ticks, and settle like any other position. Up to 3 traders.') + '</div>'
+      + (st ? '<div class="lbm-cps">' + esc(st) + '</div>' : '');
+  }
+  document.addEventListener('click', function (e) {
+    var cb = e.target.closest && e.target.closest('[data-lbcopy]');
+    if (cb) {
+      if (cb.hasAttribute('data-auth-open')) return;
+      var el = document.getElementById('lbmCopyP'); if (!el) return;
+      var pp = document.getElementById('lbmPortP'); if (pp && !pp.hidden) { pp.hidden = true; var pb0 = document.querySelector('[data-lbport].open'); if (pb0) pb0.classList.remove('open'); }
+      if (!el.hidden) { el.hidden = true; cb.classList.remove('open'); return; }
+      el.hidden = false; cb.classList.add('open'); renderCopy(el, '');
+      try { window.__mpTrack && window.__mpTrack('profile', 'copy'); } catch (x) {}
+      return;
+    }
+    var sb = e.target.closest && e.target.closest('[data-lbcopyset]'); if (!sb) return;
+    var el2 = sb.closest('.lbm-copyp'); if (!el2 || el2.getAttribute('data-busy')) return;
+    var mg = +sb.getAttribute('data-lbcopyset') || 0; el2.setAttribute('data-busy', '1');
+    fetch('/api/lb/copy', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ leader: el2.getAttribute('data-uid'), margin: mg }) }).then(function (r) { return r.json(); }).then(function (d) {
+      el2.removeAttribute('data-busy'); window.__mpCopyLast = d;
+      if (d && d.ok) { el2.setAttribute('data-copying', String(+d.copying || 0)); var tile = document.querySelector('[data-lbcopy]'); if (tile) tile.classList.toggle('on', +d.copying > 0); renderCopy(el2, +d.copying > 0 ? __esT_mpprofile("copyOk", 'On. Their next server-filled open lands in your My Trades.') : __esT_mpprofile("copyOff", 'Stopped. Open copied positions stay yours to close.')); }
+      else renderCopy(el2, d && d.error === 'too_many' ? __esT_mpprofile("copyTooMany", 'You already copy three traders - stop one first.') : d && d.error === 'self' ? __esT_mpprofile("copySelf", 'That is you.') : d && d.error === 'login_required' ? __esT_mpprofile("copySignIn", 'Sign in to copy a trader.') : __esT_mpprofile("copyErr", 'Could not change that right now.'));
+    }).catch(function () { el2.removeAttribute('data-busy'); renderCopy(el2, __esT_mpprofile("copyErr", 'Could not change that right now.')); });
   });
   document.addEventListener('click', function (e) {
     var pb = e.target.closest && e.target.closest('[data-lbport]'); if (!pb) return;

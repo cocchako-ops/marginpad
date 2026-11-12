@@ -10418,7 +10418,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0aa7d12c" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a60c8d63" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -31135,6 +31135,16 @@ export default {
           return new Response(txt, { status: r.status, headers: jh }); }
         catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
       }
+      if (sub === 'copy') { // PAPER COPY (feature #2): GET = who I copy; POST {leader, margin} sets it (margin 0 stops)
+        if (request.method === 'POST') {
+          if (su.status && su.status !== 'active') return new Response('{"error":"restricted"}', { status: 403, headers: jh });
+          let bd = {}; try { bd = await request.json(); } catch (e) {}
+          try { const r = await usersDO(env, '/copy/set', { uid: su.id, leader: bd.leader, margin: +bd.margin || 0 }); if (r && r.ok && r.isNew) { try { ctx.waitUntil(pushDrain(env)); } catch (e) {} try { ctx.waitUntil(evPush(env, request, 'copy', '@' + (su.username || '?') + ' copies ' + (r.name || '') + ' at $' + r.copying, '/paper-trade', {})); } catch (e) {} } return new Response(JSON.stringify(r || { error: 'unavailable' }), { status: r && r.ok ? 200 : (r && r.error ? 400 : 503), headers: jh }); }
+          catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
+        }
+        try { const r = await usersDO(env, '/copy/mine', { uid: su.id }); return new Response(JSON.stringify(r || { leaders: [] }), { headers: jh }); }
+        catch (e) { return new Response('{"leaders":[]}', { headers: jh }); }
+      }
       if (sub === 'following') {
         try { const r = await stub.fetch(new Request('https://do/lbfollowing?uid=' + encodeURIComponent(su.id))); return new Response(await r.text(), { headers: jh }); }
         catch (e) { return new Response('{"following":[]}', { headers: jh }); }
@@ -34848,7 +34858,7 @@ export class UserStore {
     if (!p) return { started: false, rules: ACAD_PRACT };
     const out = { started: true, start: +p.start, done: +p.done || 0, run: 0, n: ACAD_PRACT.n, rules: ACAD_PRACT, trades: [] };
     if (p.done) { out.run = ACAD_PRACT.n; return out; }
-    const rows = this.rows("SELECT tid, ts, sym, side, lev, margin, liq, src, sl, slpx, entry FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts ASC, id ASC LIMIT 500", uid, +p.start), seen = {};
+    const rows = this.rows("SELECT tid, ts, sym, side, lev, margin, liq, src, sl, slpx, entry FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(cp,0)=0 ORDER BY ts ASC, id ASC LIMIT 500", uid, +p.start), seen = {}; // the practical exam is the learner's own hand - a paper copy is not (feature #2)
     for (const r of rows) {
       if (seen[r.tid]) continue; seen[r.tid] = 1; // a partial close and the final one are one trade
       const why = pracCheck(r, +p.start); if (!why) continue;
@@ -35141,7 +35151,7 @@ export class UserStore {
     const uids = this._squadUids(r.sid), per = {}, cap = (+r.target || 0) * RAID_ONE_SHARE;
     let total = 0, n = 0, skippedMargin = 0, skippedEarly = 0;
     for (const uid of uids) {
-      const rows = this.rows("SELECT ts, pnl, margin, tid FROM tradeev WHERE user_id=? AND kind='close' AND UPPER(sym)=? AND ts>=? AND ts<? ORDER BY ts ASC", uid, String(r.coin).toUpperCase(), +r.start_ts, +r.end_ts);
+      const rows = this.rows("SELECT ts, pnl, margin, tid FROM tradeev WHERE user_id=? AND kind='close' AND UPPER(sym)=? AND ts>=? AND ts<? AND COALESCE(cp,0)=0 ORDER BY ts ASC", uid, String(r.coin).toUpperCase(), +r.start_ts, +r.end_ts); // a paper copy fills no raid (feature #2)
       for (const e of rows) {
         const ot = tradeOpenTs(String(e.tid || '')); if (ot != null && ot < +r.start_ts) { skippedEarly++; continue; }
         if ((+e.margin || 0) > RAID_MARGIN_MAX) { skippedMargin++; continue; }
@@ -35201,7 +35211,7 @@ export class UserStore {
   _duelDisp(metric, v) { if (v == null) return null; if (metric === 'pnl' || metric === 'survival') return v <= -1e8 ? null : v; return v < 0 ? null : v; } // pnl/survival keep real negatives; the big sentinels mean "didn't compete" → null
   _duelStats(uid, from, to, rules) { // full closed-trade stats over [from,to): best ROE, win rate, biggest win, total pnl, longest win streak, ending equity (survival), sniper ROE
     uid = String(uid).replace(/^u:/, ''); rules = rules || {}; const maxLev = +rules.maxLev || 0, symLock = rules.sym ? String(rules.sym).toUpperCase() : '', maxTrades = Math.min(5, Math.max(1, +rules.maxTrades || 3)), START = 10000;
- const r = this.rows('SELECT pnl, roe, lev, sym, ts, tid FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<? ORDER BY ts ASC', uid, 'close', from, to);
+ const r = this.rows('SELECT pnl, roe, lev, sym, ts, tid FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<? AND COALESCE(cp,0)=0 ORDER BY ts ASC', uid, 'close', from, to); // a paper copy settles no duel (feature #2)
  // A duel scores trades OPENED after it started (owner, 2026-09-01: an old position closed during the duel
  // decided one - "no older trades should be counted when the challenge begins"). Open time comes from the
  // trade's 'open' row (same tid), else from the journal blob; a trade whose open time is unknown stays in,
@@ -36192,6 +36202,31 @@ export class UserStore {
       out.sort((a, c) => a.ts - c.ts);
       return this.j({ ok: true, users, rows: out });
     }
+    if (path.indexOf('/copy/') === 0) { // PAPER COPY (2026-11-12, feature #2): who copies whom, at what margin per trade
+      const uid = String(b.uid || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' });
+      if (path === '/copy/mine') {
+        const rows = this.rows('SELECT c.leader, c.margin, c.ts, u.username FROM copies c LEFT JOIN users u ON u.id=c.leader WHERE c.uid=? ORDER BY c.ts DESC LIMIT 10', uid);
+        const open = this._loadJournal(uid).filter(x => x && x.copy && x.status !== 'win' && x.status !== 'loss');
+        return this.j({ ok: true, leaders: rows.map(r => ({ uid: 'u:' + r.leader, name: r.username || '', margin: +r.margin || 0, ts: +r.ts || 0, open: open.filter(x => String(x.copyOf) === String(r.leader)).length })), max: COPY_MAX_LEADERS, margins: COPY_MARGINS });
+      }
+      if (path === '/copy/set') {
+        const leader = String(b.leader || '').replace(/^u:/, ''), margin = +b.margin || 0;
+        if (!leader) return this.j({ error: 'bad' });
+        if (leader === uid) return this.j({ error: 'self' });
+        if (margin === 0) { this.sql.exec('DELETE FROM copies WHERE uid=? AND leader=?', uid, leader); this._copiedBust(); return this.j({ ok: true, copying: 0 }); } // stop: the open mirrored rows stay the copier's to close
+        if (COPY_MARGINS.indexOf(margin) < 0) return this.j({ error: 'bad_margin', margins: COPY_MARGINS });
+        const lu = this.rows("SELECT username, status FROM users WHERE id=?", leader)[0];
+        if (!lu || !lu.username) return this.j({ error: 'no_leader' });
+        if (lu.status && lu.status !== 'active') return this.j({ error: 'leader_restricted' });
+        const have = this.rows('SELECT 1 FROM copies WHERE uid=? AND leader=?', uid, leader)[0];
+        if (!have && (this.rows('SELECT COUNT(*) c FROM copies WHERE uid=?', uid)[0] || { c: 0 }).c >= COPY_MAX_LEADERS) return this.j({ error: 'too_many', max: COPY_MAX_LEADERS });
+        this.sql.exec('INSERT INTO copies(uid,leader,margin,ts) VALUES(?,?,?,?) ON CONFLICT(uid,leader) DO UPDATE SET margin=excluded.margin', uid, leader, margin, Date.now());
+        this._copiedBust();
+        if (!have) { try { const me = (this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {}).username || 'A trader'; this._pushNotif(leader, 'copy', '@' + me + ' is copying your trades ($' + margin + ' a trade)', me ? 'profile:' + me : ''); } catch (e) {} } // the leader is told the fact, with no control over it - these are paper positions in somebody else's book
+        return this.j({ ok: true, copying: margin, leader: 'u:' + leader, name: lu.username, isNew: !have });
+      }
+      return this.j({ error: 'not_found' });
+    }
     if (path.indexOf('/totd/') === 0) { // TRADE OF THE DAY (2026-11-12, feature #11) - candidates, votes, the board and the settle, all on the store's single thread
       const day = String(b.day || '').replace(/[^0-9-]/g, '').slice(0, 10), uid = String(b.uid || ''), id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return this.j({ error: 'bad_day' });
@@ -36245,11 +36280,11 @@ export class UserStore {
       // migration has not taken effect in this store yet, ask the question the report has always asked and
       // say so in `costs` rather than failing the whole read. A nice-to-have column is not a reason a member
       // cannot see how they traded.
-      try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl, fee, fund FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); }
+      try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl, fee, fund FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(cp,0)=0 ORDER BY ts LIMIT 5000", uid, since); } // cp=0: the report is how the MEMBER trades - a mirrored trade is somebody else's decision (feature #2)
       catch (e) {
         costErr = String((e && e.message) || e).slice(0, 180);
         try { for (const c9 of ['fee REAL', 'fund REAL']) { try { sql.exec('ALTER TABLE tradeev ADD COLUMN ' + c9); } catch (e2) {} } } catch (e3) {} // self-heal: run the migration here too, so the NEXT read has them
-        try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); }
+        try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(cp,0)=0 ORDER BY ts LIMIT 5000", uid, since); }
         catch (e4) { return this.j({ error: 'unavailable', why: String((e4 && e4.message) || e4).slice(0, 180) }); } // and if even THAT fails, say what failed - 'unavailable' alone costs a day of guessing
       }
       const opens = {};
@@ -37189,7 +37224,7 @@ export class UserStore {
             // per-sync insert cap keeps logging losses after it stops logging wins (deliberate anti-shed measure),
             // so a user who signs in on a second device and pushes a big journal at once can close a winner and
             // watch the mission refuse it. The journal itself is unbiased; take whichever source saw more.
-            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
             let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (!t || t.status !== 'win') continue; if ((+t.closeTs || 0) < dayStart) continue; if (!((+t.pnl || 0) > 0)) continue; _jw++; } } catch (e2) {}
             c = Math.max(_tv, _jw);
           }
@@ -37197,9 +37232,9 @@ export class UserStore {
           // 2026-11-12 tiers: results that take the day, every one read off a table the action itself writes
           else if (d.vt === 'xpsrc') c = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=? AND ts>=? AND src=?', uid, dayStart, String(d.va))[0] || {}).n || 0;
           else if (d.vt === 'xpsum') { const srcs = String(d.va || '').split(',').filter(Boolean); c = srcs.length ? ((this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND ts>=? AND src IN (' + srcs.map(() => '?').join(',') + ')', uid, dayStart, ...srcs)[0] || {}).s || 0) : 0; }
-          else if (d.vt === 'coins') c = (this.rows("SELECT COUNT(DISTINCT sym) n FROM tradeev WHERE user_id=? AND kind='close' AND ts>=?", uid, dayStart)[0] || {}).n || 0;
-          else if (d.vt === 'winsl') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(sl,0)=1 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
-          else if (d.vt === 'winheld') { c = 0; for (const r of this.rows("SELECT ts, sym FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)) { const o = this.rows("SELECT MAX(ts) t FROM tradeev WHERE user_id=? AND kind='open' AND sym=? AND ts<?", uid, r.sym, r.ts)[0]; if (o && o.t && r.ts - o.t >= 4 * 3600000) c++; } }
+          else if (d.vt === 'coins') c = (this.rows("SELECT COUNT(DISTINCT sym) n FROM tradeev WHERE user_id=? AND kind='close' AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'winsl') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(sl,0)=1 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'winheld') { c = 0; for (const r of this.rows("SELECT ts, sym FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)) { const o = this.rows("SELECT MAX(ts) t FROM tradeev WHERE user_id=? AND kind='open' AND sym=? AND ts<?", uid, r.sym, r.ts)[0]; if (o && o.t && r.ts - o.t >= 4 * 3600000) c++; } }
           else if (d.vt === 'exam') c = (this.rows("SELECT COUNT(*) n FROM acadexam WHERE user_id=? AND status='pass' AND ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'review') c = (this.rows('SELECT COUNT(*) n FROM acadrevday WHERE user_id=? AND day=? AND ok=1', uid, Math.floor(dayStart / 864e5))[0] || {}).n || 0;
           else if (d.vt === 'streak') c = +((this.rows('SELECT streak FROM users WHERE id=?', uid)[0] || {}).streak || 0);
@@ -37531,7 +37566,7 @@ export class UserStore {
           else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND lesson NOT LIKE 'course:%'", uid)[0] || {}).n || 0;
           else if (d.vt === 'win') { // same both-sources rule as the daily win mission: tradeev's per-sync insert
             // cap keeps logging losses after it stops logging wins, so never under-credit a real win.
-            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0", uid)[0] || {}).n || 0;
+            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0", uid)[0] || {}).n || 0;
             let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (t && t.status === 'win' && (+t.pnl || 0) > 0) _jw++; } } catch (e2) {}
             c = Math.max(_tv, _jw);
           }
@@ -38474,7 +38509,7 @@ export class UserStore {
         // (open time parsed from the id - the blob path already had this rule, this path did not), on at least
         // $1 of margin, and closed server-side. Clone dedup still applies on top: tickets of one symbol+side
         // opened within a 10-minute chain are one decision (the Adiyat 21-parallel-shorts exploit).
-        const evRows = this.rows("SELECT user_id uid, ts, sym, side, pnl, roe, lev, margin, tid, via FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY user_id, ts LIMIT 40000", ws, we);
+        const evRows = this.rows("SELECT user_id uid, ts, sym, side, pnl, roe, lev, margin, tid, via FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY user_id, ts LIMIT 40000", ws, we); // cp=0: a paper copy never ranks (feature #2)
         const tk = new Map(); // ticket key -> { uid, sym, side, open, pnl, margin, bestRoe, bestMove, n }
         for (const x of evRows) {
           if (String(x.via || '') === 'client') continue; // the paid board counts server-settled closes only (the blob path requires src:'srv' + sc)
@@ -38546,7 +38581,7 @@ export class UserStore {
           const days = Math.ceil((Math.min(Date.now(), we) - ws) / 86400000);
           for (let d = 0; d < days; d++) {
             const d0 = ws + d * 86400000, d1 = Math.min(d0 + 86400000, we);
-            const part = this.rows("SELECT user_id uid, pnl, tid FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", d0, d1);
+            const part = this.rows("SELECT user_id uid, pnl, tid FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND COALESCE(cp,0)=0 AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", d0, d1);
             gRead += part.length;
             for (const r of part) {
               const ot = tradeOpenTs(r.tid);
@@ -38565,7 +38600,7 @@ export class UserStore {
           gDiag = { rows: gRead, days: days, carriedIn: gCarried, unknownId: gUnknown, rule: 'opened-this-season' };
         } catch (eG) {
           for (const k of Object.keys(agg)) delete agg[k];
-          const old = this.rows("SELECT user_id uid, CAST((ts - ?) / 86400000 AS INTEGER) d, COUNT(*) n, COALESCE(SUM(pnl),0) p FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id, d", ws, ws, we);
+          const old = this.rows("SELECT user_id uid, CAST((ts - ?) / 86400000 AS INTEGER) d, COUNT(*) n, COALESCE(SUM(pnl),0) p FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND COALESCE(cp,0)=0 AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id, d", ws, ws, we);
           for (const g of old) {
             const a = agg[String(g.uid)] || (agg[String(g.uid)] = { days: 0, closes: 0, pnl: 0, red: 0 });
             a.closes += +g.n || 0; a.pnl += +g.p || 0;
@@ -38618,13 +38653,14 @@ export class UserStore {
              or the count beside the rate would be measuring a different book than the rate. */
           if (e && e.status !== 'win' && e.status !== 'loss') {
             const ot9 = +e.ts;
-            if (isFinite(ot9) && ot9 >= ws && ot9 < we && !lbExcluded(e.sym) && !(ws >= SRV_LB_START && e.src !== 'srv') && +e.qty > 0 && +e.entry > 0) {
+            if (isFinite(ot9) && ot9 >= ws && ot9 < we && !lbExcluded(e.sym) && !(ws >= SRV_LB_START && e.src !== 'srv') && !e.copy && +e.qty > 0 && +e.entry > 0) {
               const ob9 = openBook[r.uid] = openBook[r.uid] || [];
               if (ob9.length < 80) ob9.push({ sym: String(e.sym || '').toUpperCase(), side: e.side === 'short' ? 'short' : 'long', entry: +e.entry, qty: +e.qty, margin: +e.margin || 0 });
             }
             continue;
           }
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
+          if (e.copy) continue; // a paper copy never ranks (feature #2)
           const ct = +e.closeTs; if (!isFinite(ct) || ct < ws || ct >= we) continue; // only trades CLOSED this week count
           if (v2 && !(+e.ts >= ws)) continue; // v2: the trade must ALSO be OPENED this week - no farming an old position by (partial-)closing it into this week's board (partial closes keep the original open ts)
           if (lbExcluded(e.sym)) continue; // forex/metals/indices/stablecoins never count toward any board (low-vol → farmable at high leverage)
@@ -39147,7 +39183,7 @@ export class UserStore {
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
       let sbRoe = null, sbPnl = null, sbC = 0, sbW = 0, sbSum = 0, sbO = 0; // this-season floor derived from the display blob (backstop under the s_* counters); sbO = positions OPENED this season and still open
       try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
-        if (!e) continue;
+        if (!e || e.copy) continue; // a paper copy is not this member's record (feature #2)
         if (e.status !== 'win' && e.status !== 'loss') { if ((!e.status || e.status === 'open') && (+e.ts || 0) >= weekStart) sbO++; continue; }
         const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
         const roe = Math.max(-100, Math.min(p / m * 100, 1000000));
@@ -39156,7 +39192,7 @@ export class UserStore {
         const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekPnl += p; sbC++; if (p > 0) sbW++; sbSum += p; if (sbRoe == null || roe > sbRoe) sbRoe = roe; if (sbPnl == null || p > sbPnl) sbPnl = p; }
       } } catch (e) {}
       // weekly win/loss from tradeev (the blob is 100-capped so a heavy trader's old losses get trimmed → inflated WR); v2: win needs ≥5% ROE
-      try { const v2w = weekStart >= LB_V2_START; const mvW = v2w ? WR_MIN_MOVE : -1e9; const wr = this.rows("SELECT SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", v2w ? WR_MIN_WIN_ROE : -1e9, mvW, mvW, u.id, weekStart)[0]; if (wr) { weekW = +wr.w || 0; weekN = weekW + (+wr.l || 0); } } catch (e) {}
+      try { const v2w = weekStart >= LB_V2_START; const mvW = v2w ? WR_MIN_MOVE : -1e9; const wr = this.rows("SELECT SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", v2w ? WR_MIN_WIN_ROE : -1e9, mvW, mvW, u.id, weekStart)[0]; if (wr) { weekW = +wr.w || 0; weekN = weekW + (+wr.l || 0); } } catch (e) {}
       // PREFER the season counters: the tradeev scan above is subject to the per-sync insert cap, which keeps
       // logging losses after it stops logging wins (deliberate anti-shed measure - do not remove it). That makes
       // it a biased basis for a WIN RATE: the same 60 closes read 9W/51L there and 32W/28L in the journal.
@@ -39186,7 +39222,7 @@ export class UserStore {
       let curve = null;
       try {
         const from30 = Math.floor(now / 86400000) * 86400000 - 29 * 86400000;
-        const cr = this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(via,'')<>'client' AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY ts ASC LIMIT 5000", u.id, from30);
+        const cr = this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(via,'')<>'client' AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY ts ASC LIMIT 5000", u.id, from30);
         const days = []; for (let i = 0; i < 30; i++) days.push([from30 + i * 86400000, 0, 0]);
         let cn = 0; for (const r of cr) { const i = Math.floor((+r.ts - from30) / 86400000); if (i >= 0 && i < 30 && isFinite(+r.pnl)) { days[i][1] += +r.pnl; days[i][2]++; cn++; } }
         let acc = 0; const cum = days.map(d => { acc += d[1]; return +acc.toFixed(2); });
@@ -39202,8 +39238,10 @@ export class UserStore {
         mutual = iFollow && followsMe;
         if (!iFollow) { try { requested = !!this.rows('SELECT 1 FROM followreq WHERE k=?', viewer + '|' + u.id)[0]; } catch (e) {} } // a pending follow request the viewer sent, awaiting this profile's approval
       }
+      // PAPER COPY (feature #2): how many copy this member (a count only - the leader is told the number, never the names), and whether the viewer does, at what margin
+      let copiers = 0, iCopy = 0; try { copiers = +(this.rows('SELECT COUNT(*) c FROM copies WHERE leader=?', u.id)[0] || {}).c || 0; if (viewer && viewer !== String(u.id)) { const cr = this.rows('SELECT margin FROM copies WHERE uid=? AND leader=?', viewer, u.id)[0]; iCopy = cr ? (+cr.margin || 0) : 0; } } catch (e) {}
       return this.j({ exists: true, isSelf, viewerSignedIn: !!viewer, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
-        iFollow, followsMe, mutual, requested,
+        iFollow, followsMe, mutual, requested, copiers, iCopy,
         bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if ((fr9 === 'neon' || fr9 === 'aurora') && !this._isPrem(u)) return 'default'; /* a Premium frame comes off with the Premium (2026-10-22): /setframe checks at EQUIP time only, so two expired members were still wearing aurora */ if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
@@ -39502,7 +39540,7 @@ export class UserStore {
         const L = xpLevelOf((u && u.xp) || 0);
         let weekPnl = 0, weekN = 0, bestRoe = null;
         try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
-          if (!e || (e.status !== 'win' && e.status !== 'loss')) continue; const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
+          if (!e || e.copy || (e.status !== 'win' && e.status !== 'loss')) continue; const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
           const roe = p / m * 100; if (bestRoe == null || roe > bestRoe) bestRoe = roe;
           const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekN++; weekPnl += p; }
         } } catch (e) {}
@@ -39521,7 +39559,7 @@ export class UserStore {
       if (!ids.length) return this.j({ feed: [], follows: 0 });
       const ph = ids.map(() => '?').join(',');
       // trade events (opens/closes) from followed accounts, newest first
-      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,e.entry,e.exit,e.tid,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
+      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,e.entry,e.exit,e.tid,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') AND COALESCE(e.cp,0)=0 ORDER BY e.ts DESC LIMIT 60', ...ids); // a copier's mirrored rows are the leader's trades, not news from the copier (feature #2)
       const feed = rows.filter(r => r.username).map(r => { const L = xpLevelOf(r.xp || 0), isClose = r.kind === 'close', ot = tradeOpenTs(String(r.tid || '')); return {
         name: r.username, level: { k: L.k, name: L.name, col: L.col }, ts: r.ts, kind: r.kind,
         sym: r.sym, side: r.side, lev: r.lev, margin: r.margin, pnl: r.pnl, roe: r.roe, liq: r.liq,
