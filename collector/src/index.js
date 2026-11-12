@@ -5,6 +5,7 @@ import { EventEmitter } from 'node:events';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { statfsSync, statSync } from 'node:fs';
+import v8 from 'node:v8';
 import { config } from '../config.js';
 import { log } from './logger.js';
 import { createStorage, slowStorageCalls } from './storage/index.js';
@@ -232,7 +233,8 @@ function getStatus() {
     // pm2 enforces its ceiling on RSS, so RSS is the number that decides whether this process lives; heapUsed
     // beside it is what tells a leak (objects held) from the allocator keeping freed pages (which settles).
     mem: (() => { const m = process.memoryUsage(); const mb = (v) => Math.round(v / 1048576);
-      return { rssMb: mb(m.rss), heapUsedMb: mb(m.heapUsed), heapTotalMb: mb(m.heapTotal), externalMb: mb(m.external) }; })(),
+      let lim = 0; try { lim = mb(v8.getHeapStatistics().heap_size_limit); } catch (e) {} // the V8 ceiling in force (2026-11-12: --max-old-space-size=360 from ecosystem.config; pm2 rewrites the process title, so this is the only readable proof the flag applied)
+      return { rssMb: mb(m.rss), heapUsedMb: mb(m.heapUsed), heapTotalMb: mb(m.heapTotal), externalMb: mb(m.external), heapLimitMb: lim }; })(),
     hl: hlMeter(), // what we really spend of Hyperliquid's 1200 weight a minute, per caller
     disk: diskInfo(), // see diskInfo: free space, the database and its write-ahead log - the two figures that would have predicted 2026-09-30
     symbols: config.symbols, inserted, deduped,
