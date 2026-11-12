@@ -2,8 +2,8 @@
 <html lang="pt" data-es-twin="/academy/">
 <head>
 <meta charset="UTF-8" />
-<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <script src="/assets/ui-pt.js?v=dbcfbbba"></script>
+<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -232,6 +232,7 @@ footer a{color:var(--dim)}
 .node>span:nth-child(2){min-width:0;flex:1}
 .hero-cta{max-width:100%;white-space:normal;line-height:1.3}
 html[dir="rtl"] .node{text-align:right}
+.node.deep{outline:2px solid var(--lime,#c2f64a);outline-offset:2px;border-radius:10px} /* the lesson a ?lesson= link asked for, when it is still locked */
 .enote{margin:10px 0 0;font-size:12px;color:var(--faint);border:1px dashed var(--line2);border-radius:10px;padding:8px 12px;display:none}
 .enote.on{display:block}
 @media(max-width:480px){.hnav a{margin-left:11px;font-size:13px}}
@@ -2344,12 +2345,12 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
       var cd=c.lessons.filter(function(L){return st.done[L.id];}).length,pc=c.lessons.filter(function(L){return st.best[L.id]===0;}).length,mast=!!st.mastered[c.id];
       var lockedC=!prevDone&&!c.free&&cd===0;
       var isCur=!lockedC&&c.lessons.some(function(L){return L.id===nxt;});
-      var open=openCourses[c.id]!=null?openCourses[c.id]:isCur;
+      var open=openCourses[c.id]!=null?openCourses[c.id]:(isCur||(!!DEEP_L&&c.lessons.some(function(L){return L.id===DEEP_L;}))); /* a ?lesson= link opens the course that holds it (feature #13) */
       if(lockedC)open=false;
       html+='<section class="course'+(open?' open':'')+(lockedC?' lockedc':'')+'" data-cid="'+c.id+'" style="--cc:'+c.color+'"><div class="crs-h" data-ctoggle="'+c.id+'"><span class="ic">'+(lockedC?ICONS.lock:ICONS[c.icon])+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+(lockedC?esc(U('locked')):cd+'/'+c.lessons.length+(pc?' · '+pc+' '+esc(U('pfx')):''))+'</span>'+(mast?'<button type="button" class="crs-master" data-cert="'+c.id+'">'+esc(U('mast'))+' · '+esc(U('cert'))+'</button>':'')+'<span class="crs-chev">\u25B6</span></div>'+(lockedC?'<div class="lockmsg">'+esc(U('lockm'))+'</div>':'')+'<div class="path">';
       if(!c.free)prevDone=prevDone&&(cd===c.lessons.length);
       c.lessons.forEach(function(L,i){
-        var d=!!st.done[L.id],u=unlocked(L.id),cls=(d?'done':(L.id===nxt?'next':(u?'':'locked')))+(d&&st.best[L.id]===0?' perfect':'');
+        var d=!!st.done[L.id],u=unlocked(L.id),cls=(d?'done':(L.id===nxt?'next':(u?'':'locked')))+(d&&st.best[L.id]===0?' perfect':'')+(L.id===DEEP_L&&!u?' deep':''); /* the lesson a ?lesson= link asked for, while it is still locked - set here so a re-render keeps it */
         var nInter=L.cards.filter(function(x){return x.act;}).length;
         html+='<button type="button" class="node '+cls+'" data-start="'+esc(U('sb'))+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' '+esc(U('steps'))+' · '+L.quiz.length+' '+esc(U('qs'))+(nInter?' · '+esc(U('ho')):'')+'</span></span><span class="xpb">+25 XP</span></button>';
       });
@@ -2362,6 +2363,7 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
       else hg.innerHTML='\u25B6&nbsp; '+(n>0?esc(fmt(U('cont'),{n:n+1,t:TOTAL})):esc(U('start'))); }
     if(window.mpLvlDecorate)window.mpLvlDecorate();
   }
+  var DEEP_L=(function(){try{var id=new URLSearchParams(location.search).get('lesson');return (id&&/^[a-z]{1,3}\d{1,2}$/.test(id))?id:'';}catch(e){return '';}})(); /* ?lesson=<id> (feature #13): read once, used by render() */
   document.getElementById('heroGo').addEventListener('click',function(){
     var nx=nextLesson();
     if(nx){openLesson(nx);}
@@ -2664,6 +2666,7 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
   document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(b){var u=b.getAttribute('data-copy');try{navigator.clipboard.writeText(u).then(function(){b.textContent=U('copied');setTimeout(function(){b.textContent=U('share');},1600);});}catch(_){prompt('',u);}return;}
     var cb=e.target.closest&&e.target.closest('[data-cert]');if(cb){e.stopPropagation();var host=document.getElementById('certHost');if(!host)return;host.innerHTML=certCard(cb.getAttribute('data-cert'),(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'',Date.now(),true);host.hidden=false;host.scrollIntoView({behavior:'smooth',block:'center'});}});
   (function(){try{var q=new URLSearchParams(location.search),c=q.get('cert'),u=q.get('u');if(!c||!u)return;fetch('/api/academy/cert?u='+encodeURIComponent(u)+'&c='+encodeURIComponent(c)).then(function(r){return r.json();}).then(function(d){var host=document.getElementById('certHost');if(!host||!d||!d.ok)return;host.innerHTML=certCard(d.course,d.name,d.ts,false);host.hidden=false;});}catch(e){}})();
+  (function(){try{var id=DEEP_L;if(!id)return;var n=0,iv=setInterval(function(){n++;var b=document.querySelector('.node[data-lesson="'+id+'"]');if(b){clearInterval(iv);if(!b.disabled){b.click();}else{b.scrollIntoView({block:'center'});}}else if(n>80)clearInterval(iv);},150);}catch(e){}})(); /* ?lesson=<id> (2026-11-12, feature #13): a trade autopsy or a report finding links straight to the lesson - an unlocked one opens, a locked one is scrolled to (render() marks it .deep and opens its course) */
   function loadServer(){
     fetch('/api/academy',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       if(!d)return;
@@ -2682,6 +2685,6 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=ffe8c979"></script>
-<script defer src="/assets/mp-nav.js?v=a60c8d63"></script>
+<script defer src="/assets/mp-nav.js?v=a80bfe3a"></script>
 </body>
 </html>

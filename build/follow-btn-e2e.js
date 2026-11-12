@@ -47,7 +47,8 @@ const adm = (p, b) => fetch(BASE + p, { method: 'POST', headers: { 'content-type
       await page.setCookie({ name: 'mp_sess', value: tokA, domain: 'marginpad.io', path: '/' });
       await page.setCookie({ name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/' });
       await page.goto(BASE + '/leaderboards/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
-      await sleep(1500);
+      // the full board (137 + 358 rows on 2026-11-12) paints 2-6 s after load - wait for a NAME, never a fixed 1.5 s (two red runs with nothing wrong)
+      await page.waitForSelector('[data-lbu]', { timeout: 45000 });
       await page.evaluate(() => { const a = document.querySelector('[data-lbu]'); if (a) a.click(); });
       await page.waitForFunction('!!window.mpOpenProfile', { timeout: 30000 });
       await sleep(600);
@@ -78,13 +79,26 @@ const adm = (p, b) => fetch(BASE + p, { method: 'POST', headers: { 'content-type
 
       await tap();
       v = await look();
-      // TWO GLYPHS, not three (owner 2026-10-17: "samo treba da budu 2 razlicita coveculjka"). Not following =
-      // person + plus. Following = person + CHECK, whether or not it is mutual; friends keep the filled tile.
-      ok('one tap: following - the plus is gone and the CHECK is showing', v.st === 'follow' && !v.plus && v.chk && v.on && !v.friend, v);
+      // SINCE 2026-10-23 A FOLLOW IS A REQUEST THE TARGET APPROVES (commit 6359eb3b90, the Notifications center) - the first
+      // tap lands on `requested` (the pending tile), never straight on the check. This suite described the pre-request world
+      // and was red on HEAD for that alone (found 2026-11-12).
+      ok('one tap: a follow REQUEST - the plus is gone, the tile is pending, nothing is a check yet', v.st === 'requested' && !v.plus && !v.chk && !v.friend, v);
       ok('and still no text in it', v.text === '', v);
 
-      // B follows back from the server side, then A reopens the card
+      // B approves the request from the server side, then A reopens the card
+      const ap = await asB('/api/lb/fapprove', { method: 'POST', body: JSON.stringify({ ruid: String(uidA).replace(/^u:/, '') }) }); // the route sanitises away a colon - the center sends bare ids
+      ok('B approves the request', !!(ap && ap.ok && ap.approved), ap);
+      await open(nameB);
+      v = await look();
+      // TWO GLYPHS, not three (owner 2026-10-17: "samo treba da budu 2 razlicita coveculjka"). Not following =
+      // person + plus. Following = person + CHECK, whether or not it is mutual; friends keep the filled tile.
+      ok('approved: following - the plus is gone and the CHECK is showing', v.st === 'follow' && !v.plus && v.chk && v.on && !v.friend, v);
+
+      // B follows back (a request to A), A approves it, then reopens the card
       await asB('/api/lb/follow', { method: 'POST', body: JSON.stringify({ tuid: uidA, tname: nameA }) });
+      const uidB = String(card.uid).replace(/^u:/, '');
+      const ap2 = await fetch(BASE + '/api/lb/fapprove', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + tokA }, body: JSON.stringify({ ruid: uidB }) }).then(r => r.json());
+      ok('A approves B back', !!(ap2 && ap2.ok && ap2.approved), ap2);
       await open(nameB);
       v = await look();
       ok('WHEN THEY FOLLOW BACK, THE CARD SHOWS FRIENDS - not the add-friend plus (the reported bug)', v.st === 'friends' && v.chk && !v.plus && v.friend, v);
@@ -101,8 +115,8 @@ const adm = (p, b) => fetch(BASE + p, { method: 'POST', headers: { 'content-type
       await tap(); const a2 = await look();
       await tap(); const a3 = await look();
       ok('tap 1 unfollows: back to the plus, and the pill falls back to "Follows you"', a1.st === 'none' && a1.plus && /lbm-fw/.test(a1.pill), { a1 });
-      ok('tap 2 follows again: straight to FRIENDS, because the answer carries both directions', a2.st === 'friends' && a2.chk, { a2 });
-      ok('tap 3 unfollows again, still consistent', a3.st === 'none' && a3.plus, { a3 });
+      ok('tap 2 asks again: a REQUEST, pending until B approves (the answer carries both directions, and B still follows)', a2.st === 'requested' && !a2.plus && /lbm-fw/.test(a2.pill), { a2 });
+      ok('tap 3 cancels the request, back to the plus', a3.st === 'none' && a3.plus, { a3 });
       ok('every tap is exactly one request - no double-fire', posts.length === 3, posts.length);
       ok('no text ever appeared in the button', !a1.text && !a2.text && !a3.text, [a1.text, a2.text, a3.text]);
 

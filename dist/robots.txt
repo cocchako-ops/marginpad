@@ -24,6 +24,8 @@ Allow: /api/cg/
 # /glossary/ states in its own provenance strip that the ten measured figures on it are free JSON here, and a
 # URL we publish is a promise a crawler can fetch it (2026-10-19)
 Allow: /api/glossary/
+# the trade of the day (2026-11-12): the homepage prints the winner from this keyless read and the changelog names it
+Allow: /api/totd
 Allow: /api/price
 Allow: /api/klines
 Allow: /api/screener

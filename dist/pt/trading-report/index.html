@@ -2,8 +2,8 @@
 <html lang="pt" data-es-twin="/trading-report/">
 <head>
 <meta charset="UTF-8" />
-<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <script src="/assets/ui-pt.js?v=dbcfbbba"></script>
+<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -95,6 +95,7 @@
   .find{border-left:3px solid var(--lime);background:rgba(194,246,74,.05);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:9px;font-size:14.5px;line-height:1.55;}
   .find b{color:var(--lime);}
   .find .n{display:block;margin-top:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);}
+  .find .find-l{display:inline-block;margin-top:8px;font-size:12.5px;color:var(--lime);text-decoration:none;border:1px solid rgba(194,246,74,.3);border-radius:8px;padding:5px 9px;}.find .find-l b{color:#fff;font-weight:600;}.find .find-l:hover{border-color:var(--lime);}
   .bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-top:6px;}
   .bars i{flex:1;min-width:2px;border-radius:2px 2px 0 0;background:#2a313c;display:block;}
   .bars i.p{background:var(--up);} .bars i.l{background:var(--red);}
@@ -263,7 +264,7 @@
     findCard.hidden=!prem||!(d.findings&&d.findings.length);
     levCard.hidden=coinCard.hidden=sideCard.hidden=hourCard.hidden=!prem;
     if(!prem)return;
-    finds.innerHTML=(d.findings||[]).map(function(f){return '<div class="find">'+esc(f.text)+'<span class="n">based on '+f.n+' trade'+(f.n===1?'':'s')+'</span></div>';}).join('');
+    finds.innerHTML=(d.findings||[]).map(function(f){return '<div class="find">'+esc(f.text)+'<span class="n">based on '+f.n+' trade'+(f.n===1?'':'s')+'</span>'+(f.lesson&&f.lesson.id?'<a class="find-l" href="/pt/academy/?lesson='+esc(f.lesson.id)+'">One lesson for this: <b>'+esc(f.lesson.t)+'</b></a>':'')+'</div>';}).join(''); /* feature #13 (2026-11-12): a finding ends in one Academy lesson */
     rows(d.byLev&&d.byLev.filter(function(r){return r.n>0;}),levBody);
     rows(d.byCoin,coinBody);
     rows(d.bySide,sideBody,function(k){return k==='short'?'Short':'Long';});
@@ -294,6 +295,6 @@
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <script defer src="/assets/mp-auth.js?v=ffe8c979"></script>
-<script defer src="/assets/mp-nav.js?v=a60c8d63"></script>
+<script defer src="/assets/mp-nav.js?v=a80bfe3a"></script>
 </body>
 </html>

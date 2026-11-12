@@ -2005,15 +2005,15 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 1,
+  "cover": 0.9712230215827338,
   "hit": 135,
-  "missing": 0
+  "missing": 4
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
+  "cover": 0.9840637450199203,
   "hit": 247,
-  "missing": 0
+  "missing": 4
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2743,8 +2743,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 1,
+  "cover": 0.982,
   "hit": 491,
-  "missing": 0
+  "missing": 9
  }
 ]

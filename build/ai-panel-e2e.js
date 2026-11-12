@@ -64,7 +64,7 @@ withBrowser(async (browser) => {
     const delays = [0, 3000, 0];
     const page = await prep(browser, false, 1366, 768, delays);
     await page.evaluateOnNewDocument(() => { try { localStorage.removeItem('mp_ai_mode'); localStorage.removeItem('mp_ai_strat'); } catch (e) {} });
-    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForFunction('!!document.getElementById("cwsAdd") || (window.__mpWinsDbg && window.__mpWinsDbg.length)', { timeout: 30000 }).catch(() => {});
     await page.evaluate(() => { if (!(window.__mpWinsDbg && window.__mpWinsDbg.length)) { const a = document.getElementById('cwsAdd'); a && a.click(); } });
     await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50', { timeout: 40000 });
@@ -128,7 +128,7 @@ withBrowser(async (browser) => {
     const delays = [2500];
     const page = await prep(browser, true, 390, 844, delays);
     await page.evaluateOnNewDocument(() => { try { localStorage.setItem('mp_ai_mode', 'analysis'); localStorage.removeItem('mp_ai_strat'); } catch (e) {} });
-    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForFunction('window.__mpMfcDbg && window.__mpMfcDbg()[0] && window.__mpMfcDbg()[0].bars && window.__mpMfcDbg()[0].bars.length>50', { timeout: 40000 }); await sleep(600);
     await killToasts(page);
     await page.tap('.mfc-bar [data-act="ai"]'); await page.waitForSelector('.mfc-sheet #mfcAB', { timeout: 10000 }); await sleep(400);

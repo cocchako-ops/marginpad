@@ -2,8 +2,8 @@
 <html lang="pt" data-es-twin="/rekt/">
 <head>
 <meta charset="UTF-8" />
-<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <script src="/assets/ui-pt.js?v=dbcfbbba"></script>
+<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
@@ -819,7 +819,8 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   var offFails=0;
   /* clean, narrow format; the stat value is left-anchored + tabular below, so width changes never move the number */
   function money(n){n=+n;if(n>=1e9)return (n/1e9).toFixed(1)+'B';if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(0)+'K';return n.toFixed(0);}
-  function px(p){p=+p;return p>=1?p.toLocaleString('en-US',{maximumFractionDigits:2}):p.toLocaleString('en-US',{maximumFractionDigits:6});}
+  var _nf2=new Intl.NumberFormat('en-US',{maximumFractionDigits:2}),_nf6=new Intl.NumberFormat('en-US',{maximumFractionDigits:6}); // one formatter each: toLocaleString builds a new one per call and px() runs per row per render (measured 135 ms per six idle seconds on a phone)
+  function px(p){p=+p;return p>=1?_nf2.format(p):_nf6.format(p);}
   function ago(ts){var s=Math.round((Date.now()-ts)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':Math.floor(s/3600)+'h';}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   // per-event barcode: stripe widths seeded from the timestamp so every ticket prints a unique code
@@ -939,7 +940,13 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   function ingest(e){if(!e||!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(seen[k])return;seen[k]=1;all.push(e);
     all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
     if(maintMode)setMaint(false);setOffline(false);offFails=0;
-    render();try{deskPush([e]);}catch(_e){}}
+    renderSoon();try{deskPush([e]);}catch(_e){}}
+  /* A BURST OF PRINTS IS ONE REPAINT, NOT ONE PER PRINT (2026-11-12 perf pass). Every SSE event called render(), which
+     rebuilds the whole phone feed's innerHTML (60 tickets, a barcode gradient and formatted prices each): measured
+     231 ms of render + 135 ms of price formatting per six idle seconds on a phone, with three long tasks, on a quiet
+     evening - a cascade is far worse. Events are collected and the feed is redrawn at most four times a second; the
+     fresh-row animation still fires once per new ticket because the marking happens inside render(). */
+  var _rsT=0;function renderSoon(){if(_rsT)return;_rsT=setTimeout(function(){_rsT=0;render();},250);}
   function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}if(esFresh()){_esTick++;if(_esTick%4!==0)return;}fetch('/api/v1/feed?min=1000&limit=200').then(function(r){return r.ok?r.json():null;}).then(function(j){
     if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);return;}
     offFails=0;setOffline(false);if(maintMode)setMaint(false);
@@ -947,7 +954,7 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);fresh.push(e);added=true;}});
     all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
     if(Object.keys(seen).length>600){seen={};var _an={};all.forEach(function(e){var _k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;seen[_k]=1;if(animated[_k])_an[_k]=1;});animated=_an;} // prune BOTH dedup maps (animated used to grow unbounded → heap leak on a leave-open page) so they can't grow unbounded on long sessions
-    if(added)render();
+    if(added)renderSoon();
     if(fresh.length)try{deskPush(fresh);}catch(_e){}
   }).catch(function(){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);});}
   document.getElementById('rkFilters').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
@@ -1306,7 +1313,7 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Diário de trades">
   <button class="jr-grab" data-jr-close type="button" aria-label="Voltar"><span>Voltar</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Meus trades</span><button class="jr-share" id="jrShare" type="button" title="Share your report card" aria-label="Share your report card"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button><a class="jr-stats-lnk" href="/pt/trading-journal/" title="Estatísticas completas de trading"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Estatísticas</a><button id="jrClose" class="jr-x" type="button" aria-label="Fechar">✕</button></div>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><button class="jr-share" id="jrShare" type="button" title="Share your report card" aria-label="Share your report card"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Parcela</button><a class="jr-stats-lnk" href="/pt/trading-journal/" title="Estatísticas completas de trading"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Stats</a><button id="jrClose" class="jr-x" type="button" aria-label="Fechar">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
   <p class="jr-empty" id="jrEmpty">Nenhum ticket ainda. Abra um no <a href="/pt/paper-trade" style="color:#c2f64a;text-decoration:none">Paper Trade</a>.</p>
@@ -1420,6 +1427,6 @@ if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
-<script defer src="/assets/mp-nav.js?v=a60c8d63"></script>
+<script defer src="/assets/mp-nav.js?v=a80bfe3a"></script>
 </body>
 </html>

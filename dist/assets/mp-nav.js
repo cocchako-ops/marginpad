@@ -295,6 +295,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     scr: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3.5" y1="6" x2="3.51" y2="6"/><line x1="3.5" y1="12" x2="3.51" y2="12"/><line x1="3.5" y1="18" x2="3.51" y2="18"/>',
     sim: '<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M6.5 13l3-3.5 2.5 2.5 4.5-5"/><path d="M9 20h6"/><path d="M12 17v3"/>',
     /* compete & earn */
+    records: '<path d="M4 20h16"/><path d="M6 20V11h4v9"/><path d="M14 20V5h4v15"/><path d="M8 7l2-2 2 2"/>',
     trophy: '<path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 2.6 4.9"/><path d="M17 5h2.5a2.5 2.5 0 0 1-2.6 4.9"/><path d="M12 14v3"/><path d="M8.5 21h7"/><path d="M9.5 21c0-2 1-2.6 2.5-4 1.5 1.4 2.5 2 2.5 4"/>',
     squad: '<path d="M12 3l7 2.6v5.5c0 4.2-2.9 7.6-7 8.9-4.1-1.3-7-4.7-7-8.9V5.6L12 3z"/><circle cx="12" cy="9.6" r="1.9"/><path d="M8.4 15.2c.5-1.7 1.9-2.6 3.6-2.6s3.1.9 3.6 2.6"/>',
     ranks: '<path d="M4 6.5h9"/><path d="M4 12h13"/><path d="M4 17.5h6"/><circle cx="18.5" cy="6.5" r="2"/><path d="M18.5 10.5v7"/><path d="M16.5 15.5l2 2 2-2"/>',
@@ -306,6 +307,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     crown: '<path d="M3.2 17.6h17.6"/><path d="M3.6 7.4l3.3 3.2L12 4.4l5.1 6.2 3.3-3.2-1.4 9.6H5L3.6 7.4z"/>',
     /* live market data */
     rekt: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    records: '<path d="M4 20h16"/><path d="M6 20V11h4v9"/><path d="M14 20V5h4v15"/><path d="M8 7l2-2 2 2"/>',
     trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a1 1 0 0 0-1 1A3.5 3.5 0 0 0 7 10.5M17 6h2.5a1 1 0 0 1 1 1 3.5 3.5 0 0 1-3.5 3.5"/>',
     heat: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M15.7 9.7h4.6v4.6h-4.6z" fill="currentColor" stroke="none"/>',
     map: '<path d="M9 3.5 3.5 5.6v15L9 18.4l6 2.1 5.5-2.1v-15L15 5.6 9 3.5z"/><path d="M9 3.5v14.9M15 5.6v14.9"/>',
@@ -439,7 +441,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     // The heatmap takes no symbol from the URL, so no row pretends to open a particular coin.
     + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes order book orderbook tape prints live order flow depth bid ask'))
     + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today'))
-    + row('Liquidation records', 'The biggest liquidations, days and hours ever measured - the archive since July 2026', '/liquidations/records/', '#ff5a4d', 'trophy', 'records record biggest liquidation ever largest day worst day history archive all-time hall of fame rekt leaderboard of liquidations')
+    + row('Liquidation records', 'The biggest liquidations, days and hours ever measured - the archive since July 2026', '/liquidations/records/', '#ff5a4d', 'records', 'records record biggest liquidation ever largest day worst day history archive all-time hall of fame rekt leaderboard of liquidations')
     + row('Catalysts', 'Listings, filings, macro, hacks and whale alerts as they land, scored - and what moved each coin', '/catalysts/', '#c2f64a', 'catal', 'catalysts catalyst news events announcements listing delisting binance bybit okx upbit sec filing fomc cpi hack etf headlines whale alert what moved it why did it drop pump mentions most talked about meme')
     + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale',__esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
     // Funding, open interest and long/short are three readings of ONE question - what the crowd is holding and

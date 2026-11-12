@@ -3926,7 +3926,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=027be732'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=16d96682'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -5782,7 +5782,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function () {
   try {
     if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
-    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=123967ff' : '/assets/mp-charts.js?v=027be732', heatmap: '/assets/mp-heatmap.js?v=9454aa9f', screener: '/assets/mp-screener.js?v=b899ab9f' };
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=123967ff' : '/assets/mp-charts.js?v=16d96682', heatmap: '/assets/mp-heatmap.js?v=9454aa9f', screener: '/assets/mp-screener.js?v=b899ab9f' };
     var done = {};
     function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
     function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }
