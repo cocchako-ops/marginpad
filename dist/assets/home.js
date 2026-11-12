@@ -4218,7 +4218,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=522746a3';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=b899ab9f';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -4381,7 +4381,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=d00cc62a'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=123967ff'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
@@ -5680,3 +5680,29 @@ window.mpSrvOpen=function(payload,ok,fail){
 })();
 
 /* <<< MP-PT-SHELL <<< */
+
+/* INSTANT TOOL SWITCHING (2026-11-12, owner-approved feature #15). The six tool routes share this shell and switch in page
+   (mpGo), so the only thing a reader waits for on /paper-trade -> /charts is the OTHER tool's lazy bundle. Since today a
+   `?v=` asset is immutable for a year, fetching it a little early costs the bytes once and nothing after: the bundles the
+   current route does not use are prefetched when the page has gone idle (desktop: charts, heatmap, screener; phone: the
+   phone chart engine, heatmap, screener), and at once on a hover/touch of a link that leads to that tool. Never on a
+   saveData or 2g/3g connection, never while hidden. The literals below are stamped by bump-home-assets like every loader. */
+(function () {
+  try {
+    if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=123967ff' : '/assets/mp-charts.js?v=027be732', heatmap: '/assets/mp-heatmap.js?v=9454aa9f', screener: '/assets/mp-screener.js?v=b899ab9f' };
+    var done = {};
+    function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
+    function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }
+    function pf(u) { if (!u || done[u] || slow() || have(u)) return; done[u] = 1; var l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = u; document.head.appendChild(l); }
+    function route() { var p = (location.pathname || '').replace(/^\/(es|pt|de)(?=\/|$)/, '').replace(/\/$/, ''); return p.slice(1) || 'paper-trade'; }
+    function idle() { if (document.hidden) return; var here = route(); Object.keys(MAP).forEach(function (k) { if (k !== here) pf(MAP[k]); }); }
+    var arm = function () { if (window.requestIdleCallback) requestIdleCallback(idle, { timeout: 6000 }); else setTimeout(idle, 2500); };
+    if (document.readyState === 'complete') setTimeout(arm, 3500); else window.addEventListener('load', function () { setTimeout(arm, 3500); });
+    // a hand moving towards a tool link is the clearest signal of all
+    var onHover = function (ev) { try { var a = ev.target && ev.target.closest && ev.target.closest('a[href],[data-mpgo]'); if (!a) return; var h = a.getAttribute('href') || a.getAttribute('data-mpgo') || ''; var m = h.match(/^(?:\/(?:es|pt|de))?\/(charts|heatmap|screener)(?:[/?#]|$)/); if (m) pf(MAP[m[1]]); } catch (e) {} };
+    document.addEventListener('pointerover', onHover, { passive: true });
+    document.addEventListener('touchstart', onHover, { passive: true });
+    window.__mpPrefetched = function () { return Object.keys(done); };
+  } catch (e) {}
+})();
