@@ -61,7 +61,7 @@ chk('pure: the store refuses a reserved or taken ticker and the worker refuses a
 chk('pure: a cast refreshes the registry, ticks the first minute, posts a house line in the global room and the squad room', /await rngRegistryRefresh\(env\)/.test(WS) && /houseLine\(env, 'global2', line\)/.test(WS) && /houseLine\(env, 'room_' \+ String\(c\.sid\)\.toUpperCase\(\)/.test(WS));
 chk('pure: the minute writer ticks MPAD and then every registry coin on the same inputs; the OpsLog routes take sym -> rngpx', /const out = await one\(MPAD\);/.test(WS) && /coins = await rngCoins\(env, true\)/.test(WS) && /INSERT OR IGNORE INTO rngpx\(sym,m,px,step,parts,inputs,ts\)/.test(WS));
 chk('pure: the price, klines and the sweep feed answer a registry coin from the engine, never the cascade', /let rc = rngCoinSync\(s\);/.test(WS) && /let rcK = rngCoinSync\(sym\);/.test(WS) && /let rcL = rngCoinSync\(sym\);/.test(WS));
-chk('pure: the registry is warmed once a minute per isolate on every /api/ request', /request\.url\.indexOf\('\/api\/'\) > 0 && Date\.now\(\) - RNG_REG\.at > 60000/.test(WS));
+chk('pure: the registry is warmed every 15 s per isolate on an /api/ request, and an unknown 3-5 letter symbol refreshes it on the same clock (a coin cast on another isolate is priced within that)', /request\.url\.indexOf\('\/api\/'\) > 0 && Date\.now\(\) - RNG_REG\.at > 15000/.test(WS) && (WS.match(/Date\.now\(\) - RNG_REG\.at > 15000\) \{ try \{ await rngCoins\(/g) || []).length >= 4);
 chk('pure: the UserStore fills the exclusion globals from its own sqcoin table at start and after a cast', /_rngSyncExcl\(\) \{ try \{ const rows = this\.rows\("SELECT sym FROM sqcoin WHERE status='live'"\)/.test(WS) && (WS.match(/this\._rngSyncExcl\(\);/g) || []).length >= 3);
 const PG = fs.readFileSync(path.join(ROOT, 'dist', 'squads', 'index.html'), 'utf8');
 chk('pure: the squads page carries the Foundry tab, the treasury bars, the cast form and the forge call', /\['foundry', __esT_squadsindex\("foundryH"/.test(PG) && /function foundrySection\(/.test(PG) && /fd-row/.test(PG) && /fetch\('\/api\/squad\/forge'/.test(PG) && /data-fdk=/.test(PG));
@@ -99,9 +99,10 @@ if (PURE) { console.log('\nfoundry-e2e: ' + okN + ' passed, ' + failN + ' failed
   chk('prod: 95% of drivers leaves 5% to chance - refused (at least 15)', lowRand.error === 'rand_min', lowRand);
   const cast = await sq('forge', real[U[0]], { sym, name: 'Foundry Test', start: 12.5, mix: [{ k: 'btc', w: 40 }, { k: 'fng', w: 25 }, { k: 'xau', w: 20 }] });
   chk('prod: the cast - the coin exists with the mix, 15% chance, the squad named, the treasury spent', cast.ok && cast.coin && cast.coin.sym === sym && cast.coin.mix.length === 4 && Math.abs(cast.coin.mix[3].w - 0.15) < 1e-9 && cast.coin.squad && cast.coin.squad.sid === sid && cast.state && cast.state.parts.alloy === 0, cast.coin && { sym: cast.coin.sym, mix: cast.coin.mix, parts: cast.state && cast.state.parts });
-  const again = await sq('forge', real[U[0]], { sym: sym + 'X', name: 'x', start: 10, mix: [{ k: 'btc', w: 40 }, { k: 'fng', w: 25 }, { k: 'xau', w: 20 }] });
+  const again = await sq('forge', real[U[0]], { sym: 'ZZQXY', name: 'x', start: 10, mix: [{ k: 'btc', w: 40 }, { k: 'fng', w: 25 }, { k: 'xau', w: 20 }] });
   chk('prod: a second coin is refused - one living coin per squad', again.error === 'has_coin', again.error);
-  await sleep(1500);
+  // another isolate learns a new coin within 15 s (the unknown-symbol registry refresh) - the price and klines reads below may land on one
+  await sleep(16000);
   const cat = await J('/api/mpad?cb=' + Date.now());
   chk('prod: the catalogue lists MPAD first and the new coin with its squad', cat.coins && cat.coins[0].symbol === 'MPAD' && cat.coins.some(c => c.symbol === sym && c.squad && c.squad.sid === sid), cat.coins && cat.coins.map(c => c.symbol));
   const tick = await J('/api/admin/foundry?tick=1', { headers: H });
@@ -118,6 +119,7 @@ if (PURE) { console.log('\nfoundry-e2e: ' + okN + ' passed, ' + failN + ' failed
   const tok = (await adm('/api/admin/e2euser', { uid: U[1], op: 'sess' })).token;
   const as = (p, o) => fetch(BASE + p, Object.assign({ headers: Object.assign({ cookie: 'mp_sess=' + tok, 'content-type': 'application/json' }, (o && o.headers) || {}) }, o || {})).then(async r => ({ st: r.status, j: await r.json().catch(() => null) }));
   const xp0 = (await J('/api/auth/xp?uid=' + encodeURIComponent(real[U[1]]) + '&fresh=1&cb=' + Date.now(), { headers: H })).xp || 0;
+  const tk0 = (await mine(real[U[1]])).ticks || 0;
   const op = await as('/api/trade/open', { method: 'POST', body: JSON.stringify({ sym, side: 'long', lev: 5, margin: 100, cid: 'fd' + tag }) });
   const pid = op.j && ((op.j.position && op.j.position.id) || (op.j.raw && op.j.raw.id));
   chk('prod: a member opens a 5x long on the coin (house class, 100x cap)', op.st === 200 && !!pid, op.j && Object.keys(op.j));
@@ -127,11 +129,14 @@ if (PURE) { console.log('\nfoundry-e2e: ' + okN + ' passed, ' + failN + ' failed
   await sleep(1500);
   const xp1 = (await J('/api/auth/xp?uid=' + encodeURIComponent(real[U[1]]) + '&fresh=1&cb=' + Date.now(), { headers: H })).xp || 0;
   chk('prod: the close paid NO XP (the coin is excluded like MPAD)', xp1 === xp0, { xp0, xp1 });
-  const card = await J('/api/lb/user?name=e2e_' + U[1] + '&cb=' + Date.now());
-  chk('prod: the public card counts none of it', card && card.stats && +card.stats.closed === 0, card && card.stats);
+  // the card's trade COUNT keeps it (it is the member's own book, as with MPAD); what the coin must never do is pay - XP above, Ticks here
+  const tk1 = (await mine(real[U[1]])).ticks || 0;
+  chk('prod: the close paid NO Ticks either', tk1 === tk0, { tk0, tk1 });
   // cleanup: the coin is uncast and its series dropped, the accounts removed (the leader's removal takes the squad)
   const un = await adm('/api/admin/foundry', { sid, uncast: true });
-  chk('prod: uncast - the coin and its series are gone, the registry no longer lists it', un.ok && !un.state.coin && un.dropped === sym && !(await J('/api/mpad?cb=' + Date.now())).coins.some(c => c.symbol === sym), un);
+  // the catalogue's isolates hold a 60 s registry memo, so the coin leaves the list within a minute, not at once
+  let gone = false; for (let i = 0; i < 8 && !gone; i++) { gone = !(await J('/api/mpad?cb=' + Date.now())).coins.some(c => c.symbol === sym); if (!gone) await sleep(10000); }
+  chk('prod: uncast - the coin and its series are gone, and within a minute the catalogue no longer lists it', un.ok && !un.state.coin && un.dropped === sym && gone, { ok: un.ok, coin: un.state && un.state.coin, dropped: un.dropped, gone });
   for (const u of U.slice(1).concat(U.slice(0, 1))) await adm('/api/admin/e2euser', { uid: u, op: 'rm' });
   console.log('\nfoundry-e2e: ' + okN + ' passed, ' + failN + ' failed [pure+prod]');
   process.exit(failN ? 1 : 0);

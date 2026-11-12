@@ -7467,7 +7467,7 @@ async function fetchPrice(sym) {
      below this one records for tokenized equities. No `state` field: that is what marks a market with HOURS, and
      this one never closes. */
   { let rc = rngCoinSync(s); // MPAD, or a squad coin the registry knows
-    if (!rc && MP_ENV && /^[A-Z]{3,5}$/.test(s) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(MP_ENV); } catch (e) {} rc = rngCoinSync(s); } // a fresh isolate: one KV read before a 3-5 letter symbol is sent to the crypto cascade
+    if (!rc && MP_ENV && /^[A-Z]{3,5}$/.test(s) && Date.now() - RNG_REG.at > 15000) { try { await rngCoins(MP_ENV); } catch (e) {} rc = rngCoinSync(s); } // a fresh isolate: one KV read before a 3-5 letter symbol is sent to the crypto cascade
     if (rc) {
       const lp = MP_ENV ? await mpadPrice(MP_ENV, rc) : null; if (!lp) return null;
       let p24 = 0; try { const b = await mpadBars(MP_ENV, rc, 86400, 2, 0); if (b.length) p24 = b[0].o; } catch (e) {}
@@ -7601,7 +7601,7 @@ async function handleKlines(url, env, klSrc, ctx) {
      cache: there is no upstream to protect and no two callers to share a fetch between, so caching would only add a
      way for the chart and the settlement sweep to read different candles for the same minute. `no-store` for the
      same reason - this is the series the sweep settles a liquidation from. */
-  { let rcK = rngCoinSync(sym); if (!rcK && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} rcK = rngCoinSync(sym); }
+  { let rcK = rngCoinSync(sym); if (!rcK && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 15000) { try { await rngCoins(env); } catch (e) {} rcK = rngCoinSync(sym); }
   if (rcK) {
     const bars = await mpadBars(env, rcK, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
     if (!bars || !bars.length) return J({ error: 'no data' }, 404);
@@ -7809,7 +7809,7 @@ async function leanKlines(sym, ivMin, n, env, opts) {
      liquidation, so it must answer the SAME candle the chart drew - which it does by construction, both calling
      mpadBars. Deliberately NOT cached: the stored series IS the cache, and a second copy is one more way for the
      settlement and the chart to disagree about one minute. */
-  { let rcL = rngCoinSync(sym); if (!rcL && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} rcL = rngCoinSync(sym); }
+  { let rcL = rngCoinSync(sym); if (!rcL && /^[A-Z]{3,5}$/i.test(String(sym || '')) && Date.now() - RNG_REG.at > 15000) { try { await rngCoins(env); } catch (e) {} rcL = rngCoinSync(sym); }
     if (rcL) {
       const bars = await mpadBars(env, rcL, (+iv || 1) * 60, N, 0);
       return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
@@ -26130,7 +26130,7 @@ export default {
      The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
     colBase(env); mpEnvArm(env); // arm the collector circuit breaker + the house-coin store for this isolate (see the top of the file)
-    if (request.url.indexOf('/api/') > 0 && Date.now() - RNG_REG.at > 60000) { try { await rngCoins(env); } catch (e) {} } // the squad-coin registry (the Foundry): one KV read per isolate per minute, so assetClassOf / maxLevFor / lbExcluded know a cast coin before any trade route asks
+    if (request.url.indexOf('/api/') > 0 && Date.now() - RNG_REG.at > 15000) { try { await rngCoins(env); } catch (e) {} } // the squad-coin registry (the Foundry): one KV read per isolate per minute, so assetClassOf / maxLevFor / lbExcluded know a cast coin before any trade route asks
     const res = await this._fetchInner(request, env, ctx);
     return secureResponse(res, request);
   },

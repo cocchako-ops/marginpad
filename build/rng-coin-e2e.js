@@ -40,8 +40,11 @@ function lift(fns, consts) {
 
 (async () => {
   console.log('-- pure: the mix, lifted from the shipped worker');
-  const E = lift(['mpadFine', 'mpadRound', 'mpadPxAt', 'mpadStep', 'mpadRandLevel', '_mpH', '_mpNoise', 'mpadIs'], ['MPAD']);
-  const M = E.MPAD;
+  const E0 = lift(['mpadFine', 'mpadRound', 'mpadPxAt', 'mpadStep', 'mpadRandLevel', '_mpH', '_mpNoise', 'mpadIs'], ['MPAD']);
+  const M = E0.MPAD;
+  /* SINCE 2026-11-12 (the Foundry) every engine function takes the coin config first; this suite is about the HOUSE coin, so it binds
+     MPAD and keeps every check below as written - foundry-e2e holds the golden values proving the bound functions are the old series. */
+  const E = Object.assign({}, E0, { mpadFine: (t) => E0.mpadFine(M, t), mpadRound: (p) => E0.mpadRound(M, p), mpadPxAt: (a, t) => E0.mpadPxAt(M, a, t), mpadStep: (p, c, q, m) => E0.mpadStep(M, p, c, q, m), mpadRandLevel: (m) => E0.mpadRandLevel(M, m) });
   ok(M.sym === 'MPAD' && M.name === 'MarginPad', 'the coin is MPAD / MarginPad (the SECTION is RNG - owner, 2026-10-28)');
   ok(M.start === 17, 'the launch price is the $17 the owner set');
   const wsum = M.mix.reduce((a, c) => a + c.w, 0);
@@ -125,10 +128,11 @@ function lift(fns, consts) {
   console.log('-- pure: it ranks nowhere, and the rules come from the table');
   const body = src.replace(/\/\*[\s\S]*?\*\//g, '').split(/\r?\n/).filter(l => !/^\s*\/\//.test(l)).join('\n');
   ok(/LB_EXCL_SET\.add\(MPAD\.sym\)/.test(body), 'the house symbol is added to LB_EXCL_SET from the table, not as a literal');
-  ok(/if \(sym === MPAD\.sym\) return 'house'/.test(body), "assetClassOf returns its own class - as 'crypto' the client would open a Bybit socket for a market that has none");
-  ok(/if \(sym === MPAD\.sym\) return MPAD\.lev/.test(body), 'the leverage cap comes from the table');
-  ok(/mpadIs\(/.test(body.slice(body.indexOf('async function leanKlines'))), 'leanKlines - the function the settlement sweep reads - has its own branch');
-  ok(/mpadIs\(/.test(body.slice(body.indexOf('async function handleKlines'))), 'and so does handleKlines, which the chart reads');
+  // since the Foundry (2026-11-12) the house coin and every squad coin share one registry: MPAD by name, the rest through globalThis.__rngSyms / rngCoinSync
+  ok(/if \(sym === MPAD\.sym \|\| \(globalThis\.__rngSyms && globalThis\.__rngSyms\.has\(sym\)\)\) return 'house'/.test(body), "assetClassOf returns its own class - as 'crypto' the client would open a Bybit socket for a market that has none");
+  ok(/const rc = rngCoinSync\(sym\); if \(rc\) return rc\.lev;/.test(body), 'the leverage cap comes from the coin config (MPAD.lev for the house coin)');
+  ok(/let rcL = rngCoinSync\(sym\);/.test(body.slice(body.indexOf('async function leanKlines'), body.indexOf('async function leanKlines') + 6000)), 'leanKlines - the function the settlement sweep reads - has its own branch');
+  ok(/let rcK = rngCoinSync\(sym\);/.test(body.slice(body.indexOf('async function handleKlines'), body.indexOf('async function handleKlines') + 12000)), 'and so does handleKlines, which the chart reads');
   ok(/kind === 'close' && !lbExcluded\(e\.sym\)[\s\S]{0,200}_grantXp/.test(body), 'trade XP is gated on the same exclusion, so a close here cannot mint XP into the season XP board');
   ok(/kind === 'close' && !lbExcluded\(e\.sym\)[\s\S]{0,200}_grantTicks/.test(body), 'trade Ticks are gated on it too - Ticks are bought with real money');
   ok(/INSERT OR IGNORE INTO mpadpx/.test(body), 'a recorded minute is written with INSERT OR IGNORE - the guarantee that a past candle is never rewritten');
