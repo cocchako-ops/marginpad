@@ -23,6 +23,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // same way everywhere it appears, and adding a new term costs one line rather than a new tooltip.
   // Every entry answers the same two questions in order: WHAT it is, then WHY a trader should care.
   var HELP = {
+    movecost: [__esT_mpheatmap('hMcT', 'What a move costs'), __esT_mpheatmap('hMcB', 'Our collector records every liquidation on eight venues. For each 1% and 2% move this coin made in the last two weeks we add up what was liquidated while it happened; the figure is the median of those moves, with the count beside it. It is a measurement of what has happened, not a forecast - and the band count is how many estimated levels stand inside 1% of the price right now.')],
     spread: ['Spread', __esT_mpheatmap("theGapBetweenThe",'The gap between the best price a buyer will pay and the cheapest a seller will take. Cross it and you pay it: it is the toll for wanting something right now instead of waiting. On a busy coin it is a hundredth of a percent; on a quiet one it can be ten times that.')],
     bps: ['Basis points (bps)', __esT_mpheatmap("aHundredthOfOne",'A hundredth of one percent. 1 bps = 0.01%, 100 bps = 1%. Traders use it because "the spread moved from 0.01% to 0.02%" is a mouthful, while "1 to 2 bps" is not.')],
     resting: [__esT_mpheatmap("restingOrders",'Resting orders'), __esT_mpheatmap("moneySittingInThe",'Money sitting in the order book at a chosen price, waiting. Nobody has spent it yet, and it can be pulled at any second - which is exactly why a wall held by one exchange alone is less trustworthy than the same wall shared by four.')],
@@ -388,6 +389,10 @@ function bkSelect(cls, opts, cur) {
     'summary.hm-foot-h::after{content:"+";margin-left:auto;color:#5c6b84;font-size:13px;line-height:1}' +
     'details[open]>summary.hm-foot-h::after{content:"−"}' +
     'details.hm-foot-c[open]>summary.hm-foot-h{margin-bottom:6px}' +
+    'summary.hm-foot-h .hm-foot-s{flex:1 1 auto;min-width:0;margin-left:4px;font:12px/1.3 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;color:#8fa3c4;font-weight:500;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    'details.hm-foot-c[open]>summary.hm-foot-h .hm-foot-s{display:none}' +
+    '@media(max-width:620px){summary.hm-foot-h .hm-foot-s{white-space:normal;display:block;flex-basis:100%;margin:3px 0 0}summary.hm-foot-h{flex-wrap:wrap}}' +
+    '.hm-mcw{order:4;margin:0!important;min-height:34px}@media(max-width:620px){.hm-mcw{min-height:58px}.hm-mc em{display:none}.hm-mc{gap:3px 10px;padding:7px 10px}}.hm-wrap:has(.hm-mcw:not([style*=none])) .hm-stage{border-radius:0}.hm-mc{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:7px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;font:11px "Space Mono",monospace;color:#8fa3c4}.hm-mc b{color:#e9e7df}.hm-mc .k{color:#c9d4e6;font-weight:700;letter-spacing:.06em;font-size:10px}.hm-mc em{font-style:normal;color:#5c6b84}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-wrap{--hm-tg-h:131px}.hm-wrap[data-bk] .hm-bk{min-height:1693px}.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tg-c{gap:5px}.hm-tg-d{width:30px;font-size:9px}.hm-tgb{display:flex;align-items:baseline;gap:4px;padding:6px 6px}.hm-tgb i{display:inline;margin-top:0;margin-left:auto;font-size:9px;flex:none}.hm-tgb b{display:inline;flex:none;overflow:visible;font-size:11.5px}.hm-foot{order:5}}' +
@@ -429,6 +434,7 @@ function bkSelect(cls, opts, cur) {
     '@media(max-width:980px){.hm-top{margin:0 0 6px;padding:0 0 7px;gap:6px}.hm-top .hm-mast{flex:1 1 100%;margin:0}.hm-top .hm-bar{flex:1 1 100%}.hm-bar-a,.hm-bar-b{flex:1 1 100%}.hm-wins{flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}.hm-wins::-webkit-scrollbar{display:none}.hm-wins button{flex:1 1 0;padding:0 6px}.hm-coin{height:33px}.hm-wins,.hm-seg,.hm-btn{height:33px}.hm-wins{padding:2px}.hm-wins button{height:29px;min-width:34px}.hm-btn{width:33px}.hm-jump{display:none}' +
     '@media(max-width:980px){.hm-tg-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.hm-tg-h .hm-q{margin-left:0}.hm-tg-jump{display:inline-flex;gap:5px;margin-left:auto}.hm-tg-jump button{padding:4px 9px;border:1px solid #232b3a;border-radius:999px;background:#12161d;color:#c9d4e6;font:600 10.5px "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;cursor:pointer;white-space:nowrap}.hm-tg-jump button:hover{border-color:#3a465c;color:#fff}}' +
     '.hm-hint{left:8px;right:8px;top:28px;max-width:none;font-size:11.5px;padding:7px 9px}}';
+  function docOn(t, ev, fn, o) { t.addEventListener(ev, fn, o); if (S) (S.offs = S.offs || []).push(function () { t.removeEventListener(ev, fn, o); }); }
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
   function poolGone(x) { return S && S.price > 0 && (x.long ? x.price >= S.price : x.price <= S.price); } // crossed by the live price = consumed, waiting for the server sweep
@@ -570,6 +576,7 @@ function bkSelect(cls, opts, cur) {
         ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')'; ctx.fillRect(x0 + fw, dy, x1 - x0 - fw, dh);
       } else ctx.fillRect(x0, dy, x1 - x0, dh);
       S.bandRects.push({ s: s, x0: x0, x1: x1, y: y, h: bh, al: al });
+      if (S._flash && S._flash.until > Date.now() && Math.abs(S._flash.price - s.price) < 1e-9 && S._flash.long === s.long) { var fl = 0.35 + 0.55 * Math.abs(Math.sin((S._flash.until - Date.now()) / 160)); ctx.strokeStyle = 'rgba(255,255,255,' + fl.toFixed(2) + ')'; ctx.lineWidth = 1.6; ctx.strokeRect(x0 + 0.5, y - 2.5, Math.max(2, x1 - x0) - 1, bh + 5); if (!S._flashT) { S._flashT = setTimeout(function () { S._flashT = 0; sched(); }, 70); } }
       // The cut itself is marked, so "this line stops" reads as an event rather than as a rendering bug.
       if (isGone && cx && x1 > x0 + 2) {
         ctx.fillStyle = 'rgba(' + col + ',' + Math.min(0.95, al + 0.25).toFixed(3) + ')';
@@ -668,8 +675,14 @@ function bkSelect(cls, opts, cur) {
       for (i = 0; i < S.whales.length; i++) { var wh = S.whales[i];
         var wq = +wh.liq || 0; if (!(wq > pLo && wq < pHi)) continue;
         var wy = Y(wq);
+        // A WHALE LINE IS A MARK AT THE RIGHT EDGE, NOT A SPAN (2026-11-12, owner's screenshot zoomed out to years: the
+        // lines ran across the whole history and read as something that had been there for years). It is one real
+        // position's liquidation price RIGHT NOW; its length means nothing, so it gets a fixed one beside its label.
+        var wl = Math.max(90, Math.min(220, W * 0.18)), wx0 = Math.max(0, W - wl), whSel = !!(S.sel && S.sel.type === 'whale' && S.sel.ref === wh);
+        if (whSel) { ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke(); }
         ctx.strokeStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.moveTo(0, wy); ctx.lineTo(W, wy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke();
+        ctx.fillStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.beginPath(); ctx.arc(wx0, wy, 2.2, 0, 6.2832); ctx.fill();
         var wt = usdShort(wh.val) + ' ' + (wh.long ? 'LONG' : 'SHORT') + ' ' + __esT_mpheatmap('whLiqHere', 'LIQ') + ' ' + fpx(wq);
         var ww = ctx.measureText(wt).width;
         ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - ww - 11, wy - 13, ww + 8, 12);
@@ -701,7 +714,7 @@ function bkSelect(cls, opts, cur) {
     // squashed every visible bar to a 2px sliver and the panel read as empty (owner report 2026-07-24)
     var vis = [];
     for (i = 0; i < P.alive.length; i++) { var s0 = P.alive[i];
-      if (poolGone(s0)) continue;
+      if (zoneDead(s0)) continue; // the HOW CROWDED column shows what is standing; a cut band belongs to the map's record, not to the profile
       if (S.sideF === 'long' && !s0.long) continue; if (S.sideF === 'short' && s0.long) continue;
       if (s0.price < pLo || s0.price > pHi) continue; vis.push(s0); }
     var wMax = 0, wSum = 0; for (i = 0; i < vis.length; i++) { if (vis[i].w > wMax) wMax = vis[i].w; wSum += (+vis[i].w || 0); }
@@ -808,10 +821,10 @@ function bkSelect(cls, opts, cur) {
     // SOL 92.4%, with three of the twenty-four hours holding nothing at all on BTC (the 1H window, where
     // one page of rows covers everything, was exact). The 5-minute aggregate is complete for every window
     // the picker offers, up to the 30 days it is kept for, and it costs the request the page already makes.
-    var mins = WINS[S.win] ? WINS[S.win].mins : 1440;
+    var mins = WINS[S.win] ? WINS[S.win].mins : 1440, gen = S.gen || 0;
     fetch('/api/v1/liquidations/recent?symbol=' + encodeURIComponent(coin) + '&minutes=' + mins).then(function (r) { return r.json(); }).then(function (j) {
       var d = (j && j.data) || j, b = (d && d.buckets) || [];
-      if (!b.length || !S || coin !== S.coin) return;
+      if (!b.length || !S || coin !== S.coin || (S.gen || 0) !== gen) return;
       if (S.pools && S.pools.alive) {
         var binH = S.pools.binH || 1;
         S.pools.alive.forEach(function (p) {
@@ -852,7 +865,7 @@ function bkSelect(cls, opts, cur) {
     // knows where crowds stack RELATIVE to each other; it does not know how many dollars are in them, so
     // the panel reports a ratio and leaves dollars to the measurement.
     var wSum = 0, wN = 0;
-    P.alive.forEach(function (q) { wSum += (+q.w || 0); wN++; });
+    P.alive.forEach(function (q) { if (q.dead) return; wSum += (+q.w || 0); wN++; }); // the typical band is a STANDING one
     var wAvg = wN ? wSum / wN : 0;
     if (wAvg > 0) P.alive.forEach(function (q) { q.rel = (+q.w || 0) / wAvg; });
   }
@@ -1023,7 +1036,7 @@ function bkSelect(cls, opts, cur) {
     if (!(px > 0) || !P || !P.alive || !P.alive.length) return out;
     var bestUp = null, bestDn = null;
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i];
-      if (poolGone(x)) continue;
+      if (zoneDead(x)) continue;
       if (S.sideF === 'long' && !x.long) continue; if (S.sideF === 'short' && x.long) continue;
       var d = (x.price - px) / px; if (Math.abs(d) > 0.15) continue;
       var sc = magnetScore(x, px);
@@ -1081,8 +1094,8 @@ function bkSelect(cls, opts, cur) {
   // `batch` = the set the threshold is derived FROM (newest-first). Escalates: one estimate off the last hour
   // undershoots, because liquidation intensity is bursty - so if the window is still not covered, re-estimate
   // from the batch we just got and go bigger. Capped at 3 extra calls.
-  function backfillEvents(coin, winMins, batch, depth, prevMin) {
-    depth = depth || 0;
+  function backfillEvents(coin, winMins, batch, depth, prevMin, gen) {
+    depth = depth || 0; if (gen == null) gen = S.gen || 0;
     var src = batch || S.events || [];
     if (depth > 2 || src.length < 900) return;         // budget not exhausted => nothing older is being cut off
     var need = Date.now() - winMins * 60000;
@@ -1100,26 +1113,31 @@ function bkSelect(cls, opts, cur) {
     if (prevMin) min = Math.max(min, Math.round(prevMin * 2.5));
     if (!(min > 0)) return;
     fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000&min=' + min).then(function (r) { return r.json(); }).then(function (d) {
-      if (!S || coin !== S.coin || !d || !d.events || !d.events.length) return;
+      if (!S || coin !== S.coin || (S.gen || 0) !== gen || !d || !d.events || !d.events.length) return;
       var seen = {}; S.events.forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var add = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
       if (add.length) { S.events = S.events.concat(add).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 4000); updHead(); sched(); }
-      backfillEvents(coin, winMins, d.events, depth + 1, min); // still short of the window -> raise the threshold again
+      backfillEvents(coin, winMins, d.events, depth + 1, min, gen); // still short of the window -> raise the threshold again
     }).catch(function () {});
   }
   function loadAll(first) {
-    var coin = S.coin, w = WINS[S.win];
+    var coin = S.coin, w = WINS[S.win], gen = S.gen || 0;
     if (first && S.loadEl) S.loadEl.style.display = 'flex';
     Promise.all([
       fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000').then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch('/api/price?symbol=' + coin + window.__mpPQ('heatx', coin), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; })
+      fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      // WHAT A MOVE HAS COST (2026-11-12): the measured dollars liquidated across the last 1% and 2% moves of this coin, from the
+      // same route the chart's Big Liquidations layer reads. Measured, with its n, never a model - it rides under the targets.
+      fetch('/api/liq/events?symbol=' + coin).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (res) {
-      if (!S || coin !== S.coin) return;
+      if (!S || coin !== S.coin || (S.gen || 0) !== gen) return;
+      if (res[4] && res[4].moves && Array.isArray(res[4].moves.rows)) S.moves = res[4].moves;
       var kd = res[0];
       if (kd && kd.length) {
-        if (S.bars.length && S.bars[0].time < kd[0].time) { var older = S.bars.filter(function (b3) { return b3.time < kd[0].time; }); kd = older.concat(kd); } // keep back-paginated history - the 60s refresh only replaces the fresh tail
+        var stepNew = kd[1] ? kd[1].time - kd[0].time : 0, stepOld = S.bars[1] ? S.bars[1].time - S.bars[0].time : 0;
+        if (S.bars.length && S.bars[0].time < kd[0].time && (!stepOld || !stepNew || stepOld === stepNew)) { var older = S.bars.filter(function (b3) { return b3.time < kd[0].time; }); kd = older.concat(kd); } // keep back-paginated history - the 60s refresh only replaces the fresh tail; never across a change of interval
         S.bars = kd;
         var srv = res[3]; // server-accumulated pools (cron model - days of history, same map for everyone); local build = fallback
         // The measured layers that ride on the same response (2026-10-09): our own open-interest ring and
@@ -1137,8 +1155,15 @@ function bkSelect(cls, opts, cur) {
           // The living and the DEAD, in one list. A dead pool carries `tsw` - the candle that consumed it -
           // so its line can stop exactly there. The server knows which bar took which bin; the page would
           // only be guessing from the bars, and on a coin that revisits a level it would guess wrong.
+          // A BAND THAT DIED SINCE THE LAST READ IS AN EVENT (2026-11-12): the heaviest one is flashed on the map and said in a toast,
+          // so a reader watching the page sees the sweep happen instead of noticing later that a line has stopped.
+          var wasAlive = {}, wasDead = {}; if (!first && S.pools && S.pools.srv) S.pools.alive.forEach(function (q) { var kq = q.price.toFixed(8) + '|' + (q.long ? 1 : 0); if (q.dead) wasDead[kq] = 1; else wasAlive[kq] = q; });
           var arr = srv.alive.map(function (x) { return { price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev }; });
           (srv.dead || []).forEach(function (x) { arr.push({ price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev, tsw: +x.tsw, dead: 1 }); });
+          // a price can carry BOTH a swept band and a rebuilt living one (the 10-09 lesson), so a key that was already dead last read is not news
+          if (!first) { var died = arr.filter(function (q) { var kq = q.price.toFixed(8) + '|' + (q.long ? 1 : 0); return q.dead && wasAlive[kq] && !wasDead[kq]; }).map(function (q) { return wasAlive[q.price.toFixed(8) + '|' + (q.long ? 1 : 0)]; }).filter(function (q) { return (+q.rel || 0) >= 2; }).sort(function (a, b) { return b.w - a.w; });
+            if (died.length) { var dq = died[0]; S._flash = { price: dq.price, long: dq.long, until: Date.now() + 7000 };
+              try { if (window.mpToast) window.mpToast({ key: 'hmswept', kind: 'warn', ms: 7000, html: '<b>' + __esT_mpheatmap('sweptToastA', 'SWEPT') + '</b> ' + (dq.long ? __esT_mpheatmap('sweptToastL', 'longs at') : __esT_mpheatmap('sweptToastS', 'shorts at')) + ' <b>' + fpx(dq.price) + '</b> (' + relTxt(+dq.rel) + ' ' + __esT_mpheatmap('sweptToastT', 'a typical band') + (died.length > 1 ? ', +' + (died.length - 1) + ' ' + __esT_mpheatmap('sweptToastM', 'more') : '') + ')' }); } catch (e) {} } }
           var wMax = 0; arr.forEach(function (x) { if (x.w > wMax) wMax = x.w; });
           arr.forEach(function (x) { x.a = Math.pow(x.w / (wMax || 1), 0.4); });
           arr.sort(function (a, b) { return b.w - a.w; });
@@ -1148,10 +1173,10 @@ function bkSelect(cls, opts, cur) {
           S.sweeps = srv.sweeps || [];
           S.calib = srv.calib || null;   // what bands of each weight have REALLY liquidated, measured
         } else { S.pools = buildPools(S.bars); S.sweeps = []; }
-        if (!S._fr || Date.now() - S._fr > 300000) { S._fr = Date.now(); fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); }
+        if (!S._fr || S._frCoin !== coin || Date.now() - S._fr > 300000) { S._fr = Date.now(); S._frCoin = coin; fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && S.coin === coin && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); } // per COIN: a switch inside five minutes used to keep the previous coin's funding under the squeeze line
         if (first || !S.view) { var last = S.bars[S.bars.length - 1]; var step = S.bars[1] ? S.bars[1].time - S.bars[0].time : 60; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: last.time + step * 5 }; }
       }
-      if (res[1] && res[1].events) { S.events = res[1].events; backfillEvents(coin, w.mins); }
+      if (res[1] && res[1].events) { if (first || !S.events.length) S.events = res[1].events; else { var seen0 = {}; S.events.forEach(function (e) { seen0[e.ts + '|' + e.price + '|' + e.qty] = 1; }); var add0 = res[1].events.filter(function (e) { return !seen0[e.ts + '|' + e.price + '|' + e.qty]; }); if (add0.length) S.events = add0.concat(S.events).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 4000); } backfillEvents(coin, w.mins); } // merge, never replace: the backfilled history used to vanish for three round trips every minute
       // The measured aggregate: the window's true total and count, and the per-band dollars. Unconditional
       // (not inside the server-pools branch any more) because the headline number must not depend on whether
       // the model happens to be there.
@@ -1166,10 +1191,13 @@ function bkSelect(cls, opts, cur) {
     if (!S || S._lm || S._noMore || !S.bars.length) return;
     S._lm = 1;
     var coin = S.coin, w = WINS[S.win], endMs = (S.bars[0].time - 1) * 1000;
+    var gen = S.gen || 0;
     fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv + '&end=' + endMs).then(function (r) { return r.ok ? r.json() : null; }).then(function (kd) {
-      if (!S || coin !== S.coin) return;
+      if (!S || coin !== S.coin || (S.gen || 0) !== gen) return;
       S._lm = 0;
-      var older = (kd || []).filter(function (b3) { return b3.time < S.bars[0].time; });
+      if (!kd) return; // a failed page is not the end of history - the next pan asks again
+      if (!S.bars.length) return;
+      var older = kd.filter(function (b3) { return b3.time < S.bars[0].time; });
       if (older.length < 20) { S._noMore = 1; return; }
       S.bars = older.concat(S.bars);
       if (!(S.pools && S.pools.srv)) S.pools = buildPools(S.bars);
@@ -1179,9 +1207,9 @@ function bkSelect(cls, opts, cur) {
   }
   function pollEvents() {
     if (!S || document.hidden) return;
-    var coin = S.coin;
+    var coin = S.coin, gen = S.gen || 0;
     fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=120').then(function (r) { return r.json(); }).then(function (d) {
-      if (!S || coin !== S.coin || !d || !d.events) return;
+      if (!S || coin !== S.coin || (S.gen || 0) !== gen || !d || !d.events) return;
       var seen = {}; S.events.slice(0, 200).forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var fresh = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
       if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 4000); updHead(); sched(); } // 4000, not 2200: the poll would otherwise trim the backfilled history away over time
@@ -1225,10 +1253,22 @@ function bkSelect(cls, opts, cur) {
       + ' <span>' + (up ? __esT_mpheatmap('oiBuild', __esT_mpheatmap("leverageIsStillBeing",'leverage is still being added')) : dn ? __esT_mpheatmap('oiUnwind', __esT_mpheatmap("leverageIsBeingUnwound",'leverage is being unwound')) : __esT_mpheatmap('oiFlat', __esT_mpheatmap("leverageIsFlat",'leverage is flat'))) + '</span></div>';
   }
   function lockSvg() { return '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'; }
+  // WHAT A MOVE HAS COST, measured (2026-11-12): the median dollars liquidated across this coin's last 1% and 2% moves, with the
+  // count behind it, plus how many standing bands sit inside 1% each side right now. Nothing under three moves is printed.
+  function moveCostLine() {
+    var mv = S.moves, rows = (mv && mv.rows) || [], px = S.price, P = S.pools, out = '';
+    var parts = rows.filter(function (r) { return r && +r.n >= 3 && +r.med > 0; }).slice(0, 2).map(function (r) { return '<span>' + __esT_mpheatmap('mcA', 'a') + ' <b>' + (+r.pct) + '%</b> ' + __esT_mpheatmap('mcMove', 'move') + ' <b>' + usdShort(+r.med) + '</b> <em>(' + __esT_mpheatmap('mcMedian', 'median of') + ' ' + (+r.n) + ')</em></span>'; });
+    var nUp = 0, nDn = 0; if (px > 0 && P && P.alive) for (var i = 0; i < P.alive.length; i++) { var z = P.alive[i]; if (zoneDead(z)) continue; var d = (z.price - px) / px; if (d > 0 && d <= 0.01) nUp++; else if (d < 0 && d >= -0.01) nDn++; }
+    if (!parts.length && !(nUp + nDn)) return '';
+    out = '<div class="hm-mc"><span class="k">' + __esT_mpheatmap('mcK', 'WHAT A MOVE COSTS') + '</span>' + q('movecost') + parts.join('')
+      + (px > 0 ? '<span><b>' + nDn + '</b> ' + __esT_mpheatmap('mcBands', 'bands') + ' ' + __esT_mpheatmap('mcWithin', 'within 1% below') + ', <b>' + nUp + '</b> ' + __esT_mpheatmap('mcAbove', 'above') + '</span>' : '')
+      + (mv && mv.days ? '<em>' + __esT_mpheatmap('mcDays', 'last') + ' ' + mv.days + ' ' + __esT_mpheatmap('mcDaysB', 'days, measured') + '</em>' : '') + '</div>';
+    return out;
+  }
   function updTargets() {
     if (!S || !S.tgEl) return; var px = S.price, P = S.pools; if (!(px > 0) || !P.alive.length) { S.tgEl.innerHTML = ''; return; }
     var up = [], dn = [];
-    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (poolGone(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
+    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (zoneDead(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); } // zoneDead, not poolGone: a band the server already cut must not be offered as a target
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     S._tg = up.slice(0, 3).concat(dn.slice(0, 3)); // the chips address these by index, so a tap can move the view to one
     var cell = function (x) {
@@ -1246,12 +1286,13 @@ function bkSelect(cls, opts, cur) {
     var wr = whaleRow();
     h += '<div class="hm-tg-g' + (wr ? ' has-real' : '') + '">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + wr + '</div>';
     // squeeze: strong pools close on BOTH sides
-    var wMax = P.alive.length ? P.alive[0].w : 0;
+    var wMax = 0; for (var wi = 0; wi < P.alive.length; wi++) if (!zoneDead(P.alive[wi])) { wMax = P.alive[wi].w; break; } // the heaviest STANDING band (the list is sorted by weight, dead ones included)
     var nu = up[0], nd = dn[0];
     if (nu && nd && Math.abs(nu.price - px) / px < 0.03 && Math.abs(nd.price - px) / px < 0.03 && nu.w > wMax * 0.35 && nd.w > wMax * 0.35) {
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
+    if (S.mcEl) { var mch = moveCostLine(); if (mch) { S.mcEl.innerHTML = mch; S.mcEl.style.display = ''; } else if (S.moves) { S.mcEl.style.display = 'none'; } } // under the map, not in the reserved targets row (a line there grew the row and pushed the stage)
     h += __esT_mpheatmap("theNearestLevelsWhere",'<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>');
     S.tgEl.innerHTML = h;
   }
@@ -1411,6 +1452,11 @@ function bkSelect(cls, opts, cur) {
         h = '<span class="k">REAL LIQUIDATION</span>'
           + 'A <span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'long' : 'short') + '</span> worth <b>' + money(e.notional) + __esT_mpheatmap("wasLiquidatedAt",'</b> was liquidated at <b>') + fpx(e.price) + '</b>.<br>'
           + 'On ' + String(e.exchange).toUpperCase() + ', ' + ago2(e.ts) + '.';
+      } else if (S.sel.type === 'whale') { var wh2 = S.sel.ref, wd2 = +wh2.distPct || 0, oth = String(wh2.sym || '').toUpperCase() !== S.coin;
+        h = '<span class="k">' + __esT_mpheatmap('whaleK', 'REAL POSITION') + '</span>'
+          + '<b>' + usdShort(wh2.val) + '</b> <span class="' + (wh2.long ? 'l' : 's') + '">' + (wh2.long ? 'long' : 'short') + '</span>' + (oth ? ' ' + esc2(wh2.sym) : '') + (wh2.lev ? ' · ' + wh2.lev + 'x' : '') + ' ' + __esT_mpheatmap('whaleOn', 'on Hyperliquid') + '.<br>'
+          + __esT_mpheatmap('whaleLiq', 'It is liquidated at') + ' <b>' + fpx(wh2.liq) + '</b>' + (wd2 ? ' (' + (wd2 >= 0 ? '+' : '') + wd2.toFixed(1) + '% ' + __esT_mpheatmap('whaleFromHere', 'from here') + ')' : '') + '.<br>'
+          + '<span style="color:#8b95a1">' + __esT_mpheatmap('whaleWhy', 'Read from the exchange\'s own position data - a measured price, no model. Cross margin: the level can move as that account\'s other positions change.') + '</span>';
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
         h = __esT_mpheatmap("alreadySwept",'<span class="k">ALREADY SWEPT</span>')
           + __esT_mpheatmap("priceWentThrough",'Price went through <b>') + fpx(sw.p) + '</b> ' + ago2(sw.t) + '.<br>'
@@ -1484,7 +1530,7 @@ function bkSelect(cls, opts, cur) {
     // S.view exists only once the first candles have mounted; a gesture before that (a phone tap on the skeleton)
     // threw "Cannot read properties of null (reading 't0')" - measured 3x on /es/heatmap, 2026-11-12.
     cv.addEventListener('mousedown', function (ev) { if (!S.view) return; var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, y: ev.clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; });
-    window.addEventListener('mouseup', function () { if (S) S.drag = null; });
+    docOn(window, 'mouseup', function () { if (S) S.drag = null; });
     cv.addEventListener('wheel', function (ev) {
       ev.preventDefault();
       if (!S.view) return;
@@ -1541,8 +1587,8 @@ function bkSelect(cls, opts, cur) {
       pf.style.cursor = 'ns-resize'; pf.title = __esT_mpheatmap("dragToZoomThe",'Drag to zoom the price axis');
       pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; moved = 0; ev.preventDefault(); });
       pf.addEventListener('click', function (ev) { if (moved) { moved = 0; return; } pfPick(ev.clientY); });
-      window.addEventListener('mousemove', function (ev) { if (g && S) apply(ev.clientY - g.y); });
-      window.addEventListener('mouseup', function () { g = null; });
+      docOn(window, 'mousemove', function (ev) { if (g && S) apply(ev.clientY - g.y); });
+      docOn(window, 'mouseup', function () { g = null; });
       pf.addEventListener('touchstart', function (ev) { if (ev.touches.length === 1) g = { y: ev.touches[0].clientY, r: yr() }; }, { passive: true });
       pf.addEventListener('touchmove', function (ev) { if (g && ev.touches.length === 1) { ev.preventDefault(); apply(ev.touches[0].clientY - g.y); } }, { passive: false });
       pf.addEventListener('touchend', function (ev) { if (!moved && g) { var t = (ev.changedTouches && ev.changedTouches[0]); if (t) pfPick(t.clientY); } g = null; });
@@ -1550,6 +1596,7 @@ function bkSelect(cls, opts, cur) {
       pf.addEventListener('dblclick', function () { S.yView = null; sched(); });
     })();
     cv.addEventListener('touchend', function (ev) {
+      if (!S || !S.view) return;
       if (ev.touches.length < 2) tP = null;
       if (ev.touches.length === 1) { var r = cv.getBoundingClientRect(); tX = { x: ev.touches[0].clientX - r.left, y: ev.touches[0].clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; } // FULL state incl. y - the old rebuild here missed y/yLo/yHi, the next 1-finger move produced a NaN price range and the map went blank
       else if (!ev.touches.length) tX = null;
@@ -1881,7 +1928,8 @@ function bkSelect(cls, opts, cur) {
           '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped - plus 5 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$11.99/mo</b>.</div>' +
           '<span class="hm-pw-btn" style="margin-top:8px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>' +
           (signedIn ? '' : '<span class="hm-pw-in" style="color:#8fa3c4;font-size:12.5px;margin-top:2px">Already have Premium? <b style="color:#c2f64a;text-decoration:underline">Sign in</b></span>') +
-          (backIn ? '<span style="color:#5c6b84;font-size:11px;margin-top:2px">Free preview again in ' + backIn + '</span>' : '');
+          (backIn ? '<span style="color:#5c6b84;font-size:11px;margin-top:2px">Free preview again in ' + backIn + '</span>' : '') +
+          '<span style="color:#5c6b84;font-size:11px;max-width:420px;line-height:1.45">' + __esT_mpheatmap('wallBelow', 'Only the map locks. The order flow, the book over time and the market pulse below it stay open to everybody.') + '</span>';
         stage.appendChild(ov);
         ov.addEventListener('click', function (ev) {
           var si = ev.target.closest && ev.target.closest('.hm-pw-in');
@@ -1971,15 +2019,18 @@ function bkSelect(cls, opts, cur) {
     // among them. They are disclosures there, and stay open on a desktop where the room exists. The gesture
     // help now describes the device it is read on: a phone has no scroll wheel and no double-click, so
     // telling a thumb about Shift+scroll was help written for somebody else.
-    var FOPEN = window.innerWidth > 980 ? ' open' : '';
+    var FOPEN = ''; // closed everywhere since 2026-11-12 (owner: short and direct, the long version one click away) - each summary carries its one line
     var GEST = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
       ? __esT_mpheatmap("dragWithOneFinger",' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.')
       : __esT_mpheatmap("dragToPanAny",' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.');
     var foot = el('div', 'hm-foot',
-      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. On the map itself: a <b>dot</b> is a liquidation that really happened, a <b>diamond</b> is a level price has already swept, and a <b>bar</b> is an estimated liquidation level. ') + __esT_mpheatmap('footRules2', 'A line that fades in from the left edge was formed before the window you are looking at. A line that stops at a candle was swept by it, and its colour is what really liquidated there, not the estimate it carried. ') + GEST + '</details>' +
+      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">' + __esT_mpheatmap('howToReadH', 'HOW TO READ IT') + '</summary>' + __esT_mpheatmap('howToReadIt3', 'Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there - price tends to sweep the brightest ones. A band is an estimate of where leverage sits; tap it and the readout says what really liquidated there. ') + __esT_mpheatmap('footRules2', 'A line that fades in from the left edge was formed before the window you are looking at. A line that stops at a candle was swept by it, and its colour is what really liquidated there, not the estimate it carried. The short solid lines at the right edge are real whale positions and the exact price each would be liquidated at right now, read from Hyperliquid itself - a mark, not a span. ') + GEST + '</details>' +
       '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footNumbers", '<summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over the window you have picked - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>') + '' + '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footBook", '<summary class="hm-foot-h">READING THE ORDER BOOK</summary>The <b>order book</b> is money that has not moved yet: <span style="color:#ff8f86">red</span> above the price is sellers waiting, <span style="color:#66d3a5">green</span> below is buyers. <b>Size</b> sits at that exact price, <b>Sum</b> adds it up as you walk away, and the bar behind each row is the total so far. The thin line under each row shows <b>which exchanges hold that price</b> — a wall one venue holds alone can vanish in a second, one that four venues share will not. The <b>tape</b> is money that just moved: an arrow up means the buyer crossed the spread and paid the offer, down means the seller hit the bid. Bright rows are prints far larger than the rest, and any print opens up on a click. Pick one exchange or All — and on All each book is lined up on its own mid first, because exchanges genuinely differ by a few dollars. <b>None of this is modelled; the map above is.</b></details>') + '' + '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footData", '<summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 Bitfinex</b> \u2014 eight venues, nine websocket feeds, and every figure above is what our collector actually received. <b>We do not claim a share of the whole market</b>, because nobody can measure one: no exchange publishes its own liquidation total, and Binance\u2019s public liquidation stream sends <b>at most one order per symbol per second</b>, so on the venue that is the largest part of what we do see, our number is a floor rather than a total in exactly the minute a cascade makes it interesting. The bands are the one estimate on this page - our own model, from live price action, with entries laddered 2\u00d7 to 100\u00d7 and weighted to 10\u201325\u00d7.</details>') + '');
+    // one line under each title, visible while the fold is closed - the short version the owner asked for; the long one is the click
+    (function () { var SUMS = [__esT_mpheatmap('sumRead', 'bright = crowded, a line that stops = swept, a fade-in = older than the window'), __esT_mpheatmap('sumNumbers', 'measured dollars vs. the x-typical estimate - and why there is no dollar figure on the estimate'), __esT_mpheatmap('sumBook', 'red waits above, green below; the tape is what just traded; the thin line says which exchanges hold a price'), __esT_mpheatmap('sumData', 'eight venues, our own collector, a floor rather than a total - and the one estimate on the page')];
+      foot.querySelectorAll('summary.hm-foot-h').forEach(function (sm, i) { if (SUMS[i]) sm.insertAdjacentHTML('beforeend', '<i class="hm-foot-s">' + SUMS[i] + '</i>'); }); })();
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
-    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>' + __esT_mpheatmap('legWhale', '<span><b style="color:#e9e7df">—</b> a real whale position\u2019s liquidation price (measured)</span>');
+    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b>' + __esT_mpheatmap('legBand', '<span><b style="color:#e9e7df">\u25ac</b> estimated liquidation level (brighter = more crowded)</span>') + __esT_mpheatmap('legCut', '<span><b style="color:#e9e7df">\u25ac|</b> swept - the line stops at the candle that took it</span>') + __esT_mpheatmap('legWhale', '<span><b style="color:#e9e7df">—</b> a real whale position\u2019s liquidation price (measured)</span>');
     // ============ THE TERMINAL - order book, tape and the read (2026-09-22) ============
     // Owner: "ne znam tacno gde je trades, nije mi jasno ... jel mozemo da znamo po kojoj ceni ... sto vise
     // informacija to bolje ... treba mi neki pristup koji je originalan i koji ce korisnika da ostavi u cudu
@@ -2504,7 +2555,7 @@ function bkSelect(cls, opts, cur) {
       var r = ev.target.closest && ev.target.closest('.hm-tp-row');
       if (r) { ev.stopPropagation(); tradeCard(r); }
     });
-    document.addEventListener('click', function (ev) {
+    docOn(document, 'click', function (ev) {
       if (ev.target.closest && ev.target.closest('.hm-tc')) {
         if (ev.target.classList.contains('x')) { var c = document.querySelector('.hm-tc'); if (c) c.remove(); }
         return;
@@ -2512,8 +2563,9 @@ function bkSelect(cls, opts, cur) {
       var c2 = document.querySelector('.hm-tc'); if (c2) c2.remove();
     });
     function bkChips(names) {
-      var h = '<button type="button" data-bv="all" class="on">All</button>', i;
-      for (i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '">' + (BKN[names[i]] || names[i]) + '</button>';
+      var cur = (S && S.bk && S.bk.venue) || 'all';
+      var h = '<button type="button" data-bv="all" class="' + (cur === 'all' ? 'on' : '') + '">All</button>', i;
+      for (i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '" class="' + (cur === names[i] ? 'on' : '') + '">' + (BKN[names[i]] || names[i]) + '</button>';
       bkSeg.innerHTML = h;
     }
     function bkLoad() {
@@ -3201,8 +3253,9 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
         drag = null;
       };
       cv.addEventListener('mousedown', down);
-      window.addEventListener('mousemove', moveDrag);
-      window.addEventListener('mouseup', up);
+      // one pair of window listeners for the film, whichever canvas is current (each chrome paint re-wires a fresh canvas)
+      if (bmEl._wmm) { try { window.removeEventListener('mousemove', bmEl._wmm); window.removeEventListener('mouseup', bmEl._wmu); } catch (e) {} }
+      bmEl._wmm = moveDrag; bmEl._wmu = up; docOn(window, 'mousemove', moveDrag); docOn(window, 'mouseup', up);
       cv.addEventListener('touchstart', down, { passive: true });
       cv.addEventListener('touchmove', moveDrag, { passive: false });
       cv.addEventListener('touchend', up);
@@ -3215,10 +3268,10 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
         bmDetail(hit.kind, hit.payload);
         bmPaint();
       });
-      bmEl.addEventListener('click', function (ev) {
+      if (!bmEl._wclk) bmEl.addEventListener('click', function (ev) {
         if (ev.target.classList && ev.target.classList.contains('hm-bmd-x')) bmHide();
         if (ev.target.classList && ev.target.classList.contains('hm-bm-nowb')) { bmState.back = 0; bmFetch(true); bmNowChip(); }
-      });
+      }); bmEl._wclk = 1;
       var move = function (ev) {
         var r = cv.getBoundingClientRect();
         var x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
@@ -3262,11 +3315,12 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     bmChromePaint();
 
     var top = el('div', 'hm-top'); top.appendChild(mast); top.appendChild(bar);
-    wrap.appendChild(top); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
+    var mcEl = el('div', 'hm-mcw', '<div class="hm-mc"><span class="k">' + __esT_mpheatmap('mcK', 'WHAT A MOVE COSTS') + '</span><em>' + __esT_mpheatmap('mcWait', 'measuring…') + '</em></div>'); // reserved from the first frame; filled by updTargets, hidden only when this coin has no measured moves
+    wrap.appendChild(top); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(mcEl); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: 0, showDots: false, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { mcEl: mcEl, bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: 0, showDots: false, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     // The gate modal and the toast belong to mount; the zone bell that needs them belongs to wire. Same
     // bridge, the other way round. Declared functions, so they exist the moment mount starts running.
@@ -3275,10 +3329,17 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       try { var u = new URL(location.href); u.searchParams.set('coin', S.coin); if (S.win === '1D') u.searchParams.delete('win'); else u.searchParams.set('win', S.win); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
     }
     S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; if (S.syncTop) S.syncTop(); S.obs = null; S.obsWin = 0; updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    /* A COIN CHANGE EMPTIES THE STAGE (2026-11-12 review). Until today it reset the view and nothing else: the previous coin's
+       candles were PREPENDED to the new coin's (loadAll keeps back-paginated history by time alone), its bands, whales, OI and
+       funding stayed on screen under the new name until the fetch landed - and for good if the fetch failed. Every async
+       answer now carries the generation it was asked in and is dropped when the reader has moved on. */
+    function resetFor(kind) { S.gen = (S.gen || 0) + 1; S.obs = null; S.obsWin = 0; S.view = null; S.yView = null; S.sel = null; S.bars = []; S._noMore = 0; S._lm = 0; S._flash = null; if (S.showSel) S.showSel();
+      if (kind === 'coin') { S.pools = { alive: [], pMin: 0, pMax: 1, binH: 0 }; S.events = []; S.whales = []; S.whaleNear = null; S.oi = null; S.calib = null; S.funding = null; S._fr = 0; S.moves = null; S.vis = []; S.bandRects = []; }
+      if (S.loadEl) S.loadEl.style.display = 'flex'; if (S.tgEl) S.tgEl.innerHTML = ''; try { var c2 = S.cv.getContext('2d'); c2.clearRect(0, 0, S.cv.width, S.cv.height); var c3 = S.pf.getContext('2d'); c3.clearRect(0, 0, S.pf.width, S.pf.height); } catch (e) {} }
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; if (S.syncTop) S.syncTop(); resetFor('coin'); updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     // S.obs belongs to the window it was measured over, so it is dropped here rather than left to read as
     // the new window's total for the second before the refetch answers.
-    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; if (S.syncTop) S.syncTop(); S.obs = null; S.obsWin = 0; updHead(); urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
+    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; if (S.syncTop) S.syncTop(); resetFor('win'); updHead(); urlSync(); loadAll(true); });
     // ---- THE PILL, THE CHIPS, THE MENU (2026-11-12) - the two <select>s stay the one control path; these drive them.
     var NAMES = { BTC: 'Bitcoin', ETH: 'Ethereum', SOL: 'Solana', XRP: 'XRP', DOGE: 'Dogecoin', BNB: 'BNB', ADA: 'Cardano', LINK: 'Chainlink', AVAX: 'Avalanche', LTC: 'Litecoin' };
     var CARET = '<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg>';
@@ -3319,8 +3380,8 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     }
     coinBtn.addEventListener('click', function (ev) { ev.stopPropagation(); if (coinMenu) coinMenuClose(); else coinMenuOpen(); });
     barA.addEventListener('click', function (ev) { var b = ev.target.closest && ev.target.closest('.hm-cm-r'); if (!b || !S) return; ev.stopPropagation(); var c = b.getAttribute('data-c'); coinMenuClose(); if (c && c !== S.coin) { selC.value = c; selC.dispatchEvent(new Event('change')); } coinBtn.focus(); });
-    document.addEventListener('click', function (ev) { if (coinMenu && !(ev.target.closest && ev.target.closest('.hm-cm'))) coinMenuClose(); });
-    document.addEventListener('keydown', function (ev) {
+    docOn(document, 'click', function (ev) { if (coinMenu && !(ev.target.closest && ev.target.closest('.hm-cm'))) coinMenuClose(); });
+    docOn(document, 'keydown', function (ev) {
       if (!coinMenu) return;
       var rows = [].slice.call(coinMenu.querySelectorAll('.hm-cm-r')), i = rows.findIndex(function (x) { return x.classList.contains('k'); });
       if (ev.key === 'Escape') { ev.preventDefault(); coinMenuClose(); coinBtn.focus(); }
@@ -3339,7 +3400,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     }
     // KEYBOARD (2026-11-12): [ and ] walk the window, A / L / S pick the side, C opens the coin menu, 0 resets the view.
     // Never while something is being typed, and the open coin menu keeps its own keys.
-    document.addEventListener('keydown', function (ev) {
+    docOn(document, 'keydown', function (ev) {
       if (!S || coinMenu || ev.metaKey || ev.ctrlKey || ev.altKey) return;
       var t = ev.target, tg = t && t.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT' || (t && t.isContentEditable)) return;
       var k = ev.key, ks = Object.keys(WINS);
@@ -3367,12 +3428,9 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     S._unstick = function () { removeEventListener('scroll', stickPing); removeEventListener('resize', stickPing); };
     // the price in the top row breathes with the tick: green up, red down, through WAAPI (never @keyframes)
     var lastPx = 0;
-    window.addEventListener('mp:price', function (ev) { var d = ev.detail || {}; if (!S || d.sym !== S.coin || !(+d.p > 0)) return; if (lastPx && +d.p !== lastPx && pxEl.animate) { try { pxEl.animate([{ color: +d.p > lastPx ? '#2ebd85' : '#ff6258' }, { color: '#fff' }], { duration: 700, easing: 'ease-out' }); } catch (e) {} } lastPx = +d.p; });
+    docOn(window, 'mp:price', function (ev) { var d = ev.detail || {}; if (!S || d.sym !== S.coin || !(+d.p > 0)) return; if (lastPx && +d.p !== lastPx && pxEl.animate) { try { pxEl.animate([{ color: +d.p > lastPx ? '#2ebd85' : '#ff6258' }, { color: '#fff' }], { duration: 700, easing: 'ease-out' }); } catch (e) {} } lastPx = +d.p; });
     S.syncTop();
-    selD.addEventListener('change', function () { if (!S) return; var v = +selD.value; S.showDots = v >= 0; S.dotMin = Math.max(0, v);
-      try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
-      if (S.sel && S.sel.type === 'ev' && !dotOk(S.sel.ref)) { S.sel = null; if (S.showSel) S.showSel(); } // never leave a selection pinned to a dot that is no longer drawn
-      updHead(); sched(); });
+    // (the dot-size picker is gone with the dots - 2026-11-12; S.showDots stays false and the dot layer is never painted)
     tgEl.addEventListener('click', function (ev) { // delegated: updTargets rewrites this block on every tick
       if (!S) return;
       // A locked panel has to lead somewhere, or it is only an advert for a dead end.
@@ -3382,7 +3440,10 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       var wl = ev.target.closest('.hm-tgb.w');
       if (wl) {
         var wp = parseFloat(String(wl.getAttribute('data-wl') || '').replace(/,/g, ''));
-        if (wp > 0) { tgEl.querySelectorAll('.hm-tgb').forEach(function (b3) { b3.classList.toggle('on', b3 === wl); }); focusPool({ price: wp }); }
+        if (wp > 0) { tgEl.querySelectorAll('.hm-tgb').forEach(function (b3) { b3.classList.toggle('on', b3 === wl); });
+          var key9 = wl.getAttribute('data-wl'), who = (S.whales || []).concat(S.whaleNear ? [S.whaleNear] : []).filter(function (x) { return fpx(x.liq) === key9; })[0];
+          if (who) { S._selLo = false; var pxw = S.price > 0 ? S.price : wp, spw = Math.max(Math.abs(wp - pxw) * 2.4, pxw * 0.02), mdw = (wp + pxw) / 2; S.yView = { lo: mdw - spw / 2, hi: mdw + spw / 2 }; S.sel = { type: 'whale', ref: who }; if (S.showSel) S.showSel(); sched(); try { window.mpHaptic && window.mpHaptic('tap'); } catch (e) {} }
+          else focusPool({ price: wp }); }
         return;
       }
       var t = ev.target.closest('.hm-tgb'); if (!t || !S._tg) return;
@@ -3554,6 +3615,9 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     try { window.removeEventListener('mp:price', S.onPrice); } catch (e) {}
     try { document.removeEventListener('visibilitychange', S.onVis); } catch (e) {}
     try { S.ro && S.ro.disconnect(); } catch (e) {}
+    try { S.bmRo && S.bmRo.disconnect(); } catch (e) {}
+    try { (S.offs || []).forEach(function (f) { try { f(); } catch (e) {} }); } catch (e) {} // every document/window listener this mount added (2026-11-12 review: a remount stacked them)
+    try { if (S._flashT) clearTimeout(S._flashT); } catch (e) {}
     S = null;
   }
   // READ-ONLY MIRROR FOR THE E2E. S is closure-private and must stay that way (the map decides nothing from the

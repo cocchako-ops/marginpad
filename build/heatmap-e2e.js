@@ -138,6 +138,8 @@ const LAYOUT = () => {
     ctCols: document.querySelector('.hm-ct-hd') ? document.querySelector('.hm-ct-hd').children.length : 0,
     footOpen: [...document.querySelectorAll('details.hm-foot-c')].filter(d => d.open).length,
     footTotal: document.querySelectorAll('details.hm-foot-c').length,
+    footSums: [...document.querySelectorAll('details.hm-foot-c summary .hm-foot-s')].filter(e => e.textContent.trim().length > 20).length,
+    mcTxt: (document.querySelector('.hm-mc') || {}).textContent || '',
     mastTxt: (document.querySelector('.hm-mast-s') || {}).textContent || '',
     prevInMast: !!document.querySelector('.hm-mast-b .hm-prevrib'),
     mastLines: (() => { const t = document.querySelector('.hm-mast-t'), b = document.querySelector('.hm-mast-b'); return t && b ? Math.round(t.getBoundingClientRect().height + b.getBoundingClientRect().height) : 0; })(),
@@ -244,7 +246,8 @@ const LAYOUT = () => {
     ok('the whole map is visible without scrolling', L.stage.bottom <= L.vh, 'stage bottom=' + L.stage.bottom + ' vh=' + L.vh);
     ok('the control bar is two named groups', L.barGroups === 2, 'groups=' + L.barGroups);
     ok('the masthead states the measured venue count', /8 exchanges/.test(L.mastTxt), L.mastTxt.slice(0, 80));
-    ok('the foot cards are open on a desktop', L.footTotal >= 4 && L.footOpen === L.footTotal, L.footOpen + '/' + L.footTotal);
+    ok('the foot cards are closed on a desktop too, each with its one-line summary (2026-11-12)', L.footTotal >= 4 && L.footOpen === 0 && L.footSums === L.footTotal, L.footOpen + ' open, ' + L.footSums + '/' + L.footTotal + ' summaries');
+    ok('WHAT A MOVE COSTS sits under the map with a measured figure or is absent, never empty', !L.mcTxt || /median of d+|bands/.test(L.mcTxt), L.mcTxt.slice(0, 120));
     ok('nothing in the section overflows the viewport', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is a grid on a desktop', L.extGrid > 0 && L.extStacked === 0, 'grid=' + L.extGrid + ' stacked=' + L.extStacked);
     ok('the coin table shows all four windows on a desktop', L.ctCols === 11, 'cols=' + L.ctCols);

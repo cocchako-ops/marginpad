@@ -27,7 +27,8 @@ function files() {
 }
 function objEnd(s, i) { let d = 0, q = false; for (let j = i; j < s.length; j++) { const c = s[j]; if (q) { if (c === '\\') j++; else if (c === '"') q = false; } else if (c === '"') q = true; else if (c === '{') d++; else if (c === '}') { d--; if (!d) return j + 1; } } return -1; }
 function unq(lit) { try { return new Function('return ' + lit)(); } catch (e) { return null; } }
-const CALL = /__esT_(\w+)\(\s*"(\w+)"\s*,\s*('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")/g;
+// 2026-11-12: a key may be single-quoted too (__esT_x('key', ...)) - 190 heatmap calls and 8 profile-card calls were invisible to this pass
+const CALL = /__esT_(\w+)\(\s*["'](\w+)["']\s*,\s*('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")/g;
 function extract() {
   const strings = read(path.join(DATA, 'strings.json'), {}), dicts = read(path.join(DATA, 'dicts.json'), {}); let moved = 0, rewritten = 0;
   const addS = (en, l, t) => { if (en == null) return; strings[en] = strings[en] || {}; if (l && t != null && !strings[en][l]) strings[en][l] = t; };

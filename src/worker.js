@@ -7470,35 +7470,35 @@ async function fetchPrice(sym) {
   // Bybit USDT-perp (linear) FIRST - SAME market as the live WS feed + chart candles, so the REST fallback never reintroduces a spot-vs-perp price mismatch.
   try {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=' + pair, { cf: { cacheTtl: 8 } });
-    if (r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; if (it) { const p = +it.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +(parseFloat(it.price24hPcnt) * 100) }; } }
+    if (r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; if (it) { const p = +it.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +(parseFloat(it.price24hPcnt) * 100), src: 'bybit' }; } }
   } catch (e) {}
   // (Binance is 403-banned on Cloudflare egress - the two Binance legs here were GUARANTEED failures that only added
   //  latency + burned subrequests before the reachable venues were tried. Removed. Reachable order: Bybit → Gate → OKX → MEXC.)
   // Bybit spot fallback
   try {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol=' + pair, { cf: { cacheTtl: 10 } });
-    if (r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; if (it) { const p = +it.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +(parseFloat(it.price24hPcnt) * 100) }; } }
+    if (r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; if (it) { const p = +it.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +(parseFloat(it.price24hPcnt) * 100), src: 'bybit-spot' }; } }
   } catch (e) {}
   // Gate.io fallback - same source as the screener/klines, so anything the screener lists resolves a live price
   try {
     const r = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=' + s + '_USDT', { cf: { cacheTtl: 10 } });
-    if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage }; } }
+    if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage, src: 'gate-spot' }; } }
   } catch (e) {}
   // Gate.io USDT-PERP futures - metals/indices/forex (gold XAU, silver XAG, NAS100, US30, SPX500, GBPUSD…) live on Gate FUTURES, not spot
   try {
     const r = await fetch('https://api.gateio.ws/api/v4/futures/usdt/tickers?contract=' + s + '_USDT', { cf: { cacheTtl: 10 } });
-    if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage }; } }
+    if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage, src: 'gate-fut' }; } }
   } catch (e) {}
   // OKX USDT-perp - broad long-tail coverage CF can reach; closes the gap for tokens listed on OKX but not Bybit/Gate
   // (the screener surfaces 7 venues; without this those tokens returned no price → P&L frozen at entry).
   try {
     const r = await fetch('https://www.okx.com/api/v5/market/ticker?instId=' + s + '-USDT-SWAP', { cf: { cacheTtl: 10 } });
-    if (r.ok) { const d = await r.json(); const it = d && d.data && d.data[0]; if (it) { const p = +it.last, o = +it.open24h; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0 }; } }
+    if (r.ok) { const d = await r.json(); const it = d && d.data && d.data[0]; if (it) { const p = +it.last, o = +it.open24h; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0, src: 'okx' }; } }
   } catch (e) {}
   // MEXC spot (Binance-compatible API, reachable from CF) - last-resort long-tail coverage
   try {
     const r = await fetch('https://api.mexc.com/api/v3/ticker/24hr?symbol=' + pair, { cf: { cacheTtl: 10 } });
-    if (r.ok) { const d = await r.json(); const p = +d.lastPrice, o = +d.openPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0 }; }
+    if (r.ok) { const d = await r.json(); const p = +d.lastPrice, o = +d.openPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0, src: 'mexc' }; }
   } catch (e) {}
   // Binance futures via the collector droplet proxy (2026-07-24) - Binance 403-blocks CF egress, the droplet doesn't.
   // Deliberately LAST: Bybit stays the price authority (same market as the WS feed); this only rescues tokens nobody above lists.
@@ -7670,6 +7670,14 @@ async function handleKlines(url, env, klSrc, ctx) {
     const r = await fetchTO('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 8 } }, bybitTO, env, 'bybit-lin');
     if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
+  // 1b) THE 1000x CONTRACT (2026-11-12): Bybit lists PEPE as 1000PEPEUSDT and SHIB as SHIB1000USDT; the live feed shows the clean ticker at a
+  // thousandth. Without this leg the chart fell to OKX for exactly the coins whose price and settlement are Bybit's - a wick on the chart that
+  // never printed on the market the position lives on. Prices and volume are scaled back to the clean ticker.
+  if (!out && !/^1000/.test(sym) && !/1000$/.test(sym)) for (const ap of ['1000' + pair, sym + '1000USDT']) { if (out) break; try {
+    _curSrc = 'bybit-lin';
+    const r = await fetchTO('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + ap + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 8 } }, bybitTO, env, 'bybit-lin');
+    if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1] / 1000, high: +k[2] / 1000, low: +k[3] / 1000, close: +k[4] / 1000, vol: +k[5] * 1000 })).sort((a, b) => a.time - b.time)); }
+  } catch (e) {} }
   // 2) OKX USDT-perp - clean, liquid data for the alts Bybit's CF egress rate-limits (HBAR etc). Moved AHEAD of
   // Gate spot (thin spot books leave flat no-trade candles). Only 300 bars, but 300 real > 1000 flat; loadMore extends.
   if (!out) try {
@@ -7771,9 +7779,18 @@ async function strategyLive(env, dryDays) {
   if (!dryDays) await env.STATS.put('strat:live', JSON.stringify(st)); // a dry run proves the pass on production and stores nothing
   return st;
 }
-async function leanKlines(sym, ivMin, n, env) {
+async function leanKlines(sym, ivMin, n, env, opts) {
   sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!sym) return null;
   const iv = String(ivMin || '1'), N = Math.min(200, Math.max(2, +n || 30)), pair = sym + 'USDT';
+  /* THE VENUE IS PART OF THE PRICE (2026-11-12, Ladyp03's ticket). A position on a Bybit-listed perp was opened against the
+     Bybit websocket price and its chart draws Bybit candles, so a stop, a target and a liquidation must be settled from
+     BYBIT candles - and this function fell through to OKX and Gate whenever Bybit was slow (1.5 s ceiling) or refused.
+     OKX quotes ANTHROPIC-USDT-SWAP at a tenth of Bybit's contract (137 against 1,376), so one slow Bybit second booked a
+     10x long as liquidated at -100% on a coin that never came within 9% of its liq; an OKX/Gate 1m wick on INIT and
+     PIEVERSE did the same where Bybit's low never reached the level. `opts.bybitOnly` stops at Bybit: a miss returns
+     null, the sweep holds the position for the next pass, and nothing is settled on another venue's tape. The cache key
+     carries the mode so a cascade answer cached a second earlier can never be handed to a pinned caller. */
+  const bOnly = !!(opts && opts.bybitOnly);
   /* THE SWEEP'S OWN CANDLES FOR AN RNG MARKET (2026-10-28). This is the function that settles a stop, a target and a
      liquidation, so it must answer the SAME candle the chart drew - which it does by construction, both calling
      mpadBars. Deliberately NOT cached: the stored series IS the cache, and a second copy is one more way for the
@@ -7782,19 +7799,111 @@ async function leanKlines(sym, ivMin, n, env) {
     const bars = await mpadBars(env, (+iv || 1) * 60, N, 0);
     return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
   }
-  const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N);
+  const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N + (bOnly ? '_b' : '') + ((opts && opts.pair) ? '_' + opts.pair : ''));
   try { const hit = await caches.default.match(ckey); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 10000) { return await hit.json(); } } } catch (e) {}
   const t0 = Date.now();
   const byMap = { '1': '1', '5': '5', '15': '15', '60': '60', '240': '240', '1440': 'D' };
   let out = null;
   { const ys = yahooSymFor(sym); if (ys) { try { const y = await _yahooChart(ys, iv, 8); if (y && y.bars && y.bars.length) out = y.bars.slice(-N).map(b => ({ time: b.time, high: b.high, low: b.low, close: b.close })); } catch (e) {} if (out) { try { const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'x-mp-cached': String(Date.now()) } }); await caches.default.put(ckey, resp.clone()); } catch (e) {} } return out; } } // stocks/forex/indices resolve via Yahoo; skip the crypto sweep sources
-  try { const r = await fetchTO('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + pair + '&interval=' + (byMap[iv] || '1') + '&limit=' + N, { cf: { cacheTtl: 8 } }, 1500, env, 'sw-bybit'); if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), high: +k[2], low: +k[3], close: +k[4] })).sort((a, b) => a.time - b.time); } } catch (e) {}
+  const bPair = (opts && opts.pair) || pair, bScale = (opts && +opts.scale > 0) ? +opts.scale : 1; // the 1000x alias: PEPE is Bybit's 1000PEPEUSDT at a thousandth (the live feed the trader watches is exactly that)
+  try { const bu = 'https://api.bybit.com/v5/market/kline?category=linear&symbol=' + bPair + '&interval=' + (byMap[iv] || '1') + '&limit=' + N; const r = bOnly ? await bybitGet(bu, (opts && +opts.ms > 0) ? +opts.ms : 6000, env, 'sw-bybit') : await fetchTO(bu, { cf: { cacheTtl: 8 } }, (opts && +opts.ms > 0) ? +opts.ms : 1500, env, 'sw-bybit'); if (r && r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), high: +k[2] * bScale, low: +k[3] * bScale, close: +k[4] * bScale })).sort((a, b) => a.time - b.time); } } catch (e) {}
+  if (!out && bOnly) return null; // pinned: Bybit or nothing (never cached, so the next pass asks again)
   if (!out) try { const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D' }; const r = await fetchTO('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1m') + '&limit=' + N, { cf: { cacheTtl: 8 } }, 1500, env, 'sw-okx'); if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), high: +k[2], low: +k[3], close: +k[4] })).filter(b => isFinite(b.time) && b.high > 0).sort((a, b) => a.time - b.time); } } catch (e) {}
   if (!out) try { const gMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d' }; const r = await fetchTO('https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=' + sym + '_USDT&interval=' + (gMap[iv] || '1m') + '&limit=' + N, { cf: { cacheTtl: 8 } }, 1500, env, 'sw-gate'); if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k.t, high: +k.h, low: +k.l, close: +k.c })).sort((a, b) => a.time - b.time); } } catch (e) {}
   if (out) out = out.filter(b => b && b.time > 0 && isFinite(b.high) && isFinite(b.low) && isFinite(b.close) && b.high > 0 && b.low > 0 && b.close > 0);
   if (!out || !out.length) { return null; }
   try { const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'x-mp-cached': String(Date.now()) } }); await caches.default.put(ckey, resp.clone()); } catch (e) {}
   return out;
+}
+/* WHICH SYMBOLS ARE BYBIT'S, AND WHAT BYBIT SAYS THEY TRADE AT RIGHT NOW (2026-11-12). One linear-tickers call answers
+   both for the whole sweep: `set` = every USDT perp Bybit lists, `px` = its lastPrice, `fund` = its funding rate. The
+   set is also kept in KV (`bybit:linset`, a day) so a pass during a Bybit outage still KNOWS which symbols are pinned -
+   and holds them (`down:true`) instead of settling them on another venue. Per-isolate memo 45 s; the KV copy is
+   refreshed at most every 10 min. A symbol outside the set (a Bybit delisting, an OKX-only token somebody still holds)
+   keeps the old cascade: that is the delist path and DEAD FEED watches it. */
+/* ONE WAY TO ASK BYBIT FOR A SETTLEMENT FACT (2026-11-12). Direct first; when the direct call is refused (Bybit answers
+   403 to some Cloudflare egress ranges - the ten-minute cron isolate sits where it sits) or does not answer inside the ceiling,
+   the SAME path is asked through the collector droplet (`/api/v1/byb?path=`, a fixed non-Cloudflare address Bybit has
+   never refused - the collector's own Bybit websocket runs from it). The answer is a Response either way; the caller
+   reads it as before. `globalThis.__bybDiag` keeps the last direct failure so the sweep stamp can say why a pass held. */
+async function bybitGet(url, ms, env, lbl) {
+  const d = globalThis.__bybDiag = globalThis.__bybDiag || { n: 0, fail: 0, proxied: 0, last: null };
+  d.n++; const t0 = Date.now(); let r = null, why = null;
+  // MEASURED 2026-11-12 06:41 UTC: inside the ten-minute cron isolate EVERY direct call answered 403 'The Amazon CloudFront distribution is
+  // configured to block access from your country' (114 of 114) - Bybit geo-blocks the region that isolate runs in, and THAT was the
+  // whole reason the sweep settled on OKX/Gate. Once a 403 has been seen the isolate goes straight to the droplet for ten minutes.
+  const blocked = d.blockedUntil && Date.now() < d.blockedUntil;
+  if (!blocked) {
+    try { r = await fetchTO(url, { cf: { cacheTtl: 5 } }, ms || 4000, env, lbl || 'bybit'); if (!r.ok) { why = 'http_' + r.status; try { why += ':' + (await r.clone().text()).replace(/\s+/g, ' ').slice(0, 60); } catch (e) {} if (r.status === 403) d.blockedUntil = Date.now() + 600000; r = null; } }
+    catch (e) { why = String((e && e.name) || e).slice(0, 40); }
+    if (r) return r;
+    d.fail++; d.last = { why, ms: Date.now() - t0, at: Date.now(), u: url.slice(22, 90) };
+  }
+  // THE PROXY CALL IS THE RAW FETCH, NOT THE GUARDED ONE: the collector breaker (4 s ceiling, 60 s open after one failure, shared by every
+  // collector consumer in the isolate) would turn one slow book read elsewhere into a held sweep here. Its own ceiling, its own failure.
+  try { const u = new URL(url); const px = 'https://collector.marginpad.io/api/v1/byb?path=' + encodeURIComponent(u.pathname) + (u.search ? '&' + u.search.slice(1) : '');
+    const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), Math.max(4000, ms || 4000)); let r2 = null;
+    try { r2 = await __realFetch(px, { cf: { cacheTtl: 2 }, signal: ac.signal }); } finally { clearTimeout(tm); }
+    if (r2 && r2.ok) { d.proxied++; return r2; } if (d.last) d.last.proxy = 'http_' + (r2 && r2.status); } catch (e) { if (d.last) d.last.proxy = String((e && e.name) || e).slice(0, 40); else d.last = { proxy: String((e && e.name) || e).slice(0, 40), at: Date.now() }; }
+  return null;
+}
+async function bybitLinSet(env) {
+  const m = globalThis.__bybLin || (globalThis.__bybLin = { at: 0, v: null, kvAt: 0 });
+  if (m.v && Date.now() - m.at < 45000) return m.v;
+  let v = null;
+  try {
+    const r = await bybitGet('https://api.bybit.com/v5/market/tickers?category=linear', 12000, env, 'sw-bybit-tickers'); // 12 s: inside the */10 cron this call queues behind every other task's fetches (six connections per isolate) and a 4 s ceiling held every Bybit symbol on the first pinned pass
+    if (r && r.ok) { const j = await r.json(); const list = j && j.result && j.result.list;
+      if (Array.isArray(list) && list.length > 50) { const set = new Set(), px = {}, fund = {}, alias = {};
+        for (const it of list) { const sy = String(it.symbol || ''); if (!/USDT$/.test(sy)) continue; const k = sy.slice(0, -4); set.add(k); const p = +it.lastPrice; if (isFinite(p) && p > 0) px[k] = p; const fr = +it.fundingRate; if (isFinite(fr)) fund[k] = fr;
+          // THE 1000x ALIAS: Bybit lists 1000PEPEUSDT (prefix) and SHIB1000USDT (suffix) and the site trades the clean ticker at a thousandth - the
+          // websocket feed every trader watches is that contract divided by 1000, so the clean ticker is pinned to it too, at that scale.
+          const am = /^1000([A-Z0-9]+)$/.exec(k) || /^([A-Z0-9]+)1000$/.exec(k); if (am && !set.has(am[1]) && !alias[am[1]]) { alias[am[1]] = sy; if (isFinite(p) && p > 0) px[am[1]] = p / 1000; if (isFinite(fr)) fund[am[1]] = fr; } }
+        for (const a in alias) set.add(a);
+        v = { set, px, fund, alias, down: false, n: set.size, ts: Date.now() }; } }
+  } catch (e) {}
+  if (v) {
+    if (env && env.STATS && Date.now() - m.kvAt > 600000) { m.kvAt = Date.now(); try { await env.STATS.put('bybit:linset', JSON.stringify({ ts: v.ts, syms: Array.from(v.set), alias: v.alias }), { expirationTtl: 86400 }); } catch (e) {} }
+  } else {
+    let syms = (m.v && m.v.set) ? Array.from(m.v.set) : null, alias = (m.v && m.v.alias) || null; // the previous memo first, then the KV copy
+    if (!syms && env && env.STATS) { try { const j = JSON.parse((await env.STATS.get('bybit:linset')) || 'null'); if (j && Array.isArray(j.syms) && j.syms.length) { syms = j.syms; alias = j.alias || {}; } } catch (e) {} }
+    if (syms) v = { set: new Set(syms), px: null, fund: null, alias: alias || {}, down: true, n: syms.length, ts: Date.now() };
+  }
+  if (v) { m.v = v; m.at = Date.now(); }
+  return v; // null only when Bybit is down AND no set was ever stored - the callers fall back to the cascade then, as before
+}
+// The price of a Bybit-listed symbol, from Bybit alone (the linear ticker). Null on a miss - never another venue's number.
+async function fetchPriceBybit(sym, env, opts) {
+  const s2 = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, ''); if (!s2) return null;
+  const raw = (opts && opts.pair) || (s2 + 'USDT'), scale = (opts && +opts.scale > 0) ? +opts.scale : 1, ms = (opts && +opts.ms > 0) ? +opts.ms : 2500;
+  const ck = new Request('https://marginpad.io/__pricebyb_' + s2);
+  try { const hit = await caches.default.match(ck); if (hit) { const j2 = await hit.json(); if (j2 && +j2.price > 0 && +j2.ts > 0 && Date.now() - +j2.ts < 8000) return j2; } } catch (e) {}
+  try {
+    const r = await bybitGet('https://api.bybit.com/v5/market/tickers?category=linear&symbol=' + raw, ms, env, 'sw-bybit-px');
+    if (r && r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; const p = it ? +it.lastPrice * scale : 0;
+      if (isFinite(p) && p > 0) { const pd = { sym: s2, price: p, chg: +(parseFloat(it.price24hPcnt) * 100), src: 'bybit', ts: Date.now() };
+        try { await caches.default.put(ck, new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=8', 'x-mp-cached': String(pd.ts) } })); } catch (e) {}
+        return pd; } }
+  } catch (e) {}
+  return null;
+}
+// ONE reading of "price + candles for a settlement" (sweep, nudge, order fills): pinned to Bybit for a Bybit-listed symbol,
+// the cascade for everything else. `pin` is the bybitLinSet() answer for this pass (null = no set known).
+async function settleFeed(sym, env, pin) {
+  const k = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
+  const inB = !!(pin && pin.set && pin.set.has(k));
+  let pd = null, lk = null, ms = 0;
+  if (inB) {
+    const raw = pin.alias && pin.alias[k], scale = raw ? 1 / 1000 : 1, bo = { bybitOnly: true, pair: raw || undefined, scale, ms: 6000 }; // 6 s inside the cron: 1.5 s was what let OKX answer instead
+    if (pin.px && pin.px[k] > 0) pd = { sym: k, price: pin.px[k], src: 'bybit', ts: pin.ts };
+    else if (!pin.down) pd = null; // listed but unpriced in the very list that priced everything else: hold
+    else { try { pd = await fetchPriceBybit(k, env, bo); } catch (e) {} }
+    const t0 = Date.now(); try { lk = await leanKlines(k, '1', 30, env, bo); } catch (e) {} ms = Date.now() - t0;
+  } else {
+    try { pd = await fetchPriceCached(k); } catch (e) {}
+    try { lk = await leanKlines(k, '1', 30, env); } catch (e) {}
+  }
+  return { k, inB, pd: (pd && +pd.price > 0) ? pd : null, lk: (lk && lk.length) ? lk : null, ms, held: inB && !!pin.down && !(pd && +pd.price > 0) };
 }
 
 // Proxy to the separate liquidation collector service (its own VPS). The site reads it through here so it
@@ -9802,15 +9911,17 @@ async function sweepServerPositions(env) {
       }
     } catch (e) {}
     const prices = {}, klines = {}, states = {};
+    const pin = await bybitLinSet(env); let pinnedN = 0, heldN = 0, klOk = 0, klMiss = 0; const klMs = []; // the venue pin (2026-11-12): Bybit symbols settle from Bybit alone
     for (const sym of syms) {
       const k = sym.replace(/USDT$/, '');
-      try { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) { prices[k] = +pd.price; prices[k + 'USDT'] = +pd.price; if (pd.state != null) states[k] = String(pd.state); } } catch (e) {}
-      try { const lk = await leanKlines(k, '1', 30, env); if (lk && lk.length) klines[k] = lk; } catch (e) {} // last 30 1m candles' high/low → catches wicks that retraced between */10 passes (invisible to the current price); ~2.7KB vs 91KB
+      const sf = await settleFeed(sym, env, pin); if (sf.inB) { pinnedN++; if (sf.lk) klOk++; else klMiss++; klMs.push(sf.ms); } if (sf.held) heldN++;
+      if (sf.pd) { prices[k] = +sf.pd.price; prices[k + 'USDT'] = +sf.pd.price; if (sf.pd.state != null) states[k] = String(sf.pd.state); }
+      if (sf.lk) klines[k] = sf.lk; // last 30 1m candles' high/low → catches wicks that retraced between */10 passes (invisible to the current price); ~2.7KB vs 91KB
       // DEAD-FEED watchdog (2026-08-16, HMM delist case): a symbol we HOLD open but NO source can price or chart is a
       // delist candidate - its positions silently can't settle server-side. 3 consecutive sweep misses (counter TTL 30min
       // so separate incidents don't accumulate) → TG once/day per symbol. DETECTION ONLY - never auto-settle, because a
       // transient upstream outage looks identical to a delisting; the decision is the owner's.
-      try { if (prices[k] == null && !(klines[k] && klines[k].length)) {
+      try { if (sf.held) { /* Bybit itself is unreachable this pass: a pinned symbol with no answer is HELD, not dead */ } else if (prices[k] == null && !(klines[k] && klines[k].length)) {
         const dfk = 'deadfeed:' + k, dfn = (+(await env.STATS.get(dfk)) || 0) + 1;
         await env.STATS.put(dfk, String(dfn), { expirationTtl: 7200 });
         if (dfn >= 6) { const dfday = new Date().toISOString().slice(0, 10); // 6 misses (~1 h of sweeps), not 3: on 2026-09-12 four fresh Bybit listings paged "dead" during a short upstream gap and were quoted again within the hour
@@ -9846,7 +9957,8 @@ async function sweepServerPositions(env) {
       await new Promise(r => setTimeout(r, 50));
     }
     let rates = null;
-    try { // real funding rates (Bybit linear tickers, one call, edge-cached 5 min) - only for the syms we hold
+    if (pin && pin.fund) { rates = {}; for (const sy in pin.fund) if (prices[sy] != null) rates[sy] = pin.fund[sy]; } // the pin's own tickers call already carries funding
+    else try { // real funding rates (Bybit linear tickers, one call, edge-cached 5 min) - only for the syms we hold
       const rr = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 300, cacheEverything: true } });
       const rj = await rr.json(); const list = rj && rj.result && rj.result.list;
       if (Array.isArray(list)) { rates = {}; for (const it of list) { const sy = String(it.symbol || '').replace(/USDT$/, ''); if (prices[sy] != null) { const fr = +it.fundingRate; if (isFinite(fr)) rates[sy] = fr; } } }
@@ -9864,7 +9976,7 @@ async function sweepServerPositions(env) {
     } catch (e) {}
     if (Object.keys(prices).length || Object.keys(klines).length) {
       const res = await usersDO(env, '/tradesweepall', { prices, rates, klines, graceMin, srvCandle, promos: await xpPromos(env).catch(() => []) });
-      try { await env.STATS.put('sweep:last', JSON.stringify({ swept: res && res.swept, checked: res && res.checked, staleN: res && res.staleN, funded: res && res.funded, syms: syms.length, klSyms: Object.keys(klines).length, srvCandle, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} // observability: read via /api/admin/sweepstat
+      try { await env.STATS.put('sweep:last', JSON.stringify({ swept: res && res.swept, checked: res && res.checked, staleN: res && res.staleN, funded: res && res.funded, syms: syms.length, klSyms: Object.keys(klines).length, srvCandle, pinned: pinnedN, held: heldN, klOk, klMiss, klMsMed: klMs.length ? klMs.sort((a, c) => a - c)[Math.floor(klMs.length / 2)] : null, klMsMax: klMs.length ? klMs[klMs.length - 1] : null, bybitDown: !!(pin && pin.down), bybitSet: pin ? pin.n : 0, byb: globalThis.__bybDiag ? { n: globalThis.__bybDiag.n, fail: globalThis.__bybDiag.fail, proxied: globalThis.__bybDiag.proxied, last: globalThis.__bybDiag.last } : null, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} // observability: read via /api/admin/sweepstat
     }
     await drainXpBoostEvents(env); // boost/HH hits (from ANY close path) -> live activity feed with the username
     try { await webhookDrain(env); } catch (e) {} // fills + SL/TP/liq settled by this pass reach the account's webhooks in the same minute
@@ -20876,7 +20988,10 @@ async function handleTrade(url, request, env, ctx) {
     // today's price. Admin key + ?uid= + px; the position's own symbol, no market-hours check (the member's close
     // already happened), via 'site' so the DO books it like any member close, TG line so every correction is seen.
     const _spx = (adminUid && +b.px > 0) ? +b.px : 0;
-    const pd = _spx ? { price: _spx } : await fetchPriceCached(symC);
+    // A Bybit-listed symbol closes at BYBIT's price or answers no_price (the client keeps the position open and retries) -
+    // never at another venue's number (2026-11-12). Everything else keeps the cascade.
+    let pd = _spx ? { price: _spx } : null;
+    if (!pd) { const pin9 = await bybitLinSet(env); const k9 = symC.replace(/USDT$/, ''); pd = (pin9 && pin9.set.has(k9)) ? await fetchPriceBybit(k9, env, { pair: pin9.alias && pin9.alias[k9], scale: (pin9.alias && pin9.alias[k9]) ? 1 / 1000 : 1, ms: 4000 }) : await fetchPriceCached(symC); }
     if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
     // Exiting at a frozen price is a one-sided bet: favourable overnight gaps still land at the open, while
     // an unfavourable one can be dodged by closing before it. The price cannot move while the exchange is
@@ -20906,9 +21021,11 @@ async function handleTrade(url, request, env, ctx) {
     if (!open.length) return jt({ ok: true, swept: 0 });
     const syms = Array.from(new Set(open.map(p => String(p.symbol || p.sym || '').toUpperCase().replace(/USDT$/, '')))).slice(0, 20);
     const prices = {}, klines = {};
+    const pinN = await bybitLinSet(env); // the venue pin (2026-11-12): same rule as the cron sweep
     for (const sym2 of syms) {
-      try { const pd2 = await fetchPriceCached(sym2); if (pd2 && +pd2.price > 0) { prices[sym2] = +pd2.price; prices[sym2 + 'USDT'] = +pd2.price; } } catch (e) {}
-      try { const lk = await leanKlines(sym2, '1', 30, env); if (lk && lk.length) klines[sym2] = lk; } catch (e) {}
+      const sf = await settleFeed(sym2, env, pinN);
+      if (sf.pd) { prices[sym2] = +sf.pd.price; prices[sym2 + 'USDT'] = +sf.pd.price; }
+      if (sf.lk) klines[sym2] = sf.lk;
     }
     let graceMin = 60, srvCandle = true; try { const oc = await opsCfg(env); graceMin = oc.nudgeGraceMin || 60; srvCandle = oc.srvCandle !== false; } catch (e) {}
     const r = await usersDO(env, '/tradesweepall', { onlyUid: uid, prices, klines, graceMin, srvCandle, pend: ids, promos: _prm });
@@ -21026,9 +21143,11 @@ async function handleTrade(url, request, env, ctx) {
     if (!orders.length) return jt({ ok: true, filled: [] });
     const syms = Array.from(new Set(orders.map(o => String(o.sym || '').toUpperCase()))).slice(0, 10);
     const prices = {}, klines = {}, states = {};
+    const pinO = await bybitLinSet(env); // a limit order on a Bybit symbol fills off Bybit's tape alone (2026-11-12)
     for (const s2 of syms) {
-      try { const pd2 = await fetchPriceCached(s2); if (pd2 && +pd2.price > 0) { prices[s2] = +pd2.price; if (pd2.state != null) states[s2] = String(pd2.state); } } catch (e) {}
-      try { const lk = await leanKlines(s2, '1', 30, env); if (lk && lk.length) klines[s2] = lk; } catch (e) {}
+      const sf = await settleFeed(s2, env, pinO);
+      if (sf.pd) { prices[s2] = +sf.pd.price; if (sf.pd.state != null) states[s2] = String(sf.pd.state); }
+      if (sf.lk) klines[s2] = sf.lk;
     }
     const fr = await fillLimitOrders(env, orders, prices, klines, _prm, states);
     return jt({ ok: true, filled: fr.filled.map(f => ({ id: f.id, tid: f.tid, sym: f.sym, side: f.side, px: f.px, ts: f.ts })), positions: fr.filled.map(f => f.pos), failed: fr.failed, expired: fr.expired });
@@ -28268,6 +28387,25 @@ export default {
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
     }
+    /* THE LIQUIDATION AUDIT DESK (2026-11-12): GET lists every server liquidation in the window (?days=30&uid=) with the row's
+       open time and liq price; POST {rows:[{uid,id}], why, apply} puts the named rows back to OPEN - a DRY RUN unless apply:true.
+       The judgement (did Bybit's own 1m tape touch the liq between the open and the close) is made by the caller against Bybit's
+       candles, never by this desk; it only lists and reopens. */
+    if (url.pathname === '/api/admin/liqaudit' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      if (request.method === 'POST') {
+        let b9 = {}; try { b9 = await request.json(); } catch (e) {}
+        const rows = Array.isArray(b9.rows) ? b9.rows.slice(0, 200) : []; const apply = b9.apply === true; const why = String(b9.why || 'liquidation Bybit never made (venue mismatch, 2026-11-12)').slice(0, 200);
+        const out = [];
+        for (const r of rows) { const uid9 = String(r.uid || ''), id9 = String(r.id || ''); if (!uid9 || !id9) { out.push({ uid: uid9, id: id9, error: 'uid_and_id' }); continue; }
+          try { out.push(await usersDO(env, '/tradereopen', { uid: uid9, id: id9, why, ref: 'liqaudit', dry: !apply, row: r.row || undefined, later: r.later || undefined })); } catch (e) { out.push({ uid: uid9, id: id9, error: String(e && e.message || e).slice(0, 80) }); } }
+        if (apply && out.some(o => o && o.ok)) { try { await tgAdmin(env, '<b>Liquidation audit</b>: ' + out.filter(o => o && o.ok).length + ' position' + (out.filter(o => o && o.ok).length === 1 ? '' : 's') + ' put back to OPEN (' + why.slice(0, 80) + ')', { kind: 'liq-reopen', sev: 'info' }); } catch (e) {} }
+        return J({ ok: true, apply, n: out.length, reopened: out.filter(o => o && o.ok && !o.dry).length, rows: out });
+      }
+      const days = Math.min(90, Math.max(1, +url.searchParams.get('days') || 30)); const uidQ = String(url.searchParams.get('uid') || '');
+      const r = await usersDO(env, '/liqlist', { since: Date.now() - days * 86400000, until: +url.searchParams.get('until') || Date.now() });
+      let rows = (r && r.rows) || []; if (uidQ) rows = rows.filter(x => x.uid === uidQ);
+      return J({ ok: true, days, n: rows.length, rows });
+    }
     if (url.pathname === '/api/admin/sweeptest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Bot API 2.3 E2E: run the server sweep for ONE e2e account with an INJECTED price (proves trailing stops / SL / liq deterministically; e2e-prefixed uids only so a real account can never be settled on a fake price)
       const su = url.searchParams.get('uid') || ''; if (!/^e2e/.test(su)) return J({ error: 'e2e_uid_only' }, 400);
       const prices = {}; for (const kv of String(url.searchParams.get('px') || '').split(',')) { const m = kv.split(':'); const s2 = String(m[0] || '').toUpperCase().replace(/USDT$/, ''); if (s2 && +m[1] > 0) { prices[s2] = +m[1]; prices[s2 + 'USDT'] = +m[1]; } }
@@ -29174,7 +29312,16 @@ export default {
     }
     if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // last srv-sweep summary (swept/checked/staleN) - observability for the candle-check rollout
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
-      return J({ last });
+      let probe = null;
+      if (url.searchParams.get('probe') === '1') { // is Bybit reachable from THIS isolate right now, and how fast (2026-11-12: the first pinned sweep held every Bybit symbol)
+        probe = {}; const one = async (name, u, ms) => { const t0 = Date.now(); try { const r = await fetchTO(u, { cf: { cacheTtl: 5 } }, ms, env, 'probe'); let len = 0, rc = null; try { const tx = await r.text(); len = tx.length; try { rc = JSON.parse(tx).retCode; } catch (e) {} } catch (e) {} probe[name] = { status: r.status, ms: Date.now() - t0, len, retCode: rc }; } catch (e) { probe[name] = { error: String(e && e.message || e).slice(0, 80), ms: Date.now() - t0 }; } };
+        await one('tickersAll', 'https://api.bybit.com/v5/market/tickers?category=linear', 8000);
+        await one('tickerBTC', 'https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT', 4000);
+        await one('klineBTC', 'https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=1&limit=30', 4000);
+        await one('klineINIT', 'https://api.bybit.com/v5/market/kline?category=linear&symbol=INITUSDT&interval=1&limit=30', 4000);
+        probe.pin = await bybitLinSet(env).then(p => p ? { n: p.n, down: p.down, px: !!p.px, age: Date.now() - p.ts } : null).catch(e => ({ error: String(e && e.message || e) }));
+      }
+      return J({ last, probe });
     }
     // Limit orders: what is resting, what the last sweep did, and (?run=1) run the fill engine NOW. Support asks
     // "why didn't my order fill" - this answers it without waiting for the */10 cron. ?prices=BTC:60000&kl=... lets
@@ -29196,8 +29343,9 @@ export default {
       const inj = url.searchParams.get('px') || ''; // "BTC:60000,ETH:2500" - an injected price, for the E2E only
       inj.split(',').filter(Boolean).forEach(p => { const [s, v] = p.split(':'); if (s && +v > 0) prices[s.toUpperCase()] = +v; });
       for (const s2 of Array.from(new Set(orders.map(o => String(o.sym || '').toUpperCase()))).slice(0, 20)) {
-        if (prices[s2] == null) { try { const pd2 = await fetchPriceCached(s2); if (pd2 && +pd2.price > 0) { prices[s2] = +pd2.price; if (pd2.state != null) states[s2] = String(pd2.state); } } catch (e) {} }
-        if (url.searchParams.get('nokl') !== '1') { try { const lk = await leanKlines(s2, '1', 30, env); if (lk && lk.length) klines[s2] = lk; } catch (e) {} }
+        const pinA = await bybitLinSet(env); const sfA = await settleFeed(s2, env, pinA);
+        if (prices[s2] == null && sfA.pd) { prices[s2] = +sfA.pd.price; if (sfA.pd.state != null) states[s2] = String(sfA.pd.state); }
+        if (url.searchParams.get('nokl') !== '1' && sfA.lk) klines[s2] = sfA.lk;
       }
       const fr = await fillLimitOrders(env, orders, prices, klines, await xpPromos(env).catch(() => []), states);
       return J({ ran: true, checked: fr.checked, filled: fr.filled, failed: fr.failed, expired: fr.expired, prices });
@@ -36974,6 +37122,74 @@ export class UserStore {
       // position.sl after this call got undefined, because the row says `stop`. v2 serves `api` instead; the
       // worker strips it for v1.
       return this.j({ ok: true, position: upd, api: this._j2bot(upd, null) });
+    }
+    /* A FALSE LIQUIDATION IS PUT BACK AS AN OPEN POSITION (2026-11-12, Ladyp03's ticket; owner: "posto je greska do nas,
+       slobodno svima vrati te likvidirane pozicije u aktivne"). The sweep settled Bybit-listed positions on OKX/Gate candles and
+       prices when Bybit was slow - a liquidation the Bybit tape never made. /liqlist = every server-settled liquidation in a
+       window (the audit reads Bybit's own candles for each and names the false ones); /tradereopen puts ONE row back exactly
+       as it was before the close: status open, the exit/pnl/closeTs gone, swT = now so the sweep judges it from this minute on
+       (if the market has since really reached its liq, the next pass liquidates it honestly - a liquidation at the later
+       time, booked now), the lifetime and season counters reversed by what the close added, the tradeev close row deleted so
+       every board and report stops counting it, a note on the row saying why. _syncJournal cannot do this - its merge keeps a
+       stored CLOSED row over an incoming open one by design - so the blob is written directly. Idempotent on the row. */
+    if (path === '/liqlist') {
+      const since = +b.since || (Date.now() - 30 * 86400000), until = +b.until || Date.now();
+      const rows = this.rows("SELECT user_id, ts, sym, side, lev, margin, pnl, roe, via, tid, src, entry, exit FROM tradeev WHERE kind='close' AND liq=1 AND ts>=? AND ts<=? AND user_id NOT LIKE 'e2e%' ORDER BY ts DESC LIMIT 4000", since, until);
+      const names = {}; try { for (const r of this.rows('SELECT id, username FROM users WHERE id IN (SELECT DISTINCT user_id FROM tradeev WHERE kind=\'close\' AND liq=1 AND ts>=? AND ts<=?)', since, until)) names[r.id] = r.username; } catch (e) {}
+      const out = [];
+      for (const r of rows) { const o = { uid: r.user_id, un: names[r.user_id] || null, ts: +r.ts, sym: r.sym, side: r.side, lev: +r.lev, margin: +r.margin, pnl: +r.pnl, via: r.via, tid: r.tid, src: r.src, entry: r.entry == null ? null : +r.entry, exit: r.exit == null ? null : +r.exit, openTs: null, liq: null, inBlob: false };
+        if (r.tid) { try { const j = this._loadJournal(r.user_id).filter(t => String(t.id) === String(r.tid))[0]; if (j) { o.inBlob = true; o.openTs = +j.ts || null; o.liq = +j.liq || null; if (o.entry == null) o.entry = +j.entry || null; if (o.exit == null) o.exit = +j.exit || null; o.swT = +j.swT || null; o.reopened = !!(j.reopened || j.corrected); o.stop = j.stop == null ? null : +j.stop; o.tp = j.tp == null ? null : +j.tp; o.qty = +j.qty || null; o.feeRate = +j.feeRate || null; o.fund = +j.fund || 0; } } catch (e) {} }
+        out.push(o); }
+      return this.j({ ok: true, n: out.length, rows: out });
+    }
+    if (path === '/tradereopen') {
+      const uid = String(b.uid || ''), id = String(b.id || ''), why = String(b.why || 'reopened by support').slice(0, 200), ref = String(b.ref || '').slice(0, 60), dry = !!b.dry;
+      if (!uid || !id) return this.j({ error: 'uid_and_id' }, 400);
+      let arr = this._loadJournal(uid); let t = arr.filter(x => String(x.id) === id)[0];
+      if (!t && b.row && typeof b.row === 'object') { // the journal keeps 100 rows and a heavy trader's liquidation has long been trimmed: rebuild it from the audit's copy of the tradeev row
+        const rw = b.row, en = +rw.entry, ex = +rw.exit, mg = +rw.margin, lv = +rw.lev, ots = +rw.openTs, cts = +rw.ts; const sym = String(rw.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+        if (!(en > 0 && ex > 0 && mg > 0 && lv >= 1 && ots > 1.6e12 && cts > ots) || !sym) return this.j({ error: 'bad_row' }, 400);
+        const side = rw.side === 'short' ? 'short' : 'long', fr = (+rw.feeRate > 0) ? +rw.feeRate : 0.00055, notional = Math.round(mg * lv * 100) / 100;
+        t = { id, ts: ots, sym, side, entry: en, stop: null, tp: null, lev: lv, qty: notional / en, notional, margin: mg, riskAmt: mg, feeOpen: Math.round(notional * fr * 1000) / 1000, liq: ex, mmr: 0.005, feeRate: fr, feeVenue: '', status: 'loss', pnl: -mg, src: (rw.src === 'bot' ? 'bot' : 'srv'), exit: ex, closeTs: cts, liquidated: true, sc: 1, reconstructed: true };
+        arr = arr.concat([t]); }
+      if (!t) return this.j({ error: 'not_found' });
+      if (t.status !== 'win' && t.status !== 'loss') return this.j({ error: 'already_open' });
+      if (t.src !== 'srv' && t.src !== 'bot') return this.j({ error: 'not_server_row' });
+      const margin = +t.margin || 0, pnl = +t.pnl, closeTs = +t.closeTs || 0, wasWin = t.status === 'win';
+      const prev = { status: t.status, exit: t.exit, pnl: t.pnl, closeTs: t.closeTs, liquidated: !!t.liquidated, sc: t.sc || 0 };
+      const later = (b.later && typeof b.later === 'object' && +b.later.ts > closeTs && +b.later.px > 0 && ['liq', 'stop', 'tp'].indexOf(String(b.later.kind)) >= 0) ? { kind: String(b.later.kind), ts: +b.later.ts, px: +b.later.px } : null;
+      if (dry) return this.j({ ok: true, dry: true, uid, id, sym: t.sym, side: t.side, lev: t.lev, margin, prev, later });
+      if (later) { // THE MARKET REACHED A LEVEL AFTER THE FALSE CLOSE: the row stays closed, re-booked at that moment and that level
+        const long = t.side !== 'short', dir = long ? 1 : -1, qty = +t.qty || 0, entry = +t.entry || 0, fr = +t.feeRate || 0, fund = +t.fund || 0;
+        let np = later.kind === 'liq' ? -margin : (qty * (later.px - entry) * dir - qty * (entry + later.px) * fr - fund); if (np < -margin) np = -margin; np = Math.round(np * 100) / 100;
+        const nw = np >= 0, prevWin = wasWin, dP = isFinite(pnl) ? np - pnl : 0;
+        const c = Object.assign({}, t, { status: nw ? 'win' : 'loss', exit: later.px, pnl: np, closeTs: later.ts, sc: 1, corrected: { ts: Date.now(), why, ref, prev, later } });
+        if (later.kind === 'liq') c.liquidated = true; else delete c.liquidated;
+        const next2 = arr.map(x => (String(x.id) === id ? c : x)).sort((a, c2) => ((+a.closeTs || +a.ts || 0) - (+c2.closeTs || +c2.ts || 0)));
+        let w2 = 0, l2 = 0, o2 = 0, p2 = 0; next2.forEach(e => { const st = e && e.status; if (st === 'win') w2++; else if (st === 'loss') l2++; else o2++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) p2 += p; });
+        sql.exec('UPDATE utrades SET json=?, n=?, wins=?, losses=?, opens=?, pnl=?, updated=? WHERE user_id=?', JSON.stringify(next2), w2 + l2, w2, l2, o2, p2, Date.now(), uid);
+        try { if (dP || nw !== prevWin) { sql.exec('UPDATE utrades SET life_wins=MAX(0,COALESCE(life_wins,0)+?), life_losses=MAX(0,COALESCE(life_losses,0)+?), life_pnl=COALESCE(life_pnl,0)+? WHERE user_id=? AND life_seed=1', (nw ? 1 : 0) - (prevWin ? 1 : 0), (nw ? 0 : 1) - (prevWin ? 0 : 1), dP, uid);
+          const sn2 = lbPeriodStart(closeTs || Date.now()); const sr2 = this.rows('SELECT s_season FROM utrades WHERE user_id=?', uid)[0]; if (sr2 && +sr2.s_season === sn2) sql.exec('UPDATE utrades SET s_wins=MAX(0,COALESCE(s_wins,0)+?), s_losses=MAX(0,COALESCE(s_losses,0)+?), s_pnl=COALESCE(s_pnl,0)+? WHERE user_id=?', (nw ? 1 : 0) - (prevWin ? 1 : 0), (nw ? 0 : 1) - (prevWin ? 0 : 1), dP, uid); } } catch (e) {}
+        try { sql.exec("UPDATE tradeev SET ts=?, exit=?, pnl=?, roe=?, liq=? WHERE user_id=? AND kind='close' AND tid=?", later.ts, later.px, np, margin > 0 ? np / margin * 100 : null, later.kind === 'liq' ? 1 : 0, uid, id); } catch (e) {}
+        try { this._opsEv(uid, 'reopen', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase() + ' ' + (+t.lev || 1) + 'x $' + Math.round(margin) + ' re-booked: ' + later.kind + ' at ' + later.px + ' ' + new Date(later.ts).toISOString().slice(0, 16) + ' - ' + why, '/paper-trade', { sym: t.sym, id, why, later }); } catch (e) {}
+        try { this._pushNotif(uid, 'profile', 'Your ' + String(t.sym || '').toUpperCase() + ' ' + (t.side === 'short' ? 'short' : 'long') + ' (' + (+t.lev || 1) + 'x) was closed by a liquidation that Bybit\'s own candles never reached at that time - our fault. We restored it and let it run on Bybit\'s real tape: it ' + (later.kind === 'liq' ? 'was liquidated later, at ' : later.kind === 'tp' ? 'hit its target later, at ' : 'hit its stop later, at ') + new Date(later.ts).toISOString().slice(5, 16).replace('T', ' ') + ' UTC' + (np !== pnl ? ' (' + (np >= 0 ? '+' : '') + np.toFixed(2) + ' instead of ' + (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ')' : '') + '.', '/paper-trade?trades=1', { push: true, title: 'Position re-booked' }); } catch (e) {}
+        return this.j({ ok: true, uid, id, sym: t.sym, side: t.side, lev: t.lev, margin, prev, later, pnl: np, rebooked: true });
+      }
+      const n = Object.assign({}, t); n.status = 'open'; delete n.exit; delete n.pnl; delete n.closeTs; delete n.liquidated; delete n.sc; delete n.pendClose; delete n.swGap;
+      n.swT = Date.now(); n.reopened = { ts: Date.now(), why, ref, prev };
+      const next = arr.map(x => (String(x.id) === id ? n : x)).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
+      let wins = 0, losses = 0, opens = 0, pSum = 0; next.forEach(e => { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pSum += p; });
+      sql.exec('UPDATE utrades SET json=?, n=?, wins=?, losses=?, opens=?, pnl=?, updated=? WHERE user_id=?', JSON.stringify(next), wins + losses, wins, losses, opens, pSum, Date.now(), uid);
+      // the lifetime accumulator and the season row: take back exactly what the close added (a seeded row only; an unseeded one re-seeds from the blob on its next sync)
+      try { if (isFinite(pnl)) { sql.exec('UPDATE utrades SET life_closes=MAX(0,COALESCE(life_closes,0)-1), life_wins=MAX(0,COALESCE(life_wins,0)-?), life_losses=MAX(0,COALESCE(life_losses,0)-?), life_pnl=COALESCE(life_pnl,0)-? WHERE user_id=? AND life_seed=1', wasWin ? 1 : 0, wasWin ? 0 : 1, pnl, uid);
+        const sn = lbPeriodStart(closeTs || Date.now()); const sr = this.rows('SELECT s_season FROM utrades WHERE user_id=?', uid)[0];
+        if (sr && +sr.s_season === sn) sql.exec('UPDATE utrades SET s_closes=MAX(0,COALESCE(s_closes,0)-1), s_wins=MAX(0,COALESCE(s_wins,0)-?), s_losses=MAX(0,COALESCE(s_losses,0)-?), s_pnl=COALESCE(s_pnl,0)-? WHERE user_id=?', wasWin ? 1 : 0, wasWin ? 0 : 1, pnl, uid); } } catch (e) {}
+      let evDel = 0; try { const r = sql.exec("DELETE FROM tradeev WHERE user_id=? AND kind='close' AND tid=?", uid, id); evDel = (r && r.rowsWritten) || 0; } catch (e) {}
+      if (!evDel) { try { sql.exec("DELETE FROM tradeev WHERE user_id=? AND kind='close' AND tid IS NULL AND sym=? AND ABS(ts-?)<5000", uid, String(t.sym || '').toUpperCase().slice(0, 12), closeTs); } catch (e) {} } // a row written before tradeev carried tid
+      try { sql.exec('INSERT INTO active_srv(user_id,ts) VALUES(?,?) ON CONFLICT(user_id) DO UPDATE SET ts=excluded.ts', uid, Date.now()); } catch (e) {}
+      try { this._opsEv(uid, 'reopen', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase() + ' ' + (+t.lev || 1) + 'x $' + Math.round(margin) + ' put back to OPEN - ' + why, '/paper-trade', { sym: t.sym, id, why }); } catch (e) {}
+      try { this._pushNotif(uid, 'profile', 'Your ' + String(t.sym || '').toUpperCase() + ' ' + (t.side === 'short' ? 'short' : 'long') + ' (' + (+t.lev || 1) + 'x) is OPEN again. It was closed by a liquidation that Bybit\'s own candles never reached - our fault, so the position is back exactly as it was, with its margin.', '/paper-trade?trades=1', { push: true, title: 'Position restored' }); } catch (e) {}
+      return this.j({ ok: true, uid, id, sym: t.sym, side: t.side, lev: t.lev, margin, prev, evDel });
     }
     if (path === '/delist') { // DELISTING SETTLEMENT (2026-09-12): close every open server/bot position on `sym` at its ENTRY price. P&L 0, fees waived, sc:1 final,
       // note on the ticket, NO tradeev row (boards / report / records untouched), no XP, webhook position.closed with reason 'delisted'. {sym, dry, reason}

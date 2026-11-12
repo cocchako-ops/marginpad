@@ -631,7 +631,7 @@ function __esT_seasonindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   /* ---- fold engine (2026-10-16): prose opens on a click and the choice is remembered per section ---- */
   (function(){var KEY='mp_sfold';var st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
     var signed=/(^|; )mp_li=1/.test(document.cookie);
-    function lab(sec){var fd=sec.classList.contains('fd'),b=sec.querySelector('.ftg');if(!b)return;b.setAttribute('aria-expanded',String(!fd));var l=b.querySelector('.ftl');if(l)l.textContent=fd?__esT_seasonindex('foldOpen','Read'):__esT_seasonindex('foldClose','Hide');}
+    function lab(sec){var fd=sec.classList.contains('fd'),b=sec.querySelector('.ftg');if(!b)return;b.setAttribute('aria-expanded',String(!fd));var l=b.querySelector('.ftl');if(l)l.textContent=fd?__esT_seasonindex('foldRead','Read'):__esT_seasonindex('foldClose','Hide');}
     [].forEach.call(document.querySelectorAll('.sec[data-fold]'),function(sec){var d=sec.getAttribute('data-fold'),want=st[sec.id]!=null?st[sec.id]:(d==='member'?(signed?'closed':'open'):d);sec.classList.toggle('fd',want==='closed');lab(sec);});
     try{document.documentElement.classList.remove('mp-fd-howto','mp-fd-rules');}catch(e){} /* the first-frame stamps hand over to the classes just set - same answer, no move */
     document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.ftg[data-fold]');if(!b)return;var sec=$(b.getAttribute('data-fold'));if(!sec)return;sec.classList.toggle('fd');lab(sec);st[sec.id]=sec.classList.contains('fd')?'closed':'open';try{localStorage.setItem(KEY,JSON.stringify(st));}catch(x){}
