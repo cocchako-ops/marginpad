@@ -1423,10 +1423,13 @@ function bkSelect(cls, opts, cur) {
       if (S.sel) { S.sel = null; showSel(); sched(); }
     });
 
-    cv.addEventListener('mousedown', function (ev) { var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, y: ev.clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; });
+    // S.view exists only once the first candles have mounted; a gesture before that (a phone tap on the skeleton)
+    // threw "Cannot read properties of null (reading 't0')" - measured 3x on /es/heatmap, 2026-11-12.
+    cv.addEventListener('mousedown', function (ev) { if (!S.view) return; var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, y: ev.clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; });
     window.addEventListener('mouseup', function () { if (S) S.drag = null; });
     cv.addEventListener('wheel', function (ev) {
       ev.preventDefault();
+      if (!S.view) return;
       var r = cv.getBoundingClientRect(), f = ev.deltaY > 0 ? 1.18 : 0.85;
       if (ev.shiftKey || ev.ctrlKey) { // price-axis zoom around the cursor
         var fy = Math.max(0, Math.min(1, (ev.clientY - r.top) / (S.plotH || r.height)));
@@ -1449,6 +1452,7 @@ function bkSelect(cls, opts, cur) {
     var tX = null, tP = null;
     function tDist(ev) { var a = ev.touches[0], b = ev.touches[1]; return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1; }
     cv.addEventListener('touchstart', function (ev) {
+      if (!S.view) return;
       var r = cv.getBoundingClientRect();
       if (ev.touches.length === 2) { tX = null; tP = { d: tDist(ev), t0: S.view.t0, t1: S.view.t1, fx: ((ev.touches[0].clientX + ev.touches[1].clientX) / 2 - r.left) / r.width }; }
       else if (ev.touches.length === 1) { tP = null; tX = { x: ev.touches[0].clientX - r.left, y: ev.touches[0].clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; }
