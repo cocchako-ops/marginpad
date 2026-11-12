@@ -1902,6 +1902,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
        market's price is stale by definition - it stopped when the exchange did - so the freshness test below was
        always the one that fired, and it is the one sentence that cannot be true in that state. */
     if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+__esT_home("marketIsClosedRight2",' market is closed right now.')));add._busy=false;return;}
+    /* THE CALENDAR GUARDRAIL (2026-11-12, feature #10): an opt-in switch in Advanced refuses a MARKET open inside the 30 minutes
+       before a macro print of impact 2+ (the measured 4-5x bar); a limit order is a level, not a bet on the print, and is untouched.
+       window.mpOpenGate (the appended guardrail block) returns the sentence or nothing. */
+    try{if(window.mpPlanType!=='limit'&&window.mpOpenGate){var _gs=window.mpOpenGate(sym);if(_gs){_say(_gs);add._busy=false;return;}}}catch(e){}
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say(__esT_home("waitingForTheLive2",'Waiting for the live price for ')+(sym||__esT_home("thisCoin",'this coin'))+__esT_home("tryAgainInA",' - try again in a second.'));add._busy=false;return;}
     entry=+pl.price;
     /* LIMIT MODE: everything below (size, notional, liq, the SL/TP side checks) is computed against the price this
@@ -5704,5 +5708,55 @@ window.mpSrvOpen=function(payload,ok,fail){
     document.addEventListener('pointerover', onHover, { passive: true });
     document.addEventListener('touchstart', onHover, { passive: true });
     window.__mpPrefetched = function () { return Object.keys(done); };
+  } catch (e) {}
+})();
+
+/* THE CALENDAR GUARDRAIL (2026-11-12, owner-approved feature #10). Measured on 2026-11-05 from our own clock: a scheduled macro
+   print moves BTC 4-5x its usual bar with no direction anybody can read off the chart. Two things, both from ONE calendar read per
+   page (window.__mpCalP, the memo the homepage tape already shares): a countdown chip in the chart head from 60 minutes before an
+   impact-2+ print ("FOMC rate decision in 28 min", amber inside 30), and an OPT-IN switch in Advanced (uprefs dev:calgate on the
+   account through /api/push/device, mp_calgate on the device) that makes add() refuse a MARKET open inside the 30 minutes before
+   it, naming the print and the minutes. A limit order is a level, not a bet on the print, and is never refused. All-day entries
+   have no moment to count down to and never count. */
+(function () {
+  try {
+    if (window.__mpCalGate) return; window.__mpCalGate = 1;
+    var WIN_CHIP = 60 * 60000, WIN_GATE = 30 * 60000, AFTER = 15 * 60000, MIN_IMPACT = 2, KEY = 'mp_calgate';
+    var list = null, li = false; try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {}
+    var T = function (k, en) { try { return __esT_home(k, en); } catch (e) { return en; } };
+    function on() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+    function setOn(v, fromServer) { try { localStorage.setItem(KEY, v ? '1' : '0'); } catch (e) {} var c = document.getElementById('planCalGate'); if (c) c.checked = !!v; if (!fromServer && li) { try { fetch('/api/push/device', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: 'calgate', v: v ? 1 : 0 }), keepalive: true }).catch(function () {}); } catch (e) {} } }
+    function load(cb) { if (list) { cb && cb(list); return; } (window.__mpCalP || (window.__mpCalP = fetch('/api/calendar').then(function (r) { return r.json(); }))).then(function (d) { list = (d && d.events) || []; cb && cb(list); }).catch(function () { list = []; cb && cb(list); }); }
+    function pick(now, win) { var best = null; (list || []).forEach(function (e) { if (!e || e.allday || !(e.impact >= MIN_IMPACT) || !(e.ts > 0)) return; var d = e.ts - now; if (d > win || d < -AFTER) return; if (!best) { best = e; return; } var bd = best.ts - now; if (d >= 0 && (bd < 0 || d < bd)) best = e; else if (d < 0 && bd < 0 && d > bd) best = e; }); return best; }
+    function mins(e, now) { return Math.round((e.ts - now) / 60000); }
+    function lead(e, now) { var m = mins(e, now); if (m > 1) return T('calIn', 'in {n} min').replace('{n}', m); if (m >= 0) return T('calStarting', 'starting'); return T('calNow', 'now'); }
+    /* the gate: a sentence when a market open must wait, nothing otherwise - read by add() through window.mpOpenGate */
+    window.mpOpenGate = function () { try { if (!on() || !list) return ''; var now = Date.now(), e = pick(now, WIN_GATE); if (!e) return ''; var m = mins(e, now); if (m < 0) return ''; return T('calGateMsg', '{t} {lead} - the macro guardrail is on: no market entries in the 30 minutes before it. A limit order is still allowed; switch the guardrail off in Advanced to trade anyway.').replace('{t}', String(e.title || 'Macro print')).replace('{lead}', lead(e, now)); } catch (x) { return ''; } };
+    window.__mpCalGateDbg = { pick: function (now, win) { return pick(now || Date.now(), win || WIN_GATE); }, set: function (ls) { list = ls; }, on: on };
+    /* the chip in the chart head */
+    function chip() {
+      var head = document.querySelector('.ptc-head'); if (!head) return;
+      var el = document.getElementById('ptCalChip'), now = Date.now(), e = pick(now, WIN_CHIP);
+      if (!e) { if (el) el.remove(); return; }
+      if (!el) { el = document.createElement('a'); el.id = 'ptCalChip'; el.className = 'ptc-cal'; el.href = '/calendar/'; el.title = T('calChipT', 'Scheduled macro print - open the calendar'); head.appendChild(el); }
+      var m = mins(e, now), soon = m >= 0 && m <= 30;
+      el.classList.toggle('soon', soon); el.classList.toggle('live', m < 0);
+      var txt = '<i></i><b>' + String(e.title || '').replace(/[<>&]/g, '') + '</b> <span>' + lead(e, now) + '</span>' + (soon && on() ? ' <em>' + T('calGateOn', 'guardrail on') + '</em>' : '');
+      if (el.getAttribute('data-h') !== txt) { el.innerHTML = txt; el.setAttribute('data-h', txt); }
+    }
+    var css = document.createElement('style');
+    css.textContent = ".ptc-cal{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:3px 9px 3px 7px;border-radius:99px;border:1px solid rgba(194,246,74,.35);background:rgba(194,246,74,.07);color:#dfe4ec;font:500 11.5px/1.2 'Familjen Grotesk',system-ui,sans-serif;text-decoration:none;white-space:nowrap;vertical-align:middle}.ptc-cal i{width:6px;height:6px;border-radius:50%;background:#c2f64a}.ptc-cal b{font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis}.ptc-cal span{color:#aab3bf;font-family:'Space Mono',monospace;font-size:10.5px}.ptc-cal em{font-style:normal;color:#ffb347;font-size:10px;letter-spacing:.04em;text-transform:uppercase}.ptc-cal.soon{border-color:rgba(255,179,71,.55);background:rgba(255,179,71,.09)}.ptc-cal.soon i{background:#ffb347}.ptc-cal.live i{background:#ff5a4d}@media(max-width:720px){.ptc-cal{margin-left:6px;padding:2px 7px}.ptc-cal b{max-width:92px}}";
+    document.head.appendChild(css);
+    /* the switch in Advanced: device first, the account's answer wins when signed in */
+    function wireSwitch() {
+      var c = document.getElementById('planCalGate'); if (!c || c.__mpCal) return; c.__mpCal = 1;
+      c.checked = on();
+      c.addEventListener('change', function () { setOn(c.checked); chip(); });
+      if (li) { try { fetch('/api/push/device', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { var v = j && j.prefs && j.prefs.calgate && j.prefs.calgate.v; if (v === 1 || v === 0 || v === true || v === false) setOn(!!+v, true); else if (on()) setOn(true); }).catch(function () {}); } catch (e) {} }
+    }
+    function tick() { chip(); wireSwitch(); }
+    load(function () { tick(); setInterval(function () { if (!document.hidden) tick(); }, 30000); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && list) tick(); });
+    setTimeout(wireSwitch, 1500); setTimeout(wireSwitch, 5000);
   } catch (e) {}
 })();
