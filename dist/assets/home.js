@@ -1888,7 +1888,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(d.catalysts){o+='<div class="jrw-sec">'+MT('whyMoved','What moved it')+'</div>';
       if(d.catalysts.items&&d.catalysts.items.length){o+='<div class="jrw-cx">';d.catalysts.items.forEach(function(c){var a=!!c.url;o+='<'+(a?'a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer"':'div')+' class="jrw-c"><span class="t">'+_wt(c.ts)+'</span><span class="k">'+esc(c.kind||'')+(c.named?'':' · '+MT('whyMarket','market-wide'))+'</span><span class="h">'+esc(c.title)+'</span></'+(a?'a':'div')+'>';});o+='</div>';}
       else o+='<div class="jrw-note">'+MT('whyNoCxA','No catalyst named')+' '+esc(t.sym||'')+' '+MT('whyNoCxB','in the two hours before or during the trade - the move was the market on its own.')+'</div>';}
-    o+='<div class="jrw-lesson" hidden></div>';
+    o+=(d.lesson&&d.lesson.id)?'<a class="jrw-lesson" href="/academy/?lesson='+esc(d.lesson.id)+'"><span>'+MT('whyLessonA','One lesson for this')+'</span><b>'+esc(d.lesson.t)+'</b></a>':'<div class="jrw-lesson" hidden></div>'; /* feature #13: the autopsy ends in one Academy lesson */
     o+='<div class="jrw-foot">'+(d.source==='server'?MT('whySrvRec','From the server record of this trade.'):MT('whyDevRec','From the record on this device.'))+(d.interval?' · '+d.interval+'m '+MT('whyCandles','candles'):'')+(d.covered===false?' · '+MT('whyPartialBars','the candles do not reach back to the open'):'')+'</div>';
     return o;}
   function jrWhy(e){

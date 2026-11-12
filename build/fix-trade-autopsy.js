@@ -46,7 +46,7 @@ const BLOCK = `  ${MARK} THE TRADE AUTOPSY SHEET (2026-11-12, feature #1) - MIRR
     if(d.catalysts){o+='<div class="jrw-sec">'+MT('whyMoved','What moved it')+'</div>';
       if(d.catalysts.items&&d.catalysts.items.length){o+='<div class="jrw-cx">';d.catalysts.items.forEach(function(c){var a=!!c.url;o+='<'+(a?'a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer"':'div')+' class="jrw-c"><span class="t">'+_wt(c.ts)+'</span><span class="k">'+esc(c.kind||'')+(c.named?'':' · '+MT('whyMarket','market-wide'))+'</span><span class="h">'+esc(c.title)+'</span></'+(a?'a':'div')+'>';});o+='</div>';}
       else o+='<div class="jrw-note">'+MT('whyNoCxA','No catalyst named')+' '+esc(t.sym||'')+' '+MT('whyNoCxB','in the two hours before or during the trade - the move was the market on its own.')+'</div>';}
-    o+='<div class="jrw-lesson" hidden></div>';
+    o+=(d.lesson&&d.lesson.id)?'<a class="jrw-lesson" href="/academy/?lesson='+esc(d.lesson.id)+'"><span>'+MT('whyLessonA','One lesson for this')+'</span><b>'+esc(d.lesson.t)+'</b></a>':'<div class="jrw-lesson" hidden></div>'; /* feature #13: the autopsy ends in one Academy lesson */
     o+='<div class="jrw-foot">'+(d.source==='server'?MT('whySrvRec','From the server record of this trade.'):MT('whyDevRec','From the record on this device.'))+(d.interval?' · '+d.interval+'m '+MT('whyCandles','candles'):'')+(d.covered===false?' · '+MT('whyPartialBars','the candles do not reach back to the open'):'')+'</div>';
     return o;}
   function jrWhy(e){
@@ -82,6 +82,7 @@ const CSS = `/* My Trades - the trade autopsy sheet, "Why" (2026-11-12, feature 
 .jrw-liq{display:flex;flex-wrap:wrap;gap:6px 14px;font:12px/1.4 'Space Mono',monospace;color:#aab4be;padding:8px 10px;border:1px solid #1f262f;border-radius:9px;background:#0a0c0f}.jrw-liq .l b{color:#ff7b72}.jrw-liq .s b{color:#34d99a}.jrw-liq .n{flex-basis:100%;font-family:'Familjen Grotesk',sans-serif;font-size:11px;color:#8a95a3}
 .jrw-cx{display:flex;flex-direction:column;gap:5px}.jrw-c{display:grid;grid-template-columns:auto auto 1fr;gap:4px 10px;align-items:baseline;padding:8px 10px;border:1px solid #1f262f;border-radius:9px;background:#0a0c0f;color:#dfe4ec;text-decoration:none;font-size:12px;line-height:1.35}.jrw-c .t{font:11px/1 'Space Mono',monospace;color:#8a95a3}.jrw-c .k{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#c2f64a}.jrw-c .h{grid-column:1/-1}a.jrw-c:hover{border-color:#3a4350}
 .jrw-foot{font-size:11px;color:#5b6470;margin-top:12px;line-height:1.45}
+a.jrw-lesson{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;border:1px solid rgba(194,246,74,.35);border-radius:10px;background:rgba(194,246,74,.06);color:#dfe4ec;text-decoration:none;font-size:12.5px}a.jrw-lesson span{color:#c2f64a;font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;flex:0 0 auto}a.jrw-lesson b{font-weight:600;color:#fff;text-align:right}a.jrw-lesson:hover{border-color:#c2f64a}
 .pp-btns button.wy{color:#c2f64a;border-color:rgba(194,246,74,.3)}
 @media(max-width:480px){.jrw-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1.3fr) minmax(0,.7fr) minmax(0,.9fr);font-size:11px;padding:7px 8px}.jrw-tl .v{font-size:15px}}
 `;

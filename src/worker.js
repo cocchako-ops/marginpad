@@ -9187,6 +9187,28 @@ function skillScore(rows, opens) {
   const score = have.length >= 2 ? Math.round(have.reduce((a, k) => a + parts[k].v, 0) / have.length * 4) : null; // scaled to 100 over the parts that exist
   return { score, parts, measured: have.length, n: rows.length };
 }
+/* ONE LESSON AFTER A LOSS (2026-11-12, owner-approved feature #13). A report finding and a trade autopsy each end in at most ONE
+   Academy lesson. `ACAD_LESSON_T` is the handful of lessons these two surfaces may point at (ids as in ACAD_COURSES / #acadData -
+   `academy-start-e2e` derives counts from that table; this one only names titles for links). `/academy/?lesson=<id>` opens an
+   unlocked lesson and scrolls to a locked one. The autopsy rule is ordered: the most specific thing the trade itself shows wins. */
+const ACAD_LESSON_T = { l2: 'Leverage: trading with borrowed size', l3: 'Liquidation: the point of no return', l11: 'The leverage myths', ft4: 'The stop-loss, placed first', r1: 'Position sizing: the #1 skill', r2: 'Stop-loss and take-profit, placed like a pro', r3: 'Risk:reward - being wrong profitably', r8: 'A+ setups: the skill of skipping', r12: 'Review your journal like a coach', m5: 'Liquidation cascades: why crashes overshoot', mm4: 'Never Get Ambushed by News', py1: 'Your Brain on Leverage', tr8: 'Where the level puts your stop' };
+const LESSON_MAP = { lev: 'l2', coin: 'r8', side: 'r12', liq: 'l3', hold: null, thin: null };
+function lessonOf(id, why) { return (id && ACAD_LESSON_T[id]) ? { id, t: ACAD_LESSON_T[id], href: '/academy/?lesson=' + id, why: why || null } : null; }
+function lessonFor(k) { return lessonOf(LESSON_MAP[k], k); }
+function autopsyLesson(t, s, d) {
+  s = s || {}; d = d || {};
+  const lost = t.pnl != null ? +t.pnl < 0 : (s.movePct != null ? s.movePct < 0 : false);
+  if (t.liquidated) return lessonOf('l3', 'liquidated');
+  if (!lost) return (s.giveBackShare != null && s.giveBackShare >= 0.5 && s.mfePct != null && s.mfePct >= 0.5) ? lessonOf('r2', 'gave_back') : null; // a clean win teaches nothing here
+  if (!(t.stop > 0)) return lessonOf('ft4', 'no_stop');
+  if (s.yourStop && s.yourStop.held === false && s.mfePct != null && s.yourStop.pct > 0 && s.mfePct >= 2 * s.yourStop.pct) return lessonOf('r2', 'stopped_then_went'); // stopped out, then it went your way twice the stop distance
+  if (s.yourStop && s.yourStop.atr != null && s.yourStop.atr < 1 && s.yourStop.held === false) return lessonOf('tr8', 'stop_inside_range');
+  if (d.catalysts && d.catalysts.items && d.catalysts.items.some(c => c && c.kind === 'macro')) return lessonOf('mm4', 'macro_in_window');
+  if (d.liq && d.liq.n != null && Math.max(+d.liq.longUsd || 0, +d.liq.shortUsd || 0) >= 5e6 && (t.long ? (+d.liq.longUsd >= +d.liq.shortUsd) : (+d.liq.shortUsd >= +d.liq.longUsd))) return lessonOf('m5', 'cascade_against');
+  if (+t.lev >= 100) return lessonOf('l11', 'lev_100');
+  if (+t.lev >= 25 && +s.heldMs < 3 * 60000) return lessonOf('py1', 'fast_high_lev');
+  return lessonOf('r3', 'loss');
+}
 function reportFindings(rep) {
   const f = [], T = rep.total || {};
   if (!T.n) return f;
@@ -9220,6 +9242,7 @@ function reportFindings(rep) {
     const m = T.holdMedianMin;
     f.push({ k: 'hold', n: T.holdN, text: 'Median hold: ' + (m < 60 ? m + ' minutes' : m < 1440 ? (Math.round(m / 6) / 10) + ' hours' : (Math.round(m / 144) / 10) + ' days') + ' across ' + T.holdN + ' trades.' });
   }
+  for (const x of f) { const l = lessonFor(x.k); if (l) x.lesson = l; } // feature #13: a finding ends in one lesson (hold is a measurement, not a fault - none)
   return f;
 }
 // Which of this trader's levels are close enough to be worth saying out loud. Pure, so the E2E can exercise the
@@ -10283,7 +10306,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b5bdb7d0" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8c9bdcd8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -20974,7 +20997,7 @@ async function tradeAutopsy(env, t) {
       .map(it => ({ ts: +it.ts_src || +it.ts_seen || 0, title: String(it.title || '').slice(0, 160), url: /^https?:\/\//.test(String(it.url || '')) ? String(it.url).slice(0, 400) : '', kind: it.kind || '', source: it.source || '', score: +it.score || 0, named: String(it.syms || '').toUpperCase().split(/[,\s]+/).indexOf(sym) >= 0 }));
     catalysts = { items: mine, seen: cj.items.length };
   }
-  return { trade: { sym, side: t.long ? 'long' : 'short', entry: t.entry, exit: t.exit || null, lev: t.lev, margin: t.margin, pnl: t.pnl, roe: (t.pnl != null && t.margin > 0) ? t.pnl / t.margin * 100 : null, ts: t.ts, cts: t.cts, stop: t.stop || null, fee: t.fee, fund: t.fund, liquidated: !!t.liquidated, via: t.via, src: t.src, cls }, interval: iv, covered, bars: draw.map(b => [b.t, b.o, b.h, b.l, b.c]), stats, liq, catalysts, now };
+  return { trade: { sym, side: t.long ? 'long' : 'short', entry: t.entry, exit: t.exit || null, lev: t.lev, margin: t.margin, pnl: t.pnl, roe: (t.pnl != null && t.margin > 0) ? t.pnl / t.margin * 100 : null, ts: t.ts, cts: t.cts, stop: t.stop || null, fee: t.fee, fund: t.fund, liquidated: !!t.liquidated, via: t.via, src: t.src, cls }, interval: iv, covered, bars: draw.map(b => [b.t, b.o, b.h, b.l, b.c]), stats, liq, catalysts, lesson: autopsyLesson(t, stats, { liq, catalysts }), now };
 }
 async function handleTrade(url, request, env, ctx) {
   const T0 = Date.now(), marks = [];
@@ -38811,6 +38834,18 @@ export class UserStore {
         tradesShown = lClosed + sbO; // trades OPENED this season = season closes + positions opened this season that are still open (an old open position is not a season trade; owner 2026-09-04)
       }
       const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
+      /* THE PUBLIC CURVE (2026-11-12, owner-approved feature #9): thirty UTC days of realized P&L as a daily cumulative line, from the
+         SERVER-SETTLED closes alone (a row synced from a browser is the browser's word, so `via='client'` stays off it) and never the
+         RNG class. Under three closes nothing is drawn - a line through two points is not a record. */
+      let curve = null;
+      try {
+        const from30 = Math.floor(now / 86400000) * 86400000 - 29 * 86400000;
+        const cr = this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND COALESCE(via,'')<>'client' AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY ts ASC LIMIT 5000", u.id, from30);
+        const days = []; for (let i = 0; i < 30; i++) days.push([from30 + i * 86400000, 0, 0]);
+        let cn = 0; for (const r of cr) { const i = Math.floor((+r.ts - from30) / 86400000); if (i >= 0 && i < 30 && isFinite(+r.pnl)) { days[i][1] += +r.pnl; days[i][2]++; cn++; } }
+        let acc = 0; const cum = days.map(d => { acc += d[1]; return +acc.toFixed(2); });
+        curve = { from: from30, days: days.map(d => [d[0], +d[1].toFixed(2), d[2]]), cum, n: cn, serverOnly: true };
+      } catch (e) { curve = null; }
       // viewer-relative relationship (mutual follow = "friends") - only when a signed-in viewer is passed
       const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
       let iFollow = false, followsMe = false, mutual = false, requested = false;
@@ -38827,7 +38862,7 @@ export class UserStore {
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
-        sqbadge: u.sqbadge || '', followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
+        curve, sqbadge: u.sqbadge || '', followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
       const rows = this.rows('SELECT id, username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
