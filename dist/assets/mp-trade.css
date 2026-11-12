@@ -40,6 +40,20 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .jr-tabs{display:inline-flex;gap:3px;background:#0a0c0f;border:1px solid var(--line-bright);border-radius:9px;padding:3px;margin:4px 0 14px;}
 .jr-tabs button{font-size:12px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:8px 13px;cursor:pointer;transition:.12s;white-space:nowrap;}
 .jr-tabs button.on{background:rgba(255,255,255,.1);color:#fff;}
+/* My Trades - the Risk tab (2026-11-12, feature #3; build/fix-jr-risk.js writes this into home.css AND mp-trade.css) */
+.jr-risk{display:block}.jr-rk-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.jr-rk-t .v{font-size:17px;line-height:1.15;word-break:break-word}.jr-rk-t .l{margin-top:5px}
+.jr-rk-note{font:12.5px/1.45 'Familjen Grotesk',sans-serif;color:#aab4be;padding:9px 11px;border:1px solid var(--line-bright,#2a313c);border-radius:10px;margin:0 0 10px;background:rgba(255,255,255,.03)}
+.jr-rk-note.warn{color:#ffb4ad;border-color:rgba(255,123,114,.35);background:rgba(255,123,114,.08)}.jr-rk-note.corr{color:#f6d98a;border-color:rgba(240,195,90,.35);background:rgba(240,195,90,.08)}
+.jr-rk-h,.jr-rk-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.5fr) minmax(0,.9fr) minmax(0,.9fr) minmax(0,.7fr);gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.jr-rk-h{font:700 10px/1 'Familjen Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#5b6470;padding:4px 10px 6px}
+.jr-rk-row{font:12.5px/1.3 'Space Mono',monospace;color:#dfe4ec;padding:9px 10px;border:1px solid var(--line-bright,#2a313c);border-radius:10px;margin:0 0 6px;background:var(--panel-2,#0f1216)}
+.jr-rk-row .c{display:flex;align-items:center;gap:6px;min-width:0}.jr-rk-row .c b{font:700 13px/1 'Familjen Grotesk',sans-serif;color:#fff}.jr-rk-row .c i{font:700 9px/1 'Familjen Grotesk',sans-serif;letter-spacing:.04em;text-transform:uppercase;padding:3px 5px;border-radius:4px;font-style:normal}
+.jr-rk-row .c i.long{color:#34d99a;background:rgba(52,217,154,.14)}.jr-rk-row .c i.short{color:#ff7b72;background:rgba(255,123,114,.14)}.jr-rk-row .c i.both{color:#f0c35a;background:rgba(240,195,90,.14)}.jr-rk-row .c em{font:11px/1 'Familjen Grotesk',sans-serif;color:#5b6470;font-style:normal}
+.jr-rk-row .n{display:flex;flex-direction:column;gap:5px;min-width:0}.jr-rk-row .n b{font-weight:400}.jr-rk-bar{display:block;height:3px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}.jr-rk-bar span{display:block;height:100%;background:#c2f64a;border-radius:2px}
+.jr-rk-row .k{color:#ff7b72}.jr-rk-row .q.hot{color:#ff7b72;font-weight:700}
+.jr-rk-foot{font:11px/1.5 'Familjen Grotesk',sans-serif;color:#5b6470;padding:8px 10px 2px}
+@media(max-width:480px){.jr-rk-h span:nth-child(3),.jr-rk-row .m{display:none}.jr-rk-h,.jr-rk-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1.4fr) minmax(0,.9fr) minmax(0,.7fr)}.jr-rk-row{font-size:11.5px;padding:8px}}
+
 /* My Trades filters (2026-10-27) - the bar under the tabs, the panel of chips, the coin box */
 .jr-fb{margin:-8px 0 12px}.jr-fh{display:flex;align-items:center;gap:8px;min-height:30px}
 .jr-ft{display:inline-flex;align-items:center;gap:6px;background:#0a0c0f;border:1px solid var(--line-bright,#2a313c);border-radius:8px;padding:6px 10px;color:#aab3bf;font:700 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;transition:.12s;flex:none}

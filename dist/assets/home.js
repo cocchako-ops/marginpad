@@ -1849,6 +1849,34 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     return '<div class="jr-fb on">'+head+body+'</div>';}
   document.addEventListener('input',function(ev){var t=ev.target;if(!t||t.id!=='jrFq'||!t.closest('#jrList'))return;jrF.q=String(t.value||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,12);jrFSave();jrShow=50;jrFFocus=true;clearTimeout(jrFT);
     jrFT=setTimeout(function(){render();var i=document.getElementById('jrFq');if(i&&jrFFocus){i.focus();try{var L=i.value.length;i.setSelectionRange(L,L);}catch(e){}}jrFFocus=false;},180);});
+  /* @JRRISK THE RISK TAB (2026-11-12, feature #3) - MIRRORED in home.js and mp-trade.js by build/fix-jr-risk.js; edit the patcher, not this copy. */
+  function jrRisk(open){
+    var out='<div class="jr-risk" data-n="'+open.length+'">';
+    if(!open.length)return out+'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg><span>'+MT('rkNone','No open positions - nothing at risk right now.')+'</span></div></div>';
+    var by={},tm=0,tn=0,tu=0,near=null,near3=0,past=0,cl=0,cs=0,cn={},cN=0;
+    open.forEach(function(e){var m=metrics(e);var mg=m.margin>0?m.margin:0;var nt=(e.qty!=null&&isFinite(e.qty)&&m.live>0)?Math.abs(+e.qty)*m.live:mg*m.lev;var s=String(e.sym||'-').toUpperCase();
+      var r=by[s]||(by[s]={sym:s,l:0,s:0,m:0,n:0,u:0,liq:null});if(m.long)r.l+=nt;else r.s+=nt;r.m+=mg;r.n++;r.u+=(m.pnl||0);
+      if(isFinite(m.liqDist)){if(r.liq==null||m.liqDist<r.liq)r.liq=m.liqDist;if(near==null||m.liqDist<near.d)near={d:m.liqDist,sym:s,long:m.long,lev:m.lev};if(m.liqDist<=0)past++;else if(m.liqDist<3)near3++;}
+      tm+=mg;tn+=nt;tu+=(m.pnl||0);
+      var crypto=window.mpAssetClass?window.mpAssetClass(s)==='crypto':true;if(crypto){if(m.long)cl+=mg;else cs+=mg;cn[s]=1;cN++;}});
+    var rows=Object.keys(by).map(function(k){return by[k];}).sort(function(a,b){return (b.l+b.s)-(a.l+a.s);});
+    var cost3=rows.reduce(function(a,r){return a+Math.abs(r.l-r.s)*0.03;},0);
+    function tile(v,l,c){return '<div class="jr-stat jr-rk-t"><div class="v"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
+    var nearTxt=near?(near.sym+' '+(near.long?MT('rkLong','long'):MT('rkShort','short'))+' '+Math.round(near.lev)+'x · '+(near.d<=0?MT('rkAtLiq','at the level'):Math.abs(near.d).toFixed(near.d<10?2:1)+'% '+MT('rkAway','away'))):'-';
+    var nearCol=near?(near.d<=0||near.d<3?'#ff7b72':near.d<8?'#f0c35a':'#34d99a'):'';
+    out+='<div class="jr-rk-tiles">'+tile(money(tm),MT('rkMargin','Margin in use'))+tile(money(tn),MT('rkNotional','Open exposure'))+tile(nearTxt,MT('rkNearest','Nearest liquidation'),nearCol)+tile('-'+money(cost3).replace('-',''),MT('rkCost3','A 3% move against every net side'),'#ff7b72')+'</div>';
+    if(past>0)out+='<div class="jr-rk-note warn">'+past+' '+(past===1?MT('rkPast1','position is at its liquidation level - the server is settling it.'):MT('rkPastN','positions are at their liquidation level - the server is settling them.'))+'</div>';
+    else if(near3>0)out+='<div class="jr-rk-note warn">'+near3+' '+(near3===1?MT('rkNear1','position is inside 3% of its liquidation.'):MT('rkNearN','positions are inside 3% of their liquidation.'))+'</div>';
+    var cc=cl+cs,coins=Object.keys(cn).length;
+    if(cc>0&&cN>=2&&coins>=2){var big=Math.max(cl,cs),pct=Math.round(big/cc*100),sideW=cl>=cs?MT('rkLong','long'):MT('rkShort','short');
+      if(pct>=60)out+='<div class="jr-rk-note corr">'+pct+'% '+MT('rkCorrA','of your margin is')+' '+sideW+' '+MT('rkCorrB','crypto across')+' '+coins+' '+MT('rkCorrC','coins - they move together, so one BTC move hits all of them at once.')+'</div>';
+      else out+='<div class="jr-rk-note">'+MT('rkBal','Longs')+' '+Math.round(cl/cc*100)+'% / '+MT('rkBalS','shorts')+' '+Math.round(cs/cc*100)+'% '+MT('rkBalB','of your crypto margin across')+' '+coins+' '+MT('rkCoins','coins')+'.</div>';}
+    out+='<div class="jr-rk-h"><span>'+MT('rkCoin','Coin')+'</span><span>'+MT('rkNet','Net exposure')+'</span><span>'+MT('rkMarginS','Margin')+'</span><span>'+MT('rk3','3% costs')+'</span><span>'+MT('rkLiq','Liq')+'</span></div>';
+    rows.forEach(function(r){var net=r.l-r.s,side=(r.l>0&&r.s>0)?'both':(net>=0?'long':'short'),share=tn>0?Math.round((r.l+r.s)/tn*100):0;
+      out+='<div class="jr-rk-row" data-sym="'+esc(r.sym)+'"><span class="c"><b>'+esc(r.sym)+'</b><i class="'+side+'">'+(side==='both'?MT('rkBoth','both'):(side==='long'?MT('rkLong','long'):MT('rkShort','short')))+'</i>'+(r.n>1?'<em>x'+r.n+'</em>':'')+'</span><span class="n"><b>'+money(Math.abs(net))+'</b><span class="jr-rk-bar"><span style="width:'+share+'%"></span></span></span><span class="m">'+money(r.m)+'</span><span class="k">-'+money(Math.abs(net)*0.03).replace('-','')+'</span><span class="q'+(r.liq!=null&&r.liq<3?' hot':'')+'">'+(r.liq==null?'-':(r.liq<=0?MT('rkAtLiq','at the level'):Math.abs(r.liq).toFixed(r.liq<10?2:1)+'%'))+'</span></div>';});
+    out+='<div class="jr-rk-foot">'+MT('rkFoot','Measured from your open positions at the live price. Exposure is position size (margin x leverage); a coin held both ways counts its net.')+'</div>';
+    return out+'</div>';
+  }
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -1867,7 +1895,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +stat(wr==null?'-':wr+'%',MT('jWinRate',__esT_home("winRate",'Win rate')))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var ords=ordersNow();
-    var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
+    var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));if(jrTab==='risk')rows=[]; /* the Risk tab is a reading of the OPEN rows, drawn by jrRisk() - it lists nothing */
     var _all=rows.length;if(jrTab!=='orders')rows=jrApply(rows);
     var _ord=jrOrder(rows),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
     /* The partner line belongs on the newest WINNING close. It was pinned to index 0, so one losing trade after a
@@ -1875,11 +1903,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
        (owner 2026-09-09: "put the ads back on the winning tickets"). MIRROR in mp-trade.js. */
     _glIdx=-1;
     if(jrTab!=='orders'&&jrTab!=='open')for(var _gi=0;_gi<_vis.length;_gi++){if(_vis[_gi]&&(+_vis[_gi].pnl)>0){_glIdx=_gi;break;}}
-    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):(jrTab!=='orders'&&_all)?'':'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone',__esT_home("noOrdersWaitingPlace",'No orders waiting - place one from Paper Trade with the Limit tab.')):(jrTab==='open'?MT('jNoOpen',__esT_home("noOpenPositionsOpen",'No open positions - open one from Paper Trade.')):MT('jNoClosed',__esT_home("noClosedTradesYet",'No closed trades yet.'))))+'</span></div>';
+    var cards=jrTab==='risk'?jrRisk(open):rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):(jrTab!=='orders'&&_all)?'':'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone',__esT_home("noOrdersWaitingPlace",'No orders waiting - place one from Paper Trade with the Limit tab.')):(jrTab==='open'?MT('jNoOpen',__esT_home("noOpenPositionsOpen",'No open positions - open one from Paper Trade.')):MT('jNoClosed',__esT_home("noClosedTradesYet",'No closed trades yet.'))))+'</span></div>';
     if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote',__esT_home("theseOrdersLiveOn",'These orders live on this device and fill only while the page is open. Sign in and they rest on the server - they fill even when you are away.'))+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore',__esT_home("showMore",'Show more'))+' ('+_rest+')</button>';
     if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch',__esT_home("newSeasonStatsRestarted",'New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.'))+'</div>';
-    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+(jrTab!=='orders'?jrFbar(_all,rows.length):'')+(jrTab!=='orders'&&_all&&!rows.length?'<div class="pp-empty jr-fempty"><span>'+MT('jFNone',__esT_home("nothingMatchesTheseFilters",'Nothing matches these filters.'))+'</span><button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button></div>':'')+cards;
+    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button><button data-jt="risk" class="'+(jrTab==='risk'?'on':'')+'">'+MT('jRiskN','Risk')+'</button></div>'+(jrTab!=='orders'&&jrTab!=='risk'?jrFbar(_all,rows.length):'')+(jrTab!=='orders'&&jrTab!=='risk'&&_all&&!rows.length?'<div class="pp-empty jr-fempty"><span>'+MT('jFNone',__esT_home("nothingMatchesTheseFilters",'Nothing matches these filters.'))+'</span><button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button></div>':'')+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
@@ -2081,6 +2109,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats');
     if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';}).filter(window.mpSsnShow);var wins=closed.filter(function(e){return e.status==='win';}).length;var wr=closed.length?Math.round(wins/closed.length*100):null;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
+    if(listEl&&jrTab==='risk'){var _rk=listEl.querySelector('.jr-risk');if(_rk){var _rh=jrRisk(open);if(_rh!==listEl.__jrRisk){listEl.__jrRisk=_rh;_rk.outerHTML=_rh;}}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
       var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl class - wholesale className= dropped pp-gold every tick (2nd copy: the My Trades drawer, same flicker as the terminal list)
       var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_home("priceStale",'stale'):'');if(lv.textContent!==lvv)lv.textContent=lvv;if(lv.classList.contains('stale')!==!!m.stale)lv.classList.toggle('stale',!!m.stale);}
