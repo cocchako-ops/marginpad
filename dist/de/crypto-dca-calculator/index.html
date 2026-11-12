@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/crypto-dca-calculator/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=db0d4732"></script>
+<script src="/assets/ui-de.js?v=ebc3ecf2"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -28,6 +28,8 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-dca-calculator/" />
 <link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/crypto-dca-calculator/" />
 <link rel="alternate" hreflang="de" href="https://marginpad.io/de/crypto-dca-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/crypto-dca-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/crypto-dca-calculator/" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="DCA-Rechner - Durchschnittlicher Einstieg über mehrere Käufe | MarginPad" />
 <meta property="og:description" content="Kostenloser DCA-Rechner: Gib mehrere Käufe (Preis und Betrag) ein und erhalte deinen echten durchschnittlichen Einstieg, die Gesamtzahl der Coins und den Break-even für den ganzen Stapel." />
@@ -110,6 +112,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var r=document.getElementById('res');var tot=0,qty=0;for(var i=1;i<=4;i++){var p=+document.getElementById('p'+i).value,a=+document.getElementById('a'+i).value;if(p>0&&a>0){tot+=a;qty+=a/p;}}if(!(qty>0)){r.innerHTML='';return;}var avg=tot/qty;r.innerHTML='<div class="rrow"><span class="k">Total invested</span><span class="v">'+tot.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Total coins</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow big"><span class="k">Average entry (break-even)</span><span class="v">'+avg.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=e78733d2"></script>
+<script defer src="/assets/mp-nav.js?v=48e0db6c"></script>
 </body>
 </html>

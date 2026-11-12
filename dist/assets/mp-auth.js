@@ -78,7 +78,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       host.innerHTML = '<div class="pb-top"><span class="pb-badge">' + (window.mpLvlSvg ? window.mpLvlSvg('bronze', '#c97f4a') : '') + __esT_mpauth("bronzeIn",'</span><div class="pb-t">Bronze in <b>') + fmt(left) + ' XP</b></div><span class="pb-n">' + fmt(xp) + ' / ' + fmt(need) + '</span></div>'
         + '<div class="pb-bar"><i style="width:' + pct + '%"></i></div>'
         + __esT_mpauth("lesson25CheckIn",'<div class="pb-src"><span>lesson <b>+25</b></span><span>check-in <b>+20</b></span><span>closed trade <b>+3</b></span><span>green close <b>+15</b> more</span></div>')
-        + __esT_mpauth("bronzeUnlocksTheFaucet",'<div class="pb-why">Bronze is your first level badge - higher levels pay bigger faucet claims. <a href="/academy/">Academy</a> is the fastest road.</div>');
+        + __esT_mpauth("bronzeUnlocksTheFaucet",'<div class="pb-why">Bronze is your first level badge - higher levels unlock frames and The Gold Room at Gold. <a href="/academy/">Academy</a> is the fastest road.</div>');
     } else { // live update without rebuilding: the bar animates, the numbers just change
       var t = host.querySelector('.pb-t b'), n = host.querySelector('.pb-n'), bar = host.querySelector('.pb-bar i');
       if (t) t.textContent = fmt(left) + ' XP'; if (n) n.textContent = fmt(xp) + ' / ' + fmt(need); if (bar) bar.style.width = pct + '%';
@@ -4133,7 +4133,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   function html(me) {
     var name = esc(String((me && me.username) || 'trader').slice(0, 24)), xp = Math.max(0, +(me && me.xp) || 0);
     var toB = Math.max(0, 500 - xp), lessons = Math.ceil(toB / 25);
-    var step2 = xp >= 500 ? __esT_mpauth("youAreAlreadyBronze",'<b>You are already Bronze</b> - your first level badge is on your card; Silver pays bigger faucet claims.')
+    var step2 = xp >= 500 ? __esT_mpauth("youAreAlreadyBronze",'<b>You are already Bronze</b> - your first level badge is on your card; the next levels unlock frames and The Gold Room.')
       : '<b>Earn ' + toB.toLocaleString('en-US') + __esT_mpauth("moreXpToReach",' more XP to reach Bronze</b>') + (xp ? __esT_mpauth("youHave",' (you have ') + xp.toLocaleString('en-US') + ')' : '') + __esT_mpauth("yourFirstLevelBadge",' - your first level badge. Every Academy lesson pays 25 XP, so about ') + lessons + ' lesson' + (lessons === 1 ? '' : 's') + __esT_mpauth("doesItAndEvery",' does it, and every trade and daily check-in adds to it.');
     return '<div class="ct-welc" data-welcrow>'
       + __esT_mpauth("onlyYouSeeThis",'<div class="ct-welc-h"><span class="ct-welc-eye">ONLY YOU SEE THIS</span><b>Hey @') + name + ', welcome in.</b></div>'
@@ -4141,7 +4141,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       + '<ol>'
       + __esT_mpauth("openYourFirstPaper",'<li><b>Open your first paper trade.</b> $10,000 of practice money on real live prices - nothing to lose, and every close counts for XP. <a href="/paper-trade">Paper Trade</a></li>')
       + '<li>' + step2 + ' <a href="/academy/">Academy</a></li>'
-      + __esT_mpauth("theMoneyIsOpen",'<li><b>The money is open from day one:</b> the free USDT faucet, daily missions, withdrawals and a seat on the season boards - no level needed. <a href="/rewards/">Rewards</a> · <a href="/season/">Season</a></li>')
+      + __esT_mpauth("theMoneyIsOpen",'<li><b>The money is open from day one:</b> the season leaderboards, the Season Pass, promo codes and partner sign-up bonuses - no level needed. Daily missions pay Ticks and XP. <a href="/rewards/">Rewards</a> · <a href="/season/">Season</a></li>')
       + '</ol>'
       + __esT_mpauth("thisRoomIsFor",'<p>This room is for newcomers - say hi, ask anything. Trade talk lives in <b>All</b>, and a trade you share from any ticket lands there as a card.</p>')
       + __esT_mpauth("gotIt",'<button type="button" class="ct-welc-x" data-welcx>Got it</button>')

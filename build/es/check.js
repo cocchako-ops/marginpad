@@ -55,7 +55,7 @@ function main() {
     const base = f.replace(/\.json$/, '');
     for (const sc of fs.readdirSync(CH).filter(x => x.startsWith(base + '.' + LANG) && x.endsWith('.json')).sort()) {
       let side; try { side = JSON.parse(fs.readFileSync(path.join(CH, sc), 'utf8')); } catch (e) { perChunk.push(sc + ' INVALID JSON'); continue; }
-      if (LANG === 'id') { const byEn = new Map(side.filter(x => x.key).map(x => [x.en, x])); for (const it of arr) { const s = byEn.get(it.en); if (s) { if (!it.id) it.id = s.key; if (s.id) it[TF] = s.id; } } continue; }
+      if (LANG === 'id') { const byEn = new Map(side.map(x => [x.en, x])); for (const it of arr) { const s = byEn.get(it.en); if (s) { if (!it.id && s.key) it.id = s.key; if (s.id) it[TF] = s.id; } } continue; } // a sidecar may carry an empty key (the chunk's own id slot was blanked by the seeder) - the English is the join, the catalog restores the id below
       const m = new Map(side.map(x => [x.id, x[LANG]])); for (const it of arr) if (m.has(it.id) && m.get(it.id)) it[LANG] = m.get(it.id);
     }
     if (LANG === 'id') for (const it of arr) if (!it.id) { const k = Object.keys(cat.items).find(k => cat.items[k].en === it.en); if (k) it.id = k; }

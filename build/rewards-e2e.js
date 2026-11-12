@@ -99,11 +99,11 @@ async function visit(vp, ua, cookie) {
   ok(g.board, 'the earnings table is on the page');
   ok(g.rows === 4, 'four rows, one per cadence', g.cadences);
   ok(/once/i.test(g.cadences[0] || '') && /every day/i.test(g.cadences[1] || ''), 'and they are labelled by cadence, not by product', g.cadences);
-  ok(g.amts.length === 4 && g.amts.every(a => /^\$[\d,.]+$/.test(a)), 'every row states one amount', g.amts);
+  ok(g.amts.length === 4 && g.amts.every(a => /^\$[\d,.]+$/.test(a) || a === 'Ticks + XP'), 'every row states one amount (the "every day" row reads Ticks + XP for a guest since 2026-11-12 - the faucet is a legacy-account feature)', g.amts);
 
   // the point of the block: the numbers are the live ones, not decoration
   ok(g.amt === usd(cfg.amount), 'the faucet amount matches the server (' + g.amt + ')', { page: g.amt, server: usd(cfg.amount) });
-  ok(g.day === usd(cfg.perDay), 'the daily ceiling matches the server (' + g.day + ')', { page: g.day, server: usd(cfg.perDay) });
+  ok(cfg.faucet ? g.day === usd(cfg.perDay) : g.day === 'Ticks + XP', 'the "every day" row matches the server: a guest reads Ticks + XP, a legacy account the faucet ceiling (' + g.day + ')', { page: g.day, server: cfg.faucet ? usd(cfg.perDay) : 'Ticks + XP' });
   ok(g.min === usd(cfg.minWd), 'the withdrawal minimum matches the server (' + g.min + ')', { page: g.min, server: usd(cfg.minWd) });
   ok(g.wel === usd(cfg.welcomeAmt), 'the welcome bonus matches the server (' + g.wel + ')', { page: g.wel, server: usd(cfg.welcomeAmt) });
   // VENUE-DRIVEN, so a venue retired or added does not make this suite wrong (2026-10-21: Fomo out, MEXC and
@@ -157,7 +157,7 @@ async function visit(vp, ua, cookie) {
     const uid = 'e2erw' + Math.random().toString(36).slice(2, 6);
     const H = { 'x-admin-key': ADMIN, 'content-type': 'application/json' };
     const po = (p2, b2) => fetch(ORIGIN + p2, { method: 'POST', headers: H, body: JSON.stringify(b2) }).then(r => r.json().catch(() => ({})));
-    await po('/api/admin/e2euser', { uid, op: 'mk' });
+    await po('/api/admin/e2euser', { uid, op: 'mk', created: Date.UTC(2026, 0, 1) }); // a LEGACY fixture (pre-2026-11-12): the faucet card this leg measures exists only for those accounts
     const se = await po('/api/admin/e2euser', { uid, op: 'sess' });
     if (!se || !se.token) { ok(false, 'could not mint a member session', se); }
     else {

@@ -13,6 +13,7 @@ const SKIP_DIRS = new Set(['assets', 'demo-home', 'i18n', 'sdk', 'og', 'img', 'f
 // already Spanish / Portuguese by design
 const SKIP_PAGES = new Set(['dolar-cripto/index.html', 'bitcoin-hoje/index.html', 'simulador-trading-cripto-argentina/index.html',
   'simulador-trading-cripto-brasil/index.html', 'app-es.html', 'app-pt.html', 'app-de.html' /* our own output in three languages (2026-10-29: the pt/de shells were being read as English and handed to the Spanish translators) */]);
+for (const l of ['fr', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl']) SKIP_PAGES.add('app-' + l + '.html'); // 2026-11-12: every twin's tool shell is our own output (app-fr/app-id were read as 329 English segments each)
 
 function pages() {
   const out = [];

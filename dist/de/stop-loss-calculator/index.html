@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/stop-loss-calculator/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=db0d4732"></script>
+<script src="/assets/ui-de.js?v=ebc3ecf2"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -28,6 +28,8 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/stop-loss-calculator/" />
 <link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/stop-loss-calculator/" />
 <link rel="alternate" hreflang="de" href="https://marginpad.io/de/stop-loss-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/stop-loss-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/stop-loss-calculator/" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Stop-Loss- & Take-Profit-Rechner - R:R-Ziele | MarginPad" />
 <meta property="og:description" content="Kostenloser Stop-Loss-Rechner für Krypto: exakter Stop-Preis aus deinem Dollar-Risiko und deiner Positionsgröße, plus Take-Profit-Ziele bei 1R, 2R und 3R für saubere Chance-Risiko-Planung." />
@@ -111,6 +113,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,p=+document.getElementById('pos').value,ru=+document.getElementById('riskusd').value;var r=document.getElementById('res');if(!(en>0&&p>0&&ru>0)){r.innerHTML='';return;}var dist=ru/p,sl=en*(1-s*dist),t1=en*(1+s*dist),t2=en*(1+s*dist*2),t3=en*(1+s*dist*3);var fx=function(v){return v.toLocaleString(undefined,{maximumFractionDigits:2});};
 r.innerHTML='<div class="rrow"><span class="k">Stop distance</span><span class="v">'+(dist*100).toFixed(2)+'%</span></div><div class="rrow big"><span class="k">Stop-loss price</span><span class="v dn">'+fx(sl)+'</span></div><div class="rrow"><span class="k">Take-profit 1R (risk = reward)</span><span class="v up">'+fx(t1)+'</span></div><div class="rrow"><span class="k">Take-profit 2R</span><span class="v up">'+fx(t2)+'</span></div><div class="rrow"><span class="k">Take-profit 3R</span><span class="v up">'+fx(t3)+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=e78733d2"></script>
+<script defer src="/assets/mp-nav.js?v=48e0db6c"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/apr-apy-calculator/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=db0d4732"></script>
+<script src="/assets/ui-de.js?v=ebc3ecf2"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -28,6 +28,8 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/apr-apy-calculator/" />
 <link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/apr-apy-calculator/" />
 <link rel="alternate" hreflang="de" href="https://marginpad.io/de/apr-apy-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/apr-apy-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/apr-apy-calculator/" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="APR-zu-APY-Rechner - Die Wahrheit über die Compounding-Frequenz | MarginPad" />
 <meta property="og:description" content="Kostenloser APR-zu-APY-Rechner: Jeder Satz und jede Compounding-Frequenz, umgerechnet in die echte Jahresrendite. Sieh, was tägliche Verzinsung wirklich bringt." />
@@ -110,6 +112,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var a=+document.getElementById('apr').value/100,f=+document.getElementById('freq').value,amt=+document.getElementById('amt').value;var r=document.getElementById('res');if(!(a>=0)){r.innerHTML='';return;}var apy=Math.pow(1+a/f,f)-1;r.innerHTML='<div class="rrow big"><span class="k">APY (effective annual yield)</span><span class="v up">'+(apy*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">On '+amt.toLocaleString()+' USD / year</span><span class="v up">+'+(amt*apy).toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Compounding adds</span><span class="v">+'+((apy-a)*100).toFixed(2)+'% vs simple APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=e78733d2"></script>
+<script defer src="/assets/mp-nav.js?v=48e0db6c"></script>
 </body>
 </html>

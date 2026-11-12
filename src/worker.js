@@ -10161,7 +10161,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1e950216" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=48e0db6c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14725,12 +14725,12 @@ const CAMPAIGN_TPLS = [
       + '<p style="margin:0 0 12px">Link Telegram and you get the daily wrap at 16:00 UTC - what moved, what got liquidated, what is coming - plus alerts when your own positions reach a level you set.</p>',
     cta: ['Link Telegram', 'https://marginpad.io/alerts/'] },
 
-  { id: 'rewards', name: 'Free rewards and the faucet', group: 'Activation', needs: [],
+  { id: 'rewards', name: 'Rewards: boards, pass and bonuses', group: 'Activation', needs: [],
     subject: 'There is money on the table you have not taken',
-    lead: 'Rewards, missions, the faucet. Open to every account from day one.',
-    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Free, and you have not claimed it.</p>'
-      + '<p style="margin:0 0 12px">MarginPad pays real USDT for things you can do without depositing anything: daily missions, the faucet, exchange sign-up bonuses and the season boards.</p>'
-      + '<p style="margin:0 0 12px">There is no level to reach first - every account can claim, run the missions and withdraw from its first day.</p>',
+    lead: 'Season leaderboards, the Season Pass, partner bonuses. Open to every account from day one.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Real USDT, and you have not touched it.</p>'
+      + '<p style="margin:0 0 12px">MarginPad pays real USDT for things you can do without depositing anything: the season leaderboards, the Season Pass, promo codes, partner sign-up bonuses and the affiliate program. Daily missions pay Ticks and XP.</p>'
+      + '<p style="margin:0 0 12px">There is no level to reach first - every account can compete, run the missions and withdraw from its first day.</p>',
     cta: ['See what pays', 'https://marginpad.io/rewards/'] },
 
   { id: 'bot_api', name: 'For developers - the Bot API', group: 'Product', needs: [],
@@ -22532,7 +22532,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '1ef29b25';
+const ASSET_V = '56f45b3e';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -24646,7 +24646,7 @@ async function handleReward(url, request, env) {
     return jr({ found, checked, action: act, note: act === 'comment' ? 'search covers replies from the last ~7 days only' : null, error: err });
   }
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0, suEmail = '', suName = '', suRwFac = 100, suRrTag = '';
+  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0, suEmail = '', suName = '', suRwFac = 100, suRrTag = '', suLegacy = false; // suLegacy: account from before REWARDS_LEGACY_BEFORE - the only kind the faucet still pays
   // `/support` IS ON THIS LIST SINCE 2026-10-18, and its absence was the whole bug. A ticket filed through the
   // site's own form was the ONE member-facing write where the server never asked who was writing: the desk
   // showed whatever had been typed into the contact box. A Nigerian member typed his PHONE NUMBER and the
@@ -24655,7 +24655,7 @@ async function handleReward(url, request, env) {
   // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
   if (path === '/bybitlink' || path === '/bingxlink' || path === '/moonlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suLegacy = legacyRewards(su); suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
     if (!acct && path === '/xengage/submit' && adminOk) { const ov = url.searchParams.get('uid'); if (ov) acct = 'u:' + ov; }
     /* ... and for the two sign-up surfaces, so support can file a claim for a member who never did
@@ -24672,6 +24672,8 @@ async function handleReward(url, request, env) {
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
   if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || signSubmitPath(path) || path === '/xengage/submit')) return jr({ error: 'restricted' }, 403);
   if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
+  // THE FAUCET IS CLOSED TO ACCOUNTS CREATED FROM 2026-11-12 (legacyRewards): their money comes from the boards, the pass, codes and partner bonuses
+  if (path === '/claim' && acct && !suLegacy) return jr({ error: 'faucet_closed', message: 'The faucet is only for accounts opened before 12 Nov 2026. Earn on the season leaderboards, the Season Pass, promo codes and partner sign-up bonuses.', earn: '/leaderboards/' }, 403);
   if (path === '/support/mine') { // signed-in user's own support conversation (their tickets + our email replies), identity resolved server-side
     const tok = getCookie(request, SESS_COOKIE);
     const su = tok && env.USERS ? await sessionUser(env, tok) : null;
@@ -25326,6 +25328,8 @@ async function handleReward(url, request, env) {
       }
     } catch (e) {}
   }
+  // the page decides what to draw (faucet card, "every day" row, mission reward unit) from these two flags; a guest reads the new-account truth
+  if (r.status === 200 && path === '/me') { try { const data = JSON.parse(txt); data.legacy = !!(acct && suLegacy); data.faucet = !!(acct && suLegacy); data.legacyBefore = REWARDS_LEGACY_BEFORE; txt = JSON.stringify(data); } catch (e) {} }
   // Earnings breakdown: resolve who the account is + fold in the COMPLETE daily-mission earning history from UserStore
   // (RewardLedger only keeps a recent global log ring; UserStore's `missions` table is the durable per-user record).
   if (r.status === 200 && path === '/earnings') {
@@ -33565,6 +33569,13 @@ const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP) + Le
    `need:` fields publish (0 = nothing needed). Bronze is still the first LEVEL (XP_LEVELS) - badge, frame, bigger claims. */
 const REWARDS_MIN_XP = 0;
 function rewardsUnlocked(xp) { return true; }
+/* NO MORE FAUCET MONEY FOR NEW ACCOUNTS (2026-11-12, owner: "za sve nove korisnike iskljucimo opciju faucet ... misije za nove
+   korisnike ce davati samo ticks a stari korisnici nek imaju sve kao i pre"). An account created before this instant is LEGACY:
+   it keeps the faucet, the level claim multiplier and the mission cents exactly as before. Everyone newer earns money only from
+   the season boards, the Season Pass, promo codes, partner sign-up bonuses and the affiliate program; their missions pay Ticks
+   (and the set bonus XP) and never a cent. `created` rides on the session user from the DO, so this costs no extra read. */
+const REWARDS_LEGACY_BEFORE = Date.UTC(2026, 10, 12, 0, 0, 0);
+function legacyRewards(su) { return !!(su && +su.created && +su.created < REWARDS_LEGACY_BEFORE); }
 const LEVEL_CLAIM_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, master: 1.75, legendary: 1.90 }; // faucet claim size by level
 const LEVEL_DAY_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.25, platinum: 1.40, diamond: 1.60, master: 2.0, legendary: 2.2 }; // personal DAILY cap by level (owner 2026-08-14: each tier must be able to EARN more per day, not just claim in fewer clicks - gold $0.20 -> $0.25)
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
@@ -38130,7 +38141,7 @@ export class UserStore {
         if (!dry) { try { this._whUids = null; } catch (e) {} }
         return this.j({ ok: true, dry: !!dry, ...out });
       } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
-      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', (+b.created > 0 ? +b.created : Date.now()), Date.now(), 'e2e_' + uid); /* `created` lets a suite mint a LEGACY fixture (pre-2026-11-12) for the faucet / mission-cents paths */ } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       // optional device + per-path dwell, so the ban and reduced-rewards paths are testable: a device ban reads
       // users.did, and the rank rule reads udwell. Nothing but an e2e uid can reach this (gated above).
       if (b.did) { try { sql.exec('UPDATE users SET did=? WHERE id=?', String(b.did).replace(/[^a-zA-Z0-9]/g, '').slice(0, 64), uid); } catch (e) {} }
@@ -40184,12 +40195,12 @@ async function handleMissions(url, request, env) {
   const enabled = cfg.raw ? cfg.raw.missionsEnabled !== false : true;
   const day = new Date().toISOString().slice(0, 10);
   const dayStart = new Date(day).getTime();
-  const SET_N = 5, SET_CENTS = 0, SET_XP = 60, WEEK_N = 15, WEEK_CENTS = 5; // engagement bonuses: claim 5 of 7 today -> +60 XP set bonus (money until 2026-09-29, when it was the single biggest mission line at $34.17 of $193.75 over 30 days; XP feeds the level, the season board and the pass, which is where the exclusive cosmetics are); 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
+  const SET_N = 5, SET_CENTS = 0, SET_XP = 60, WEEK_N = 15, WEEK_CENTS = 5, MISSION_TICKS = 4; /* MISSION_TICKS mirrors the DO's grant per claim - what a NEW account (legacyRewards false) is told a mission pays */ // engagement bonuses: claim 5 of 7 today -> +60 XP set bonus (money until 2026-09-29, when it was the single biggest mission line at $34.17 of $193.75 over 30 days; XP feeds the level, the season board and the pass, which is where the exclusive cosmetics are); 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
   const wkFrom = new Date(dayStart - ((new Date(dayStart).getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10); // this week's Monday (UTC)
   const wkMid = 'wk' + wkFrom.replace(/-/g, '');
-  let uid = '', uxp = 0;
+  let uid = '', uxp = 0, legacy = false; // legacy = created before REWARDS_LEGACY_BEFORE: missions pay cents; a newer account is paid Ticks only (2026-11-12)
   const tok = getCookie(request, SESS_COOKIE);
-  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uxp = +su.xp || 0; } }
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uxp = +su.xp || 0; legacy = legacyRewards(su); } }
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only)
   if (adminUid && (await adminCookieOk(request, env))) { uid = adminUid; uxp = REWARDS_MIN_XP; } // preview must never be blocked by the ADMIN session's own (zero) XP - it used to return locked:true for every previewed user, hiding their real mission state
   if (!enabled) return jr({ enabled: false, missions: [] });
@@ -40223,7 +40234,7 @@ async function handleMissions(url, request, env) {
   for (const m of defs) if (m.vt === 'comm') {
     try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) { st.done[m.mid] = false; }
   }
-  const missions = defs.map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: m.cents, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }));
+  const missions = defs.map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: legacy ? m.cents : 0, ticks: MISSION_TICKS, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }));
   if (request.method === 'POST') {
     let b = {}; try { b = await request.json(); } catch (e) {}
     const mid = String(b.mid || '');
@@ -40235,8 +40246,8 @@ async function handleMissions(url, request, env) {
     try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid }) })); const d = await r.json(); fresh = !!d.fresh; bonusXp = +d.xp || 0; } catch (e) { return jr({ error: 'transient' }, 503); }
     if (!fresh) return jr({ error: 'already_claimed' }, 400);
     let balanceUsd = null;
-    try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger refused the ' + m.cents + 'c credit: ' + d.error, { kind: 'mission-credit', sev: 'warn' }); return jr({ error: d.error }, 403); } balanceUsd = d.balanceUsd; } catch (e) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger credit of ' + m.cents + 'c FAILED (' + (e && e.message ? e.message : 'error') + ') - the claim is consumed, credit by hand', { kind: 'mission-credit', sev: 'warn' }); } // 2026-09-12: a swallowed failure here was a consumed mission with no money and no trace
-    try { await evPush(env, request, 'mission', mid + ' +$' + (m.cents / 100).toFixed(2), '/rewards/'); } catch (e) {}
+    if (legacy) try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger refused the ' + m.cents + 'c credit: ' + d.error, { kind: 'mission-credit', sev: 'warn' }); return jr({ error: d.error }, 403); } balanceUsd = d.balanceUsd; } catch (e) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger credit of ' + m.cents + 'c FAILED (' + (e && e.message ? e.message : 'error') + ') - the claim is consumed, credit by hand', { kind: 'mission-credit', sev: 'warn' }); } // 2026-09-12: a swallowed failure here was a consumed mission with no money and no trace
+    try { await evPush(env, request, 'mission', mid + (legacy ? ' +$' + (m.cents / 100).toFixed(2) : ' +' + MISSION_TICKS + ' T'), '/rewards/'); } catch (e) {}
     // SET BONUS: the 6th claim of the day pays extra - idempotent through the same missions-table dedup (mid 'setbonus')
     let setBonusUsd = 0, weekBonusUsd = 0, setBonusXp = 0;
     const claimedNow = defs.filter(x => st.claimed && st.claimed[x.mid]).length + 1;
@@ -40254,16 +40265,16 @@ async function handleMissions(url, request, env) {
     try {
       const mr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) }));
       const md = await mr.json(); wkC9 = +md.n || 0; wkCl9 = !!md.weekClaimed;
-      if (wkC9 >= WEEK_N && !wkCl9) {
+      if (legacy && wkC9 >= WEEK_N && !wkCl9) { // the weekly cents are a legacy-account bonus; a new account's week ends in XP and Ticks alone
         const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid: wkMid }) }));
         const d3 = await r.json();
         if (d3 && d3.fresh) { const cr2 = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: WEEK_CENTS, mid: wkMid }) })); const cd2 = await cr2.json(); if (!cd2.error) { weekBonusUsd = WEEK_CENTS / 100; wkCl9 = true; if (cd2.balanceUsd != null) balanceUsd = cd2.balanceUsd; try { await evPush(env, request, 'mission', 'weekly bonus +$' + weekBonusUsd.toFixed(2), '/rewards/'); } catch (e) {} } }
       }
     } catch (e) {}
     const upd = missions.map(x => x.mid === mid ? { ...x, claimed: true } : x);
-    return jr({ ok: true, credited: m.cents / 100, balanceUsd, missions: upd, day, bonusXp: bonusXp || undefined, setBonusUsd: setBonusUsd || undefined, setBonusXp: setBonusXp || undefined, weekBonusUsd: weekBonusUsd || undefined, bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: setBonusXp > 0 || setBonusUsd > 0 || claimedNow > SET_N, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: wkC9, weekClaimed: wkCl9 } });
+    return jr({ ok: true, credited: legacy ? m.cents / 100 : 0, ticks: MISSION_TICKS, legacy, balanceUsd, missions: upd, day, bonusXp: bonusXp || undefined, setBonusUsd: setBonusUsd || undefined, setBonusXp: setBonusXp || undefined, weekBonusUsd: weekBonusUsd || undefined, bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: setBonusXp > 0 || setBonusUsd > 0 || claimedNow > SET_N, weekN: WEEK_N, weekUsd: legacy ? WEEK_CENTS / 100 : 0, weekCount: wkC9, weekClaimed: wkCl9 } });
   }
-  return jr({ enabled: true, signedIn: true, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed } });
+  return jr({ enabled: true, signedIn: true, legacy, ticks: MISSION_TICKS, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekUsd: legacy ? WEEK_CENTS / 100 : 0, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed } });
 }
 // ---------- IndexNow (Bing/Yandex/Seznam/Naver instant indexing) ----------
 const INDEXNOW_KEY = '9f3c7e21b84d4a6fae0c5d2178b6e093'; // public by protocol design - the key file at /<key>.txt proves ownership

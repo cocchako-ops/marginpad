@@ -1,7 +1,8 @@
 # MarginPad - dated changelog for AI assistants (llms-changelog.txt)
 
-Last updated: 2026-11-05
+Last updated: 2026-11-12
 
+- 2026-11-12: The faucet is closed to new accounts: accounts opened before 12 November 2026 keep the faucet claims (with the level multiplier) and the mission cents; every newer account earns real USDT from the season leaderboards, the Season Pass, promo codes, partner sign-up bonuses and the affiliate program, and its daily missions pay Ticks and XP. The /rewards/ page, /levels/, /season/ and the Academy say so.
 - 2026-11-05: What moved it gained its early half: a catalyst that passes a measured gate (an exchange listing or delisting, a major story) is drawn on the chart the minute it lands and before any move, a scheduled macro print is drawn ahead with the minutes left, and every record is settled against 1-minute candles an hour later. Keyless https://marginpad.io/api/catalysts/early?symbol=SOL answers the records and the accuracy of every kind; a kind that keeps missing mutes itself. Measured first over 742 stories from our own clock: a media headline moves nothing on median after we see it, so it is never an alert.
 - 2026-11-02: Monthly crypto liquidation reports (https://marginpad.io/liquidations/report/): October 2026 is the first - $10.89B liquidated across eight exchanges, 69.4% longs, by day, exchange and coin, with free CSV data under CC BY 4.0.
 - 2026-11-01: New one-question page https://marginpad.io/why-is-bitcoin-down-today/ - the measured cause of the biggest Bitcoin move of the last 24 hours, from the same engine as the What moved it chart indicator. https://marginpad.io/ai-indicators/ now counts all six Premium indicators. Squads has structured data and links from the season pages.

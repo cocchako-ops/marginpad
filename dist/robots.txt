@@ -133,3 +133,5 @@ Sitemap: https://marginpad.io/sitemap-recaps.xml
 Sitemap: https://marginpad.io/sitemap-es.xml
 Sitemap: https://marginpad.io/sitemap-pt.xml
 Sitemap: https://marginpad.io/sitemap-de.xml
+Sitemap: https://marginpad.io/sitemap-fr.xml
+Sitemap: https://marginpad.io/sitemap-id.xml

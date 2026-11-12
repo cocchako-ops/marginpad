@@ -4154,7 +4154,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258','','navRekt','prodRektS')
    +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,__esT_home("priceAlerts",'Price Alerts'),__esT_home("emailOrTelegramWhen",'Email or Telegram when a coin hits your price'),'#c2f64a','','brAlertsT','brAlertsS')
    +'<div class="browse-sec" data-i18n="secEarn">Earn</div>'
-   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards',__esT_home("claimEvery5Minutes",'Claim every 5 minutes'),'#ffd75a','','brFreeT','brFreeS')
+   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards',__esT_home("claimEvery5Minutes",'Boards, pass and bonuses'),'#ffd75a','','brFreeT','brFreeS')
    +'<div class="browse-sec" data-i18n="secMore">More</div><div class="browse-more">'
      +'<a class="browse-mrow" href="/blog/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span data-i18n="navBlog">Blog</span></a>'
      +'<a class="browse-mrow" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Telegram</a>'

@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "pt",
-  "generated": "2026-11-06T04:18:38.605Z",
+  "generated": "2026-11-11T23:46:39.182Z",
   "pages": 459,
-  "unique": 15834,
-  "words": 291246,
-  "untranslated": 4,
-  "untranslatedWords": 8,
-  "merged": "2026-11-06T04:34:59.512Z"
+  "unique": 15835,
+  "words": 291441,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-11-11T23:54:23.399Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -101,7 +101,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 103,
+   "n": 113,
    "w": 1,
    "pt": "Long"
   },
@@ -117,7 +117,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 99,
+   "n": 109,
    "w": 1,
    "pt": "Short"
   },
@@ -148,7 +148,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 174,
+   "n": 177,
    "w": 1,
    "pt": "Alavancagem"
   },
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 2063,
+   "n": 2085,
    "w": 1,
    "pt": "MarginPad"
   },
@@ -11490,6 +11490,780 @@
    "w": 33,
    "pt": "API gratuita e sem chave de dados de mercado cripto (preços, OHLC, screener, funding, interesse aberto, liquidações, calendário, calculadoras), uma Bot API de paper trading (REST, WebSocket, webhooks, ordens limit/stop, trailing stops) e um servidor MCP remoto com 22 ferramentas. OpenAPI 3.1."
   },
+  "UaHCDQd_L3": {
+   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/"
+   ],
+   "n": 81,
+   "w": 1,
+   "pt": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>"
+  },
+  "4vZ0c5CpM-": {
+   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/"
+   ],
+   "n": 82,
+   "w": 5,
+   "pt": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "leaf": true
+  },
+  "QFwW0TOIo2": {
+   "en": "My Trades",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/catalysts/"
+   ],
+   "n": 83,
+   "w": 2,
+   "pt": "Meus trades"
+  },
+  "zpmhBUvLJc": {
+   "en": "<span>Note</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "<span>Nota</span>"
+  },
+  "SKYW2Zbiby": {
+   "en": "Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Watchlist"
+  },
+  "RSoVO-G-Pk": {
+   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 5,
+   "pt": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "leaf": true
+  },
+  "m9FuWK2UCT": {
+   "en": "Screener",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/free-crypto-api/"
+   ],
+   "n": 6,
+   "w": 1,
+   "pt": "Screener"
+  },
+  "Oxjo4zJQDz": {
+   "en": "Volume",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "Volume"
+  },
+  "b_Fxxmc486": {
+   "en": "Funding",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Funding"
+  },
+  "5zNu03p97d": {
+   "en": "★ Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "★ Favoritos"
+  },
+  "ABSrPRUDss": {
+   "en": "Liquidation",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/",
+    "/glossary/"
+   ],
+   "n": 7,
+   "w": 1,
+   "pt": "Liquidação"
+  },
+  "rrrREQMzV2": {
+   "en": "PnL / ROI",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 6,
+   "w": 2,
+   "pt": "PnL / ROI"
+  },
+  "Qqcee-_jcA": {
+   "en": "Take-profit",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/glossary/"
+   ],
+   "n": 6,
+   "w": 1,
+   "pt": "Take-profit"
+  },
+  "Rt2tHuR3sW": {
+   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "pt": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>"
+  },
+  "6ElJRITtLj": {
+   "en": "Crypto",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Cripto"
+  },
+  "DwNisxlHs5": {
+   "en": "Forex",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "Forex"
+  },
+  "ZeBJXjDoz_": {
+   "en": "Indices",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Índices"
+  },
+  "BJLQQ88bfb": {
+   "en": "<span data-i18n=\"long\">Long</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "<span data-i18n=\"long\">Long</span>"
+  },
+  "OIWeOUDbe-": {
+   "en": "<span data-i18n=\"short\">Short</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "<span data-i18n=\"short\">Short</span>"
+  },
+  "aQyK0fclKF": {
+   "en": "MarginPad - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "pt": "MarginPad - 0.5%",
+   "leaf": true
+  },
+  "7yKqDeDTd0": {
+   "en": "Binance - 0.4%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Binance - 0.4%",
+   "leaf": true
+  },
+  "5ZOCKqG5Bp": {
+   "en": "Bybit - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Bybit - 0.5%",
+   "leaf": true
+  },
+  "b5sJgE-gp2": {
+   "en": "OKX - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "OKX - 0.5%"
+  },
+  "4xOEJckW1n": {
+   "en": "Bitget - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Bitget - 0.5%",
+   "leaf": true
+  },
+  "f4tyacp3SN": {
+   "en": "MEXC - 0.1%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "MEXC - 0.1%"
+  },
+  "PgRAMeug7a": {
+   "en": "KuCoin - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "KuCoin - 0.5%",
+   "leaf": true
+  },
+  "xfF7XoGeHA": {
+   "en": "Gate - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Gate - 0.5%",
+   "leaf": true
+  },
+  "tidhONmH-4": {
+   "en": "Kraken - 0.6%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Kraken - 0.6%",
+   "leaf": true
+  },
+  "bJmVCli3x5": {
+   "en": "Hyperliquid - 1.25%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Hyperliquid - 1.25%",
+   "leaf": true
+  },
+  "NbY1pa6AcP": {
+   "en": "Coinbase - 1.33%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 9,
+   "w": 2,
+   "pt": "Coinbase - 1.33%",
+   "leaf": true
+  },
+  "xnU-pHn9BQ": {
+   "en": "MarginPad - 0.055%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "pt": "MarginPad - 0.055%",
+   "leaf": true
+  },
+  "XIfnOuScDy": {
+   "en": "Stop-loss",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/how-to-set-a-stop-loss/"
+   ],
+   "n": 6,
+   "w": 1,
+   "pt": "Stop-loss"
+  },
+  "WyBZXB2UvT": {
+   "en": "Trailing stop",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/what-is-a-trailing-stop/"
+   ],
+   "n": 5,
+   "w": 2,
+   "pt": "Trailing stop"
+  },
+  "CjMNLLk462": {
+   "en": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
+  },
+  "ZwPMimQZKE": {
+   "en": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
+  },
+  "l_riKf071f": {
+   "en": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
+  },
+  "hUSkdyWDaj": {
+   "en": "Profit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "Lucro"
+  },
+  "uMs9BK8HRr": {
+   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Mapa de calor</span>"
+  },
+  "Mf46iRDWup": {
+   "en": "TradingView",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "TradingView"
+  },
+  "7qxtMaeb-F": {
+   "en": "Koinly",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Koinly"
+  },
+  "YNDGY6v7RI": {
+   "en": "3Commas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "3Commas"
+  },
+  "V_TTAcNK31": {
+   "en": "<span>My Trades</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "pt": "<span>Meus trades</span>"
+  },
+  "ClPoxqx5JT": {
+   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "<span data-i18n=\"chatBtn\">Chat</span>"
+  },
+  "V_X177xZkP": {
+   "en": "Menu",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/"
+   ],
+   "n": 83,
+   "w": 1,
+   "pt": "Menu"
+  },
+  "qXSSU8Np0M": {
+   "en": "Coin",
+   "kind": [
+    "attr:aria-label",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/hyperliquid-liquidations/",
+    "/liquidation-statistics/"
+   ],
+   "n": 8,
+   "w": 1,
+   "pt": "Moeda"
+  },
+  "J6JbU5D47S": {
+   "en": "planExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "planExHint"
+  },
+  "DeFJ3eHlTO": {
+   "en": "planFeeHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "planFeeHint"
+  },
+  "a3_8lyG-KA": {
+   "en": "planRzHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "planRzHint"
+  },
+  "2npoc0Nngo": {
+   "en": "off",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "desl."
+  },
+  "5MN3jTT9VP": {
+   "en": "liqExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "liqExHint"
+  },
+  "6MRy4Bu8n3": {
+   "en": "crExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "crExHint"
+  },
+  "ihLVYm_j0n": {
+   "en": "Trending",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "Em alta"
+  },
+  "ovemx4owHS": {
+   "en": "Take-Profit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "Take-profit"
+  },
+  "pX5LlEWjaF": {
+   "en": "Risk / Reward",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 4,
+   "w": 2,
+   "pt": "Risco / Retorno"
+  },
+  "Vpu9dX4buL": {
+   "en": "Market",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/",
+    "/trading-api/"
+   ],
+   "n": 4,
+   "w": 1,
+   "pt": "A mercado"
+  },
+  "JNlI5L2-W4": {
+   "en": "Limit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "Limite"
+  },
+  "dJlaE8rvN4": {
+   "en": "Target ROE",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2,
+   "pt": "ROE alvo"
+  },
+  "VtoQU5BbyJ": {
+   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2,
+   "pt": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "leaf": true
+  },
+  "moMMcUuytS": {
+   "en": "Tool",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/best-liquidation-heatmap-tools/"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Ferramenta"
+  },
+  "lyrY2KUDl7": {
+   "en": "Layout",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "pt": "Layout"
+  },
+  "hd7Lc9FDjS": {
+   "en": "Timeframe",
+   "kind": [
+    "attr:aria-label",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/crypto-correlation-matrix/"
+   ],
+   "n": 3,
+   "w": 1,
+   "pt": "Tempo gráfico"
+  },
   "xB-wafRBzr": {
    "en": "Crypto Liquidation Map, Heatmap & Calculators - MarginPad",
    "kind": [
@@ -11516,53 +12290,6 @@
    "n": 81,
    "w": 2,
    "pt": "<a href=\"/\" class=\"mark\" aria-label=\"MarginPad - home\">MARGIN<b>PAD</b></a>"
-  },
-  "UaHCDQd_L3": {
-   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/",
-    "/catalysts/",
-    "/defi/"
-   ],
-   "n": 79,
-   "w": 1,
-   "pt": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>"
-  },
-  "4vZ0c5CpM-": {
-   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/",
-    "/calendar/",
-    "/catalysts/"
-   ],
-   "n": 80,
-   "w": 5,
-   "pt": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "leaf": true
-  },
-  "QFwW0TOIo2": {
-   "en": "My Trades",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/catalysts/",
-    "/hyperliquid-whales/",
-    "/"
-   ],
-   "n": 77,
-   "w": 2,
-   "pt": "Meus trades"
   },
   "_OT7_SufkL": {
    "en": "<span data-auth-status>Sign in</span>",
@@ -11615,8 +12342,8 @@
    "w": 3,
    "pt": "<span data-i18n=\"heroCta\">Abrir o Paper Trade</span>"
   },
-  "2dgX07XCiN": {
-   "en": "<a href=\"/rewards/\" class=\"hero-cta hero-cta-rwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg><span data-i18n=\"heroCtaRwd\">Rewards</span></a> <span class=\"hero-note\" data-i18n=\"heroNote\">No signup · any exchange · 100% free</span>",
+  "AJbtJnUhmu": {
+   "en": "<a href=\"/rewards/\" class=\"hero-cta hero-cta-rwd\" title=\"Rewards - boards, pass and bonuses\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg><span data-i18n=\"heroCtaRwd\">Rewards</span></a> <span class=\"hero-note\" data-i18n=\"heroNote\">No signup · any exchange · 100% free</span>",
    "kind": [
     "html"
    ],
@@ -11625,7 +12352,7 @@
    ],
    "n": 1,
    "w": 7,
-   "pt": "<a href=\"/rewards/\" class=\"hero-cta hero-cta-rwd\" title=\"USDT grátis - resgate a cada 5 min\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg><span data-i18n=\"heroCtaRwd\">Recompensas</span></a> <span class=\"hero-note\" data-i18n=\"heroNote\">Sem cadastro · qualquer corretora · 100% grátis</span>"
+   "pt": "<a href=\"/rewards/\" class=\"hero-cta hero-cta-rwd\" title=\"Rewards - boards, pass and bonuses\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg><span data-i18n=\"heroCtaRwd\">Recompensas</span></a> <span class=\"hero-note\" data-i18n=\"heroNote\">Sem cadastro · qualquer exchange · 100% grátis</span>"
   },
   "zbu-cCduBh": {
    "en": "<span class=\"pi\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"23 18 13.5 8.5 8.5 13.5 1 6\"/><polyline points=\"17 18 23 18 23 12\"/></svg></span><span class=\"pt\"><b data-i18n=\"prodCalc\">Liquidation Calculator</b><small data-i18n=\"prodCalcS\">Know your exit price</small></span>",
@@ -11747,18 +12474,6 @@
    "w": 1,
    "pt": "<span>Sincronizar</span>"
   },
-  "zpmhBUvLJc": {
-   "en": "<span>Note</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<span>Nota</span>"
-  },
   "BJc6lVXKW1": {
    "en": "<span>Calculator</span>",
    "kind": [
@@ -11855,18 +12570,6 @@
    "w": 1,
    "pt": "Claro"
   },
-  "SKYW2Zbiby": {
-   "en": "Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Watchlist"
-  },
   "FmUsfdDTNU": {
    "en": "Star coins on the homepage to pin them here.",
    "kind": [
@@ -11941,19 +12644,6 @@
    "n": 1,
    "w": 5,
    "pt": "<b>Scalping</b><span>BTC · 5m · sinais + EMA</span>"
-  },
-  "RSoVO-G-Pk": {
-   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 5,
-   "pt": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "leaf": true
   },
   "O8Sd5zpAME": {
    "en": "<b>BTC multi-TF</b><span>15m + 1H side by side</span>",
@@ -12163,21 +12853,6 @@
    "w": 1,
    "pt": "<span class=\"eyebrow\" data-i18n=\"ebMarkets\">Mercados</span>"
   },
-  "m9FuWK2UCT": {
-   "en": "Screener",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/free-crypto-api/",
-    "/",
-    "/spot/"
-   ],
-   "n": 4,
-   "w": 1,
-   "pt": "Screener"
-  },
   "HcjEOqAAWP": {
    "en": "Perp futures",
    "kind": [
@@ -12264,31 +12939,6 @@
    "w": 1,
    "pt": "Maiores quedas"
   },
-  "Oxjo4zJQDz": {
-   "en": "Volume",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Volume"
-  },
-  "b_Fxxmc486": {
-   "en": "Funding",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Funding"
-  },
   "rDAi4RNELb": {
    "en": "Volatile",
    "kind": [
@@ -12325,19 +12975,6 @@
    "w": 2,
    "pt": "▼ Setups short"
   },
-  "5zNu03p97d": {
-   "en": "★ Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "★ Favoritos"
-  },
   "8zVMfZfkFf": {
    "en": "Loading live markets…",
    "kind": [
@@ -12361,18 +12998,6 @@
    "n": 1,
    "w": 19,
    "pt": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Sinais de trade grátis no Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">o resumo diário do mercado às 16:00 UTC - o que se mexeu, o que vem a seguir</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Entre grátis</span> </a>"
-  },
-  "ihLVYm_j0n": {
-   "en": "Trending",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Em alta"
   },
   "2LhDkiLHa_": {
    "en": "New pairs",
@@ -12422,22 +13047,6 @@
    "w": 24,
    "pt": "Dados multicorretora ao vivo (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + dados de derivativos do MarginPad (nosso próprio coletor de liquidações de oito corretoras) · apenas paper trading, não é aconselhamento financeiro."
   },
-  "ABSrPRUDss": {
-   "en": "Liquidation",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/",
-    "/glossary/",
-    "/hyperliquid-liquidations/"
-   ],
-   "n": 5,
-   "w": 1,
-   "pt": "Liquidação"
-  },
   "0I_PksYvAu": {
    "en": "Cross Liq",
    "kind": [
@@ -12462,18 +13071,6 @@
    "w": 2,
    "pt": "Tamanho da posição"
   },
-  "rrrREQMzV2": {
-   "en": "PnL / ROI",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "pt": "PnL / ROI"
-  },
   "D6w0az6TOa": {
    "en": "Average / DCA",
    "kind": [
@@ -12485,55 +13082,6 @@
    "n": 2,
    "w": 2,
    "pt": "Médio / DCA"
-  },
-  "ovemx4owHS": {
-   "en": "Take-Profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Take-profit"
-  },
-  "pX5LlEWjaF": {
-   "en": "Risk / Reward",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "pt": "Risco / Retorno"
-  },
-  "Rt2tHuR3sW": {
-   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>"
-  },
-  "6ElJRITtLj": {
-   "en": "Crypto",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Cripto"
   },
   "oDfCw8gHeA": {
    "en": "Stocks",
@@ -12548,19 +13096,6 @@
    "w": 1,
    "pt": "Ações"
   },
-  "DwNisxlHs5": {
-   "en": "Forex",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Forex"
-  },
   "MKo7Cf-Cfs": {
    "en": "Metals",
    "kind": [
@@ -12572,70 +13107,6 @@
    "n": 1,
    "w": 1,
    "pt": "Metais"
-  },
-  "ZeBJXjDoz_": {
-   "en": "Indices",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Índices"
-  },
-  "Vpu9dX4buL": {
-   "en": "Market",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/",
-    "/trading-api/"
-   ],
-   "n": 3,
-   "w": 1,
-   "pt": "A mercado"
-  },
-  "JNlI5L2-W4": {
-   "en": "Limit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Limite"
-  },
-  "BJLQQ88bfb": {
-   "en": "<span data-i18n=\"long\">Long</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<span data-i18n=\"long\">Long</span>"
-  },
-  "OIWeOUDbe-": {
-   "en": "<span data-i18n=\"short\">Short</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<span data-i18n=\"short\">Short</span>"
   },
   "sjos3CGOIM": {
    "en": "Limit price",
@@ -12771,147 +13242,6 @@
    "w": 4,
    "pt": "Corretora (define a taxa de margem)"
   },
-  "aQyK0fclKF": {
-   "en": "MarginPad - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "MarginPad - 0.5%",
-   "leaf": true
-  },
-  "7yKqDeDTd0": {
-   "en": "Binance - 0.4%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Binance - 0.4%",
-   "leaf": true
-  },
-  "5ZOCKqG5Bp": {
-   "en": "Bybit - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Bybit - 0.5%",
-   "leaf": true
-  },
-  "b5sJgE-gp2": {
-   "en": "OKX - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "OKX - 0.5%"
-  },
-  "4xOEJckW1n": {
-   "en": "Bitget - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Bitget - 0.5%",
-   "leaf": true
-  },
-  "f4tyacp3SN": {
-   "en": "MEXC - 0.1%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "MEXC - 0.1%"
-  },
-  "PgRAMeug7a": {
-   "en": "KuCoin - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "KuCoin - 0.5%",
-   "leaf": true
-  },
-  "xfF7XoGeHA": {
-   "en": "Gate - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Gate - 0.5%",
-   "leaf": true
-  },
-  "tidhONmH-4": {
-   "en": "Kraken - 0.6%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Kraken - 0.6%",
-   "leaf": true
-  },
-  "bJmVCli3x5": {
-   "en": "Hyperliquid - 1.25%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Hyperliquid - 1.25%",
-   "leaf": true
-  },
-  "NbY1pa6AcP": {
-   "en": "Coinbase - 1.33%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Coinbase - 1.33%",
-   "leaf": true
-  },
   "if_zv_6NFN": {
    "en": "<b>Maintenance margin</b> is the slice of your position the exchange makes you keep on deposit; the moment your margin falls to it, you are liquidated. Binance asks 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% on its first tier, Hyperliquid 1.25% on BTC, Coinbase 1.33%; MarginPad default is 0.5%. It moves <b>only where your liquidation price sits</b>. Position size, fees and P&amp;L do not change.",
    "kind": [
@@ -12935,19 +13265,6 @@
    "n": 1,
    "w": 6,
    "pt": "Taxas como na (define a taxa taker)"
-  },
-  "xnU-pHn9BQ": {
-   "en": "MarginPad - 0.055%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "MarginPad - 0.055%",
-   "leaf": true
   },
   "eDNj8OEvti": {
    "en": "<b>Taker fee</b> is what the venue charges per side on the full position size (not on your margin), once at open and once at close, less the discount a MarginPad sign-up gets there. It changes <b>only what the trade costs and your net P&amp;L</b>, never the liquidation price. <a href=\"/trading-api/#fees\" target=\"_blank\" rel=\"noopener\">How the fee schedules work</a>",
@@ -13009,22 +13326,6 @@
    "w": 135,
    "pt": "Por padrão, uma ordem a mercado é executada ao <b>preço ao vivo</b> e a margem de manutenção é fixa em <b>0.5%</b> - a linha de entrada fica exatamente onde você clicou e uma nova posição mostra 0.00. Isso é mais fácil do que uma corretora real. O <b>Slippage</b> move a execução contra você como ao percorrer um livro de ordens real: 0.01% nas principais, 0.05% em cripto menos líquida, 0.005% em forex, 0.02% em ações, metais e índices. Os <b>níveis de margem</b> elevam a margem de manutenção conforme a posição cresce, como uma tabela de limite de risco de corretora, então uma posição grande é liquidada mais cedo - uma exigência de manutenção maior deixa menos espaço antes de fechar você. Ambos ficam desligados a menos que você os ative, valem para <b>posições abertas a partir de agora</b>, e uma posição sempre mantém a margem de manutenção com que foi executada. A mesma configuração é a que seus bots usam pela API."
   },
-  "XIfnOuScDy": {
-   "en": "Stop-loss",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/how-to-set-a-stop-loss/",
-    "/glossary/",
-    "/risk-reward-calculator/"
-   ],
-   "n": 4,
-   "w": 1,
-   "pt": "Stop-loss"
-  },
   "cZ6jlq2S4B": {
    "en": "Clear",
    "kind": [
@@ -13050,20 +13351,6 @@
    "w": 18,
    "pt": "A porcentagem é da sua margem, não do preço - com 20x, um movimento de 1% contra você são 20%."
   },
-  "Qqcee-_jcA": {
-   "en": "Take-profit",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/glossary/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Take-profit"
-  },
   "uWFLSW40C-": {
    "en": "Type a price, or the profit you are aiming for as a percent of your margin.",
    "kind": [
@@ -13075,21 +13362,6 @@
    "n": 1,
    "w": 14,
    "pt": "Digite um preço ou o lucro que você busca como porcentagem da sua margem."
-  },
-  "WyBZXB2UvT": {
-   "en": "Trailing stop",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/what-is-a-trailing-stop/",
-    "/glossary/"
-   ],
-   "n": 3,
-   "w": 2,
-   "pt": "Trailing stop"
   },
   "vcKsh1cExG": {
    "en": "Break-even at ROE",
@@ -13293,18 +13565,6 @@
    "n": 5,
    "w": 2,
    "pt": "Tamanho da posição"
-  },
-  "CjMNLLk462": {
-   "en": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
   },
   "_GLQdnGdxv": {
    "en": "Futures wallet balance",
@@ -13550,18 +13810,6 @@
    "w": 2,
    "pt": "Preço de saída"
   },
-  "ZwPMimQZKE": {
-   "en": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
-  },
   "HH_r9MkG7F": {
    "en": "Profit / Loss",
    "kind": [
@@ -13805,18 +14053,6 @@
    "w": 3,
    "pt": "Tamanho da posição (opcional)"
   },
-  "l_riKf071f": {
-   "en": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">moeda</span>"
-  },
   "TtQoitgpQp": {
    "en": "Custom target ROE",
    "kind": [
@@ -13840,30 +14076,6 @@
    "n": 1,
    "w": 3,
    "pt": "Preço alvo personalizado"
-  },
-  "dJlaE8rvN4": {
-   "en": "Target ROE",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "ROE alvo"
-  },
-  "hUSkdyWDaj": {
-   "en": "Profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Lucro"
   },
   "pG6-Ro9wIJ": {
    "en": "Target exit for a desired return on equity. ROE is amplified by leverage, so a small price move is a large account return.",
@@ -14093,18 +14305,6 @@
    "w": 24,
    "pt": "Preços ao vivo e variações de 24 horas nos mercados mais ativos. Toque na ★ para fixar um par na sua watchlist - os pares marcados vão para o início."
   },
-  "uMs9BK8HRr": {
-   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Mapa de calor</span>"
-  },
   "6kRqBe-Mo1": {
    "en": "See where liquidations cluster",
    "kind": [
@@ -14309,18 +14509,6 @@
    "w": 10,
    "pt": "As plataformas que combinariam com o MarginPad - gráficos, impostos e automação."
   },
-  "Mf46iRDWup": {
-   "en": "TradingView",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "TradingView"
-  },
   "HMUGCPsOFe": {
    "en": "Pro charts, 100+ indicators and price alerts - the industry-standard charting platform.",
    "kind": [
@@ -14345,18 +14533,6 @@
    "w": 1,
    "pt": "<span class=\"tc-go\" data-i18n=\"toolGo\">Visitar →</span>"
   },
-  "7qxtMaeb-F": {
-   "en": "Koinly",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Koinly"
-  },
   "0c4JVku-R8": {
    "en": "Crypto tax reports done in minutes - connects to every major exchange.",
    "kind": [
@@ -14369,18 +14545,6 @@
    "w": 11,
    "pt": "Relatórios de impostos de cripto em minutos - conecta com as principais corretoras."
   },
-  "YNDGY6v7RI": {
-   "en": "3Commas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "3Commas"
-  },
   "sgujG0PYfr": {
    "en": "Automated trading bots, smart orders and a multi-exchange terminal.",
    "kind": [
@@ -14392,19 +14556,6 @@
    "n": 1,
    "w": 8,
    "pt": "Bots de trading automatizados, ordens inteligentes e um terminal multicorretora."
-  },
-  "VtoQU5BbyJ": {
-   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "leaf": true
   },
   "FJcqz0QOt4": {
    "en": "Log your trades, win USDT",
@@ -14889,8 +15040,8 @@
    "w": 4,
    "pt": "<a href=\"/blog/\" data-i18n=\"navBlog\">Blog</a> <a href=\"/widgets/\" data-i18n=\"navWidgets\">Widgets</a> <a href=\"/about/\" data-i18n=\"navAbout\">Sobre</a> <a href=\"/contact/\" data-i18n=\"navContact\">Contato</a>"
   },
-  "M-GxaCacNj": {
-   "en": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn free USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b data-i18n=\"footRwd\">Earn free USDT</b><small data-i18n=\"footRwdSub\">Claim every 5 minutes</small></span> </a>",
+  "izhdfHAi1l": {
+   "en": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn real USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b data-i18n=\"footRwd\">Earn real USDT</b><small data-i18n=\"footRwdSub\">Boards, pass and bonuses</small></span> </a>",
    "kind": [
     "html"
    ],
@@ -14898,8 +15049,8 @@
     "/app.html"
    ],
    "n": 1,
-   "w": 6,
-   "pt": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Ganhe USDT grátis\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b data-i18n=\"footRwd\">Ganhe USDT grátis</b><small data-i18n=\"footRwdSub\">Resgate a cada 5 minutos</small></span> </a>"
+   "w": 7,
+   "pt": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn real USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b data-i18n=\"footRwd\">Ganhe USDT de verdade</b><small data-i18n=\"footRwdSub\">Rankings, passe e bônus</small></span> </a>"
   },
   "sC_808K_WC": {
    "en": "<span data-i18n=\"footLegal\">© 2026 MarginPad · Not financial advice</span> <span><a href=\"/terms/\" style=\"color:inherit\">Terms</a> &middot; <a href=\"/privacy/\" style=\"color:inherit\">Privacy</a> &middot; marginpad.io</span>",
@@ -14951,30 +15102,6 @@
    "n": 1,
    "w": 10,
    "pt": "Nenhum ticket ainda. Planeje um trade e toque em “Salvar no diário”."
-  },
-  "V_TTAcNK31": {
-   "en": "<span>My Trades</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2,
-   "pt": "<span>Meus trades</span>"
-  },
-  "ClPoxqx5JT": {
-   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "<span data-i18n=\"chatBtn\">Chat</span>"
   },
   "otpSlG_baZ": {
    "en": "<span class=\"ct-title\" data-i18n=\"chatTitleW\">Trader Chat</span><span class=\"ct-online\" id=\"ctOnline\"></span>",
@@ -15090,21 +15217,6 @@
    "w": 9,
    "pt": "<span data-i18n=\"pwaStep3\">Toque em Adicionar - ele abre em tela cheia, como um app</span>"
   },
-  "V_X177xZkP": {
-   "en": "Menu",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/",
-    "/calendar/",
-    "/catalysts/"
-   ],
-   "n": 81,
-   "w": 1,
-   "pt": "Menu"
-  },
   "M7iFr1ELQD": {
    "en": "MarginPad - home",
    "kind": [
@@ -15151,8 +15263,8 @@
    "w": 1,
    "pt": "Idioma"
   },
-  "rtThN6a7Ti": {
-   "en": "Free USDT - claim every 5 min",
+  "gBN_krS6wR": {
+   "en": "Rewards - boards, pass and bonuses",
    "kind": [
     "attr:title"
    ],
@@ -15164,7 +15276,7 @@
    ],
    "n": 4,
    "w": 5,
-   "pt": "USDT grátis - resgate a cada 5 min"
+   "pt": "Recompensas - rankings, passe e bônus"
   },
   "9JXnPtCzTG": {
    "en": "Main tools",
@@ -15262,18 +15374,6 @@
    "n": 1,
    "w": 3,
    "pt": "Abrir o Paper Trade"
-  },
-  "lyrY2KUDl7": {
-   "en": "Layout",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Layout"
   },
   "1T2AJCOwKB": {
    "en": "2 charts",
@@ -15427,22 +15527,6 @@
    "w": 2,
    "pt": "Mapa de calor de liquidações"
   },
-  "qXSSU8Np0M": {
-   "en": "Coin",
-   "kind": [
-    "attr:aria-label",
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/hyperliquid-liquidations/",
-    "/liquidation-statistics/",
-    "/liquidations/report/2026-10/"
-   ],
-   "n": 7,
-   "w": 1,
-   "pt": "Moeda"
-  },
   "ePEgBUGqDb": {
    "en": "Market screener",
    "kind": [
@@ -15490,20 +15574,6 @@
    "n": 1,
    "w": 2,
    "pt": "Buscar pares"
-  },
-  "hd7Lc9FDjS": {
-   "en": "Timeframe",
-   "kind": [
-    "attr:aria-label",
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/crypto-correlation-matrix/"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "Tempo gráfico"
   },
   "Fe6hl2VCHH": {
    "en": "More timeframes",
@@ -15637,18 +15707,6 @@
    "w": 2,
    "pt": "Controle de alavancagem"
   },
-  "J6JbU5D47S": {
-   "en": "planExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "planExHint"
-  },
   "on6EHMOYn-": {
    "en": "What does the margin rate do?",
    "kind": [
@@ -15673,18 +15731,6 @@
    "w": 3,
    "pt": "Preset de margem de manutenção da corretora"
   },
-  "DeFJ3eHlTO": {
-   "en": "planFeeHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "planFeeHint"
-  },
   "NuZ844-Cq5": {
    "en": "What does the fee schedule do?",
    "kind": [
@@ -15708,18 +15754,6 @@
    "n": 1,
    "w": 2,
    "pt": "Tabela de taxas"
-  },
-  "a3_8lyG-KA": {
-   "en": "planRzHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "planRzHint"
   },
   "di0iGuc9Zf": {
    "en": "What do realistic fills change?",
@@ -15769,18 +15803,6 @@
    "w": 5,
    "pt": "Take-profit como porcentagem da margem"
   },
-  "2npoc0Nngo": {
-   "en": "off",
-   "kind": [
-    "attr:placeholder"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "pt": "desl."
-  },
   "kDB3_iLbXG": {
    "en": "Search a coin, a company, a pair&#8230;",
    "kind": [
@@ -15805,18 +15827,6 @@
    "w": 2,
    "pt": "Buscar mercados"
   },
-  "5MN3jTT9VP": {
-   "en": "liqExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "liqExHint"
-  },
   "r3T3xTYqru": {
    "en": "Copy",
    "kind": [
@@ -15833,18 +15843,6 @@
    "n": 19,
    "w": 1,
    "pt": "Copiar"
-  },
-  "6MRy4Bu8n3": {
-   "en": "crExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "crExHint"
   },
   "OcZtDV9p8R": {
    "en": "Live market pulse",
@@ -15920,8 +15918,8 @@
    "w": 2,
    "pt": "Bot do Telegram"
   },
-  "FBVgp2r0Ho": {
-   "en": "Earn free USDT",
+  "m3IGvmNkmR": {
+   "en": "Earn real USDT",
    "kind": [
     "attr:aria-label",
     "html"
@@ -15933,7 +15931,7 @@
    ],
    "n": 3,
    "w": 3,
-   "pt": "Ganhe USDT grátis"
+   "pt": "Ganhe USDT de verdade"
   },
   "2ciDqQVzG8": {
    "en": "Back to top",
@@ -25385,18 +25383,6 @@
    "w": 56,
    "pt": "O melhor mapa de calor de liquidações grátis em 2026 é o <b>MarginPad</b> (ao vivo, prévia grátis de 5 minutos, ilimitado com Premium por $11.99/mês); o produto pago mais profundo é a <b>Coinglass</b>. Abaixo: 6 ferramentas comparadas com honestidade - incluindo o que todo fornecedor de heatmap tem em comum e poucos divulgam: as camadas de clusters são <b>estimativas</b>, em todas as plataformas. Esta lista é publicada pelo MarginPad; cada afirmação pode ser verificada em minutos."
   },
-  "moMMcUuytS": {
-   "en": "Tool",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/best-liquidation-heatmap-tools/"
-   ],
-   "n": 1,
-   "w": 1,
-   "pt": "Ferramenta"
-  },
   "1JoBEDxQUt": {
    "en": "Free heatmap",
    "kind": [
@@ -29850,8 +29836,8 @@
    "w": 11,
    "pt": "Ciclo do Bitcoin - Pi Cycle Top, Rainbow, Puell e Indicadores | MarginPad"
   },
-  "IFUQwsmKhv": {
-   "en": "<a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
+  "MV6ZOvZ9lC": {
+   "en": "<a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Rewards - boards, pass and bonuses\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
    "kind": [
     "html"
    ],
@@ -29862,7 +29848,7 @@
    ],
    "n": 3,
    "w": 3,
-   "pt": "<a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Recompensas</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>Meus Trades</a>"
+   "pt": "<a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Rewards - boards, pass and bonuses\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Recompensas</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>Meus Trades</a>"
   },
   "bjAzHnCdsW": {
    "en": "<a href=\"/\">Home</a> / Bitcoin cycle",
@@ -65219,8 +65205,8 @@
    "w": 9,
    "pt": "Duas integrações fazem dessa parceria mais do que uma troca de logos:"
   },
-  "JjXE88B_4H": {
-   "en": "<b>1. Rewards cash out straight to Moon.</b> MarginPad's <a href=\"/rewards/\">rewards faucet</a> pays real money for using the site - and at withdrawal you can choose a <b>Moon username</b> as the destination instead of an exchange UID. Practice funds earned here become a live Moon balance there. There is also a Moon sign-up reward on the same page.",
+  "cFJcKuTTUH": {
+   "en": "<b>1. Rewards cash out straight to Moon.</b> MarginPad's <a href=\"/rewards/\">rewards</a> pay real money for competing on the site - and at withdrawal you can choose a <b>Moon username</b> as the destination instead of an exchange UID. Practice funds earned here become a live Moon balance there. There is also a Moon sign-up reward on the same page.",
    "kind": [
     "html"
    ],
@@ -65229,7 +65215,7 @@
    ],
    "n": 1,
    "w": 52,
-   "pt": "<b>1. As recompensas são sacadas direto para a Moon.</b> O <a href=\"/rewards/\">faucet de recompensas</a> da MarginPad paga dinheiro real por usar o site, e no saque você pode escolher um <b>username da Moon</b> como destino em vez do UID de uma corretora. Os fundos ganhos aqui viram saldo real na Moon. Também há uma recompensa de cadastro na Moon na mesma página."
+   "pt": "<b>1. As recompensas saem direto para a Moon.</b> As <a href=\"/rewards/\">recompensas</a> da MarginPad pagam dinheiro de verdade por competir no site - e no saque você pode escolher um <b>nome de usuário da Moon</b> como destino, em vez de um UID de exchange. O que você ganha praticando aqui vira saldo real na Moon. Na mesma página há também uma recompensa de cadastro na Moon."
   },
   "dqblkW60Il": {
    "en": "<b>2. Practice first, free.</b> Every mechanic that matters on Moon - direction, sizing, leverage, knowing when you are wrong - is exactly what <a href=\"/paper-trade\">Paper Trade</a> drills at live prices with zero risk. The traders who do best on real platforms are the ones who made their mistakes on paper first.",
@@ -65424,8 +65410,8 @@
    "w": 6,
    "pt": "Posso sacar as recompensas da MarginPad para a Moon?"
   },
-  "HQCy2irU4E": {
-   "en": "Yes. MarginPad's rewards faucet supports cashing out straight to a Moon account - at withdrawal you choose the Moon option and enter your Moon username. There is also a Moon sign-up reward on the rewards page. Rewards unlock at Bronze level (500 XP), which normal use of the site reaches quickly.",
+  "IZZ-CbtCj1": {
+   "en": "Yes. MarginPad's rewards balance can be cashed out straight to a Moon account - at withdrawal you choose the Moon option and enter your Moon username. There is also a Moon sign-up reward on the rewards page. Rewards unlock at Bronze level (500 XP), which normal use of the site reaches quickly.",
    "kind": [
     "ld"
    ],
@@ -65433,8 +65419,8 @@
     "/blog/moon-trading-platform-review/"
    ],
    "n": 1,
-   "w": 48,
-   "pt": "Sim. O faucet de recompensas da MarginPad permite sacar direto para uma conta Moon: no saque você escolhe a opção Moon e informa seu username da Moon. Também há uma recompensa de cadastro na Moon na página de recompensas. As recompensas são liberadas no nível Bronze (500 XP), que o uso normal do site alcança rápido."
+   "w": 49,
+   "pt": "Sim. O saldo de recompensas da MarginPad pode ser sacado direto para uma conta Moon - no saque, você escolhe a opção Moon e informa seu nome de usuário da Moon. Há também uma recompensa de cadastro na Moon na página de recompensas. As recompensas são liberadas no nível Bronze (500 XP), que o uso normal do site alcança rápido."
   },
   "VsjowYrMRn": {
    "en": "Moon review",
@@ -120562,8 +120548,8 @@
    "w": 3,
    "pt": "Ler os guias <i>→</i>"
   },
-  "S-J1sI-GNh": {
-   "en": "<span class=\"dot\"></span> Free USDT",
+  "ktxD-ZnBO_": {
+   "en": "<span class=\"dot\"></span> Real USDT",
    "kind": [
     "html"
    ],
@@ -120572,7 +120558,7 @@
    ],
    "n": 1,
    "w": 2,
-   "pt": "<span class=\"dot\"></span> USDT grátis"
+   "pt": "<span class=\"dot\"></span> USDT de verdade"
   },
   "L09Lf7yBvB": {
    "en": "Rewards",
@@ -120586,8 +120572,8 @@
    "w": 1,
    "pt": "Recompensas"
   },
-  "bToziIGRz5": {
-   "en": "Claim free USDT every 5 minutes, finish daily missions, win the 14-day league. Withdraw real USDT.",
+  "e_hW0byt0G": {
+   "en": "Win the 14-day leaderboards, climb the Season Pass, redeem codes and partner bonuses. Withdraw real USDT from $5.",
    "kind": [
     "html"
    ],
@@ -120595,11 +120581,11 @@
     "/"
    ],
    "n": 1,
-   "w": 15,
-   "pt": "Resgate USDT grátis a cada 5 minutos, complete missões diárias, vença a liga de 14 dias. Saque USDT de verdade."
+   "w": 18,
+   "pt": "Vença os rankings de 14 dias, suba no Season Pass, resgate códigos e bônus de parceiros. Saque USDT de verdade a partir de $5."
   },
-  "pKYE10gK1z": {
-   "en": "<span class=\"cd\"></span> CLAIM EVERY 5 MIN · DAILY MISSIONS",
+  "pXAeylW1s8": {
+   "en": "<span class=\"cd\"></span> 14-DAY SEASONS · SEASON PASS · BONUSES",
    "kind": [
     "html"
    ],
@@ -120608,7 +120594,7 @@
    ],
    "n": 1,
    "w": 5,
-   "pt": "<span class=\"cd\"></span> RESGATE A CADA 5 MIN · MISSÕES DIÁRIAS"
+   "pt": "<span class=\"cd\"></span> TEMPORADAS DE 14 DIAS · SEASON PASS · BÔNUS"
   },
   "I1wPndmez5": {
    "en": "Start earning <i>→</i>",
@@ -126068,8 +126054,8 @@
    "w": 6,
    "pt": "Suba de nível do <span class=\"g\">Bronze ao Diamante</span>"
   },
-  "T2MHPP1Wu8": {
-   "en": "Every meaningful thing you do on MarginPad earns XP. Everyone starts <b style=\"color:#8fb0c8\">Unranked</b> with every reward already open - the faucet, the missions, withdrawals and the boards need no level. Reach <b style=\"color:#c97f4a\">Bronze (500 XP)</b> for your first badge, then climb six tiers to Diamond and prove your loyalty. This is a marathon, not a sprint - Diamond is for the few who stay.",
+  "UzBgMalwGF": {
+   "en": "Every meaningful thing you do on MarginPad earns XP. Everyone starts <b style=\"color:#8fb0c8\">Unranked</b> with every reward already open - the boards, the Season Pass, the missions and withdrawals need no level. Reach <b style=\"color:#c97f4a\">Bronze (500 XP)</b> for your first badge, then climb six tiers to Diamond and prove your loyalty. This is a marathon, not a sprint - Diamond is for the few who stay.",
    "kind": [
     "html"
    ],
@@ -126077,8 +126063,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 58,
-   "pt": "Tudo o que é relevante que você faz na MarginPad rende XP. Todo mundo começa <b style=\"color:#8fb0c8\">Sem nível</b> com todas as recompensas já abertas - o faucet, as missões, os saques e as tabelas não exigem nível. Chegue ao <b style=\"color:#c97f4a\">Bronze (500 XP)</b> para ganhar seu primeiro selo, depois suba seis níveis até o Diamante e prove sua lealdade. É uma maratona, não uma corrida de velocidade - o Diamante é para os poucos que ficam."
+   "w": 59,
+   "pt": "Tudo o que você faz de relevante na MarginPad rende XP. Todo mundo começa <b style=\"color:#8fb0c8\">Sem Ranking</b>, já com todas as recompensas abertas - os rankings, o Season Pass, as missões e os saques não exigem nível. Alcance o <b style=\"color:#c97f4a\">Bronze (500 XP)</b> para o seu primeiro selo, depois suba seis níveis até o Diamante e prove sua lealdade. Isto é uma maratona, não um sprint - o Diamante é para os poucos que ficam."
   },
   "ryEaJf7b4t": {
    "en": "Unranked",
@@ -126141,8 +126127,8 @@
    "w": 2,
    "pt": "Os níveis"
   },
-  "oTby3uLoLi": {
-   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it pays bigger faucet claims. Each tier takes progressively longer.",
+  "uwB75Cd-Eh": {
+   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it unlocks a frame, a badge and a bigger withdrawal bonus. The faucet claim multiplier below applies only to accounts opened before 12 Nov 2026 - newer accounts earn USDT from the season boards, the Season Pass, promo codes and partner bonuses. Each tier takes progressively longer.",
    "kind": [
     "html"
    ],
@@ -126150,8 +126136,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 38,
-   "pt": "Todo mundo começa Sem nível, e toda recompensa está liberada desde o primeiro dia - nenhum nível desbloqueia nada. O Bronze, com 500 XP, é o seu primeiro emblema, e cada nível acima paga resgates maiores no faucet. Cada nível leva progressivamente mais tempo."
+   "w": 71,
+   "pt": "Todo mundo começa Sem Ranking, e todas as recompensas estão abertas desde o primeiro dia - nenhum nível desbloqueia nada. Bronze, aos 500 XP, é seu primeiro selo, e cada nível acima libera uma moldura, um selo e um bônus de saque maior. O multiplicador de resgate do faucet abaixo vale apenas para contas abertas antes de 12 de novembro de 2026 - contas mais novas ganham USDT nos rankings da temporada, no Season Pass, em códigos promocionais e bônus de parceiros. Cada nível leva progressivamente mais tempo."
   },
   "pBTrdb5I8D": {
    "en": "<b>0</b> XP · where everyone starts",
@@ -126189,8 +126175,8 @@
    "w": 7,
    "pt": "Ganhe XP: Academia, paper trades, check-ins &amp; sequências"
   },
-  "nYdvh7pJn2": {
-   "en": "Faucet, missions, withdrawals and boards - all open",
+  "YMW_PTu7DQ": {
+   "en": "Missions (Ticks + XP), boards, Season Pass and withdrawals - all open",
    "kind": [
     "html"
    ],
@@ -126198,8 +126184,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 7,
-   "pt": "Faucet, missões, saques e tabelas - tudo liberado"
+   "w": 10,
+   "pt": "Missões (Ticks + XP), rankings, Season Pass e saques - tudo aberto"
   },
   "AfetcLhvgA": {
    "en": "<b>Reach 500 XP</b> to become Bronze",
@@ -126250,8 +126236,8 @@
    "w": 3,
    "pt": "<b>Emblema Bronze no perfil</b>"
   },
-  "Kq_FHFKDCv": {
-   "en": "Standard faucet rewards",
+  "PkzMcumt9V": {
+   "en": "Standard faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126259,8 +126245,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 3,
-   "pt": "Recompensas padrão do faucet"
+   "w": 5,
+   "pt": "Resgates de faucet padrão (contas antigas)"
   },
   "SJiYC_zDTi": {
    "en": "Your first frame colour on the trader card",
@@ -126310,8 +126296,8 @@
    "w": 2,
    "pt": "<b>3,000</b> XP"
   },
-  "FIHSQRWLxH": {
-   "en": "<b>+10%</b> faucet claim rewards",
+  "9_DIbgY22o": {
+   "en": "<b>+10%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126319,8 +126305,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+10%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+10%</b> nos resgates de faucet (contas antigas)"
   },
   "SnFLCcBjhz": {
    "en": "Silver profile badge",
@@ -126382,8 +126368,8 @@
    "w": 2,
    "pt": "<b>12,000</b> XP"
   },
-  "q7cBTF2hro": {
-   "en": "<b>+20%</b> faucet claim rewards",
+  "OXRDF36K2y": {
+   "en": "<b>+20%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126391,8 +126377,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+20%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+20%</b> nos resgates de faucet (contas antigas)"
   },
   "n9AA6IGmi_": {
    "en": "Higher daily claim limit",
@@ -126454,8 +126440,8 @@
    "w": 2,
    "pt": "<b>30,000</b> XP"
   },
-  "dVuVQMvGZd": {
-   "en": "<b>+35%</b> faucet claim rewards",
+  "HPaHSILvkd": {
+   "en": "<b>+35%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126463,8 +126449,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+35%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+35%</b> nos resgates de faucet (contas antigas)"
   },
   "LaPQ83r_2g": {
    "en": "Even higher daily limits",
@@ -126526,8 +126512,8 @@
    "w": 2,
    "pt": "<b>60,000</b> XP"
   },
-  "CsRfU_XSP4": {
-   "en": "<b>+50%</b> faucet claim rewards",
+  "kxYQftxU9j": {
+   "en": "<b>+50%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126535,8 +126521,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+50%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+50%</b> nos resgates de faucet (contas antigas)"
   },
   "GzoqRZmSxP": {
    "en": "<b>+10% withdrawal bonus</b> - the house pays extra",
@@ -126598,8 +126584,8 @@
    "w": 2,
    "pt": "<b>120,000</b> XP"
   },
-  "G5jb4hZwJQ": {
-   "en": "<b>+75%</b> faucet claim rewards",
+  "g1NPwpiOoI": {
+   "en": "<b>+75%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126607,8 +126593,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+75%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+75%</b> nos resgates de faucet (contas antigas)"
   },
   "C90wA75kti": {
    "en": "<b>2x</b> your daily earning cap",
@@ -126670,8 +126656,8 @@
    "w": 4,
    "pt": "<b>250,000</b> XP · o 1%"
   },
-  "pCYnjnoGVs": {
-   "en": "<b>+90%</b> faucet claim rewards",
+  "Fb8glV8mZw": {
+   "en": "<b>+90%</b> faucet claims (legacy accounts)",
    "kind": [
     "html"
    ],
@@ -126679,8 +126665,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 4,
-   "pt": "<b>+90%</b> nas recompensas do faucet"
+   "w": 5,
+   "pt": "<b>+90%</b> nos resgates de faucet (contas antigas)"
   },
   "vJo60PW6z2": {
    "en": "<b>15%</b> withdrawal bonus",
@@ -126862,8 +126848,8 @@
    "w": 4,
    "pt": "Resgatar no faucet"
   },
-  "NxoCwBovMn": {
-   "en": "up to 10/day",
+  "yr3QBqlp3B": {
+   "en": "legacy accounts · up to 10/day",
    "kind": [
     "html"
    ],
@@ -126871,8 +126857,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 3,
-   "pt": "até 10/dia"
+   "w": 5,
+   "pt": "contas antigas · até 10/dia"
   },
   "OrB2PFX_50": {
    "en": "Approved promo post",
@@ -127054,8 +127040,8 @@
    "w": 4,
    "pt": "Como eu ganho XP?"
   },
-  "h_pOigB-5q": {
-   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, faucet claims, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
+  "YC9hu3Rgkp": {
+   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, faucet claims (legacy accounts), promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
    "kind": [
     "html"
    ],
@@ -127063,8 +127049,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 34,
-   "pt": "Fechando paper trades lucrativos, check-ins e sequências diárias, missões diárias, resgates no faucet, divulgando a plataforma no X e ficando bem colocado nas competições de temporada de 14 dias. Toda fonte tem um limite diário para não dar para farmar."
+   "w": 36,
+   "pt": "Fechar paper trades com lucro, check-ins e sequências diárias, missões diárias, resgates de faucet (contas antigas), divulgar a plataforma no X e se classificar nas competições de temporada de 14 dias. Cada fonte tem um limite diário, então não dá para farmar."
   },
   "Gt_zKQMtnQ": {
    "en": "How long does Diamond take?",
@@ -127127,8 +127113,8 @@
    "w": 5,
    "pt": "O que os níveis mais altos desbloqueiam?"
   },
-  "bNNmEGxzlR": {
-   "en": "Bigger faucet rewards (up to +75% at Legendary), higher daily limits, exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+  "t90DwT9gX3": {
+   "en": "Exclusive badges and frames, higher daily limits (accounts opened before 12 Nov 2026 also keep bigger faucet claims, up to +90% at Legendary), exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
    "kind": [
     "html"
    ],
@@ -127136,8 +127122,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 26,
-   "pt": "Recompensas maiores no faucet (até +75% no Lendário), limites diários mais altos, emblemas e cosméticos exclusivos, competições especiais e bônus de saque para Diamante (10%) e Lendário (15%)."
+   "w": 38,
+   "pt": "Selos e molduras exclusivos, limites diários maiores (contas abertas antes de 12 de novembro de 2026 também mantêm resgates de faucet maiores, até +90% no Lendário), selos e cosméticos exclusivos, competições especiais e bônus de saque para Diamante (10%) e Lendário (15%)."
   },
   "FTi-jONO8u": {
    "en": "Do I lose XP if I go inactive?",
@@ -127223,8 +127209,8 @@
    "w": 11,
    "pt": "<span><a href=\"/\">MarginPad</a> · <a href=\"/rewards/\">Recompensas</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/community/\">Comunidade</a></span><br> <span>© 2026 MarginPad · Suba de nível ficando.</span>"
   },
-  "d4k5o-QZnE": {
-   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock bigger faucet rewards, exclusive badges and a Diamond withdrawal bonus. A slow, loyalty-first progression.",
+  "6s3h_botWw": {
+   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock exclusive badges, frames and a withdrawal bonus; accounts opened before 12 Nov 2026 also keep bigger faucet claims. A slow, loyalty-first progression.",
    "kind": [
     "attr:content"
    ],
@@ -127232,8 +127218,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 34,
-   "pt": "Ganhe XP por atividade real na MarginPad - trading, sequências diárias, missões e competições - e suba do Bronze ao Diamante. Níveis mais altos desbloqueiam recompensas maiores no faucet, emblemas exclusivos e um bônus de saque no Diamante. Uma progressão lenta, que premia a fidelidade."
+   "w": 42,
+   "pt": "Ganhe XP por atividade real na MarginPad - trading, sequências diárias, missões e competições - e suba de Bronze a Diamante. Níveis mais altos liberam selos e molduras exclusivos e um bônus de saque; contas abertas antes de 12 de novembro de 2026 também mantêm resgates de faucet maiores. Uma progressão lenta, que premia a lealdade."
   },
   "X0OP53QCZO": {
    "en": "MarginPad Level System - Bronze to Diamond",
@@ -127247,8 +127233,8 @@
    "w": 6,
    "pt": "Sistema de níveis da MarginPad - do Bronze ao Diamante"
   },
-  "mN3_fdzU9A": {
-   "en": "Level up by using the platform. Bigger faucet rewards, badges, exclusive events and a Diamond withdrawal bonus reward long-term loyalty.",
+  "1nZioUJQyN": {
+   "en": "Level up by using the platform. Badges, frames, exclusive events and a withdrawal bonus reward long-term loyalty.",
    "kind": [
     "attr:content"
    ],
@@ -127256,8 +127242,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 19,
-   "pt": "Suba de nível usando a plataforma. Recompensas maiores no faucet, emblemas, eventos exclusivos e um bônus de saque no Diamante premiam a fidelidade de longo prazo."
+   "w": 16,
+   "pt": "Suba de nível usando a plataforma. Selos, molduras, eventos exclusivos e um bônus de saque recompensam a lealdade de longo prazo."
   },
   "aU4RV_E2Sk": {
    "en": "How do I earn XP on MarginPad?",
@@ -127271,8 +127257,8 @@
    "w": 6,
    "pt": "Como eu ganho XP na MarginPad?"
   },
-  "S6ovlHZ7Kv": {
-   "en": "You earn XP for real activity: closing profitable paper trades, daily check-ins and streaks, completing daily missions, claiming from the faucet, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
+  "Mjg9u1hGSe": {
+   "en": "You earn XP for real activity: closing profitable paper trades, daily check-ins and streaks, completing daily missions, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
    "kind": [
     "ld"
    ],
@@ -127280,8 +127266,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 43,
-   "pt": "Você ganha XP por atividade real: fechando paper trades lucrativos, check-ins e sequências diárias, concluindo missões diárias, resgatando no faucet, divulgando a plataforma no X e ficando bem colocado nas competições de temporada de 14 dias. Toda fonte tem um limite diário para não dar para farmar."
+   "w": 39,
+   "pt": "Você ganha XP por atividade real: fechar paper trades com lucro, check-ins e sequências diárias, completar as missões diárias, divulgar a plataforma no X e se classificar nas competições de temporada de 14 dias. Cada fonte tem um limite diário, então não dá para farmar."
   },
   "by9cUupcu0": {
    "en": "How long does it take to reach Diamond?",
@@ -127331,8 +127317,8 @@
    "w": 37,
    "pt": "Não. O XP da Academia tem limite, então só ajuda um usuário novo a chegar aos primeiros níveis. Mesmo depois de concluir todas as lições você ainda estará longe do Diamante - a progressão de longo prazo só se conquista com uso consistente."
   },
-  "PV4-LQRtmB": {
-   "en": "Bigger faucet claim rewards (up to +90% at Legendary), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+  "94a-Sw2UfL": {
+   "en": "Exclusive profile badges and cosmetics first; accounts opened before 12 Nov 2026 also keep bigger faucet claims (up to +90% at Legendary). Then higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
    "kind": [
     "ld"
    ],
@@ -127340,8 +127326,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 30,
-   "pt": "Recompensas maiores nos resgates do faucet (até +90% no Lendário), limites diários mais altos, emblemas de perfil e cosméticos exclusivos, acesso a competições especiais e bônus de saque para Diamante (10%) e Lendário (15%)."
+   "w": 44,
+   "pt": "Primeiro, selos de perfil e cosméticos exclusivos; contas abertas antes de 12 de novembro de 2026 também mantêm resgates de faucet maiores (até +90% no Lendário). Depois, limites diários maiores, selos de perfil e cosméticos exclusivos, acesso a competições especiais e bônus de saque para Diamante (10%) e Lendário (15%)."
   },
   "3NkNYtfteI": {
    "en": "Do I lose XP if I stop being active?",
@@ -147602,8 +147588,8 @@
    "w": 4,
    "pt": "<a href=\"/blog/\">Blog</a> <a href=\"/widgets/\">Widgets</a> <a href=\"/about/\">Sobre</a> <a href=\"/contact/\">Contato</a>"
   },
-  "afgZ-cCEwX": {
-   "en": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn free USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b>Earn free USDT</b><small>Claim every 5 minutes</small></span> </a>",
+  "jZZja_dnMn": {
+   "en": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn real USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b>Earn real USDT</b><small>Boards, pass and bonuses</small></span> </a>",
    "kind": [
     "html"
    ],
@@ -147611,8 +147597,8 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 6,
-   "pt": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn free USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b>Ganhe USDT grátis</b><small>Resgate a cada 5 minutos</small></span> </a>"
+   "w": 7,
+   "pt": "<a class=\"foot-rwd\" href=\"/rewards/\" aria-label=\"Earn real USDT\"> <svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg> <span><b>Ganhe USDT de verdade</b><small>Rankings, passe e bônus</small></span> </a>"
   },
   "OF8why6xEc": {
    "en": "<span>© 2026 MarginPad · Not financial advice</span> <span>marginpad.io</span>",
@@ -147902,8 +147888,8 @@
    "w": 8,
    "pt": "Liquidações de Cripto ao Vivo - Feed em Tempo Real, Grátis, Sem Login"
   },
-  "-bPMNNPVLX": {
-   "en": "Free USDT Faucet - Claim Every 5 Minutes, No Deposit | MarginPad",
+  "C72eCqRQJr": {
+   "en": "Earn USDT Rewards - Season Leaderboards, Season Pass, Bonuses | MarginPad",
    "kind": [
     "title",
     "attr:content"
@@ -147913,10 +147899,10 @@
    ],
    "n": 2,
    "w": 9,
-   "pt": "Faucet de USDT Grátis - Resgate a Cada 5 Minutos, Sem Depósito | MarginPad"
+   "pt": "Ganhe USDT - Rankings de Temporada, Season Pass, Bônus | MarginPad"
   },
-  "WJ30ba_Kxw": {
-   "en": "<span class=\"pill\">● Free USDT · No deposit</span>",
+  "AQSEGsczlL": {
+   "en": "<span class=\"pill\">● Real USDT · No deposit</span>",
    "kind": [
     "html"
    ],
@@ -147925,10 +147911,10 @@
    ],
    "n": 1,
    "w": 4,
-   "pt": "<span class=\"pill\">● USDT grátis · Sem depósito</span>"
+   "pt": "<span class=\"pill\">● USDT de verdade · Sem depósito</span>"
   },
-  "5O19aPV72R": {
-   "en": "Stack <span>free USDT</span> every 5 minutes.",
+  "ZCvrVoGZse": {
+   "en": "Earn <span>real USDT</span> for trading well.",
    "kind": [
     "html"
    ],
@@ -147936,11 +147922,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 5,
-   "pt": "Acumule <span>USDT grátis</span> a cada 5 minutos."
+   "w": 6,
+   "pt": "Ganhe <span>USDT de verdade</span> por operar bem."
   },
-  "OdkkObBhyu": {
-   "en": "Every account earns from its first day - no level to reach, no deposit. Claim, run the missions, invite, compete, then cash out from $5 to Bybit, Moon, MEXC or Bitget.",
+  "9WlG0sBO-W": {
+   "en": "Every account earns from its first day - no level to reach, no deposit. Compete on the season leaderboards, climb the Season Pass, redeem codes, invite friends, then cash out from $5 to Bybit, Moon or MEXC.",
    "kind": [
     "html"
    ],
@@ -147948,8 +147934,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 30,
-   "pt": "Toda conta ganha desde o primeiro dia - sem nível a alcançar, sem depósito. Resgate, cumpra as missões, convide, dispute, e depois saque a partir de $5 para Bybit, Moon, MEXC ou Bitget."
+   "w": 36,
+   "pt": "Toda conta ganha desde o primeiro dia - sem nível para alcançar, sem depósito. Compita nos rankings da temporada, suba no Season Pass, resgate códigos, convide amigos e depois saque a partir de $5 para Bybit, Moon ou MEXC."
   },
   "_89GS-D4rS": {
    "en": "What&#39;s on the table",
@@ -148011,8 +147997,8 @@
    "w": 26,
    "pt": "<b id=\"eaWel\">$0.50</b> de bônus de boas-vindas quando um amigo convida você, mais <b id=\"eaMoon\">$1.00</b> por abrir uma conta Moon por nós, e <b id=\"eaMexc\">$1.00</b> por uma conta MEXC, <b id=\"eaBingx\">$1.00</b> por uma BingX ou <b id=\"eaBitget\">$1.00</b> por uma Bitget."
   },
-  "V8xtr4n-l4": {
-   "en": "<span class=\"eamt\" id=\"eaDay\">$0.10</span><i>a day</i>",
+  "fSlh0__kSP": {
+   "en": "<span class=\"eamt\" id=\"eaDay\">Ticks + XP</span><i id=\"eaDayU\">missions</i>",
    "kind": [
     "html"
    ],
@@ -148020,11 +148006,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 2,
-   "pt": "<span class=\"eamt\" id=\"eaDay\">$0.10</span><i>por dia</i>"
+   "w": 3,
+   "pt": "<span class=\"eamt\" id=\"eaDay\">Ticks + XP</span><i id=\"eaDayU\">missões</i>"
   },
-  "AMK4jbzmbC": {
-   "en": "Claim <b id=\"eaAmt\">$0.01</b> from the faucet every few minutes and finish the daily missions. Resets at 00:00 UTC.",
+  "0HrzSuaEq0": {
+   "en": "Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class=\"fcl-only\"> Your account also keeps the faucet: claim <b id=\"eaAmt\">$0.01</b> every few minutes.</span>",
    "kind": [
     "html"
    ],
@@ -148032,8 +148018,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 17,
-   "pt": "Resgate <b id=\"eaAmt\">$0.01</b> do faucet a cada poucos minutos e conclua as missões diárias. Reinicia às 00:00 UTC."
+   "w": 28,
+   "pt": "Complete as missões diárias: cada missão paga Ticks, e fechar o conjunto paga XP. Reinicia às 00:00 UTC.<span class=\"fcl-only\"> Sua conta também mantém o faucet: resgate <b id=\"eaAmt\">$0.01</b> a cada poucos minutos.</span>"
   },
   "tYQ-piW984": {
    "en": "Every time you do it",
@@ -148119,8 +148105,8 @@
    "w": 35,
    "pt": "Pago em USDT no seu saldo da MarginPad. Saque a partir de <b id=\"eaMin\">$5.00</b> para uma conta Bybit ou Moon. Uso justo: um saldo por pessoa, com limite de frequência, pago de um pool diário - um agradecimento por usar o site, não uma renda."
   },
-  "ir4X5MauLc": {
-   "en": "Sign in free with just your email. The faucet, missions and withdrawals are open from your first day - no level to reach. Claim free USDT every few minutes, and earn XP on the <a href=\"/academy/\" style=\"color:#c2f64a\">Academy</a> and <a href=\"/paper-trade\" style=\"color:#c2f64a\">Paper Trade</a> for bigger claims.",
+  "_fygMQRJbb": {
+   "en": "Sign in free with just your email. The season leaderboards, the Season Pass, codes and partner bonuses pay real USDT from your first day - no level to reach, no deposit. Daily missions pay Ticks and XP, and the <a href=\"/academy/\" style=\"color:#c2f64a\">Academy</a> and <a href=\"/paper-trade\" style=\"color:#c2f64a\">Paper Trade</a> level you up.",
    "kind": [
     "html"
    ],
@@ -148128,8 +148114,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 40,
-   "pt": "Entre grátis só com seu e-mail. O faucet, as missões e os saques estão abertos desde o primeiro dia - sem nível a alcançar. Resgate USDT grátis a cada poucos minutos e ganhe XP na <a href=\"/academy/\" style=\"color:#c2f64a\">Academia</a> e no <a href=\"/paper-trade\" style=\"color:#c2f64a\">Paper Trade</a> para resgates maiores."
+   "w": 45,
+   "pt": "Entre grátis só com seu e-mail. Os rankings da temporada, o Season Pass, os códigos e os bônus de parceiros pagam USDT de verdade desde o seu primeiro dia - sem nível para alcançar, sem depósito. As missões diárias pagam Ticks e XP, e a <a href=\"/academy/\" style=\"color:#c2f64a\">Academia</a> e o <a href=\"/paper-trade\" style=\"color:#c2f64a\">Paper Trade</a> sobem o seu nível."
   },
   "XPt1WqOAk0": {
    "en": "Sign in with just your email - no password, no deposit. Your balance follows you across devices; you only add your Bybit UID or Moon username when you cash out.",
@@ -148407,6 +148393,18 @@
    "n": 1,
    "w": 31,
    "pt": "Os saques <b style=\"color:#ffd75a\">não são automáticos</b> - cada pedido é revisado e enviado manualmente, e será processado em breve. O USDT é enviado para sua conta Bybit pelo UID - confira bem seu UID da Bybit antes de confirmar."
+  },
+  "YVQ2FNKZYu": {
+   "en": "Real USDT on MarginPad comes from the season leaderboards, the Season Pass, promo codes and partner sign-up bonuses. Daily missions pay Ticks and XP. Prizes land on this balance; cash out from $5.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 33,
+   "pt": "O USDT de verdade na MarginPad vem dos rankings da temporada, do Season Pass, de códigos promocionais e de bônus de cadastro em parceiros. As missões diárias pagam Ticks e XP. Os prêmios caem neste saldo; saque a partir de $5."
   },
   "88kK6Q0D61": {
    "en": "<span id=\"progLbl\">$0.00 / $0.10 claimed today</span>",
@@ -148829,8 +148827,8 @@
    "w": 30,
    "pt": "Use as ferramentas, ganhe USDT extra - cada resgate também libera um <b style=\"color:#c2f64a\">bônus misterioso de XP</b>. Resgate 6 para o bônus do conjunto diário, 15 na semana para o prêmio semanal. Reinicia às 00:00 UTC<span id=\"msnReset\"></span>."
   },
-  "_SEmSd6kB9": {
-   "en": "<span class=\"st\">&#9675;</span><span class=\"tx\"><span class=\"t1\">Daily missions</span><span class=\"t2\" style=\"display:block\">Sign in to unlock daily missions and earn free USDT for using the site.</span></span>",
+  "BrKhWCA6rh": {
+   "en": "<span class=\"st\">&#9675;</span><span class=\"tx\"><span class=\"t1\">Daily missions</span><span class=\"t2\" style=\"display:block\">Sign in to unlock daily missions - they pay Ticks and XP for using the site.</span></span>",
    "kind": [
     "html"
    ],
@@ -148838,8 +148836,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 16,
-   "pt": "<span class=\"st\">&#9675;</span><span class=\"tx\"><span class=\"t1\">Missões diárias</span><span class=\"t2\" style=\"display:block\">Entre para liberar as missões diárias e ganhar USDT grátis por usar o site.</span></span>"
+   "w": 17,
+   "pt": "<span class=\"st\">&#9675;</span><span class=\"tx\"><span class=\"t1\">Missões diárias</span><span class=\"t2\" style=\"display:block\">Entre para liberar as missões diárias - elas pagam Ticks e XP por usar o site.</span></span>"
   },
   "Bcz90c1rfg": {
    "en": "<span class=\"msn-gst\"><a href=\"#\" data-auth-open style=\"color:#c2f64a;font-weight:700\">Sign in</a> to unlock daily missions &mdash; they verify automatically.</span>",
@@ -149312,8 +149310,8 @@
    "w": 14,
    "pt": "Só o seu e-mail - sem senha, sem UID por enquanto. Seu saldo fica salvo na sua conta."
   },
-  "Kdn2di42YK": {
-   "en": "Claim every 5 min",
+  "mV8uE5B1ti": {
+   "en": "Compete, climb, redeem",
    "kind": [
     "html"
    ],
@@ -149322,10 +149320,10 @@
    ],
    "n": 1,
    "w": 3,
-   "pt": "Resgate a cada 5 min"
+   "pt": "Compita, suba, resgate"
   },
-  "K6L57ACTF_": {
-   "en": "Each claim adds <span class=\"tAmt\">0.01</span> USDT, up to $<span class=\"tPer\">0.10</span> a day (more at higher levels). Come back and stack it up.",
+  "SYVdJFPIIV": {
+   "en": "Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class=\"fcl-only\"> Your account also claims the faucet: <span class=\"tAmt\">0.01</span> USDT per claim, up to $<span class=\"tPer\">0.10</span> a day.</span>",
    "kind": [
     "html"
    ],
@@ -149333,8 +149331,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 19,
-   "pt": "Cada resgate adiciona <span class=\"tAmt\">0.01</span> USDT, até $<span class=\"tPer\">0.10</span> por dia (mais em níveis mais altos). Volte e acumule."
+   "w": 38,
+   "pt": "Fique entre os cinco primeiros em um ranking de temporada, suba no Season Pass, resgate códigos promocionais, abra uma conta em parceiro pelo nosso link. As missões diárias pagam Ticks e XP.<span class=\"fcl-only\"> Sua conta também resgata o faucet: <span class=\"tAmt\">0.01</span> USDT por resgate, até $<span class=\"tPer\">0.10</span> por dia.</span>"
   },
   "nk_JzI-xRD": {
    "en": "Withdraw at $<span class=\"tMin\">5</span>",
@@ -149936,8 +149934,8 @@
    "w": 1,
    "pt": "voce@email.com"
   },
-  "2Au5fWCDyD": {
-   "en": "Claim free USDT every 5 minutes with no deposit: sign in with just your email, get a welcome bonus, complete daily missions and withdraw from $5 to Bybit, MEXC, BingX or Moon.",
+  "5CTSzOu_Mj": {
+   "en": "Earn real USDT with no deposit: sign in with just your email, compete on the 14-day season leaderboards, climb the Season Pass, redeem codes and partner sign-up bonuses. Withdraw from $5 to Bybit, MEXC or Moon.",
    "kind": [
     "attr:content"
    ],
@@ -149945,11 +149943,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 30,
-   "pt": "Resgate USDT grátis a cada 5 minutos, sem depósito: entre só com seu email, ganhe um bônus de boas-vindas, cumpra missões diárias e saque a partir de $5 para Bybit, MEXC, BingX ou Moon."
+   "w": 36,
+   "pt": "Ganhe USDT de verdade sem depósito: entre só com seu e-mail, compita nos rankings de temporada de 14 dias, suba no Season Pass, resgate códigos e bônus de cadastro em parceiros. Saque a partir de $5 para Bybit, MEXC ou Moon."
   },
-  "ChPRq4fWOz": {
-   "en": "Free USDT Faucet - Claim Every 5 Minutes, No Deposit",
+  "nbcDYDaMkJ": {
+   "en": "Earn USDT Rewards - Season Leaderboards, Season Pass, Bonuses",
    "kind": [
     "attr:content"
    ],
@@ -149958,10 +149956,10 @@
    ],
    "n": 1,
    "w": 8,
-   "pt": "Faucet de USDT Grátis - Resgate a Cada 5 Minutos, Sem Depósito"
+   "pt": "Ganhe Recompensas em USDT - Rankings de Temporada, Season Pass, Bônus"
   },
-  "hrLzGZooQW": {
-   "en": "Claim free USDT every 5 minutes with no deposit: email sign-in, welcome bonus, daily missions, withdraw from $5 to Bybit, MEXC, BingX or Moon.",
+  "EnZYVb3OFp": {
+   "en": "Real USDT with no deposit: email sign-in, 14-day season leaderboards, the Season Pass, codes and partner bonuses. Withdraw from $5 to Bybit, MEXC or Moon.",
    "kind": [
     "attr:content"
    ],
@@ -149969,11 +149967,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 23,
-   "pt": "Resgate USDT grátis a cada 5 minutos, sem depósito: login por email, bônus de boas-vindas, missões diárias, saque a partir de $5 para Bybit, MEXC, BingX ou Moon."
+   "w": 25,
+   "pt": "USDT de verdade sem depósito: login por e-mail, rankings de temporada de 14 dias, Season Pass, códigos e bônus de parceiros. Saque de $5 para Bybit, MEXC ou Moon."
   },
-  "v_eBYMZ2xi": {
-   "en": "Sign in with your email, get a welcome bonus, claim free USDT every 5 minutes. Withdraw from $5. No deposit.",
+  "NEno12LXHY": {
+   "en": "Sign in with your email, compete on the season leaderboards, climb the Season Pass. Withdraw from $5. No deposit.",
    "kind": [
     "attr:content"
    ],
@@ -149981,11 +149979,83 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 18,
-   "pt": "Entre com seu e-mail, ganhe um bônus de boas-vindas, resgate USDT grátis a cada 5 minutos. Saque a partir de $5. Sem depósito."
+   "w": 19,
+   "pt": "Entre com seu e-mail, compita nos rankings da temporada, suba no Season Pass. Saque a partir de $5. Sem depósito."
   },
-  "cJAKbmLMQ0": {
-   "en": "MarginPad USDT Faucet",
+  "9qxA4E1o-Z": {
+   "en": "MarginPad Rewards",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 2,
+   "pt": "Recompensas MarginPad"
+  },
+  "V9CYzCruti": {
+   "en": "Earn real USDT on MarginPad with no deposit: sign in with your email, compete on the 14-day season leaderboards, climb the Season Pass, redeem promo codes and partner sign-up bonuses. Daily missions pay Ticks and XP.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 36,
+   "pt": "Ganhe USDT de verdade na MarginPad sem depósito: entre com seu e-mail, compita nos rankings de temporada de 14 dias, suba no Season Pass, resgate códigos promocionais e bônus de cadastro em parceiros. As missões diárias pagam Ticks e XP."
+  },
+  "c_wGhfVvMj": {
+   "en": "How do I earn USDT on MarginPad?",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 6,
+   "pt": "Como ganho USDT na MarginPad?"
+  },
+  "3KMzOrxIUy": {
+   "en": "Sign in with just your email (a 6-digit code, no password). Real USDT comes from the 14-day season leaderboards, the Season Pass, promo codes and partner sign-up bonuses - no deposit anywhere. Daily missions pay Ticks and XP.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 37,
+   "pt": "Entre só com seu e-mail (um código de 6 dígitos, sem senha). O USDT de verdade vem dos rankings de temporada de 14 dias, do Season Pass, de códigos promocionais e de bônus de cadastro em parceiros - sem depósito em nenhum lugar. As missões diárias pagam Ticks e XP."
+  },
+  "8fWuJP-qBf": {
+   "en": "Is it really free?",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 4,
+   "pt": "É grátis mesmo?"
+  },
+  "gOCc8eIwai": {
+   "en": "Yes. Nothing on the rewards page asks for a deposit. MarginPad earns when a member opens an exchange account through one of its partner links, and part of that pays the prizes.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 30,
+   "pt": "Sim. Nada na página de recompensas pede depósito. A MarginPad ganha quando um membro abre uma conta em exchange por um dos links de parceiros, e parte disso paga os prêmios."
+  },
+  "oUwwXYm8pJ": {
+   "en": "How do I withdraw?",
    "kind": [
     "ld"
    ],
@@ -149994,10 +150064,10 @@
    ],
    "n": 1,
    "w": 3,
-   "pt": "Faucet de USDT do MarginPad"
+   "pt": "Como faço para sacar?"
   },
-  "Z7pXoynNwQ": {
-   "en": "Earn free USDT on MarginPad: sign in with your email, get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID or Moon account - no deposit.",
+  "C74otaK1ME": {
+   "en": "From $5 on your balance, request a payout to a Bybit UID, a MEXC UID or a Moon username that was opened through MarginPad. Every withdrawal is checked and paid by hand.",
    "kind": [
     "ld"
    ],
@@ -150005,59 +150075,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 34,
-   "pt": "Ganhe USDT grátis na MarginPad: entre com seu e-mail, receba um bônus de boas-vindas instantâneo, resgate a cada 5 minutos e complete missões diárias. Saque a partir de $5 para seu UID da Bybit ou conta Moon - sem depósito."
+   "w": 28,
+   "pt": "A partir de $5 de saldo, peça um pagamento para um UID da Bybit, um UID da MEXC ou um nome de usuário da Moon aberto pela MarginPad. Todo saque é conferido e pago manualmente."
   },
-  "iL1eAJFYEZ": {
-   "en": "How do I claim free USDT?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 5,
-   "pt": "Como resgato USDT grátis?"
-  },
-  "odbMeLLFW3": {
-   "en": "Sign in with just your email (a 6-digit code, no password), collect your instant welcome bonus and tap Claim - you can claim free USDT every 5 minutes. No deposit required.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 29,
-   "pt": "Entre só com seu e-mail (um código de 6 dígitos, sem senha), pegue seu bônus de boas-vindas instantâneo e toque em Resgatar - você pode resgatar USDT grátis a cada 5 minutos. Sem depósito."
-  },
-  "mvAO9PtTWH": {
-   "en": "Is the MarginPad faucet really free?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 6,
-   "pt": "O faucet da MarginPad é mesmo grátis?"
-  },
-  "iL8Kdn19VJ": {
-   "en": "Yes. There is no deposit and nothing to pay. You sign in with an email address; a Bybit UID is only needed when you withdraw.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 24,
-   "pt": "Sim. Não há depósito nem nada a pagar. Você entra com um endereço de e-mail; o UID da Bybit só é necessário na hora do saque."
-  },
-  "8Y0nUxmFTe": {
-   "en": "What is the minimum withdrawal?",
+  "BQsQp-fMyA": {
+   "en": "What happened to the faucet?",
    "kind": [
     "ld"
    ],
@@ -150066,10 +150088,10 @@
    ],
    "n": 1,
    "w": 5,
-   "pt": "Qual é o saque mínimo?"
+   "pt": "O que aconteceu com o faucet?"
   },
-  "jJphcVX3ej": {
-   "en": "Once your balance reaches $5 you can withdraw your USDT to your Bybit account by UID, or to your Moon account by username.",
+  "tATsaLVmKA": {
+   "en": "The faucet and mission payouts stay for accounts opened before 12 November 2026. Newer accounts earn USDT from the leaderboards, the Season Pass, codes and partner bonuses instead.",
    "kind": [
     "ld"
    ],
@@ -150077,11 +150099,11 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 23,
-   "pt": "Quando seu saldo chegar a $5, você pode sacar seu USDT para sua conta Bybit pelo UID, ou para sua conta Moon pelo nome de usuário."
+   "w": 28,
+   "pt": "O faucet e os pagamentos das missões continuam para contas abertas antes de 12 de novembro de 2026. Contas mais novas ganham USDT nos rankings, no Season Pass, em códigos e bônus de parceiros."
   },
-  "zXPNJCfUPq": {
-   "en": "How else can I earn besides claiming?",
+  "7AWRMSvEmf": {
+   "en": "Earn USDT Rewards - Season Leaderboards, Season Pass and Bonuses",
    "kind": [
     "ld"
    ],
@@ -150089,32 +150111,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 6,
-   "pt": "Como mais posso ganhar além de resgatar?"
-  },
-  "vCmycNIbyp": {
-   "en": "Daily missions pay extra USDT for using the tools (paper trades, screener, calendar), promo posts on X earn a bonus per approved post, and the 14-day paper-trading leaderboard pays real USDT prizes to the top traders.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 34,
-   "pt": "As missões diárias pagam USDT extra por usar as ferramentas (paper trades, screener, calendário), os posts promocionais no X rendem um bônus por post aprovado, e o ranking de paper trading de 14 dias paga prêmios reais em USDT aos melhores traders."
-  },
-  "L_KuzTAm8e": {
-   "en": "Free USDT Faucet - Welcome Bonus + Claim Every 5 Minutes",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 8,
-   "pt": "Faucet de USDT grátis - bônus de boas-vindas + resgate a cada 5 minutos"
+   "w": 9,
+   "pt": "Ganhe Recompensas em USDT - Rankings de Temporada, Season Pass e Bônus"
   },
   "67Vzm8FHmc": {
    "en": "Risk of Ruin Calculator &amp; Kelly Criterion - Crypto | MarginPad",
@@ -152053,8 +152051,8 @@
    "w": 7,
    "pt": "O dinheiro está aberto desde o primeiro dia"
   },
-  "UIbxA3IF8u": {
-   "en": "The faucet, the daily missions, withdrawals and referrals are open to every account the moment it signs in. No level, no deposit, nothing to unlock. Levels still matter: a higher level pays bigger faucet claims and wears its own badge.",
+  "IA5v5aLhZQ": {
+   "en": "The season leaderboards, the Season Pass, promo codes and partner sign-up bonuses are open to every account the moment it signs in. No level, no deposit, nothing to unlock. Daily missions pay Ticks and XP. Levels still matter: a higher level wears its own badge and frame.",
    "kind": [
     "html"
    ],
@@ -152062,8 +152060,8 @@
     "/season/"
    ],
    "n": 1,
-   "w": 39,
-   "pt": "O faucet, as missões diárias, os saques e as indicações estão abertos a toda conta no momento em que ela entra. Sem nível, sem depósito, nada para desbloquear. Os níveis ainda importam: um nível mais alto paga resgates maiores no faucet e ganha seu próprio selo."
+   "w": 46,
+   "pt": "Os rankings da temporada, o Season Pass, os códigos promocionais e os bônus de cadastro em parceiros ficam abertos para qualquer conta no momento em que ela entra. Sem nível, sem depósito, nada para desbloquear. As missões diárias pagam Ticks e XP. Os níveis ainda importam: um nível mais alto usa seu próprio selo e sua própria moldura."
   },
   "YTcpAb1LEC": {
    "en": "The Academy is the fastest way to level up",
@@ -152257,8 +152255,8 @@
    "w": 2,
    "pt": "0 de 9 concluídos"
   },
-  "7-Ktr1xL8f": {
-   "en": "They pay XP only, never money. At 500 XP the faucet, the daily missions, withdrawals and referrals all open, anything you win becomes yours to withdraw, and this card is done with you.",
+  "6Ool7W2JgT": {
+   "en": "They pay XP only, never money. At 500 XP you wear your first badge - the boards, the Season Pass, the missions and withdrawals were open from day one, anything you win becomes yours to withdraw, and this card is done with you.",
    "kind": [
     "html"
    ],
@@ -152266,8 +152264,8 @@
     "/season/"
    ],
    "n": 1,
-   "w": 33,
-   "pt": "Elas pagam só XP, nunca dinheiro. Com 500 XP, o faucet, as missões diárias, os saques e as indicações se abrem, tudo o que você ganhar passa a ser seu para sacar, e este card termina com você."
+   "w": 42,
+   "pt": "Elas pagam só XP, nunca dinheiro. Aos 500 XP você veste seu primeiro selo - as tabelas, o Season Pass, as missões e os saques estavam abertos desde o primeiro dia, tudo o que você ganhar é seu para sacar, e este card já cumpriu o papel dele com você."
   },
   "YzKx5glHiO": {
    "en": "<a href=\"#howto\" data-s=\"howto\">How it works</a><a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a><a href=\"#rules\" data-s=\"rules\">Rules</a>",

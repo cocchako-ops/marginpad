@@ -24,7 +24,7 @@ const TG = ['tgsignals', 'tgnews', 'tgbot'];
   else ok(true, 'Ticks table not on this feed, checked through the claim instead');
 
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) }).catch(() => {});
-  await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'mk' }) });
+  await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'mk', created: Date.UTC(2026, 0, 1) }) }); // LEGACY fixture: mission cents exist only for accounts from before 2026-11-12 (faucet-legacy-e2e covers the new-account shape)
   const who = await J('/api/admin/xpdiag?u=' + encodeURIComponent(UN), { headers: H });
   const internal = (who.user || {}).id;
   await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: internal, level: 'bronze', note: 'missions-fix-e2e' }) });

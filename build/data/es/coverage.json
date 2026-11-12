@@ -1790,13 +1790,13 @@
  {
   "rel": "liquidations/report/2026-10/index.html",
   "cover": 1,
-  "hit": 88,
+  "hit": 90,
   "missing": 0
  },
  {
   "rel": "liquidations/report/index.html",
   "cover": 1,
-  "hit": 10,
+  "hit": 12,
   "missing": 0
  },
  {
@@ -2012,7 +2012,7 @@
  {
   "rel": "rewards/index.html",
   "cover": 1,
-  "hit": 248,
+  "hit": 249,
   "missing": 0
  },
  {
@@ -2096,7 +2096,7 @@
  {
   "rel": "squads/index.html",
   "cover": 1,
-  "hit": 37,
+  "hit": 35,
   "missing": 0
  },
  {
