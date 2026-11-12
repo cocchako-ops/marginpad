@@ -392,6 +392,12 @@ function bkSelect(cls, opts, cur) {
     'summary.hm-foot-h .hm-foot-s{flex:1 1 auto;min-width:0;margin-left:4px;font:12px/1.3 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;color:#8fa3c4;font-weight:500;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     'details.hm-foot-c[open]>summary.hm-foot-h .hm-foot-s{display:none}' +
     '@media(max-width:620px){summary.hm-foot-h .hm-foot-s{white-space:normal;display:block;flex-basis:100%;margin:3px 0 0}summary.hm-foot-h{flex-wrap:wrap}}' +
+    '.hm-ls{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;margin-left:4px}.hm-ls .l{color:#66d3a5;font:10px "Space Mono",monospace}.hm-ls i{display:inline-block;width:46px;height:4px;border-radius:2px;background:#ff6258;overflow:hidden;flex:none}.hm-ls i b{display:block;height:100%;background:#2ebd85;border-radius:2px 0 0 2px}' +
+    '.hm-readw{order:4;margin:0!important;min-height:40px;padding:8px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0}.hm-read{font:12.5px/1.45 "Familjen Grotesk",system-ui,sans-serif;color:#c9d4e6}.hm-read b{color:#e9e7df;font-weight:700}.hm-read b.l{color:#66d3a5}.hm-read b.s{color:#ff8f86}@media(max-width:620px){.hm-readw{min-height:58px}}' +
+    '.hm-tgb{position:relative;overflow:hidden}.hm-tgb i .w{font-size:inherit;color:#8fa3c4}.hm-tgb em{font:9px "Space Mono",monospace;font-style:normal;color:#8fa3c4;margin-left:5px;flex:none}.hm-tgb u{position:absolute;left:0;bottom:0;height:2px;background:#5c6b84;opacity:.9;text-decoration:none}.hm-tgb.l u{background:#2ebd85}.hm-tgb.s u{background:#ff6258}' +
+    '.hm-legend{order:4;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin:0!important;padding:6px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;font:10.5px "Space Mono",monospace;color:#8fa3c4;overflow:visible!important;white-space:normal!important}.hm-legend>span{white-space:normal;min-width:0;max-width:100%}.hm-legend b{color:#e9e7df;white-space:nowrap}' +
+    '.hm-btn.hm-rp.on{color:#c2f64a;border-color:#c2f64a66;background:rgba(194,246,74,.08)}' +
+    '@media(max-width:980px){.hm-read{font-size:12px;margin-bottom:7px;padding-bottom:7px}.hm-tgb i .w{display:none}.hm-legend{font-size:10px;gap:3px 10px}.hm-ls{justify-content:flex-start}}' +
     '.hm-mcw{order:4;margin:0!important;min-height:34px}@media(max-width:620px){.hm-mcw{min-height:58px}.hm-mc em{display:none}.hm-mc{gap:3px 10px;padding:7px 10px}}.hm-wrap:has(.hm-mcw:not([style*=none])) .hm-stage{border-radius:0}.hm-mc{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:7px 12px;background:#0e131c;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;font:11px "Space Mono",monospace;color:#8fa3c4}.hm-mc b{color:#e9e7df}.hm-mc .k{color:#c9d4e6;font-weight:700;letter-spacing:.06em;font-size:10px}.hm-mc em{font-style:normal;color:#5c6b84}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
@@ -554,6 +560,7 @@ function bkSelect(cls, opts, cur) {
       // being drawn as if it were still standing.
       var isGone = s.dead || s._gone;
       var x1 = isGone ? (cx ? X(cx) : W) : W;
+      if (S._rpT) { if (s.t0 > S._rpT) continue; var xr = X(S._rpT); if (x1 > xr) { x1 = xr; isGone = false; cx = 0; } } // replay: nothing past the cursor exists yet, and a band is cut only once the cursor reaches its candle
       if (x1 <= x0 + 0.5) continue;
       // CLIP TO THE PLOT (2026-10-09). A swept band whose cut candle sits outside the visible time range came
       // back with x0 past the canvas width after a time-zoom, was painted off-canvas (harmless) and RECORDED in
@@ -586,7 +593,9 @@ function bkSelect(cls, opts, cur) {
     // candles
     var n = 0; for (i = 0; i < bars.length; i++) if (bars[i].time >= v.t0 && bars[i].time <= v.t1) n++;
     var cw = Math.max(1.5, Math.min(11, W / (n || 1) * 0.62));
+    var rpLast = null;
     for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue;
+      if (S._rpT && b.time > S._rpT) continue; if (S._rpT) rpLast = b;
       var x = X(b.time), up = b.close >= b.open;
       ctx.strokeStyle = up ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x, Y(b.high)); ctx.lineTo(x, Y(b.low)); ctx.stroke();
@@ -670,7 +679,12 @@ function bkSelect(cls, opts, cur) {
       }
     }
     // REAL whale liquidation prices (measured, from Hyperliquid's own position data - no model in them)
-    if (S.whales && S.whales.length) {
+    if (S._rpT) { // the cursor and the price of that moment
+      var rx = X(S._rpT); ctx.strokeStyle = 'rgba(194,246,74,.55)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, PH); ctx.stroke(); ctx.setLineDash([]);
+      if (rpLast) { var ry = Y(rpLast.close); ctx.fillStyle = '#c2f64a'; ctx.beginPath(); ctx.arc(rx, ry, 3.5, 0, 6.2832); ctx.fill(); }
+      ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'left'; var rt = __esT_mpheatmap('rpLabel', 'REPLAY') + ' ' + tlabel(S._rpT) + (rpLast ? '  ' + fpx(rpLast.close) : ''); var rw = ctx.measureText(rt).width; ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W / 2 - rw / 2 - 8, 26, rw + 16, 17); ctx.fillStyle = '#c2f64a'; ctx.fillText(rt, W / 2 - rw / 2, 38);
+    }
+    if (S.whales && S.whales.length && !S._rpT) {
       ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'right';
       for (i = 0; i < S.whales.length; i++) { var wh = S.whales[i];
         var wq = +wh.liq || 0; if (!(wq > pLo && wq < pHi)) continue;
@@ -695,7 +709,7 @@ function bkSelect(cls, opts, cur) {
       var kg = ctx.createLinearGradient(kx, 0, kx + kw, 0); for (i = 0; i <= 6; i++) kg.addColorStop(i / 6, 'rgba(' + heatCol(i / 6) + ',1)'); ctx.fillStyle = kg; ctx.fillRect(kx, ky + 2, kw, 5);
       ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'left'; ctx.fillStyle = '#9aa7b8'; ctx.fillText(__esT_mpheatmap('keyCrowded', 'how crowded'), kx + kw + 6, ky + 8); }
     // live price - the LINE stays on the plot, the TAG moved to the price axis where a price tag belongs
-    if (S.price > 0 && S.price > pLo && S.price < pHi) {
+    if (S.price > 0 && S.price > pLo && S.price < pHi && !S._rpT) {
       var py = Y(S.price);
       ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(194,246,74,.85)'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke(); ctx.setLineDash([]);
@@ -838,9 +852,9 @@ function bkSelect(cls, opts, cur) {
       }
       // The same buckets are the window's true total and its true count - every liquidation the collector
       // recorded for this coin, not the ones this browser happened to download.
-      var tot = 0, nn = 0;
-      for (var k = 0; k < b.length; k++) { tot += (+b[k].long || 0) + (+b[k].short || 0); nn += (+b[k].count || 0); }
-      S.obs = { usd: tot, n: nn, mins: (d && +d.minutes) || mins, ts: Date.now() };
+      var tot = 0, nn = 0, tl = 0;
+      for (var k = 0; k < b.length; k++) { tl += (+b[k].long || 0); tot += (+b[k].long || 0) + (+b[k].short || 0); nn += (+b[k].count || 0); }
+      S.obs = { usd: tot, n: nn, long: tl, short: tot - tl, mins: (d && +d.minutes) || mins, ts: Date.now() };
       S.obsWin = (d && d.minutes) || mins;
       updHead(); draw();
     }).catch(function () {});
@@ -1265,16 +1279,29 @@ function bkSelect(cls, opts, cur) {
       + (mv && mv.days ? '<em>' + __esT_mpheatmap('mcDays', 'last') + ' ' + mv.days + ' ' + __esT_mpheatmap('mcDaysB', 'days, measured') + '</em>' : '') + '</div>';
     return out;
   }
+  // THE READ LINE (2026-11-12, owner: "lako za kapiranje"): one sentence that says what the map says, built from the numbers already on the
+  // page - the nearest heavy crowd each side with its weight, who got liquidated in the window, what a 1% move has cost. Measured words only.
+  function readLine(nu, nd) {
+    var px = S.price; if (!(px > 0) || (!nu && !nd)) return '';
+    var T = function (k, en) { return __esT_mpheatmap(k, en); }, parts = [];
+    var crowd = function (x) { var d = Math.abs((x.price - px) / px * 100), r = relOf(x); return '<b class="' + (x.long ? 'l' : 's') + '">' + (x.long ? T('rlLongs', 'longs') : T('rlShorts', 'shorts')) + '</b> ' + T('rlAt', 'at') + ' <b>' + fpx(x.price) + '</b> (' + d.toFixed(1) + '% ' + (x.price > px ? T('rlAbove', 'above') : T('rlBelow', 'below')) + (r >= 1.5 ? ', ' + relTxt(r) + ' ' + T('rlTyp', 'a typical crowd') : '') + ')'; };
+    var near = [nu, nd].filter(Boolean).sort(function (a, b) { return Math.abs(a.price - px) - Math.abs(b.price - px); });
+    parts.push(T('rlNearest', 'Nearest crowd') + ': ' + crowd(near[0]) + (near[1] ? '; ' + T('rlThen', 'then') + ' ' + crowd(near[1]) : '') + '.');
+    var o = S.obs; if (o && o.usd > 0 && o.long != null) { var lp = Math.round(o.long / o.usd * 100); parts.push('<b>' + money(o.usd) + '</b> ' + T('rlLiq', 'liquidated in') + ' ' + obsWinTxt() + ', ' + (lp >= 50 ? lp + '% ' + T('rlOfItLongs', 'of it longs') : (100 - lp) + '% ' + T('rlOfItShorts', 'of it shorts')) + '.'); }
+    var mv = S.moves && (S.moves.rows || []).filter(function (r) { return +r.pct === 1 && +r.n >= 3 && +r.med > 0; })[0]; if (mv) parts.push(T('rlMove', 'A 1% move here has cost') + ' <b>' + usdShort(+mv.med) + '</b>.');
+    return '<div class="hm-read">' + parts.join(' ') + '</div>';
+  }
   function updTargets() {
     if (!S || !S.tgEl) return; var px = S.price, P = S.pools; if (!(px > 0) || !P.alive.length) { S.tgEl.innerHTML = ''; return; }
     var up = [], dn = [];
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (zoneDead(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); } // zoneDead, not poolGone: a band the server already cut must not be offered as a target
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     S._tg = up.slice(0, 3).concat(dn.slice(0, 3)); // the chips address these by index, so a tap can move the view to one
+    var relMax = 0; S._tg.forEach(function (x) { var r0 = relOf(x); if (r0 > relMax) relMax = r0; });
     var cell = function (x) {
-      var d = ((x.price - px) / px * 100), i = S._tg.indexOf(x);
+      var d = ((x.price - px) / px * 100), i = S._tg.indexOf(x), r1 = relOf(x), wpct = relMax > 0 ? Math.max(6, Math.round(r1 / relMax * 100)) : 0;
       return '<button type="button" class="hm-tgb ' + (x.long ? 'l' : 's') + '" data-tg="' + i + __esT_mpheatmap("titleShowThisZone",'" title="Show this zone on the map">') +
-        '<b>' + fpx(x.price) + '</b><i>' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></button>';
+        '<b>' + fpx(x.price) + '</b><i>' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%' + (r1 > 0 ? '<small class="w"> · ' + relTxt(r1) + '</small>' : '') + '</i>' + (r1 > 0 ? '<u style="width:' + wpct + '%"></u>' : '') + '</button>'; // the bar is the crowd's weight against the heaviest chip on this row
     };
     var side = function (arr, cls, lab) {
       return '<div class="hm-tg-r"><span class="hm-tg-d ' + cls + '">' + lab + '</span><div class="hm-tg-c">' +
@@ -1284,6 +1311,7 @@ function bkSelect(cls, opts, cur) {
       ? '<div class="hm-tg-h">' + __esT_mpheatmap('targetsShort', 'TARGETS') + q('targets') + '<span class="hm-tg-jump">' + window.__mpHmJump + '</span></div>'
       : __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>') .replace('</div>', q('targets') + '</div>');
     var wr = whaleRow();
+    if (S.readEl) { var rl = readLine(up[0], dn[0]); S.readEl.innerHTML = rl; S.readEl.style.display = rl ? '' : 'none'; } // under the map, never in the reserved targets row
     h += '<div class="hm-tg-g' + (wr ? ' has-real' : '') + '">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + wr + '</div>';
     // squeeze: strong pools close on BOTH sides
     var wMax = 0; for (var wi = 0; wi < P.alive.length; wi++) if (!zoneDead(P.alive[wi])) { wMax = P.alive[wi].w; break; } // the heaviest STANDING band (the list is sorted by weight, dead ones included)
@@ -1327,6 +1355,9 @@ function bkSelect(cls, opts, cur) {
         ? (nar ? (money(o.usd) + ' · ' + o.n.toLocaleString('en-US') + ' liqs')
                : (money(o.usd) + ' liquidated · ' + o.n.toLocaleString('en-US') + ' liqs · ' + S.win))
         : '';
+      // THE SPLIT, AS AN INLINE BAR (2026-11-12): who got liquidated in this window, longs or shorts - on the SAME line as the total, so the
+      // one-row top keeps its height (a second line here would push the stage down on every load)
+      if (o && o.usd > 0 && o.long != null && !nar && S.pxEl && S.price > 0) { var lp = Math.round(o.long / o.usd * 100); S.pxEl.innerHTML += ' <span class="hm-ls" title="' + __esT_mpheatmap('lsTitle', 'Share of the liquidated dollars in this window that were longs vs shorts (measured)') + '"><i><b style="width:' + lp + '%"></b></i><span class="l">' + lp + '% ' + __esT_mpheatmap('lsLongsShort', 'L') + '</span></span>'; }
     }
   }
 
@@ -2005,7 +2036,8 @@ function bkSelect(cls, opts, cur) {
     var winsEl = el('div', 'hm-wins'); winsEl.setAttribute('role', 'group'); winsEl.setAttribute('aria-label', 'Time window');
     barA.appendChild(selC); barA.appendChild(selW); barA.appendChild(coinBtn); barA.appendChild(winsEl);
     var jump = el('span', 'hm-jump'); window.__mpHmJump = jump.innerHTML = '<button type="button" data-j=".hm-bk">' + __esT_mpheatmap('jumpFlow', 'Order flow') + '</button><button type="button" class="mid" data-j=".hm-bm">' + __esT_mpheatmap('jumpFilm', 'Book over time') + '</button><button type="button" data-j=".hm-mkt">' + __esT_mpheatmap('jumpPulse', 'Market pulse') + '</button>';
-    barB.appendChild(seg); barB.appendChild(jump); barB.appendChild(dl); barB.appendChild(sh);
+    var rpBtn = el('button', 'hm-btn hm-rp', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>'); rpBtn.type = 'button'; rpBtn.title = __esT_mpheatmap('rpTitle', 'Replay this window: watch price sweep the bands'); rpBtn.setAttribute('aria-label', 'Replay');
+    barB.appendChild(seg); barB.appendChild(jump); barB.appendChild(rpBtn); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
     mast.innerHTML = __esT_mpheatmap("liquidationHeatmapLiveReal",'<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP' + q('what') + '</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 8 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>');
@@ -3316,11 +3348,13 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
 
     var top = el('div', 'hm-top'); top.appendChild(mast); top.appendChild(bar);
     var mcEl = el('div', 'hm-mcw', '<div class="hm-mc"><span class="k">' + __esT_mpheatmap('mcK', 'WHAT A MOVE COSTS') + '</span><em>' + __esT_mpheatmap('mcWait', 'measuring…') + '</em></div>'); // reserved from the first frame; filled by updTargets, hidden only when this coin has no measured moves
-    wrap.appendChild(top); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(mcEl); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
+    legend.style.cssText = ''; legend.className = 'hm-legend';
+    var readEl = el('div', 'hm-readw'); readEl.style.display = 'none';
+    wrap.appendChild(top); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(readEl); wrap.appendChild(legend); wrap.appendChild(mcEl); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { mcEl: mcEl, bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: 0, showDots: false, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { mcEl: mcEl, readEl: readEl, bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: 0, showDots: false, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     // The gate modal and the toast belong to mount; the zone bell that needs them belongs to wire. Same
     // bridge, the other way round. Declared functions, so they exist the moment mount starts running.
@@ -3333,7 +3367,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
        candles were PREPENDED to the new coin's (loadAll keeps back-paginated history by time alone), its bands, whales, OI and
        funding stayed on screen under the new name until the fetch landed - and for good if the fetch failed. Every async
        answer now carries the generation it was asked in and is dropped when the reader has moved on. */
-    function resetFor(kind) { S.gen = (S.gen || 0) + 1; S.obs = null; S.obsWin = 0; S.view = null; S.yView = null; S.sel = null; S.bars = []; S._noMore = 0; S._lm = 0; S._flash = null; if (S.showSel) S.showSel();
+    function resetFor(kind) { S.gen = (S.gen || 0) + 1; S._rpT = 0; if (S._rpRaf) { cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; } S.obs = null; S.obsWin = 0; S.view = null; S.yView = null; S.sel = null; S.bars = []; S._noMore = 0; S._lm = 0; S._flash = null; if (S.showSel) S.showSel();
       if (kind === 'coin') { S.pools = { alive: [], pMin: 0, pMax: 1, binH: 0 }; S.events = []; S.whales = []; S.whaleNear = null; S.oi = null; S.calib = null; S.funding = null; S._fr = 0; S.moves = null; S.vis = []; S.bandRects = []; }
       if (S.loadEl) S.loadEl.style.display = 'flex'; if (S.tgEl) S.tgEl.innerHTML = ''; try { var c2 = S.cv.getContext('2d'); c2.clearRect(0, 0, S.cv.width, S.cv.height); var c3 = S.pf.getContext('2d'); c3.clearRect(0, 0, S.pf.width, S.pf.height); } catch (e) {} }
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; if (S.syncTop) S.syncTop(); resetFor('coin'); updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
@@ -3453,6 +3487,20 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
+    // REPLAY (2026-11-12): the window from its first candle to now in about nine seconds. Candles appear as the cursor passes, every band
+    // is drawn only up to the cursor and a swept band is cut the moment the cursor reaches its candle, the price tag follows the last
+    // visible close. Nothing is fetched and no state is changed: draw() reads S._rpT and nothing else. Press again to stop.
+    function rpStop() { if (!S) return; S._rpT = 0; S._rpRaf && cancelAnimationFrame(S._rpRaf); S._rpRaf = 0; rpBtn.classList.remove('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>'; sched(); }
+    function rpStart() {
+      if (!S || !S.view || !S.bars.length) return;
+      var v0 = S.view, t0 = Math.max(v0.t0, S.bars[0].time), t1 = Math.min(v0.t1, S.bars[S.bars.length - 1].time), dur = 9000, st = performance.now();
+      if (!(t1 > t0)) return;
+      rpBtn.classList.add('on'); rpBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
+      try { window.mpHaptic && window.mpHaptic('tap'); } catch (e) {}
+      var step = function (now) { if (!S) return; var f = Math.min(1, (now - st) / dur); S._rpT = t0 + (t1 - t0) * (f < 1 ? f * f * (3 - 2 * f) : 1); draw(); if (f < 1) S._rpRaf = requestAnimationFrame(step); else { S._rpRaf = 0; setTimeout(function () { if (S && S._rpT) rpStop(); }, 900); } };
+      S._rpRaf = requestAnimationFrame(step);
+    }
+    rpBtn.addEventListener('click', function () { if (S && S._rpT) rpStop(); else rpStart(); });
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
     function shotX() { // 1200x675 (16:9) - the exact card X shows uncropped in the timeline
       var W = 1200, H = 675, out = document.createElement('canvas'); out.width = W; out.height = H;
