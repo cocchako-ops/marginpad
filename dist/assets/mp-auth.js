@@ -3939,11 +3939,19 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       for (i = 0; i < trig.length; i++) { if (trig[i].classList.contains('mpa-unread')) pulse(trig[i], 'ring'); else stop(trig[i]); }
     }
     window.mpBreatheSweep = sweep;
+    /* ONE SWEEP PER 400 ms, NOT ONE PER MUTATION BATCH (2026-11-12 perf pass). A live tape, the heatmap's book and
+       the terminal's ticker mutate the DOM dozens of times a second, and each batch ran two whole-document
+       querySelectorAll calls: measured on a phone, this sweep and the frame sweep below were 880 ms of a 3.4 s busy
+       main thread over six IDLE seconds on /heatmap (630 ms on /screener) - the single biggest idle cost on the
+       site. A mark that appears is still breathing within half a second. */
+    var swT = 0;
+    function swSoon() { if (swT || document.hidden) return; swT = setTimeout(function () { swT = 0; sweep(); }, 400); }
     var mo = new MutationObserver(function (recs) {
       var need = false;
       for (var r = 0; r < recs.length && !need; r++) { var m = recs[r]; if (m.type === 'attributes') need = true; else if (m.addedNodes && m.addedNodes.length) need = true; }
-      if (need) sweep();
+      if (need) swSoon();
     });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) swSoon(); });
     var boot = function () { try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {} sweep(); };
     if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   } catch (e) {}
@@ -3978,9 +3986,14 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       if (els.length) run(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
     }
     window.mpNovaSweep = sweep;
-    document.addEventListener('visibilitychange', function () { if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = 0; } } else run(); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = 0; } } else { run(); swSoon(); } });
+    /* coalesced like the breathe sweep above: one whole-document scan per 400 ms at most (measured 690 ms per six idle
+       seconds on /heatmap before). An element that already carries the frame is left alone; a frame that arrives is
+       moving within half a second. */
+    var swT = 0;
+    function swSoon() { if (swT || document.hidden) return; swT = setTimeout(function () { swT = 0; sweep(); }, 400); }
     var mo = new MutationObserver(function (recs) {
-      for (var r = 0; r < recs.length; r++) { var m = recs[r]; if (m.type === 'attributes' || (m.addedNodes && m.addedNodes.length) || (m.removedNodes && m.removedNodes.length)) { sweep(); return; } }
+      for (var r = 0; r < recs.length; r++) { var m = recs[r]; if (m.type === 'attributes' || (m.addedNodes && m.addedNodes.length) || (m.removedNodes && m.removedNodes.length)) { swSoon(); return; } }
     });
     var boot = function () { try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {} sweep(); };
     if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
@@ -5067,79 +5080,4 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   window.mpWaitArm(document);
 })();
 
-/* ══════════ APP DIAGNOSTIC (2026-10-25, v2) ══════════
-   The owner's installed app disagrees with every emulator about two things and no engine here reproduces
-   either, so this measures from the device that can answer. v1 of this block FROZE the app: it mutated the
-   DOM inside a MutationObserver callback, which re-queues the callback as a microtask and never yields.
-   v2 has no observer, touches the DOM exactly once at startup, and stops on a deadline regardless.
-   Delete it once both are settled - it is an instrument, not a feature. */
-(function(){
-  if(window.__mpAppDiag)return; window.__mpAppDiag=1;
-  var sent={}, dead=false;
-  /* env(safe-area-inset-bottom) cannot be read any other way - getComputedStyle never reports the env() and an
-     emulator resolves it to 0 - so ONE throwaway element, measured ONCE, at startup, cached for ever. This is
-     the only DOM write in the whole block and nothing can call it again. */
-  var INS=-1;
-  try{ var d=document.createElement('div');
-    d.style.cssText='position:fixed;left:-9999px;bottom:0;width:1px;height:env(safe-area-inset-bottom,0px)';
-    (document.body||document.documentElement).appendChild(d);
-    INS=Math.round(d.getBoundingClientRect().height); d.parentNode.removeChild(d);
-  }catch(e){}
-
-  function send(tag,label){
-    if(sent[tag]||dead)return; sent[tag]=1;
-    try{fetch('/api/track?t=diag&e='+encodeURIComponent(String(label).slice(0,108))+'&p='+encodeURIComponent(location.pathname),{keepalive:true,cache:'no-store'});}catch(e){}
-  }
-  function R(e){ if(!e)return null; var r=e.getBoundingClientRect(); return {y:Math.round(r.y),h:Math.round(r.height),b:Math.round(r.bottom),w:Math.round(r.width)}; }
-  var N=function(v){return Math.round(parseFloat(v)||0);};
-
-  function dock(){
-    if(sent.dock||dead)return;                              // guard FIRST - nothing is built for a row already sent
-    var d=document.querySelector('.tdock'); if(!d)return;
-    var r=R(d); if(!r||!r.h)return;
-    var cs=getComputedStyle(d), col=document.querySelector('.tcol-left,.tcol-mid,.tcol');
-    var vv=(window.visualViewport&&Math.round(window.visualViewport.height))||0;
-    send('dock','dock y'+r.y+' h'+r.h+' b'+r.b+' ih'+window.innerHeight+' vv'+vv
-      +' pb'+N(cs.paddingBottom)+' ins'+INS+' col'+(col?N(getComputedStyle(col).paddingBottom):-1)
-      +' bp'+N(getComputedStyle(document.body).paddingBottom)+' sa'+(window.navigator.standalone?1:0)
-      +' sh'+(screen&&screen.height||0)+' sy'+Math.round(window.scrollY||0));
-  }
-  /* THE SAME DOCK, MEASURED AT THE MOMENT THE OWNER TAPS IT (2026-10-26, owner: "izdignut od ivice za toliko i
-     ostavlja prazan prostor ispod"). The load-time row said the dock's bottom equals innerHeight on his phone, so
-     whatever he sees happens LATER or is outside what the browser calls the viewport: a layout-viewport scroll left
-     behind by the keyboard (sy), a visual viewport offset (vt/vh), or a webview shorter than the screen (sh vs ih).
-     Once per session, from a tap, read on the next frame - no observer, no feedback path. */
-  function dock2(){
-    if(sent.dock2||dead)return;
-    var d=document.querySelector('.tdock'); if(!d)return; var r=R(d); if(!r)return;
-    var vv=window.visualViewport;
-    send('dock2','dock2 y'+r.y+' h'+r.h+' b'+r.b+' ih'+window.innerHeight+' sy'+Math.round(window.scrollY||0)
-      +' vt'+(vv?Math.round(vv.offsetTop):-1)+' vh'+(vv?Math.round(vv.height):-1)+' dh'+document.documentElement.scrollHeight
-      +' sh'+(screen&&screen.height||0)+' ins'+INS+' sa'+(window.navigator.standalone?1:0));
-  }
-  try{ document.addEventListener('click',function(ev){ if(sent.dock2||dead)return; var t=ev.target; if(!t||!t.closest||!t.closest('.tdock'))return; requestAnimationFrame(function(){ setTimeout(dock2,120); }); },true); }catch(e){}
-
-  function csel(){
-    if(sent.csel||dead)return;
-    var panel=document.querySelector('.csel-panel.csel-sheet:not([hidden])'); if(!panel)return;
-    var r=R(panel), cs=getComputedStyle(panel), br=R(document.querySelector('.csel-sheet-bd')), hit=null;
-    try{ if(r&&r.w>0&&r.h>0){ var el=document.elementFromPoint(Math.round(r.w/2),Math.round(r.y+Math.min(30,r.h/2)));
-      hit=el?String(el.className||el.tagName).replace(/\s+/g,'.').slice(0,14):'null'; } }catch(e){}
-    send('csel','csel y'+(r?r.y:-1)+' h'+(r?r.h:-1)+' w'+(r?r.w:-1)+' d'+cs.display.slice(0,4)
-      +' v'+cs.visibility.slice(0,4)+' o'+cs.opacity+' mh'+N(cs.maxHeight)+' p'+cs.position.slice(0,5)
-      +' z'+String(cs.zIndex).slice(-4)+' bdh'+(br?br.h:-1)+' hit'+hit
-      +' bf'+(getComputedStyle(document.body).position==='fixed'?1:0)+' ih'+window.innerHeight+' ins'+INS);
-  }
-
-  /* the sheet is raised by a tap, so listen for the tap and read on the NEXT FRAME - a listener fires once per
-     gesture and a rAF runs once per frame, so there is no path by which either can re-trigger the other */
-  try{
-    document.addEventListener('click',function(ev){
-      if(sent.csel||dead)return;
-      var t=ev.target; if(!t||!t.closest||!t.closest('.csel'))return;
-      requestAnimationFrame(function(){ setTimeout(csel,160); });
-    },true);
-  }catch(e){}
-  setTimeout(dock,2500); setTimeout(dock,7000);
-  setTimeout(function(){ dead=true; },60000);   // stops for good, measured or not
-})();
+/* The APP DIAGNOSTIC v2 instrument (2026-10-25) lived here and was removed on 2026-11-12: it had answered (the dock and the picker were both measured from the owner's phone), cost 34-66 ms on every page load, and its rows made up the whole "broken pages" alarm. */

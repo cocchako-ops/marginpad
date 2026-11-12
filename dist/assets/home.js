@@ -3219,13 +3219,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=f9d04048
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=9454aa9f
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=f9d04048';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=9454aa9f';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -3789,7 +3789,8 @@ window.addEventListener('load', function () {
 (function(){
   var states={}; // keyed state so the roll persists even when a ticket rebuilds its element
   function dpFor(v){ v=Math.abs(+v)||0; return v>=1000?2 : v>=100?3 : v>=10?3 : v>=1?4 : v>=0.1?4 : v>=0.01?5 : v>=0.001?6 : v>=0.0001?7 : 8; }     // ~5 sig figs; $1-100 coins now keep 3-4 dp (XRP 1.0904, SOL 74.093) instead of collapsing to 2
-  function fmt(v,dp){ return '$'+v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp}); } // min=max → width never changes
+  var _nfs={}; function _nf(dp){ return _nfs[dp]||(_nfs[dp]=new Intl.NumberFormat('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp})); } // one formatter per precision: this runs per price per frame while a roll settles, and toLocaleString builds a new formatter on every call
+  function fmt(v,dp){ return '$'+_nf(dp).format(v); } // min=max → width never changes
   window.mpSmoothPx=function(el,value,key,dp){
     if(!el||!(value>0))return false;
     key=(typeof key==='string'&&key)?key:(el.id||null); if(!key)return false;
@@ -3803,8 +3804,12 @@ window.addEventListener('load', function () {
   /* event-driven since 2026-07-14 (mobile perf): the loop used to rAF forever even with nothing to ease - it now
      stops when every price has settled and restarts on the next mpSmoothPx() call (pollers/WS keep those coming),
      plus a visibilitychange kick. Worst case with no new ticks: the last written value stays - correct. */
-  var _smRun=false;
-  function tick(){
+  var _smRun=false,_smLast=0;
+  function tick(ts){
+    /* 30 writes a second, not 60 (2026-11-12 perf pass): every written price is a layout + paint of the row it sits in, and with
+       BTC ticking every second the roll never settles on a busy terminal - measured 610 rAF fires in six idle seconds on a phone,
+       Layout 152 ms + Paint 113 ms of it this loop's. A number easing over 1.1 s reads the same at 30 fps. */
+    if(ts!=null&&ts-_smLast<30){requestAnimationFrame(tick);return;} _smLast=ts||0;
     var busy=false,now=Date.now();
     if(!document.hidden){
       for(var k in states){var s=states[k];if(!s.el||!(s.target>0))continue;
@@ -5241,13 +5246,21 @@ window.mpSrvOpen=function(payload,ok,fail){
       return (v > 0 && v < 240) ? v + 6 : 0;   // +6: the sheet must clear it, not touch it
     } catch (e) { return 0; }
   }
+  /* THE STYLESHEET'S FLOOR IS READ ONCE PER VIEWPORT SIZE, NOT EVERY TWO SECONDS (2026-11-12 perf pass). The old read
+     removed the inline --mkb and asked getComputedStyle(root) for it on every call - and this runs on a 2 s timer, so
+     every two seconds the WHOLE document's style was invalidated and recomputed: measured 173 ms of a six-second idle
+     window on a phone (/heatmap), 54 ms on /screener. The floor is a stylesheet constant that only changes with the
+     media query, i.e. with the viewport, so it is re-read on resize alone. */
+  var _mkbFloor = -1, _mkbKey = '';
   function setInset() {
     try {
-      var root = document.documentElement;
-      root.style.removeProperty('--mkb');                                  // read the stylesheet's own floor first
-      var floor = parseFloat(getComputedStyle(root).getPropertyValue('--mkb')) || 0;
+      var root = document.documentElement, key = innerWidth + 'x' + innerHeight;
+      if (_mkbFloor < 0 || key !== _mkbKey) {
+        root.style.removeProperty('--mkb');                                // read the stylesheet's own floor first
+        _mkbFloor = parseFloat(getComputedStyle(root).getPropertyValue('--mkb')) || 0; _mkbKey = key;
+      }
       var v = barInset();
-      if (v > floor) root.style.setProperty('--mkb', v + 'px');            // only ever raise it
+      if (v > _mkbFloor) root.style.setProperty('--mkb', v + 'px');        // only ever raise it
     } catch (e) { }
   }
 

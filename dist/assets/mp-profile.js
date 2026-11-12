@@ -500,13 +500,9 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
      at the OS level (the owner runs that way) and keyframes then never paint. A transform-free
      background-position tween always renders, and it stops while the tab is hidden. */
   (function(){ if (window.__mpSheen) return; window.__mpSheen = 1;
-    var t = 0;
-    setInterval(function(){
-      if (document.hidden) return;
-      var els = document.querySelectorAll('[data-sheen]');
-      if (!els.length) return;
-      t = (t + 3) % 260;
-      for (var i = 0; i < els.length; i++) els[i].style.backgroundPosition = (120 - t) + '% 0';
-    }, 45);
+    /* WAAPI since 2026-11-12 (build/fix-sheen-waapi.js): the 45 ms interval cost 486 ms of style recalc per six idle seconds on a phone, guests included */
+    function arm(){ if (document.hidden) return; var els = document.querySelectorAll('[data-sheen]:not([data-sheen-on])');
+      for (var i = 0; i < els.length; i++) { try { els[i].setAttribute('data-sheen-on', '1'); els[i].animate([{ backgroundPosition: '120% 0' }, { backgroundPosition: '-140% 0' }], { duration: 3900, iterations: Infinity, easing: 'linear' }); } catch (e) {} } }
+    arm(); setInterval(arm, 1000);
   })();
 })();

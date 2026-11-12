@@ -6,13 +6,17 @@ var __esD_mpcalc = {};
 function __esT_mpcalc(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpcalc) || __esD_mpcalc; if (d[k] != null) return d[k]; } catch (e) {} return en; }
 ﻿  const $ = id => document.getElementById(id);
   const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
-  const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '-';
+  /* one Intl.NumberFormat per shape, built once: toLocaleString creates a formatter on EVERY call, and this runs for
+     every calculator output on every input - measured 55-108 ms at load on every tool route (2026-11-12 perf pass) */
+  const _nfU2 = new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}), _nfU6 = new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:6}), _nfC6 = new Intl.NumberFormat('en-US',{maximumFractionDigits:6});
+  const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? _nfU2.format(n) : _nfU6.format(n)) : '-';
   const fmtPct = n => isFinite(n) ? (n>=0?'+':'') + n.toFixed(2) + '%' : '-';
-  const fmtCoin = n => isFinite(n) ? n.toLocaleString('en-US',{maximumFractionDigits:6}) : '-';
+  const fmtCoin = n => isFinite(n) ? _nfC6.format(n) : '-';
 
   function animateNum(el, to, fmt){
     if(!isFinite(to)){ el._cur = NaN; cancelAnimationFrame(el._raf); el.textContent = '-'; return; }
     const from = (typeof el._cur === 'number' && isFinite(el._cur)) ? el._cur : to;
+    if(from === to){ cancelAnimationFrame(el._raf); el._cur = to; el.textContent = fmt(to); return; } // nothing to roll (the first paint, or an unchanged value): write once instead of a 380 ms rAF loop writing the same text
     cancelAnimationFrame(el._raf);
     const start = performance.now(), dur = 380;
     const tick = now => {
@@ -191,7 +195,11 @@ function __esT_mpcalc(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpc
     ex.addEventListener('change', () => { if(ex.value!==''){ mmr.value=ex.value; calcAll(); } });
     mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu&&ex.value!==''){ ex.value=''; ex.dispatchEvent(new Event('change',{bubbles:true})); } }); // dispatch so the custom-select label flips to "Custom" too
   })();
-  calcAll();
+  /* The first pass runs at once on /calculators, where the outputs are on screen; on every other tool route the calculator
+     panel is hidden at load and the pass went into the critical path for nothing (measured 55-108 ms on a throttled
+     phone, 2026-11-12). Idle-deferred there; an input event still computes immediately. */
+  if (/(^|\s)route-calc(\s|$)/.test(document.documentElement.className) || /^\/(es\/|pt\/|de\/)?calculators\/?$/.test(location.pathname) || !window.requestIdleCallback) calcAll();
+  else requestIdleCallback(calcAll, { timeout: 2500 });
 
   // copy-to-clipboard buttons on each main result
   document.querySelectorAll('.copybtn').forEach(btn => btn.addEventListener('click', () => {

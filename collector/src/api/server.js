@@ -478,6 +478,18 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       delete out.cols;
       out.only = 'walls';
     }
+    // ONLY WHAT IS NEW SINCE THE LAST READ (2026-11-12, perf pass). The heatmap polls this every 5 s and ONE column arrives
+    // per poll, yet every poll re-downloaded the whole 10-minute film: 355 KB raw / 74 KB on the wire, every five seconds,
+    // per open phone - 53 MB an hour, and a JSON.parse of a third of a megabyte on the main thread each time. `since` is the
+    // newest column ts the caller already holds (the page rounds it down to the 5 s sample grid so a crowd shares one edge
+    // copy); the answer keeps the walls and the window metadata whole and carries only the newer columns, marked partial.
+    // A caller that sent nothing, or asked for the past (back), still gets the whole film.
+    const since = +req.query.since || 0;
+    if (since > 0 && out && Array.isArray(out.cols) && !(+req.query.back > 0)) {
+      out.cols = out.cols.filter(c => c && c.ts > since);
+      out.since = since;
+      out.partial = true;
+    }
     if (!out) { res.set('Cache-Control', 'public, max-age=3'); return res.json({ symbol: sym, ts: Date.now(), building: true, cols: [], wallsStanding: [], wallsFinished: [], note: 'the film starts empty after a restart and fills within a few seconds' }); }
     res.set('Cache-Control', 'public, max-age=3');
     res.json(out);

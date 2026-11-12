@@ -36,7 +36,9 @@ function asyncReads(path) {
   let worker = null, seq = 0; const pending = new Map();
   const stats = { restarts: 0, inflight: 0, timeouts: 0, errors: 0, maxMs: 0 };
   function spawn() {
-    worker = new Worker(new URL('./reader.js', import.meta.url), { workerData: { path } });
+    // its own heap ceiling (2026-11-12): a 5,000-row catalyst read is ~7 MB of objects per call and the worker inherited the
+    // process default of ~1 GB, so it too grew instead of collecting - see ecosystem.config.cjs on the main isolate's limit
+    worker = new Worker(new URL('./reader.js', import.meta.url), { workerData: { path }, resourceLimits: { maxOldGenerationSizeMb: 160 } });
     worker.on('message', (m) => {
       const p = pending.get(m.id); if (!p) return;
       pending.delete(m.id); clearTimeout(p.t); stats.inflight = pending.size;

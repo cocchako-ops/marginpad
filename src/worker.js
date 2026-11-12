@@ -2222,7 +2222,14 @@ async function handleCatalystMoves(url, env) {
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
   const [kl, cj, lj] = await Promise.all([
     aiKlinesAfter(env, sym, tf, since, pages).catch(() => ({ bars: [] })),
-    colFetch('/api/v1/catalysts?since=' + (since - CX_BEFORE_MS) + '&until=' + (now + 60000) + '&limit=5000&min=' + CX_MIN_SCORE, 4000, 120),
+    /* THE WINDOW IS QUANTIZED TO THE CACHE'S OWN TTL (2026-11-12). `since`/`until` were millisecond-unique, so the 120 s edge
+       cache on this call NEVER hit and every what-moved-it read (the chart, the six-markets cxCov pass, the desk) pulled the
+       whole 30-day catalyst table from the droplet again: measured in nginx, ~200 calls an hour around the clock, 0.8-3 MB
+       each, 4.7 GB a day - and on the collector each one is 5,000 row objects on the reader thread, cloned into the main
+       heap, then a 3 MB string; that churn is what has been walking the collector's RSS to pm2's 700 MB ceiling once a day
+       since 10-30. Rounded to 2-minute boundaries the six markets of one pass share one URL, and the next pass inside the
+       TTL is an edge hit. The window still covers [since - CX_BEFORE_MS, now + 60 s] - it only ever widens by under 2 min. */
+    colFetch('/api/v1/catalysts?since=' + (Math.floor((since - CX_BEFORE_MS) / 120000) * 120000) + '&until=' + (Math.ceil((now + 60000) / 120000) * 120000) + '&limit=5000&min=' + CX_MIN_SCORE, 4000, 120),
     hasLiq ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.min(43200, days * 1440), 4000, 300) : Promise.resolve(null),
   ]);
   const bars = (kl && kl.bars) || [];
@@ -10273,7 +10280,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=fb54551e" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c396141e" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -22651,7 +22658,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '032017e5';
+const ASSET_V = '5557814d';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -25668,6 +25675,25 @@ export default {
     const url = new URL(request.url);
     // SEO: http:// must 301 to https:// - GSC was indexing http duplicates (http returned 200)
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
+    /* STATIC ASSETS GET A REAL CACHE LIFETIME (2026-11-12, perf pass). The asset binding's default is
+       `public, max-age=0, must-revalidate` on everything, and there has been NO caching service worker since 2026-10-15
+       - so every page load, every return visit, revalidated home.js (180 KB br), mp-auth.js (152 KB), home.css,
+       mp-nav.js, the chart library and fonts.css one conditional round trip EACH (measured: 8-10 x 304 per load on
+       production, 1 RTT apiece on a phone). A `?v=` bundle's URL IS its content (bump-home-assets stamps sha256[0:8]
+       of the file, check-home-hash refuses a deploy whose stamp disagrees with the bytes), so it is immutable for a
+       year: a new build is a new URL, an old tab keeps a coherent old set. Bare assets (icons, partner logos, og
+       cards, fonts.css, blog.css) keep a SHORT max-age with stale-while-revalidate: an in-place edit reaches a reader
+       on the second load, the way the page HTML already behaves. HTML is deliberately untouched (one RTT for the
+       document is the price of a fresh page). */
+    if ((request.method === 'GET' || request.method === 'HEAD') && url.pathname.indexOf('/assets/') === 0) {
+      const ar = await env.ASSETS.fetch(request);
+      if (ar.status !== 200 && ar.status !== 304) return ar;
+      const ah = new Headers(ar.headers);
+      if (/^[a-f0-9]{8}$/.test(url.searchParams.get('v') || '')) ah.set('cache-control', 'public, max-age=31536000, immutable');
+      else if (/\.(png|jpe?g|webp|svg|gif|ico|woff2?|ttf)$/i.test(url.pathname)) ah.set('cache-control', 'public, max-age=86400, stale-while-revalidate=604800');
+      else ah.set('cache-control', 'public, max-age=300, stale-while-revalidate=86400');
+      return new Response(ar.body, { status: ar.status, statusText: ar.statusText, headers: ah });
+    }
     // 301 renamed/dead blog slugs → their current URL, so old links + GSC-indexed dead URLs pass authority instead of 404ing.
     // Root cause was fixed in gen-blog.js (sitemap prune) + the 2 internal links; this catches external/historical refs. (2026-07)
     const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };

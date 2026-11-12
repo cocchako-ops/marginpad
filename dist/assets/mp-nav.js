@@ -182,6 +182,12 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards). */
     +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'
     +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
+    /* THE COOKIE NOTICE'S ROOM, RESERVED FROM THE FIRST FRAME (2026-11-12): html.mp-ckbar is stamped by a one-line <head> script
+       (build/add-ckbar-boot.js) when nobody has pressed OK; until mount() swaps it for the bar (html.mp-ckon) the body carries a
+       transparent border of the bar's MEASURED height (47.4px two-line notice on a phone + the inset the bar itself pads by; 41px
+       desktop). border-box so a 100dvh flex body (the terminals) keeps its size. The bar carries the same min-height so the
+       swap is exact. Measured before: CLS 0.056-0.061 phone / 0.030 desktop on every visit without an OK. */
+    +   'html.mp-ckbar:not(.mp-ckon) body{border-top:calc(47.4px + env(safe-area-inset-top)) solid transparent;box-sizing:border-box;}#mpCkBar{min-height:calc(47.4px + env(safe-area-inset-top));box-sizing:border-box;}'
     +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
     + '}'
     /* a header inside a padded .wrap starts that padding down; pinHeader() pulls it to the top edge by exactly that
@@ -217,7 +223,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap - break out) */
     /* height stated (12 + the 32px link + 12 = 56, a tenth under the 62 it was - owner 2026-10-27), not derived from whatever the
        page's own markup puts in the bar before it is rebuilt - a static header measured 57px on /academy/ and 69px on /premium/ */
-    + '@media(min-width:721px){html{overflow-x:clip;}HDRSEL{width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
+    + '@media(min-width:721px){html{overflow-x:clip;}html.mp-ckbar:not(.mp-ckon) body{border-top:41px solid transparent;box-sizing:border-box;}#mpCkBar{min-height:41px;box-sizing:border-box;}#mpCkBar>span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}HDRSEL{width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
     /* site-wide header tweaks (apply to canonical + injected headers): bigger account icon, language as a transparent globe */
     + 'header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}'
     + 'header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}'
@@ -989,8 +995,8 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=032017e5', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=032017e5"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=5557814d', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=5557814d"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -1003,7 +1009,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=6bd3b44b', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=7d92b595', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
       if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
@@ -1179,7 +1185,16 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
 /* Cookie notice - one-time, dismissible. The site sets cookies (sign-in session, device id for anti-abuse,
    anonymous stats); this makes that visible. localStorage mp_ck_ok = accepted. */
 (function(){
-  try{if(localStorage.getItem('mp_ck_ok'))return;}catch(e){return;}
+  /* THE NOTICE HAS ITS ROOM FROM THE FIRST FRAME (2026-11-12 perf pass). It is inserted at the top of <body> 900 ms after
+     DOMContentLoaded and used to push the whole page down by its own height - measured CLS 0.030 on a desktop and
+     0.056-0.061 on a phone on EVERY visit by anybody who had not pressed OK, the one shift left on the site after the
+     2026-10-27 round. A one-line <head> script (build/add-ckbar-boot.js) now stamps html.mp-ckbar when neither the
+     cookie nor localStorage says OK, the HDRCRIT stylesheet reserves the bar's exact height as a transparent border
+     on <body> (box-sizing:border-box, so a 100dvh flex body keeps its size), and mount() swaps the reservation for
+     the bar in one frame (html.mp-ckon). Every path that decides NOT to mount must take the class off, or the page
+     keeps a blank strip - that is the `noBar()` below. */
+  function noBar(){try{document.documentElement.classList.remove('mp-ckbar');}catch(e){}}
+  try{if(localStorage.getItem('mp_ck_ok')){noBar();return;}}catch(e){noBar();return;}
   if(document.getElementById('mpCkBar'))return;
   /* THE ACKNOWLEDGEMENT FOLLOWS THE ACCOUNT (2026-10-26): the owner's installed iPhone app showed the notice again after
      he had accepted it weeks ago - iOS had wiped the web app's storage, localStorage and script cookies together. A signed-in
@@ -1188,7 +1203,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
   var li=false;try{li=/(^|; )mp_li=1/.test(document.cookie);}catch(e){}
   function mount(){
     if(document.getElementById('mpCkBar'))return;
-    try{document.documentElement.classList.add('mp-ckbar');}catch(e){}
+    try{document.documentElement.classList.add('mp-ckbar');document.documentElement.classList.add('mp-ckon');}catch(e){} // mp-ckon: the bar is in the flow now, the reservation goes - same frame, no shift
     var b=document.createElement('div');b.id='mpCkBar';
     b.style.cssText='position:relative;z-index:94;margin:0;display:flex;align-items:center;gap:9px;background:rgba(13,16,21,.97);border-bottom:1px solid #2b323b;padding:calc(7px + env(safe-area-inset-top)) 12px 7px;font-family:Familjen Grotesk,system-ui,sans-serif;font-size:12px;line-height:1.35;color:#aab2bd'; // one slim line (2026-09-07 UX pass); padded by the safe-area inset since 2026-10-22 - the installed app draws under the iOS status bar and this is body's FIRST child, so it was the one thing under the clock: the four-line card sat above the brand on every first visit and covered drawer headers
     b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">' + ((window.__mpTR && window.__mpTR('ckBar')) || __esT_mpnav("cookiesSignInSecurity",'Cookies: sign-in, security and anonymous analytics. No ad tracking.')) + '</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:5px 11px;cursor:pointer">OK</button>';
@@ -1197,10 +1212,10 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
       if(li){try{fetch('/api/push/device',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({k:'ckok',v:Date.now()}),keepalive:true}).catch(function(){});}catch(e){}}});
   }
   function go(){
-    try{if(/(^|; )mp_ck_ok=1/.test(document.cookie)){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}return;}}catch(e){}
+    try{if(/(^|; )mp_ck_ok=1/.test(document.cookie)){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}noBar();return;}}catch(e){}
     if(!li){mount();return;}
     try{fetch('/api/push/device',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
-      if(j&&j.prefs&&j.prefs.ckok&&j.prefs.ckok.v){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}return;}
+      if(j&&j.prefs&&j.prefs.ckok&&j.prefs.ckok.v){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}noBar();return;}
       mount();}).catch(mount);}catch(e){mount();}
   }
   if(document.readyState!=='loading')setTimeout(go,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(go,900);});
@@ -1278,12 +1293,19 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
       var upd = function () { el.classList.toggle('mp-hs-end', el.scrollLeft + el.clientWidth >= el.scrollWidth - 4); };
       el.addEventListener('scroll', upd, { passive: true }); upd();
     }
-    function scan() { var all = document.querySelectorAll('div,section,nav,ul,ol,pre,code,table,figure,main,article'); for (var i = 0; i < all.length; i++) mark(all[i]); }
+    var HS_SEL = 'div,section,nav,ul,ol,pre,code,table,figure,main,article';
+    function scan() { if (document.hidden) return; var all = document.querySelectorAll(HS_SEL); for (var i = 0; i < all.length; i++) mark(all[i]); }
     var t = null, last = 0; function later() { clearTimeout(t); t = setTimeout(function () { last = Date.now(); scan(); }, 400); }
     if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
     setTimeout(scan, 1500); setTimeout(scan, 4000);
     window.addEventListener('resize', later);
-    // a live tape mutates every second - rescan at most every 5 s on DOM changes, the first paint is covered above
-    try { new MutationObserver(function () { if (Date.now() - last > 5000) later(); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+    /* A DOM CHANGE SCANS WHAT CHANGED, NOT THE WHOLE DOCUMENT (2026-11-12 perf pass). The old observer re-ran the full
+       scan every 5 s on any mutation: on a live tape or the terminal that is a whole-document querySelectorAll plus a
+       getComputedStyle (a forced style recalc) for every unseen block, for ever. Now the added nodes are collected and
+       only THEIR subtrees are marked, coalesced to one pass per 700 ms; the three full scans above still cover the
+       first paint and a resize. */
+    var pend = [], pt = null;
+    function flush() { pt = null; var list = pend; pend = []; if (document.hidden) return; for (var i = 0; i < list.length; i++) { var n = list[i]; if (!n.isConnected) continue; try { if (n.matches && n.matches(HS_SEL)) mark(n); var q = n.querySelectorAll ? n.querySelectorAll(HS_SEL) : []; for (var j = 0; j < q.length; j++) mark(q[j]); } catch (e) {} } }
+    try { new MutationObserver(function (recs) { for (var r = 0; r < recs.length; r++) { var a = recs[r].addedNodes; for (var k = 0; k < a.length; k++) if (a[k].nodeType === 1 && pend.length < 400) pend.push(a[k]); } if (pend.length && !pt) pt = setTimeout(flush, 700); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
   } catch (e) {}
 })();

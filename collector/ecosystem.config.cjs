@@ -13,6 +13,15 @@ module.exports = {
     // (1,000 wallets since 2026-10-11) sits at ~300 MB steady state, so the old ceiling killed it every
     // five minutes - 119 times before it was noticed. Twice the measured steady state, half of free RAM.
     max_memory_restart: '700M',
+    /* V8 IS TOLD WHERE THE CEILING IS (2026-11-12). Measured 11-10 -> 11-11: RSS 377 -> 659 MB in 29 h at ~5.5 MB/h with heapUsed
+       sawtoothing to 371 MB and heapTotal to 490 - no unbounded structure anywhere in the code (every ring, memo, dedupe set
+       and whale memory was walked and is capped), but ~100-200 MB/min of RESPONSE GARBAGE (the 30-day catalyst dump, tape,
+       bookmap, live) against a default old-space limit of ~1 GB per isolate: V8 grows the heap toward live x 4 instead of
+       collecting, and pm2 kills on RSS long before V8 feels any pressure. 360 MB for the main isolate (the measured warm steady
+       state is 150-200 MB) makes it collect early; the reader thread gets its own 160 MB in storage/index.js. The pm2 ceiling
+       is untouched - it is the guard against a real leak - and if a genuine retainer exists this turns the daily RSS kill
+       into an OOM at the limit, which is the one signal that names it. */
+    node_args: '--max-old-space-size=360',
     kill_timeout: 4000,           // give graceful SIGTERM shutdown time to flush aggregates
     env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite' },
     out_file: 'logs/out.log',

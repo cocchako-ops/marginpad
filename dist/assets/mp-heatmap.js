@@ -2252,6 +2252,11 @@ function bkSelect(cls, opts, cur) {
       var nf = { minimumFractionDigits: dp, maximumFractionDigits: dp };
 
       var one = list.length < 2;
+      /* ONE REFLOW FOR EVERY ROW THAT MOVED, NOT ONE PER ROW (2026-11-12 perf pass). flash() restarts the transition by
+         reading offsetWidth, and reading it inside this loop forced a synchronous layout for every changed row on
+         every 4 s poll - measured 259 ms of a six-second idle window on a phone, with a long task on most polls. The
+         moved rows are collected and flushed through a single read after the loop. */
+      var flashQ = [];
       var paint = function (host, rows, cls) {
         var ch = ensure(host, rows.length, cls);
         for (var k = 0; k < rows.length; k++) {
@@ -2268,11 +2273,12 @@ function bkSelect(cls, opts, cur) {
           else if (vs.getAttribute('data-v') !== sig) { vs.setAttribute('data-v', sig); vs.innerHTML = barHtml(r.v, r.sz, 0); }
           else { var segs = vs.children, kk = Object.keys(r.v).sort(function (a, b2) { return r.v[b2] - r.v[a]; });
             for (var q = 0; q < segs.length && q < kk.length; q++) segs[q].style.width = (r.v[kk[q]] / r.sz * 100).toFixed(1) + '%'; }
-          if (moved) flash(e);
+          if (moved) flashQ.push(e);
         }
       };
       paint(obA, aRows.slice().reverse(), 'hm-ob-row a');
       paint(obB, bRows, 'hm-ob-row b');
+      if (flashQ.length) { var fq; for (fq = 0; fq < flashQ.length; fq++) flashQ[fq].classList.remove('fx'); void obA.offsetWidth; for (fq = 0; fq < flashQ.length; fq++) flashQ[fq].classList.add('fx'); }
 
       var spr = null;
       for (i = 0; i < list.length; i++) { var sp = +list[i].spreadBps; if (sp > 0 && (spr === null || sp < spr)) spr = sp; }
@@ -2689,12 +2695,27 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       if (!S || (bmState.loading && !force)) return;
       var coin = bmState.coin || S.coin, ven = bmState.venue, mins = bmState.mins, back = Math.round(bmState.back * 10) / 10, band = bmState.band;
       bmState.loading = true;
-      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (band === 'wide' ? '&band=wide' : '') + (ven && ven !== 'all' ? '&venue=' + ven : ''))
+      /* THE POLL ASKS FOR WHAT IS NEW, NOT FOR THE WHOLE FILM (2026-11-12 perf pass). A 10-minute film is 120 columns and the
+         5 s poll brings exactly one new one, yet each poll re-downloaded all 120: 74 KB on the wire every five seconds (53 MB
+         an hour on a phone) and a third-of-a-megabyte JSON.parse on the main thread each time. When a film is already held
+         for this exact view, `since` = the newest column we have, rounded DOWN to the 5 s sample grid so every reader polling
+         inside the same window shares one edge copy; the collector answers the newer columns alone (`partial`) and the walls
+         whole. A view change, a drag into the past or an empty film still fetch everything. */
+      var have = bmState.data, inc = !force && back === 0 && have && have.cols && have.cols.length && have.symbol === coin && have.newestKeptTs > 0;
+      var since = inc ? Math.floor(have.newestKeptTs / 5000) * 5000 : 0;
+      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (band === 'wide' ? '&band=wide' : '') + (ven && ven !== 'all' ? '&venue=' + ven : '') + (since ? '&since=' + since : ''))
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
           bmState.loading = false;
           if (!S || bmState.coin !== coin || bmState.venue !== ven || bmState.mins !== mins || bmState.band !== band) return;
-          bmState.data = (j && j.cols && j.cols.length) ? j : null;
+          if (j && j.partial && bmState.data && bmState.data.cols) {
+            // merge: append the columns newer than what we hold, keep the newest `mins` of film, take every other field from the answer
+            var cur = bmState.data.cols, newest = cur.length ? cur[cur.length - 1].ts : 0, add = (j.cols || []).filter(function (c) { return c && c.ts > newest; });
+            var cols = add.length ? cur.concat(add) : cur, keep = Math.max(1, Math.round(mins * 60000 / (j.sampleMs || 5000)));
+            if (cols.length > keep) cols = cols.slice(cols.length - keep);
+            var merged = {}; for (var k2 in j) merged[k2] = j[k2]; merged.cols = cols; delete merged.partial; delete merged.since;
+            bmState.data = cols.length ? merged : null;
+          } else bmState.data = (j && j.cols && j.cols.length) ? j : null;
           if (j && j.keepMins) bmState.keepMins = j.keepMins;
           bmPaint();
         })
@@ -3462,7 +3483,8 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     S._unstick = function () { removeEventListener('scroll', stickPing); removeEventListener('resize', stickPing); };
     // the price in the top row breathes with the tick: green up, red down, through WAAPI (never @keyframes)
     var lastPx = 0;
-    docOn(window, 'mp:price', function (ev) { var d = ev.detail || {}; if (!S || d.sym !== S.coin || !(+d.p > 0)) return; if (lastPx && +d.p !== lastPx && pxEl.animate) { try { pxEl.animate([{ color: +d.p > lastPx ? '#2ebd85' : '#ff6258' }, { color: '#fff' }], { duration: 700, easing: 'ease-out' }); } catch (e) {} } lastPx = +d.p; });
+    var lastAnimT = 0; // one colour flash per 700 ms, the animation's own length: BTC ticks up to once a frame and every tick was starting a new WAAPI animation on top of the running one (2026-11-12)
+    docOn(window, 'mp:price', function (ev) { var d = ev.detail || {}; if (!S || d.sym !== S.coin || !(+d.p > 0)) return; var nowA = Date.now(); if (lastPx && +d.p !== lastPx && pxEl.animate && nowA - lastAnimT >= 700) { lastAnimT = nowA; try { pxEl.animate([{ color: +d.p > lastPx ? '#2ebd85' : '#ff6258' }, { color: '#fff' }], { duration: 700, easing: 'ease-out' }); } catch (e) {} } lastPx = +d.p; });
     S.syncTop();
     // (the dot-size picker is gone with the dots - 2026-11-12; S.showDots stays false and the dot layer is never painted)
     tgEl.addEventListener('click', function (ev) { // delegated: updTargets rewrites this block on every tick
@@ -3534,7 +3556,11 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
         window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(txt), '_blank'); // desktop: the PNG just downloaded - attach it to the tweet
       } catch (e2) {} }, 'image/png');
     } catch (e) {} });
-    S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); if (!S._tgT || Date.now() - S._tgT > 5000) { S._tgT = Date.now(); updTargets(); } sched(); } };
+    /* A PRICE TICK REPAINTS THE MAP TWELVE TIMES A SECOND AT MOST (2026-11-12 perf pass). BTC's trades arrive at up to one per frame
+       and every one redrew the whole stage canvas and rewrote the masthead: measured 328 rAF fires and 1,061 paints in six IDLE
+       seconds on a phone, ~1.1 s of the main thread. The price line moves by a pixel at most between two frames; the 11-01 rule
+       for the background canvases (12 fps by the clock) applies to the map too. The first tick after a quiet spell paints at once. */
+    S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; var nowP = Date.now(); if (S._pxPaintT && nowP - S._pxPaintT < 80) { if (!S._pxPend) { S._pxPend = setTimeout(function () { S._pxPend = 0; if (!S) return; S._pxPaintT = Date.now(); updHead(); sched(); }, 80 - (nowP - S._pxPaintT)); } return; } S._pxPaintT = nowP; updHead(); if (!S._tgT || nowP - S._tgT > 5000) { S._tgT = nowP; updTargets(); } sched(); } };
     window.addEventListener('mp:price', S.onPrice);
     try { if (window.mpWS) window.mpWS.sub(coin); } catch (e) {}
     // the venue chips - one delegated handler, the same shape as the All/Longs/Shorts control above

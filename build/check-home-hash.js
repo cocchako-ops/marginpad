@@ -39,6 +39,24 @@ for (const b of Object.keys(seen)) {
   if (bare.length) { bad++; console.error('check-home-hash: FAIL - ' + b + ' referenced WITHOUT ?v= in ' + bare.length + ' file(s): ' + bare.slice(0, 5).join(', ') + (bare.length > 5 ? ' (+' + (bare.length - 5) + ' more)' : '')); }
   if (versioned.length > 1) { bad++; console.error('check-home-hash: FAIL - ' + b + ' carries ' + versioned.length + ' different hashes (a bump was missed):'); for (const hh of versioned) { const fl = [...seen[b][hh]]; console.error('  ' + hh + '  -> ' + fl.slice(0, 5).join(', ') + (fl.length > 5 ? '  (+' + (fl.length - 5) + ' more)' : '')); } }
 }
+/* FRESHNESS (2026-11-12): a `?v=` asset is served `immutable` for a year by the worker, so the stamp MUST be the file's
+   own content hash - a bundle edited after the last bump would otherwise be cached under the OLD url for ever on every
+   returning browser (2026-10-21: every page pointed at mp-auth.js?v=7aa2374f while the file hashed to 6f2e5459, and
+   this check was green because it only proved the stamps AGREED with each other). Same arithmetic as bump-home-assets:
+   each bundle = sha256(file)[0:8]; home.css + home.js share hash(css + js). */
+const crypto = require('crypto');
+const hashOf = (buf) => crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
+{
+  const A = path.join(ROOT, 'dist', 'assets');
+  let vHome = ''; try { vHome = hashOf(fs.readFileSync(path.join(A, 'home.css'), 'utf8') + fs.readFileSync(path.join(A, 'home.js'), 'utf8')); } catch (e) {}
+  for (const b of Object.keys(seen)) {
+    const stamp = Object.keys(seen[b]).filter(x => x)[0]; if (!stamp) continue;
+    let want = '';
+    if (b === 'home.js' || b === 'home.css') want = vHome;
+    else { try { want = hashOf(fs.readFileSync(path.join(A, b))); } catch (e) { continue; } }
+    if (want && want !== stamp) { bad++; console.error('check-home-hash: FAIL - ' + b + ' is stamped ?v=' + stamp + ' but the file hashes to ' + want + ' (edited after the last bump - a returning browser would keep the OLD bytes under the old url for a year)'); }
+  }
+}
 if (bad) { console.error('Fix: node build/bump-home-assets.js  (then re-run this check).'); process.exit(1); }
 const summary = Object.keys(seen).map(b => b + '=' + Object.keys(seen[b])[0]).join(' ');
 console.log('check-home-hash: OK - one consistent hash per bundle across ' + files.length + ' html files (' + summary + ').');
