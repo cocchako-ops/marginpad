@@ -1018,6 +1018,10 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     + '@media(max-width:420px){.ct-tk{max-width:100%}.ct-tk-sp{width:88px}.ct-tk-roe{font-size:20px}}'
     + '.ct-tk-rx{display:flex;align-items:center;gap:3px;padding:5px 7px 6px;border-top:1px solid #1f2936;background:rgba(0,0,0,.28);overflow-x:auto;scrollbar-width:none}'
     + '.ct-tk-rx::-webkit-scrollbar{display:none}'
+    + '.ct-tk-totd{display:flex;align-items:center;gap:8px;padding:5px 7px 6px;border-top:1px solid #1f2936;background:rgba(0,0,0,.2)}.ct-tk-totd:empty{display:none}'
+    + '.ct-tk-totdb{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:999px;border:1px solid #2c3849;background:transparent;color:#aab6c4;font:700 10.5px/1 "Familjen Grotesk",sans-serif;letter-spacing:.03em;cursor:pointer;transition:border-color .15s,background .15s,color .15s}'
+    + '.ct-tk-totdb svg{width:13px;height:13px;flex:none}.ct-tk-totdb:hover{border-color:#c2f64a;color:#e9e7df}.ct-tk-totdb.cand{color:#e9e7df;border-color:#3a4a60}.ct-tk-totdb.on{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.1)}.ct-tk-totdb.own{opacity:.6;cursor:default}.ct-tk-totdb.done{opacity:.55}.ct-tk-totdb.busy{opacity:.5;pointer-events:none}'
+    + '.ct-tk-totdn{font:10.5px/1 "Familjen Grotesk",sans-serif;color:#6c7681}'
     + '.ct-tk-rxb{display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px 0 5px;border-radius:999px;border:1px solid transparent;background:transparent;font-size:13px;line-height:1;cursor:pointer;color:#e9e7df;opacity:.42;box-shadow:none;transition:opacity .15s,border-color .15s,background .15s;flex:none}'
     + '.ct-tk-rxb .g{display:flex;align-items:center;justify-content:center;width:16px;height:16px;color:#aab6c4}'
     + '.ct-rxg{width:15px;height:15px;display:block}.ct-rxg-t{font-size:12px;line-height:1}'
@@ -4117,6 +4121,40 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     rail.innerHTML = keys.map(function (k) { var h = have[k], lb = rxLabel(k); return '<button type="button" class="ct-rxb ct-tk-rxb' + (h ? ' has' : '') + (h && h.on ? ' on' : '') + '" data-rx="' + esc(k) + '" data-rxm="' + esc(mid) + '" title="' + esc(lb) + '" aria-label="' + esc(lb) + '"><span class="g">' + rxGlyph(k) + '</span><i>' + (h && h.n ? h.n : '') + '</i></button>'; }).join('') + '<span class="ct-tk-rxlbl">react</span>';
     if (prev) { try { var changed = rail.querySelector('.ct-tk-rxb.on') || rail.querySelector('.ct-tk-rxb.has'); if (changed) changed.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.28)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' }); } catch (e) {} }
   }
+  /* TRADE OF THE DAY (2026-11-12, owner-approved feature #11): a CLOSED card carries one more rail - Nominate while the ticket is not yet
+     a candidate (one nomination a day per member), Vote with the count while it is, the reader's own vote lit. The state is ONE read of
+     /api/totd per page per 30 s shared by every card; a write repaints every rail on the page. A guest is sent to sign in. The server
+     decides everything (your own nomination, a second one, an open trade) - the button only asks and says what came back. */
+  var totdS = null, totdT = 0, totdP = null;
+  function totdGet(force) { if (!force && totdP && Date.now() - totdT < 30000) return totdP; totdT = Date.now(); totdP = fetch('/api/totd' + (force ? '?nc=1' : ''), { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) totdS = d; return totdS; }).catch(function () { return totdS; }); return totdP; }
+  function totdPaintAll() { Array.prototype.forEach.call(document.querySelectorAll('.ct-tk-totd[data-totd]'), totdPaint); }
+  function totdPaint(el) {
+    var id = el.getAttribute('data-totd'), s = totdS; if (!s) { el.innerHTML = ''; return; }
+    var c = null; for (var i = 0; i < (s.cands || []).length; i++) if (s.cands[i].id === id) { c = s.cands[i]; break; }
+    var mine = s.mine === id, cnt = c ? (+c.n || 0) : 0;
+    var lbl = c ? (__esT_mpauth("totdVote", 'Vote') + (cnt ? ' · ' + cnt : '')) : __esT_mpauth("totdNominate", 'Nominate for trade of the day');
+    var tip = c ? (c.own ? __esT_mpauth("totdOwn", 'Your nomination - the room votes') : __esT_mpauth("totdVoteT", 'Vote for this as the trade of the day')) : __esT_mpauth("totdNomT", 'Put this closed trade up for the vote - one nomination a day');
+    el.innerHTML = '<button type="button" class="ct-tk-totdb' + (c ? ' cand' : '') + (mine ? ' on' : '') + (c && c.own ? ' own' : '') + (!c && s.nominated === true ? ' done' : '') + '" data-totdop="' + (c ? 'vote' : 'nominate') + '" data-totdid="' + esc(id) + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span>' + esc(lbl) + '</span></button>' + (c ? '<span class="ct-tk-totdn">' + esc(__esT_mpauth("totdRunning", 'running for trade of the day')) + '</span>' : '');
+  }
+  function totdMount(card, id) { var el = document.createElement('div'); el.className = 'ct-tk-totd'; el.setAttribute('data-totd', id); card.appendChild(el); totdGet().then(function () { totdPaint(el); }); }
+  document.addEventListener('click', function (ev) {
+    var b = ev.target && ev.target.closest && ev.target.closest('.ct-tk-totdb'); if (!b) return;
+    ev.preventDefault(); ev.stopPropagation(); // the card under it opens the ticket on a click - this tap is the vote, not that
+    var me = window.mpAuth && window.mpAuth.me && window.mpAuth.me();
+    if (!me) { try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (e) {} window.__mpTotdLast = { error: 'guest' }; return; }
+    if (b.classList.contains('own') || b.classList.contains('busy')) return;
+    b.classList.add('busy');
+    var op = b.getAttribute('data-totdop');
+    fetch('/api/totd', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ op: op, id: b.getAttribute('data-totdid') }) }).then(function (r) { return r.json(); }).then(function (d) {
+      window.__mpTotdLast = d;
+      if (d && d.cands) totdS = Object.assign({}, totdS || {}, d, { ok: true });
+      var m = (d && d.ok) ? (op === 'vote' ? __esT_mpauth("totdVoted", 'Your vote is in.') : __esT_mpauth("totdNomOk", 'Nominated. The room votes until midnight UTC.'))
+        : (d && d.error === 'own') ? __esT_mpauth("totdOwnE", 'You cannot vote for your own nomination.') : (d && d.error === 'already_nominated') ? __esT_mpauth("totdOnce", 'One nomination a day - yours is already in.') : (d && d.error === 'not_closed') ? __esT_mpauth("totdOpenE", 'Only a closed trade can run.') : (d && d.error === 'already_candidate') ? __esT_mpauth("totdAlready", 'This trade is already in the vote.') : __esT_mpauth("totdErr", 'Could not record that right now.');
+      try { if (window.mpToast) window.mpToast({ msg: m, kind: (d && d.ok) ? 'good' : 'warn', ms: 3400 }); } catch (e) {}
+      totdPaintAll();
+    }).catch(function () { window.__mpTotdLast = { error: 'network' }; }).then(function () { b.classList.remove('busy'); });
+  }, true);
+  window.__mpTotd = { get: totdGet, paint: totdPaintAll, state: function () { return totdS; } };
   function hydrate(root) {
     root = root || document; if (!root.querySelectorAll) return;
     try { if (window.mpChatPrefs && window.mpChatPrefs.get().trades === 'link') return; } catch (e) {}   // the reader asked for the plain link (chat settings)
@@ -4134,6 +4172,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
           row.classList.add('ct-hastk');
         }
         a.parentNode.replaceChild(card, a);
+        if (t.status === 'win' || t.status === 'loss') totdMount(card, id); // feature #11: a closed card can run for trade of the day
         if (row && mid) {
           railSync(card, row, mid);
           try { new MutationObserver(function () { railSync(card, row, mid); }).observe(row, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}

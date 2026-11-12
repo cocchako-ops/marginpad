@@ -9122,6 +9122,72 @@ function botWidgetSvg(d, err) {
     + (d ? '<text x="306" y="43" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="16" font-weight="700" fill="' + col + '">' + esc(pnl) + '</text><text x="306" y="56" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="8.5" fill="#5d6b7f">season P&amp;L · paper</text>' : '')
     + '</svg>';
 }
+/* TRADE OF THE DAY (2026-11-12, owner-approved feature #11). A shared CLOSED ticket (a `.ct-tk` card in the room, i.e. a tshare snapshot)
+   can be nominated - once a day per member - and voted for - one vote a day per member, the newer one stands, never for your own
+   nomination. The candidates and the votes live in UserStore (totdc / totdv): a vote count in KV is a read-modify-write that loses
+   concurrent writes. After midnight UTC the cron settles the day before: most votes wins, a tie goes to the bigger ROE, nobody wins with
+   zero votes; the winner is written to KV (totd:win:<day>, 40 d), the author is paid TOTD_XP once (DO /xp, src 'totd', once per day
+   through the KV flag), and one house line goes into the room. The homepage hero carries the winner. */
+const TOTD_XP = 100;
+function totdDayOf(ms) { return new Date(ms).toISOString().slice(0, 10); }
+async function handleTotd(url, request, env, ctx) {
+  const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
+  const tok = getCookie(request, SESS_COOKIE); const su = tok && env.USERS ? await sessionUser(env, tok) : null; const uid = su && su.id ? String(su.id) : '';
+  const today = totdDayOf(Date.now());
+  if (request.method === 'GET') {
+    const day = /^\d{4}-\d{2}-\d{2}$/.test(String(url.searchParams.get('day') || '')) ? String(url.searchParams.get('day')) : today;
+    const wantWin = url.searchParams.get('win') === '1';
+    if (!uid && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v1_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
+    let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid }); } catch (e) { bd = null; }
+    if (!bd || !bd.ok) return jt({ error: 'unavailable' }, 503);
+    const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP };
+    if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} out.win = win ? Object.assign({ day: yd }, win) : null; }
+    const resp = jt(out, 200, uid ? 'no-store' : 'public, max-age=20');
+    if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v1_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
+    return resp;
+  }
+  if (request.method !== 'POST') return jt({ error: 'method' }, 405);
+  if (!uid) return jt({ error: 'login_required' }, 401);
+  if (su.status && su.status !== 'active') return jt({ error: 'restricted' }, 403);
+  let b = {}; try { b = await request.json(); } catch (e) {}
+  const id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), op = String(b.op || '');
+  if (!id) return jt({ error: 'id_required' }, 400);
+  const bust = async () => { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v1_' + today)); await caches.default.delete(new Request('https://marginpad.io/__totd_v1_' + today + '_w')); } catch (e) {} };
+  if (op === 'nominate') {
+    let snap = null; try { snap = env.STATS && await env.STATS.get('tshr:' + id, 'json'); } catch (e) {}
+    if (!snap) return jt({ error: 'not_found' }, 404);
+    if (snap.status !== 'win' && snap.status !== 'loss') return jt({ error: 'not_closed' }, 400); // a trade of the day is a finished trade
+    const roe = snap.roe != null ? +snap.roe : (snap.margin > 0 && snap.pnl != null ? +snap.pnl / +snap.margin * 100 : null);
+    const r = await usersDO(env, '/totd/nominate', { day: today, id, uid, author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe, pnl: snap.pnl });
+    if (r && r.ok) { await bust(); try { if (ctx && ctx.waitUntil) ctx.waitUntil(evPush(env, request, 'totd', 'nominated ' + (snap.sym || '') + ' ' + (snap.side || '') + ' by @' + (snap.by || '?'), '/paper-trade?chat=1', {}, uid)); } catch (e) {} }
+    return jt(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error ? 409 : 503));
+  }
+  if (op === 'vote') {
+    const r = await usersDO(env, '/totd/vote', { day: today, id, uid });
+    if (r && r.ok) await bust();
+    return jt(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error === 'own' ? 403 : r && r.error ? 409 : 503));
+  }
+  return jt({ error: 'bad_op' }, 400);
+}
+async function totdSettle(env, o) {
+  o = o || {}; const day = o.day || totdDayOf(Date.now() - 86400000);
+  if (!o.force && !o.dry && await env.STATS.get('totd:done:' + day)) return { ok: true, day, skipped: 'done' };
+  if (!o.force && !o.dry && day === totdDayOf(Date.now())) return { ok: true, day, skipped: 'today' }; // the day is still being voted on
+  let bd = null; try { bd = await usersDO(env, '/totd/settle', { day }); } catch (e) { bd = null; }
+  if (!bd || !bd.ok) return { ok: false, day, error: 'unavailable' };
+  const win = bd.winner || null;
+  if (o.dry) return { ok: true, day, dry: true, winner: win, cands: bd.cands.length };
+  let paid = null, said = false;
+  if (win) {
+    const rec = { id: win.id, by: win.by, sym: win.sym, side: win.side, roe: win.roe, pnl: win.pnl, n: win.n, xp: TOTD_XP, at: Date.now() };
+    try { await env.STATS.put('totd:win:' + day, JSON.stringify(rec), { expirationTtl: 40 * 86400 }); } catch (e) {}
+    // the AUTHOR of the trade is paid (never the nominator): the name on the snapshot is resolved to an account
+    try { if (win.by && !/^e2e_/i.test(win.by)) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(win.by))); const u = await r.json(); const auid = u && u.exists && u.uid ? String(u.uid).replace(/^u:/, '') : ''; if (auid) { const g = await usersDO(env, '/xp', { uid: auid, src: 'totd', amt: TOTD_XP, note: 'trade of the day ' + day + ' - ' + win.sym + ' ' + win.side }); paid = g && g.granted != null ? g.granted : null; try { await usersDO(env, '/notify', { uid: auid, kind: 'totd', body: 'Your ' + win.sym + ' ' + win.side + ' was voted trade of the day (' + day + '): +' + TOTD_XP + ' XP', link: '/paper-trade?chat=1' }); } catch (e) {} } } } catch (e) {}
+    try { if (env.CHAT && !/^e2e_/i.test(String(win.by || ''))) { const roe = win.roe != null ? ((+win.roe >= 0 ? '+' : '') + (+win.roe).toFixed(1) + '%') : ''; const text = 'Trade of the day ' + day + ': @' + win.by + ' - ' + win.sym + ' ' + win.side + (roe ? ' ' + roe : '') + ', ' + win.n + ' vote' + (win.n === 1 ? '' : 's') + '. +' + TOTD_XP + ' XP. Share a closed ticket in the room and nominate it to run today.'; await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); said = true; } } catch (e) {}
+  }
+  try { await env.STATS.put('totd:done:' + day, '1', { expirationTtl: 40 * 86400 }); } catch (e) {}
+  return { ok: true, day, winner: win, cands: bd.cands.length, paid, said };
+}
 /* THE REPORT CARD (2026-11-12, owner-approved feature #8): GET /api/report/card.svg?u=<name> is a 1200x630 SVG of a member's season as
    the public card already states it (/lbuser: season trades, win rate, realized P&L, best ROE, best trade, the level, the 30-day curve
    of server-settled closes). PURE - the suite lifts it. System fonts on purpose: an SVG drawn into a canvas on the member's phone
@@ -10352,7 +10418,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3e0b6eb4" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0aa7d12c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -10411,6 +10477,104 @@ async function handleLiqRecap(url, env) {
   const desc = _rcU(rec.totalUsd) + ' in crypto was liquidated on ' + human + ': ' + _rcU(rec.longUsd) + ' longs vs ' + _rcU(rec.shortUsd) + ' shorts across ' + rec.n.toLocaleString('en-US') + ' events. Biggest single liquidation, busiest hour, per-coin and per-exchange breakdown.';
   const extraHead = '<script type="application/ld+json">' + faq + '</script><meta property="og:title" content="' + title + '"><meta property="og:description" content="' + desc + '">';
   return new Response(_rcShell(title, desc, 'https://marginpad.io/liquidations/recap/' + day + '/', body, extraHead), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
+}
+/* THE LIQUIDATION RECORDS (2026-11-12, owner-approved feature #14): /liquidations/records/ is the archive read as a record book - the
+   biggest single liquidation of every archived day ranked, the biggest and quietest days, the biggest hours, the coins and the venues
+   all-time, the long/short split, the hour of the UTC day that liquidates most, the longest run of days above the archive's own median.
+   liqRecordsCompute is PURE over the recap objects liqRecapBuild already writes (one KV row per day, measured from the R2 archive), so the
+   suite drives it with constructed days; liqRecordsBuild reads the index and every recap once a day (111 reads the day it shipped) and
+   keeps the result in KV `liqrecords`. Every figure is a measurement from the collector's own feed; a day under 50 prints never made it
+   into a recap and so never reaches a record. */
+function liqRecordsCompute(recs) {
+  recs = (recs || []).filter(r => r && r.day && +r.totalUsd > 0).sort((a, b) => a.day < b.day ? -1 : 1);
+  if (!recs.length) return null;
+  const sum = (k) => recs.reduce((a, r) => a + (+r[k] || 0), 0);
+  const totalUsd = sum('totalUsd'), n = sum('n'), longUsd = sum('longUsd'), shortUsd = sum('shortUsd');
+  const totals = recs.map(r => +r.totalUsd).sort((a, b) => a - b), medianDay = totals[Math.floor(totals.length / 2)];
+  const byDay = recs.slice().sort((a, b) => b.totalUsd - a.totalUsd);
+  const biggestDays = byDay.slice(0, 10).map(r => ({ day: r.day, usd: +r.totalUsd, n: +r.n, longPct: r.totalUsd > 0 ? Math.round(+r.longUsd / +r.totalUsd * 100) : 0, biggest: r.biggest ? { usd: +r.biggest.usd, sym: r.biggest.sym, side: r.biggest.side, ex: r.biggest.ex } : null }));
+  const quietestDays = byDay.slice(-5).reverse().map(r => ({ day: r.day, usd: +r.totalUsd, n: +r.n }));
+  const biggestEvents = recs.filter(r => r.biggest && +r.biggest.usd > 0).map(r => ({ day: r.day, usd: +r.biggest.usd, sym: r.biggest.sym, side: r.biggest.side, ex: r.biggest.ex, px: r.biggest.px, ts: +r.biggest.ts || 0 })).sort((a, b) => b.usd - a.usd).slice(0, 10);
+  const hours = []; const hod = new Array(24).fill(0);
+  for (const r of recs) if (Array.isArray(r.byHour)) r.byHour.forEach((v, h) => { hod[h] += +v || 0; hours.push({ day: r.day, h, usd: +v || 0 }); });
+  const biggestHours = hours.sort((a, b) => b.usd - a.usd).slice(0, 10);
+  const hodTotal = hod.reduce((a, b) => a + b, 0); let peakHod = 0; for (let h = 1; h < 24; h++) if (hod[h] > hod[peakHod]) peakHod = h;
+  const coins = {}; for (const r of recs) for (const t of (r.top || [])) { const c = coins[t.sym] || (coins[t.sym] = { sym: t.sym, usd: 0, n: 0, days: 0, best: null }); c.usd += +t.usd || 0; c.n += +t.n || 0; c.days++; if (!c.best || +t.usd > c.best.usd) c.best = { day: r.day, usd: +t.usd }; }
+  const topCoins = Object.values(coins).sort((a, b) => b.usd - a.usd).slice(0, 15).map(c => ({ sym: c.sym, usd: Math.round(c.usd), n: c.n, days: c.days, share: totalUsd > 0 ? +(c.usd / totalUsd * 100).toFixed(1) : 0, best: c.best }));
+  const exs = {}; for (const r of recs) for (const e of (r.exs || [])) { const x = exs[e.ex] || (exs[e.ex] = { ex: e.ex, usd: 0, n: 0 }); x.usd += +e.usd || 0; x.n += +e.n || 0; }
+  const exchanges = Object.values(exs).sort((a, b) => b.usd - a.usd).map(x => ({ ex: x.ex, usd: Math.round(x.usd), n: x.n, share: totalUsd > 0 ? +(x.usd / totalUsd * 100).toFixed(1) : 0 }));
+  // the longest run of consecutive archived days above the archive's own median - a measured streak, not a round threshold
+  let best = { len: 0, from: null, to: null }, cur = { len: 0, from: null, to: null };
+  for (let i = 0; i < recs.length; i++) {
+    const r = recs[i], prev = recs[i - 1], consecutive = prev && (Date.parse(r.day) - Date.parse(prev.day) === 86400000);
+    if (+r.totalUsd > medianDay && (!cur.len || consecutive)) { if (!cur.len) cur = { len: 1, from: r.day, to: r.day }; else { cur.len++; cur.to = r.day; } }
+    else if (+r.totalUsd > medianDay) cur = { len: 1, from: r.day, to: r.day };
+    else cur = { len: 0, from: null, to: null };
+    if (cur.len > best.len) best = { ...cur };
+  }
+  return { built: Date.now(), span: { first: recs[0].day, last: recs[recs.length - 1].day, days: recs.length, totalUsd: Math.round(totalUsd), n, longUsd: Math.round(longUsd), shortUsd: Math.round(shortUsd), longPct: totalUsd > 0 ? Math.round(longUsd / totalUsd * 100) : 0, medianDay: Math.round(medianDay), avgDay: Math.round(totalUsd / recs.length) },
+    biggestEvents, biggestDays, quietestDays, biggestHours, hourOfDay: { peak: peakHod, share: hodTotal > 0 ? +(hod[peakHod] / hodTotal * 100).toFixed(1) : 0, hist: hod.map(v => Math.round(v)) }, topCoins, exchanges, streak: best.len ? best : null };
+}
+async function liqRecordsBuild(env) {
+  let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+  const days = idx.map(x => x.day).filter(Boolean);
+  const recs = [];
+  for (let i = 0; i < days.length; i += 20) { const part = await Promise.all(days.slice(i, i + 20).map(d => env.STATS.get('liqrecap:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); for (const r of part) if (r) recs.push(r); }
+  const out = liqRecordsCompute(recs);
+  if (out) { try { await env.STATS.put('liqrecords', JSON.stringify(out)); await env.STATS.put('liqrecords:day', new Date().toISOString().slice(0, 10)); } catch (e) {} }
+  return out;
+}
+async function liqRecordsCron(env) { // once a UTC day, after the recap of yesterday had its chance (liqRecapDaily runs in the same pass; a day's recap missing today is in tomorrow's book)
+  if (!env.STATS) return;
+  const today = new Date().toISOString().slice(0, 10);
+  if ((await env.STATS.get('liqrecords:day')) === today) return;
+  if (new Date().getUTCHours() < 1) return; // the recap builder needs the archive pull first (settle hour 01:00)
+  await liqRecordsBuild(env);
+}
+async function handleLiqRecords(url, env, request) {
+  let rec = null; try { rec = JSON.parse(await env.STATS.get('liqrecords') || 'null'); } catch (e) {}
+  if (!rec || url.searchParams.get('nc') === '1') { try { rec = (await liqRecordsBuild(env)) || rec; } catch (e) {} }
+  if (!rec) return new Response(_rcShell('Crypto Liquidation Records | MarginPad', 'The biggest liquidations ever measured on MarginPad.', 'https://marginpad.io/liquidations/records/', '<h1>Crypto Liquidation Records</h1><p class="lead">The record book fills in once the first archived day closes.</p>'), { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  const S = rec.span, e1 = rec.biggestEvents[0], d1 = rec.biggestDays[0], h1 = rec.biggestHours[0];
+  const ev = rec.biggestEvents.map((x, i) => '<tr><td>' + (i + 1) + '.</td><td class="r"><b>' + _rcU(x.usd) + '</b></td><td>' + x.sym + ' ' + x.side + '</td><td>' + x.ex + '</td><td><a href="/liquidations/recap/' + x.day + '/">' + x.day + (x.ts ? ' ' + new Date(x.ts).toISOString().slice(11, 16) : '') + '</a></td></tr>').join('');
+  const dy = rec.biggestDays.map((x, i) => '<tr><td>' + (i + 1) + '.</td><td><a href="/liquidations/recap/' + x.day + '/">' + _rcDate(x.day) + '</a></td><td class="r"><b>' + _rcU(x.usd) + '</b></td><td class="r">' + x.n.toLocaleString('en-US') + '</td><td class="r">' + x.longPct + '% long</td></tr>').join('');
+  const qt = rec.quietestDays.map((x) => '<tr><td><a href="/liquidations/recap/' + x.day + '/">' + _rcDate(x.day) + '</a></td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td></tr>').join('');
+  const hr = rec.biggestHours.map((x, i) => '<tr><td>' + (i + 1) + '.</td><td><a href="/liquidations/recap/' + x.day + '/">' + x.day + '</a> ' + ('0' + x.h).slice(-2) + ':00-' + ('0' + (x.h + 1)).slice(-2) + ':00 UTC</td><td class="r"><b>' + _rcU(x.usd) + '</b></td></tr>').join('');
+  const co = rec.topCoins.map((x, i) => '<tr><td>' + (i + 1) + '. ' + x.sym + '</td><td class="r"><b>' + _rcU(x.usd) + '</b></td><td class="r">' + x.share + '%</td><td class="r">' + x.n.toLocaleString('en-US') + '</td><td>' + (x.best ? '<a href="/liquidations/recap/' + x.best.day + '/">' + x.best.day + '</a> · ' + _rcU(x.best.usd) : '-') + '</td></tr>').join('');
+  const ex = rec.exchanges.map((x) => '<tr><td>' + x.ex + '</td><td class="r"><b>' + _rcU(x.usd) + '</b></td><td class="r">' + x.share + '%</td><td class="r">' + x.n.toLocaleString('en-US') + '</td></tr>').join('');
+  const maxH = Math.max.apply(null, rec.hourOfDay.hist) || 1;
+  const bars = rec.hourOfDay.hist.map((v, h) => '<i style="height:' + Math.max(3, Math.round(v / maxH * 100)) + '%"' + (h === rec.hourOfDay.peak ? ' class="pk"' : '') + ' title="' + ('0' + h).slice(-2) + ':00 UTC - ' + _rcU(v) + ' across the archive"></i>').join('');
+  const faq = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'What is the biggest crypto liquidation MarginPad has measured?', acceptedAnswer: { '@type': 'Answer', text: e1 ? ('A ' + _rcU(e1.usd) + ' ' + e1.sym + ' ' + e1.side + ' position force-closed on ' + e1.ex + ' on ' + _rcDate(e1.day) + ' - the largest single liquidation in the archive, which runs from ' + _rcDate(S.first) + ' across ' + S.days + ' UTC days.') : 'No record yet.' } },
+    { '@type': 'Question', name: 'What was the biggest day of crypto liquidations?', acceptedAnswer: { '@type': 'Answer', text: d1 ? (_rcDate(d1.day) + ', with ' + _rcU(d1.usd) + ' liquidated across ' + d1.n.toLocaleString('en-US') + ' events (' + d1.longPct + '% longs). The archive median day is ' + _rcU(S.medianDay) + '.') : 'No record yet.' } },
+    { '@type': 'Question', name: 'Which hour of the day sees the most crypto liquidations?', acceptedAnswer: { '@type': 'Answer', text: ('0' + rec.hourOfDay.peak).slice(-2) + ':00-' + ('0' + (rec.hourOfDay.peak + 1)).slice(-2) + ':00 UTC carries ' + rec.hourOfDay.share + '% of everything liquidated across ' + S.days + ' archived days - measured on MarginPad’s multi-exchange feed.' } }
+  ] });
+  const body = '<div class="crumb"><a href="/">Home</a> / <a href="/liquidations/">Liquidations</a> / Records</div>'
+    + '<h1>Crypto Liquidation Records</h1>'
+    + '<p class="lead">The record book of MarginPad&#39;s own liquidation archive: <b>' + S.days + ' UTC days</b> since ' + _rcDate(S.first) + ', <b>' + _rcU(S.totalUsd) + '</b> in forced closes across <b>' + S.n.toLocaleString('en-US') + '</b> prints, measured from the collector&#39;s multi-exchange feed - never estimated. Every figure links to the day it happened on.</p>'
+    + '<div class="grid">'
+    + (e1 ? '<div class="kpi"><b>' + _rcU(e1.usd) + '</b><span>biggest single liquidation</span></div>' : '')
+    + (d1 ? '<div class="kpi"><b>' + _rcU(d1.usd) + '</b><span>biggest day</span></div>' : '')
+    + (h1 ? '<div class="kpi"><b>' + _rcU(h1.usd) + '</b><span>biggest hour</span></div>' : '')
+    + '<div class="kpi"><b>' + _rcU(S.medianDay) + '</b><span>median day</span></div>'
+    + '<div class="kpi"><b>' + S.longPct + '%</b><span>of all of it was longs</span></div>'
+    + '<div class="kpi"><b>' + ('0' + rec.hourOfDay.peak).slice(-2) + ':00</b><span>the UTC hour that liquidates most (' + rec.hourOfDay.share + '%)</span></div>'
+    + '</div>'
+    + '<h2>The biggest single liquidations</h2><p>The largest print of each archived day, ranked. ' + (e1 ? 'The record is a <b>' + _rcU(e1.usd) + ' ' + e1.sym + ' ' + e1.side + '</b> on ' + e1.ex + ', ' + _rcDate(e1.day) + '.' : '') + '</p><table><thead><tr><th></th><th class="r">Size</th><th>Position</th><th>Venue</th><th>Day (UTC)</th></tr></thead><tbody>' + ev + '</tbody></table>'
+    + '<h2>The biggest days</h2><table><thead><tr><th></th><th>Day (UTC)</th><th class="r">Liquidated</th><th class="r">Prints</th><th class="r">Side</th></tr></thead><tbody>' + dy + '</tbody></table>'
+    + (rec.streak ? '<p>The longest run of days above the archive median (' + _rcU(S.medianDay) + '): <b>' + rec.streak.len + ' days</b>, ' + _rcDate(rec.streak.from) + ' to ' + _rcDate(rec.streak.to) + '.</p>' : '')
+    + '<h2>The quietest days</h2><table><thead><tr><th>Day (UTC)</th><th class="r">Liquidated</th><th class="r">Prints</th></tr></thead><tbody>' + qt + '</tbody></table>'
+    + '<h2>The biggest hours</h2><table><thead><tr><th></th><th>Hour (UTC)</th><th class="r">Liquidated</th></tr></thead><tbody>' + hr + '</tbody></table>'
+    + '<h2>When the day liquidates</h2><div class="bars">' + bars + '</div><div class="hl"><span>00:00 UTC</span><span>12:00</span><span>23:00</span></div><p>Every archived day summed by UTC hour. <b>' + ('0' + rec.hourOfDay.peak).slice(-2) + ':00-' + ('0' + (rec.hourOfDay.peak + 1)).slice(-2) + ':00</b> carries ' + rec.hourOfDay.share + '% of the archive.</p>'
+    + '<h2>By coin, all-time</h2><table><thead><tr><th>Coin</th><th class="r">Liquidated</th><th class="r">Share</th><th class="r">Prints</th><th>Record day</th></tr></thead><tbody>' + co + '</tbody></table>'
+    + '<h2>By venue, all-time</h2><table><thead><tr><th>Venue</th><th class="r">Liquidated</th><th class="r">Share</th><th class="r">Prints</th></tr></thead><tbody>' + ex + '</tbody></table>'
+    + '<p>See it live: <a href="/rekt/">real-time liquidation feed</a> · <a href="/liquidations/recap/">every archived day</a> · <a href="/liquidations/">24h totals by coin</a> · <a href="/heatmap">liquidation heatmap</a>.</p>'
+    + '<div class="foot">Source: MarginPad liquidation collector - every event streamed from exchange liquidation feeds and archived at UTC day close (R2, sha256-verified, corrections kept as revisions). Venues with no public liquidation feed are not in it, so these are floors, not market totals. Rebuilt daily. Not financial advice.</div>';
+  const title = 'Crypto Liquidation Records - Biggest Liquidations, Days and Hours Ever Measured | MarginPad';
+  const desc = (e1 ? 'The biggest single crypto liquidation measured: ' + _rcU(e1.usd) + ' ' + e1.sym + ' ' + e1.side + ' (' + e1.day + '). ' : '') + (d1 ? 'Biggest day ' + _rcU(d1.usd) + ' (' + d1.day + '). ' : '') + 'All-time records from ' + S.days + ' archived days of MarginPad’s multi-exchange liquidation feed, by coin, venue and hour.';
+  const extraHead = '<script type="application/ld+json">' + faq + '</script><meta property="og:title" content="' + title + '"><meta property="og:description" content="' + desc.replace(/"/g, '&quot;') + '"><meta property="og:image" content="https://marginpad.io/assets/og/rekt.jpg"><meta name="twitter:card" content="summary_large_image">';
+  const html = _rcShell(title, desc.replace(/"/g, '&quot;'), 'https://marginpad.io/liquidations/records/', body, extraHead);
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
 }
 async function handleRecapSitemap(env, request) {
   let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
@@ -15978,6 +16142,12 @@ const WH_MAX = 3, WH_MAX_TRIES = 5, WH_PAUSE_AFTER = 25;
 const WH_EVENTS = ['position.opened', 'position.updated', 'position.closed', 'position.liquidated', 'order.filled', 'order.expired', 'order.cancelled'];
 const PORDER_TTL = 30 * 86400000;       // GTC with a 30-day expiry - an order nobody remembers placing is not a feature
 const PT_MAX_OPEN = 50, PT_MAX_PAIR = 10;
+/* PAPER COPY (2026-11-12, owner-approved feature #2 - with his one condition: "ti trejdovi ne smeju da se racunaju u leaderboard").
+   A member copies up to COPY_MAX_LEADERS traders at a fixed margin per trade; every SERVER-FILLED open of a leader is mirrored into the
+   copier's journal at the leader's entry (same market, same moment), and the leader's close, partial and SL/TP edit mirror too. A
+   mirrored row is `src:'srv'` (so the sweep settles it like any server position) and carries `copy:1`; tradeev writes it with `cp=1`.
+   EVERY board, record, grant and duel reads `cp=0` / `!e.copy` - a copied trade earns the copier nothing but the experience. */
+const COPY_MAX_LEADERS = 3, COPY_MAX_PER_LEADER = 10, COPY_LEADER_MAX_MARGIN = 10000, COPY_MARGINS = [50, 100, 250];
 // Resolve the current session user's premium standing: owner grant (premium:allow) OR active paid sub (prem:sub:<uid>).
 /* WHEN DOES THIS ACCOUNT'S PREMIUM ACTUALLY END (2026-10-11)? There are TWO stores - the KV row `prem:sub:<uid>`
    that a payment writes, and the `users.premium` column that an owner grant writes - and `premiumFor` reads
@@ -22823,7 +22993,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd4c6733e';
+const ASSET_V = 'ffe8c979';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26671,6 +26841,18 @@ export default {
         await env.STATS.put('botwidget:u:' + uid, tk); await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ uid, un, ts: Date.now() }));
       } else { try { const rec = JSON.parse((await env.STATS.get('botwidget:t:' + tk)) || 'null'); if (rec && rec.un !== un && un) await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ ...rec, un })); } catch (e) {} } // a rename follows the token
       return new Response(JSON.stringify({ ok: true, token: tk, username: un, iframe: 'https://marginpad.io/widget/bot/?t=' + tk, badge: 'https://marginpad.io/api/widget/bot.svg?t=' + tk, json: 'https://marginpad.io/api/widget/bot?t=' + tk }), { headers: JHW });
+    }
+    if (url.pathname === '/api/totd') return handleTotd(url, request, env, ctx); // TRADE OF THE DAY (feature #11)
+    if (url.pathname === '/api/admin/liqrecords' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the record book as JSON; ?build=1 rebuilds it now (feature #14)
+      const rec = url.searchParams.get('build') === '1' ? await liqRecordsBuild(env) : JSON.parse((await env.STATS.get('liqrecords')) || 'null');
+      return new Response(JSON.stringify({ ok: !!rec, builtDay: await env.STATS.get('liqrecords:day'), rec }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/totd' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the settle by hand: ?day=YYYY-MM-DD&settle=1 (the cron's own function; dry=1 only reads)
+      const day = String(url.searchParams.get('day') || totdDayOf(Date.now() - 86400000)).replace(/[^0-9-]/g, '');
+      if (url.searchParams.get('settle') === '1') return new Response(JSON.stringify(await totdSettle(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      let bd = null; try { bd = await usersDO(env, '/totd/board', { day }); } catch (e) {}
+      let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + day)) || 'null'); } catch (e) {}
+      return new Response(JSON.stringify({ day, board: bd, win, done: !!(await env.STATS.get('totd:done:' + day)) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/report/card.svg') { // THE REPORT CARD (feature #8): public, by username, edge 300 s; `?nc=1` renders past the copy
       const nm = String(url.searchParams.get('u') || '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 24);
@@ -31502,6 +31684,7 @@ export default {
  const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match - 'recap' must never be parsed as a coin slug
+      if (url.pathname === '/liquidations/records' || url.pathname === '/liquidations/records/') return handleLiqRecords(url, env, request); // the record book over the archive (feature #14) - same rule, before the coin match
       if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env, request);
       const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
       if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
@@ -31669,6 +31852,7 @@ export default {
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotBoardCron, 'memeboard'); // the Meme Spot season board into KV every ten minutes (2026-10-16) // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveMarket, 'mktarch'); // THE MARKET ARCHIVE (2026-10-28): every dataset in MARKET_DS, one verified UTC day per pull, into R2 marginpad-market; replaces archiveLiq (which now only delegates here)
+    bg(liqRecordsCron, 'liqrecords'); // the record book over the recaps, once a UTC day (feature #14)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
     bg(checkPersonalWraps, 'wrapdm'); // Daily Wrap v2: the personal DM edition, per chat, at the hour each chat chose
@@ -31696,6 +31880,7 @@ export default {
     bg(payBingxPrizes, 'bingxprizes'); // BingX volume board (2026-10-30): pays an ended sealed season once, from BINGX_LB_START
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
+    bg(totdSettle, 'totd'); // Trade of the day (2026-11-12): yesterday's vote settled once (KV flag), the author paid TOTD_XP, one house line
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(strategyLive, 'stratlive'); // once a closed UTC day, the strategy library's forward record
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
@@ -34412,6 +34597,11 @@ export class UserStore {
     // trimmed to 60 rows per user and mixes every source, so it can never answer "who paid for Ticks". `ref` is the
     // PRIMARY KEY and is the payment id for crypto, so an IPN retry inserts nothing and the grant cannot double.
     try { s.exec('CREATE TABLE IF NOT EXISTS tickbuy(ref TEXT PRIMARY KEY, ts INTEGER, user_id TEXT, pack TEXT, ticks INTEGER, cents INTEGER, via TEXT, cur TEXT)'); } catch (e) {}
+    // TRADE OF THE DAY (2026-11-12, feature #11): the day's candidates (a shared closed ticket, nominated once per member per day) and the
+    // votes (one per member per day, replaceable) - in the store and not in KV, because a vote count in KV is a read-modify-write that
+    // loses concurrent writes (measured 2026-10-18: five at once, one survived)
+    try { s.exec('CREATE TABLE IF NOT EXISTS totdc(day TEXT, id TEXT, uid TEXT, author TEXT, sym TEXT, side TEXT, roe REAL, pnl REAL, ts INTEGER, PRIMARY KEY(day,id))'); } catch (e) {}
+    try { s.exec('CREATE TABLE IF NOT EXISTS totdv(day TEXT, uid TEXT, id TEXT, ts INTEGER, PRIMARY KEY(day,uid))'); } catch (e) {}
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING - so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
@@ -34583,6 +34773,8 @@ export class UserStore {
     try { s.exec('ALTER TABLE tradeev ADD COLUMN sl INTEGER'); } catch (e) {} // skill score (2026-09-06): had a stop set at close (0/1); NULL = before the column existed
     try { s.exec('ALTER TABLE tradeev ADD COLUMN rz TEXT'); } catch (e) {} // realism the trade was FILLED with (2026-09-16): S=slippage, T=size tier, M=venue margin rate. NULL/'' = the defaults, which is every trade before that date - so the Bot arena can say on the board which bots ran on easy mode.
     for (const col of ['entry REAL', 'exit REAL']) { try { s.exec('ALTER TABLE tradeev ADD COLUMN ' + col); } catch (e) {} } // 2026-10-23: the fill prices, so the Following feed can open the same trade sheet (Copy / Chart / AI analyze) the push does
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN cp INTEGER DEFAULT 0'); } catch (e) {} // PAPER COPY (2026-11-12, feature #2): 1 on a mirrored trade - every board, duel, raid, report, mission and record reads cp=0
+    try { s.exec('CREATE TABLE IF NOT EXISTS copies(uid TEXT, leader TEXT, margin INTEGER, ts INTEGER, PRIMARY KEY(uid,leader))'); s.exec('CREATE INDEX IF NOT EXISTS copies_leader ON copies(leader)'); } catch (e) {} // who copies whom, at what margin per trade
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     try { s.exec('ALTER TABLE duels ADD COLUMN xp_paid INTEGER DEFAULT 0'); } catch (e) {}
@@ -35167,6 +35359,66 @@ export class UserStore {
   _pushUidBust() { this._pushSet = null; }
   _followedSet() { if (this._folSet) return this._folSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT tuid FROM ufollows')) s.add(String(r.tuid)); } catch (e) {} this._folSet = s; return s; } // accounts that at least one person follows - so _syncJournal pays a Set lookup, not a query, for the vast majority nobody follows
   _followedBust() { this._folSet = null; }
+  /* PAPER COPY (2026-11-12, feature #2). `_copiedSet` is the leaders somebody copies - a Set lookup per sync, like _followedSet, so the
+     vast majority of accounts nobody copies pay nothing. `_copyFanOut(leader, ops)` mirrors each op into every copier: an OPEN becomes a
+     position at the LEADER'S entry (same market, same moment - no second price to disagree with) sized to the copier's margin, with the
+     leader's stop/tp/leverage/fee rate, `src:'srv'` (the sweep settles it like any server position: liq, stop, target) and `copy:1`
+     (every board, grant, duel, raid, report, mission and record skips it); a CLOSE closes the mirrored rows at the leader's exit with the
+     one P&L formula; a PARTIAL trims them by the same fraction. Caps: the copier's own open count (PT_MAX_OPEN), COPY_MAX_PER_LEADER open
+     copies of one leader, a leader open over COPY_LEADER_MAX_MARGIN is not mirrored. A copier whose account is not active gets nothing. */
+  _copiedSet() { if (this._cpSet) return this._cpSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT leader FROM copies')) s.add(String(r.leader)); } catch (e) {} this._cpSet = s; return s; }
+  _copiedBust() { this._cpSet = null; }
+  _copyFanOut(leader, ops) {
+    const now = Date.now();
+    let copiers = []; try { copiers = this.rows("SELECT c.uid, c.margin FROM copies c JOIN users u ON u.id=c.uid WHERE c.leader=? AND (u.status IS NULL OR u.status='active') LIMIT 200", leader); } catch (e) { copiers = []; }
+    if (!copiers.length) return;
+    const ln = (this.rows('SELECT username FROM users WHERE id=?', leader)[0] || {}).username || 'trader';
+    const pnlOf = (x, exit) => { const long = x.side !== 'short', dir = long ? 1 : -1, q = +x.qty || 0, en = +x.entry || 0, m = +x.margin || 0; let p = q * (exit - en) * dir - q * (en + exit) * (+x.feeRate || 0) - (+x.fund || 0); if (p < -m) p = -m; return Math.round(p * 100) / 100; };
+    for (const o of ops) {
+      const kind = o[0], e = o[3]; if (!e || e.copy) continue;
+      if (kind === 'open') {
+        if (!(e.src === 'srv' || e.src === 'bot')) continue;
+        const lm = +e.margin || 0, lev = +e.lev || 1, entry = +e.entry || 0; if (!(entry > 0) || !(lm > 0) || lm > COPY_LEADER_MAX_MARGIN) continue;
+        for (const c of copiers) {
+          const cu = String(c.uid); if (cu === String(leader)) continue;
+          const jn = this._loadJournal(cu), open = jn.filter(x => x && x.status !== 'win' && x.status !== 'loss');
+          if (open.length >= PT_MAX_OPEN) continue;
+          if (open.filter(x => x && x.copy && String(x.copyOf) === String(leader)).length >= COPY_MAX_PER_LEADER) continue;
+          const m = Math.max(1, Math.min(10000, +c.margin || 100)), fr = +e.feeRate || 0, qty = m * lev / entry, long = e.side !== 'short';
+          const t = { id: 'srv' + now.toString(36) + 'c' + Math.random().toString(36).slice(2, 7), ts: now, sym: String(e.sym || '').toUpperCase().slice(0, 12), side: long ? 'long' : 'short', entry, stop: (e.stop != null && +e.stop > 0) ? +e.stop : null, tp: (e.tp != null && +e.tp > 0) ? +e.tp : null, lev, qty, notional: m * lev, margin: m, riskAmt: m, feeOpen: _feeOpen(m, lev, fr), liq: (+e.liq > 0) ? +e.liq : mpcLiq(entry, lev, +e.mmr || 0.005, long, fr), mmr: +e.mmr || 0.005, feeRate: fr, feeVenue: e.feeVenue || '', rz: e.rz || '', status: 'open', pnl: null, src: 'srv', swT: now, copy: 1, copyOf: String(leader), copyName: ln, copyTid: String(e.id || '') };
+          try { this._syncJournal(cu, [t], null, true, 'copy'); } catch (e2) {}
+        }
+      } else if (kind === 'close') {
+        const exit = +e.exit; if (!(exit > 0)) continue;
+        for (const c of copiers) {
+          const cu = String(c.uid); if (cu === String(leader)) continue;
+          const mine = this._loadJournal(cu).filter(x => x && x.copy && String(x.copyTid) === String(e.id) && x.status !== 'win' && x.status !== 'loss');
+          if (!mine.length) continue;
+          const closes = mine.map(x => { const p = pnlOf(x, exit); return Object.assign({}, x, { status: p >= 0 ? 'win' : 'loss', exit, pnl: p, closeTs: now, sc: 1, liquidated: !!e.liquidated }); });
+          try { this._syncJournal(cu, closes, null, true, 'copy'); } catch (e2) {}
+        }
+      } else if (kind === 'trim') {
+        // the leader's partial: the closed part is its own close op in the same sync (id = <leader id>p...), the trimmed row is `e`
+        const part = ops.map(p => p[3]).find(p => p && p !== e && String(p.id || '').indexOf(String(e.id) + 'p') === 0 && (p.status === 'win' || p.status === 'loss'));
+        const exit = part ? +part.exit : 0, q1 = +e.qty || 0, qp = part ? +part.qty || 0 : 0; if (!(exit > 0) || !(qp > 0)) continue;
+        const frac = Math.min(0.99, Math.max(0.01, qp / (qp + q1)));
+        for (const c of copiers) {
+          const cu = String(c.uid); if (cu === String(leader)) continue;
+          const mine = this._loadJournal(cu).filter(x => x && x.copy && String(x.copyTid) === String(e.id) && x.status !== 'win' && x.status !== 'loss');
+          for (const x of mine) {
+            const pr = Object.assign({}, x, { id: String(x.id) + 'p' + now.toString(36), qty: (+x.qty || 0) * frac, margin: Math.round((+x.margin || 0) * frac * 100) / 100, notional: Math.round((+x.notional || 0) * frac * 100) / 100, fund: Math.round((+x.fund || 0) * frac * 1e6) / 1e6, partial: Math.round(frac * 100) });
+            const p = pnlOf(pr, exit); pr.status = p >= 0 ? 'win' : 'loss'; pr.exit = exit; pr.pnl = p; pr.closeTs = now; pr.sc = 1;
+            const rem = Object.assign({}, x, { qty: (+x.qty || 0) * (1 - frac), margin: Math.round((+x.margin || 0) * (1 - frac) * 100) / 100, notional: Math.round((+x.notional || 0) * (1 - frac) * 100) / 100, fund: Math.round((+x.fund || 0) * (1 - frac) * 1e6) / 1e6 });
+            try { this._syncJournal(cu, [rem, pr], null, true, 'copy'); } catch (e2) {}
+          }
+        }
+      }
+    }
+  }
+  _copySltp(leader, tid, sl, tp) { // the leader moved a stop or a target: every open mirrored row follows (same entry, so the side checks hold)
+    let copiers = []; try { copiers = this.rows('SELECT uid FROM copies WHERE leader=? LIMIT 200', leader); } catch (e) { return; }
+    for (const c of copiers) { const cu = String(c.uid); const mine = this._loadJournal(cu).filter(x => x && x.copy && String(x.copyTid) === String(tid) && x.status !== 'win' && x.status !== 'loss'); if (!mine.length) continue; try { this._syncJournal(cu, mine.map(x => Object.assign({}, x, { stop: sl, tp: tp })), null, true, 'copy'); } catch (e2) {} }
+  }
   _pushUrl(link) { link = String(link || ''); if (link.indexOf('/') === 0) return 'https://marginpad.io' + link; if (link.indexOf('dm:') === 0) return 'https://marginpad.io/paper-trade?dm=' + encodeURIComponent(link.slice(3)); if (link.indexOf('profile:') === 0) return 'https://marginpad.io/paper-trade?profile=' + encodeURIComponent(link.slice(8)); if (link === 'duel') return 'https://marginpad.io/paper-trade?duels=1'; if (link.indexOf('squad') === 0) return 'https://marginpad.io/squads/'; return 'https://marginpad.io/paper-trade?notif=1'; }
   _notifAllows(uid, kind) { try { const p = this._npPref(uid); if (!p) return true; return p[kind] === undefined ? true : !!p[kind]; } catch (e) { return true; } } // per-user "what reaches my phone" switch (uprefs 'notifpush' blob) - a kind not stored defaults ON; gates ONLY the push, never the in-app bell
   /* ONE PREFS READ PER MEMBER PER TEN MINUTES, NOT ONE PER FOLLOWER PER TRADE (2026-10-24). The follow-trade fan-out
@@ -35512,11 +35764,15 @@ export class UserStore {
             }
           }
         } catch (eF) {}
+        // PAPER COPY (2026-11-12, feature #2): a server-filled open / close / partial of a leader somebody copies is mirrored into
+        // every copier's journal at the leader's own fill. Only a per-op sync (a bulk sync is history), never a copy row itself, never
+        // a replay, never a client sync (the client's word is not a fill).
+        try { if (srvAuth && via !== 'copy' && via !== 'replay' && ops.length && ops.length <= 8 && this._copiedSet().has(uid)) this._copyFanOut(uid, ops); } catch (eC) {}
       } catch (eo) {}
       const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try - see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
         if (kind === 'close') try { this._lbBest(uid, e, ts9); } catch (e8) {} // season-best BEFORE the per-sync cap/age skips - a qualifying close must never miss the board store
-        if (kind === 'close') { const lp9 = +e.pnl; if (isFinite(lp9)) { const _win9 = e.status === 'win'; /* classify by the row's own status so these counters always agree with the win rate the UI renders; pnl>0 disagrees on legacy rows where the label predates the fee */ _lfC++; if (_win9) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (_win9) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
+        if (kind === 'close' && !e.copy) { const lp9 = +e.pnl; if (isFinite(lp9)) { const _win9 = e.status === 'win'; /* classify by the row's own status so these counters always agree with the win rate the UI renders; pnl>0 disagrees on legacy rows where the label predates the fee */ _lfC++; if (_win9) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (_win9) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
         if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
@@ -35527,10 +35783,10 @@ export class UserStore {
         // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
         // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
-        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
-        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
-        try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
-          if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
+        try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
+        try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
+        try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null && !e.copy) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
+          if (roe != null && !e.copy) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once - a DO-reset re-sync must not double-grant */
             if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
@@ -35546,7 +35802,7 @@ export class UserStore {
           if (_q9 > 0 && _en9 > 0 && _ex9 > 0 && _fr9 > 0) _fee9 = Math.round(_q9 * (_en9 + _ex9) * _fr9 * 1e4) / 1e4;
           if (isFinite(+e.fund)) _fnd9 = Math.round(+e.fund * 1e4) / 1e4;
         }
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit,slpx) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null, (+e.sl > 0) ? +e.sl : ((+e.stop > 0) ? +e.stop : null)); // the client journal says `sl`, a server-filled position says `stop`
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit,slpx,cp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null, (+e.sl > 0) ? +e.sl : ((+e.stop > 0) ? +e.stop : null), e.copy ? 1 : 0); // the client journal says `sl`, a server-filled position says `stop`; cp = a mirrored (paper copy) trade
         nIns++;
       }
       if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
@@ -35580,7 +35836,7 @@ export class UserStore {
   }
   _lbBest(uid, e, closeTs) { // trim-proof season-best upsert (keep-max), written the moment a qualifying close enters the system - the board reads MAX(blob scan, lbbest) so blob trims can never lower a shown value again
     try {
-      if (!(e && e.src === 'srv' && e.sc)) return;                    // the paid board counts only server-filled + server-closed trades (same rule as the board scan)
+      if (!(e && e.src === 'srv' && e.sc) || e.copy) return;         // the paid board counts only server-filled + server-closed trades (same rule as the board scan); a paper copy never (feature #2)
       const season = lbPeriodStart(+closeTs || Date.now());
       if (!(+e.ts >= season)) return;                                  // must be OPENED this season (no farming an old position into a new board)
       if (lbExcluded(e.sym)) return;                                   // forex/metals/indices/stables never rank
@@ -35935,6 +36191,37 @@ export class UserStore {
       }
       out.sort((a, c) => a.ts - c.ts);
       return this.j({ ok: true, users, rows: out });
+    }
+    if (path.indexOf('/totd/') === 0) { // TRADE OF THE DAY (2026-11-12, feature #11) - candidates, votes, the board and the settle, all on the store's single thread
+      const day = String(b.day || '').replace(/[^0-9-]/g, '').slice(0, 10), uid = String(b.uid || ''), id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return this.j({ error: 'bad_day' });
+      const board = (who) => {
+        const rows = this.rows('SELECT c.id, c.uid, c.author, c.sym, c.side, c.roe, c.pnl, c.ts, (SELECT COUNT(*) FROM totdv v WHERE v.day=c.day AND v.id=c.id) n FROM totdc c WHERE c.day=? ORDER BY n DESC, c.roe DESC, c.ts ASC LIMIT 50', day);
+        const mine = who ? (this.rows('SELECT id FROM totdv WHERE day=? AND uid=?', day, who)[0] || {}).id || null : null;
+        const nomd = who ? !!this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=?', day, who)[0] : false;
+        return { day, cands: rows.map(r => ({ id: r.id, by: r.author || '', sym: r.sym || '', side: r.side || 'long', roe: r.roe == null ? null : +r.roe, pnl: r.pnl == null ? null : +r.pnl, n: +r.n || 0, ts: +r.ts || 0, own: !!(who && String(r.uid) === String(who)) })), mine, nominated: nomd };
+      };
+      if (path === '/totd/board') return this.j({ ok: true, ...board(uid || null) });
+      if (path === '/totd/nominate') {
+        if (!uid || !id) return this.j({ error: 'no_uid' });
+        if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
+        if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=?', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one nomination a day per member
+        this.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts) VALUES(?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now());
+        return this.j({ ok: true, ...board(uid) });
+      }
+      if (path === '/totd/vote') {
+        if (!uid || !id) return this.j({ error: 'no_uid' });
+        const c = this.rows('SELECT uid FROM totdc WHERE day=? AND id=?', day, id)[0];
+        if (!c) return this.j({ error: 'not_candidate', ...board(uid) });
+        if (String(c.uid) === String(uid)) return this.j({ error: 'own', ...board(uid) }); // the member who nominated it does not vote for it
+        this.sql.exec('INSERT OR REPLACE INTO totdv(day,uid,id,ts) VALUES(?,?,?,?)', day, uid, id, Date.now()); // one vote a day, the newer one stands
+        return this.j({ ok: true, ...board(uid) });
+      }
+      if (path === '/totd/settle') { // the winner: most votes, a tie to the bigger ROE; nobody with zero votes
+        const bd = board(null); const top = bd.cands[0];
+        return this.j({ ok: true, ...bd, winner: (top && top.n > 0) ? top : null });
+      }
+      return this.j({ error: 'not_found' });
     }
     if (path === '/tradeone') { // THE AUTOPSY (2026-11-12, feature #1): one trade's close row and its open time, by tid - the record of what happened
       const uid = String(b.uid || ''), tid = String(b.id || '').slice(0, 80); if (!uid || !tid) return this.j({ error: 'no_uid' });
@@ -37327,6 +37614,7 @@ export class UserStore {
         if (upd.stop == null) { const _hw = +upd.hwm > 0 ? +upd.hwm : entry; upd.stop = Number((long ? _hw * (1 - tr / 100) : _hw * (1 + tr / 100)).toPrecision(10)); }
       } else { delete upd.trail; delete upd.hwm; } }
       this._syncJournal(uid, [upd], null, true, 'sltp');
+      try { if (!t.copy && this._copiedSet().has(uid)) this._copySltp(uid, String(t.id), sl, tp); } catch (eC) {} // paper copy (feature #2): the copiers' mirrored rows follow the leader's levels
       try { this._whEnqueue(uid, 'position.updated', Object.assign(this._j2bot(upd, null), { via: 'sltp' })); } catch (e7) {}
       this._opsEv(uid, 'sltp', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase().slice(0, 12) + ' SL ' + (sl == null ? 'off' : sl) + ' / TP ' + (tp == null ? 'off' : tp), '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), sl, tp, id: String(t.id || '').slice(0, 24) });
       try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff

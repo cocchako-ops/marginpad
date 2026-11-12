@@ -46,6 +46,7 @@ const EXTRAS = [
   ['/leverage-report/', '1.0', D],
   ['/crypto-liquidations-today/', '0.9', D],
   ['/liquidations/by-exchange/', '0.9', D],
+  ['/liquidations/records/', '0.9', D], // the record book over the archive (2026-11-12, feature #14) - rebuilt daily
   ['/strategies/', '1.0', W],
   ['/strategies/automate/', '0.7', M],
   ...require('./strategies/rules').RULES.map((r) => [`/strategies/${r.slug}/`, '0.7', M]),

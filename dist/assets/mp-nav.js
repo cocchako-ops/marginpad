@@ -306,6 +306,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     crown: '<path d="M3.2 17.6h17.6"/><path d="M3.6 7.4l3.3 3.2L12 4.4l5.1 6.2 3.3-3.2-1.4 9.6H5L3.6 7.4z"/>',
     /* live market data */
     rekt: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a1 1 0 0 0-1 1A3.5 3.5 0 0 0 7 10.5M17 6h2.5a1 1 0 0 1 1 1 3.5 3.5 0 0 1-3.5 3.5"/>',
     heat: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M15.7 9.7h4.6v4.6h-4.6z" fill="currentColor" stroke="none"/>',
     map: '<path d="M9 3.5 3.5 5.6v15L9 18.4l6 2.1 5.5-2.1v-15L15 5.6 9 3.5z"/><path d="M9 3.5v14.9M15 5.6v14.9"/>',
     /* body + fluke + spout. The first cut was a single closed curve with an eye inside it and at 19px it read as
@@ -437,7 +438,8 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     // every other, plus the /liquidations/ hub), unlike the comparison pages which had 1-3 and had to be kept.
     // The heatmap takes no symbol from the URL, so no row pretends to open a particular coin.
     + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes order book orderbook tape prints live order flow depth bid ask'))
-    + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today records'))
+    + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today'))
+    + row('Liquidation records', 'The biggest liquidations, days and hours ever measured - the archive since July 2026', '/liquidations/records/', '#ff5a4d', 'trophy', 'records record biggest liquidation ever largest day worst day history archive all-time hall of fame rekt leaderboard of liquidations')
     + row('Catalysts', 'Listings, filings, macro, hacks and whale alerts as they land, scored - and what moved each coin', '/catalysts/', '#c2f64a', 'catal', 'catalysts catalyst news events announcements listing delisting binance bybit okx upbit sec filing fomc cpi hack etf headlines whale alert what moved it why did it drop pump mentions most talked about meme')
     + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale',__esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
     // Funding, open interest and long/short are three readings of ONE question - what the crowd is holding and
@@ -1064,8 +1066,8 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=d4c6733e', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=d4c6733e"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=ffe8c979', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=ffe8c979"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }

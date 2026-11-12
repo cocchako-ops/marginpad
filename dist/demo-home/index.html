@@ -232,6 +232,8 @@ function __esV_srv(s){try{var d=(window.__mpUI&&window.__mpUI["V:srv"])||__esVD_
   .pt-feats svg{width:14px;height:14px;stroke:var(--lime);flex:0 0 14px;}
   .pt-cta{margin-top:auto;padding-top:18px;}
   .pt-cta .btn-l{font-size:14px;padding:12px 20px;display:inline-block;}
+  .pt-totd{min-height:20px;margin-top:10px;font-size:12px;line-height:1.4;color:var(--dim);display:flex;align-items:center;gap:6px;flex-wrap:wrap;} /* trade of the day (feature #11): the room's pick of yesterday - reserved from the first frame, filled by JS */
+  .pt-totd b{color:var(--lime);font-weight:700;} .pt-totd .r{color:#2ebd85;font-family:'Space Mono',monospace;} .pt-totd .r.l{color:#ff5a4d;}
   .pt-viz{position:relative;border:1px solid var(--line);border-radius:14px;background:#090c0f;overflow:hidden;min-height:220px;}
   #ptChart{position:absolute;inset:0;width:100%;height:100%;}
   .pt-viz .px{position:absolute;top:12px;left:14px;z-index:3;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--grn);font-variant-numeric:tabular-nums;}
@@ -1177,6 +1179,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
             <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Real liquidations - lose the margin, learn the lesson</span>
           </div>
           <div class="pt-cta"><span class="btn-l">Open a demo trade →</span></div>
+          <div class="pt-totd" id="ptTotd" aria-live="polite"></div>
         </div>
         <div class="pt-viz">
           <canvas id="ptChart"></canvas>
@@ -2139,6 +2142,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     ['hTickPnl','ptTickPnl'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.textContent=(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);el.style.color=v>=0?'#2ebd85':'#ff5a4d';});
   }
   fetch('/api/klines?symbol=BTC&interval=60').then(function(r){return r.json();}).then(function(k){if(Array.isArray(k)&&k.length>10){K=k;redraw();}}).catch(function(){});
+  /* TRADE OF THE DAY (2026-11-12, feature #11): yesterday's room pick under the hero copy - names only, from /api/totd?win=1 (edge 20 s) */
+  fetch('/api/totd?win=1').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('ptTotd');if(!el||!d||!d.win)return;var w=d.win,cl=function(s){return String(s||'').replace(/[<>&]/g,'');},roe=(w.roe!=null&&isFinite(+w.roe))?((+w.roe>=0?'+':'')+(+w.roe).toFixed(1)+'%'):'';el.innerHTML='<b>Trade of the day</b> @'+cl(w.by)+' · '+cl(w.sym)+' '+(w.side==='short'?'short':'long')+(roe?' <span class="r'+(+w.roe<0?' l':'')+'">'+roe+'</span>':'')+' · '+(+w.n||0)+((+w.n)===1?' vote':' votes');}).catch(function(){});
   window.__tickBtc=function(px){if(!K||!(px>0))return;K[K.length-1]={close:px};redraw();}; // live tick from the 15s price poll - the hero chart moves
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(redraw,180);});
 
@@ -2316,8 +2321,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=b89c01f7"></script>
-<script defer src="/assets/mp-auth.js?v=d4c6733e"></script>
-<script defer src="/assets/mp-nav.js?v=3e0b6eb4"></script>
+<script defer src="/assets/mp-auth.js?v=ffe8c979"></script>
+<script defer src="/assets/mp-nav.js?v=0aa7d12c"></script>
 
 <script>
 (function(){try{
