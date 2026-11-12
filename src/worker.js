@@ -1356,7 +1356,7 @@ function cxStories(items) {
   }
   for (const c of items) if (!c.major) c.major = !!(c.lbl && +c.lbl.imp >= 85) || ((c.kind === 'listing' || c.kind === 'delisting' || c.kind === 'macro' || c.kind === 'earnings') && c.tier === 'primary');
 }
-const CX_LBL_KINDS = { listing: 1, delisting: 1, macro: 1, hack: 1, etf: 1, regulation: 1, politics: 1, whale: 1, unlock: 1, protocol: 1, adoption: 1, filing: 1, news: 1, promo: 1, pair: 1 };
+const CX_LBL_KINDS = { listing: 1, delisting: 1, macro: 1, hack: 1, etf: 1, regulation: 1, politics: 1, whale: 1, unlock: 1, protocol: 1, adoption: 1, filing: 1, news: 1, promo: 1, pair: 1, warning: 1 /* an exchange's own risk flag on a coin (Upbit, 2026-11-12) */ };
 // price printed the way the chart prints it
 function cxPx(v) { v = +v; if (!(v > 0)) return '?'; if (v >= 1000) return Math.round(v).toLocaleString('en-US'); if (v >= 1) return v.toFixed(v >= 100 ? 1 : 2); return v.toPrecision(3); }
 // THE CHART'S OWN STRUCTURE EXPLAINS A MOVE TOO (2026-10-29, owner: "ako je btc dominance ... mozda je probio support ili
@@ -1532,7 +1532,7 @@ async function handleCatalystHealth(url, env) {
       const r = await __realFetch(base + '/api/v1/catalysts/status', { signal: ctl.signal });
       if (r.ok) {
         const st = await r.json(); const now = Date.now(); const src = (st && st.sources) || {};
-        const rows = Object.keys(src).map(k => { const s = src[k] || {}; const prim = /^(bybit|okx|hl-|binance|upbit|bitget|kucoin|coinbase|kraken|gate|fed-press|sec|fedreg|cftc|calendar)/.test(k); return { name: k, group: prim ? 'primary' : 'media', ok: +s.ok || 0, err: +s.err || 0, added: +s.added || 0, last: +s.last || 0, lateP50: s.lateP50 != null ? +s.lateP50 : null, lastErr: s.lastErr || '', online: !!(s.last && now - s.last < 600000 && (!s.lastErr || (s.ok || 0) > (s.err || 0))) }; });
+        const rows = Object.keys(src).map(k => { const s = src[k] || {}; const prim = /^(bybit|okx|hl-|binance|upbit|bithumb|bitget|kucoin|coinbase|kraken|gate|mexc|status:|fed-press|sec|fedreg|cftc|calendar)/.test(k); return { name: k, group: prim ? 'primary' : 'media', ok: +s.ok || 0, err: +s.err || 0, added: +s.added || 0, last: +s.last || 0, lateP50: s.lateP50 != null ? +s.lateP50 : null, lastErr: s.lastErr || '', online: !!(s.last && now - s.last < 600000 && (!s.lastErr || (s.ok || 0) > (s.err || 0))) }; });
         const med = v => { const a = v.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : null; };
         body = { ts: now, collector: 'ok', online: rows.filter(x => x.online).length, total: rows.length, lagPrimary: med(rows.filter(x => x.group === 'primary').map(x => x.lateP50)), lagMedia: med(rows.filter(x => x.group === 'media').map(x => x.lateP50)), ring: st.ring, uptimeSec: st.uptimeSec, labelsAt: null, sources: rows.sort((a, b) => b.added - a.added).slice(0, 60) };
         try { const lb = await cxLabelsGet(env); body.labelsAt = lb.at || null; body.labels = lb.n || Object.keys(lb.m || {}).length; } catch (e) {}

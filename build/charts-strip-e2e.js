@@ -119,8 +119,10 @@ async function deskInd(page, k, on) {
     for (const k of ['rsi', 'atr', 'stoch', 'cci']) await deskInd(page, k, false);
     // daily levels + price scale + bar replay
     await deskInd(page, 'dl', true);
+    // the axis governor (2026-11-12) merges two lines at one price into one badge ("PDC · OPEN") - the NAMES are what the check reads
+    const names = ts => [].concat.apply([], ts.map(t => String(t || '').replace(/ \+\d+$/, '').split(' · ')));
     const dl = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const t = (w.indLines || []).map(l => { try { return l.options().title; } catch (e) { return ''; } }); return { titles: t, tf: w.tf }; });
-    ok('Daily levels draws PDH / PDL / PDC / OPEN as price lines on an intraday chart', ['PDH', 'PDL', 'PDC', 'OPEN'].every(k => dl.titles.indexOf(k) >= 0), JSON.stringify(dl));
+    ok('Daily levels draws PDH / PDL / PDC / OPEN as price lines on an intraday chart', ['PDH', 'PDL', 'PDC', 'OPEN'].every(k => names(dl.titles).indexOf(k) >= 0), JSON.stringify(dl));
     await deskInd(page, 'dl', false);
     const sc8 = await page.evaluate(async () => { const w = window.__mpWinsDbg[0]; const b = document.querySelector('.cwin .cwin-ind-btn'); b.click(); const n = document.querySelectorAll('.cwin-ind-menu [data-chscale]').length; document.querySelector('.cwin-ind-menu [data-chscale="log"]').click(); b.click(); await new Promise(r => setTimeout(r, 300)); const mode = w.chart.priceScale('right').options().mode; b.click(); document.querySelector('.cwin-ind-menu [data-chscale="lin"]').click(); b.click(); return { n, mode, stored: localStorage.getItem('mp_ch_scale') }; });
     ok('Price scale: three modes in the menu, Log switches the right scale to mode 1', sc8.n === 3 && sc8.mode === 1, JSON.stringify(sc8));
@@ -191,7 +193,8 @@ async function deskInd(page, k, on) {
     // round eight on the phone: daily levels, scale chips, replay
     await page.evaluate(() => { const i = document.querySelector('.mfc-sheet input[data-ind="dl"]'); if (i && !i.checked) { i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); } }); await sleep(400);
     const p8 = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; const t = (p.indLines || []).map(l => { try { return l.options().title; } catch (e) { return ''; } }); return { titles: t, scaleChips: document.querySelectorAll('.mfc-sheet [data-chscale]').length, replayBtn: !!document.querySelector('.mfc-sheet [data-replay]') }; });
-    ok('phone: Daily levels draws the four lines; the sheet carries the three scale chips and the replay button', ['PDH', 'PDL', 'PDC', 'OPEN'].every(k => p8.titles.indexOf(k) >= 0) && p8.scaleChips === 3 && p8.replayBtn, JSON.stringify(p8));
+    const names8 = [].concat.apply([], p8.titles.map(t => String(t || '').replace(/ \+\d+$/, '').split(' · '))); // merged badges (axis governor, 2026-11-12)
+    ok('phone: Daily levels draws the four lines; the sheet carries the three scale chips and the replay button', ['PDH', 'PDL', 'PDC', 'OPEN'].every(k => names8.indexOf(k) >= 0) && p8.scaleChips === 3 && p8.replayBtn, JSON.stringify(p8));
     await page.evaluate(() => { const i = document.querySelector('.mfc-sheet input[data-ind="dl"]'); if (i && i.checked) { i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); } }); await sleep(200);
     await page.tap('.mfc-sheet [data-replay]'); await sleep(700);
     const prp = await page.evaluate(async () => { const p = window.__mpMfcDbg()[0]; const ui = p.host.querySelector('.cwin-replay'); if (!ui) return { ui: false }; const r = ui.getBoundingClientRect(); const dock = document.querySelector('.mfc-dock').getBoundingClientRect(); const i0 = p._rp.i; const pb = ui.querySelector('[data-rp="play"]'); const pr = pb.getBoundingClientRect(); const hit = document.elementFromPoint(pr.left + pr.width / 2, pr.top + pr.height / 2); const reach = !!(hit && (hit === pb || pb.contains(hit))); pb.click(); await new Promise(r => setTimeout(r, 1600)); const i1 = p._rp.i; ui.querySelector('[data-rp="x"]').click(); await new Promise(r => setTimeout(r, 400)); return { ui: true, aboveDock: r.bottom <= dock.top + 1, reach, i0, i1, exited: !p._rp, n: p.bars.length }; });

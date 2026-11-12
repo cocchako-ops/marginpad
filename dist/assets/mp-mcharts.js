@@ -514,6 +514,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(p.w){p.w._cxMarks=null;p.w._cxeMarks=null;if(!p.inds.catalyst&&S&&S.cxWatch){try{p.w._cxHit=null;S.cxWatch(p.w,false);}catch(e){}}}
     if(p.inds.catalyst&&IA&&S&&S.loadCx&&p.w){
       p.w.sym=p.sym;p.w.bars=p.bars;p.w.inds=p.inds;p.w._reapply=function(){try{applyInds(p);}catch(e){}};
+      /* ONE BADGE PER SPOT ON THE AXIS (2026-11-12): the shared axis governor (mp-charts, run from the pane's own rAF watcher) reads the
+         pane's price lines through this getter - they live on `p`, not on `p.w` - and `_axDirty` asks for a pass after every apply */
+      p.w._axLines=function(){return [].concat(p.indLines||[],p.tradeLines||[],p._aiPlan||[]);};p.w._axDirty=1;
       try{S.wireLiqClick(p.w);}catch(e){}try{S.loadCx(p.w);}catch(e){}try{if(S.loadCxEarly)S.loadCxEarly(p.w);}catch(e){}try{S.cxWatch(p.w,true);}catch(e){}
       var _cx=p.w._cx;
       if(_cx&&_cx.moves){
@@ -631,7 +634,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* VISION (2026-10-04): a downscaled JPEG of the pane's chart so the model sees the formations (numbers stay from the brief) */
   function mChartSnap(p){try{if(!p||!p.chart||!p.chart.takeScreenshot)return null;var src=p.chart.takeScreenshot();if(!src||!(src.width>0))return null;var maxW=900,scale=Math.min(1,maxW/src.width),cv=document.createElement('canvas');cv.width=Math.round(src.width*scale);cv.height=Math.round(src.height*scale);var cx=cv.getContext('2d');if(!cx)return null;cx.drawImage(src,0,0,cv.width,cv.height);var u=cv.toDataURL('image/jpeg',0.6);return (u&&u.length>1200&&u.length<3500000)?u:null;}catch(e){return null;}}
   function mAiDraw(p,plan){if(!p||!p.candle||!plan)return;mAiClear(p);p._aiPlan=[];
-    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{p._aiPlan.push(p.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title||''}));}catch(e){}} /* short coloured axis tag (E/SL/TP) back + the legend box (2026-10-04 owner: bare lines read as "nothing drawn") */
+    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{p._aiPlan.push(p.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title||''}));if(p.w)p.w._axDirty=1;}catch(e){}} /* short coloured axis tag (E/SL/TP) back + the legend box (2026-10-04 owner: bare lines read as "nothing drawn") */
     /* short tags on the axis; the shared legend box (drawn by the engine on p.w) carries the full numbers - declutter 2026-10-04 */
     /* entry solid for a live trade, dashed for a wait - and targets deduped within 0.4% - EXACTLY as the shared card swatch shows, so the legend reads as the lines (owner 2026-10-05) */
     try{if(window.__mpAi&&window.__mpAi.stampReach&&p)window.__mpAi.stampReach(p,plan);}catch(e){}/* the reach measurement rides on the plan, so tradable() answers the same here as on the desktop */
