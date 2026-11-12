@@ -640,7 +640,13 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     if ((window.scrollY || window.pageYOffset || 0) > 2) return;   // only meaningful at the top of the page
     var hh = document.querySelector('body>.wrap>header, body>header'); if (!hh) return;
     hh.style.marginTop = '';
-    var t = hh.getBoundingClientRect().top;
+    /* THE COOKIE NOTICE'S ROOM IS NOT PADDING (2026-11-12): since the notice's height is reserved from frame 0 as a transparent
+       body border (html.mp-ckbar, see the cookie block below) this ran with the header 41px down FOR THAT REASON, pulled it up
+       by 41 and the header ended under the bar on every desktop page without an OK. The strip that is the bar's (the reserved
+       border, or the mounted bar itself) is taken off the measurement; what is left is the .wrap padding this exists to undo. */
+    var ckb = document.getElementById('mpCkBar'), top0 = 0;
+    try { top0 = (parseFloat(getComputedStyle(document.body).borderTopWidth) || 0) + (ckb ? ckb.getBoundingClientRect().height : 0); } catch (e) {}
+    var t = hh.getBoundingClientRect().top - top0;
     if (t > 0 && t < 120) hh.style.marginTop = (-t) + 'px';
     // mobile: full-bleed horizontally - headers inside a padded .wrap render 16-24px narrower than the
     // screen and read as "cut off" at the left/right edges (alerts/fear-greed/news/coins/blog/...)
