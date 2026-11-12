@@ -1684,7 +1684,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +(feeHas(e)?'<div><span>'+MT('jFees','Fees')+'</span><b class="pp-fee" role="button" tabindex="0" title="'+MT('jFeeTip',__esT_home("tapForTheFee",'Tap for the fee breakdown'))+'">'+feeLbl(e)+'</b></div>':'')
       +'</div>'
       +(feeHas(e)?feeBdHtml(e):'')
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="wy" data-act="why" data-id="'+e.id+'">'+MT('jWhy','Why')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div>'
       +((_i===_glIdx&&window.mpGoLive)?window.mpGoLive(e):'') /* newest winning close only: one dismissible line to the same pair on a venue that fits this reader (mp-auth.js owns it; MIRROR in mp-trade.js) */
       +'</div>';}
@@ -1849,6 +1849,64 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     return '<div class="jr-fb on">'+head+body+'</div>';}
   document.addEventListener('input',function(ev){var t=ev.target;if(!t||t.id!=='jrFq'||!t.closest('#jrList'))return;jrF.q=String(t.value||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,12);jrFSave();jrShow=50;jrFFocus=true;clearTimeout(jrFT);
     jrFT=setTimeout(function(){render();var i=document.getElementById('jrFq');if(i&&jrFFocus){i.focus();try{var L=i.value.length;i.setSelectionRange(L,L);}catch(e){}}jrFFocus=false;},180);});
+  /* @JRWHY THE TRADE AUTOPSY SHEET (2026-11-12, feature #1) - MIRRORED in home.js and mp-trade.js by build/fix-trade-autopsy.js; edit the patcher, not this copy. */
+  var _JRWX='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function _wp(v){v=+v;if(!isFinite(v))return '-';var d=v>=1000?2:v>=1?4:v>=0.01?6:8;return v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:d});}
+  function _wt(ms){var x=new Date(+ms);if(!isFinite(x.getTime()))return '-';return x.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+  function _wd(ms){ms=Math.max(0,+ms||0);var m=Math.round(ms/60000);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<48)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
+  function _wu(x){x=+x||0;return (x>=0?'+':'-')+money(Math.abs(x)).replace('-','');}
+  function jrWhyBody(d){var t=d.trade||{},s=d.stats||{},long=t.side!=='short',o='';
+    var bars=d.bars||[];
+    if(bars.length>1){var W=520,H=130,P=6,lo=Infinity,hi=-Infinity;bars.forEach(function(b){if(b[3]<lo)lo=b[3];if(b[2]>hi)hi=b[2];});if(t.stop>0){lo=Math.min(lo,t.stop);hi=Math.max(hi,t.stop);}if(t.entry>0){lo=Math.min(lo,t.entry);hi=Math.max(hi,t.entry);}
+      var t0=bars[0][0],t1=bars[bars.length-1][0]||(t0+1);var X=function(ts){return P+(W-2*P)*((ts-t0)/Math.max(1,t1-t0));},Y=function(p){return P+(H-2*P)*(1-(p-lo)/Math.max(1e-12,hi-lo));};
+      var pth=bars.map(function(b,i){return (i?'L':'M')+X(b[0]).toFixed(1)+' '+Y(b[4]).toFixed(1);}).join(' ');
+      var x0=X(Math.max(t0,t.ts)),x1=X(Math.min(t1,t.cts));
+      o+='<svg class="jrw-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><rect x="'+x0.toFixed(1)+'" y="0" width="'+Math.max(1,x1-x0).toFixed(1)+'" height="'+H+'" class="win"/>';
+      if(t.entry>0)o+='<line x1="0" x2="'+W+'" y1="'+Y(t.entry).toFixed(1)+'" y2="'+Y(t.entry).toFixed(1)+'" class="en"/>';
+      if(t.stop>0)o+='<line x1="0" x2="'+W+'" y1="'+Y(t.stop).toFixed(1)+'" y2="'+Y(t.stop).toFixed(1)+'" class="st"/>';
+      o+='<path d="'+pth+'" class="px"/>';
+      if(s.mfeT&&s.mfePct!=null)o+='<circle cx="'+X(s.mfeT).toFixed(1)+'" cy="'+Y(long?t.entry*(1+s.mfePct/100):t.entry*(1-s.mfePct/100)).toFixed(1)+'" r="4" class="best"/>';
+      if(s.maeT&&s.maePct!=null)o+='<circle cx="'+X(s.maeT).toFixed(1)+'" cy="'+Y(long?t.entry*(1-s.maePct/100):t.entry*(1+s.maePct/100)).toFixed(1)+'" r="4" class="worst"/>';
+      o+='<circle cx="'+X(t.ts).toFixed(1)+'" cy="'+Y(t.entry).toFixed(1)+'" r="4.5" class="in"/>';if(t.exit>0)o+='<circle cx="'+X(t.cts).toFixed(1)+'" cy="'+Y(t.exit).toFixed(1)+'" r="4.5" class="out"/>';
+      o+='</svg><div class="jrw-leg"><span><i class="in"></i>'+MT('whyEntry','entry')+'</span><span><i class="out"></i>'+MT('whyExit','exit')+'</span><span><i class="best"></i>'+MT('whyBest','best point')+'</span><span><i class="worst"></i>'+MT('whyWorst','worst point')+'</span>'+(t.stop>0?'<span><i class="st"></i>'+MT('whyStop','your stop')+'</span>':'')+'</div>';}
+    function tile(v,l,c){return '<div class="jrw-tl"><div class="v"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
+    o+='<div class="jrw-tiles">'
+      +tile(s.mfePct!=null?'+'+s.mfePct.toFixed(2)+'%'+(s.mfeUsd!=null?' <small>'+_wu(s.mfeUsd)+'</small>':''):'-',MT('whyBestL','Best point in your favour')+(s.mfeT?' · '+_wt(s.mfeT):''),'#34d99a')
+      +tile(s.maePct!=null?'-'+s.maePct.toFixed(2)+'%'+(s.maeUsd!=null?' <small>'+_wu(-s.maeUsd)+'</small>':''):'-',MT('whyWorstL','Worst point against you')+(s.maeT?' · '+_wt(s.maeT):''),'#ff7b72')
+      +tile(s.movePct!=null?(s.movePct>=0?'+':'')+s.movePct.toFixed(2)+'%'+(t.pnl!=null?' <small>'+_wu(t.pnl)+'</small>':''):'-',MT('whyTook','You took')+(s.giveBackShare!=null&&s.giveBackShare>0.05?' · '+MT('whyGave','gave back')+' '+Math.round(s.giveBackShare*100)+'% '+MT('whyOfBest','of the best'):''),(s.movePct!=null&&s.movePct>=0)?'#34d99a':'#ff7b72')
+      +tile(_wd(s.heldMs),MT('whyHeld','Held')+((t.fee!=null||t.fund!=null)?' · '+MT('whyCosts','fees + funding')+' '+money((+t.fee||0)+(+t.fund||0)):''))
+      +'</div>';
+    if((s.ladder&&s.ladder.length)||s.yourStop){o+='<div class="jrw-sec">'+MT('whyStops','Where a stop would have held')+(s.atrPct!=null?'<small>'+MT('whyAtr','pre-trade range, 1 ATR =')+' '+s.atrPct.toFixed(2)+'%</small>':'')+'</div><div class="jrw-rows">';
+      var rowS=function(lbl,px,pct,held,usd,mine){return '<div class="jrw-row'+(mine?' mine':'')+'" data-held="'+(held===true?'1':held===false?'0':'')+'"><span class="a">'+lbl+'</span><span class="b">'+_wp(px)+' <small>'+(+pct).toFixed(2)+'%</small></span><span class="c '+(held===true?'ok':held===false?'no':'')+'">'+(held===true?MT('whyHeldY','held'):held===false?MT('whyHeldN','hit'):'-')+'</span><span class="d">'+(usd!=null?'-'+money(Math.abs(usd)).replace('-',''):'-')+'</span></div>';};
+      if(s.yourStop)o+=rowS(MT('whyYours','Your stop')+(s.yourStop.atr!=null?' <small>'+s.yourStop.atr.toFixed(1)+' ATR</small>':''),s.yourStop.px,s.yourStop.pct,s.yourStop.held,s.yourStop.lossUsd,true);
+      (s.ladder||[]).forEach(function(l){o+=rowS(l.atr+' ATR',l.px,l.pct,l.held,l.lossUsd,false);});
+      o+='</div>';
+      if(s.firstHeldAtr!=null)o+='<div class="jrw-note">'+MT('whyFirstHeld','The tightest of these that survived the whole trade:')+' <b>'+s.firstHeldAtr+' ATR</b>'+((s.yourStop&&s.yourStop.held===false&&s.yourStop.atr!=null&&s.yourStop.atr<s.firstHeldAtr)?' - '+MT('whyYoursTight','yours was inside the range the market moved.'):'')+'</div>';
+      else if(s.ladder&&s.ladder.length)o+='<div class="jrw-note">'+MT('whyNoneHeld','Even a 2 ATR stop would have been hit - the move against you was bigger than the usual range.')+'</div>';}
+    if(d.liq){if(d.liq.none==='older_than_feed')o+='<div class="jrw-sec">'+MT('whyLiqs','Liquidated while you were in')+'</div><div class="jrw-note">'+MT('whyLiqOld','The liquidation feed keeps 14 days - this trade is older.')+'</div>';
+      else if(!d.liq.none){o+='<div class="jrw-sec">'+MT('whyLiqs','Liquidated while you were in')+'</div><div class="jrw-liq"><span class="l">'+MT('whyLongs','longs')+' <b>'+money(d.liq.longUsd)+'</b></span><span class="s">'+MT('whyShorts','shorts')+' <b>'+money(d.liq.shortUsd)+'</b></span><span class="n">'+d.liq.n+' '+MT('whyPrints','prints over $1K')+(d.liq.biggest?' · '+MT('whyBiggest','biggest')+' '+money(d.liq.biggest.usd)+' '+(d.liq.biggest.side==='long'?MT('whyLong','long'):MT('whyShort','short'))+(d.liq.biggest.exchange?' @ '+esc(d.liq.biggest.exchange):''):'')+(d.liq.complete===false?' · '+MT('whyPartial','the oldest part of the window is cut by the feed cap'):'')+'</span></div>';}}
+    if(d.catalysts){o+='<div class="jrw-sec">'+MT('whyMoved','What moved it')+'</div>';
+      if(d.catalysts.items&&d.catalysts.items.length){o+='<div class="jrw-cx">';d.catalysts.items.forEach(function(c){var a=!!c.url;o+='<'+(a?'a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer"':'div')+' class="jrw-c"><span class="t">'+_wt(c.ts)+'</span><span class="k">'+esc(c.kind||'')+(c.named?'':' · '+MT('whyMarket','market-wide'))+'</span><span class="h">'+esc(c.title)+'</span></'+(a?'a':'div')+'>';});o+='</div>';}
+      else o+='<div class="jrw-note">'+MT('whyNoCxA','No catalyst named')+' '+esc(t.sym||'')+' '+MT('whyNoCxB','in the two hours before or during the trade - the move was the market on its own.')+'</div>';}
+    o+='<div class="jrw-lesson" hidden></div>';
+    o+='<div class="jrw-foot">'+(d.source==='server'?MT('whySrvRec','From the server record of this trade.'):MT('whyDevRec','From the record on this device.'))+(d.interval?' · '+d.interval+'m '+MT('whyCandles','candles'):'')+(d.covered===false?' · '+MT('whyPartialBars','the candles do not reach back to the open'):'')+'</div>';
+    return o;}
+  function jrWhy(e){
+    var old=document.getElementById('jrWhy');if(old)old.remove();var ob=document.getElementById('jrWhyBd');if(ob)ob.remove();
+    var long=e.side!=='short',win=(+e.pnl)>=0;
+    var bd=document.createElement('div');bd.id='jrWhyBd';bd.className='jrw-bd';
+    var sh=document.createElement('div');sh.id='jrWhy';sh.className='jrw';sh.setAttribute('role','dialog');sh.setAttribute('aria-modal','true');sh.setAttribute('aria-label',MT('whyTitle','Why this trade went the way it did'));
+    sh.innerHTML='<div class="jrw-h"><div class="jrw-t"><b>'+esc(e.sym||'-')+'</b><i class="'+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+' '+(e.lev||1)+'x</i><span class="'+(win?'win':'loss')+'">'+(e.liquidated?MT('whyLiq','Liquidated'):(win?MT('whyWin','Win'):MT('whyLoss','Loss')))+(e.pnl!=null?' '+_wu(+e.pnl):'')+'</span></div><button type="button" class="jrw-x" aria-label="'+MT('whyClose','Close')+'">'+_JRWX+'</button></div><div class="jrw-b">'+(window.mpWaitHtml?window.mpWaitHtml(MT('whyReading','Reading the trade')):'<div class="jrw-wait">'+MT('whyReading','Reading the trade')+'</div>')+'</div>';
+    document.body.appendChild(bd);document.body.appendChild(sh);
+    function close(){sh.remove();bd.remove();document.removeEventListener('keydown',onKey);}
+    function onKey(ev){if(ev.key==='Escape')close();}
+    bd.addEventListener('click',close);sh.querySelector('.jrw-x').addEventListener('click',close);document.addEventListener('keydown',onKey);
+    var ex=(e.exit!=null?+e.exit:(win?(+e.tp||0):(+e.stop||0)));
+    var q='/api/trade/autopsy?id='+encodeURIComponent(e.id)+'&sym='+encodeURIComponent(String(e.sym||'').toUpperCase())+'&side='+(long?'long':'short')+'&entry='+(+e.entry||0)+'&exit='+(ex>0?ex:0)+'&lev='+(+e.lev||1)+'&margin='+(+e.margin||0)+'&ts='+(+e.ts||0)+'&cts='+(+e.closeTs||Date.now())+(e.stop>0?'&stop='+(+e.stop):'')+(e.pnl!=null?'&pnl='+(+e.pnl):'')+(e.liquidated?'&liq=1':'');
+    window.__mpJrWhyLast={id:e.id,q:q};
+    fetch(q,{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){var b=document.getElementById('jrWhy');if(!b)return;b.querySelector('.jrw-b').innerHTML=(d&&d.ok)?jrWhyBody(d):'<div class="jrw-wait">'+MT('whyNoRead','Could not read this trade right now.')+(d&&d.error?' ('+esc(d.error)+')':'')+'</div>';window.__mpJrWhyData=d;}).catch(function(){var b=document.getElementById('jrWhy');if(b)b.querySelector('.jrw-b').innerHTML='<div class="jrw-wait">'+MT('whyNoRead','Could not read this trade right now.')+'</div>';});
+  }
+  window.__mpJrWhy=jrWhy;
   /* @JRRISK THE RISK TAB (2026-11-12, feature #3) - MIRRORED in home.js and mp-trade.js by build/fix-jr-risk.js; edit the patcher, not this copy. */
   function jrRisk(open){
     var out='<div class="jr-risk" data-n="'+open.length+'">';
@@ -2081,6 +2139,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='elig'){_eligData=data;eligToggle(b,e);return;}
     if(act==='share'){shareTicket(e);return;}
+    if(act==='why'){jrWhy(e);return;}
     if(act==='chatshare'){shareTicketChat(e,b);return;}
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();closeJr();if(window.matchMedia&&window.matchMedia('(max-width:880px)').matches){if(window.mpOpenMobileCharts){window.mpOpenMobileCharts(_cs);}else{try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}location.href='/charts';}return;}try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}    if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');closeJr();if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}

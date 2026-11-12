@@ -10283,7 +10283,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=14228936" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b5bdb7d0" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -20905,6 +20905,77 @@ async function handleTshare(url, request, env, ctx) {
 // P0 - server-side trading for the WEB user (session-cookie auth). The server takes the live price, fills,
 // and writes journal-shaped trades (src:'srv') through the same UserStore journal every existing surface reads
 // (My Trades, tradeev, XP, leaderboards, multi-device pull) - so nothing downstream needs migrating.
+/* ── THE TRADE AUTOPSY (2026-11-12, feature #1) ──────────────────────────────────────────────────────────────────────────────────
+   autopsyStats is PURE (lifted by build/autopsy-e2e.js and driven with constructed candles): the best and worst point of the trade
+   against its entry, the move actually taken and what was given back from the best, the pre-trade ATR and whether a stop at 1 / 1.5 / 2
+   ATR - and the trader's own, when one was set - would have survived the window. tradeAutopsy fetches around it: candles at an
+   interval sized to the hold (1m for a scalp, 4h for a fortnight), the liquidation feed inside the window, the catalysts that named
+   the coin. A source that cannot be read is ABSENT in the answer, never a zero. */
+function autopsyTradeFromQuery(url) {
+  const g = (k) => url.searchParams.get(k);
+  const sym = String(g('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12), entry = +g('entry'), exit = +g('exit'), ts = +g('ts'), cts = +g('cts');
+  if (!sym || !(entry > 0) || !(ts > 0) || !(cts > 0) || cts < ts) return null;
+  return { sym, long: String(g('side') || 'long') !== 'short', entry, exit: exit > 0 ? exit : 0, lev: +g('lev') > 0 ? Math.min(2000, +g('lev')) : 1, margin: +g('margin') > 0 ? +g('margin') : 0, ts, cts: Math.min(cts, Date.now()), stop: +g('stop') > 0 ? +g('stop') : 0, pnl: g('pnl') != null && isFinite(+g('pnl')) ? +g('pnl') : null, fee: null, fund: null, liquidated: g('liq') === '1', via: null, src: null };
+}
+function autopsyStats(t, bars, ivMs) {
+  const long = !!t.long, e = +t.entry, x = +t.exit, lev = +t.lev > 0 ? +t.lev : 1, margin = +t.margin > 0 ? +t.margin : 0, notional = margin * lev, iv = +ivMs > 0 ? +ivMs : 60000;
+  const inW = bars.filter(b => b.t + iv > t.ts && b.t <= t.cts), pre = bars.filter(b => b.t + iv <= t.ts).slice(-14);
+  let mfe = null, mae = null, mfeT = null, maeT = null;
+  for (const b of inW) {
+    const up = b.h / e - 1, dn = 1 - b.l / e, fav = long ? up : dn, adv = long ? dn : up;
+    if (mfe == null || fav > mfe) { mfe = fav; mfeT = b.t; }
+    if (mae == null || adv > mae) { mae = adv; maeT = b.t; }
+  }
+  if (mfe != null && mfe < 0) mfe = 0; if (mae != null && mae < 0) mae = 0; // a window whose candles never touched the entry on that side: nothing was in favour / against
+  const atr = pre.length >= 5 ? pre.reduce((a, b) => a + (b.h - b.l), 0) / pre.length : null, atrPct = (atr != null && e > 0) ? atr / e : null;
+  const held = (px) => { if (!(px > 0) || !inW.length) return null; return long ? inW.every(b => b.l > px) : inW.every(b => b.h < px); };
+  const ladder = atrPct == null ? [] : [1, 1.5, 2].map(k => { const px = long ? e * (1 - k * atrPct) : e * (1 + k * atrPct); return { atr: k, px, pct: k * atrPct * 100, held: held(px), lossUsd: notional * k * atrPct }; });
+  const move = (e > 0 && x > 0) ? (x / e - 1) * (long ? 1 : -1) : null;
+  const yourStop = t.stop > 0 ? { px: +t.stop, pct: Math.abs(+t.stop / e - 1) * 100, held: held(+t.stop), atr: atrPct ? Math.abs(+t.stop / e - 1) / atrPct : null, lossUsd: notional * Math.abs(+t.stop / e - 1) } : null;
+  const giveBack = (mfe != null && mfe > 0 && move != null) ? Math.max(0, mfe - move) : null;
+  const firstHeld = ladder.find(l => l.held === true) || null;
+  return { bars: inW.length, preBars: pre.length, mfePct: mfe != null ? mfe * 100 : null, mfeUsd: mfe != null ? mfe * notional : null, mfeT, maePct: mae != null ? mae * 100 : null, maeUsd: mae != null ? mae * notional : null, maeT, atrPct: atrPct != null ? atrPct * 100 : null, ladder, yourStop, movePct: move != null ? move * 100 : null, moveUsd: move != null ? move * notional : null, giveBackPct: giveBack != null ? giveBack * 100 : null, giveBackShare: (giveBack != null && mfe > 0) ? giveBack / mfe : null, firstHeldAtr: firstHeld ? firstHeld.atr : null, notional, heldMs: t.cts - t.ts };
+}
+async function tradeAutopsy(env, t) {
+  const sym = t.sym, cls = assetClassOf(sym), span = Math.max(60000, t.cts - t.ts), now = Date.now();
+  const LAD = [['1', 1], ['5', 5], ['15', 15], ['60', 60], ['240', 240]];
+  let i0 = span <= 3 * 3600000 ? 0 : span <= 15 * 3600000 ? 1 : span <= 3 * 86400000 ? 2 : span <= 14 * 86400000 ? 3 : 4;
+  let bars = [], iv = null, ivMs = 0, covered = false;
+  for (let i = i0; i < LAD.length; i++) {
+    const tok = LAD[i][0], ms = LAD[i][1] * 60000, from = t.ts - 20 * ms;
+    let r = null; try { r = await aiKlinesAfter(env, sym, tok, from, 6); } catch (e) { r = null; }
+    const cut = ((r && r.bars) || []).map(b => ({ t: +b.time * 1000, o: +b.open, h: +b.high, l: +b.low, c: +b.close })).filter(b => b.t <= t.cts + 20 * ms && b.h > 0 && b.l > 0);
+    if (cut.length) { bars = cut; iv = tok; ivMs = ms; covered = !!(r && r.coversSince) || (cut[0].t <= t.ts); }
+    if (covered) break; // a finer interval could not reach back to the open inside six pages - the next rung reaches further
+  }
+  const stats = autopsyStats(t, bars, ivMs);
+  // a compact series for the sheet's drawing: at most ~240 points, every k-th bar, the window edges kept
+  let draw = bars; if (draw.length > 240) { const k = Math.ceil(draw.length / 240); draw = draw.filter((b, i) => i % k === 0 || i === bars.length - 1); }
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  const colGet = async (path, ms, ttl) => { if (!base || now < COL_DOWN_UNTIL) return null; const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), ms); try { const r = await __realFetch(base + path, { signal: ctl.signal, cf: { cacheTtl: ttl, cacheEverything: true } }); return r.ok ? await r.json() : null; } catch (e) { return null; } finally { clearTimeout(tmr); } };
+  const hasLiq = cls !== 'house' && cls !== 'forex', liqInFeed = (now - t.ts) < 13.5 * 86400000;
+  const q10 = (ms) => Math.floor(ms / 600000) * 600000;
+  const [lj, cj] = await Promise.all([
+    (hasLiq && liqInFeed) ? colGet('/api/v1/liquidations/live?symbol=' + sym + '&limit=1000&min=1000&since=' + t.ts, 2500, 60) : Promise.resolve(null),
+    (now - t.ts) < 30 * 86400000 ? colGet('/api/v1/catalysts?since=' + q10(t.ts - 2 * 3600000) + '&until=' + (q10(t.cts) + 600000) + '&limit=500&min=' + CX_MIN_SCORE, 3000, 120) : Promise.resolve(null),
+  ]);
+  let liq = null;
+  if (!hasLiq) liq = { none: 'no_feed_for_class' };
+  else if (!liqInFeed) liq = { none: 'older_than_feed' };
+  else if (lj && Array.isArray(lj.events)) {
+    const ev = lj.events.filter(r => +r.ts >= t.ts && +r.ts <= t.cts);
+    let L = 0, S = 0, big = null; for (const r of ev) { const u = +r.notional || 0; if (/long/.test(String(r.side))) L += u; else S += u; if (!big || u > big.usd) big = { usd: u, side: /long/.test(String(r.side)) ? 'long' : 'short', ts: +r.ts, exchange: r.exchange || '' }; }
+    liq = { longUsd: Math.round(L), shortUsd: Math.round(S), n: ev.length, biggest: big, complete: lj.complete !== false };
+  }
+  let catalysts = null;
+  if (cj && Array.isArray(cj.items)) {
+    const mine = cj.items.filter(it => { const syms = String(it.syms || '').toUpperCase().split(/[,\s]+/).filter(Boolean); const ts = +it.ts_src || +it.ts_seen || 0; if (!(ts >= t.ts - 2 * 3600000 && ts <= t.cts + 600000)) return false; if (syms.indexOf(sym) >= 0) return true; return cls === 'crypto' && (it.kind === 'macro' || (it.kind === 'hack' && +it.score >= 60)); })
+      .sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 4)
+      .map(it => ({ ts: +it.ts_src || +it.ts_seen || 0, title: String(it.title || '').slice(0, 160), url: /^https?:\/\//.test(String(it.url || '')) ? String(it.url).slice(0, 400) : '', kind: it.kind || '', source: it.source || '', score: +it.score || 0, named: String(it.syms || '').toUpperCase().split(/[,\s]+/).indexOf(sym) >= 0 }));
+    catalysts = { items: mine, seen: cj.items.length };
+  }
+  return { trade: { sym, side: t.long ? 'long' : 'short', entry: t.entry, exit: t.exit || null, lev: t.lev, margin: t.margin, pnl: t.pnl, roe: (t.pnl != null && t.margin > 0) ? t.pnl / t.margin * 100 : null, ts: t.ts, cts: t.cts, stop: t.stop || null, fee: t.fee, fund: t.fund, liquidated: !!t.liquidated, via: t.via, src: t.src, cls }, interval: iv, covered, bars: draw.map(b => [b.t, b.o, b.h, b.l, b.c]), stats, liq, catalysts, now };
+}
 async function handleTrade(url, request, env, ctx) {
   const T0 = Date.now(), marks = [];
   const mk = (n, t) => marks.push(n + ';dur=' + (Date.now() - t));
@@ -20925,6 +20996,9 @@ async function handleTrade(url, request, env, ctx) {
   // documents), so there is nothing here to withhold. Writing one still needs an account.
   if (!uid && url.pathname === '/api/trade/realism' && request.method === 'GET') return jt(realismInfo(REALISM_DEF));
   if (!uid && url.pathname === '/api/trade/sim' && request.method === 'GET') return jt(simInfo(SIM_DEF, ''));
+  // A GUEST'S CLOSED TRADE CAN HAVE ITS AUTOPSY TOO (2026-11-12, feature #1): the row lives on their device, they send it, and
+  // the read touches no store - candles, the liquidation feed and the catalyst table are all public data.
+  if (!uid && url.pathname === '/api/trade/autopsy' && request.method === 'GET' && url.searchParams.get('sym')) { const tq = autopsyTradeFromQuery(url); if (!tq) return jt({ error: 'bad_trade' }, 400); return jt(Object.assign({ ok: true, source: 'device' }, await tradeAutopsy(env, tq))); }
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
   wantDrain = request.method === 'POST' && ['/open', '/close', '/sltp', '/order', '/ordersweep', '/tradesweep', '/trades'].indexOf(path) >= 0;
@@ -21093,6 +21167,25 @@ async function handleTrade(url, request, env, ctx) {
     if (adminUid) prem = true; // owner/E2E inspection of a specific account
     if (!prem) return jt({ ok: true, days: rep.days, total: rep.total, skill: rep.skill, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'] });
     return jt(Object.assign({ premium: true, findings: reportFindings(rep) }, rep));
+  }
+  /* THE TRADE AUTOPSY (2026-11-12, owner-approved feature #1): GET /api/trade/autopsy?id=<tid>[&sym=&side=&entry=&exit=&lev=&margin=&ts=&cts=&stop=]
+     The server's own close row (tradeev, by tid) is the record of what happened; the query carries the device's copy of the same row
+     and fills only what the server row does not hold (entry/exit for rows closed before 2026-10-23, the stop price, the open time of a
+     trimmed journal). A trade the store never saw - a guest's, or a client-only row - is read from the query alone and SAID to be
+     (`source:'device'`). Nothing here decides money: it is a reading of candles, the liquidation feed and the catalyst table around
+     a trade that is already closed. */
+  if (path === '/autopsy' && request.method === 'GET') {
+    const id = String(url.searchParams.get('id') || '').slice(0, 80);
+    let row = null; if (id) { try { row = await usersDO(env, '/tradeone', { uid, id }); } catch (e) { row = null; } }
+    const tq = autopsyTradeFromQuery(url);
+    let t = null, source = 'device';
+    if (row && row.ok && row.close) {
+      const c = row.close; source = 'server';
+      t = { sym: String(c.sym || (tq && tq.sym) || '').toUpperCase(), long: String(c.side || (tq && (tq.long ? 'long' : 'short')) || 'long') !== 'short', entry: +c.entry > 0 ? +c.entry : (tq ? tq.entry : 0), exit: +c.exit > 0 ? +c.exit : (tq ? tq.exit : 0), lev: +c.lev > 0 ? +c.lev : (tq ? tq.lev : 1), margin: +c.margin > 0 ? +c.margin : (tq ? tq.margin : 0), ts: +row.openTs > 0 ? +row.openTs : (tq ? tq.ts : 0), cts: +c.ts > 0 ? +c.ts : (tq ? tq.cts : 0), stop: +c.slpx > 0 ? +c.slpx : (tq ? tq.stop : 0), pnl: c.pnl != null ? +c.pnl : (tq ? tq.pnl : null), fee: c.fee != null ? +c.fee : null, fund: c.fund != null ? +c.fund : null, liquidated: !!(+c.liq), via: c.via || null, src: c.src || null };
+      if (!(t.ts > 0) && t.cts > 0) t.ts = t.cts - 60000; // an open row trimmed away and no device copy: the window is the closing minute
+    } else if (tq) t = tq;
+    if (!t || !t.sym || !(t.entry > 0) || !(t.cts > 0)) return jt({ error: row && row.error === 'unavailable' ? 'unavailable' : 'not_found', why: row && row.why }, row && row.error === 'unavailable' ? 503 : 404);
+    return jt(Object.assign({ ok: true, source }, await tradeAutopsy(env, t)));
   }
   // ── LIMIT ORDERS ────────────────────────────────────────────────────────────────────────────────────────────
   if (path === '/orders' && request.method === 'GET') { const r = await usersDO(env, '/order/list', { uid }); return jt(r || { orders: [], done: [] }); }
@@ -35761,6 +35854,15 @@ export class UserStore {
       }
       out.sort((a, c) => a.ts - c.ts);
       return this.j({ ok: true, users, rows: out });
+    }
+    if (path === '/tradeone') { // THE AUTOPSY (2026-11-12, feature #1): one trade's close row and its open time, by tid - the record of what happened
+      const uid = String(b.uid || ''), tid = String(b.id || '').slice(0, 80); if (!uid || !tid) return this.j({ error: 'no_uid' });
+      let rows = [];
+      try { rows = this.rows("SELECT ts, kind, sym, side, lev, margin, pnl, roe, liq, tid, sl, slpx, fee, fund, entry, exit, src, via FROM tradeev WHERE user_id=? AND tid=? ORDER BY ts ASC LIMIT 20", uid, tid); }
+      catch (e) { return this.j({ error: 'unavailable', why: String((e && e.message) || e).slice(0, 160) }); }
+      const close = rows.filter(r => r.kind === 'close').pop() || null, open = rows.filter(r => r.kind === 'open')[0] || null;
+      if (!close) return this.j({ ok: false, error: 'not_found' });
+      return this.j({ ok: true, close, openTs: open ? +open.ts : null });
     }
     if (path === '/tradereport') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
