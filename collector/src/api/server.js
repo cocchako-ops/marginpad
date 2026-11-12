@@ -246,6 +246,29 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     } catch (e) { return res.status(502).json({ error: 'binance_unreachable', detail: String(e).slice(0, 120) }); }
   });
 
+  // Bybit proxy (2026-11-12): the worker's SETTLEMENT path (a stop, a target, a liquidation) is pinned to Bybit's own
+  // candles and prices, and Bybit refuses or stalls some Cloudflare egress ranges - the */10 cron isolate in particular.
+  // This box has a fixed address Bybit has never refused (the collector's Bybit websocket runs from it). Market data only,
+  // strict allowlist, 2 s cache so sixty symbols a minute cost sixty calls at most.
+  const BYB_ALLOW = /^\/v5\/market\/(kline|tickers)$/;
+  const bybCache = new Map();
+  setInterval(() => { const c = Date.now() - 20000; for (const [k, v] of bybCache) if (v.t < c) bybCache.delete(k); }, 20000).unref?.();
+  app.get('/api/v1/byb', async (req, res) => {
+    const p3 = String(req.query.path || '');
+    if (!BYB_ALLOW.test(p3)) return res.status(400).json({ error: 'path_not_allowed' });
+    const qs = Object.entries(req.query).filter(([k]) => k !== 'path').map(([k, v]) => k + '=' + encodeURIComponent(String(v))).join('&');
+    const url = 'https://api.bybit.com' + p3 + (qs ? '?' + qs : '');
+    const hitY = bybCache.get(url);
+    if (hitY && Date.now() - hitY.t < 2000) { res.set('Cache-Control', 'public, max-age=2'); res.set('x-byb-cache', 'hit'); return res.status(hitY.status).type('application/json').send(hitY.body); }
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      const body = await r.text();
+      if (r.status === 200) bybCache.set(url, { t: Date.now(), status: r.status, body });
+      res.set('Cache-Control', 'public, max-age=2');
+      return res.status(r.status).type('application/json').send(body);
+    } catch (e) { return res.status(502).json({ error: 'bybit_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
   // OKX proxy (2026-08-22): the rubik stats endpoints reject Cloudflare-Worker IPs (market-data
   // endpoints do not), so the worker reaches them through this box. Strict allowlist, same
   // short-cache pattern as /api/v1/bnc.
