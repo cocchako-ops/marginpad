@@ -49,7 +49,7 @@ function __esT_rewardsindex(k, en) { try { var d = (window.__mpUI && window.__mp
 <meta name="twitter:description" content="Sign in with your email, compete on the season leaderboards, climb the Season Pass. Withdraw from $5. No deposit." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/rewards.jpg" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad Rewards","url":"https://marginpad.io/rewards/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Earn real USDT on MarginPad with no deposit: sign in with your email, compete on the 14-day season leaderboards, climb the Season Pass, redeem promo codes and partner sign-up bonuses. Daily missions pay Ticks and XP."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I earn USDT on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password). Real USDT comes from the 14-day season leaderboards, the Season Pass, promo codes and partner sign-up bonuses - no deposit anywhere. Daily missions pay Ticks and XP."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Nothing on the rewards page asks for a deposit. MarginPad earns when a member opens an exchange account through one of its partner links, and part of that pays the prizes."}},{"@type":"Question","name":"How do I withdraw?","acceptedAnswer":{"@type":"Answer","text":"From $5 on your balance, request a payout to a Bybit UID, a MEXC UID or a Moon username that was opened through MarginPad. Every withdrawal is checked and paid by hand."}},{"@type":"Question","name":"What happened to the faucet?","acceptedAnswer":{"@type":"Answer","text":"The faucet and mission payouts stay for accounts opened before 12 November 2026. Newer accounts earn USDT from the leaderboards, the Season Pass, codes and partner bonuses instead."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I earn USDT on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password). Real USDT comes from the 14-day season leaderboards, the Season Pass, promo codes and partner sign-up bonuses - no deposit anywhere. Daily missions pay Ticks and XP."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Nothing on the rewards page asks for a deposit. MarginPad earns when a member opens an exchange account through one of its partner links, and part of that pays the prizes."}},{"@type":"Question","name":"How do I withdraw?","acceptedAnswer":{"@type":"Answer","text":"From $5 on your balance, request a payout to a Bybit UID, a MEXC UID or a Moon username that was opened through MarginPad. Every withdrawal is checked and paid by hand."}}]}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -575,7 +575,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     <div class="et-r">
       <div class="et-k">Every day</div>
       <div class="et-v"><span class="eamt" id="eaDay">Ticks + XP</span><i id="eaDayU">missions</i></div>
-      <div class="et-d" id="eaDayD">Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class="fcl-only"> Your account also keeps the faucet: claim <b id="eaAmt">$0.01</b> every few minutes.</span></div>
+      <div class="et-d" id="eaDayD">Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class="fcl-only"> Your account also claims <b id="eaAmt">$0.01</b> every few minutes.</span></div>
     </div>
     <div class="et-r">
       <div class="et-k">Every time you do it</div>
@@ -856,7 +856,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     <div class="lbl">How it works</div>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Sign in with email</h3><p>Just your email - no password, no UID yet. Your balance saves to your account.</p></div>
-      <div class="step"><div class="n">02</div><h3>Compete, climb, redeem</h3><p>Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class="fcl-only"> Your account also claims the faucet: <span class="tAmt">0.01</span> USDT per claim, up to $<span class="tPer">0.10</span> a day.</span></p></div>
+      <div class="step"><div class="n">02</div><h3>Compete, climb, redeem</h3><p>Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class="fcl-only"> Your account also claims <span class="tAmt">0.01</span> USDT at a time, up to $<span class="tPer">0.10</span> a day.</span></p></div>
       <div class="step"><div class="n">03</div><h3>Withdraw at $<span class="tMin">5</span></h3><p>Hit $<span class="tMin">5</span> and request a payout. USDT lands in your Bybit account by UID. <a data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" style="color:#ffd75a;font-weight:700;white-space:nowrap">No UID yet? &rarr;</a></p></div>
     </div>
   </div>
@@ -1558,7 +1558,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     }
     if(!list._go){list._go=1;var TGT={tgsignals:['tgsig','signals'],tgnews:['tgnews','news'],tgbot:['tgbot','bot']};list.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('[data-msngo]');if(!a)return;var mid=a.getAttribute('data-msngo')||'';var m=TGT[mid];if(!m)return;try{fetch('/api/track?t='+m[0]+'&e='+m[1]+'&p=%2Frewards%2F',{method:'POST',keepalive:true});}catch(e){}});}
     list.innerHTML=d.missions.map(function(m){
-      var rw=(m.cents>0)?fmt2(m.cents):((m.ticks||d.ticks||4)+' T');
+      var rw='+'+(m.ticks||0)+' T \u00b7 +'+(m.xp||0)+' XP';
       var right=m.claimed?'<span class="claimed">CLAIMED \u2713</span>':(m.done?'<button data-msn="'+m.mid+'">Claim '+rw+'</button>':'<span class="amt">'+rw+'</span>');
       var go=(m.url&&!m.claimed)?' <a class="msn-go" href="'+m.url+'" target="_blank" rel="noopener" data-msngo="'+m.mid+__esT_rewardsindex("openRarr",'">Open &rarr;</a>'):'';
       return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+go+'</span></span>'+right+'</div>';
@@ -1569,13 +1569,13 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
       var C9=169.6,total9=d.missions.length;
       var rf=document.getElementById('msnRingF');if(rf)rf.style.strokeDashoffset=String((C9*(1-(total9?doneN/total9:0))).toFixed(1));
       var rt=document.getElementById('msnRingT');if(rt)rt.textContent=doneN+'/'+total9;
-      var b9=d.bonus||{};var sN=+b9.setN||5,sU=(+b9.setUsd||0).toFixed(2),sX=+b9.setXp||60,wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.05).toFixed(2),wC=+b9.weekCount||0;
+      var b9=d.bonus||{};var sN=+b9.setN||8,sU='0.00',sX=+b9.setXp||60,wN9=+b9.weekN||25,wT=+b9.weekTicks||100,wC=+b9.weekCount||0;
       var st9=document.getElementById('msnSetTxt');
       var _sv=(+sU>0)?('+$'+sU):('+'+sX+' XP'); /* 2026-09-29: the set bonus pays XP, not cents */
       if(st9)st9.innerHTML=b9.setClaimed?'SET BONUS <span style="color:#c2f64a">'+_sv+' PAID</span>':'SET BONUS <span style="color:#c2f64a">'+_sv+'</span> at '+sN+' claims \u00b7 <span style="color:#e9e7df">'+Math.min(doneN,sN)+'/'+sN+'</span>';
       var wt=document.getElementById('msnWkTxt');
-      if(wt)wt.innerHTML=(+wU<=0)?(wC+'/'+wN9+' this week'):b9.weekClaimed?'<span style="color:#c2f64a">+$'+wU+' PAID</span>':(wC+'/'+wN9+' \u2192 +$'+wU);
-      var wb=document.getElementById('msnWkBar');if(wb)wb.style.width=Math.min(100,Math.round(wC/(wN9||15)*100))+'%';
+      if(wt)wt.innerHTML=b9.weekClaimed?'<span style="color:#c2f64a">+'+wT+' T PAID</span>':(wC+'/'+wN9+' \u2192 +'+wT+' T');
+      var wb=document.getElementById('msnWkBar');if(wb)wb.style.width=Math.min(100,Math.round(wC/(wN9||25)*100))+'%';
     }
     document.getElementById('msnFoot').textContent=doneN===d.missions.length?__esT_rewardsindex("allMissionsDoneFor",'All missions done for today \u2014 come back after 00:00 UTC.'):__esT_rewardsindex("doTheThingAnywhere",'Do the thing anywhere on the site, come back, hit Claim.');
     if(d.resetInMs){var h=Math.floor(d.resetInMs/3600000),mi=Math.floor(d.resetInMs%3600000/60000);document.getElementById('msnReset').textContent=' (in '+h+'h '+mi+'m)';}

@@ -35,10 +35,12 @@ const TG = ['tgsignals', 'tgnews', 'tgbot'];
   const MH = { cookie: 'mp_sess=' + (se.token || se.sess), 'content-type': 'application/json' };
   const m1 = await J('/api/missions', { headers: MH });
   const ids1 = (m1.missions || []).map(x => x.mid);
-  ok(!m1.locked && ids1.length === 7, 'a fresh member gets seven missions', ids1);
+  ok(!m1.locked && ids1.length === 10, 'a fresh member gets ten missions', ids1);
   const tg1 = ids1.filter(x => TG.indexOf(x) >= 0);
   ok(tg1.length === 1, 'exactly one of them is the Telegram mission', tg1);
-  ok(m1.bonus && m1.bonus.setUsd === 0 && m1.bonus.setXp === 60 && m1.bonus.setN === 5, 'the set bonus is 60 XP at 5 claims, no cents', m1.bonus);
+  ok(m1.bonus && m1.bonus.setUsd == null && m1.bonus.setXp === 60 && m1.bonus.setN === 8 && m1.bonus.weekTicks === 100, 'the set bonus is 60 XP at 8 claims, the week pays 100 Ticks, no cents anywhere', m1.bonus);
+  ok((m1.missions || []).every(x => x.cents == null && x.ticks > 0 && x.xp > 0 && /^[emh]$/.test(x.tier)), 'every mission carries a tier, Ticks and XP, never cents', (m1.missions || []).map(x => [x.tier, x.ticks, x.xp]));
+  ok((m1.missions || []).filter(x => x.tier === 'e').length === 4 && (m1.missions || []).filter(x => x.tier === 'm').length === 4 && (m1.missions || []).filter(x => x.tier === 'h').length === 2, 'four easy, four medium, two hard', (m1.missions || []).map(x => x.tier).join(''));
 
   // claim the Telegram mission for real: the event it verifies is the tg click, recorded through /api/track
   const va = { tgsignals: 'tgsig', tgnews: 'tgnews', tgbot: 'tgbot' }[tg1[0]];
@@ -49,25 +51,25 @@ const TG = ['tgsignals', 'tgnews', 'tgbot'];
   const done = (m2.missions || []).find(x => x.mid === tg1[0]);
   ok(done && done.done, 'the Telegram mission verifies from the real event', done);
   const cl = await J('/api/missions', { method: 'POST', headers: MH, body: JSON.stringify({ mid: tg1[0] }) });
-  ok(cl && cl.ok && cl.credited > 0, 'it pays once', { credited: cl && cl.credited, xp: cl && cl.bonusXp });
+  ok(cl && cl.ok && cl.ticks === 5 && cl.xp === 10 && cl.credited == null, 'it pays once: 5 Ticks and 10 XP (tier e), no cents', { ticks: cl && cl.ticks, xp: cl && cl.xp });
 
   // THE FIX: from here on the member never sees a Telegram mission again, and the day is still seven
   const m3 = await J('/api/missions', { headers: MH });
   const ids3 = (m3.missions || []).map(x => x.mid);
-  ok(ids3.length === 7, 'the day still holds seven missions afterwards', ids3);
+  ok(ids3.length === 10, 'the day still holds ten missions afterwards', ids3);
   ok(ids3.filter(x => TG.indexOf(x) >= 0).length === 0, 'and none of them is a Telegram mission any more', ids3.filter(x => TG.indexOf(x) >= 0));
   ok(ids3.filter(x => ids1.indexOf(x) < 0).length >= 1, 'the freed slot went to an ordinary mission', ids3.filter(x => ids1.indexOf(x) < 0));
 
   // the set bonus: claim five and check what it pays
   let paid = 1, setXp = 0, setUsd = 0;
   for (const m of (m3.missions || [])) {
-    if (paid >= 5) break;
+    if (paid >= 8) break;
     if (!m.done || m.claimed) continue;
     const r = await J('/api/missions', { method: 'POST', headers: MH, body: JSON.stringify({ mid: m.mid }) });
     if (r && r.ok) { paid++; if (r.setBonusXp) setXp = r.setBonusXp; if (r.setBonusUsd) setUsd = r.setBonusUsd; }
   }
   if (setXp || setUsd) ok(setXp === 60 && !setUsd, 'the set bonus paid 60 XP and no cents', { setXp, setUsd });
-  else ok(true, 'the set bonus was not reached in this run (needs five verified missions), the shape was checked above');
+  else ok(true, 'the set bonus was not reached in this run (needs eight verified missions), the shape was checked above');
 
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });
   console.log(out.join('\n')); console.log('\nmissions-fix-e2e: pass ' + pass + '  fail ' + fail);

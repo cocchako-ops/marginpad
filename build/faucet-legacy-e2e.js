@@ -23,16 +23,17 @@ const rm = (uid) => J('/api/admin/e2euser', { method: 'POST', headers: H, body: 
   const meL = await J('/api/reward/me', { headers: hl });
   ok(meL.faucet === true && meL.legacy === true, 'legacy: /me says faucet:true legacy:true', { faucet: meL.faucet, legacy: meL.legacy });
   const msL = await J('/api/missions', { headers: hl });
-  ok(Array.isArray(msL.missions) && msL.missions.length === 7 && msL.missions.every(m => m.cents > 0), 'legacy: seven missions, every one carries cents', msL.missions && msL.missions.map(m => m.cents));
-  ok(msL.legacy === true && msL.bonus && msL.bonus.weekUsd > 0, 'legacy: weekly bonus is money', msL.bonus);
+  ok(Array.isArray(msL.missions) && msL.missions.length === 10 && msL.missions.every(m => m.cents == null && m.ticks > 0 && m.xp > 0), 'legacy: ten missions, Ticks and XP, no cents (missions pay nobody money since 2026-11-12)', msL.missions && msL.missions.map(m => [m.ticks, m.xp]));
+  ok(msL.bonus && msL.bonus.weekTicks === 100 && msL.bonus.weekUsd == null, 'legacy: the weekly bonus is Ticks', msL.bonus);
   // new
   const meN = await J('/api/reward/me', { headers: hn });
   ok(meN.faucet === false && meN.legacy === false && meN.legacyBefore === Date.UTC(2026, 10, 12), 'new: /me says faucet:false legacy:false, with the cutoff', { faucet: meN.faucet, legacy: meN.legacy, before: meN.legacyBefore });
   const msN = await J('/api/missions', { headers: hn });
-  ok(Array.isArray(msN.missions) && msN.missions.length === 7 && msN.missions.every(m => m.cents === 0 && m.ticks === 4), 'new: seven missions, 0 cents and 4 Ticks each', msN.missions && msN.missions.map(m => [m.cents, m.ticks]));
-  ok(msN.legacy === false && msN.bonus && msN.bonus.weekUsd === 0 && msN.bonus.setXp === 60, 'new: weekly bonus 0, set bonus still 60 XP', msN.bonus);
+  ok(Array.isArray(msN.missions) && msN.missions.length === 10 && msN.missions.every(m => m.cents == null && m.ticks > 0 && m.xp > 0), 'new: ten missions, Ticks and XP, no cents', msN.missions && msN.missions.map(m => [m.ticks, m.xp]));
+  ok(JSON.stringify(msN.missions.map(m => m.mid)) !== JSON.stringify(msL.missions.map(m => m.mid)), 'the two members got different sets on the same day', { a: msL.missions.map(m => m.mid).join(','), b: msN.missions.map(m => m.mid).join(',') });
+  ok(msN.bonus && msN.bonus.weekUsd == null && msN.bonus.setXp === 60 && msN.bonus.setN === 8, 'new: no money in any bonus, set bonus 60 XP at 8', msN.bonus);
   const cl = await J('/api/reward/claim', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, hn), body: '{}' });
-  ok(cl._status === 403 && cl.error === 'faucet_closed' && /12 Nov 2026/.test(cl.message || ''), 'new: POST /claim is refused as faucet_closed naming the date', { status: cl._status, error: cl.error });
+  ok(cl._status === 404 && cl.error === 'not_available' && !cl.message, 'new: POST /claim answers not_available with no explanation (a new account never learns a faucet existed)', { status: cl._status, error: cl.error });
   // a guest reads the new-account truth
   const meG = await J('/api/reward/me');
   ok(meG.faucet === false && meG.legacy === false, 'guest: /me says faucet:false', { faucet: meG.faucet });

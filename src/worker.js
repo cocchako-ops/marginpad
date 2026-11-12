@@ -15897,7 +15897,7 @@ const VAULT_TESTERS = ['chako']; // owner's test account - owns every item (test
 const TICK_SOURCES = [
   { k: 'checkin', label: 'Daily check-in', cap: 40 },
   { k: 'trade_sl', label: 'Closed with a stop set', cap: 24 },
-  { k: 'mission', label: 'Missions claimed', cap: 28 }, // 2026-09-29: 7 missions x 4 T. It was 20, which ran out on the fifth claim and dropped the rest with nothing said; the set and weekly bonuses no longer draw from it at all
+  { k: 'mission', label: 'Missions claimed', cap: 240 }, // 2026-11-12: ten tiered missions (4x5 + 4x12 + 2x30 = 128 T) + the 100 T weekly bonus on the day it lands // 2026-09-29: 7 missions x 4 T. It was 20, which ran out on the fifth claim and dropped the rest with nothing said; the set and weekly bonuses no longer draw from it at all
   { k: 'academy', label: 'Academy lessons', cap: 30 },
   { k: 'exam', label: 'Academy final exams', cap: 60 },
   { k: 'review', label: 'Academy daily review', cap: 3 },
@@ -24673,7 +24673,7 @@ async function handleReward(url, request, env) {
   if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || signSubmitPath(path) || path === '/xengage/submit')) return jr({ error: 'restricted' }, 403);
   if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
   // THE FAUCET IS CLOSED TO ACCOUNTS CREATED FROM 2026-11-12 (legacyRewards): their money comes from the boards, the pass, codes and partner bonuses
-  if (path === '/claim' && acct && !suLegacy) return jr({ error: 'faucet_closed', message: 'The faucet is only for accounts opened before 12 Nov 2026. Earn on the season leaderboards, the Season Pass, promo codes and partner sign-up bonuses.', earn: '/leaderboards/' }, 403);
+  if (path === '/claim' && acct && !suLegacy) return jr({ error: 'not_available' }, 404); // nothing to explain: a newer account never saw a faucet
   if (path === '/support/mine') { // signed-in user's own support conversation (their tickets + our email replies), identity resolved server-side
     const tok = getCookie(request, SESS_COOKIE);
     const su = tok && env.USERS ? await sessionUser(env, tok) : null;
@@ -25344,7 +25344,7 @@ async function handleReward(url, request, env) {
           const md = await mr.json(); const rows = (md && md.rows) || [];
           const byId = {}; MISSION_POOL.forEach(m => { byId[m.mid] = m; });
           data.items = data.items || [];
-          for (const row of rows) { const def = byId[row.mid]; data.items.push({ type: 'mission', usd: (def ? def.cents : 0) / 100, ts: row.ts || (row.day ? new Date(row.day).getTime() : 0), mid: row.mid, title: def ? def.title : row.mid }); }
+          for (const row of rows) { const def = byId[row.mid]; data.items.push({ type: 'mission', usd: ((def && def.cents) || 0) / 100, ts: row.ts || (row.day ? new Date(row.day).getTime() : 0), mid: row.mid, title: def ? def.title : row.mid }); }
           data.items.sort((x, y) => (y.ts || 0) - (x.ts || 0));
           const summary = data.summary || {};
           for (const it of data.items) if (it.type === 'mission') { (summary.mission = summary.mission || { n: 0, usd: 0 }); summary.mission.n++; summary.mission.usd = +(summary.mission.usd + it.usd).toFixed(2); }
@@ -36554,6 +36554,15 @@ export class UserStore {
             c = Math.max(_tv, _jw);
           }
           else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND ts>=? AND lesson NOT LIKE 'course:%'", uid, dayStart)[0] || {}).n || 0;
+          // 2026-11-12 tiers: results that take the day, every one read off a table the action itself writes
+          else if (d.vt === 'xpsrc') c = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=? AND ts>=? AND src=?', uid, dayStart, String(d.va))[0] || {}).n || 0;
+          else if (d.vt === 'xpsum') { const srcs = String(d.va || '').split(',').filter(Boolean); c = srcs.length ? ((this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND ts>=? AND src IN (' + srcs.map(() => '?').join(',') + ')', uid, dayStart, ...srcs)[0] || {}).s || 0) : 0; }
+          else if (d.vt === 'coins') c = (this.rows("SELECT COUNT(DISTINCT sym) n FROM tradeev WHERE user_id=? AND kind='close' AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'winsl') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(sl,0)=1 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'winheld') { c = 0; for (const r of this.rows("SELECT ts, sym FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)) { const o = this.rows("SELECT MAX(ts) t FROM tradeev WHERE user_id=? AND kind='open' AND sym=? AND ts<?", uid, r.sym, r.ts)[0]; if (o && o.t && r.ts - o.t >= 4 * 3600000) c++; } }
+          else if (d.vt === 'exam') c = (this.rows("SELECT COUNT(*) n FROM acadexam WHERE user_id=? AND status='pass' AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'review') c = (this.rows('SELECT COUNT(*) n FROM acadrevday WHERE user_id=? AND day=? AND ok=1', uid, Math.floor(dayStart / 864e5))[0] || {}).n || 0;
+          else if (d.vt === 'streak') c = +((this.rows('SELECT streak FROM users WHERE id=?', uid)[0] || {}).streak || 0);
         } catch (e) {}
         done[d.mid] = c >= (d.n || 1);
       }
@@ -36862,10 +36871,11 @@ export class UserStore {
       const uid = String(b.uid || ''), day = String(b.day || ''), mid = String(b.mid || '').replace(/[^a-z0-9]/gi, '');
       if (!uid || !day || !mid) return this.j({ error: 'bad' }, 400);
       if (this.rows('SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid=?', uid, day, mid)[0]) return this.j({ ok: true, fresh: false });
-      const mxp = mid === 'setbonus' ? 60 : mid.indexOf('wk') === 0 ? 25 : (10 + Math.floor(Math.random() * 51)); // 2026-09-29: the set bonus pays 60 XP instead of cents // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) - variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
-      sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', mxp, { dayCap: 320, note: 'mission ' + mid }); } catch (me) {}
-      if (mid !== 'setbonus' && mid.indexOf('wk') !== 0) { try { this._grantTicks(uid, 'mission', 4, { dayCap: TICK_CAP.mission, note: 'mission claimed' }); } catch (me2) {} } // the bonuses used to draw from the same 20-Tick budget and push real missions off it
-      return this.j({ ok: true, fresh: true, xp: mxp });
+      const mxp = (b.xp != null) ? Math.max(0, Math.min(200, Math.round(+b.xp || 0))) : mid === 'setbonus' ? 60 : mid.indexOf('wk') === 0 ? 25 : (10 + Math.floor(Math.random() * 51)); // 2026-11-12: the worker names the tier's XP; the old mystery roll is the fallback
+      const mt = (b.ticks != null) ? Math.max(0, Math.min(200, Math.round(+b.ticks || 0))) : (mid !== 'setbonus' && mid.indexOf('wk') !== 0 ? 4 : 0); // 2026-09-29: the set bonus pays 60 XP instead of cents // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) - variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
+      sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); if (mxp > 0) { try { this._grantXp(uid, 'mission', mxp, { dayCap: 320, note: 'mission ' + mid }); } catch (me) {} }
+      if (mt > 0) { try { this._grantTicks(uid, 'mission', mt, { dayCap: TICK_CAP.mission, note: 'mission ' + mid }); } catch (me2) {} } // the bonuses used to draw from the same 20-Tick budget and push real missions off it
+      return this.j({ ok: true, fresh: true, xp: mxp, ticks: mt });
     }
     if (path === '/bronze/state') { // ROAD TO BRONZE: verified LIFETIME (no dayStart) from the same tables the
       // daily missions read. uevents is a 500-row ring per user, which is exactly the window this audience
@@ -39939,96 +39949,123 @@ function commMd(src) {
 }
 // ---------- Daily Missions: earn cents by USING the product (verified from the per-user event log - turns reward farmers into traders) ----------
 const MISSION_POOL = [
-  // trade missions are always index 0/1 (missionsForDay picks one) - DO NOT reorder these two. cat = per-day category quota (see missionsForDay CAPS).
-  { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', cents: 2, vt: 'ev', va: 'paper', n: 1, cat: 'core' },
-  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today - repetition is how instinct gets built', cents: 2, vt: 'ev', va: 'paper', n: 3, cat: 'core' },
-  // growth: Telegram - the free signal group / news channel / bot rotate ONE into every day (missionsForDay). owner-provided links 2026-07-31.
- { mid: 'tgsignals', title: 'Join our free Telegram channel', desc: 'The daily market wrap at 16:00 UTC - prices, liquidations and the next macro event', cents: 1, vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' }, // the free channel carries the daily wrap; live signals are the paid tiers (free signals paused since 2026-08-03)
-  { mid: 'tgnews', title: 'Follow our Telegram news channel', desc: 'Crypto headlines the minute they drop - ahead of your P&L', cents: 1, vt: 'ev', va: 'tgnews', n: 1, cat: 'promo2', url: 'https://t.me/marginpadnews' }, // owner-added 2026-07-31
-  { mid: 'tgbot', title: 'Open the MarginPad Telegram bot', desc: 'Live prices, alerts and signals right in your DMs', cents: 1, vt: 'ev', va: 'tgbot', n: 1, cat: 'promo2', url: 'https://t.me/MarginPadBot' }, // owner-added 2026-07-31
-  // trade quality (verified against the trade-event log / event trail)
-  { mid: 'win', title: 'Close a winning trade', desc: 'Get one into the green and actually take it. Banked beats brilliant', cents: 2, vt: 'win', va: '', n: 1, cat: 'trade' },
-  { mid: 'sltp', title: 'Set a stop-loss or take-profit', desc: 'Pick your exit before the market picks one for you', cents: 2, vt: 'ev', va: 'sltp', n: 1, cat: 'trade' },
-  { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', cents: 1, vt: 'ev', va: 'watch', n: 1, cat: 'market' },
-  { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', cents: 2, vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
-  { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', cents: 2, vt: 'win', va: '', n: 2, cat: 'trade' },
-  { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', cents: 2, vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
-  // social / community. THE CHAT MISSIONS ARE GONE (2026-10-07, owner: "ukinemo misiju za chat, skroz da je izbacimo"):
-  // `chat` (1c, one message) and `chat3` (2c, three) paid for messages whose only reason to exist was the cent. The
-  // `chat` beacon itself still records (activity feed, radar), only nothing pays for it any more. A day already
-  // claimed keeps its claim; from this deploy the set simply never contains them (missionsForDay re-derives per day).
-  { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board - follow someone worth studying', cents: 2, vt: 'follow', va: '', n: 1, cat: 'social' },
-  { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 2, vt: 'dm', va: '', n: 1, cat: 'social' },
-  { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 2, vt: 'duel', va: '', n: 1, cat: 'social' },
-  { mid: 'duelwin', title: 'Win a duel', desc: 'Any format - take the pot and the bragging rights', cents: 2, vt: 'duelw', va: '', n: 1, cat: 'social' },
-  { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk - be worth following today', cents: 2, vt: 'follower', va: '', n: 1, cat: 'social' },
-  { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card - see how the ranked ones do it', cents: 1, vt: 'ev', va: 'profile', n: 1, cat: 'social' },
-  { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win - or your tuition', cents: 2, vt: 'ev', va: 'share', n: 1, cat: 'social' },
-  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one - the floor decides', cents: 2, vt: 'comm', va: '', n: 1, cat: 'community' },
-  { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', cents: 1, vt: 'pv', va: '/community', n: 1, cat: 'community' },
-  { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent - tell them', cents: 1, vt: 'ev', va: 'like', n: 1, cat: 'community' },
-  // academy (verified against the completed-lessons table) - CAPPED AT ONE PER DAY by missionsForDay
-  { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', cents: 2, vt: 'academy', va: '', n: 1, cat: 'academy' },
-  { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day - a proper study session', cents: 2, vt: 'academy', va: '', n: 3, cat: 'academy' },
-  { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', cents: 2, vt: 'academy', va: '', n: 2, cat: 'academy' },
-  { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', cents: 1, vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
-  { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', cents: 1, vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
-  // markets / tools discovery
-  { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market - know the terrain', cents: 1, vt: 'pv', va: '/coins', n: 1, cat: 'market' },
-  { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', cents: 1, vt: 'pv', va: '/news', n: 1, cat: 'market' },
-  { mid: 'screener', title: 'Scan the market screener', desc: 'Find out who’s pumping and who’s bleeding right now', cents: 2, vt: 'pv', va: '/screener', n: 1, cat: 'market' },
-  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when the market has chaos scheduled this week', cents: 1, vt: 'pv', va: '/calendar', n: 1, cat: 'market' },
-  { mid: 'funding', title: 'Check funding rates', desc: 'See which side of the boat is overloaded', cents: 1, vt: 'pv', va: '/funding', n: 1, cat: 'market' },
-  { mid: 'feargreed', title: 'Check the Fear & Greed index', desc: 'Check the market’s mood ring', cents: 1, vt: 'pv', va: '/fear-greed', n: 1, cat: 'market' },
-  { mid: 'calc', title: 'Use a trading calculator', desc: 'Do the math before the market does it to you', cents: 2, vt: 'pv', va: '/calculators', n: 1, cat: 'market' },
-  { mid: 'charts', title: 'Open the charts workspace', desc: 'Chart something - indicators, drawings, the works', cents: 2, vt: 'pv', va: '/charts', n: 1, cat: 'market' },
-  { mid: 'levels', title: 'Check the XP leaderboard', desc: 'See where you rank. Then go fix it', cents: 1, vt: 'pv', va: '/levels', n: 1, cat: 'market' },
-  { mid: 'defi', title: 'Explore DeFi TVL', desc: 'See which chains actually hold the money', cents: 1, vt: 'pv', va: '/defi', n: 1, cat: 'market' },
-  { mid: 'longshort', title: 'Check the long/short ratio', desc: 'Longs vs shorts - see which crowd is braver', cents: 1, vt: 'pv', va: '/long-short', n: 1, cat: 'market' },
-  { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', cents: 2, vt: 'ev', va: 'alert', n: 1, cat: 'market' },
-  { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', cents: 2, vt: 'ev', va: 'ai', n: 1, cat: 'market' },
-  { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level - trade lines, not vibes', cents: 1, vt: 'ev', va: 'draw', n: 1, cat: 'market' },
-  // 2026-08-14 owner: more same-value missions so the daily rotation feels fresh
- { mid: 'vault', title: 'Browse MP Shop', desc: 'Frames, ticket skins, backgrounds - see what your Ticks buy', cents: 1, vt: 'pv', va: '/vault', n: 1, cat: 'market' },
-  { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time - and learn from it', cents: 1, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
-  { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house - no leverage, no liquidations', cents: 2, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
-  { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', cents: 2, vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
-  { mid: 'spotsell', title: 'Sell a coin in Demo Spot', desc: 'Take a profit or cut a loss - exits are the skill', cents: 2, vt: 'ev', va: 'spotsell', n: 1, cat: 'market' }, // 2026-10-16: Demo Spot has no card to cash out to any more; selling is the exit
-  { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding - know where the edge is', cents: 1, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
-  { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 1, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
-  { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats - review before you repeat', cents: 1, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
-  { mid: 'backtest', title: 'Open the strategy library', desc: 'Test the idea on history before it tests your balance', cents: 2, vt: 'pv', va: '/strategies', n: 1, cat: 'market' },
+  /* THREE TIERS, NO MONEY (2026-11-12). tier e = a look (pageviews, one trade): 5 Ticks / 10 XP; m = an action: 12 / 25; h = a result that takes the day:
+     30 / 60. A day holds 4 + 4 + 2, picked PER MEMBER (missionsForDay seeds on the uid) with a three-day cooldown, so no two members farm the same
+     thing on the same day and nobody sees a mission twice in a row. Verified server-side as before: vt/va/n are what the DO checks. cat = per-day
+     category quota (CAPS in missionsForDay). The Telegram trio is tier e and ONCE per account. */
+  { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', tier: 'e', vt: 'ev', va: 'paper', n: 1, cat: 'trade' },
+  { mid: 'checkin', title: 'Check in today', desc: 'Show up. The streak is the whole game', tier: 'e', vt: 'xpsrc', va: 'checkin', n: 1, cat: 'core' },
+  { mid: 'tgsignals', title: 'Join our free Telegram channel', desc: 'The daily market wrap at 16:00 UTC - prices, liquidations and the next macro event', tier: 'e', vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' },
+  { mid: 'tgnews', title: 'Follow our Telegram news channel', desc: 'Crypto headlines the minute they drop - ahead of your P&L', tier: 'e', vt: 'ev', va: 'tgnews', n: 1, cat: 'promo2', url: 'https://t.me/marginpadnews' },
+  { mid: 'tgbot', title: 'Open the MarginPad Telegram bot', desc: 'Live prices, alerts and signals right in your DMs', tier: 'e', vt: 'ev', va: 'tgbot', n: 1, cat: 'promo2', url: 'https://t.me/MarginPadBot' },
+  { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', tier: 'e', vt: 'ev', va: 'watch', n: 1, cat: 'market' },
+  { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card - see how the ranked ones do it', tier: 'e', vt: 'ev', va: 'profile', n: 1, cat: 'social' },
+  { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent - tell them', tier: 'e', vt: 'ev', va: 'like', n: 1, cat: 'community' },
+  { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', tier: 'e', vt: 'pv', va: '/community', n: 1, cat: 'community' },
+  { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', tier: 'e', vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
+  { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', tier: 'e', vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
+  { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market - know the terrain', tier: 'e', vt: 'pv', va: '/coins', n: 1, cat: 'market' },
+  { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', tier: 'e', vt: 'pv', va: '/news', n: 1, cat: 'market' },
+  { mid: 'screener', title: 'Scan the market screener', desc: 'Find out who’s pumping and who’s bleeding right now', tier: 'e', vt: 'pv', va: '/screener', n: 1, cat: 'market' },
+  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when the market has chaos scheduled this week', tier: 'e', vt: 'pv', va: '/calendar', n: 1, cat: 'market' },
+  { mid: 'funding', title: 'Check funding rates', desc: 'See which side of the boat is overloaded', tier: 'e', vt: 'pv', va: '/funding', n: 1, cat: 'market' },
+  { mid: 'feargreed', title: 'Check the Fear & Greed index', desc: 'Check the market’s mood ring', tier: 'e', vt: 'pv', va: '/fear-greed', n: 1, cat: 'market' },
+  { mid: 'calc', title: 'Use a trading calculator', desc: 'Do the math before the market does it to you', tier: 'e', vt: 'pv', va: '/calculators', n: 1, cat: 'market' },
+  { mid: 'charts', title: 'Open the charts workspace', desc: 'Chart something - indicators, drawings, the works', tier: 'e', vt: 'pv', va: '/charts', n: 1, cat: 'market' },
+  { mid: 'levels', title: 'Check the XP leaderboard', desc: 'See where you rank. Then go fix it', tier: 'e', vt: 'pv', va: '/levels', n: 1, cat: 'market' },
+  { mid: 'leaderboards', title: 'Check the season leaderboards', desc: 'Ten boards, real prizes - see who is ahead this season', tier: 'e', vt: 'pv', va: '/leaderboards', n: 1, cat: 'market' },
+  { mid: 'defi', title: 'Explore DeFi TVL', desc: 'See which chains actually hold the money', tier: 'e', vt: 'pv', va: '/defi', n: 1, cat: 'market' },
+  { mid: 'longshort', title: 'Check the long/short ratio', desc: 'Longs vs shorts - see which crowd is braver', tier: 'e', vt: 'pv', va: '/long-short', n: 1, cat: 'market' },
+  { mid: 'catalysts', title: 'Read what moved the market', desc: 'Every big move of the day, with its measured cause', tier: 'e', vt: 'pv', va: '/catalysts', n: 1, cat: 'market' },
+  { mid: 'alertshub', title: 'Open the alerts hub', desc: 'Every alert on one page - see which ones you are missing', tier: 'e', vt: 'pv', va: '/alerts', n: 1, cat: 'market' },
+  { mid: 'glossary', title: 'Open the glossary', desc: 'Sixty terms, live numbers next to the ones we measure', tier: 'e', vt: 'pv', va: '/glossary', n: 1, cat: 'academy' },
+  { mid: 'squads', title: 'Look at the squads', desc: 'Raids, duels and a private room - see who is recruiting', tier: 'e', vt: 'pv', va: '/squads', n: 1, cat: 'social' },
+  { mid: 'vault', title: 'Browse MP Shop', desc: 'Frames, ticket skins, backgrounds - see what your Ticks buy', tier: 'e', vt: 'pv', va: '/vault', n: 1, cat: 'market' },
+  { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time - and learn from it', tier: 'e', vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
+  { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house - no leverage, no liquidations', tier: 'e', vt: 'pv', va: '/spot', n: 1, cat: 'market' },
+  { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding - know where the edge is', tier: 'e', vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
+  { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', tier: 'e', vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
+  { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats - review before you repeat', tier: 'e', vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
+  { mid: 'backtest', title: 'Open the strategy library', desc: 'Test the idea on history before it tests your balance', tier: 'e', vt: 'pv', va: '/strategies', n: 1, cat: 'market' },
+  // tier m - an action
+  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today - repetition is how instinct gets built', tier: 'm', vt: 'ev', va: 'paper', n: 3, cat: 'trade' },
+  { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', tier: 'm', vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
+  { mid: 'win', title: 'Close a winning trade', desc: 'Get one into the green and actually take it. Banked beats brilliant', tier: 'm', vt: 'win', va: '', n: 1, cat: 'trade' },
+  { mid: 'sltp', title: 'Set a stop-loss or take-profit', desc: 'Pick your exit before the market picks one for you', tier: 'm', vt: 'ev', va: 'sltp', n: 1, cat: 'trade' },
+  { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', tier: 'm', vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
+  { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board - follow someone worth studying', tier: 'm', vt: 'follow', va: '', n: 1, cat: 'social' },
+  { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', tier: 'm', vt: 'dm', va: '', n: 1, cat: 'social' },
+  { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', tier: 'm', vt: 'duel', va: '', n: 1, cat: 'social' },
+  { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win - or your tuition', tier: 'm', vt: 'ev', va: 'share', n: 1, cat: 'social' },
+  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one - the floor decides', tier: 'm', vt: 'comm', va: '', n: 1, cat: 'community' },
+  { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', tier: 'm', vt: 'academy', va: '', n: 1, cat: 'academy' },
+  { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', tier: 'm', vt: 'academy', va: '', n: 2, cat: 'academy' },
+  { mid: 'review', title: 'Finish the Academy daily review', desc: 'Five questions from lessons you already passed. Memory is a muscle', tier: 'm', vt: 'review', va: '', n: 1, cat: 'academy' },
+  { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', tier: 'm', vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
+  { mid: 'spotsell', title: 'Sell a coin in Demo Spot', desc: 'Take a profit or cut a loss - exits are the skill', tier: 'm', vt: 'ev', va: 'spotsell', n: 1, cat: 'market' },
+  { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', tier: 'm', vt: 'ev', va: 'alert', n: 1, cat: 'market' },
+  { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', tier: 'm', vt: 'ev', va: 'ai', n: 1, cat: 'market' },
+  { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level - trade lines, not vibes', tier: 'm', vt: 'ev', va: 'draw', n: 1, cat: 'market' },
+  { mid: 'follow2', title: 'Follow 2 traders', desc: 'Two names off the boards. Watch how they size', tier: 'm', vt: 'follow', va: '', n: 2, cat: 'social' },
+  { mid: 'profile3', title: "Open 3 traders' profiles", desc: 'Three cards, three styles - steal the one that fits you', tier: 'm', vt: 'ev', va: 'profile', n: 3, cat: 'social' },
+  { mid: 'share2', title: 'Share 2 trade cards', desc: 'Two tickets on the floor - the loss teaches more than the win', tier: 'm', vt: 'ev', va: 'share', n: 2, cat: 'social' },
+  { mid: 'like3', title: 'Like 3 community posts', desc: 'Three posts worth a nod. The floor runs on it', tier: 'm', vt: 'ev', va: 'like', n: 3, cat: 'community' },
+  { mid: 'watch3', title: 'Star 3 coins', desc: 'A watchlist of three is a plan. One is a hope', tier: 'm', vt: 'ev', va: 'watch', n: 3, cat: 'market' },
+  { mid: 'alert2', title: 'Set 2 price alerts', desc: 'A level above and a level below - let the site watch both', tier: 'm', vt: 'ev', va: 'alert', n: 2, cat: 'market' },
+  // tier h - a result that takes the day
+  { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', tier: 'h', vt: 'win', va: '', n: 2, cat: 'trade' },
+  { mid: 'win3', title: 'Close 3 winning trades', desc: 'Three in the green on one day. That is a process, not a mood', tier: 'h', vt: 'win', va: '', n: 3, cat: 'trade' },
+  { mid: 'winsl', title: 'Close 2 winners with a stop set', desc: 'Planned exits that paid. The stop is what made them trades', tier: 'h', vt: 'winsl', va: '', n: 2, cat: 'trade' },
+  { mid: 'winheld', title: 'Close a winner you held 4 hours or more', desc: 'Sit through the noise and take it at your level, not the first green tick', tier: 'h', vt: 'winheld', va: '', n: 1, cat: 'trade' },
+  { mid: 'coins4', title: 'Trade 4 different coins today', desc: 'Open and close on four markets - range beats a lucky favourite', tier: 'h', vt: 'coins', va: '', n: 4, cat: 'trade' },
+  { mid: 'trade10', title: 'Open 10 paper trades', desc: 'Ten reps. Volume is where the habits show', tier: 'h', vt: 'ev', va: 'paper', n: 10, cat: 'trade' },
+  { mid: 'tradexp', title: 'Earn 50 XP from your trades today', desc: 'Wins pay XP. Fifty of it means several good closes', tier: 'h', vt: 'xpsum', va: 'trade,trade_win', n: 50, cat: 'trade' },
+  { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day - a proper study session', tier: 'h', vt: 'academy', va: '', n: 3, cat: 'academy' },
+  { mid: 'academy5', title: 'Finish 5 Academy lessons', desc: 'Half a course in a day. The exam will feel easy', tier: 'h', vt: 'academy', va: '', n: 5, cat: 'academy' },
+  { mid: 'exam', title: 'Pass an Academy final exam', desc: 'Ten questions, eight to pass, twelve minutes. Prove the course stuck', tier: 'h', vt: 'exam', va: '', n: 1, cat: 'academy' },
+  { mid: 'duelwin', title: 'Win a duel', desc: 'Any format - take the pot and the bragging rights', tier: 'h', vt: 'duelw', va: '', n: 1, cat: 'social' },
+  { mid: 'duel2', title: 'Challenge 2 traders to a duel', desc: 'Two opponents, two weeks of pressure', tier: 'h', vt: 'duel', va: '', n: 2, cat: 'social' },
+  { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk - be worth following today', tier: 'h', vt: 'follower', va: '', n: 1, cat: 'social' },
+  { mid: 'followers2', title: 'Gain 2 new followers', desc: 'Two people decided you are worth watching. Earn a third', tier: 'h', vt: 'follower', va: '', n: 2, cat: 'social' },
+  { mid: 'streak7', title: 'Hold a 7-day check-in streak', desc: 'Seven days in a row. Consistency is the rarest edge', tier: 'h', vt: 'streak', va: '', n: 7, cat: 'core' },
 ];
-// mulberry32 - tiny deterministic PRNG so a day's missions are STABLE within that day (claims re-derive the set)
-// but well-shuffled and different day-to-day (feels random). Seeded from the UTC date.
+const MISSION_PAY = { e: { t: 5, xp: 10 }, m: { t: 12, xp: 25 }, h: { t: 30, xp: 60 } }; // Ticks / XP per tier - the ONE table the claim pays from
+const MISSION_DAY = { e: 4, m: 4, h: 2 };                                            // ten a day: 128 Ticks and 260 XP at a full clear
+const MISSION_SET = { n: 8, xp: 60 };                                                // 8 of 10 -> +60 XP (the set bonus has paid XP since 2026-09-29)
+const MISSION_WEEK = { n: 25, t: 100 };                                              // 25 claims since Monday -> +100 Ticks once a week
+const MISSION_COOLDOWN_DAYS = 3;
+function missionPay(m) { return MISSION_PAY[m.tier] || MISSION_PAY.e; }
+// mulberry32 - tiny deterministic PRNG so a member's missions are STABLE within a day (claims re-derive the set) but differ from day to day and member to member
 function _missionRng(seed) { let s = (seed ^ 0x9e3779b9) >>> 0; return function () { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegram-group mission + 6 category-capped picks, seeded by the date.
-  // CAPS fix the "3 academy missions in one day" problem: a plain shuffle could stack one category; now each day is a designed mix.
-  opts = opts || {};
-  const seed = parseInt(String(day).replace(/-/g, ''), 10) || 0; // deterministic per UTC day, so a claim re-derives the same set the GET showed
-  const rnd = _missionRng(seed);
-  const tradeM = MISSION_POOL[rnd() < 0.5 ? 0 : 1]; // trade1 or trade3 (random per day)
-  const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; // the free signal group / news channel / bot - ONE a day on an even 3-day cycle
-  // ONCE PER ACCOUNT (2026-09-29). Measured over 30 days: 849 claims, $16.89, for re-opening a link the member had already
-  // joined - the only mission in the pool that could be finished for ever and still paid every third day. Once any of the
-  // three has been claimed the slot goes back to the ordinary pool, so the day still holds seven missions.
-  const promo2M = opts.promoDone ? null : MISSION_POOL.find(m => m.mid === PROMO2[Math.floor(Date.parse(day) / 86400000) % 3]);
-  const rest = MISSION_POOL.filter(m => m.cat !== 'core' && m.cat !== 'promo2');
-  for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = rest[i]; rest[i] = rest[j]; rest[j] = t; } // Fisher–Yates
- // Missions a given user cannot complete are swapped for the next pick: lesson missions once the whole
- // Academy is finished, and the Ask-AI mission for non-Premium members (Ask-AI has been Premium-only since
- // 2026-07-25; the mission kept rotating in for everyone and could never be finished - three chat reports on 09-01).
- const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
-  const CAPS = { academy: 1, community: 1, social: 3, trade: 2, market: 2 }; // `chat: 1` left with the chat missions (2026-10-07) // per-day category quotas (2026-08-15 owner: same money, higher-value actions - social 2->3, market pageviews 3->2; every follow/duel raises switching cost, a pageview raises nothing)
-  const used = {}; const pick = [];
-  const PICKS = promo2M ? 5 : 6; // 6 until 2026-09-28 (the mission budget was halved: see SET_CENTS in handleMissions); a member who already took the Telegram mission gets an ordinary sixth pick instead, so every day is still seven
-  for (let i = 0; i < rest.length && pick.length < PICKS; i++) {
-    const m = rest[i]; if (skip(m)) continue;
-    const c = m.cat || 'market'; if ((used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue;
-    used[c] = (used[c] || 0) + 1; pick.push(m);
+function _missionHash(str) { let h = 2166136261 >>> 0; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
+function missionsForDay(day, uid, opts) { // the day's ten for ONE member: 4 e + 4 m + 2 h, category-capped, nothing they were offered in the last three days
+  if (uid && typeof uid === 'object') { opts = uid; uid = ''; } // old callers passed (day, opts)
+  opts = opts || {}; uid = String(uid || '');
+  const CAPS = { trade: 4, social: 3, academy: 2, community: 2, market: 4, core: 1, promo2: 1 };
+  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
+  const dayN = Math.floor(Date.parse(day) / 86400000);
+  const pick = (d, excl) => { // the base set for (member, day d) - deterministic; excl = ids on cooldown
+    const dstr = new Date(d * 86400000).toISOString().slice(0, 10);
+    const rnd = _missionRng((parseInt(dstr.replace(/-/g, ''), 10) || 0) ^ _missionHash(uid));
+    const pool = MISSION_POOL.filter(m => m.cat !== 'promo2' && !skip(m)); for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+    const used = {}, out = [];
+    const take = (tier, want, allowExcl, noCaps) => { for (const m of pool) { if (out.length >= 10 || want <= 0) break; if (m.tier !== tier || out.indexOf(m) >= 0) continue; if (!allowExcl && excl.has(m.mid)) continue; const c = m.cat || 'market'; if (!noCaps && (used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue; used[c] = (used[c] || 0) + 1; out.push(m); want--; } return want; };
+    // the category caps give way BEFORE the cooldown does: a repeat inside three days is the thing the member notices, a fifth market mission is not
+    for (const tier of ['h', 'm', 'e']) { let left = take(tier, MISSION_DAY[tier], false, false); if (left > 0) left = take(tier, left, false, true); if (left > 0) left = take(tier, left, true, false); if (left > 0) left = take(tier, left, true, true); }
+    return out;
+  };
+  // THE COOLDOWN IS AGAINST WHAT THE MEMBER WAS REALLY OFFERED, so the sets are walked forward from a fixed epoch (one pick per day
+  // since 2026-11-12 - a shuffle of 67 items each, microseconds) and each day excludes the three real sets before it. Excluding only
+  // the "base" set of the previous days left 127 repeats in a 30-day walk, because a replacement that entered yesterday's set was
+  // never on anybody's exclusion list.
+  const EPOCH = Math.floor(Date.UTC(2026, 10, 12) / 86400000); const hist = [];
+  for (let d = Math.min(EPOCH, dayN); d <= dayN; d++) { const excl = new Set(); for (const prev of hist.slice(-MISSION_COOLDOWN_DAYS)) for (const m of prev) excl.add(m.mid); hist.push(pick(d, excl)); }
+  const set = hist[hist.length - 1];
+  if (!opts.promoDone) { // the Telegram trio, ONE a day on a 3-day cycle, once per account: it takes an easy slot so the day is still ten
+    const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; const pm = MISSION_POOL.find(m => m.mid === PROMO2[dayN % 3]);
+    if (pm) { const i = set.map(m => m.tier).lastIndexOf('e'); if (i >= 0) set[i] = pm; else set.push(pm); }
   }
-  for (let i = 0; i < rest.length && pick.length < PICKS; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback - never under-fill the day
-  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram, once per account + 5 (or 6 once it is done) = 7/day
+  return set;
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
 const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7','mm8'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
@@ -40195,46 +40232,37 @@ async function handleMissions(url, request, env) {
   const enabled = cfg.raw ? cfg.raw.missionsEnabled !== false : true;
   const day = new Date().toISOString().slice(0, 10);
   const dayStart = new Date(day).getTime();
-  const SET_N = 5, SET_CENTS = 0, SET_XP = 60, WEEK_N = 15, WEEK_CENTS = 5, MISSION_TICKS = 4; /* MISSION_TICKS mirrors the DO's grant per claim - what a NEW account (legacyRewards false) is told a mission pays */ // engagement bonuses: claim 5 of 7 today -> +60 XP set bonus (money until 2026-09-29, when it was the single biggest mission line at $34.17 of $193.75 over 30 days; XP feeds the level, the season board and the pass, which is where the exclusive cosmetics are); 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
+  const SET_N = MISSION_SET.n, SET_XP = MISSION_SET.xp, WEEK_N = MISSION_WEEK.n, WEEK_T = MISSION_WEEK.t; /* 2026-11-12: missions pay Ticks + XP for EVERY member and never a cent; the ledger is not called here any more */
   const wkFrom = new Date(dayStart - ((new Date(dayStart).getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10); // this week's Monday (UTC)
   const wkMid = 'wk' + wkFrom.replace(/-/g, '');
-  let uid = '', uxp = 0, legacy = false; // legacy = created before REWARDS_LEGACY_BEFORE: missions pay cents; a newer account is paid Ticks only (2026-11-12)
+  let uid = '', uxp = 0;
   const tok = getCookie(request, SESS_COOKIE);
-  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uxp = +su.xp || 0; legacy = legacyRewards(su); } }
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uxp = +su.xp || 0; } }
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only)
-  if (adminUid && (await adminCookieOk(request, env))) { uid = adminUid; uxp = REWARDS_MIN_XP; } // preview must never be blocked by the ADMIN session's own (zero) XP - it used to return locked:true for every previewed user, hiding their real mission state
+  if (adminUid && (await adminCookieOk(request, env))) { uid = adminUid; uxp = REWARDS_MIN_XP; }
   if (!enabled) return jr({ enabled: false, missions: [] });
-  if (!uid) return jr({ enabled: true, signedIn: false, missions: [], day }); // missions are NOT available to logged-out users - don't expose the list, just prompt sign-in on the client
-  // FAUCET/REWARDS GATE (2026-08-04): missions are part of the rewards system → also unlock at Bronze (500 XP).
+  if (!uid) return jr({ enabled: true, signedIn: false, missions: [], day }); // missions are NOT available to logged-out users
   const rewardsLocked = (cfg.raw ? cfg.raw.levelsEnabled !== false : true) && !rewardsUnlocked(uxp);
   if (rewardsLocked) {
     if (request.method === 'POST') return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: uxp, level: 'unranked', earn: '/academy/' }, 403);
     return jr({ enabled: true, signedIn: true, locked: true, minXp: REWARDS_MIN_XP, xp: uxp, missions: [], day, resetInMs: (dayStart + 86400000) - Date.now() });
   }
-  // the day's set needs to know whether the Telegram mission was already taken, so meta is read BEFORE the set is derived
-  // (and reused for the bonus block below, so this costs no extra call on a GET)
   let meta9 = { n: 0, weekClaimed: false, setClaimed: false, promoDone: false };
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) })); meta9 = await r.json(); } catch (e) {}
-  let defs = missionsForDay(day, { promoDone: !!meta9.promoDone });
-  // Owner rule: a user who FINISHED the whole Academy must not get lesson-completion missions (impossible for them) →
-  // swap them out for the next mission. Only fetch the completion count on days those missions actually appear.
- // Same for Ask-AI (Premium-only): the premium lookup only runs on days the 'ai' mission is in the set. Both
- // flags feed ONE deterministic re-derivation, so GET and the later claim POST see the same set.
- const mo = { promoDone: !!meta9.promoDone };
-  if (defs.some(m => m.vt === 'academy')) {
- try { const ar = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const done = ((await ar.json()) || {}).done || []; if (done.filter(x => !String(x).startsWith('course:')).length >= ACAD_TOTAL_LESSONS) mo.academyDone = true; } catch (e) {}
- }
- if (defs.some(m => m.va === 'ai')) {
- try { if (!(await premiumFor(env, request)).premium) mo.nonPremium = true; } catch (e) {}
-  }
- if (Object.keys(mo).length) defs = missionsForDay(day, mo);
+  let defs = missionsForDay(day, uid, { promoDone: !!meta9.promoDone });
+  // a member who FINISHED the Academy gets no lesson missions; a non-Premium member no Ask-AI one - both feed ONE deterministic re-derivation
+  const mo = { promoDone: !!meta9.promoDone };
+  if (defs.some(m => m.vt === 'academy')) { try { const ar = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const done = ((await ar.json()) || {}).done || []; if (done.filter(x => !String(x).startsWith('course:')).length >= ACAD_TOTAL_LESSONS) mo.academyDone = true; } catch (e) {} }
+  if (defs.some(m => m.va === 'ai')) { try { if (!(await premiumFor(env, request)).premium) mo.nonPremium = true; } catch (e) {} }
+  if (Object.keys(mo).length > 1) defs = missionsForDay(day, uid, mo);
   const evDefs = defs.filter(m => m.vt !== 'comm').map(m => ({ mid: m.mid, vt: m.vt, va: m.va, n: m.n }));
   let st = { done: {}, claimed: {} };
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, dayStart, defs: evDefs }) })); st = await r.json(); } catch (e) {}
   for (const m of defs) if (m.vt === 'comm') {
-    try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) { st.done[m.mid] = false; }
+    try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) {}
   }
-  const missions = defs.map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: legacy ? m.cents : 0, ticks: MISSION_TICKS, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }));
+  const missions = defs.map(m => { const p = missionPay(m); return { mid: m.mid, title: m.title, desc: m.desc, tier: m.tier, ticks: p.t, xp: p.xp, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }; });
+  const bonus = () => ({ setN: SET_N, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekTicks: WEEK_T, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed });
   if (request.method === 'POST') {
     let b = {}; try { b = await request.json(); } catch (e) {}
     const mid = String(b.mid || '');
@@ -40242,39 +40270,26 @@ async function handleMissions(url, request, env) {
     if (!m) return jr({ error: 'bad_mission' }, 400);
     if (!st.done[mid]) return jr({ error: 'not_done' }, 400);
     if (st.claimed[mid]) return jr({ error: 'already_claimed' }, 400);
-    let fresh = false, bonusXp = 0;
-    try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid }) })); const d = await r.json(); fresh = !!d.fresh; bonusXp = +d.xp || 0; } catch (e) { return jr({ error: 'transient' }, 503); }
+    const pay = missionPay(m);
+    const claimDO = (body) => env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ uid, day }, body)) })).then(r => r.json());
+    let fresh = false, gotXp = 0, gotT = 0;
+    try { const d = await claimDO({ mid, ticks: pay.t, xp: pay.xp }); fresh = !!d.fresh; gotXp = +d.xp || 0; gotT = +d.ticks || 0; } catch (e) { return jr({ error: 'busy' }, 503); }
     if (!fresh) return jr({ error: 'already_claimed' }, 400);
-    let balanceUsd = null;
-    if (legacy) try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger refused the ' + m.cents + 'c credit: ' + d.error, { kind: 'mission-credit', sev: 'warn' }); return jr({ error: d.error }, 403); } balanceUsd = d.balanceUsd; } catch (e) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger credit of ' + m.cents + 'c FAILED (' + (e && e.message ? e.message : 'error') + ') - the claim is consumed, credit by hand', { kind: 'mission-credit', sev: 'warn' }); } // 2026-09-12: a swallowed failure here was a consumed mission with no money and no trace
-    try { await evPush(env, request, 'mission', mid + (legacy ? ' +$' + (m.cents / 100).toFixed(2) : ' +' + MISSION_TICKS + ' T'), '/rewards/'); } catch (e) {}
-    // SET BONUS: the 6th claim of the day pays extra - idempotent through the same missions-table dedup (mid 'setbonus')
-    let setBonusUsd = 0, weekBonusUsd = 0, setBonusXp = 0;
+    try { await evPush(env, request, 'mission', mid + ' +' + gotT + ' T +' + gotXp + ' XP', '/rewards/'); } catch (e) {}
+    // SET BONUS: the 8th claim of the day pays XP once - idempotent through the same missions-table dedup (mid 'setbonus')
+    let setBonusXp = 0, weekBonusT = 0;
     const claimedNow = defs.filter(x => st.claimed && st.claimed[x.mid]).length + 1;
-    if (claimedNow >= SET_N) { try {
-      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid: 'setbonus' }) }));
-      const d2 = await r.json();
-      if (d2 && d2.fresh) {
-        setBonusXp = +d2.xp || SET_XP; // the DO granted it; SET_CENTS is 0 since 2026-09-29, so there is no ledger call to make
-        if (SET_CENTS > 0) { const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: SET_CENTS, mid: 'setbonus' }) })); const cd = await cr.json(); if (!cd.error) { setBonusUsd = SET_CENTS / 100; if (cd.balanceUsd != null) balanceUsd = cd.balanceUsd; } }
-        try { await evPush(env, request, 'mission', 'set bonus +' + (setBonusUsd > 0 ? '$' + setBonusUsd.toFixed(2) : setBonusXp + ' XP'), '/rewards/'); } catch (e) {}
-      }
-    } catch (e) {} }
-    // WEEKLY BONUS: 15 real claims since Monday pays once per week (mid 'wkYYYYMMDD', same dedup)
-    let wkC9 = 0, wkCl9 = false;
+    if (claimedNow >= SET_N) { try { const d2 = await claimDO({ mid: 'setbonus', ticks: 0, xp: SET_XP }); if (d2 && d2.fresh) { setBonusXp = +d2.xp || SET_XP; meta9.setClaimed = true; try { await evPush(env, request, 'mission', 'set bonus +' + setBonusXp + ' XP', '/rewards/'); } catch (e) {} } } catch (e) {} }
+    // WEEKLY BONUS: 25 real claims since Monday pays Ticks once per week (mid 'wkYYYYMMDD', same dedup)
     try {
-      const mr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) }));
-      const md = await mr.json(); wkC9 = +md.n || 0; wkCl9 = !!md.weekClaimed;
-      if (legacy && wkC9 >= WEEK_N && !wkCl9) { // the weekly cents are a legacy-account bonus; a new account's week ends in XP and Ticks alone
-        const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid: wkMid }) }));
-        const d3 = await r.json();
-        if (d3 && d3.fresh) { const cr2 = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: WEEK_CENTS, mid: wkMid }) })); const cd2 = await cr2.json(); if (!cd2.error) { weekBonusUsd = WEEK_CENTS / 100; wkCl9 = true; if (cd2.balanceUsd != null) balanceUsd = cd2.balanceUsd; try { await evPush(env, request, 'mission', 'weekly bonus +$' + weekBonusUsd.toFixed(2), '/rewards/'); } catch (e) {} } }
-      }
+      const md = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) })).then(r => r.json());
+      meta9.n = +md.n || 0; meta9.weekClaimed = !!md.weekClaimed;
+      if (meta9.n >= WEEK_N && !meta9.weekClaimed) { const d3 = await claimDO({ mid: wkMid, ticks: WEEK_T, xp: 0 }); if (d3 && d3.fresh) { weekBonusT = +d3.ticks || WEEK_T; meta9.weekClaimed = true; try { await evPush(env, request, 'mission', 'weekly bonus +' + weekBonusT + ' T', '/rewards/'); } catch (e) {} } }
     } catch (e) {}
     const upd = missions.map(x => x.mid === mid ? { ...x, claimed: true } : x);
-    return jr({ ok: true, credited: legacy ? m.cents / 100 : 0, ticks: MISSION_TICKS, legacy, balanceUsd, missions: upd, day, bonusXp: bonusXp || undefined, setBonusUsd: setBonusUsd || undefined, setBonusXp: setBonusXp || undefined, weekBonusUsd: weekBonusUsd || undefined, bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: setBonusXp > 0 || setBonusUsd > 0 || claimedNow > SET_N, weekN: WEEK_N, weekUsd: legacy ? WEEK_CENTS / 100 : 0, weekCount: wkC9, weekClaimed: wkCl9 } });
+    return jr({ ok: true, ticks: gotT, xp: gotXp, missions: upd, day, bonusXp: gotXp || undefined, setBonusXp: setBonusXp || undefined, weekBonusTicks: weekBonusT || undefined, bonus: bonus() });
   }
-  return jr({ enabled: true, signedIn: true, legacy, ticks: MISSION_TICKS, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekUsd: legacy ? WEEK_CENTS / 100 : 0, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed } });
+  return jr({ enabled: true, signedIn: true, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: bonus() });
 }
 // ---------- IndexNow (Bing/Yandex/Seznam/Naver instant indexing) ----------
 const INDEXNOW_KEY = '9f3c7e21b84d4a6fae0c5d2178b6e093'; // public by protocol design - the key file at /<key>.txt proves ownership

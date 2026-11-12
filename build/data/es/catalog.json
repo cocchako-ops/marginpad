@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-11-11T23:48:18.701Z",
+  "generated": "2026-11-12T00:35:42.095Z",
   "pages": 458,
-  "occurrences": 32675,
-  "unique": 15835,
-  "words": 291441,
+  "occurrences": 32671,
+  "unique": 15826,
+  "words": 291303,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-11-11T23:54:23.215Z"
+  "merged": "2026-11-12T00:38:32.850Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -125998,9 +125998,9 @@
    "n": 1,
    "w": 2
   },
-  "uwB75Cd-Eh": {
-   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it unlocks a frame, a badge and a bigger withdrawal bonus. The faucet claim multiplier below applies only to accounts opened before 12 Nov 2026 - newer accounts earn USDT from the season boards, the Season Pass, promo codes and partner bonuses. Each tier takes progressively longer.",
-   "es": "Todos empiezan en Sin rango y todas las recompensas están abiertas desde el primer día: ningún nivel desbloquea nada. Bronze, a 500 XP, es tu primera insignia, y cada nivel por encima desbloquea un marco, una insignia y un bono de retiro mayor. El multiplicador de reclamos de faucet de abajo aplica solo a las cuentas abiertas antes del 12 nov 2026; las cuentas más nuevas ganan USDT en las tablas de temporada, el Season Pass, los códigos promocionales y los bonos de exchanges. Cada nivel tarda cada vez más.",
+  "fQCt0J0iGU": {
+   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it unlocks a frame, a badge and a bigger withdrawal bonus. Real USDT comes from the season boards, the Season Pass, promo codes and partner bonuses. Each tier takes progressively longer.",
+   "es": "Todos empiezan sin rango y todas las recompensas están disponibles desde el primer día: ningún nivel desbloquea nada. Bronce, con 500 XP, es tu primera insignia, y cada nivel por encima desbloquea un marco, una insignia y un bono de retiro mayor. Los USDT reales provienen de las tablas de temporada, el pase de temporada, los códigos promocionales y los bonos de socios. Cada nivel cuesta progresivamente más tiempo.",
    "kind": [
     "html"
    ],
@@ -126008,7 +126008,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 71
+   "w": 56
   },
   "pBTrdb5I8D": {
    "en": "<b>0</b> XP · where everyone starts",
@@ -126107,9 +126107,9 @@
    "n": 1,
    "w": 3
   },
-  "PkzMcumt9V": {
-   "en": "Standard faucet claims (legacy accounts)",
-   "es": "Reclamos de faucet estándar (cuentas antiguas)",
+  "3SX3je5jtZ": {
+   "en": "Standard rewards",
+   "es": "Recompensas estándar",
    "kind": [
     "html"
    ],
@@ -126117,7 +126117,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 5
+   "w": 2
   },
   "SJiYC_zDTi": {
    "en": "Your first frame colour on the trader card",
@@ -126167,17 +126167,17 @@
    "n": 1,
    "w": 2
   },
-  "9_DIbgY22o": {
-   "en": "<b>+10%</b> faucet claims (legacy accounts)",
-   "es": "<b>+10%</b> en reclamos de faucet (cuentas antiguas)",
+  "FGAtJ33lsU": {
+   "en": "<b>Bigger bonuses</b> on the tier’s rewards",
+   "es": "<b>Bonos mayores</b> en las recompensas del nivel",
    "kind": [
     "html"
    ],
    "ctx": [
     "/levels/"
    ],
-   "n": 1,
-   "w": 5
+   "n": 6,
+   "w": 6
   },
   "SnFLCcBjhz": {
    "en": "Silver profile badge",
@@ -126239,18 +126239,6 @@
    "n": 1,
    "w": 2
   },
-  "OXRDF36K2y": {
-   "en": "<b>+20%</b> faucet claims (legacy accounts)",
-   "es": "<b>+20%</b> en reclamos de faucet (cuentas antiguas)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
-  },
   "n9AA6IGmi_": {
    "en": "Higher daily claim limit",
    "es": "Límite diario de reclamo más alto",
@@ -126310,18 +126298,6 @@
    ],
    "n": 1,
    "w": 2
-  },
-  "HPaHSILvkd": {
-   "en": "<b>+35%</b> faucet claims (legacy accounts)",
-   "es": "<b>+35%</b> en reclamos de faucet (cuentas antiguas)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
   },
   "LaPQ83r_2g": {
    "en": "Even higher daily limits",
@@ -126383,18 +126359,6 @@
    "n": 1,
    "w": 2
   },
-  "kxYQftxU9j": {
-   "en": "<b>+50%</b> faucet claims (legacy accounts)",
-   "es": "<b>+50%</b> en reclamos de faucet (cuentas antiguas)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
-  },
   "GzoqRZmSxP": {
    "en": "<b>+10% withdrawal bonus</b> - the house pays extra",
    "es": "<b>+10% de bono en retiros</b> - la casa pone extra",
@@ -126455,18 +126419,6 @@
    "n": 1,
    "w": 2
   },
-  "g1NPwpiOoI": {
-   "en": "<b>+75%</b> faucet claims (legacy accounts)",
-   "es": "<b>+75%</b> en reclamos de faucet (cuentas antiguas)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
-  },
   "C90wA75kti": {
    "en": "<b>2x</b> your daily earning cap",
    "es": "<b>2x</b> tu límite diario de ganancias",
@@ -126526,18 +126478,6 @@
    ],
    "n": 1,
    "w": 4
-  },
-  "Fb8glV8mZw": {
-   "en": "<b>+90%</b> faucet claims (legacy accounts)",
-   "es": "<b>+90%</b> en reclamos de faucet (cuentas antiguas)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
   },
   "vJo60PW6z2": {
    "en": "<b>15%</b> withdrawal bonus",
@@ -126706,30 +126646,6 @@
    ],
    "n": 1,
    "w": 4
-  },
-  "K86j-dyYmQ": {
-   "en": "Claim from the faucet",
-   "es": "Reclama del faucet",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "yr3QBqlp3B": {
-   "en": "legacy accounts · up to 10/day",
-   "es": "cuentas antiguas · hasta 10/día",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5
   },
   "OrB2PFX_50": {
    "en": "Approved promo post",
@@ -126911,9 +126827,9 @@
    "n": 1,
    "w": 4
   },
-  "YC9hu3Rgkp": {
-   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, faucet claims (legacy accounts), promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
-   "es": "Cerrar operaciones de paper trading con beneficio, check-ins diarios y rachas, misiones diarias, reclamos de faucet (cuentas antiguas), promocionar la plataforma en X y quedar entre los primeros en las competiciones de temporada de 14 días. Cada fuente tiene un tope diario para que no se pueda farmear.",
+  "hkF4cviLa2": {
+   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
+   "es": "Cerrar operaciones simuladas con ganancia, registros diarios y rachas, misiones diarias, promocionar la plataforma en X y quedar entre los primeros en las competiciones de temporada de 14 días. Cada fuente tiene un límite diario para que no se pueda farmear.",
    "kind": [
     "html"
    ],
@@ -126921,7 +126837,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 36
+   "w": 32
   },
   "Gt_zKQMtnQ": {
    "en": "How long does Diamond take?",
@@ -126984,9 +126900,9 @@
    "n": 2,
    "w": 5
   },
-  "t90DwT9gX3": {
-   "en": "Exclusive badges and frames, higher daily limits (accounts opened before 12 Nov 2026 also keep bigger faucet claims, up to +90% at Legendary), exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
-   "es": "Insignias y marcos exclusivos, límites diarios más altos (las cuentas abiertas antes del 12 nov 2026 conservan además reclamos de faucet más grandes, hasta +90% en Legendary), insignias y cosméticos exclusivos, competiciones especiales y bonos de retiro para Diamond (10%) y Legendary (15%).",
+  "64jCzQXrnJ": {
+   "en": "Exclusive badges and frames, higher daily limits, exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+   "es": "Insignias y marcos exclusivos, límites diarios más altos, insignias y cosméticos exclusivos, competiciones especiales y bonos de retiro para Diamante (10%) y Legendario (15%).",
    "kind": [
     "html"
    ],
@@ -126994,7 +126910,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 38
+   "w": 22
   },
   "FTi-jONO8u": {
    "en": "Do I lose XP if I go inactive?",
@@ -127080,9 +126996,9 @@
    "n": 1,
    "w": 11
   },
-  "6s3h_botWw": {
-   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock exclusive badges, frames and a withdrawal bonus; accounts opened before 12 Nov 2026 also keep bigger faucet claims. A slow, loyalty-first progression.",
-   "es": "Gana XP por actividad real en MarginPad - trading, rachas diarias, misiones y competiciones - y sube de Bronze a Diamond. Los niveles más altos desbloquean insignias y marcos exclusivos y un bono de retiro; las cuentas abiertas antes del 12 nov 2026 conservan además reclamos de faucet más grandes. Una progresión lenta, pensada para premiar la lealtad.",
+  "p_MzgaEo16": {
+   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock exclusive badges, frames and a withdrawal bonus. A slow, loyalty-first progression.",
+   "es": "Gana XP por actividad real en MarginPad (trading, rachas diarias, misiones y competiciones) y sube de Bronce a Diamante. Los niveles más altos desbloquean insignias y marcos exclusivos y un bono de retiro. Una progresión lenta que premia la constancia.",
    "kind": [
     "attr:content"
    ],
@@ -127090,7 +127006,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 42
+   "w": 31
   },
   "X0OP53QCZO": {
    "en": "MarginPad Level System - Bronze to Diamond",
@@ -127188,9 +127104,9 @@
    "n": 1,
    "w": 37
   },
-  "94a-Sw2UfL": {
-   "en": "Exclusive profile badges and cosmetics first; accounts opened before 12 Nov 2026 also keep bigger faucet claims (up to +90% at Legendary). Then higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
-   "es": "Primero, insignias de perfil y cosméticos exclusivos; las cuentas abiertas antes del 12 nov 2026 conservan además reclamos de faucet más grandes (hasta +90% en Legendary). Después, límites diarios más altos, insignias de perfil y cosméticos exclusivos, acceso a competiciones especiales y bonos de retiro para Diamond (10%) y Legendary (15%).",
+  "ShajMHP6Nk": {
+   "en": "Exclusive profile badges and cosmetics, higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+   "es": "Insignias de perfil y cosméticos exclusivos, límites diarios más altos, insignias de perfil y cosméticos exclusivos, acceso a competiciones especiales y bonos de retiro para Diamante (10%) y Legendario (15%).",
    "kind": [
     "ld"
    ],
@@ -127198,7 +127114,7 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 44
+   "w": 26
   },
   "3NkNYtfteI": {
    "en": "Do I lose XP if I stop being active?",
@@ -147864,9 +147780,9 @@
    "n": 1,
    "w": 3
   },
-  "0HrzSuaEq0": {
-   "en": "Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class=\"fcl-only\"> Your account also keeps the faucet: claim <b id=\"eaAmt\">$0.01</b> every few minutes.</span>",
-   "es": "Completa las misiones diarias: cada misión paga Ticks y cerrar el set completo paga XP. Se reinicia a las 00:00 UTC.<span class=\"fcl-only\"> Tu cuenta conserva además el faucet: reclama <b id=\"eaAmt\">$0.01</b> cada pocos minutos.</span>",
+  "kQFSAPlZW5": {
+   "en": "Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class=\"fcl-only\"> Your account also claims <b id=\"eaAmt\">$0.01</b> every few minutes.</span>",
+   "es": "Completa las misiones diarias: cada misión paga Ticks y completar el set paga XP. Se reinician a las 00:00 UTC.<span class=\"fcl-only\"> Tu cuenta además reclama <b id=\"eaAmt\">$0.01</b> cada pocos minutos.</span>",
    "kind": [
     "html"
    ],
@@ -147874,7 +147790,7 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 28
+   "w": 25
   },
   "tYQ-piW984": {
    "en": "Every time you do it",
@@ -149176,9 +149092,9 @@
    "n": 1,
    "w": 3
   },
-  "SYVdJFPIIV": {
-   "en": "Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class=\"fcl-only\"> Your account also claims the faucet: <span class=\"tAmt\">0.01</span> USDT per claim, up to $<span class=\"tPer\">0.10</span> a day.</span>",
-   "es": "Quedar entre los cinco primeros de una clasificación de temporada, subir en el Season Pass, canjear códigos promocionales, abrir una cuenta en un exchange a través de nosotros. Las misiones diarias pagan Ticks y XP.<span class=\"fcl-only\"> Tu cuenta reclama además el faucet: <span class=\"tAmt\">0.01</span> USDT por reclamo, hasta $<span class=\"tPer\">0.10</span> al día.</span>",
+  "hioyJXkNU-": {
+   "en": "Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class=\"fcl-only\"> Your account also claims <span class=\"tAmt\">0.01</span> USDT at a time, up to $<span class=\"tPer\">0.10</span> a day.</span>",
+   "es": "Queda entre los cinco primeros de una tabla de temporada, avanza en el pase de temporada, canjea códigos promocionales, abre una cuenta en un exchange asociado a través de nosotros. Las misiones diarias pagan Ticks y XP.<span class=\"fcl-only\"> Tu cuenta además reclama <span class=\"tAmt\">0.01</span> USDT cada vez, hasta $<span class=\"tPer\">0.10</span> al día.</span>",
    "kind": [
     "html"
    ],
@@ -149186,7 +149102,7 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 38
+   "w": 36
   },
   "nk_JzI-xRD": {
    "en": "Withdraw at $<span class=\"tMin\">5</span>",
@@ -149923,30 +149839,6 @@
   "C74otaK1ME": {
    "en": "From $5 on your balance, request a payout to a Bybit UID, a MEXC UID or a Moon username that was opened through MarginPad. Every withdrawal is checked and paid by hand.",
    "es": "Desde $5 de saldo, pide un pago a un UID de Bybit, un UID de MEXC o un usuario de Moon abierto a través de MarginPad. Cada retiro se revisa y se paga a mano.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 28
-  },
-  "BQsQp-fMyA": {
-   "en": "What happened to the faucet?",
-   "es": "¿Qué pasó con el faucet?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "tATsaLVmKA": {
-   "en": "The faucet and mission payouts stay for accounts opened before 12 November 2026. Newer accounts earn USDT from the leaderboards, the Season Pass, codes and partner bonuses instead.",
-   "es": "El faucet y los pagos de misiones se mantienen para las cuentas abiertas antes del 12 de noviembre de 2026. Las cuentas más nuevas ganan USDT en las clasificaciones, el Season Pass, los códigos y los bonos de exchanges.",
    "kind": [
     "ld"
    ],

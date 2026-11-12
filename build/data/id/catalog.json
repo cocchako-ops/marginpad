@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "id",
-  "generated": "2026-11-11T23:46:39.704Z",
+  "generated": "2026-11-12T00:35:42.790Z",
   "pages": 459,
-  "unique": 15835,
-  "words": 291441,
+  "unique": 15826,
+  "words": 291303,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-11-11T23:55:28.463Z"
+  "merged": "2026-11-12T00:38:33.339Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -102,7 +102,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 113,
+   "n": 103,
    "w": 1,
    "id": "Long",
    "leaf": true
@@ -119,7 +119,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 109,
+   "n": 99,
    "w": 1,
    "id": "Short",
    "leaf": true
@@ -151,7 +151,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 177,
+   "n": 174,
    "w": 1,
    "id": "Leverage"
   },
@@ -687,7 +687,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 2085,
+   "n": 2065,
    "w": 1,
    "id": "MarginPad",
    "leaf": true
@@ -11535,803 +11535,6 @@
    "w": 33,
    "id": "API data pasar kripto gratis tanpa key (harga, OHLC, screener, funding, open interest, likuidasi, kalender, kalkulator), Bot API paper trading (REST, WebSocket, webhook, order limit/stop, trailing stop) dan server MCP remote dengan 22 tool. OpenAPI 3.1."
   },
-  "UaHCDQd_L3": {
-   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/"
-   ],
-   "n": 81,
-   "w": 1,
-   "id": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
-   "leaf": true
-  },
-  "4vZ0c5CpM-": {
-   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/"
-   ],
-   "n": 82,
-   "w": 5,
-   "id": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
-   "leaf": true
-  },
-  "QFwW0TOIo2": {
-   "en": "My Trades",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/catalysts/"
-   ],
-   "n": 83,
-   "w": 2,
-   "id": "My Trades",
-   "leaf": true
-  },
-  "zpmhBUvLJc": {
-   "en": "<span>Note</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "<span>Catatan</span>"
-  },
-  "SKYW2Zbiby": {
-   "en": "Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Watchlist"
-  },
-  "RSoVO-G-Pk": {
-   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 5,
-   "id": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
-   "leaf": true
-  },
-  "m9FuWK2UCT": {
-   "en": "Screener",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/free-crypto-api/"
-   ],
-   "n": 6,
-   "w": 1,
-   "id": "Screener",
-   "leaf": true
-  },
-  "Oxjo4zJQDz": {
-   "en": "Volume",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "Volume"
-  },
-  "b_Fxxmc486": {
-   "en": "Funding",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Funding",
-   "leaf": true
-  },
-  "5zNu03p97d": {
-   "en": "★ Watchlist",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/coins/"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "★ Watchlist"
-  },
-  "ABSrPRUDss": {
-   "en": "Liquidation",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/",
-    "/glossary/"
-   ],
-   "n": 7,
-   "w": 1,
-   "id": "Likuidasi"
-  },
-  "rrrREQMzV2": {
-   "en": "PnL / ROI",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 6,
-   "w": 2,
-   "id": "PnL / ROI",
-   "leaf": true
-  },
-  "Qqcee-_jcA": {
-   "en": "Take-profit",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/glossary/"
-   ],
-   "n": 6,
-   "w": 1,
-   "id": "Take-profit"
-  },
-  "Rt2tHuR3sW": {
-   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "id": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
-   "leaf": true
-  },
-  "6ElJRITtLj": {
-   "en": "Crypto",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Kripto"
-  },
-  "DwNisxlHs5": {
-   "en": "Forex",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "Forex",
-   "leaf": true
-  },
-  "ZeBJXjDoz_": {
-   "en": "Indices",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Indeks"
-  },
-  "BJLQQ88bfb": {
-   "en": "<span data-i18n=\"long\">Long</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "<span data-i18n=\"long\">Long</span>",
-   "leaf": true
-  },
-  "OIWeOUDbe-": {
-   "en": "<span data-i18n=\"short\">Short</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "<span data-i18n=\"short\">Short</span>",
-   "leaf": true
-  },
-  "aQyK0fclKF": {
-   "en": "MarginPad - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "id": "MarginPad - 0.5%",
-   "leaf": true
-  },
-  "7yKqDeDTd0": {
-   "en": "Binance - 0.4%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Binance - 0.4%",
-   "leaf": true
-  },
-  "5ZOCKqG5Bp": {
-   "en": "Bybit - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Bybit - 0.5%",
-   "leaf": true
-  },
-  "b5sJgE-gp2": {
-   "en": "OKX - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "OKX - 0.5%",
-   "leaf": true
-  },
-  "4xOEJckW1n": {
-   "en": "Bitget - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Bitget - 0.5%",
-   "leaf": true
-  },
-  "f4tyacp3SN": {
-   "en": "MEXC - 0.1%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "MEXC - 0.1%",
-   "leaf": true
-  },
-  "PgRAMeug7a": {
-   "en": "KuCoin - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "KuCoin - 0.5%",
-   "leaf": true
-  },
-  "xfF7XoGeHA": {
-   "en": "Gate - 0.5%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Gate - 0.5%",
-   "leaf": true
-  },
-  "tidhONmH-4": {
-   "en": "Kraken - 0.6%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Kraken - 0.6%",
-   "leaf": true
-  },
-  "bJmVCli3x5": {
-   "en": "Hyperliquid - 1.25%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Hyperliquid - 1.25%",
-   "leaf": true
-  },
-  "NbY1pa6AcP": {
-   "en": "Coinbase - 1.33%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 9,
-   "w": 2,
-   "id": "Coinbase - 1.33%",
-   "leaf": true
-  },
-  "xnU-pHn9BQ": {
-   "en": "MarginPad - 0.055%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "id": "MarginPad - 0.055%",
-   "leaf": true
-  },
-  "XIfnOuScDy": {
-   "en": "Stop-loss",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/how-to-set-a-stop-loss/"
-   ],
-   "n": 6,
-   "w": 1,
-   "id": "Stop-loss"
-  },
-  "WyBZXB2UvT": {
-   "en": "Trailing stop",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/app.html",
-    "/blog/what-is-a-trailing-stop/"
-   ],
-   "n": 5,
-   "w": 2,
-   "id": "Trailing stop"
-  },
-  "CjMNLLk462": {
-   "en": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
-  },
-  "ZwPMimQZKE": {
-   "en": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
-  },
-  "l_riKf071f": {
-   "en": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
-  },
-  "hUSkdyWDaj": {
-   "en": "Profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "Untung"
-  },
-  "uMs9BK8HRr": {
-   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>"
-  },
-  "Mf46iRDWup": {
-   "en": "TradingView",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "TradingView",
-   "leaf": true
-  },
-  "7qxtMaeb-F": {
-   "en": "Koinly",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Koinly",
-   "leaf": true
-  },
-  "YNDGY6v7RI": {
-   "en": "3Commas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "3Commas",
-   "leaf": true
-  },
-  "V_TTAcNK31": {
-   "en": "<span>My Trades</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 2,
-   "id": "<span>My Trades</span>",
-   "leaf": true
-  },
-  "ClPoxqx5JT": {
-   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "<span data-i18n=\"chatBtn\">Chat</span>",
-   "leaf": true
-  },
-  "V_X177xZkP": {
-   "en": "Menu",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/bitcoin-cycle/"
-   ],
-   "n": 83,
-   "w": 1,
-   "id": "Menu"
-  },
-  "qXSSU8Np0M": {
-   "en": "Coin",
-   "kind": [
-    "attr:aria-label",
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/hyperliquid-liquidations/",
-    "/liquidation-statistics/"
-   ],
-   "n": 8,
-   "w": 1,
-   "id": "Koin"
-  },
-  "J6JbU5D47S": {
-   "en": "planExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "planExHint",
-   "leaf": true
-  },
-  "DeFJ3eHlTO": {
-   "en": "planFeeHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "planFeeHint",
-   "leaf": true
-  },
-  "a3_8lyG-KA": {
-   "en": "planRzHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "planRzHint",
-   "leaf": true
-  },
-  "2npoc0Nngo": {
-   "en": "off",
-   "kind": [
-    "attr:placeholder"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "mati"
-  },
-  "5MN3jTT9VP": {
-   "en": "liqExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "liqExHint",
-   "leaf": true
-  },
-  "6MRy4Bu8n3": {
-   "en": "crExHint",
-   "kind": [
-    "attr:data-hint"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "crExHint",
-   "leaf": true
-  },
-  "ihLVYm_j0n": {
-   "en": "Trending",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "Trending"
-  },
-  "ovemx4owHS": {
-   "en": "Take-Profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "Take-Profit"
-  },
-  "pX5LlEWjaF": {
-   "en": "Risk / Reward",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 4,
-   "w": 2,
-   "id": "Risk / Reward",
-   "leaf": true
-  },
-  "Vpu9dX4buL": {
-   "en": "Market",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html",
-    "/strategies/",
-    "/trading-api/"
-   ],
-   "n": 4,
-   "w": 1,
-   "id": "Market"
-  },
-  "JNlI5L2-W4": {
-   "en": "Limit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "Limit"
-  },
-  "dJlaE8rvN4": {
-   "en": "Target ROE",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "id": "Target ROE",
-   "leaf": true
-  },
-  "VtoQU5BbyJ": {
-   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 2,
-   "id": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
-   "leaf": true
-  },
-  "moMMcUuytS": {
-   "en": "Tool",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/best-liquidation-heatmap-tools/"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Tool"
-  },
-  "lyrY2KUDl7": {
-   "en": "Layout",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 2,
-   "w": 1,
-   "id": "Layout"
-  },
-  "hd7Lc9FDjS": {
-   "en": "Timeframe",
-   "kind": [
-    "attr:aria-label",
-    "html"
-   ],
-   "ctx": [
-    "/app.html",
-    "/crypto-correlation-matrix/"
-   ],
-   "n": 3,
-   "w": 1,
-   "id": "Timeframe"
-  },
   "xB-wafRBzr": {
    "en": "Crypto Liquidation Map, Heatmap & Calculators - MarginPad",
    "kind": [
@@ -12358,6 +11561,55 @@
    "n": 81,
    "w": 2,
    "id": "<a href=\"/\" class=\"mark\" aria-label=\"MarginPad - beranda\">MARGIN<b>PAD</b></a>"
+  },
+  "UaHCDQd_L3": {
+   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/catalysts/",
+    "/defi/"
+   ],
+   "n": 79,
+   "w": 1,
+   "id": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a>",
+   "leaf": true
+  },
+  "4vZ0c5CpM-": {
+   "en": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/calendar/",
+    "/catalysts/"
+   ],
+   "n": 80,
+   "w": 5,
+   "id": "<a class=\"hsoc-i tg\" role=\"menuitem\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span><span class=\"hsoc-t\"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class=\"hsoc-i ig\" role=\"menuitem\" href=\"https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.4\" cy=\"6.6\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/></svg></span><span class=\"hsoc-t\"><b>Instagram</b><i>@marginpad</i></span></a><a class=\"hsoc-i x\" role=\"menuitem\" href=\"https://x.com/marginpad\" target=\"_blank\" rel=\"noopener\"><span class=\"hsoc-ic\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" style=\"width:14px;height:14px\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg></span><span class=\"hsoc-t\"><b>X</b><i>@marginpad</i></span></a>",
+   "leaf": true
+  },
+  "QFwW0TOIo2": {
+   "en": "My Trades",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/catalysts/",
+    "/hyperliquid-whales/",
+    "/"
+   ],
+   "n": 77,
+   "w": 2,
+   "id": "My Trades",
+   "leaf": true
   },
   "_OT7_SufkL": {
    "en": "<span data-auth-status>Sign in</span>",
@@ -12542,6 +11794,18 @@
    "w": 1,
    "id": "<span>Sinkron</span>"
   },
+  "zpmhBUvLJc": {
+   "en": "<span>Note</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span>Catatan</span>"
+  },
   "BJc6lVXKW1": {
    "en": "<span>Calculator</span>",
    "kind": [
@@ -12638,6 +11902,18 @@
    "w": 1,
    "id": "Terang"
   },
+  "SKYW2Zbiby": {
+   "en": "Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Watchlist"
+  },
   "FmUsfdDTNU": {
    "en": "Star coins on the homepage to pin them here.",
    "kind": [
@@ -12712,6 +11988,19 @@
    "n": 1,
    "w": 5,
    "id": "<b>Scalping</b><span>BTC · 5m · sinyal + EMA</span>"
+  },
+  "RSoVO-G-Pk": {
+   "en": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5,
+   "id": "<b>Swing</b><span>BTC · 4h · EMA + SMA</span>",
+   "leaf": true
   },
   "O8Sd5zpAME": {
    "en": "<b>BTC multi-TF</b><span>15m + 1H side by side</span>",
@@ -12921,6 +12210,22 @@
    "w": 1,
    "id": "<span class=\"eyebrow\" data-i18n=\"ebMarkets\">Market</span>"
   },
+  "m9FuWK2UCT": {
+   "en": "Screener",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/free-crypto-api/",
+    "/",
+    "/spot/"
+   ],
+   "n": 4,
+   "w": 1,
+   "id": "Screener",
+   "leaf": true
+  },
   "HcjEOqAAWP": {
    "en": "Perp futures",
    "kind": [
@@ -13007,6 +12312,32 @@
    "w": 1,
    "id": "Top loser"
   },
+  "Oxjo4zJQDz": {
+   "en": "Volume",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Volume"
+  },
+  "b_Fxxmc486": {
+   "en": "Funding",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Funding",
+   "leaf": true
+  },
   "rDAi4RNELb": {
    "en": "Volatile",
    "kind": [
@@ -13043,6 +12374,19 @@
    "w": 2,
    "id": "▼ Setup short"
   },
+  "5zNu03p97d": {
+   "en": "★ Watchlist",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/coins/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "★ Watchlist"
+  },
   "8zVMfZfkFf": {
    "en": "Loading live markets…",
    "kind": [
@@ -13066,6 +12410,18 @@
    "n": 1,
    "w": 19,
    "id": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Sinyal trading gratis di Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">rangkuman pasar harian pukul 16:00 UTC - apa yang bergerak, apa yang berikutnya</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Gabung gratis</span> </a>"
+  },
+  "ihLVYm_j0n": {
+   "en": "Trending",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Trending"
   },
   "2LhDkiLHa_": {
    "en": "New pairs",
@@ -13115,6 +12471,22 @@
    "w": 24,
    "id": "Data live multi-exchange (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + data derivatif MarginPad (collector likuidasi delapan exchange milik kami sendiri) · hanya paper trading, bukan nasihat keuangan."
   },
+  "ABSrPRUDss": {
+   "en": "Liquidation",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/",
+    "/glossary/",
+    "/hyperliquid-liquidations/"
+   ],
+   "n": 5,
+   "w": 1,
+   "id": "Likuidasi"
+  },
   "0I_PksYvAu": {
    "en": "Cross Liq",
    "kind": [
@@ -13139,6 +12511,19 @@
    "w": 2,
    "id": "Ukuran Posisi"
   },
+  "rrrREQMzV2": {
+   "en": "PnL / ROI",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2,
+   "id": "PnL / ROI",
+   "leaf": true
+  },
   "D6w0az6TOa": {
    "en": "Average / DCA",
    "kind": [
@@ -13150,6 +12535,57 @@
    "n": 2,
    "w": 2,
    "id": "Rata-rata / DCA"
+  },
+  "ovemx4owHS": {
+   "en": "Take-Profit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Take-Profit"
+  },
+  "pX5LlEWjaF": {
+   "en": "Risk / Reward",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2,
+   "id": "Risk / Reward",
+   "leaf": true
+  },
+  "Rt2tHuR3sW": {
+   "en": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "<span class=\"ptc-ic\" id=\"ptSymIc\"></span> <span class=\"ptc-sn\"><span class=\"ptc-pair\"><b id=\"ptSymTxt\">BTC</b><span class=\"ptc-quote\">USD</span><svg class=\"ptc-chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></span><span class=\"ptc-cd\" id=\"ptCd\"></span></span>",
+   "leaf": true
+  },
+  "6ElJRITtLj": {
+   "en": "Crypto",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Kripto"
   },
   "oDfCw8gHeA": {
    "en": "Stocks",
@@ -13164,6 +12600,20 @@
    "w": 1,
    "id": "Saham"
   },
+  "DwNisxlHs5": {
+   "en": "Forex",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Forex",
+   "leaf": true
+  },
   "MKo7Cf-Cfs": {
    "en": "Metals",
    "kind": [
@@ -13175,6 +12625,72 @@
    "n": 1,
    "w": 1,
    "id": "Logam"
+  },
+  "ZeBJXjDoz_": {
+   "en": "Indices",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Indeks"
+  },
+  "Vpu9dX4buL": {
+   "en": "Market",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/strategies/",
+    "/trading-api/"
+   ],
+   "n": 3,
+   "w": 1,
+   "id": "Market"
+  },
+  "JNlI5L2-W4": {
+   "en": "Limit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Limit"
+  },
+  "BJLQQ88bfb": {
+   "en": "<span data-i18n=\"long\">Long</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span data-i18n=\"long\">Long</span>",
+   "leaf": true
+  },
+  "OIWeOUDbe-": {
+   "en": "<span data-i18n=\"short\">Short</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span data-i18n=\"short\">Short</span>",
+   "leaf": true
   },
   "sjos3CGOIM": {
    "en": "Limit price",
@@ -13310,6 +12826,149 @@
    "w": 4,
    "id": "Exchange (mengatur rasio margin)"
   },
+  "aQyK0fclKF": {
+   "en": "MarginPad - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "MarginPad - 0.5%",
+   "leaf": true
+  },
+  "7yKqDeDTd0": {
+   "en": "Binance - 0.4%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Binance - 0.4%",
+   "leaf": true
+  },
+  "5ZOCKqG5Bp": {
+   "en": "Bybit - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Bybit - 0.5%",
+   "leaf": true
+  },
+  "b5sJgE-gp2": {
+   "en": "OKX - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "OKX - 0.5%",
+   "leaf": true
+  },
+  "4xOEJckW1n": {
+   "en": "Bitget - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Bitget - 0.5%",
+   "leaf": true
+  },
+  "f4tyacp3SN": {
+   "en": "MEXC - 0.1%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "MEXC - 0.1%",
+   "leaf": true
+  },
+  "PgRAMeug7a": {
+   "en": "KuCoin - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "KuCoin - 0.5%",
+   "leaf": true
+  },
+  "xfF7XoGeHA": {
+   "en": "Gate - 0.5%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Gate - 0.5%",
+   "leaf": true
+  },
+  "tidhONmH-4": {
+   "en": "Kraken - 0.6%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Kraken - 0.6%",
+   "leaf": true
+  },
+  "bJmVCli3x5": {
+   "en": "Hyperliquid - 1.25%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Hyperliquid - 1.25%",
+   "leaf": true
+  },
+  "NbY1pa6AcP": {
+   "en": "Coinbase - 1.33%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Coinbase - 1.33%",
+   "leaf": true
+  },
   "if_zv_6NFN": {
    "en": "<b>Maintenance margin</b> is the slice of your position the exchange makes you keep on deposit; the moment your margin falls to it, you are liquidated. Binance asks 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% on its first tier, Hyperliquid 1.25% on BTC, Coinbase 1.33%; MarginPad default is 0.5%. It moves <b>only where your liquidation price sits</b>. Position size, fees and P&amp;L do not change.",
    "kind": [
@@ -13333,6 +12992,19 @@
    "n": 1,
    "w": 6,
    "id": "Biaya seperti di (mengatur biaya taker)"
+  },
+  "xnU-pHn9BQ": {
+   "en": "MarginPad - 0.055%",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "MarginPad - 0.055%",
+   "leaf": true
   },
   "eDNj8OEvti": {
    "en": "<b>Taker fee</b> is what the venue charges per side on the full position size (not on your margin), once at open and once at close, less the discount a MarginPad sign-up gets there. It changes <b>only what the trade costs and your net P&amp;L</b>, never the liquidation price. <a href=\"/trading-api/#fees\" target=\"_blank\" rel=\"noopener\">How the fee schedules work</a>",
@@ -13394,6 +13066,22 @@
    "w": 135,
    "id": "Secara default, market order tereksekusi di <b>harga live</b> dan maintenance margin tetap <b>0.5%</b> - garis entry ada persis di tempat kamu klik dan posisi baru menunjukkan 0.00. Ini lebih mudah daripada venue sungguhan. <b>Slippage</b> menggeser harga eksekusi melawanmu seperti saat menembus order book sungguhan: 0.01% di koin besar, 0.05% di kripto yang lebih tipis, 0.005% di forex, 0.02% di saham, logam dan indeks. <b>Tingkat margin</b> menaikkan maintenance margin seiring posisi membesar, seperti tabel risk-limit di exchange, jadi posisi besar dilikuidasi lebih cepat - kebutuhan maintenance yang lebih tinggi menyisakan ruang lebih sempit sebelum posisimu ditutup. Keduanya mati kecuali kamu menyalakannya, berlaku untuk <b>posisi yang dibuka mulai sekarang</b>, dan sebuah posisi selalu mempertahankan maintenance margin saat ia tereksekusi. Pengaturan yang sama juga dipakai bot-mu lewat API."
   },
+  "XIfnOuScDy": {
+   "en": "Stop-loss",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/how-to-set-a-stop-loss/",
+    "/glossary/",
+    "/risk-reward-calculator/"
+   ],
+   "n": 4,
+   "w": 1,
+   "id": "Stop-loss"
+  },
   "cZ6jlq2S4B": {
    "en": "Clear",
    "kind": [
@@ -13419,6 +13107,20 @@
    "w": 18,
    "id": "Persennya dihitung dari margin-mu, bukan dari harga - di 20x, pergerakan 1% melawanmu berarti 20%."
   },
+  "Qqcee-_jcA": {
+   "en": "Take-profit",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/glossary/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Take-profit"
+  },
   "uWFLSW40C-": {
    "en": "Type a price, or the profit you are aiming for as a percent of your margin.",
    "kind": [
@@ -13430,6 +13132,21 @@
    "n": 1,
    "w": 14,
    "id": "Ketik harga, atau profit yang kamu incar sebagai persen dari margin-mu."
+  },
+  "WyBZXB2UvT": {
+   "en": "Trailing stop",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/app.html",
+    "/blog/what-is-a-trailing-stop/",
+    "/glossary/"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": "Trailing stop"
   },
   "vcKsh1cExG": {
    "en": "Break-even at ROE",
@@ -13633,6 +13350,18 @@
    "n": 5,
    "w": 2,
    "id": "Ukuran posisi"
+  },
+  "CjMNLLk462": {
+   "en": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<input type=\"number\" id=\"crQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
   },
   "_GLQdnGdxv": {
    "en": "Futures wallet balance",
@@ -13878,6 +13607,18 @@
    "w": 2,
    "id": "Harga keluar"
   },
+  "ZwPMimQZKE": {
+   "en": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<input type=\"number\" id=\"pnlQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
+  },
   "HH_r9MkG7F": {
    "en": "Profit / Loss",
    "kind": [
@@ -14121,6 +13862,18 @@
    "w": 3,
    "id": "Ukuran posisi (opsional)"
   },
+  "l_riKf071f": {
+   "en": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">coin</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<input type=\"number\" id=\"tpQty\" value=\"0.5\" step=\"any\"><span class=\"unit\" data-i18n=\"uCoin\">koin</span>"
+  },
   "TtQoitgpQp": {
    "en": "Custom target ROE",
    "kind": [
@@ -14144,6 +13897,31 @@
    "n": 1,
    "w": 3,
    "id": "Harga target kustom"
+  },
+  "dJlaE8rvN4": {
+   "en": "Target ROE",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "Target ROE",
+   "leaf": true
+  },
+  "hUSkdyWDaj": {
+   "en": "Profit",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Untung"
   },
   "pG6-Ro9wIJ": {
    "en": "Target exit for a desired return on equity. ROE is amplified by leverage, so a small price move is a large account return.",
@@ -14373,6 +14151,18 @@
    "w": 24,
    "id": "Harga live dan pergerakan 24 jam di market paling aktif. Ketuk ★ untuk menyematkan pair ke watchlist-mu - pair berbintang langsung pindah ke depan."
   },
+  "uMs9BK8HRr": {
+   "en": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span class=\"mteaser-eb\" data-i18n=\"ebHeat2\">Heatmap</span>"
+  },
   "6kRqBe-Mo1": {
    "en": "See where liquidations cluster",
    "kind": [
@@ -14577,6 +14367,19 @@
    "w": 10,
    "id": "Platform yang cocok dipasangkan dengan MarginPad - chart, pajak dan otomatisasi."
   },
+  "Mf46iRDWup": {
+   "en": "TradingView",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "TradingView",
+   "leaf": true
+  },
   "HMUGCPsOFe": {
    "en": "Pro charts, 100+ indicators and price alerts - the industry-standard charting platform.",
    "kind": [
@@ -14601,6 +14404,19 @@
    "w": 1,
    "id": "<span class=\"tc-go\" data-i18n=\"toolGo\">Kunjungi →</span>"
   },
+  "7qxtMaeb-F": {
+   "en": "Koinly",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Koinly",
+   "leaf": true
+  },
   "0c4JVku-R8": {
    "en": "Crypto tax reports done in minutes - connects to every major exchange.",
    "kind": [
@@ -14613,6 +14429,19 @@
    "w": 11,
    "id": "Laporan pajak kripto beres dalam hitungan menit - terhubung ke semua exchange besar."
   },
+  "YNDGY6v7RI": {
+   "en": "3Commas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "3Commas",
+   "leaf": true
+  },
   "sgujG0PYfr": {
    "en": "Automated trading bots, smart orders and a multi-exchange terminal.",
    "kind": [
@@ -14624,6 +14453,19 @@
    "n": 1,
    "w": 8,
    "id": "Bot trading otomatis, smart order dan terminal multi-exchange."
+  },
+  "VtoQU5BbyJ": {
+   "en": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "<span class=\"league-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3\"/></svg>Trade League</span>",
+   "leaf": true
   },
   "FJcqz0QOt4": {
    "en": "Log your trades, win USDT",
@@ -15171,6 +15013,32 @@
    "w": 10,
    "id": "Belum ada tiket. Rencanakan trade lalu ketuk “Simpan ke jurnal”."
   },
+  "V_TTAcNK31": {
+   "en": "<span>My Trades</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "<span>My Trades</span>",
+   "leaf": true
+  },
+  "ClPoxqx5JT": {
+   "en": "<span data-i18n=\"chatBtn\">Chat</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span data-i18n=\"chatBtn\">Chat</span>",
+   "leaf": true
+  },
   "otpSlG_baZ": {
    "en": "<span class=\"ct-title\" data-i18n=\"chatTitleW\">Trader Chat</span><span class=\"ct-online\" id=\"ctOnline\"></span>",
    "kind": [
@@ -15284,6 +15152,21 @@
    "n": 1,
    "w": 9,
    "id": "<span data-i18n=\"pwaStep3\">Ketuk Tambah - terbuka layar penuh, persis seperti aplikasi</span>"
+  },
+  "V_X177xZkP": {
+   "en": "Menu",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/bitcoin-cycle/",
+    "/calendar/",
+    "/catalysts/"
+   ],
+   "n": 81,
+   "w": 1,
+   "id": "Menu"
   },
   "M7iFr1ELQD": {
    "en": "MarginPad - home",
@@ -15443,6 +15326,18 @@
    "w": 3,
    "id": "Buka Paper Trade"
   },
+  "lyrY2KUDl7": {
+   "en": "Layout",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Layout"
+  },
   "1T2AJCOwKB": {
    "en": "2 charts",
    "kind": [
@@ -15595,6 +15490,22 @@
    "w": 2,
    "id": "Heatmap likuidasi"
   },
+  "qXSSU8Np0M": {
+   "en": "Coin",
+   "kind": [
+    "attr:aria-label",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/hyperliquid-liquidations/",
+    "/liquidation-statistics/",
+    "/liquidations/report/2026-10/"
+   ],
+   "n": 7,
+   "w": 1,
+   "id": "Koin"
+  },
   "ePEgBUGqDb": {
    "en": "Market screener",
    "kind": [
@@ -15642,6 +15553,20 @@
    "n": 1,
    "w": 2,
    "id": "Cari pair"
+  },
+  "hd7Lc9FDjS": {
+   "en": "Timeframe",
+   "kind": [
+    "attr:aria-label",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/crypto-correlation-matrix/"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "Timeframe"
   },
   "Fe6hl2VCHH": {
    "en": "More timeframes",
@@ -15775,6 +15700,19 @@
    "w": 2,
    "id": "Slider leverage"
   },
+  "J6JbU5D47S": {
+   "en": "planExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "planExHint",
+   "leaf": true
+  },
   "on6EHMOYn-": {
    "en": "What does the margin rate do?",
    "kind": [
@@ -15799,6 +15737,19 @@
    "w": 3,
    "id": "Preset maintenance margin exchange"
   },
+  "DeFJ3eHlTO": {
+   "en": "planFeeHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "planFeeHint",
+   "leaf": true
+  },
   "NuZ844-Cq5": {
    "en": "What does the fee schedule do?",
    "kind": [
@@ -15822,6 +15773,19 @@
    "n": 1,
    "w": 2,
    "id": "Jadwal biaya"
+  },
+  "a3_8lyG-KA": {
+   "en": "planRzHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "planRzHint",
+   "leaf": true
   },
   "di0iGuc9Zf": {
    "en": "What do realistic fills change?",
@@ -15871,6 +15835,18 @@
    "w": 5,
    "id": "Take-profit sebagai persen dari margin"
   },
+  "2npoc0Nngo": {
+   "en": "off",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 1,
+   "id": "mati"
+  },
   "kDB3_iLbXG": {
    "en": "Search a coin, a company, a pair&#8230;",
    "kind": [
@@ -15895,6 +15871,19 @@
    "w": 2,
    "id": "Cari market"
   },
+  "5MN3jTT9VP": {
+   "en": "liqExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "liqExHint",
+   "leaf": true
+  },
   "r3T3xTYqru": {
    "en": "Copy",
    "kind": [
@@ -15911,6 +15900,19 @@
    "n": 19,
    "w": 1,
    "id": "Salin"
+  },
+  "6MRy4Bu8n3": {
+   "en": "crExHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "crExHint",
+   "leaf": true
   },
   "OcZtDV9p8R": {
    "en": "Live market pulse",
@@ -25478,6 +25480,18 @@
    "n": 1,
    "w": 56,
    "id": "Heatmap likuidasi gratis terbaik di 2026 adalah <b>MarginPad</b> (live, preview gratis 5 menit, tanpa batas dengan Premium $11.99/bln); produk berbayar paling dalam adalah <b>Coinglass</b>. Di bawah: 6 tools dibandingkan dengan jujur - termasuk hal yang sama di semua vendor heatmap tapi jarang diiklankan: layer cluster adalah <b>estimasi</b>, di platform mana pun. Daftar ini diterbitkan MarginPad; setiap klaim bisa dicek dalam hitungan menit."
+  },
+  "moMMcUuytS": {
+   "en": "Tool",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/best-liquidation-heatmap-tools/"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "Tool"
   },
   "1JoBEDxQUt": {
    "en": "Free heatmap",
@@ -126406,8 +126420,8 @@
    "w": 2,
    "id": "Tingkatan"
   },
-  "uwB75Cd-Eh": {
-   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it unlocks a frame, a badge and a bigger withdrawal bonus. The faucet claim multiplier below applies only to accounts opened before 12 Nov 2026 - newer accounts earn USDT from the season boards, the Season Pass, promo codes and partner bonuses. Each tier takes progressively longer.",
+  "fQCt0J0iGU": {
+   "en": "Everyone starts Unranked, and every reward is open from the first day - no level unlocks anything. Bronze at 500 XP is your first badge, and each tier above it unlocks a frame, a badge and a bigger withdrawal bonus. Real USDT comes from the season boards, the Season Pass, promo codes and partner bonuses. Each tier takes progressively longer.",
    "kind": [
     "html"
    ],
@@ -126415,8 +126429,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 71,
-   "id": "Semua mulai dari Unranked, dan semua reward terbuka sejak hari pertama - tidak ada level yang membuka apa pun. Bronze di 500 XP adalah badge pertamamu, dan setiap tingkat di atasnya membuka bingkai, badge, dan bonus penarikan lebih besar. Pengali klaim faucet di bawah ini hanya berlaku untuk akun yang dibuka sebelum 12 November 2026 - akun yang lebih baru mendapatkan USDT dari papan peringkat musim, Season Pass, kode promo, dan bonus partner. Setiap tingkat butuh waktu makin lama."
+   "w": 56,
+   "id": "Semua orang mulai dari belum berperingkat, dan semua hadiah sudah terbuka sejak hari pertama - tidak ada level yang membuka apa pun. Bronze di 500 XP adalah badge pertamamu, dan setiap tier di atasnya membuka bingkai, badge, dan bonus penarikan yang lebih besar. USDT sungguhan datang dari papan peringkat musim, Season Pass, kode promo, dan bonus partner. Setiap tier butuh waktu makin lama."
   },
   "pBTrdb5I8D": {
    "en": "<b>0</b> XP · where everyone starts",
@@ -126515,8 +126529,8 @@
    "w": 3,
    "id": "<b>Badge profil Bronze</b>"
   },
-  "PkzMcumt9V": {
-   "en": "Standard faucet claims (legacy accounts)",
+  "3SX3je5jtZ": {
+   "en": "Standard rewards",
    "kind": [
     "html"
    ],
@@ -126524,8 +126538,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 5,
-   "id": "Klaim faucet standar (akun lama)"
+   "w": 2,
+   "id": "Hadiah standar"
   },
   "SJiYC_zDTi": {
    "en": "Your first frame colour on the trader card",
@@ -126576,17 +126590,17 @@
    "id": "<b>3,000</b> XP",
    "leaf": true
   },
-  "9_DIbgY22o": {
-   "en": "<b>+10%</b> faucet claims (legacy accounts)",
+  "FGAtJ33lsU": {
+   "en": "<b>Bigger bonuses</b> on the tier’s rewards",
    "kind": [
     "html"
    ],
    "ctx": [
     "/levels/"
    ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+10%</b> klaim faucet (akun lama)"
+   "n": 6,
+   "w": 6,
+   "id": "<b>Bonus lebih besar</b> untuk hadiah di tier tersebut"
   },
   "SnFLCcBjhz": {
    "en": "Silver profile badge",
@@ -126649,18 +126663,6 @@
    "id": "<b>12,000</b> XP",
    "leaf": true
   },
-  "OXRDF36K2y": {
-   "en": "<b>+20%</b> faucet claims (legacy accounts)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+20%</b> klaim faucet (akun lama)"
-  },
   "n9AA6IGmi_": {
    "en": "Higher daily claim limit",
    "kind": [
@@ -126722,18 +126724,6 @@
    "id": "<b>30,000</b> XP",
    "leaf": true
   },
-  "HPaHSILvkd": {
-   "en": "<b>+35%</b> faucet claims (legacy accounts)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+35%</b> klaim faucet (akun lama)"
-  },
   "LaPQ83r_2g": {
    "en": "Even higher daily limits",
    "kind": [
@@ -126794,18 +126784,6 @@
    "w": 2,
    "id": "<b>60,000</b> XP",
    "leaf": true
-  },
-  "kxYQftxU9j": {
-   "en": "<b>+50%</b> faucet claims (legacy accounts)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+50%</b> klaim faucet (akun lama)"
   },
   "GzoqRZmSxP": {
    "en": "<b>+10% withdrawal bonus</b> - the house pays extra",
@@ -126869,18 +126847,6 @@
    "id": "<b>120,000</b> XP",
    "leaf": true
   },
-  "g1NPwpiOoI": {
-   "en": "<b>+75%</b> faucet claims (legacy accounts)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+75%</b> klaim faucet (akun lama)"
-  },
   "C90wA75kti": {
    "en": "<b>2x</b> your daily earning cap",
    "kind": [
@@ -126940,18 +126906,6 @@
    "n": 1,
    "w": 4,
    "id": "<b>250,000</b> XP · 1% teratas"
-  },
-  "Fb8glV8mZw": {
-   "en": "<b>+90%</b> faucet claims (legacy accounts)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>+90%</b> klaim faucet (akun lama)"
   },
   "vJo60PW6z2": {
    "en": "<b>15%</b> withdrawal bonus",
@@ -127120,30 +127074,6 @@
    "n": 1,
    "w": 4,
    "id": "bertambah seiring streak-mu"
-  },
-  "K86j-dyYmQ": {
-   "en": "Claim from the faucet",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 4,
-   "id": "Klaim dari faucet"
-  },
-  "yr3QBqlp3B": {
-   "en": "legacy accounts · up to 10/day",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/levels/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "akun lama · maks 10/hari"
   },
   "OrB2PFX_50": {
    "en": "Approved promo post",
@@ -127325,8 +127255,8 @@
    "w": 4,
    "id": "Bagaimana cara mendapat XP?"
   },
-  "YC9hu3Rgkp": {
-   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, faucet claims (legacy accounts), promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
+  "hkF4cviLa2": {
+   "en": "Closing profitable paper trades, daily check-ins and streaks, daily missions, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed.",
    "kind": [
     "html"
    ],
@@ -127334,8 +127264,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 36,
-   "id": "Menutup paper trade yang profit, check-in harian dan streak, misi harian, klaim faucet (akun lama), mempromosikan platform di X, dan masuk peringkat di kompetisi musim 14 hari. Setiap sumber punya batas harian supaya tidak bisa di-farm."
+   "w": 32,
+   "id": "Menutup paper trade yang profit, check-in harian dan streak, misi harian, mempromosikan platform di X, dan masuk peringkat di kompetisi musim 14 hari. Setiap sumber punya batas harian supaya tidak bisa di-farm."
   },
   "Gt_zKQMtnQ": {
    "en": "How long does Diamond take?",
@@ -127398,8 +127328,8 @@
    "w": 5,
    "id": "Apa yang dibuka di level yang lebih tinggi?"
   },
-  "t90DwT9gX3": {
-   "en": "Exclusive badges and frames, higher daily limits (accounts opened before 12 Nov 2026 also keep bigger faucet claims, up to +90% at Legendary), exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+  "64jCzQXrnJ": {
+   "en": "Exclusive badges and frames, higher daily limits, exclusive badges and cosmetics, special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
    "kind": [
     "html"
    ],
@@ -127407,8 +127337,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 38,
-   "id": "Badge dan bingkai eksklusif, batas harian lebih tinggi (akun yang dibuka sebelum 12 November 2026 juga tetap dapat klaim faucet lebih besar, sampai +90% di Legendary), badge dan kosmetik eksklusif, kompetisi khusus, dan bonus penarikan untuk Diamond (10%) dan Legendary (15%)."
+   "w": 22,
+   "id": "Badge dan bingkai eksklusif, limit harian lebih tinggi, badge dan kosmetik eksklusif, kompetisi khusus, serta bonus penarikan untuk Diamond (10%) dan Legendary (15%)."
   },
   "FTi-jONO8u": {
    "en": "Do I lose XP if I go inactive?",
@@ -127494,8 +127424,8 @@
    "w": 11,
    "id": "<span><a href=\"/\">MarginPad</a> · <a href=\"/rewards/\">Reward</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/community/\">Komunitas</a></span><br> <span>© 2026 MarginPad · Naik level dengan bertahan.</span>"
   },
-  "6s3h_botWw": {
-   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock exclusive badges, frames and a withdrawal bonus; accounts opened before 12 Nov 2026 also keep bigger faucet claims. A slow, loyalty-first progression.",
+  "p_MzgaEo16": {
+   "en": "Earn XP for real activity on MarginPad - trading, daily streaks, missions and competitions - and climb from Bronze to Diamond. Higher levels unlock exclusive badges, frames and a withdrawal bonus. A slow, loyalty-first progression.",
    "kind": [
     "attr:content"
    ],
@@ -127503,8 +127433,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 42,
-   "id": "Dapatkan XP dari aktivitas nyata di MarginPad - trading, streak harian, misi, dan kompetisi - lalu naik dari Bronze ke Diamond. Level lebih tinggi membuka badge dan bingkai eksklusif serta bonus penarikan; akun yang dibuka sebelum 12 November 2026 juga tetap dapat klaim faucet lebih besar. Progres yang pelan, loyalitas dulu."
+   "w": 31,
+   "id": "Dapatkan XP dari aktivitas nyata di MarginPad - trading, streak harian, misi, dan kompetisi - lalu naik dari Bronze ke Diamond. Level yang lebih tinggi membuka badge dan bingkai eksklusif serta bonus penarikan. Progres yang pelan dan mengutamakan loyalitas."
   },
   "X0OP53QCZO": {
    "en": "MarginPad Level System - Bronze to Diamond",
@@ -127602,8 +127532,8 @@
    "w": 37,
    "id": "Tidak. XP Akademi dibatasi sehingga hanya bisa membantu pengguna baru mencapai tingkat awal. Bahkan setelah menyelesaikan semua pelajaran, kamu masih jauh dari Diamond - progres jangka panjang hanya bisa diraih lewat pemakaian yang konsisten."
   },
-  "94a-Sw2UfL": {
-   "en": "Exclusive profile badges and cosmetics first; accounts opened before 12 Nov 2026 also keep bigger faucet claims (up to +90% at Legendary). Then higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+  "ShajMHP6Nk": {
+   "en": "Exclusive profile badges and cosmetics, higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
    "kind": [
     "ld"
    ],
@@ -127611,8 +127541,8 @@
     "/levels/"
    ],
    "n": 1,
-   "w": 44,
-   "id": "Badge profil dan kosmetik eksklusif lebih dulu; akun yang dibuka sebelum 12 November 2026 juga tetap dapat klaim faucet lebih besar (sampai +90% di Legendary). Lalu batas harian lebih tinggi, badge profil dan kosmetik eksklusif, akses ke kompetisi khusus, dan bonus penarikan untuk Diamond (10%) dan Legendary (15%)."
+   "w": 26,
+   "id": "Badge profil dan kosmetik eksklusif, limit harian lebih tinggi, badge profil dan kosmetik eksklusif, akses ke kompetisi khusus, serta bonus penarikan untuk Diamond (10%) dan Legendary (15%)."
   },
   "3NkNYtfteI": {
    "en": "Do I lose XP if I stop being active?",
@@ -148334,8 +148264,8 @@
    "w": 3,
    "id": "<span class=\"eamt\" id=\"eaDay\">Ticks + XP</span><i id=\"eaDayU\">misi</i>"
   },
-  "0HrzSuaEq0": {
-   "en": "Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class=\"fcl-only\"> Your account also keeps the faucet: claim <b id=\"eaAmt\">$0.01</b> every few minutes.</span>",
+  "kQFSAPlZW5": {
+   "en": "Finish the daily missions: every mission pays Ticks, clearing the set pays XP. Resets at 00:00 UTC.<span class=\"fcl-only\"> Your account also claims <b id=\"eaAmt\">$0.01</b> every few minutes.</span>",
    "kind": [
     "html"
    ],
@@ -148343,8 +148273,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 28,
-   "id": "Selesaikan misi harian: setiap misi membayar Ticks, menuntaskan satu set membayar XP. Reset pukul 00:00 UTC.<span class=\"fcl-only\"> Akunmu juga tetap punya faucet: klaim <b id=\"eaAmt\">$0.01</b> setiap beberapa menit.</span>"
+   "w": 25,
+   "id": "Selesaikan misi harian: setiap misi memberi Ticks, menuntaskan satu set memberi XP. Reset pukul 00:00 UTC.<span class=\"fcl-only\"> Akunmu juga mengklaim <b id=\"eaAmt\">$0.01</b> setiap beberapa menit.</span>"
   },
   "tYQ-piW984": {
    "en": "Every time you do it",
@@ -149660,8 +149590,8 @@
    "w": 3,
    "id": "Berkompetisi, naiki, tukarkan"
   },
-  "SYVdJFPIIV": {
-   "en": "Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class=\"fcl-only\"> Your account also claims the faucet: <span class=\"tAmt\">0.01</span> USDT per claim, up to $<span class=\"tPer\">0.10</span> a day.</span>",
+  "hioyJXkNU-": {
+   "en": "Place top five on a season leaderboard, climb the Season Pass, redeem promo codes, open a partner account through us. Daily missions pay Ticks and XP.<span class=\"fcl-only\"> Your account also claims <span class=\"tAmt\">0.01</span> USDT at a time, up to $<span class=\"tPer\">0.10</span> a day.</span>",
    "kind": [
     "html"
    ],
@@ -149669,8 +149599,8 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 38,
-   "id": "Masuk lima besar di papan peringkat musim, naiki Season Pass, tukarkan kode promo, buka akun partner lewat kami. Misi harian membayar Ticks dan XP.<span class=\"fcl-only\"> Akunmu juga tetap bisa klaim faucet: <span class=\"tAmt\">0.01</span> USDT per klaim, sampai $<span class=\"tPer\">0.10</span> per hari.</span>"
+   "w": 36,
+   "id": "Masuk lima besar di papan peringkat musim, naikkan Season Pass, tukar kode promo, buka akun partner lewat kami. Misi harian memberi Ticks dan XP.<span class=\"fcl-only\"> Akunmu juga mengklaim <span class=\"tAmt\">0.01</span> USDT setiap kali, hingga $<span class=\"tPer\">0.10</span> per hari.</span>"
   },
   "nk_JzI-xRD": {
    "en": "Withdraw at $<span class=\"tMin\">5</span>",
@@ -150415,30 +150345,6 @@
    "n": 1,
    "w": 28,
    "id": "Mulai dari $5 di saldomu, ajukan pembayaran ke UID Bybit, UID MEXC, atau username Moon yang dibuka lewat MarginPad. Setiap penarikan diperiksa dan dibayar secara manual."
-  },
-  "BQsQp-fMyA": {
-   "en": "What happened to the faucet?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "Apa yang terjadi dengan faucet?"
-  },
-  "tATsaLVmKA": {
-   "en": "The faucet and mission payouts stay for accounts opened before 12 November 2026. Newer accounts earn USDT from the leaderboards, the Season Pass, codes and partner bonuses instead.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/rewards/"
-   ],
-   "n": 1,
-   "w": 28,
-   "id": "Faucet dan pembayaran misi tetap ada untuk akun yang dibuka sebelum 12 November 2026. Akun yang lebih baru mendapatkan USDT dari papan peringkat, Season Pass, kode, dan bonus partner."
   },
   "7AWRMSvEmf": {
    "en": "Earn USDT Rewards - Season Leaderboards, Season Pass and Bonuses",
