@@ -4809,6 +4809,56 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   window.mpChatPrefs = { get: get, set: set, apply: apply, open: open, close: close };
 })();
 
+/* THE WATCHLIST FOLLOWS THE ACCOUNT (2026-11-12, owner approved feature #12). Until today the site kept THREE device lists for one
+   idea - the terminal's favourites (mp_pt_favs), the phone charts' stars (mp_mfc_fav) and the screener's watchlist (mp_watchlist,
+   with a USDT suffix) - none of them on the account, none of them agreeing. window.mpWatch is the ONE store: bare symbols in
+   localStorage `mp_watch`, mirrored into the three legacy keys (a bundle copy from before this build still reads them) and, for a
+   signed-in member, kept in uprefs `dev:watch` through /api/push/device like the chat preferences above. The FIRST sync is a
+   UNION of what the device holds and what the account holds (neither side's stars are thrown away); after that the newer side
+   wins. Consumers call mpWatch.list()/toggle() at CALL time and fall back to their own key while this deferred bundle has not
+   parsed. Every change fires `mp-watch-change` so an open picker repaints. */
+(function () {
+  if (window.mpWatch) return;
+  var KEY = 'mp_watch', LEG = ['mp_pt_favs', 'mp_mfc_fav', 'mp_watchlist'], MAX = 80;
+  var li = false; try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {}
+  function norm(s) { s = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (s.length > 4 && /USDT$/.test(s)) s = s.slice(0, -4); return s.slice(0, 20); }
+  function uniq(a) { var o = []; for (var i = 0; i < a.length; i++) { var x = norm(a[i]); if (x && o.indexOf(x) < 0) o.push(x); } return o.slice(0, MAX); }
+  function mirror(list) { try { localStorage.setItem('mp_pt_favs', JSON.stringify(list)); localStorage.setItem('mp_mfc_fav', JSON.stringify(list.slice(0, 20))); localStorage.setItem('mp_watchlist', JSON.stringify(list.map(function (s) { return s + 'USDT'; }))); } catch (e) {} }
+  function read() {
+    var o = null; try { o = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (!o || !Array.isArray(o.s)) { // first run on this device: the union of the three lists this replaces
+      var u = []; LEG.forEach(function (k) { try { var a = JSON.parse(localStorage.getItem(k) || '[]'); if (Array.isArray(a)) u = u.concat(a); } catch (e) {} });
+      o = { s: uniq(u), ts: u.length ? Date.now() : 0, m: 0 }; write(o, true);
+    }
+    return o;
+  }
+  function write(o, quiet) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} mirror(o.s); if (!quiet) { try { window.dispatchEvent(new CustomEvent('mp-watch-change', { detail: { list: o.s.slice() } })); } catch (e) {} } }
+  var putT = 0;
+  function srvPut(o) { if (!li) return; clearTimeout(putT); putT = setTimeout(function () { try { fetch('/api/push/device', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: 'watch', v: { s: o.s, ts: o.ts } }), keepalive: true }).catch(function () {}); } catch (e) {} }, 800); }
+  function srvPull() {
+    if (!li) return;
+    try { fetch('/api/push/device', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var row = j && j.prefs && j.prefs.watch, sv = row && row.v, loc = read();
+      if (!sv || !Array.isArray(sv.s)) { if (loc.s.length) srvPut(loc); return; } // the account holds nothing yet: this device's list becomes it
+      if (!loc.m) { var u = uniq(loc.s.concat(sv.s)); var o = { s: u, ts: Date.now(), m: 1 }; write(o, true); srvPut(o); try { window.dispatchEvent(new CustomEvent('mp-watch-change', { detail: { list: u } })); } catch (e) {} return; } // first meeting: union
+      if (+loc.ts > (+sv.ts || 0)) { srvPut(loc); return; } // the device is ahead (an offline change) - the account takes it
+      var n = { s: uniq(sv.s), ts: +sv.ts || Date.now(), m: 1 }; if (JSON.stringify(n.s) !== JSON.stringify(loc.s)) write(n); else write(n, true);
+    }).catch(function () {}); } catch (e) {}
+  }
+  function set(arr) { var o = read(); o.s = uniq(arr); o.ts = Date.now(); write(o); srvPut(o); return o.s.slice(); }
+  window.mpWatch = {
+    list: function () { return read().s.slice(); },
+    has: function (s) { return read().s.indexOf(norm(s)) >= 0; },
+    toggle: function (s) { s = norm(s); var a = read().s.slice(), i = a.indexOf(s); if (i >= 0) a.splice(i, 1); else a.unshift(s); set(a); return i < 0; },
+    add: function (s) { s = norm(s); var a = read().s.slice(); if (a.indexOf(s) < 0) { a.unshift(s); set(a); } },
+    remove: function (s) { s = norm(s); set(read().s.filter(function (x) { return x !== s; })); },
+    set: set, pull: srvPull
+  };
+  read(); // migrate the legacy keys at once, so the mirror is in step before any consumer asks
+  setTimeout(srvPull, 1400);
+  window.addEventListener('mp-auth-change', function () { try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {} srvPull(); });
+})();
+
 /* SUPPORT LIVES IN THE CHAT WINDOW (2026-11-12, owner: "ubacicemo na prozoru chat-a mesto za button za support, koji ce
    klikom da pretvori chat u support ticket prostor i da mozes da se dopisujes sa supportom kao i da pregledas tvoje
    tikete od pre").

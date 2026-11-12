@@ -933,7 +933,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* THE COIN SHEET IS A MARKET LIST, NOT A GRID OF LETTERS (2026-10-08): every row carries the live price and the 24h move,
      favourites (star, remembered) and recent coins sit on top, and the search still finds any ticker. */
   var PX={};function pullPx(cb){var now=Date.now();if(PX._t&&now-PX._t<60000){cb&&cb();return;}fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.pairs){PX._t=now;j.pairs.forEach(function(x){var s=String(x.symbol||'').replace(/USDT$/,'');PX[s]={p:+x.price,c:+x.changePct};});}cb&&cb();}).catch(function(){cb&&cb();});}
-  function favs(){try{return JSON.parse(localStorage.getItem('mp_mfc_fav')||'[]')||[];}catch(e){return [];}}
+  function favs(){try{if(window.mpWatch)return window.mpWatch.list();}catch(e){}try{return JSON.parse(localStorage.getItem('mp_mfc_fav')||'[]')||[];}catch(e){return [];}} // one watchlist on the account since 2026-11-12 (mp-auth window.mpWatch); the local key is its mirror
   function recents(){try{return JSON.parse(localStorage.getItem('mp_mfc_recent')||'[]')||[];}catch(e){return [];}}
   function noteRecent(s){try{var r=recents().filter(function(x){return x!==s;});r.unshift(s);localStorage.setItem('mp_mfc_recent',JSON.stringify(r.slice(0,8)));}catch(e){}}
   function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search"><div class="mfc-syl" id="mfcSyl"></div>';
@@ -949,7 +949,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       list.innerHTML=sec(mcT('mcFavs',__esT_mpmcharts("favourites",'Favourites')),fv)+sec(mcT('mcRecent',__esT_mpmcharts("recent",'Recent')),rc)+sec(mcT('mcMajors',__esT_mpmcharts("majors",'Majors')),top);}
     if(window.mpLoadTokens)window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;render(inp.value);});
     render('');pullPx(function(){render(inp.value);});inp.addEventListener('input',function(){render(this.value);});
-    list.addEventListener('click',function(e){var st=e.target.closest('[data-fav]');if(st){var s=st.getAttribute('data-fav'),f=favs();if(f.indexOf(s)>=0)f=f.filter(function(x){return x!==s;});else f.unshift(s);try{localStorage.setItem('mp_mfc_fav',JSON.stringify(f.slice(0,20)));}catch(_){}render(inp.value);return;}
+    list.addEventListener('click',function(e){var st=e.target.closest('[data-fav]');if(st){var s=st.getAttribute('data-fav');if(window.mpWatch){try{window.mpWatch.toggle(s);}catch(_){}}else{var f=favs();if(f.indexOf(s)>=0)f=f.filter(function(x){return x!==s;});else f.unshift(s);try{localStorage.setItem('mp_mfc_fav',JSON.stringify(f.slice(0,20)));}catch(_){}}render(inp.value);return;}
       var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');noteRecent(p.sym);clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();mfcSave();});
     setTimeout(function(){try{inp.focus({preventScroll:true});}catch(e){}},60);}
   /* INDICATORS IN GROUPS, EACH WITH ONE LINE OF MEANING (2026-10-08): 25 buttons in a flat grid asked the reader to already know

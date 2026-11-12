@@ -16,9 +16,11 @@ function __esT_mpscreener(k, en) { try { var d = (window.__mpUI && window.__mpUI
   var T=__esT_mpscreener;
   var DATA=[],sortKey='score',sortDir='desc',filterKey='all',query='',sheet=null,curRow=null,LOGOS={},NAMES={},showAll=false,LIMIT=30;
   function track(e){try{window.__mpTrack&&window.__mpTrack('screener',String(e||'').slice(0,40));}catch(_e){}}
-  function wlGet(){try{return JSON.parse(localStorage.getItem('mp_watchlist')||'[]');}catch(e){return [];}}
+  /* ONE WATCHLIST ON THE ACCOUNT (2026-11-12): window.mpWatch (mp-auth.js) holds bare symbols and syncs them to the account; this list
+     has always carried the USDT suffix, so the mirror is read through the same shape and the toggle goes through the store. */
+  function wlGet(){try{if(window.mpWatch)return window.mpWatch.list().map(function(s){return s+'USDT';});}catch(e){}try{return JSON.parse(localStorage.getItem('mp_watchlist')||'[]');}catch(e){return [];}}
   function wlHas(s){var a=wlGet();return a.indexOf(s+'USDT')>=0||a.indexOf(s)>=0;}
-  function wlToggle(s){var a=wlGet(),k=s+'USDT',i=a.indexOf(k);if(i<0&&a.indexOf(s)>=0){k=s;i=a.indexOf(s);}if(i>=0)a.splice(i,1);else a.push(k);try{localStorage.setItem('mp_watchlist',JSON.stringify(a));}catch(e){}}
+  function wlToggle(s){try{if(window.mpWatch){window.mpWatch.toggle(s);return;}}catch(e){}var a=wlGet(),k=s+'USDT',i=a.indexOf(k);if(i<0&&a.indexOf(s)>=0){k=s;i=a.indexOf(s);}if(i>=0)a.splice(i,1);else a.push(k);try{localStorage.setItem('mp_watchlist',JSON.stringify(a));}catch(e){}}
   function fmtPx(p){p=+p;return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:p>=1?2:6});}
   function fmtBig(n){n=+n;if(n>=1e9)return '$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(0)+'K';return '$'+(n||0).toFixed(0);}
   /* ===== On-chain · Memecoins mode (GeckoTerminal trending + new pairs - the DexScreener direction) ===== */

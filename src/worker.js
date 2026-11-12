@@ -19663,7 +19663,7 @@ async function handlePush(url, env, request) {
      the cookie acknowledgement, the Demo Spot view: tiny, per member, under uprefs `dev:<k>`; the page keeps writing
      its local copies and reads the server once per load when signed in. Allow-listed keys, 2 KB each. */
   if (sub === '/device') {
-    const DEVK = ['chat', 'ckok', 'spotview'];
+    const DEVK = ['chat', 'ckok', 'spotview', 'watch', 'calgate']; // watch = the account's watchlist {s:[symbols], ts} (2026-11-12); calgate = the calendar guardrail switch
     let uidD = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); uidD = (await hr.json()).uid; } catch (e) {}
     if (!uidD) return jr({ error: 'not_signed_in' }, 401);
     if (request.method !== 'POST') {

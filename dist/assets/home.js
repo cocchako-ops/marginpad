@@ -5075,8 +5075,12 @@ window.mpSrvOpen=function(payload,ok,fail){
 
   /* ── THE MARKET PICKER ────────────────────────────────────────────────────────────────────────────────── */
   var FAVK = 'mp_pt_favs';
-  function favs() { try { var a = JSON.parse(localStorage.getItem(FAVK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  function favWrite(a) { try { localStorage.setItem(FAVK, JSON.stringify(a.slice(0, 80))); } catch (e) { } }
+  /* ONE WATCHLIST ON THE ACCOUNT (2026-11-12): window.mpWatch in mp-auth.js is the store (localStorage mirror + uprefs dev:watch when
+     signed in, shared with the phone charts and the screener); this key is its mirror, read only in the tick before the deferred bundle
+     parses. Looked up at CALL time - home.js parses first. */
+  function favs() { try { if (window.mpWatch) return window.mpWatch.list(); } catch (e) {} try { var a = JSON.parse(localStorage.getItem(FAVK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function favWrite(a) { try { if (window.mpWatch) { window.mpWatch.set(a); return; } } catch (e) {} try { localStorage.setItem(FAVK, JSON.stringify(a.slice(0, 80))); } catch (e) { } }
+  try { window.addEventListener('mp-watch-change', function () { try { if (document.getElementById('ptMkList')) mkRender(); } catch (e) {} }); } catch (e) {} // another device (or the server merge) changed it while the picker is open
   function favHas(s) { return favs().indexOf(s) >= 0; }
   function favTog(s) { var a = favs(), i = a.indexOf(s); if (i >= 0) a.splice(i, 1); else a.unshift(s); favWrite(a); return a.indexOf(s) >= 0; }
 
