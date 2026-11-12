@@ -68,7 +68,8 @@ async function open(browser, vp, ua) {
 const LAYOUT = () => {
   const bb = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), bottom: Math.round(r.bottom) }; };
   const nav = document.querySelector('.mpbn');
-  const taps = [...document.querySelectorAll('.hm-bar select, .hm-bar button')].map(e => { const r = e.getBoundingClientRect(); return { t: (e.options ? e.options[e.selectedIndex].text : (e.textContent || e.title || '')).trim().slice(0, 16), w: Math.round(r.width), h: Math.round(r.height) }; });
+  // 2026-11-12: the two <select>s are hidden on purpose (the coin pill and the window chips drive them) and the jump buttons are display:none on a narrow desktop - a control nobody can see is not a tap target
+    const taps = [...document.querySelectorAll('.hm-bar select:not(.hm-sel-x), .hm-bar button')].filter(e => e.getBoundingClientRect().width > 0).map(e => { const r = e.getBoundingClientRect(); return { t: (e.options ? e.options[e.selectedIndex].text : (e.textContent || e.title || '')).trim().slice(0, 16), w: Math.round(r.width), h: Math.round(r.height) }; });
   return {
     vw: innerWidth, vh: innerHeight,
     scrollW: document.documentElement.scrollWidth, pageH: document.documentElement.scrollHeight,

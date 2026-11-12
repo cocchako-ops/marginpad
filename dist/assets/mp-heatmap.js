@@ -38,6 +38,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     lined: [__esT_mpheatmap("linedUp",'Lined up'), __esT_mpheatmap("exchangesDoNotTrade",'Exchanges do not trade at exactly the same price - measured on Bitcoin, one venue sat $73 above the other four. When you look at all of them together each book is shifted onto the shared middle price first, so a row means "this far from the price" rather than a number that crosses itself.')],
     zone: ['Liquidation zone', __esT_mpheatmap("aPriceWhereA",'A price where a crowd of leveraged positions would be force-closed. It is a MODEL, not a record: the exchange never publishes who is leveraged where, so this is estimated from price history. Price is often pulled toward the heavy ones, because a forced close is an order that has to happen.')],
     crowded: ['How crowded', 'The column beside the map ranks each level against the OTHERS YOU CAN SEE, not against a dollar amount. 2.3x means we estimate roughly twice as many leveraged traders would be closed out at that price as at an average level on this screen; 0.8x means fewer than average. It is a comparison on purpose - exchanges never publish who is leveraged where, so a dollar figure there would be invented. Use it to rank the levels in front of you, and trust the measured 24h figure in the tooltip when the two disagree.'],
+    what: [__esT_mpheatmap('whatPageT', 'What this page is'), __esT_mpheatmap('whatPageB', 'Real liquidations from eight exchanges, drawn the second they happen. The bright horizontal bands are the prices where crowds of leveraged positions would be force-closed - price tends to get pulled toward the brightest ones and a band disappears once price trades through it. Keys: [ and ] change the window, A / L / S the side, C opens the coin menu, 0 resets the view. Under the map: the live order book and trade tape for the same coin, the book over time, and the whole market\'s liquidations.')],
     targets: ['Targets', __esT_mpheatmap("theNearestModelledLiquidat",'The nearest modelled liquidation zones above and below the price - the same crowds the column beside the map ranks - green where longs get closed out, red where shorts do. Tap one to show it on the map. They are estimates from price history, never a record of money that has changed hands.')],
     costmove: [__esT_mpheatmap("whatItCostsTo",'What it costs to move it'), __esT_mpheatmap("theDollarsOfResting",'The dollars of resting orders inside a tenth of a percent of the price. To lift the price that far, a buyer has to eat all of them - so this is the price of moving the market, in the only unit anybody thinks in. When one side is far cheaper than the other, that is the direction of least resistance right now. It is a fact about the book this second, not a forecast: the orders can be pulled.')],
     measured: [__esT_mpheatmap("measuredNotModelled",'Measured, not modelled'), __esT_mpheatmap("everythingInThisPanel",'Everything in this panel is something that really exists right now: orders standing in five books, trades that really printed. The map above it is a model of where leverage probably sits. We keep the two apart on purpose, and never put a dollar figure on the model.')],
@@ -349,7 +350,7 @@ function bkSelect(cls, opts, cur) {
     '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:25px;height:25px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
-    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 344px);max-height:820px}' +
+    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 300px);max-height:860px}' +
     '.hm-cv{flex:1;min-width:0;display:block;border-radius:10px 0 0 10px;background:#07090c;cursor:crosshair}' +
     '.hm-prof{width:104px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
     '.hm-tip{position:absolute;pointer-events:none;background:rgba(10,12,16,.97);border:1px solid #2a3345;border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.55;color:#dbe4f5;z-index:5;display:none;font-family:"Space Mono",monospace;white-space:nowrap}' +
@@ -389,9 +390,45 @@ function bkSelect(cls, opts, cur) {
     'details.hm-foot-c[open]>summary.hm-foot-h{margin-bottom:6px}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
-    '@media(max-width:980px){.hm-wrap{--hm-tg-h:126px}.hm-wrap[data-bk] .hm-bk{min-height:1693px}.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tg-c{gap:5px}.hm-tg-d{width:30px;font-size:9px}.hm-tgb{display:flex;align-items:baseline;gap:4px;padding:6px 6px}.hm-tgb i{display:inline;margin-top:0;margin-left:auto;font-size:9px;flex:none}.hm-tgb b{display:inline;flex:none;overflow:visible;font-size:11.5px}.hm-foot{order:5}}' +
+    '@media(max-width:980px){.hm-wrap{--hm-tg-h:131px}.hm-wrap[data-bk] .hm-bk{min-height:1693px}.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tg-c{gap:5px}.hm-tg-d{width:30px;font-size:9px}.hm-tgb{display:flex;align-items:baseline;gap:4px;padding:6px 6px}.hm-tgb i{display:inline;margin-top:0;margin-left:auto;font-size:9px;flex:none}.hm-tgb b{display:inline;flex:none;overflow:visible;font-size:11.5px}.hm-foot{order:5}}' +
     '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:8px 10px 9px}'+'.hm-bk-g{grid-template-columns:minmax(0,1fr);gap:13px}'+'.hm-bk-seg{margin-left:0;width:100%}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
+  CSS += '@media(min-width:981px){#heatmap.hm-full{padding:4px 14px 12px}#heatmap.hm-full .hm-wrap{border:0;background:transparent;padding:0;border-radius:0}}.hm-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 9px;padding:9px 0 8px;border-bottom:1px solid #1c2230;background:var(--panel,#0c0f15)}' +
+    '@media(min-width:981px){.hm-top.hm-stuck{position:fixed;top:0;z-index:8;margin:0;padding-left:14px;padding-right:14px;box-shadow:0 10px 24px -18px rgba(0,0,0,.9)}}' +
+    '.hm-top .hm-mast{margin:0;flex:1 1 auto;gap:12px;align-items:center}.hm-top .hm-bar{margin:0;flex:0 1 auto}.hm-top .hm-bar-b{margin-left:0}' +
+    '.hm-top .hm-mast-t{display:flex;align-items:center;gap:6px}' +
+    '.hm-top .hm-mast-b{margin-top:2px}' +
+    '@media(min-width:1100px){.hm-top .hm-mast{display:contents}.hm-top .hm-mast-l{order:0;flex:0 0 auto}.hm-top .hm-bar{order:1;flex:0 1 auto}.hm-top .hm-mast-r{order:2;flex:0 0 auto;margin-left:auto}.hm-top .hm-mast-s{display:none}.hm-top .hm-mast-r .hm-px{font-size:17px}.hm-top .hm-mast-r .hm-stats{font-size:10.5px}}' +
+    '.hm-sel.hm-sel-x{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;opacity:0;pointer-events:none;overflow:hidden;flex:none!important}' +
+    '.hm-bar-a{position:relative;flex-wrap:nowrap}' +
+    '.hm-coin{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 9px 0 6px;border:1px solid #232b3a;border-radius:9px;background:#12161d;color:#fff;font:700 12.5px "Space Mono",monospace;cursor:pointer;white-space:nowrap;flex:none;transition:border-color .15s,background .15s}' +
+    '.hm-coin:hover,.hm-coin[aria-expanded="true"]{border-color:#3a465c;background:#161c25}.hm-coin:focus-visible{outline:none;border-color:#c2f64a}' +
+    '.hm-coin-i{width:18px;height:18px;border-radius:50%;background:#1c2230;flex:none}' +
+    '.hm-coin-n{font:11px "Familjen Grotesk",system-ui,sans-serif;color:#7c8aa2;font-weight:500}' +
+    '.hm-coin svg{width:10px;height:10px;color:#8fa3c4;flex:none}' +
+    '.hm-wins{display:flex;align-items:center;gap:2px;height:28px;padding:2px;border:1px solid #232b3a;border-radius:9px;background:#12161d;flex:none}' +
+    '.hm-wins button{height:22px;padding:0 8px;border:0;border-radius:6px;background:none;color:#8fa3c4;font:700 11.5px "Space Mono",monospace;cursor:pointer;letter-spacing:.02em}' +
+    '.hm-wins button:hover{color:#dbe4f5;background:rgba(255,255,255,.05)}.hm-wins button.on{background:#1a2413;color:#c2f64a}' +
+    '.hm-seg,.hm-btn{height:28px}.hm-seg{border-radius:9px}.hm-btn{width:28px;border-radius:9px}' +
+    '.hm-cm{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(340px,calc(100vw - 24px));max-height:min(62vh,440px);overflow-y:auto;overscroll-behavior:contain;padding:6px;border:1px solid #2a3547;border-radius:12px;background:rgba(12,15,21,.98);box-shadow:0 18px 50px rgba(0,0,0,.65);backdrop-filter:blur(6px)}' +
+    '.hm-cm-h{display:grid;grid-template-columns:1fr auto;gap:8px;padding:4px 8px 6px;font:9.5px "Space Mono",monospace;letter-spacing:.1em;color:#5c6b84;text-transform:uppercase}' +
+    '.hm-cm-r{display:grid;grid-template-columns:22px 1fr auto;grid-template-rows:auto auto;column-gap:9px;align-items:center;width:100%;padding:6px 8px;border:0;border-radius:8px;background:none;color:#dbe4f5;text-align:left;cursor:pointer;font-family:inherit}' +
+    '.hm-cm-r:hover,.hm-cm-r.k{background:rgba(255,255,255,.06)}.hm-cm-r.on{background:rgba(194,246,74,.09)}.hm-cm-r.on .hm-cm-s{color:#c2f64a}' +
+    '.hm-cm-r img{grid-row:1/3;width:22px;height:22px;border-radius:50%;background:#1c2230}' +
+    '.hm-cm-s{font:700 12.5px "Space Mono",monospace;color:#fff}.hm-cm-s small{margin-left:6px;font:11px "Familjen Grotesk",system-ui,sans-serif;color:#7c8aa2;font-weight:500}' +
+    '.hm-cm-v{font:700 11.5px "Space Mono",monospace;color:#c9d4e6;text-align:right;white-space:nowrap}.hm-cm-v small{display:block;font:10px "Space Mono",monospace;color:#5c6b84;font-weight:400;margin-top:1px}' +
+    '.hm-cm-b{grid-column:2/4;height:3px;margin-top:4px;border-radius:2px;background:#2a1512;overflow:hidden}.hm-cm-b i{display:block;height:100%;background:#2ebd85;border-radius:2px}' +
+    '.hm-cm-f{padding:6px 8px 3px;font:10px/1.45 "Familjen Grotesk",system-ui,sans-serif;color:#5c6b84}' +
+    '.hm-jump{display:none;align-items:center;gap:2px;margin-right:4px}@media(min-width:1300px){.hm-jump{display:inline-flex}.hm-jump button.mid{display:none}}@media(min-width:1480px){.hm-jump button.mid{display:inline-block}}' +
+    '.hm-jump button{border:0;background:none;cursor:pointer;color:#7c8aa2;font:600 11px "Familjen Grotesk",system-ui,sans-serif;padding:4px 7px;border-radius:7px;white-space:nowrap}.hm-jump button:hover{color:#dbe4f5;background:rgba(255,255,255,.05)}' +
+    '.hm-under{display:none}' +
+    '.hm-hint{position:absolute;left:10px;right:118px;top:30px;z-index:5;display:flex;align-items:flex-start;gap:9px;max-width:560px;padding:8px 10px 8px 11px;border:1px solid rgba(194,246,74,.35);border-left:3px solid #c2f64a;border-radius:9px;background:rgba(10,13,17,.94);font:12px/1.5 "Familjen Grotesk",system-ui,sans-serif;color:#c9d4e6;box-shadow:0 10px 30px rgba(0,0,0,.5)}' +
+    '.hm-hint b{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;display:block;margin-bottom:2px}' +
+    '.hm-hint em{font-style:normal;color:#eef3fa;font-weight:600}' +
+    '.hm-hint button{flex:none;align-self:center;height:26px;padding:0 10px;border:1px solid rgba(194,246,74,.4);border-radius:7px;background:rgba(194,246,74,.1);color:#c2f64a;font:600 11px "Familjen Grotesk",system-ui,sans-serif;cursor:pointer}.hm-hint button:hover{background:rgba(194,246,74,.2)}' +
+    '@media(max-width:980px){.hm-top{margin:0 0 6px;padding:0 0 7px;gap:6px}.hm-top .hm-mast{flex:1 1 100%;margin:0}.hm-top .hm-bar{flex:1 1 100%}.hm-bar-a,.hm-bar-b{flex:1 1 100%}.hm-wins{flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}.hm-wins::-webkit-scrollbar{display:none}.hm-wins button{flex:1 1 0;padding:0 6px}.hm-coin{height:33px}.hm-wins,.hm-seg,.hm-btn{height:33px}.hm-wins{padding:2px}.hm-wins button{height:29px;min-width:34px}.hm-btn{width:33px}.hm-jump{display:none}' +
+    '@media(max-width:980px){.hm-tg-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.hm-tg-h .hm-q{margin-left:0}.hm-tg-jump{display:inline-flex;gap:5px;margin-left:auto}.hm-tg-jump button{padding:4px 9px;border:1px solid #232b3a;border-radius:999px;background:#12161d;color:#c9d4e6;font:600 10.5px "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;cursor:pointer;white-space:nowrap}.hm-tg-jump button:hover{border-color:#3a465c;color:#fff}}' +
+    '.hm-hint{left:8px;right:8px;top:28px;max-width:none;font-size:11.5px;padding:7px 9px}}';
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
   function poolGone(x) { return S && S.price > 0 && (x.long ? x.price >= S.price : x.price <= S.price); } // crossed by the live price = consumed, waiting for the server sweep
@@ -522,7 +559,16 @@ function bkSelect(cls, opts, cur) {
       // WIDE BINS READ AS A WALL (2026-11-01, owner: "sve treba da bude izuzetno pregledno"): zoomed in, one 0.1% bin is 15px tall and a run of them is a solid slab.
       // Drawn as a line with air on both sides each level can be told from the next; the click box stays the whole bin.
       var dh = bh >= 5 ? Math.max(3, bh * 0.62) : bh, dy = y + (bh - dh) / 2;
-      ctx.fillRect(x0, dy, x1 - x0, dh);
+      // A BAND OLDER THAN THE WINDOW FADES IN FROM THE EDGE (2026-11-12, owner on the 7-day view: "nenormalno dugacke
+      // linije koje idu do pocetka"). Measured: 479 of 650 standing BTC bands were formed before the 7-day window (median
+      // age 18 days), so every one of them started hard at the first candle and the left edge read as a wall. The band
+      // IS that old - the fade says "this continues from before what you can see" instead of "this began on day one".
+      if (x0 <= 0.5 && s.t0 < v.t0 && x1 - x0 > 40) {
+        var fw = Math.min(90, (x1 - x0) * 0.3), g = ctx.createLinearGradient(0, 0, fw, 0);
+        g.addColorStop(0, 'rgba(' + col + ',' + (al * 0.12).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + col + ',' + al.toFixed(3) + ')');
+        ctx.fillStyle = g; ctx.fillRect(x0, dy, fw, dh);
+        ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')'; ctx.fillRect(x0 + fw, dy, x1 - x0 - fw, dh);
+      } else ctx.fillRect(x0, dy, x1 - x0, dh);
       S.bandRects.push({ s: s, x0: x0, x1: x1, y: y, h: bh, al: al });
       // The cut itself is marked, so "this line stops" reads as an event rather than as a rendering bug.
       if (isGone && cx && x1 > x0 + 2) {
@@ -831,10 +877,20 @@ function bkSelect(cls, opts, cur) {
   // bands mean something.
   function heatScale(vis) {
     var n = vis.length; if (!n) return;
-    var ws = vis.map(function (p) { return +p.w || 0; }).sort(function (a, b) { return a - b; });
-    var q = ws[Math.min(n - 1, Math.floor(n * 0.95))] || ws[n - 1] || 1; // the top 5% saturate instead of one outlier owning the scale
-    for (var i = 0; i < n; i++) { var p = vis[i];
-      p._h = Math.min(1, (+p.w || 0) / q);
+    // TWO SCALES, ONE PALETTE (2026-11-12, owner: a cut line that liquidated $10M was drawn grey beside a standing $3M
+    // band drawn yellow). A standing band has only the model's weight to be ranked by. A band the candles have gone
+    // through has something better: the dollars our collector saw liquidate there (obs). Ranking a cut line by the
+    // weight it USED to carry describes a crowd that no longer exists; ranking it by what it liquidated describes the
+    // event, which is what the reader is looking at. Each set is normalised against its own visible p95.
+    var live = [], gone = [], i, p;
+    for (i = 0; i < n; i++) { p = vis[i]; (p.dead || p._gone ? gone : live).push(p); }
+    var q95 = function (arr) { if (!arr.length) return 0; var a = arr.slice().sort(function (x, y) { return x - y; }); return a[Math.min(a.length - 1, Math.floor(a.length * 0.95))] || a[a.length - 1] || 0; };
+    var q = q95(live.map(function (x) { return +x.w || 0; })) || 1; // the top 5% saturate instead of one outlier owning the scale
+    for (i = 0; i < live.length; i++) { p = live[i]; p._h = Math.min(1, (+p.w || 0) / q); }
+    var qo = q95(gone.map(function (x) { return +x.obs || 0; }).filter(function (v) { return v > 0; }));
+    for (i = 0; i < gone.length; i++) { p = gone[i]; var o = +p.obs || 0;
+      // measured nothing there (a sweep older than the loaded window) - keep the model's reading, muted, never bright
+      p._h = (qo > 0 && o > 0) ? Math.min(1, o / qo) : Math.min(0.45, (+p.w || 0) / q);
     }
   }
   function heatAlpha(h) { return 0.085 + Math.pow(h, 0.7) * 0.80; }
@@ -1184,7 +1240,9 @@ function bkSelect(cls, opts, cur) {
       return '<div class="hm-tg-r"><span class="hm-tg-d ' + cls + '">' + lab + '</span><div class="hm-tg-c">' +
         (arr.length ? arr.slice(0, 3).map(cell).join('') : '<span class="hm-tg-none">none within 12%</span>') + '</div></div>';
     };
-    var h = __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>') .replace('</div>', q('targets') + '</div>');
+    var h = (window.innerWidth <= 980 && window.__mpHmJump)
+      ? '<div class="hm-tg-h">' + __esT_mpheatmap('targetsShort', 'TARGETS') + q('targets') + '<span class="hm-tg-jump">' + window.__mpHmJump + '</span></div>'
+      : __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>') .replace('</div>', q('targets') + '</div>');
     var wr = whaleRow();
     h += '<div class="hm-tg-g' + (wr ? ' has-real' : '') + '">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + wr + '</div>';
     // squeeze: strong pools close on BOTH sides
@@ -1858,7 +1916,7 @@ function bkSelect(cls, opts, cur) {
     unmount();
     if (!document.getElementById('hmCss')) { var st = document.createElement('style'); st.id = 'hmCss'; st.textContent = CSS; document.head.appendChild(st); }
     section.classList.add('hm-full');
-    try { document.documentElement.style.overflowY = 'scroll'; } catch (e) {} // keep the scrollbar gutter ALWAYS on - without it this page (which fits the viewport) centers 8px wider than /paper-trade and the logo visibly shifts
+    try { document.documentElement.style.scrollbarGutter = 'stable'; } catch (e) {} // keep the scrollbar gutter ALWAYS on (scrollbar-gutter, not overflow-y:scroll: that one made <body> the scroll container through body{overflow-x:hidden} and killed position:sticky on the top row, 2026-11-12) - without it this page (which fits the viewport) centers 8px wider than /paper-trade and the logo visibly shifts
     coin = (coin || 'BTC').toUpperCase(); if (COINS.indexOf(coin) < 0) coin = 'BTC';
     var win0 = '1D'; try { var qw = (location.search.match(/[?&]win=([A-Za-z0-9]+)/) || [])[1]; if (qw && WINS[qw.toUpperCase()]) win0 = qw.toUpperCase(); } catch (e) {}
     var wrap = el('div', 'hm-wrap');
@@ -1893,11 +1951,16 @@ function bkSelect(cls, opts, cur) {
     var barA = el('div', 'hm-bar-a'), barB = el('div', 'hm-bar-b');
     // The dot-size picker went with the dots: there is nothing left for it to size, and a control that
     // changes nothing is worse than no control.
-    barA.appendChild(selC); barA.appendChild(selW);
-    barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
+    selC.className += ' hm-sel-x'; selC.setAttribute('aria-label', 'Coin'); selC.tabIndex = -1;
+    selW.className += ' hm-sel-x'; selW.setAttribute('aria-label', 'Time window'); selW.tabIndex = -1;
+    var coinBtn = el('button', 'hm-coin'); coinBtn.type = 'button'; coinBtn.setAttribute('aria-haspopup', 'listbox'); coinBtn.setAttribute('aria-expanded', 'false');
+    var winsEl = el('div', 'hm-wins'); winsEl.setAttribute('role', 'group'); winsEl.setAttribute('aria-label', 'Time window');
+    barA.appendChild(selC); barA.appendChild(selW); barA.appendChild(coinBtn); barA.appendChild(winsEl);
+    var jump = el('span', 'hm-jump'); window.__mpHmJump = jump.innerHTML = '<button type="button" data-j=".hm-bk">' + __esT_mpheatmap('jumpFlow', 'Order flow') + '</button><button type="button" class="mid" data-j=".hm-bm">' + __esT_mpheatmap('jumpFilm', 'Book over time') + '</button><button type="button" data-j=".hm-mkt">' + __esT_mpheatmap('jumpPulse', 'Market pulse') + '</button>';
+    barB.appendChild(seg); barB.appendChild(jump); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
-    mast.innerHTML = __esT_mpheatmap("liquidationHeatmapLiveReal",'<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 8 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>');
+    mast.innerHTML = __esT_mpheatmap("liquidationHeatmapLiveReal",'<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP' + q('what') + '</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 8 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>');
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:var(--hm-tg-h,75px)'; /* 2026-10-27: the row is reserved at its filled height (two labelled rows of chips; 126px on a phone via the CSS var) - it used to grow 18 -> 75 and push the stage down 57px when the pools landed (layout shift) */
     var stage = el('div', 'hm-stage');
@@ -1913,7 +1976,7 @@ function bkSelect(cls, opts, cur) {
       ? __esT_mpheatmap("dragWithOneFinger",' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.')
       : __esT_mpheatmap("dragToPanAny",' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.');
     var foot = el('div', 'hm-foot',
-      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. On the map itself: a <b>dot</b> is a liquidation that really happened, a <b>diamond</b> is a level price has already swept, and a <b>bar</b> is an estimated liquidation level. ') + GEST + '</details>' +
+      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. On the map itself: a <b>dot</b> is a liquidation that really happened, a <b>diamond</b> is a level price has already swept, and a <b>bar</b> is an estimated liquidation level. ') + __esT_mpheatmap('footRules2', 'A line that fades in from the left edge was formed before the window you are looking at. A line that stops at a candle was swept by it, and its colour is what really liquidated there, not the estimate it carried. ') + GEST + '</details>' +
       '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footNumbers", '<summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over the window you have picked - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>') + '' + '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footBook", '<summary class="hm-foot-h">READING THE ORDER BOOK</summary>The <b>order book</b> is money that has not moved yet: <span style="color:#ff8f86">red</span> above the price is sellers waiting, <span style="color:#66d3a5">green</span> below is buyers. <b>Size</b> sits at that exact price, <b>Sum</b> adds it up as you walk away, and the bar behind each row is the total so far. The thin line under each row shows <b>which exchanges hold that price</b> — a wall one venue holds alone can vanish in a second, one that four venues share will not. The <b>tape</b> is money that just moved: an arrow up means the buyer crossed the spread and paid the offer, down means the seller hit the bid. Bright rows are prints far larger than the rest, and any print opens up on a click. Pick one exchange or All — and on All each book is lined up on its own mid first, because exchanges genuinely differ by a few dollars. <b>None of this is modelled; the map above is.</b></details>') + '' + '<details class="hm-foot-c"' + FOPEN + '>' + __esT_mpheatmap("footData", '<summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 Bitfinex</b> \u2014 eight venues, nine websocket feeds, and every figure above is what our collector actually received. <b>We do not claim a share of the whole market</b>, because nobody can measure one: no exchange publishes its own liquidation total, and Binance\u2019s public liquidation stream sends <b>at most one order per symbol per second</b>, so on the venue that is the largest part of what we do see, our number is a floor rather than a total in exactly the minute a cascade makes it interesting. The bands are the one estimate on this page - our own model, from live price action, with entries laddered 2\u00d7 to 100\u00d7 and weighted to 10\u201325\u00d7.</details>') + '');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>' + __esT_mpheatmap('legWhale', '<span><b style="color:#e9e7df">—</b> a real whale position\u2019s liquidation price (measured)</span>');
@@ -3198,7 +3261,8 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
     if ([5, 10, 20].indexOf(bmState.mins) < 0) bmState.mins = 10;
     bmChromePaint();
 
-    wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
+    var top = el('div', 'hm-top'); top.appendChild(mast); top.appendChild(bar);
+    wrap.appendChild(top); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(bk); wrap.appendChild(bmEl); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
@@ -3211,10 +3275,100 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       try { var u = new URL(location.href); u.searchParams.set('coin', S.coin); if (S.win === '1D') u.searchParams.delete('win'); else u.searchParams.set('win', S.win); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
     }
     S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.obs = null; S.obsWin = 0; updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; if (S.syncTop) S.syncTop(); S.obs = null; S.obsWin = 0; updHead(); urlSync(); if (S.bkLoad) S.bkLoad(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     // S.obs belongs to the window it was measured over, so it is dropped here rather than left to read as
     // the new window's total for the second before the refetch answers.
-    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.obs = null; S.obsWin = 0; updHead(); urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
+    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; if (S.syncTop) S.syncTop(); S.obs = null; S.obsWin = 0; updHead(); urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
+    // ---- THE PILL, THE CHIPS, THE MENU (2026-11-12) - the two <select>s stay the one control path; these drive them.
+    var NAMES = { BTC: 'Bitcoin', ETH: 'Ethereum', SOL: 'Solana', XRP: 'XRP', DOGE: 'Dogecoin', BNB: 'BNB', ADA: 'Cardano', LINK: 'Chainlink', AVAX: 'Avalanche', LTC: 'Litecoin' };
+    var CARET = '<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg>';
+    function coinIco(c) { return '<img class="hm-coin-i" alt="" src="/api/coinicon?sym=' + encodeURIComponent(c) + '&v=2" onerror="this.style.visibility=\'hidden\'">'; }
+    function winTitle(k) { for (var i = 0; i < selW.options.length; i++) if (selW.options[i].value === k) return selW.options[i].textContent; return k; }
+    function syncCoin() { coinBtn.innerHTML = coinIco(S.coin) + '<b>' + S.coin + '</b><span class="hm-coin-n">' + (NAMES[S.coin] || '') + '</span>' + CARET; coinBtn.setAttribute('aria-label', __esT_mpheatmap('coinPick', 'Coin') + ': ' + S.coin); }
+    function syncWins() { winsEl.innerHTML = Object.keys(WINS).map(function (k) { return '<button type="button" data-w="' + k + '"' + (k === S.win ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ' title="' + winTitle(k) + '">' + k + '</button>'; }).join(''); }
+    S.syncTop = function () { syncCoin(); syncWins(); };
+    winsEl.addEventListener('click', function (ev) { var b = ev.target.closest('[data-w]'); if (!b || !S) return; var k = b.getAttribute('data-w'); if (k === S.win) return; selW.value = k; selW.dispatchEvent(new Event('change')); });
+    var coinMenu = null, COINSTAT = null, coinStatAt = 0;
+    function coinMenuClose() { if (coinMenu) { coinMenu.remove(); coinMenu = null; coinBtn.setAttribute('aria-expanded', 'false'); } }
+    function coinRows() {
+      var st = COINSTAT || {}, h = '<div class="hm-cm-h"><span>' + __esT_mpheatmap('cmHead', 'Coin') + '</span><span>' + __esT_mpheatmap('cmHead2', 'Liquidated 24h') + '</span></div>';
+      COINS.forEach(function (c) {
+        var s = st[c], lp = (window.mpLivePrices && window.mpLivePrices[c] && +window.mpLivePrices[c].p > 0) ? +window.mpLivePrices[c].p : 0;
+        var lsh = s && s.liq > 0 ? Math.round(s.long / s.liq * 100) : null;
+        h += '<button type="button" class="hm-cm-r' + (c === S.coin ? ' on' : '') + '" role="option" data-c="' + c + '" aria-selected="' + (c === S.coin) + '">' + coinIco(c)
+          + '<span class="hm-cm-s">' + c + '<small>' + (NAMES[c] || '') + '</small></span>'
+          + '<span class="hm-cm-v">' + (s && s.liq > 0 ? money(s.liq) : (COINSTAT ? '-' : '…')) + (lp ? '<small>$' + fpx(lp) + '</small>' : '') + '</span>'
+          + (lsh !== null ? '<span class="hm-cm-b" title="' + lsh + '% longs"><i style="width:' + lsh + '%"></i></span>' : '')
+          + '</button>';
+      });
+      return h + '<div class="hm-cm-f">' + __esT_mpheatmap('cmFoot', 'Green share of the bar = longs liquidated, red = shorts, our own collector, all venues. Arrow keys move, Enter picks.') + '</div>';
+    }
+    function coinMenuOpen() {
+      coinMenuClose(); helpClose();
+      coinMenu = el('div', 'hm-cm'); coinMenu.setAttribute('role', 'listbox'); coinMenu.innerHTML = coinRows();
+      barA.appendChild(coinMenu); coinBtn.setAttribute('aria-expanded', 'true');
+      var r = coinBtn.getBoundingClientRect(), mw = coinMenu.getBoundingClientRect().width;
+      if (r.left + mw > innerWidth - 12) coinMenu.style.left = Math.max(12 - r.left, innerWidth - 12 - mw - r.left) + 'px';
+      var cur = coinMenu.querySelector('.hm-cm-r.on'); if (cur) { cur.classList.add('k'); try { cur.focus({ preventScroll: true }); } catch (e) {} }
+      if (!COINSTAT || Date.now() - coinStatAt > 120000) {
+        fetch('/api/v1/liquidations').then(function (x) { return x.ok ? x.json() : null; }).then(function (j) {
+          var d = (j && (j.data || j)) || {}, m = {}; (d.coins || []).forEach(function (x) { if (x && x.s) m[String(x.s).toUpperCase()] = { liq: +x.liq || 0, long: +x.long || 0, short: +x.short || 0 }; });
+          COINSTAT = m; coinStatAt = Date.now(); if (coinMenu) { var k0 = coinMenu.querySelector('.hm-cm-r.k'), kc = k0 && k0.getAttribute('data-c'); coinMenu.innerHTML = coinRows(); var k1 = kc && coinMenu.querySelector('[data-c="' + kc + '"]'); if (k1) k1.classList.add('k'); }
+        }).catch(function () { COINSTAT = COINSTAT || {}; });
+      }
+    }
+    coinBtn.addEventListener('click', function (ev) { ev.stopPropagation(); if (coinMenu) coinMenuClose(); else coinMenuOpen(); });
+    barA.addEventListener('click', function (ev) { var b = ev.target.closest && ev.target.closest('.hm-cm-r'); if (!b || !S) return; ev.stopPropagation(); var c = b.getAttribute('data-c'); coinMenuClose(); if (c && c !== S.coin) { selC.value = c; selC.dispatchEvent(new Event('change')); } coinBtn.focus(); });
+    document.addEventListener('click', function (ev) { if (coinMenu && !(ev.target.closest && ev.target.closest('.hm-cm'))) coinMenuClose(); });
+    document.addEventListener('keydown', function (ev) {
+      if (!coinMenu) return;
+      var rows = [].slice.call(coinMenu.querySelectorAll('.hm-cm-r')), i = rows.findIndex(function (x) { return x.classList.contains('k'); });
+      if (ev.key === 'Escape') { ev.preventDefault(); coinMenuClose(); coinBtn.focus(); }
+      else if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); var n = (i + (ev.key === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length; rows.forEach(function (x) { x.classList.remove('k'); }); rows[n].classList.add('k'); try { rows[n].focus({ preventScroll: true }); } catch (e) {} }
+      else if (ev.key === 'Enter' && i >= 0) { ev.preventDefault(); rows[i].click(); }
+    });
+    // the jump links scroll to the block they name (the hash is cosmetic - the blocks have no ids by design)
+    wrap.addEventListener('click', function (ev) { var a = ev.target.closest && ev.target.closest('.hm-jump button,.hm-tg-jump button'); if (!a) return; ev.preventDefault(); var t = wrap.querySelector(a.getAttribute('data-j')); if (!t) return; var y = t.getBoundingClientRect().top + scrollY - (window.innerWidth > 980 ? (top.getBoundingClientRect().height + 8) : 8); try { window.scrollTo({ top: y, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, y); } });
+    // FIRST VISIT: one sentence over the bottom of the map, remembered per device. The long explanation is in
+    // HOW TO READ IT below; this is the one thing a newcomer needs before the picture makes sense.
+    var HINTK = 'mp_hm_hint1', hintSeen = false; try { hintSeen = !!localStorage.getItem(HINTK); } catch (e) {}
+    if (!hintSeen) {
+      var hint = el('div', 'hm-hint', '<span><b>' + __esT_mpheatmap('hintT', 'HOW TO READ THE MAP') + '</b>' + __esT_mpheatmap('hintB', 'Each bright band is a price where a crowd of leveraged traders gets liquidated - <em>price is drawn toward the brightest ones</em>. Tap a band for the numbers; the chips above the map are the nearest ones.') + '</span><button type="button">' + __esT_mpheatmap('hintOk', 'Got it') + '</button>');
+      hint.querySelector('button').addEventListener('click', function (ev) { ev.stopPropagation(); try { localStorage.setItem(HINTK, '1'); } catch (e) {} hint.remove(); });
+      stage.appendChild(hint);
+    }
+    // KEYBOARD (2026-11-12): [ and ] walk the window, A / L / S pick the side, C opens the coin menu, 0 resets the view.
+    // Never while something is being typed, and the open coin menu keeps its own keys.
+    document.addEventListener('keydown', function (ev) {
+      if (!S || coinMenu || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+      var t = ev.target, tg = t && t.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT' || (t && t.isContentEditable)) return;
+      var k = ev.key, ks = Object.keys(WINS);
+      if (k === '[' || k === ']') { var i = ks.indexOf(S.win) + (k === ']' ? 1 : -1); if (i >= 0 && i < ks.length) { ev.preventDefault(); selW.value = ks[i]; selW.dispatchEvent(new Event('change')); } }
+      else if (k === 'a' || k === 'l' || k === 's') { var b = seg.querySelector('[data-s="' + (k === 'a' ? 'all' : k === 'l' ? 'long' : 'short') + '"]'); if (b) b.click(); }
+      else if (k === 'c') { ev.preventDefault(); coinMenuOpen(); }
+      else if (k === '0' && S.bars.length) { var w0 = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w0.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; S.yView = null; sched(); }
+    });
+    // THE TOP ROW STAYS WITH THE READER ON A DESKTOP. position:sticky cannot do it here: html{overflow-x:clip} stops
+    // body{overflow-x:hidden} propagating to the viewport, so <body> is the scroll container and sticky never reaches
+    // the top of the screen (measured 2026-11-12). Fixed on scroll instead, with the wrap padded by the row's own height
+    // so nothing under it moves; one rAF per scroll burst; phones keep the row in flow.
+    var stuck = false, stRaf = 0;
+    function stick() {
+      stRaf = 0; if (!S) return;
+      var wide = window.innerWidth > 980, wr = wrap.getBoundingClientRect(), want = wide && wr.top < -4 && wr.bottom > 200;
+      if (want) { top.style.left = wr.left + 'px'; top.style.width = wr.width + 'px'; }
+      if (want === stuck) return;
+      stuck = want;
+      if (stuck) { var th = top.getBoundingClientRect().height; wrap.style.paddingTop = (th + 9) + 'px'; top.classList.add('hm-stuck'); }
+      else { top.classList.remove('hm-stuck'); top.style.left = ''; top.style.width = ''; wrap.style.paddingTop = ''; }
+    }
+    function stickPing() { if (!stRaf) stRaf = requestAnimationFrame(stick); }
+    addEventListener('scroll', stickPing, { passive: true }); addEventListener('resize', stickPing); S.timers.push(setInterval(stickPing, 1500));
+    S._unstick = function () { removeEventListener('scroll', stickPing); removeEventListener('resize', stickPing); };
+    // the price in the top row breathes with the tick: green up, red down, through WAAPI (never @keyframes)
+    var lastPx = 0;
+    window.addEventListener('mp:price', function (ev) { var d = ev.detail || {}; if (!S || d.sym !== S.coin || !(+d.p > 0)) return; if (lastPx && +d.p !== lastPx && pxEl.animate) { try { pxEl.animate([{ color: +d.p > lastPx ? '#2ebd85' : '#ff6258' }, { color: '#fff' }], { duration: 700, easing: 'ease-out' }); } catch (e) {} } lastPx = +d.p; });
+    S.syncTop();
     selD.addEventListener('change', function () { if (!S) return; var v = +selD.value; S.showDots = v >= 0; S.dotMin = Math.max(0, v);
       try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
       if (S.sel && S.sel.type === 'ev' && !dotOk(S.sel.ref)) { S.sel = null; if (S.showSel) S.showSel(); } // never leave a selection pinned to a dot that is no longer drawn
@@ -3395,7 +3549,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
   }
   function unmount() {
     if (!S) return;
-    try { document.documentElement.style.overflowY = ''; } catch (e) {}
+    try { if (S && S._unstick) S._unstick(); } catch (e) {} try { document.documentElement.style.scrollbarGutter = ''; } catch (e) {}
     try { S.timers.forEach(clearInterval); } catch (e) {}
     try { window.removeEventListener('mp:price', S.onPrice); } catch (e) {}
     try { document.removeEventListener('visibilitychange', S.onVis); } catch (e) {}
