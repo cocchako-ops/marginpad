@@ -15,6 +15,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const CT = { js: 'text/javascript', css: 'text/css', html: 'text/html; charset=utf-8' };
 function localFile(u) { const p = new URL(u).pathname; if (p.indexOf('/assets/') === 0) return path.join(ROOT, 'dist', p); if (/^\/(paper-trade|charts|heatmap|screener|calculators|swap)$/.test(p)) return path.join(ROOT, 'app', 'index.html'); if (p === '/') return path.join(ROOT, 'dist', 'index.html'); return null; }
 const DAY = new Date().toISOString().slice(0, 10);
+{ /* THE WINNER IS PAID $1 (2026-11-13): the settle credits the AUTHOR through the ledger's /gift with from:'totd' and a one-day `once`, publishes
+     `usd` on GET so the rail, the panel and the homepage strip never type the figure, and the panel + chat chip exist in mp-auth. */
+  const W = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8'), MA = fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'mp-auth.js'), 'utf8'), HM = fs.readFileSync(path.join(ROOT, 'dist', 'demo-home', 'index.html'), 'utf8');
+  chk('pure: TOTD_USD_C is 100 and the settle pays it through the ledger /gift as from:totd with once:86400, paging on a failed credit', /const TOTD_USD_C = 100;/.test(W) && /JSON\.stringify\(\{ acct: 'u:' \+ auid, cents: TOTD_USD_C, from: 'totd', once: 86400 \}\)/.test(W) && /kind: 'totd-pay-failed'/.test(W));
+  chk('pure: GET /api/totd publishes usd beside xp, under a bumped cache key', /xp: TOTD_XP, usd: TOTD_USD_C \/ 100 \}/.test(W) && /__totd_v2_/.test(W) && !/__totd_v1_/.test(W));
+  chk('pure: mp-auth carries the panel (mpTotdPanel), the chat header chip (.ct-totd-btn) and the ?totd=1 opener', /window\.mpTotdPanel = \{ open: tpOpen/.test(MA) && /className = 'ct-totd-btn'/.test(MA) && /\[\?&\]totd=1/.test(MA));
+  chk('pure: the homepage strip always prints and links the panel', /paper-trade\?totd=1/.test(HM) && /nominate and vote/.test(HM));
+}
 const TK = (id, status) => ({ v: 1, sym: 'SOL', side: 'long', status, entry: 80, exit: status === 'open' ? null : 84, lev: 10, roe: 50, pnl: 50, margin: 100, notional: 1000, qty: 12.5, ts: Date.now() - 3600000, closeTs: status === 'open' ? null : Date.now() - 600000, by: 'e2e_sharer', at: Date.now() });
 async function mk(browser, url, w, o) {
   o = o || {}; const ctx = await browser.createBrowserContext(); const p = await ctx.newPage();

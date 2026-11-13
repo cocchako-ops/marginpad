@@ -1021,6 +1021,22 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     + '.ct-tk-totd{display:flex;align-items:center;gap:8px;padding:5px 7px 6px;border-top:1px solid #1f2936;background:rgba(0,0,0,.2)}.ct-tk-totd:empty{display:none}'
     + '.ct-tk-totdb{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:999px;border:1px solid #2c3849;background:transparent;color:#aab6c4;font:700 10.5px/1 "Familjen Grotesk",sans-serif;letter-spacing:.03em;cursor:pointer;transition:border-color .15s,background .15s,color .15s}'
     + '.ct-tk-totdb svg{width:13px;height:13px;flex:none}.ct-tk-totdb:hover{border-color:#c2f64a;color:#e9e7df}.ct-tk-totdb.cand{color:#e9e7df;border-color:#3a4a60}.ct-tk-totdb.on{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.1)}.ct-tk-totdb.own{opacity:.6;cursor:default}.ct-tk-totdb.done{opacity:.55}.ct-tk-totdb.busy{opacity:.5;pointer-events:none}'
+    /* the trade-of-the-day chip in the chat header and the panel (2026-11-13) */
+    + '.ct-totd-btn{position:relative;background:none;border:none;color:#7c8794;cursor:pointer;padding:2px 6px;line-height:1;display:inline-flex;align-items:center}.ct-totd-btn:hover{color:#f0c35a}.ct-totd-btn svg{width:17px;height:17px}.ct-totd-btn .n{position:absolute;top:-4px;right:-1px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;background:#f0c35a;color:#0a0b0d;font:800 9px/14px "Space Mono",monospace;text-align:center;font-style:normal}.ct-totd-btn .n[hidden]{display:none}'
+    + '#mpTotdP{position:fixed;inset:0;z-index:2147483645;display:none;align-items:center;justify-content:center;padding:16px;font-family:"Familjen Grotesk",system-ui,sans-serif}#mpTotdP.on{display:flex}html.mpt-on{overflow:hidden}'
+    + '.mpt-bd{position:absolute;inset:0;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}'
+    + '.mpt-card{position:relative;width:100%;max-width:400px;max-height:calc(100dvh - 32px);overflow:auto;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),#0b0e13;border:1px solid rgba(240,195,90,.35);border-radius:18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 46px -22px rgba(240,195,90,.6);color:#dfe4ec}'
+    + '.mpt-h{display:flex;align-items:center;gap:10px;padding:14px 14px 10px;border-bottom:1px solid rgba(255,255,255,.07)}.mpt-ic{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:rgba(240,195,90,.14);color:#f0c35a;flex:none}.mpt-ic svg{width:17px;height:17px}.mpt-t{flex:1;font:800 16px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em;color:#fff}'
+    + '.mpt-x{width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#8b97a5;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}.mpt-x svg{width:14px;height:14px}.mpt-x:hover{color:#fff}'
+    + '.mpt-b{padding:12px 14px 14px}.mpt-stake{font-size:12.5px;line-height:1.45;color:#aab3bf;padding:10px 12px;border-radius:11px;background:rgba(240,195,90,.07);border:1px solid rgba(240,195,90,.22);margin-bottom:12px}.mpt-stake b{color:#f0c35a;font-weight:800;font-family:"Space Mono",monospace;letter-spacing:-.01em}'
+    + '.mpt-win{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;font-size:12.5px;color:#c7cdd4;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:12px}.mpt-win .k{font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#6f7b89}.mpt-win b{color:#fff}.mpt-win .n{margin-left:auto;color:#8b97a5;font-size:11px}'
+    + '.mpt-k{font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#6f7b89;margin:0 0 7px}.mpt-l{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}'
+    + '.mpt-c{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}.mpt-c.mine{border-color:rgba(194,246,74,.35)}.mpt-ci{flex:1;min-width:0}.mpt-cs{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.mpt-cs b{font:800 14px "Space Mono",monospace;color:#fff}.mpt-cs i{font:700 9px "Space Mono",monospace;letter-spacing:.04em;padding:2px 6px;border-radius:4px;font-style:normal}.mpt-cs i.l{color:#34d99a;background:rgba(46,189,133,.15)}.mpt-cs i.s{color:#ff7b72;background:rgba(255,98,88,.15)}'
+    + '.mpt-roe{font:700 12px "Space Mono",monospace;color:#34d99a}.mpt-roe.l{color:#ff6c5c}.mpt-cb{font-size:11.5px;color:#8b97a5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpt-cb [data-lbu],.mpt-win [data-lbu]{color:#dfe4ec;font-weight:600;cursor:pointer}.mpt-cb [data-lbu]:hover,.mpt-win [data-lbu]:hover{color:#fff;text-decoration:underline}'
+    + '.mpt-e{font-size:12.5px;color:#8b97a5;padding:12px;border-radius:11px;border:1px dashed rgba(255,255,255,.12);text-align:center;margin-bottom:12px}'
+    + '.mpt-how{margin:0 0 12px;padding:0 0 0 18px;font-size:12px;line-height:1.5;color:#aab3bf}.mpt-how li{margin-bottom:4px}'
+    + '.mpt-f{display:flex;gap:8px}.mpt-chat{flex:1;height:38px;border-radius:10px;border:1px solid #f0c35a;background:#f0c35a;color:#0a0b0d;font:800 12.5px "Space Mono",monospace;letter-spacing:.03em;cursor:pointer}.mpt-chat:hover{background:#ffd97a}.mpt-chat.ghost{background:transparent;color:#f0c35a}'
+    + '@media(max-width:619px){#mpTotdP{align-items:flex-end;padding:0}.mpt-card{max-width:none;border-radius:18px 18px 0 0;max-height:calc(100dvh - 24px);padding-bottom:env(safe-area-inset-bottom)}}'
     + '.ct-tk-totdn{font:10.5px/1 "Familjen Grotesk",sans-serif;color:#6c7681}'
     + '.ct-tk-rxb{display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px 0 5px;border-radius:999px;border:1px solid transparent;background:transparent;font-size:13px;line-height:1;cursor:pointer;color:#e9e7df;opacity:.42;box-shadow:none;transition:opacity .15s,border-color .15s,background .15s;flex:none}'
     + '.ct-tk-rxb .g{display:flex;align-items:center;justify-content:center;width:16px;height:16px;color:#aab6c4}'
@@ -4121,13 +4137,14 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
      decides everything (your own nomination, a second one, an open trade) - the button only asks and says what came back. */
   var totdS = null, totdT = 0, totdP = null;
   function totdGet(force) { if (!force && totdP && Date.now() - totdT < 30000) return totdP; totdT = Date.now(); totdP = fetch('/api/totd' + (force ? '?nc=1' : ''), { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) totdS = d; return totdS; }).catch(function () { return totdS; }); return totdP; }
-  function totdPaintAll() { Array.prototype.forEach.call(document.querySelectorAll('.ct-tk-totd[data-totd]'), totdPaint); }
+  function totdPaintAll() { Array.prototype.forEach.call(document.querySelectorAll('.ct-tk-totd[data-totd]'), totdPaint); try { if (window.mpTotdPanel && window.mpTotdPanel.isOpen()) window.mpTotdPanel.paint(); } catch (e) {} try { var ci = document.querySelector('.ct-totd-btn .n'); if (ci) { var cn = totdS && totdS.cands ? totdS.cands.length : 0; ci.textContent = cn ? String(cn) : ''; ci.hidden = !cn; } } catch (e) {} }
   function totdPaint(el) {
     var id = el.getAttribute('data-totd'), s = totdS; if (!s) { el.innerHTML = ''; return; }
     var c = null; for (var i = 0; i < (s.cands || []).length; i++) if (s.cands[i].id === id) { c = s.cands[i]; break; }
     var mine = s.mine === id, cnt = c ? (+c.n || 0) : 0;
     var lbl = c ? (__esT_mpauth("totdVote", 'Vote') + (cnt ? ' · ' + cnt : '')) : __esT_mpauth("totdNominate", 'Nominate for trade of the day');
-    var tip = c ? (c.own ? __esT_mpauth("totdOwn", 'Your nomination - the room votes') : __esT_mpauth("totdVoteT", 'Vote for this as the trade of the day')) : __esT_mpauth("totdNomT", 'Put this closed trade up for the vote - one nomination a day');
+    var stk = '$' + (s.usd != null ? +s.usd : 1) + ' + ' + (s.xp != null ? +s.xp : 100) + ' XP';
+    var tip = (c ? (c.own ? __esT_mpauth("totdOwn", 'Your nomination - the room votes') : __esT_mpauth("totdVoteT", 'Vote for this as the trade of the day')) : __esT_mpauth("totdNomT", 'Put this closed trade up for the vote - one nomination a day')) + ' · ' + stk + ' ' + __esT_mpauth("totdToAuthor", 'to the author');
     el.innerHTML = '<button type="button" class="ct-tk-totdb' + (c ? ' cand' : '') + (mine ? ' on' : '') + (c && c.own ? ' own' : '') + (!c && s.nominated === true ? ' done' : '') + '" data-totdop="' + (c ? 'vote' : 'nominate') + '" data-totdid="' + esc(id) + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span>' + esc(lbl) + '</span></button>' + (c ? '<span class="ct-tk-totdn">' + esc(__esT_mpauth("totdRunning", 'running for trade of the day')) + '</span>' : '');
   }
   function totdMount(card, id) { var el = document.createElement('div'); el.className = 'ct-tk-totd'; el.setAttribute('data-totd', id); card.appendChild(el); totdGet().then(function () { totdPaint(el); }); }
@@ -4149,6 +4166,66 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     }).catch(function () { window.__mpTotdLast = { error: 'network' }; }).then(function () { b.classList.remove('busy'); });
   }, true);
   window.__mpTotd = { get: totdGet, paint: totdPaintAll, state: function () { return totdS; } };
+  /* THE TRADE OF THE DAY HAS ONE PLACE TO BE FOUND (2026-11-13, owner: "Vote za trade of the day mi uopste nije jasan gde je"): until now
+     the vote lived only as a rail under a shared CLOSED ticket in the room, which a reader meets by accident. `window.mpTotdPanel` is a
+     sheet (#mpTotdP): the stake ($1 + 100 XP to the author, the figures from the server's own answer), yesterday's winner, today's
+     candidates with the SAME Vote button the rail uses (one click handler, one state), and the three steps to nominate. Opened by the
+     star chip in the chat header (with today's candidate count), by `?totd=1` on any page (the homepage strip links there), and by
+     anything calling mpTotdPanel.open(). A [data-lbu] name opens the profile card above it. WAAPI reveal (the owner's Windows renders
+     no @keyframes). */
+  var tpEl = null, tpWin = null;
+  function tpStake(s) { s = s || totdS || {}; var usd = s.usd != null ? +s.usd : 1, xp = s.xp != null ? +s.xp : 100; return '$' + usd + ' + ' + xp + ' XP'; }
+  function tpRoe(v) { if (v == null || !isFinite(+v)) return ''; return '<span class="mpt-roe' + (+v < 0 ? ' l' : '') + '">' + (+v >= 0 ? '+' : '') + (+v).toFixed(1) + '%</span>'; }
+  function tpRow(c, s) {
+    var mine = s && s.mine === c.id, cnt = +c.n || 0;
+    var lbl = __esT_mpauth("totdVote", 'Vote') + (cnt ? ' · ' + cnt : '');
+    var tip = c.own ? __esT_mpauth("totdOwn", 'Your nomination - the room votes') : __esT_mpauth("totdVoteT", 'Vote for this as the trade of the day');
+    return '<div class="mpt-c' + (mine ? ' mine' : '') + '" data-tpid="' + esc(c.id) + '"><div class="mpt-ci"><div class="mpt-cs"><b>' + esc(c.sym) + '</b><i class="' + (c.side === 'short' ? 's' : 'l') + '">' + (c.side === 'short' ? 'SHORT' : 'LONG') + '</i>' + tpRoe(c.roe) + '</div><div class="mpt-cb">' + __esT_mpauth("totdBy", 'by') + ' <span data-lbu="' + esc(c.by) + '" role="button" tabindex="0">@' + esc(c.by) + '</span>' + (c.own ? ' · ' + __esT_mpauth("totdYours", 'your nomination') : '') + '</div></div>'
+      + '<button type="button" class="ct-tk-totdb cand' + (mine ? ' on' : '') + (c.own ? ' own' : '') + '" data-totdop="vote" data-totdid="' + esc(c.id) + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span>' + esc(lbl) + '</span></button></div>';
+  }
+  function tpPaint() {
+    if (!tpEl) return; var s = totdS, body = tpEl.querySelector('.mpt-b'); if (!body) return;
+    var cands = (s && s.cands) || [], n = cands.length;
+    var h = '<div class="mpt-stake"><b>' + tpStake(s) + '</b> ' + __esT_mpauth("totdStake", 'to the author of the winning trade. The room votes until midnight UTC; the most votes wins, a tie goes to the bigger ROE.') + '</div>';
+    if (tpWin) h += '<div class="mpt-win"><span class="k">' + __esT_mpauth("totdYesterday", 'Yesterday') + '</span><b>' + esc(tpWin.sym) + ' ' + (tpWin.side === 'short' ? 'short' : 'long') + '</b>' + tpRoe(tpWin.roe) + ' <span data-lbu="' + esc(tpWin.by) + '" role="button" tabindex="0">@' + esc(tpWin.by) + '</span><span class="n">' + (+tpWin.n || 0) + ' ' + __esT_mpauth(+tpWin.n === 1 ? "totdVote1" : "totdVotes", +tpWin.n === 1 ? 'vote' : 'votes') + '</span></div>';
+    h += '<div class="mpt-k">' + __esT_mpauth("totdToday", 'Today') + (n ? ' · ' + n : '') + '</div>';
+    h += n ? '<div class="mpt-l">' + cands.map(function (c) { return tpRow(c, s); }).join('') + '</div>' : '<div class="mpt-e">' + __esT_mpauth("totdNone", 'Nobody is running yet today - be the one who nominates.') + '</div>';
+    h += '<div class="mpt-k">' + __esT_mpauth("totdHowK", 'How a trade gets here') + '</div><ol class="mpt-how"><li>' + __esT_mpauth("totdHow1", 'Close a trade and press Share on its ticket - it lands in the room as a card.') + '</li><li>' + __esT_mpauth("totdHow2", 'Press Nominate under a shared closed ticket - yours or anybody\'s, one nomination a day.') + '</li><li>' + __esT_mpauth("totdHow3", 'The room votes, one vote each. At midnight UTC the author of the winner is paid.') + '</li></ol>';
+    h += '<div class="mpt-f"><button type="button" class="mpt-chat" data-tpchat>' + __esT_mpauth("totdOpenChat", 'Open the chat') + '</button>' + (s && s.signedIn === false ? '<button type="button" class="mpt-chat ghost" data-auth-open>' + __esT_mpauth("totdSignIn", 'Sign in to vote') + '</button>' : '') + '</div>';
+    body.innerHTML = h;
+  }
+  function tpOpen() {
+    if (!tpEl) {
+      tpEl = document.createElement('div'); tpEl.id = 'mpTotdP'; tpEl.setAttribute('role', 'dialog'); tpEl.setAttribute('aria-modal', 'true');
+      tpEl.innerHTML = '<div class="mpt-bd" data-tpx></div><div class="mpt-card"><div class="mpt-h"><span class="mpt-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></span><span class="mpt-t">' + __esT_mpauth("totdTitle", 'Trade of the day') + '</span><button type="button" class="mpt-x" data-tpx aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="mpt-b"><div class="mpt-e">' + __esT_mpauth("totdLoading", 'Loading today\'s vote…') + '</div></div></div>';
+      document.body.appendChild(tpEl);
+      tpEl.addEventListener('click', function (e) { if (e.target.closest('[data-tpx]')) { tpClose(); return; } if (e.target.closest('[data-tpchat]')) { tpClose(); try { if (window.mpEnsureChat) window.mpEnsureChat(function () { if (window.mpOpenChat) window.mpOpenChat(); }); else if (window.mpOpenChat) window.mpOpenChat(); } catch (x) {} } });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && tpEl && tpEl.classList.contains('on')) tpClose(); });
+    }
+    tpEl.classList.add('on'); document.documentElement.classList.add('mpt-on');
+    try { tpEl.querySelector('.mpt-card').animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' }); } catch (e) {}
+    tpPaint();
+    totdGet(true).then(function () { tpPaint(); });
+    fetch('/api/totd?win=1', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { tpWin = d.win || null; if (d.usd != null && totdS) totdS.usd = d.usd; tpPaint(); } }).catch(function () {});
+    try { window.__mpTrack && window.__mpTrack('totd', 'panel'); } catch (e) {}
+  }
+  function tpClose() { if (!tpEl) return; tpEl.classList.remove('on'); document.documentElement.classList.remove('mpt-on'); }
+  window.mpTotdPanel = { open: tpOpen, close: tpClose, paint: tpPaint, isOpen: function () { return !!(tpEl && tpEl.classList.contains('on')); } };
+  /* the chat header chip: a star with today's candidate count, read when the chat box OPENS (never on page load) */
+  function tpChip() {
+    var bx = document.getElementById('chatBox'), h = bx && bx.querySelector('.ct-head'); if (!h) return false;
+    if (h.querySelector('.ct-totd-btn')) return true;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'ct-totd-btn'; b.title = __esT_mpauth("totdTitle", 'Trade of the day'); b.setAttribute('aria-label', b.title);
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><i class="n" hidden></i>';
+    var sup = h.querySelector('.ct-sup-btn'), g = h.querySelector('.ct-gear'), x = h.querySelector('.ct-x'); h.insertBefore(b, sup || g || x || null);
+    b.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); tpOpen(); });
+    var cnt = function () { totdGet().then(function (s) { var n = s && s.cands ? s.cands.length : 0, i = b.querySelector('.n'); if (!i) return; i.textContent = n ? String(n) : ''; i.hidden = !n; }); };
+    try { new MutationObserver(function () { if (!bx.hidden) cnt(); }).observe(bx, { attributes: true, attributeFilter: ['hidden'] }); } catch (e) {}
+    if (!bx.hidden) cnt();
+    return true;
+  }
+  (function () { if (tpChip()) return; var mo = null; try { mo = new MutationObserver(function () { if (document.getElementById('chatBox') && tpChip()) { try { mo.disconnect(); } catch (e) {} } }); mo.observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {} var t = 0; (function look() { if (tpChip()) { try { mo && mo.disconnect(); } catch (e) {} return; } if (++t > 240) return; setTimeout(look, 500); })(); })();
+  if (/[?&]totd=1(&|$)/.test(location.search)) setTimeout(tpOpen, 400);
   function hydrate(root) {
     root = root || document; if (!root.querySelectorAll) return;
     try { if (window.mpChatPrefs && window.mpChatPrefs.get().trades === 'link') return; } catch (e) {}   // the reader asked for the plain link (chat settings)

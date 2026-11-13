@@ -9134,6 +9134,10 @@ function botWidgetSvg(d, err) {
    zero votes; the winner is written to KV (totd:win:<day>, 40 d), the author is paid TOTD_XP once (DO /xp, src 'totd', once per day
    through the KV flag), and one house line goes into the room. The homepage hero carries the winner. */
 const TOTD_XP = 100;
+/* THE WINNER IS PAID $1 (2026-11-13, owner: "ubaci da trade of the day dobija $1"): a prize, not faucet money - it goes to the AUTHOR through
+   the ledger's /gift with from:'totd' and once:86400, so a forced re-settle inside a day is answered `dup` and credits nothing twice; a new
+   account (faucet closed from 2026-11-12) is paid like any board prize. Published as `usd` on GET /api/totd so no surface types the figure. */
+const TOTD_USD_C = 100;
 function totdDayOf(ms) { return new Date(ms).toISOString().slice(0, 10); }
 async function handleTotd(url, request, env, ctx) {
   const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
@@ -9142,13 +9146,13 @@ async function handleTotd(url, request, env, ctx) {
   if (request.method === 'GET') {
     const day = /^\d{4}-\d{2}-\d{2}$/.test(String(url.searchParams.get('day') || '')) ? String(url.searchParams.get('day')) : today;
     const wantWin = url.searchParams.get('win') === '1';
-    if (!uid && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v1_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
+    if (!uid && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
     let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid }); } catch (e) { bd = null; }
     if (!bd || !bd.ok) return jt({ error: 'unavailable' }, 503);
-    const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP };
+    const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP, usd: TOTD_USD_C / 100 };
     if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} out.win = win ? Object.assign({ day: yd }, win) : null; }
     const resp = jt(out, 200, uid ? 'no-store' : 'public, max-age=20');
-    if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v1_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
+    if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
     return resp;
   }
   if (request.method !== 'POST') return jt({ error: 'method' }, 405);
@@ -9157,7 +9161,7 @@ async function handleTotd(url, request, env, ctx) {
   let b = {}; try { b = await request.json(); } catch (e) {}
   const id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), op = String(b.op || '');
   if (!id) return jt({ error: 'id_required' }, 400);
-  const bust = async () => { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v1_' + today)); await caches.default.delete(new Request('https://marginpad.io/__totd_v1_' + today + '_w')); } catch (e) {} };
+  const bust = async () => { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + today)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + today + '_w')); } catch (e) {} };
   if (op === 'nominate') {
     let snap = null; try { snap = env.STATS && await env.STATS.get('tshr:' + id, 'json'); } catch (e) {}
     if (!snap) return jt({ error: 'not_found' }, 404);
@@ -9182,16 +9186,21 @@ async function totdSettle(env, o) {
   if (!bd || !bd.ok) return { ok: false, day, error: 'unavailable' };
   const win = bd.winner || null;
   if (o.dry) return { ok: true, day, dry: true, winner: win, cands: bd.cands.length };
-  let paid = null, said = false;
+  let paid = null, said = false, cents = null;
   if (win) {
-    const rec = { id: win.id, by: win.by, sym: win.sym, side: win.side, roe: win.roe, pnl: win.pnl, n: win.n, xp: TOTD_XP, at: Date.now() };
+    const usd = TOTD_USD_C / 100, stake = '$' + usd + ' + ' + TOTD_XP + ' XP';
+    const rec = { id: win.id, by: win.by, sym: win.sym, side: win.side, roe: win.roe, pnl: win.pnl, n: win.n, xp: TOTD_XP, usd, at: Date.now() };
     try { await env.STATS.put('totd:win:' + day, JSON.stringify(rec), { expirationTtl: 40 * 86400 }); } catch (e) {}
-    // the AUTHOR of the trade is paid (never the nominator): the name on the snapshot is resolved to an account
-    try { if (win.by && !/^e2e_/i.test(win.by)) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(win.by))); const u = await r.json(); const auid = u && u.exists && u.uid ? String(u.uid).replace(/^u:/, '') : ''; if (auid) { const g = await usersDO(env, '/xp', { uid: auid, src: 'totd', amt: TOTD_XP, note: 'trade of the day ' + day + ' - ' + win.sym + ' ' + win.side }); paid = g && g.granted != null ? g.granted : null; try { await usersDO(env, '/notify', { uid: auid, kind: 'totd', body: 'Your ' + win.sym + ' ' + win.side + ' was voted trade of the day (' + day + '): +' + TOTD_XP + ' XP', link: '/paper-trade?chat=1' }); } catch (e) {} } } } catch (e) {}
-    try { if (env.CHAT && !/^e2e_/i.test(String(win.by || ''))) { const roe = win.roe != null ? ((+win.roe >= 0 ? '+' : '') + (+win.roe).toFixed(1) + '%') : ''; const text = 'Trade of the day ' + day + ': @' + win.by + ' - ' + win.sym + ' ' + win.side + (roe ? ' ' + roe : '') + ', ' + win.n + ' vote' + (win.n === 1 ? '' : 's') + '. +' + TOTD_XP + ' XP. Share a closed ticket in the room and nominate it to run today.'; await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); said = true; } } catch (e) {}
+    // the AUTHOR of the trade is paid (never the nominator): the name on the snapshot is resolved to an account; the dollar goes through the
+    // ledger's /gift (from:'totd', once a day per account) and a failed credit is paged, never silent (the pass-rollover pattern)
+    try { if (win.by && !/^e2e_/i.test(win.by)) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(win.by))); const u = await r.json(); const auid = u && u.exists && u.uid ? String(u.uid).replace(/^u:/, '') : ''; if (auid) {
+      const g = await usersDO(env, '/xp', { uid: auid, src: 'totd', amt: TOTD_XP, note: 'trade of the day ' + day + ' - ' + win.sym + ' ' + win.side }); paid = g && g.granted != null ? g.granted : null;
+      try { const lj = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + auid, cents: TOTD_USD_C, from: 'totd', once: 86400 }) }))).json(); cents = lj && lj.ok ? TOTD_USD_C : (lj && lj.error === 'dup' ? 0 : null); if (!lj || (!lj.ok && lj.error !== 'dup')) { try { await tgAdmin(env, 'TRADE OF THE DAY ' + day + ': @' + win.by + ' won but the $' + usd + ' credit failed (' + (lj && lj.error || 'no answer') + ') - credit by hand', { kind: 'totd-pay-failed', sev: 'warn' }); } catch (e2) {} } } catch (e) { cents = null; try { await tgAdmin(env, 'TRADE OF THE DAY ' + day + ': @' + win.by + ' won but the ledger threw - credit $' + usd + ' by hand', { kind: 'totd-pay-failed', sev: 'warn' }); } catch (e2) {} }
+      try { await usersDO(env, '/notify', { uid: auid, kind: 'totd', body: 'Your ' + win.sym + ' ' + win.side + ' was voted trade of the day (' + day + '): ' + stake + (cents ? ' - the dollar is on your rewards balance' : ''), link: '/rewards/' }); } catch (e) {} } } } catch (e) {}
+    try { if (env.CHAT && !/^e2e_/i.test(String(win.by || ''))) { const roe = win.roe != null ? ((+win.roe >= 0 ? '+' : '') + (+win.roe).toFixed(1) + '%') : ''; const text = 'Trade of the day ' + day + ': @' + win.by + ' - ' + win.sym + ' ' + win.side + (roe ? ' ' + roe : '') + ', ' + win.n + ' vote' + (win.n === 1 ? '' : 's') + '. ' + stake + ' to the author. Share a closed ticket in the room and nominate it to run today.'; await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); said = true; } } catch (e) {}
   }
   try { await env.STATS.put('totd:done:' + day, '1', { expirationTtl: 40 * 86400 }); } catch (e) {}
-  return { ok: true, day, winner: win, cands: bd.cands.length, paid, said };
+  return { ok: true, day, winner: win, cands: bd.cands.length, paid, cents, said };
 }
 /* THE REPORT CARD (2026-11-12, owner-approved feature #8): GET /api/report/card.svg?u=<name> is a 1200x630 SVG of a member's season as
    the public card already states it (/lbuser: season trades, win rate, realized P&L, best ROE, best trade, the level, the 30-day curve
@@ -10423,7 +10432,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=ff69ef1a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=f84a9a16" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -23133,7 +23142,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '96363fb9';
+const ASSET_V = '46da3be1';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

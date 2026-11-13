@@ -1661,15 +1661,24 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var x=ev.target.closest&&ev.target.closest('[data-fbx]');
       if(x){var w=x.closest('.pp-feebd');if(w)w.classList.remove('on');ev.stopPropagation();ev.preventDefault();return;}
       var f=ev.target.closest&&ev.target.closest('.pp-fee');
-      if(f){ev.stopPropagation();ev.preventDefault();
-        var card=f.closest('.pp');if(!card)return;
-        var bd=card.querySelector('.pp-feebd');if(!bd)return;
+      if(f){ev.stopPropagation();ev.preventDefault();window._mpFeeClickAt=Date.now();
+        var card=f.closest('.pp');if(!card){feeDiag('open nocard');return;}
+        var bd=card.querySelector('.pp-feebd');if(!bd){feeDiag('open nobd');return;}
         var was=bd.classList.contains('on');
         try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){o.classList.remove('on');});}catch(_){}
-        if(!was){bd.classList.add('on');try{feeMxFill(bd);}catch(_){}}
+        if(!was){bd.classList.add('on');window._mpFeeOpenAt=Date.now();try{feeMxFill(bd);}catch(_){}feeWatch(bd);}
         return;}
+      /* the outside tap closes it - but never a synthetic click, the haptic label's activation click (WebKit delivers it TRUSTED, on the hidden switch) or any click inside 350 ms of the open (2026-10-27 socials lesson) */
+      if(ev.isTrusted===false)return;
+      if(ev.target&&ev.target.closest&&ev.target.closest('[data-mp-haptic],input[switch]'))return;
+      if(Date.now()-(window._mpFeeOpenAt||0)<350)return;
       try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){if(!o.contains(ev.target))o.classList.remove('on');});}catch(_){}
-    },true);}
+    },true);
+    /* iOS-only instrument (2026-11-13): the phone says what happened to the window after a tap, and whether a tap produced a click at all */
+    var _feeIos=/iPhone|iPad|iPod/.test(navigator.userAgent),_feeDiagN=0;
+    function feeDiag(s){try{if(!_feeIos||_feeDiagN++>=4)return;var lab=('fee sa'+(navigator.standalone?1:0)+' '+s).replace(/[^a-zA-Z0-9 #:._/-]/g,'').slice(0,110);var u='/api/track?t=diag&e='+encodeURIComponent(lab)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u,{keepalive:true}).catch(function(){});}catch(_){}}
+    function feeWatch(bd){if(!_feeIos)return;setTimeout(function(){try{var on=bd.classList.contains('on'),live=bd.isConnected,r=bd.getBoundingClientRect(),cs=getComputedStyle(bd),c=document.elementFromPoint(r.left+r.width/2,r.top+Math.min(30,r.height/2));var d=c?(c.tagName+(c.className&&typeof c.className==='string'?'.'+c.className.split(' ')[0]:'')):'none';feeDiag('open dt400 on'+(on?1:0)+' live'+(live?1:0)+' h'+Math.round(r.height)+' d:'+cs.display+' o:'+cs.opacity+' top:'+d);}catch(_){}},400);}
+    if(_feeIos)document.addEventListener('touchend',function(ev){try{var f=ev.target&&ev.target.closest&&ev.target.closest('.pp-fee');if(!f)return;var t0=Date.now();setTimeout(function(){if(!(window._mpFeeClickAt>=t0-50))feeDiag('noclick');},500);}catch(_){}},{capture:true,passive:true});}
 
   var _glIdx=-1; // index (within the visible list) of the newest winning close - set by render(), read by closedCard
   function closedCard(e,_i){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
@@ -1941,6 +1950,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
+    var _fbKeep=null;try{var _fbo=listEl.querySelector('.pp-feebd.on'),_fbc=_fbo&&_fbo.closest('.pp');_fbKeep=_fbc?_fbc.getAttribute('data-id'):null;}catch(_){} /* @FEEKEEP */ /* the fee window open on a card survives the rebuild (iOS: a journal pull re-renders under the finger, 2026-11-13) */
     var data=load();_eligData=data;/* one journal read per render for the eligibility twin check, not one per card */
     var open=data.filter(function(e){return e.status==='open';});
     var allClosed=data.filter(function(e){return e.status==='win'||e.status==='loss';});
@@ -1970,6 +1980,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch',__esT_home("newSeasonStatsRestarted",'New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.'))+'</div>';
     listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button><button data-jt="risk" class="'+(jrTab==='risk'?'on':'')+'">'+MT('jRiskN','Risk')+'</button></div>'+(jrTab!=='orders'&&jrTab!=='risk'?jrFbar(_all,rows.length):'')+(jrTab!=='orders'&&jrTab!=='risk'&&_all&&!rows.length?'<div class="pp-empty jr-fempty"><span>'+MT('jFNone',__esT_home("nothingMatchesTheseFilters",'Nothing matches these filters.'))+'</span><button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button></div>':'')+cards;
     if(emptyEl)emptyEl.style.display='none';
+    try{if(_fbKeep){var _fbn=listEl.querySelector('.pp[data-id="'+_fbKeep+'"] .pp-feebd');if(_fbn)_fbn.classList.add('on');}}catch(_){}
   }
   function add(){
     if(add._busy){ // 1s cooldown active (or a server open still in flight) - nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button

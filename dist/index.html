@@ -91,7 +91,7 @@ function __esV_srv(s){try{var d=(window.__mpUI&&window.__mpUI["V:srv"])||__esVD_
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css">
-<link rel="stylesheet" href="/assets/mp-trade.css?v=00514372">
+<link rel="stylesheet" href="/assets/mp-trade.css?v=7ae3a402">
 <style>
   :root{--bg:#0b0d12;--panel:#12161d;--panel2:#171c26;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.17);--ink:#f0eee6;--dim:#a6afba;--faint:#707a86;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -266,7 +266,7 @@ function __esV_srv(s){try{var d=(window.__mpUI&&window.__mpUI["V:srv"])||__esVD_
   .pt-cta{margin-top:auto;padding-top:18px;}
   .pt-cta .btn-l{font-size:14px;padding:12px 20px;display:inline-block;}
   .pt-totd{min-height:20px;margin-top:10px;font-size:12px;line-height:1.4;color:var(--dim);display:flex;align-items:center;gap:6px;flex-wrap:wrap;} /* trade of the day (feature #11): the room's pick of yesterday - reserved from the first frame, filled by JS */
-  .pt-totd b{color:var(--lime);font-weight:700;} .pt-totd .r{color:#2ebd85;font-family:'Space Mono',monospace;} .pt-totd .r.l{color:#ff5a4d;}
+  .pt-totd b{color:var(--lime);font-weight:700;} .pt-totd .r{color:#2ebd85;font-family:'Space Mono',monospace;} .pt-totd .r.l{color:#ff5a4d;}.pt-totd a{color:var(--lime);text-decoration:none;font-weight:600;}.pt-totd a:hover{text-decoration:underline;}
   .pt-viz{position:relative;border:1px solid var(--line);border-radius:14px;background:#090c0f;overflow:hidden;min-height:220px;}
   #ptChart{position:absolute;inset:0;width:100%;height:100%;}
   .pt-viz .px{position:absolute;top:12px;left:14px;z-index:3;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--grn);font-variant-numeric:tabular-nums;}
@@ -2178,7 +2178,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   }
   fetch('/api/klines?symbol=BTC&interval=60').then(function(r){return r.json();}).then(function(k){if(Array.isArray(k)&&k.length>10){K=k;redraw();}}).catch(function(){});
   /* TRADE OF THE DAY (2026-11-12, feature #11): yesterday's room pick under the hero copy - names only, from /api/totd?win=1 (edge 20 s) */
-  fetch('/api/totd?win=1').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('ptTotd');if(!el||!d||!d.win)return;var w=d.win,cl=function(s){return String(s||'').replace(/[<>&]/g,'');},roe=(w.roe!=null&&isFinite(+w.roe))?((+w.roe>=0?'+':'')+(+w.roe).toFixed(1)+'%'):'';el.innerHTML='<b>Trade of the day</b> @'+cl(w.by)+' · '+cl(w.sym)+' '+(w.side==='short'?'short':'long')+(roe?' <span class="r'+(+w.roe<0?' l':'')+'">'+roe+'</span>':'')+' · '+(+w.n||0)+((+w.n)===1?' vote':' votes');}).catch(function(){});
+  fetch('/api/totd?win=1').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('ptTotd');if(!el||!d)return;var cl=function(s){return String(s||'').replace(/[<>&]/g,'');},st='$'+(d.usd!=null?+d.usd:1)+' + '+(d.xp!=null?+d.xp:100)+' XP',w=d.win;if(w){var roe=(w.roe!=null&&isFinite(+w.roe))?((+w.roe>=0?'+':'')+(+w.roe).toFixed(1)+'%'):'';el.innerHTML='<b>Trade of the day</b> @'+cl(w.by)+' · '+cl(w.sym)+' '+(w.side==='short'?'short':'long')+(roe?' <span class="r'+(+w.roe<0?' l':'')+'">'+roe+'</span>':'')+' · '+(+w.n||0)+((+w.n)===1?' vote':' votes')+' · <a href="/paper-trade?totd=1">vote today \u2192</a>';}else{el.innerHTML='<b>Trade of the day</b> '+st+' to the author · <a href="/paper-trade?totd=1">nominate and vote \u2192</a>';}}).catch(function(){});
   window.__tickBtc=function(px){if(!K||!(px>0))return;K[K.length-1]={close:px};redraw();}; // live tick from the 15s price poll - the hero chart moves
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(redraw,180);});
 
@@ -2355,9 +2355,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=9da06373"></script>
-<script defer src="/assets/mp-auth.js?v=96363fb9"></script>
-<script defer src="/assets/mp-nav.js?v=ff69ef1a"></script>
+<script defer src="/assets/mp-trade.js?v=c57b20fa"></script>
+<script defer src="/assets/mp-auth.js?v=46da3be1"></script>
+<script defer src="/assets/mp-nav.js?v=f84a9a16"></script>
 
 <script>
 (function(){try{
