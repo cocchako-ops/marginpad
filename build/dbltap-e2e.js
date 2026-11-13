@@ -43,7 +43,7 @@ const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, 
         await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 }); await sleep(4000);
         const diag = await page.evaluate(() => { const c = document.querySelector('[data-mpbn="chat"]'); if (!c) return 'no-bar'; const r = c.getBoundingClientRect(); const cs = getComputedStyle(c.closest('.mpbn')); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { display: cs.display, top: Math.round(r.top), hit: hit ? hit.tagName + '.' + hit.className : null, reach: !!(hit && (hit === c || c.contains(hit))) }; });
         out.push('INFO mobile /charts bottom-bar Chat: ' + JSON.stringify(diag));
-        const sheet = await page.evaluate(() => { const b = document.querySelector('[data-act="trade"]'); if (!b) return 'no-btn'; b.click(); return !!document.getElementById('mtrGo'); });
+        const sheet = await page.evaluate(() => { const b = document.querySelector('.mfc-dock [data-act="long"]'); if (!b) return 'no-btn'; b.click(); return !!document.getElementById('mtrGo'); });
         chk('mobile charts: trade sheet opens', sheet === true, sheet);
         if (sheet === true) { await page.evaluate(() => { const a = document.getElementById('mtrAmt'); if (a) { a.value = '100'; a.dispatchEvent(new Event('input', { bubbles: true })); } }); await sleep(1500);
           const before = (await opens()).length;

@@ -4375,3 +4375,66 @@ html.pt-sheet{overflow:hidden!important;touch-action:none}
 .mpss-dynw.off .mpss-dyn{opacity:.45}
 .mpss-dynn{min-height:14px;font:10.5px 'Space Mono',monospace;color:#9aa3ad;margin:6px 0 0 2px}
 @media(max-width:380px){.mpss-row .r{flex-basis:76px;font-size:14px}.mpss-row .pc{flex-basis:52px}}
+
+/* ══════════ Phone charts v2 (2026-11-13, owner: "pametno iskoristimo prostor i funkcije") ══════════
+   The header is the instrument (back · logo+symbol+price+24h · timeframe · AI · More), the dock ends in LONG / SHORT,
+   theme/share/2-charts live in the More sheet, Volume sits under the candles, and in single-pane mode the floating pane
+   label keeps only the candle clock because the header already says what and how much. Overrides only - every earlier
+   .mfc rule stays underneath. */
+.mfc .mfc-bar{gap:6px;padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px;}
+.mfc .mfc-bar .mfc-b{min-height:40px;}
+.mfc .mfc-bar .mfc-x{width:36px;padding:0;justify-content:center;background:transparent;border-color:transparent;color:#cfd4da;}
+.mfc .mfc-bar .mfc-x svg{width:20px;height:20px;}
+.mfc .mfc-inst{gap:8px;padding:4px 10px 4px 6px;min-width:0;flex:0 1 auto;background:#10141a;border-color:#20262f;}
+.mfc .mfc-ilogo{width:24px;height:24px;border-radius:50%;flex:0 0 auto;background:#1a2029;object-fit:cover;}
+.mfc .mfc-ilogo[hidden]{display:none;}
+.mfc .mfc-itx{display:flex;flex-direction:column;align-items:flex-start;min-width:0;line-height:1.15;}
+.mfc .mfc-ir1{display:flex;align-items:center;gap:3px;}
+.mfc .mfc-ir1 b{font:800 14px/1.1 'Bricolage Grotesque','Familjen Grotesk',sans-serif;color:#f2f1ec;letter-spacing:.01em;}
+.mfc .mfc-ir2{font:700 11px/1.2 'Space Mono',monospace;color:#cfd4da;white-space:nowrap;}
+.mfc .mfc-ichg.up{color:#2ebd85;}.mfc .mfc-ichg.dn{color:#ff6258;}
+.mfc .mfc-ichg{font-style:normal;font-size:10.5px;}
+.mfc .mfc-tfb{padding:0 10px;gap:3px;font-size:13px;}
+.mfc .mfc-bar .mfc-ai{padding:0 12px;gap:5px;}
+.mfc .mfc-bar .mfc-ai .mfc-bl{display:inline;font-weight:800;letter-spacing:.04em;}
+.mfc .mfc-more{width:36px;padding:0;justify-content:center;background:transparent;border-color:transparent;color:#9aa3ad;}
+.mfc .mfc-more svg{width:18px;height:18px;}
+/* the dock: four tools + the trade pair */
+.mfc .mfc-dock{gap:2px;padding:5px 6px calc(5px + env(safe-area-inset-bottom));align-items:center;}
+.mfc .mfc-dock>.mfc-b{flex:1 1 0;}
+.mfc .mfc-dock .mfc-ls{flex:2.3 1 0;display:flex;gap:6px;min-width:0;padding-left:4px;}
+.mfc .mfc-ls .mfc-b{flex:1 1 0;min-width:0;justify-content:center;flex-direction:row;min-height:44px;border-radius:11px;font:800 13px/1 'Bricolage Grotesque','Familjen Grotesk',sans-serif;letter-spacing:.03em;text-transform:uppercase;padding:0 4px;}
+.mfc .mfc-ls .mfc-long{background:#2ebd85!important;border-color:#2ebd85!important;color:#03140c!important;}
+.mfc .mfc-ls .mfc-short{background:#ff5a4d!important;border-color:#ff5a4d!important;color:#1a0503!important;}
+.mfc .mfc-ls .mfc-b:active{filter:brightness(1.12);}
+/* single pane: the header carries symbol and price, the floating label keeps the candle clock (and the OHLC while scrubbing) */
+.mfc.mfc-one .mfc-pl .mfc-pl-s,.mfc.mfc-one .mfc-pl .mfc-pl-p,.mfc.mfc-one .mfc-pl .mfc-pl-tf{display:none;}
+.mfc.mfc-one .mfc-pl{top:6px;left:8px;padding:2px 7px;background:rgba(8,10,13,.45);}
+.mfc.mfc-one .mfc-pane .cwin-leg{top:30px;}
+/* the More sheet */
+.mfc-sheet .mfc-mlist{display:flex;flex-direction:column;gap:6px;padding:2px 0 6px;}
+.mfc-sheet .mfc-mrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#10141a;border:1px solid #20262f;border-radius:12px;padding:11px 12px;color:#e9e7df;cursor:pointer;font:inherit;}
+.mfc-sheet .mfc-mrow:active{transform:scale(.985);}
+.mfc-sheet .mfc-mic{width:36px;height:36px;border-radius:10px;background:#171c24;display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:#cfd4da;}
+.mfc-sheet .mfc-mic svg{width:18px;height:18px;}
+.mfc-sheet .mfc-mtx{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.mfc-sheet .mfc-mtx b{font:700 14px/1.2 'Familjen Grotesk',sans-serif;color:#f2f1ec;}
+.mfc-sheet .mfc-mtx i{font-style:normal;font-size:12px;color:#7f8a99;}
+.mfc-sheet .mfc-mrow[data-mact="close"] .mfc-mic{color:#ff8a80;}
+@media(orientation:landscape){
+  .mfc .mfc-bar{padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:4px;gap:5px;}
+  .mfc .mfc-bar .mfc-b{min-height:36px;}
+  .mfc .mfc-bar .mfc-ls.mfc-dockable{display:inline-flex;gap:5px;flex:0 0 auto;}
+  .mfc .mfc-bar .mfc-ls .mfc-b{min-height:36px;padding:0 13px;font-size:12px;}
+  .mfc .mfc-bar .mfc-ai .mfc-bl{display:inline;}
+}
+/* light theme */
+.mfc.light .mfc-inst{background:#f1f3f6;border-color:#dfe4e9;}
+.mfc.light .mfc-ir1 b{color:#14181d;}.mfc.light .mfc-ir2{color:#3a424c;}
+.mfc.light .mfc-bar .mfc-x,.mfc.light .mfc-more{color:#3a424c;background:transparent;border-color:transparent;}
+.mfc.light.mfc-one .mfc-pl{background:rgba(255,255,255,.6);}
+.mfc.light ~ .mfc-sheet .mfc-mrow,.mfc.light .mfc-sheet .mfc-mrow{background:#f1f3f6;border-color:#dfe4e9;color:#14181d;}
+.mfc.light .mfc-sheet .mfc-mic{background:#e6eaef;color:#3a424c;}
+.mfc.light .mfc-sheet .mfc-mtx b{color:#14181d;}
+.mfc .mfc-bar .mfc-ls.mfc-dockable{padding:0;background:none;border:0;}
+.mfc.mfc-one .mfc-pane .cwin-leg{top:6px;left:64px;}

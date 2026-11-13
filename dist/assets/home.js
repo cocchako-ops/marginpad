@@ -4487,7 +4487,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=123967ff'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=3409f9dc'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
@@ -5847,7 +5847,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function () {
   try {
     if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
-    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=123967ff' : '/assets/mp-charts.js?v=ef36f4ba', heatmap: '/assets/mp-heatmap.js?v=585f2313', screener: '/assets/mp-screener.js?v=b899ab9f' };
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=3409f9dc' : '/assets/mp-charts.js?v=ef36f4ba', heatmap: '/assets/mp-heatmap.js?v=585f2313', screener: '/assets/mp-screener.js?v=b899ab9f' };
     var done = {};
     function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
     function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }
