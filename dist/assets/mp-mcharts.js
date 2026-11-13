@@ -184,12 +184,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       trade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'};
     var actions=function(dock){var c=dock?'':'mfc-dockable';return ACT('ind',SV.ind,dock?mcT('mcIndShort',__esT_mpmcharts("indShort",'Indicators')):mcT('indBtn','Indicators'),c)
       +ACT('draw',SV.draw,mcT('mcDraw','Draw'),c)
-      +ACT('trades',SV.trades,dock?mcT('mcTradesShort',__esT_mpmcharts("tradesShort",'Trades')):mcT('mtMyTrades',__esT_mpmcharts("myTrades",'My trades')),c)
+      /* ASK AI IS THE CENTRE OF THE DOCK (2026-11-13, owner: "Ask AI moze da predje dole i da bude mnogo vise cool"); the trade
+         pair and Trades left the dock and Split came back to it. */
+      +'<button class="mfc-b mfc-aib'+(c?' '+c:'')+'" data-act="ai" aria-label="Ask AI"><span class="mfc-aig"></span><span class="mfc-aii"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span class="mfc-bl">Ask AI</span></span></button>'
       +ACT('calc',SV.calc,mcT('mcCalc','Calc'),c)
-      /* LONG / SHORT IS THE TRADE BUTTON (2026-11-13, owner: "pametno iskoristimo prostor i funkcije"): every exchange app ends
-         its chart in two coloured buttons, and the old single "Trade" cell opened a form whose first question was the side.
-         One tap now opens the same demo-trade sheet with the side already chosen. "2 charts" moved to the More sheet. */
-      +'<span class="mfc-ls'+(c?' '+c:'')+'"><button class="mfc-b mfc-long" data-act="long" type="button">'+mcT('long','Long')+'</button><button class="mfc-b mfc-short" data-act="short" type="button">'+mcT('short','Short')+'</button></span>';};/* the dock is six 65px cells on a 390px phone: "Indicators" and "Demo trade" truncated to "Indicato…" (screenshot 2026-10-08) */
+      +'<button class="mfc-b '+c+'" data-act="split">'+SV.split+'<span class="mfc-bl mfc-splitL">'+(split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts'))+'</span></button>';};/* the dock is six 65px cells on a 390px phone: "Indicators" and "Demo trade" truncated to "Indicato…" (screenshot 2026-10-08) */
     ov.innerHTML='<div class="mfc-bar">'
       /* THE HEADER IS THE INSTRUMENT (2026-11-13): back, then ONE button that says what you are looking at - logo, symbol, live
          price and the 24h move - then the timeframe, Ask AI and More. Theme, Share and 2 charts are things a reader does once a
@@ -200,7 +199,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<button class="mfc-b mfc-tfb" data-act="tf"><span class="mfc-tfL">1m</span><span class="mfc-car">▾</span></button>'
       +actions(false)
       +'<span class="mfc-grow"></span>'
-      +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span class="mfc-bl">AI</span></button>'
       +'<button class="mfc-b mfc-more" data-act="more" aria-label="'+mcT('mcMore',__esT_mpmcharts("more",'More'))+'" title="'+mcT('mcMore',__esT_mpmcharts("more",'More'))+'"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>'
       +'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
@@ -217,6 +215,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ov.appendChild(gate);
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
+    /* the Ask AI button's light drifts - WAAPI, never @keyframes (the owner's Windows renders no CSS keyframes) */
+    try{Array.prototype.forEach.call(ov.querySelectorAll('.mfc-aig'),function(g){if(g.animate)g.animate([{backgroundPosition:'0% 50%'},{backgroundPosition:'100% 50%'},{backgroundPosition:'0% 50%'}],{duration:7000,iterations:Infinity,easing:'ease-in-out'});});}catch(e){}
     try{wireWheel(ov.querySelector('.mfc-bar'));}catch(e){}
     function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}
       // portrait no longer walls off the charts - they WORK in portrait (verified by the real-browser UX audit); the
@@ -316,7 +316,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq||p._rp)return false;
       var ok=false;
-      if(kd&&kd.length){klStallNote(p,sym,tf,kd);kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:axFmt(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
+      if(kd&&kd.length){klStallNote(p,sym,tf,kd);kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:axFmt((function(pf){p._prec=pf&&pf.precision;return pf;})(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01}))});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
       return ok;
     });
@@ -453,7 +453,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(panes[activeI]===p)hdrInst(p,pr,chg);}
   /* the header's instrument button carries the live price and the 24h move of the ACTIVE pane (2026-11-13) */
   function hdrInst(p,pr,chg){if(!ov||!p)return;var ip=ov.querySelector('.mfc-ipx'),ic=ov.querySelector('.mfc-ichg'),lg=ov.querySelector('.mfc-ilogo');
-    if(ip)ip.textContent=pr?fp(pr):'';if(ic){ic.className='mfc-ichg'+(chg==null?'':(chg>=0?' up':' dn'));ic.textContent=chg==null?'':((chg>=0?'+':'')+chg.toFixed(2)+'%');}
+    /* THE BOX MUST NOT BREATHE (2026-11-13, owner: the instrument box moved whenever the price's decimals changed): the price is printed at the market's MEASURED precision with its trailing zeros kept, and the button never shrinks below the widest it has been for this symbol, so a tick can only change digits, never the width of the header row. */
+    var _d=(p._prec!=null&&isFinite(p._prec))?p._prec:(pr>=100?2:pr>=1?4:6);if(ip)ip.textContent=pr?'$'+(+pr).toLocaleString('en-US',{minimumFractionDigits:_d,maximumFractionDigits:_d}):'';if(ic){ic.className='mfc-ichg'+(chg==null?'':(chg>=0?' up':' dn'));ic.textContent=chg==null?'':((chg>=0?'+':'')+chg.toFixed(2)+'%');}
+    var _ib=ov.querySelector('.mfc-inst');if(_ib){if(_ib.getAttribute('data-w')!==p.sym){_ib.setAttribute('data-w',p.sym);_ib.style.minWidth='';}var _w=Math.ceil(_ib.getBoundingClientRect().width);if(_w>(parseFloat(_ib.style.minWidth)||0))_ib.style.minWidth=_w+'px';}
     if(lg&&lg.getAttribute('data-s')!==p.sym){lg.setAttribute('data-s',p.sym);lg.hidden=true;lg.onload=function(){lg.hidden=false;};lg.onerror=function(){lg.hidden=true;};lg.src='/api/coinicon?v=2&sym='+encodeURIComponent(p.sym);}}
   /* OHLC UNDER THE FINGER (2026-10-08): touch a candle and the label shows that candle's open / high / low / close and its
      move, like every exchange app; lift and the live price returns. */
@@ -953,7 +955,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     body.innerHTML='<div class="mfc-mlist">'
       +row('theme',ic.th,L?mcT('mcDarkTheme',__esT_mpmcharts("darkTheme",'Dark theme')):mcT('mcLightTheme',__esT_mpmcharts("lightTheme",'Light theme')),__esT_mpmcharts("themeSub",'The same choice on the desktop charts'))
       +row('share',ic.sh,mcT('mcShare',__esT_mpmcharts("shareChart",'Share chart')),__esT_mpmcharts("shareSub",'A picture of this chart, ready to send'))
-      +row('split',ic.sp,split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts'),split===2?__esT_mpmcharts("splitSub1",'Back to one full chart'):__esT_mpmcharts("splitSub2",'The same coin on the next timeframe, side by side'))
       +row('close',ic.x,mcT('mcCloseCharts',__esT_mpmcharts("closeCharts",'Close charts')),__esT_mpmcharts("closeSub",'Back to the homepage'))
       +'</div>';
     body.addEventListener('click',function(e){var b=e.target.closest('[data-mact]');if(!b)return;var a=b.getAttribute('data-mact');closeSheet();

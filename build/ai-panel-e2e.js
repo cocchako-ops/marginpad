@@ -140,7 +140,7 @@ withBrowser(async (browser) => {
     await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForFunction('window.__mpMfcDbg && window.__mpMfcDbg()[0] && window.__mpMfcDbg()[0].bars && window.__mpMfcDbg()[0].bars.length>50', { timeout: 40000 }); await sleep(600);
     await killToasts(page);
-    await page.tap('.mfc-bar [data-act="ai"]'); await page.waitForSelector('.mfc-sheet #mfcAB', { timeout: 10000 }); await sleep(400);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-act="ai"]')].find(x => x.offsetParent); b && b.click(); }); await page.waitForSelector('.mfc-sheet #mfcAB', { timeout: 10000 }); await sleep(400);
     const s0 = await page.evaluate(() => { const b = document.querySelector('.mfc-sheet'); return { strip: !!b.querySelector('.mfc-ai-mode'), anOn: b.querySelector('[data-mode="analysis"]').classList.contains('on'), st: b.querySelector('#mfcAST').getAttribute('data-st'), chips: [...b.querySelectorAll('#mfcAC .cwin-ai-chip')].map(c => c.textContent) }; });
     ok('the sheet carries the mode strip (Analysis only remembered from the desktop key), the status line and analysis chips', s0.strip && s0.anOn && s0.st === 'idle' && /Map the chart/.test(s0.chips.join('|')), s0);
     await page.evaluate(() => { document.querySelector('.mfc-sheet #mfcAC .cwin-ai-chip').click(); }); await sleep(300);
@@ -149,7 +149,7 @@ withBrowser(async (browser) => {
     await page.evaluate(() => { const x = document.querySelector('.mfc-sheet [data-x]'); x && x.click(); }); await sleep(300);
     const s2 = await page.evaluate(() => ({ sheet: !!document.querySelector('.mfc-sheet #mfcAB'), run: !!window.__mpMfcDbg()[0]._aiRun }));
     ok('closing the sheet does not stop the read', !s2.sheet && s2.run, s2);
-    await page.tap('.mfc-bar [data-act="ai"]'); await page.waitForSelector('.mfc-sheet #mfcAB', { timeout: 10000 }); await sleep(300);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-act="ai"]')].find(x => x.offsetParent); b && b.click(); }); await page.waitForSelector('.mfc-sheet #mfcAB', { timeout: 10000 }); await sleep(300);
     const s3 = await page.evaluate(() => { const b = document.querySelector('.mfc-sheet'); return { streaming: !!b.querySelector('.mfc-ai-msg.streaming'), st: b.querySelector('#mfcAST').getAttribute('data-st') }; });
     ok('reopening mid-read re-attaches the streaming bubble', s3.streaming && /^(reading|thinking|writing)$/.test(s3.st), s3);
     await page.waitForFunction('!window.__mpMfcDbg()[0]._aiRun', { timeout: 20000 }).catch(() => {}); await sleep(500);

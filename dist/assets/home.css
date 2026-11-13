@@ -4438,3 +4438,26 @@ html.pt-sheet{overflow:hidden!important;touch-action:none}
 .mfc.light .mfc-sheet .mfc-mtx b{color:#14181d;}
 .mfc .mfc-bar .mfc-ls.mfc-dockable{padding:0;background:none;border:0;}
 .mfc.mfc-one .mfc-pane .cwin-leg{top:6px;left:64px;}
+/* Phone charts v3 (2026-11-13, owner: "cenu i ticker izbaci iz box-a ... isto i timeframe; Ask AI dole i mnogo vise cool; fali split") */
+.mfc .mfc-bar .mfc-inst,.mfc.light .mfc-bar .mfc-inst{background:transparent;border-color:transparent;padding:0 6px 0 2px;}
+.mfc .mfc-bar .mfc-tfb,.mfc.light .mfc-bar .mfc-tfb{background:transparent;border-color:transparent;padding:0 8px;font-size:14px;color:#e9e7df;}
+.mfc.light .mfc-bar .mfc-tfb{color:#14181d;}
+.mfc .mfc-bar .mfc-tfb:active,.mfc .mfc-bar .mfc-inst:active{background:rgba(255,255,255,.06);}
+.mfc .mfc-inst .mfc-ir1 b{font-size:15px;}
+.mfc .mfc-dock{align-items:stretch;}
+.mfc .mfc-dock>.mfc-b{flex:1 1 0;}
+.mfc .mfc-b.mfc-aib{position:relative;overflow:hidden;isolation:isolate;color:#fff!important;border:0!important;background:#0d1220!important;border-radius:16px;box-shadow:0 0 0 1px rgba(170,150,255,.45),0 8px 24px -8px rgba(124,92,255,.7),0 0 22px -6px rgba(63,216,230,.45);}
+.mfc .mfc-dock .mfc-b.mfc-aib{flex:1.3 1 0;margin:0 5px;min-height:52px;}
+.mfc .mfc-aig{position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,#1d4ed8 0%,#7c3aed 28%,#22d3ee 52%,#7c3aed 76%,#1d4ed8 100%);background-size:260% 100%;background-position:0% 50%;}
+.mfc .mfc-b.mfc-aib::after{content:'';position:absolute;left:1px;right:1px;top:1px;height:48%;border-radius:15px 15px 10px 10px;background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,0));pointer-events:none;}
+.mfc .mfc-aii{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.mfc .mfc-aib svg{width:21px!important;height:21px!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.55));}
+.mfc .mfc-dock .mfc-aib .mfc-bl{font:800 10px/1 'Bricolage Grotesque','Familjen Grotesk',sans-serif!important;letter-spacing:.06em;text-transform:uppercase;color:#fff;max-width:none;}
+.mfc .mfc-b.mfc-aib:active{transform:scale(.96);}
+.mfc .mfc-b.mfc-aib.on{box-shadow:0 0 0 2px #c2f64a,0 8px 24px -8px rgba(124,92,255,.7);}
+@media(orientation:landscape){
+  .mfc .mfc-bar .mfc-aib.mfc-dockable{padding:0 14px;min-height:36px;}
+  .mfc .mfc-bar .mfc-aib .mfc-aii{flex-direction:row;gap:6px;}
+  .mfc .mfc-bar .mfc-aib .mfc-bl{display:inline!important;font:800 12px/1 'Bricolage Grotesque',sans-serif;letter-spacing:.04em;}
+  .mfc .mfc-bar .mfc-aib svg{width:16px!important;height:16px!important;}
+}
