@@ -9153,7 +9153,7 @@ async function handleTotd(url, request, env, ctx) {
     let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid, e2e }); } catch (e) { bd = null; }
     if (!bd || !bd.ok) return jt({ error: 'unavailable' }, 503);
     const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP, usd: TOTD_USD_C / 100 };
-    if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} out.win = win ? Object.assign({ day: yd }, win) : null; }
+    if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} if (win && /^e2e/i.test(String(win.by || ''))) win = null; out.win = win ? Object.assign({ day: yd }, win) : null; } // 2026-11-13: 11-12's only entry was the suite's, and "yesterday's winner" read e2e_... - a test author is never shown as a winner
     const resp = jt(out, 200, uid ? 'no-store' : 'public, max-age=20');
     if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
     return resp;
