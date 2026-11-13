@@ -176,6 +176,18 @@ const LAYOUT = () => {
 
     ok('no page or console errors', errs.length === 0, errs.join(' | '));
     ok('the map renders standing bands', S.bands > 5, 'bands=' + S.bands);
+    // ── A WHALE MARK THE PRICE HAS CROSSED IS NOT DRAWN, AND NO POLLED READ MAY COME FROM THE BROWSER CACHE (2026-11-13) ──
+    // The owner's phone drew "WHALE $16.1M LONG · liq at 71,125.5" with the price at 70,862, 73 minutes after Hyperliquid had
+    // liquidated the first slice of that position: /api/heatmap/pools was fetched with the default cache and the zone hands an
+    // edge HIT to the browser as max-age=14400. Two guards, both asserted here: every polled /api/ GET in the bundle carries
+    // no-store (a POST carries a method), and every whale mark the last frame drew sits on the live side of the price.
+    const SRCB = fs.readFileSync(BUNDLE, 'utf8');
+    const cached = []; SRCB.replace(/fetch\((['"])\/api\/[^]*?\)\s*\.then\(/g, (m) => { if (!/no-store/.test(m) && !/method:/.test(m)) cached.push(m.slice(0, 70)); return m; });
+    ok('every polled /api/ read in the bundle asks the browser for no cache', cached.length === 0, cached.join(' || '));
+    const WH = (S.whales || []).filter((w) => String(w.sym || '').toUpperCase() === S.coin);
+    const crossedDrawn = (S.whDrawn || []).filter((q) => { const w = WH.find((x) => +x.liq === +q); return !w || (w.long ? S.price <= +w.liq : S.price >= +w.liq); });
+    ok('no whale mark stands on the wrong side of the live price (a crossed liquidation is not drawn)', S.price > 0 && crossedDrawn.length === 0, 'price=' + S.price + ' drawn=' + JSON.stringify(S.whDrawn) + ' bad=' + JSON.stringify(crossedDrawn));
+    if (!LOCAL) ok('a whale row says when the exchange was read (at)', !WH.length || WH.every((w) => +w.at > 0), JSON.stringify(WH.map((w) => w.at)));
     const RP = await page.evaluate(RP_CHECK);
     ok('REPLAY: the top row keeps its height and nothing leaves the wrap while it runs', RP.on && RP.after.topH === RP.before.topH && RP.over.length === 0 && RP.after.sx === RP.before.sx, JSON.stringify(RP));
     ok('REPLAY: the transport is an overlay inside the plot, under the finger, and the cursor moves', !!RP.overlay && RP.overlay.inStage && RP.under && RP.moved && RP.stopped, JSON.stringify(RP.overlay) + ' moved=' + RP.moved);

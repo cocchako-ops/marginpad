@@ -136,28 +136,51 @@ export class HyperliquidLiqCollector {
       fills = await hlPost({ type: 'userFillsByTime', user: c.user, startTime: Date.now() - FILLS_WINDOW_MS }, { who: 'liq-harvest', timeoutMs: 8000 });
     } catch (e) { return; }
     if (!Array.isArray(fills)) return;
-    for (const f of fills) {
-      if (!f || !f.liquidation) continue;
-      const coin = String(f.coin || '');
-      if (!coin || coin.charAt(0) === '@' || coin.indexOf('/') >= 0) continue; // spot fills, not perps
-      const px = +f.px, sz = +f.sz; if (!(px > 0) || !(sz > 0)) continue;
-      // WHOSE fill is this? Both participants of a liquidation trade carry the `liquidation` metadata, and the
-      // counterparty's copy has the OPPOSITE side: the liquidated long is force-SOLD (its own fill side 'A'), so the
-      // maker who absorbed it shows side 'B'. Until 2026-10-17 this read `f.side === 'A'` whatever the fill's owner,
-      // and because the harvest polls BOTH users, roughly half of every day's Hyperliquid liquidations were booked on
-      // the wrong side: measured 47% long here against 86% long on Coinglass for the same 24 hours.
-      const liqUser = String((f.liquidation && f.liquidation.liquidatedUser) || '').toLowerCase();
-      const own = !liqUser || liqUser === String(c.user).toLowerCase();
-      const liqSold = own ? f.side === 'A' : f.side !== 'A';
-      // One liquidation, two fills, two tids - the dedupe has to be the EVENT, not the fill id.
-      const tid = String(f.tid || f.hash + f.time); if (this.seenTid.has(tid)) continue;
-      const evKey = liqUser ? liqUser + '|' + coin + '|' + f.time + '|' + f.px + '|' + f.sz : tid;
-      if (this.seenTid.has(evKey)) continue;
-      this.seenTid.add(tid); this.seenTid.add(evKey); if (this.seenTid.size > 10000) this.seenTid.clear();
-      const side = liqSold ? 'long_liquidated' : 'short_liquidated';
+    for (const ev of liqEventsOf(fills, c.user, this.seenTid)) {
       this.lastEventAt = Date.now(); this.eventsTotal++;
-      // builder-dex coins arrive as "xyz:CL" → emit "XYZ:CL" (matches Coinglass display); core stay as-is
-      this.onEvent({ ts: +f.time || Date.now(), exchange: 'hyperliquid', symbol: coin.toUpperCase(), side, price: px, qty: sz, notional: px * sz });
+      this.onEvent({ ts: ev.ts, exchange: 'hyperliquid', symbol: ev.symbol, side: ev.side, price: ev.price, qty: ev.qty, notional: ev.notional });
     }
   }
+}
+
+/* ONE LIQUIDATION IS ONE PRINT (2026-11-13). Hyperliquid liquidates with a market order that crosses the book, and the
+   exchange reports every maker it crossed as a fill of its own: a $16.1M BTC long had its first slice taken at
+   00:31:47.938 UTC as 52 fills of 0.00015 to 13.8 BTC, all stamped the same millisecond, all naming the same
+   liquidatedUser. Booked per fill - which is what this did until today - the feed held 52 prints under $1M and the
+   biggest-hits list on /rekt/, where a reader looks for a whale, never carried the $3.2M that really happened; the
+   heatmap had named the position, so the owner read the mark as a liquidation we had invented. Fills that share the
+   liquidated user, the coin, the side and the exchange's own timestamp are ONE event: the size is their sum, the price
+   their notional-weighted mean. The per-fill keys stay in `seen`, so the counterparty's copy of the same fills (the
+   harvest polls both participants) is still a no-op, and a second harvest of the same user adds nothing twice.
+   Pure, so `tools/probe-hl-liqgroup.mjs` runs it over real fills. */
+export function liqEventsOf(fills, user, seen) {
+  const groups = new Map(), out = [];
+  for (const f of fills) {
+    if (!f || !f.liquidation) continue;
+    const coin = String(f.coin || '');
+    if (!coin || coin.charAt(0) === '@' || coin.indexOf('/') >= 0) continue; // spot fills, not perps
+    const px = +f.px, sz = +f.sz; if (!(px > 0) || !(sz > 0)) continue;
+    // WHOSE fill is this? Both participants of a liquidation trade carry the `liquidation` metadata, and the
+    // counterparty's copy has the OPPOSITE side: the liquidated long is force-SOLD (its own fill side 'A'), so the
+    // maker who absorbed it shows side 'B'. Until 2026-10-17 this read `f.side === 'A'` whatever the fill's owner,
+    // and because the harvest polls BOTH users, roughly half of every day's Hyperliquid liquidations were booked on
+    // the wrong side: measured 47% long here against 86% long on Coinglass for the same 24 hours.
+    const liqUser = String((f.liquidation && f.liquidation.liquidatedUser) || '').toLowerCase();
+    const own = !liqUser || liqUser === String(user).toLowerCase();
+    const liqSold = own ? f.side === 'A' : f.side !== 'A';
+    // ONE TRADE, ONE tid ON BOTH SIDES (measured 2026-11-13 against a live BTC trade: the maker's fill and the taker's fill
+    // carry the same `tid` with their own `oid`s). The comment here used to say "two fills, two tids" and keyed the dedupe
+    // on liquidatedUser|coin|time|px|sz - which merged two genuinely different fills of the same size at the same price in
+    // the same millisecond (the 00:31:47 event held two of 0.09 BTC at 71,102 and booked one). The trade id is exact.
+    const tid = String(f.tid || f.hash + f.time); if (seen.has(tid)) continue;
+    seen.add(tid); if (seen.size > 20000) seen.clear();
+    const side = liqSold ? 'long_liquidated' : 'short_liquidated';
+    const gk = (liqUser || tid) + '|' + coin + '|' + side + '|' + f.time;
+    let g = groups.get(gk);
+    // builder-dex coins arrive as "xyz:CL" → emit "XYZ:CL" (matches Coinglass display); core stay as-is
+    if (!g) { g = { ts: +f.time || Date.now(), symbol: coin.toUpperCase(), side, qty: 0, notional: 0, fills: 0, user: liqUser }; groups.set(gk, g); out.push(g); }
+    g.qty += sz; g.notional += px * sz; g.fills++;
+  }
+  for (const g of out) { g.price = +(g.notional / g.qty).toFixed(6); g.qty = +g.qty.toFixed(8); }
+  return out;
 }

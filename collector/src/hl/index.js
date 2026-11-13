@@ -313,7 +313,10 @@ function api() {
     for (const w of W.values()) {
       if (w.ntl < 1e6) continue;
       const pos = big.all(w.addr); if (!pos.length) continue;
-      rows.push({ user: w.addr, acct: { eq: Math.round(w.av || 0), book: Math.round(w.ntl), used: Math.round(pos.reduce((a, p) => a + (p.margin || 0), 0)), free: 0, n: w.n }, positions: pos.map((p) => ({ user: w.addr, sym: p.coin, long: p.szi > 0, lev: p.lev, val: Math.round(p.ntl), liq: p.liq, mark: p.ntl / Math.abs(p.szi), pnl: Math.round(p.upnl), ent: p.entry, x: p.cross, roe: p.margin ? Math.round(p.upnl / p.margin * 1e4) / 1e4 : null, sz: Math.abs(p.szi) })) });
+      // `at` = when this wallet was last READ from clearinghouseState (hl_pos.ts). A liquidation price is a fact about that
+      // moment, and the heatmap labels a row that is minutes behind (2026-11-13: a whale mark stood 73 minutes after the exchange
+      // had liquidated the position; the page could not say how old its row was, so it could not doubt it).
+      rows.push({ user: w.addr, acct: { eq: Math.round(w.av || 0), book: Math.round(w.ntl), used: Math.round(pos.reduce((a, p) => a + (p.margin || 0), 0)), free: 0, n: w.n }, positions: pos.map((p) => ({ user: w.addr, sym: p.coin, long: p.szi > 0, lev: p.lev, val: Math.round(p.ntl), liq: p.liq, mark: p.ntl / Math.abs(p.szi), pnl: Math.round(p.upnl), ent: p.entry, x: p.cross, roe: p.margin ? Math.round(p.upnl / p.margin * 1e4) / 1e4 : null, sz: Math.abs(p.szi), at: +p.ts || 0 })) });
     }
     res.json({ ts: Date.now(), rows });
   });

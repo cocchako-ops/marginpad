@@ -1137,6 +1137,7 @@ async function heatExtras(env, sym) {
             val: Math.round(+p.val || 0), liq: +p.liq || 0, mark: +p.mark || 0,
             distPct: (+p.liq > 0 && +p.mark > 0) ? (+p.liq - +p.mark) / +p.mark * 100 : null,
             user: String(p.user || '').slice(0, 10),   // the wallet prefix only - the page links the full one itself
+            at: +p.at || 0,                            // when the wallet was last read from the exchange - the page prints the age past five minutes
           });
           const ok = pos.filter((p) => +p.liq > 0 && +p.mark > 0 && +p.val > 0);
           // On this coin: the ones whose liquidation is inside the widest view the map can hold.
@@ -2391,7 +2392,7 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
 }
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const ck = new Request('https://marginpad.io/__hmp_v2_' + sym); // v2: carries `moves`, the measured cost of a move of a given size - bump on any shape change
+  const ck = new Request('https://marginpad.io/__hmp_v3_' + sym); // v3: whale rows carry `at` (read time); v2 added `moves` - bump on any shape change
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
   try { const sw = await env.STATS.get('hmp:swp:' + sym); if (body && sw) { const o = JSON.parse(body); o.sweeps = JSON.parse(sw); body = JSON.stringify(o); } } catch (e) {}

@@ -765,10 +765,11 @@ function bkSelect(cls, opts, cur) {
       var rt2 = tN ? (usdShort(tUsd) + ' ' + __esT_mpheatmap('rpSoFar', 'liquidated so far') + (nar2 ? '' : ' · ' + __esT_mpheatmap('rpLongs', 'longs') + ' ' + usdShort(tLong) + ' · ' + __esT_mpheatmap('rpShorts', 'shorts') + ' ' + usdShort(tUsd - tLong)) + (tCut ? ' · ' + tCut + ' ' + __esT_mpheatmap(tCut === 1 ? 'rpBand1' : 'rpBandN', tCut === 1 ? 'band swept' : 'bands swept') : '')) : __esT_mpheatmap('rpNothingYet', 'nothing liquidated yet');
       var rw = Math.max(ctx.measureText(rt).width, ctx.measureText(rt2).width); ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W / 2 - rw / 2 - 8, 26, rw + 16, 31); ctx.fillStyle = '#c2f64a'; ctx.fillText(rt, W / 2 - rw / 2, 38); ctx.fillStyle = '#aab5c4'; ctx.fillText(rt2, W / 2 - rw / 2, 52);
     }
+    var drawnW = [];
     if (S.whales && S.whales.length && !S._rpT) {
       ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'right';
       for (i = 0; i < S.whales.length; i++) { var wh = S.whales[i];
-        var wq = +wh.liq || 0; if (!(wq > pLo && wq < pHi)) continue;
+        var wq = +wh.liq || 0; if (!(wq > pLo && wq < pHi) || whCrossed(wh)) continue; drawnW.push(wq);
         var wy = Y(wq);
         // A WHALE LINE IS A MARK AT THE RIGHT EDGE, NOT A SPAN (2026-11-12, owner's screenshot zoomed out to years: the
         // lines ran across the whole history and read as something that had been there for years). It is one real
@@ -783,13 +784,14 @@ function bkSelect(cls, opts, cur) {
         ctx.strokeStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.lineWidth = 1.4;
         ctx.beginPath(); ctx.moveTo(wx0, wy); ctx.lineTo(W, wy); ctx.stroke(); ctx.restore();
         ctx.fillStyle = wh.long ? 'rgba(102,211,165,.95)' : 'rgba(255,143,134,.95)'; ctx.beginPath(); ctx.moveTo(wx0 - 3.5, wy); ctx.lineTo(wx0, wy - 3.5); ctx.lineTo(wx0 + 3.5, wy); ctx.lineTo(wx0, wy + 3.5); ctx.closePath(); ctx.fill();
-        var wt = __esT_mpheatmap('whMark', 'WHALE') + ' ' + usdShort(wh.val) + ' ' + (wh.long ? 'LONG' : 'SHORT') + ' · ' + __esT_mpheatmap('whLiqAt', 'liq at') + ' ' + fpx(wq);
+        var wt = __esT_mpheatmap('whMark', 'WHALE') + ' ' + usdShort(wh.val) + ' ' + (wh.long ? 'LONG' : 'SHORT') + ' · ' + __esT_mpheatmap('whLiqAt', 'liq at') + ' ' + fpx(wq) + whAgeTxt(wh);
         var ww = ctx.measureText(wt).width;
         ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - ww - 11, wy - 13, ww + 8, 12);
         ctx.fillStyle = wh.long ? '#66d3a5' : '#ff8f86'; ctx.fillText(wt, W - 7, wy - 4);
       }
       ctx.textAlign = 'left';
     }
+    S._whDrawn = drawnW;
     // the scale, on the map: colour is how crowded a level is, and a reader should not need the docs to know that
     if (W > 300) { var kw = 96, kx = 8, ky = 8; ctx.fillStyle = 'rgba(7,9,12,.82)'; ctx.fillRect(kx - 4, ky - 3, kw + 96, 15);
       var kg = ctx.createLinearGradient(kx, 0, kx + kw, 0); for (i = 0; i <= 6; i++) kg.addColorStop(i / 6, 'rgba(' + heatCol(i / 6) + ',1)'); ctx.fillStyle = kg; ctx.fillRect(kx, ky + 2, kw, 5);
@@ -922,7 +924,7 @@ function bkSelect(cls, opts, cur) {
     // one page of rows covers everything, was exact). The 5-minute aggregate is complete for every window
     // the picker offers, up to the 30 days it is kept for, and it costs the request the page already makes.
     var mins = WINS[S.win] ? WINS[S.win].mins : 1440, gen = S.gen || 0;
-    fetch('/api/v1/liquidations/recent?symbol=' + encodeURIComponent(coin) + '&minutes=' + mins).then(function (r) { return r.json(); }).then(function (j) {
+    fetch('/api/v1/liquidations/recent?symbol=' + encodeURIComponent(coin) + '&minutes=' + mins, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
       var d = (j && j.data) || j, b = (d && d.buckets) || [];
       if (!b.length || !S || coin !== S.coin || (S.gen || 0) !== gen) return;
       if (S.pools && S.pools.alive) {
@@ -1212,7 +1214,7 @@ function bkSelect(cls, opts, cur) {
     // (measured on BTC: 1.2h -> 18.2h -> 20.6h -> 20.6h), because each new batch's own ratio approaches 1.
     if (prevMin) min = Math.max(min, Math.round(prevMin * 2.5));
     if (!(min > 0)) return;
-    fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000&min=' + min).then(function (r) { return r.json(); }).then(function (d) {
+    fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000&min=' + min, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
       if (!S || coin !== S.coin || (S.gen || 0) !== gen || !d || !d.events || !d.events.length) return;
       var seen = {}; S.events.forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var add = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
@@ -1225,12 +1227,12 @@ function bkSelect(cls, opts, cur) {
     if (first && S.loadEl) S.loadEl.style.display = 'flex';
     Promise.all([
       fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-      fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000').then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000', { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch('/api/price?symbol=' + coin + window.__mpPQ('heatx', coin), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch('/api/heatmap/pools?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
       // WHAT A MOVE HAS COST (2026-11-12): the measured dollars liquidated across the last 1% and 2% moves of this coin, from the
       // same route the chart's Big Liquidations layer reads. Measured, with its n, never a model - it rides under the targets.
-      fetch('/api/liq/events?symbol=' + coin).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      fetch('/api/liq/events?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (res) {
       if (!S || coin !== S.coin || (S.gen || 0) !== gen) return;
       if (res[4] && res[4].moves && Array.isArray(res[4].moves.rows)) S.moves = res[4].moves;
@@ -1273,7 +1275,7 @@ function bkSelect(cls, opts, cur) {
           S.sweeps = srv.sweeps || [];
           S.calib = srv.calib || null;   // what bands of each weight have REALLY liquidated, measured
         } else { S.pools = buildPools(S.bars); S.sweeps = []; }
-        if (!S._fr || S._frCoin !== coin || Date.now() - S._fr > 300000) { S._fr = Date.now(); S._frCoin = coin; fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && S.coin === coin && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); } // per COIN: a switch inside five minutes used to keep the previous coin's funding under the squeeze line
+        if (!S._fr || S._frCoin !== coin || Date.now() - S._fr > 300000) { S._fr = Date.now(); S._frCoin = coin; fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (f) { if (S && S.coin === coin && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); } // per COIN: a switch inside five minutes used to keep the previous coin's funding under the squeeze line
         if (first || !S.view) { var last = S.bars[S.bars.length - 1]; var step = S.bars[1] ? S.bars[1].time - S.bars[0].time : 60; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: last.time + step * 5 }; }
       }
       if (res[1] && res[1].events) { if (first || !S.events.length) S.events = res[1].events; else { var seen0 = {}; S.events.forEach(function (e) { seen0[e.ts + '|' + e.price + '|' + e.qty] = 1; }); var add0 = res[1].events.filter(function (e) { return !seen0[e.ts + '|' + e.price + '|' + e.qty]; }); if (add0.length) S.events = add0.concat(S.events).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 4000); } backfillEvents(coin, w.mins); } // merge, never replace: the backfilled history used to vanish for three round trips every minute
@@ -1292,7 +1294,7 @@ function bkSelect(cls, opts, cur) {
     S._lm = 1;
     var coin = S.coin, w = WINS[S.win], endMs = (S.bars[0].time - 1) * 1000;
     var gen = S.gen || 0;
-    fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv + '&end=' + endMs).then(function (r) { return r.ok ? r.json() : null; }).then(function (kd) {
+    fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv + '&end=' + endMs, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (kd) {
       if (!S || coin !== S.coin || (S.gen || 0) !== gen) return;
       S._lm = 0;
       if (!kd) return; // a failed page is not the end of history - the next pan asks again
@@ -1308,7 +1310,7 @@ function bkSelect(cls, opts, cur) {
   function pollEvents() {
     if (!S || document.hidden) return;
     var coin = S.coin, gen = S.gen || 0;
-    fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=120').then(function (r) { return r.json(); }).then(function (d) {
+    fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=120', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
       if (!S || coin !== S.coin || (S.gen || 0) !== gen || !d || !d.events) return;
       var seen = {}; S.events.slice(0, 200).forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var fresh = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
@@ -1323,9 +1325,28 @@ function bkSelect(cls, opts, cur) {
   // dollars. MEASURED the day this shipped: of 40 tracked positions ONE had its liq within 12% of the
   // price, so a per-coin layer alone would be empty most of the time - hence the fallback to the nearest
   // one across every coin, which is never empty and is the biggest real forced close the market is near.
+  /* A WHALE MARK THE PRICE HAS ALREADY CROSSED IS NOT A STANDING LIQUIDATION (2026-11-13, owner's screenshot: "WHALE $16.1M LONG ·
+     liq at 71,125.5" drawn at 01:44 UTC with the price at 70,862, 73 minutes after Hyperliquid had taken the first slice of exactly
+     that position at 71,09x). The row was the browser's: /api/heatmap/pools was fetched with the default cache and the zone hands an
+     edge HIT to the browser as max-age=14400, so an installed phone redrew a four-hour-old whale list every minute (the fetches above
+     carry no-store now). This is the second guard, for the minutes a row can honestly be behind (the engine reads a $1M+ wallet every
+     six minutes, the tracker publishes every four): a long whose liquidation price is ABOVE the live price, or a short whose price is
+     below it, is a level the exchange has already acted on or a reading that is late - either way nothing that still stands there. A
+     row that is five minutes old or more says so on its label. */
+  function whCrossed(wh) {
+    var p = S && +S.price > 0 ? +S.price : 0, q = +wh.liq || 0;
+    if (!(p > 0 && q > 0) || String(wh.sym || '').toUpperCase() !== S.coin) return false;
+    return wh.long ? p <= q : p >= q;
+  }
+  function whAgeTxt(wh) {
+    var at = +wh.at || 0; if (!at) return '';
+    var m = Math.round((Date.now() - at) / 60000);
+    return m >= 5 ? ' · ' + __esT_mpheatmap('whReadAgo', 'read {m}m ago').split('{m}').join(String(m)) : '';
+  }
   function whaleRow() {
-    var here = (S.whales || []).filter(function (x) { return Math.abs(+x.distPct || 0) <= 12; });
-    if (!here.length && !S.whaleNear) return '';
+    var here = (S.whales || []).filter(function (x) { return Math.abs(+x.distPct || 0) <= 12 && !whCrossed(x); });
+    var near = S.whaleNear && !whCrossed(S.whaleNear) ? S.whaleNear : null;
+    if (!here.length && !near) return '';
     var chip = function (x, other) {
       var d = +x.distPct || 0;
       return '<button type="button" class="hm-tgb w' + (x.long ? ' l' : ' s') + '" data-wl="' + fpx(x.liq) + '"'
@@ -1334,7 +1355,7 @@ function bkSelect(cls, opts, cur) {
     };
     var cells = here.length
       ? here.slice(0, 3).map(function (x) { return chip(x, 0); }).join('')
-      : chip(S.whaleNear, String(S.whaleNear.sym || '').toUpperCase() !== S.coin);
+      : chip(near, String(near.sym || '').toUpperCase() !== S.coin);
     return '<div class="hm-tg-r rl"><span class="hm-tg-d rl">' + __esT_mpheatmap('tgReal', 'REAL') + '</span><div class="hm-tg-c">' + cells
       + '</div></div>';
   }
@@ -1490,7 +1511,7 @@ function bkSelect(cls, opts, cur) {
     function zalLoad() {
       var li = false; try { li = /(^|;\s*)mp_li=/.test(document.cookie); } catch (e) {}
       if (!li) return;
-      fetch('/api/alerts/zonealert').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      fetch('/api/alerts/zonealert', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
         if (!S || !j) return;
         S.zal = j.cfg || null; S.zalTg = !!j.telegram;
         if (S.showSel) S.showSel();
@@ -1572,7 +1593,7 @@ function bkSelect(cls, opts, cur) {
       } else if (S.sel.type === 'whale') { var wh2 = S.sel.ref, wd2 = +wh2.distPct || 0, oth = String(wh2.sym || '').toUpperCase() !== S.coin;
         h = '<span class="k">' + __esT_mpheatmap('whaleK', 'REAL POSITION') + '</span>'
           + '<b>' + usdShort(wh2.val) + '</b> <span class="' + (wh2.long ? 'l' : 's') + '">' + (wh2.long ? 'long' : 'short') + '</span>' + (oth ? ' ' + esc2(wh2.sym) : '') + (wh2.lev ? ' · ' + wh2.lev + 'x' : '') + ' ' + __esT_mpheatmap('whaleOn', 'on Hyperliquid') + '.<br>'
-          + __esT_mpheatmap('whaleLiq', 'It is liquidated at') + ' <b>' + fpx(wh2.liq) + '</b>' + (wd2 ? ' (' + (wd2 >= 0 ? '+' : '') + wd2.toFixed(1) + '% ' + __esT_mpheatmap('whaleFromHere', 'from here') + ')' : '') + '.<br>'
+          + __esT_mpheatmap('whaleLiq', 'It is liquidated at') + ' <b>' + fpx(wh2.liq) + '</b>' + (wd2 ? ' (' + (wd2 >= 0 ? '+' : '') + wd2.toFixed(1) + '% ' + __esT_mpheatmap('whaleFromHere', 'from here') + ')' : '') + '.' + (wh2.at ? ' ' + __esT_mpheatmap('whaleReadAt', 'Read from the exchange') + ' ' + ago2(+wh2.at) + '.' : '') + '<br>'
           + '<span style="color:#8b95a1">' + __esT_mpheatmap('whaleWhy', 'Read from the exchange\'s own position data - a measured price, no model. Cross margin: the level can move as that account\'s other positions change.') + '</span>';
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
         h = __esT_mpheatmap("alreadySwept",'<span class="k">ALREADY SWEPT</span>')
@@ -1997,12 +2018,12 @@ function bkSelect(cls, opts, cur) {
       ctRender();
     }
     function loadMkt() {
-      fetch('/api/v1/pulse').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      fetch('/api/v1/pulse', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
         if (!j || !j.h24) return;
         M.p = j; render();
       }).catch(function () {});
     }
-    fetch('/api/prices').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    fetch('/api/prices', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       if (!j || !Array.isArray(j.pairs)) return;
       j.pairs.forEach(function (pr) { M.px[String(pr.symbol).replace(/USDT$/, '')] = { price: +pr.price, chg: pr.changePct != null ? +pr.changePct : null }; });
       if (M.p) render();
@@ -2696,11 +2717,11 @@ function bkSelect(cls, opts, cur) {
       if (!S) return;
       var coin = S.coin;
       Promise.all([
-        fetch('/api/v1/book?symbol=' + encodeURIComponent(coin) + '&levels=40').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        fetch('/api/v1/book?symbol=' + encodeURIComponent(coin) + '&levels=40', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
         // Tell the tape what we are filtering for, so the kept prints it returns are the ones that will
         // actually be shown - otherwise the deepest filter gets the shallowest reach back in time.
         fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=140'
-          + (bkPref('mp_hm_tapemin', 0) >= 50000 ? '&bigmin=' + bkPref('mp_hm_tapemin', 0) : ''))
+          + (bkPref('mp_hm_tapemin', 0) >= 50000 ? '&bigmin=' + bkPref('mp_hm_tapemin', 0) : ''), { cache: 'no-store' })
           .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       ]).then(function (res) {
         if (!S || S.coin !== coin) return;
@@ -2789,7 +2810,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
          whole. A view change, a drag into the past or an empty film still fetch everything. */
       var have = bmState.data, inc = !force && back === 0 && have && have.cols && have.cols.length && have.symbol === coin && have.newestKeptTs > 0;
       var since = inc ? Math.floor(have.newestKeptTs / 5000) * 5000 : 0;
-      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (band === 'wide' ? '&band=wide' : '') + (ven && ven !== 'all' ? '&venue=' + ven : '') + (since ? '&since=' + since : ''))
+      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (band === 'wide' ? '&band=wide' : '') + (ven && ven !== 'all' ? '&venue=' + ven : '') + (since ? '&since=' + since : ''), { cache: 'no-store' })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
           bmState.loading = false;
@@ -3513,7 +3534,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       if (r.left + mw > innerWidth - 12) coinMenu.style.left = Math.max(12 - r.left, innerWidth - 12 - mw - r.left) + 'px';
       var cur = coinMenu.querySelector('.hm-cm-r.on'); if (cur) { cur.classList.add('k'); try { cur.focus({ preventScroll: true }); } catch (e) {} }
       if (!COINSTAT || Date.now() - coinStatAt > 120000) {
-        fetch('/api/v1/liquidations').then(function (x) { return x.ok ? x.json() : null; }).then(function (j) {
+        fetch('/api/v1/liquidations', { cache: 'no-store' }).then(function (x) { return x.ok ? x.json() : null; }).then(function (j) {
           var d = (j && (j.data || j)) || {}, m = {}; (d.coins || []).forEach(function (x) { if (x && x.s) m[String(x.s).toUpperCase()] = { liq: +x.liq || 0, long: +x.long || 0, short: +x.short || 0 }; });
           COINSTAT = m; coinStatAt = Date.now(); if (coinMenu) { var k0 = coinMenu.querySelector('.hm-cm-r.k'), kc = k0 && k0.getAttribute('data-c'); coinMenu.innerHTML = coinRows(); var k1 = kc && coinMenu.querySelector('[data-c="' + kc + '"]'); if (k1) k1.classList.add('k'); }
         }).catch(function () { COINSTAT = COINSTAT || {}; });
@@ -3739,7 +3760,7 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
       // non-HttpOnly cookie that says a session exists; it is what the lazy auth loader reads too.
       var li = false; try { li = /(^|;\s*)mp_li=/.test(document.cookie); } catch (e) {}
       if (!li) { bellPaint(); return; }
-      fetch('/api/alerts/tapealert').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      fetch('/api/alerts/tapealert', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
         if (j && j.cfg) { bellCfg = j.cfg; bellCfg._tg = !!j.telegram; }
         bellPaint();
       }).catch(function () {});
@@ -3865,7 +3886,8 @@ var BM_BANDS = [['near', __esT_mpheatmap("atThePrice",'At the price')], ['wide',
         // any of these from the pixels, and the whole point of the total is that it is NOT the row count.
         obs: S.obs ? { usd: S.obs.usd, n: S.obs.n, mins: S.obs.mins } : null,
         oi: S.oi ? { oi: S.oi.oi, chg4h: S.oi.chg4h == null ? null : S.oi.chg4h, chg24h: S.oi.chg24h == null ? null : S.oi.chg24h } : null,
-        whales: (S.whales || []).map(function (x) { return { sym: x.sym, long: !!x.long, val: x.val, liq: x.liq, distPct: x.distPct }; }),
+        whales: (S.whales || []).map(function (x) { return { sym: x.sym, long: !!x.long, val: x.val, liq: x.liq, distPct: x.distPct, at: x.at || 0 }; }),
+        whDrawn: (S._whDrawn || []).slice(),
         whaleNear: S.whaleNear ? { sym: S.whaleNear.sym, val: S.whaleNear.val, liq: S.whaleNear.liq, distPct: S.whaleNear.distPct } : null,
         whaleN: S.whaleN || 0,
         model: S.model || null,
