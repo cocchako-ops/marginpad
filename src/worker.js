@@ -2102,8 +2102,13 @@ const CX_EARLY_MUTE_N = 20, CX_EARLY_MUTE_HIT = 0.55, CX_EARLY_MUTE_BIG = 0.3, C
 function cxEarlyCell(c) { return (c.kind || 'news') + '|' + (c.tier || '') + '|' + (c.major ? 'major' : c.why === 'score' ? 'score' : 'plain'); }
 function cxEarlyMuted(acc, cell) { const a = acc && acc[cell]; if (!a || !(a.n >= CX_EARLY_MUTE_N)) return false; const big = a.big / a.n, hit = a.nd ? a.hit / a.nd : null; return big < CX_EARLY_MUTE_BIG && (hit == null || hit < CX_EARLY_MUTE_HIT); }
 // c = an ENRICHED item (cxEnrich: labels, impact, story). null = not an early alert; {muted:true} = would be, but its cell's own record says no.
+/* A DATED FUTURE IS NEVER A LISTING (2026-11-13, owner: BTC wore 'New listing' after a 'Delisting' on /charts): the market-list diff
+   read Bybit's quarterly contracts (BTCUSDT-13NOV26 expiring, BTCUSDT-04DEC26 opening) as a delisting and a listing of BTC. The
+   collector now reads perpetuals only; this is the same rule on this side, for any row already stored. */
+const CX_DATED = /\b[A-Z0-9]{2,15}-\d{1,2}[A-Z]{3}\d{2}\b/;
+function cxDatedRow(c) { return !!c && (c.kind === 'listing' || c.kind === 'delisting') && CX_DATED.test(String(c.title || '')); }
 function cxEarlyDecide(c, now, acc) {
-  if (!c || !c.id || CX_SKIP_KIND[c.kind]) return null;
+  if (!c || !c.id || CX_SKIP_KIND[c.kind] || cxDatedRow(c)) return null;
   const syms = String(c.syms || '').split(',').filter(Boolean);
   if (!syms.length || syms.length > 3) return null;
   const seen = +c.ts_seen || 0; if (!(seen > 0) || now - seen > 3 * 60000) return null;
@@ -9808,7 +9813,7 @@ async function premLiveRow(env, allow, w, now) {
 // stories that are major (importance 70+ with two desks, or 85+) or score 70+, and tells every Premium member with an open
 // position or resting order on a coin they name - Telegram and push, the same senders the position alerts use. One story
 // per member per twelve hours (`cxal:`), and `cxalert:last` is always stamped so a quiet minute reads as quiet, not dead.
-async function cxEarlyRead(env) { try { const j = JSON.parse(await env.STATS.get('cx:early') || 'null'); return j && Array.isArray(j.items) ? j : { items: [], upcoming: [] }; } catch (e) { return { items: [], upcoming: [] }; } }
+async function cxEarlyRead(env) { try { const j = JSON.parse(await env.STATS.get('cx:early') || 'null'); if (j && Array.isArray(j.items)) j.items = j.items.filter(r => !cxDatedRow(r)); return j && Array.isArray(j.items) ? j : { items: [], upcoming: [] }; } catch (e) { return { items: [], upcoming: [] }; } }
 async function cxEarlyAccRead(env) { try { return JSON.parse(await env.STATS.get('cx:early:acc') || '{}') || {}; } catch (e) { return {}; } }
 // THE MINUTE'S EARLY PASS (2026-11-05): what landed in the last three minutes, what is scheduled inside 35 minutes, and (every other
 // minute) whether a coin a member holds is moving abnormally right now. Writes the ring once; the alert sender reads `fresh`.
