@@ -9139,6 +9139,7 @@ const TOTD_XP = 100;
    the ledger's /gift with from:'totd' and once:86400, so a forced re-settle inside a day is answered `dup` and credits nothing twice; a new
    account (faucet closed from 2026-11-12) is paid like any board prize. Published as `usd` on GET /api/totd so no surface types the figure. */
 const TOTD_USD_C = 100;
+const TOTD_AUTO_MAX = 3; // a shared win enters the vote by itself (2026-11-13); this many per author per day, so one member cannot fill the ballot
 function totdDayOf(ms) { return new Date(ms).toISOString().slice(0, 10); }
 async function handleTotd(url, request, env, ctx) {
   const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
@@ -9147,8 +9148,9 @@ async function handleTotd(url, request, env, ctx) {
   if (request.method === 'GET') {
     const day = /^\d{4}-\d{2}-\d{2}$/.test(String(url.searchParams.get('day') || '')) ? String(url.searchParams.get('day')) : today;
     const wantWin = url.searchParams.get('win') === '1';
-    if (!uid && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
-    let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid }); } catch (e) { bd = null; }
+    const e2e = url.searchParams.get('e2e') === '1'; // a test author's entry is hidden from the public ballot (the desk rule); the suite asks for it by name
+    if (!uid && !url.searchParams.get('nc') && !e2e) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
+    let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid, e2e }); } catch (e) { bd = null; }
     if (!bd || !bd.ok) return jt({ error: 'unavailable' }, 503);
     const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP, usd: TOTD_USD_C / 100 };
     if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} out.win = win ? Object.assign({ day: yd }, win) : null; }
@@ -9183,7 +9185,8 @@ async function totdSettle(env, o) {
   o = o || {}; const day = o.day || totdDayOf(Date.now() - 86400000);
   if (!o.force && !o.dry && await env.STATS.get('totd:done:' + day)) return { ok: true, day, skipped: 'done' };
   if (!o.force && !o.dry && day === totdDayOf(Date.now())) return { ok: true, day, skipped: 'today' }; // the day is still being voted on
-  let bd = null; try { bd = await usersDO(env, '/totd/settle', { day }); } catch (e) { bd = null; }
+  // a DRY run may look at test entries (the suite's own); a real settle never can - a test author is never paid
+  let bd = null; try { bd = await usersDO(env, '/totd/settle', { day, e2e: !!(o.dry && o.e2e) }); } catch (e) { bd = null; }
   if (!bd || !bd.ok) return { ok: false, day, error: 'unavailable' };
   const win = bd.winner || null;
   if (o.dry) return { ok: true, day, dry: true, winner: win, cands: bd.cands.length };
@@ -10433,7 +10436,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=f84a9a16" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8e1316dd" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -21285,6 +21288,22 @@ async function handleTshare(url, request, env, ctx) {
   } catch (e) {}
   const id = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Date.now().toString(36) + Math.random().toString(36).slice(2))).slice(0, 10);
   try { await env.STATS.put('tshr:' + id, JSON.stringify(snap), { expirationTtl: 10368000 }); } catch (e) { return jt({ error: 'store_failed' }, 500); }
+  /* A SHARED WIN IS ON THE BALLOT BY ITSELF (2026-11-13, owner: "neki trejdovi nisu zavrsili u nominacijama ... vidim samo e2e i chako a
+     ostali koji su share njihov trade, njih nema"). Trade of the day shipped as a SECOND tap - Nominate under a shared card - and the room
+     never made it: members shared their trades, nobody pressed the button, and the one member who did had spent his one nomination a day.
+     This route is called by the chat Share alone (the image share builds its ticket locally), so a closed WIN that lands in the room enters
+     the vote as the author's own entry: the author cannot vote for it, everybody else can. A loss is not a trade of the day and still needs
+     a hand. The store caps the automatic entries per author per day (TOTD_AUTO_MAX); nothing here is on the response path. */
+  if (snap.status === 'win' && env.USERS) {
+    const enter = (async () => {
+      try {
+        const d = totdDayOf(Date.now());
+        const r = await usersDO(env, '/totd/nominate', { day: d, id, uid, author: snap.by || '', sym, side: snap.side, roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, auto: 1 });
+        if (r && r.ok) { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + d)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + d + '_w')); }
+      } catch (e) {}
+    })();
+    if (ctx && ctx.waitUntil) ctx.waitUntil(enter); else await enter;
+  }
   return jt({ ok: true, id, spark: snap.spark ? snap.spark.length : 0 });
 }
 
@@ -23143,7 +23162,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '46da3be1';
+const ASSET_V = '00202c7c';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -27019,7 +27038,7 @@ export default {
     }
     if (url.pathname === '/api/admin/totd' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the settle by hand: ?day=YYYY-MM-DD&settle=1 (the cron's own function; dry=1 only reads)
       const day = String(url.searchParams.get('day') || totdDayOf(Date.now() - 86400000)).replace(/[^0-9-]/g, '');
-      if (url.searchParams.get('settle') === '1') return new Response(JSON.stringify(await totdSettle(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      if (url.searchParams.get('settle') === '1') return new Response(JSON.stringify(await totdSettle(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1', e2e: url.searchParams.get('e2e') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
       let bd = null; try { bd = await usersDO(env, '/totd/board', { day }); } catch (e) {}
       let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + day)) || 'null'); } catch (e) {}
       return new Response(JSON.stringify({ day, board: bd, win, done: !!(await env.STATS.get('totd:done:' + day)) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -34811,6 +34830,7 @@ export class UserStore {
     // loses concurrent writes (measured 2026-10-18: five at once, one survived)
     try { s.exec('CREATE TABLE IF NOT EXISTS totdc(day TEXT, id TEXT, uid TEXT, author TEXT, sym TEXT, side TEXT, roe REAL, pnl REAL, ts INTEGER, PRIMARY KEY(day,id))'); } catch (e) {}
     try { s.exec('CREATE TABLE IF NOT EXISTS totdv(day TEXT, uid TEXT, id TEXT, ts INTEGER, PRIMARY KEY(day,uid))'); } catch (e) {}
+    try { s.exec('ALTER TABLE totdc ADD COLUMN auto INTEGER DEFAULT 0'); } catch (e) {} // 2026-11-13: 1 = entered by the share itself, 0 = a hand nomination (the one-a-day quota counts these alone)
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING - so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
@@ -36527,19 +36547,24 @@ export class UserStore {
     if (path.indexOf('/totd/') === 0) { // TRADE OF THE DAY (2026-11-12, feature #11) - candidates, votes, the board and the settle, all on the store's single thread
       const day = String(b.day || '').replace(/[^0-9-]/g, '').slice(0, 10), uid = String(b.uid || ''), id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return this.j({ error: 'bad_day' });
+      // A TEST AUTHOR IS NOT ON THE PUBLIC BALLOT (2026-11-13: the owner opened the panel and found "e2e_e2etotdaovqd" beside one real
+      // trade). Hidden unless the caller asks (`e2e`) or is itself a test account - the suite reads its own entries that way.
+      const showE2e = !!b.e2e || /^e2e/i.test(uid);
       const board = (who) => {
-        const rows = this.rows('SELECT c.id, c.uid, c.author, c.sym, c.side, c.roe, c.pnl, c.ts, (SELECT COUNT(*) FROM totdv v WHERE v.day=c.day AND v.id=c.id) n FROM totdc c WHERE c.day=? ORDER BY n DESC, c.roe DESC, c.ts ASC LIMIT 50', day);
+        const rows = this.rows("SELECT c.id, c.uid, c.author, c.sym, c.side, c.roe, c.pnl, c.ts, (SELECT COUNT(*) FROM totdv v WHERE v.day=c.day AND v.id=c.id) n FROM totdc c WHERE c.day=? AND (?=1 OR (c.author NOT LIKE 'e2e%' AND c.uid NOT LIKE 'e2e%')) ORDER BY n DESC, c.roe DESC, c.ts ASC LIMIT 50", day, showE2e ? 1 : 0);
         const mine = who ? (this.rows('SELECT id FROM totdv WHERE day=? AND uid=?', day, who)[0] || {}).id || null : null;
-        const nomd = who ? !!this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=?', day, who)[0] : false;
+        const nomd = who ? !!this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=? AND COALESCE(auto,0)=0', day, who)[0] : false; // the hand nomination spent - an automatic entry never spends it
         return { day, cands: rows.map(r => ({ id: r.id, by: r.author || '', sym: r.sym || '', side: r.side || 'long', roe: r.roe == null ? null : +r.roe, pnl: r.pnl == null ? null : +r.pnl, n: +r.n || 0, ts: +r.ts || 0, own: !!(who && String(r.uid) === String(who)) })), mine, nominated: nomd };
       };
       if (path === '/totd/board') return this.j({ ok: true, ...board(uid || null) });
       if (path === '/totd/nominate') {
         if (!uid || !id) return this.j({ error: 'no_uid' });
+        const auto = !!b.auto; // the share itself (a closed win landing in the room) - capped per author per day, never spending the hand nomination
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
-        if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=?', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one nomination a day per member
-        this.state.storage.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts) VALUES(?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now());
-        return this.j({ ok: true, ...board(uid) });
+        if (auto) { if ((this.rows('SELECT COUNT(*) c FROM totdc WHERE day=? AND uid=? AND auto=1', day, uid)[0] || { c: 0 }).c >= TOTD_AUTO_MAX) return this.j({ error: 'auto_cap', max: TOTD_AUTO_MAX, ...board(uid) }); }
+        else if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=? AND COALESCE(auto,0)=0', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one hand nomination a day per member
+        this.state.storage.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts,auto) VALUES(?,?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now(), auto ? 1 : 0);
+        return this.j({ ok: true, auto, ...board(uid) });
       }
       if (path === '/totd/vote') {
         if (!uid || !id) return this.j({ error: 'no_uid' });
@@ -39145,7 +39170,7 @@ export class UserStore {
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
         const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
-        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq'];
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq', 'totdc', 'totdv']; // totdc/totdv since 2026-11-13: a test nomination sat on the owner's public ballot
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -39179,7 +39204,7 @@ export class UserStore {
           out.botuse2 = { orphans: n0, total: (this.rows('SELECT COUNT(*) n FROM botuse2')[0] || {}).n || 0 };
           if (n0) { out.tables.botuse2 = n0; out.removed += n0; if (!dry) sql.exec('DELETE FROM botuse2 WHERE NOT EXISTS (SELECT 1 FROM botkeys2 b WHERE b.k = botuse2.k)'); }
         } catch (e) { out.botuse2 = { error: String((e && e.message) || e).slice(0, 140) }; }
-        for (const t of ['botwh', 'botwhq', 'botkeys2', 'botkeys', 'botpos', 'botuse', 'botidem', 'porders']) {
+        for (const t of ['botwh', 'botwhq', 'botkeys2', 'botkeys', 'botpos', 'botuse', 'botidem', 'porders', 'totdc', 'totdv']) { // totdc/totdv 2026-11-13: test nominations outlived their accounts on the live ballot
           let rowsO = [];
           try { rowsO = this.rows('SELECT DISTINCT uid FROM ' + t + ' WHERE uid IS NOT NULL'); } catch (e) { continue; }
           for (const r of rowsO) {

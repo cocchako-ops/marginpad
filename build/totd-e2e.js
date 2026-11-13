@@ -112,20 +112,32 @@ const readRail = (id) => { const c = document.querySelector('.ct-tk[data-trade="
     await adm({ uid: A, op: 'mk' }); await adm({ uid: B, op: 'mk' });
     const sa = (await adm({ uid: A, op: 'sess' })).token, sb = (await adm({ uid: B, op: 'sess' })).token;
     const as = (tok, u, o) => fetch(BASE + u, Object.assign({ headers: Object.assign({ cookie: 'mp_sess=' + tok, 'content-type': 'application/json' }, (o && o.headers) || {}) }, o || {})).then(async r => ({ st: r.status, j: await r.json().catch(() => null) }));
-    // A shares a closed ticket, nominates it; A cannot vote for it; B votes; A cannot nominate twice
+    // A SHARED WIN IS ON THE BALLOT BY ITSELF (2026-11-13, owner: members shared their trades and none could be voted for - the second
+    // tap, Nominate, was one nobody made). A shares a closed win: it is a candidate at once, as A's own entry, A's hand nomination still
+    // free; nominating it by hand says it already stands; A cannot vote for it; B votes; a loss does NOT enter by itself; a test author is
+    // off the public ballot and visible with ?e2e=1.
     const sh = await as(sa, '/api/tshare', { method: 'POST', body: JSON.stringify({ ticket: { sym: 'SOL', side: 'long', status: 'win', entry: 80, exit: 84, lev: 10, roe: 50, pnl: 50, margin: 100, ts: Date.now() - 3600000, closeTs: Date.now() - 60000 } }) });
     const id = sh.j && sh.j.id; chk('prod: a closed ticket is shared', sh.st === 200 && !!id, sh);
+    await new Promise(r => setTimeout(r, 2500)); // the entry rides on waitUntil behind the share's own response
+    const b0 = await as(sa, '/api/totd?nc=1', {});
+    chk('prod: the shared win is on the board by itself - the sharer\'s own entry, 0 votes, the hand nomination still free', b0.st === 200 && b0.j && b0.j.cands.some(c => c.id === id && c.own && c.n === 0) && b0.j.nominated === false, b0.j);
     const n1 = await as(sa, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'nominate', id }) });
-    chk('prod: the sharer nominates it - it is on the board with 0 votes, as their own', n1.st === 200 && n1.j && n1.j.ok && n1.j.cands.some(c => c.id === id && c.own && c.n === 0) && n1.j.nominated === true, n1.j);
+    chk('prod: nominating it by hand answers already_candidate', n1.st === 409 && n1.j && n1.j.error === 'already_candidate', n1);
     const v0 = await as(sa, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'vote', id }) });
-    chk('prod: the nominator cannot vote for their own nomination (403 own)', v0.st === 403 && v0.j && v0.j.error === 'own', v0);
+    chk('prod: the author cannot vote for their own entry (403 own)', v0.st === 403 && v0.j && v0.j.error === 'own', v0);
     const v1 = await as(sb, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'vote', id }) });
     chk('prod: the other member votes - 1 vote, mine set', v1.st === 200 && v1.j && v1.j.ok && v1.j.mine === id && v1.j.cands.some(c => c.id === id && c.n === 1), v1.j);
+    const shl = await as(sa, '/api/tshare', { method: 'POST', body: JSON.stringify({ ticket: { sym: 'ETH', side: 'short', status: 'loss', entry: 2500, exit: 2550, lev: 10, roe: -20, pnl: -20, margin: 100, ts: Date.now() - 3600000, closeTs: Date.now() - 60000 } }) });
+    await new Promise(r => setTimeout(r, 2000));
+    const b1 = await as(sa, '/api/totd?nc=1', {});
+    chk('prod: a shared LOSS does not enter by itself', shl.st === 200 && b1.j && !b1.j.cands.some(c => c.id === (shl.j && shl.j.id)), b1.j && b1.j.cands.map(c => c.id));
     const n2 = await as(sa, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'nominate', id: 'zzzz0000zzzz' }) });
-    chk('prod: a second nomination the same day is refused', n2.st >= 400 && n2.j && (n2.j.error === 'already_nominated' || n2.j.error === 'not_found'), n2);
-    const g = await fetch(BASE + '/api/totd?nc=1').then(r => r.json());
-    chk('prod: the public board carries the candidate with its vote', g && g.ok && g.cands.some(c => c.id === id && c.n === 1), g && g.cands && g.cands.length);
-    const dry = await fetch(BASE + '/api/admin/totd?settle=1&dry=1&day=' + DAY, { headers: H }).then(r => r.json());
+    chk('prod: a hand nomination of an unknown share is refused', n2.st >= 400 && n2.j && (n2.j.error === 'already_nominated' || n2.j.error === 'not_found'), n2);
+    const gPub = await fetch(BASE + '/api/totd?nc=1').then(r => r.json());
+    chk('prod: a test author is NOT on the public ballot', gPub && gPub.ok && !gPub.cands.some(c => c.id === id) && !gPub.cands.some(c => /^e2e/i.test(c.by)), gPub && gPub.cands && gPub.cands.map(c => c.by));
+    const g = await fetch(BASE + '/api/totd?nc=1&e2e=1').then(r => r.json());
+    chk('prod: with ?e2e=1 the board carries the candidate with its vote', g && g.ok && g.cands.some(c => c.id === id && c.n === 1), g && g.cands && g.cands.length);
+    const dry = await fetch(BASE + '/api/admin/totd?settle=1&dry=1&e2e=1&day=' + DAY, { headers: H }).then(r => r.json());
     chk('prod: a dry settle of today names the winner without writing', dry && dry.ok && dry.dry && dry.winner && dry.winner.id === id, dry);
     const open = await as(sa, '/api/tshare', { method: 'POST', body: JSON.stringify({ ticket: { sym: 'BTC', side: 'long', status: 'open', entry: 70000, lev: 5, margin: 100, ts: Date.now() } }) });
     const n3 = await as(sb, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'nominate', id: open.j && open.j.id }) });
