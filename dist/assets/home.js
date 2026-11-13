@@ -577,7 +577,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     setBox(rs,hs);
     // TP readout - directly under the take-profit field
     var ht='';
-    if(tp>0){var wt=lng?(tp<=entry):(tp>=entry);if(!wt){var gainFrac=lev*Math.abs(tp-entry)/entry;ht='<div class="pr-tp"><span>If take-profit hits</span><span class="v"><b>+$'+(margin*gainFrac).toFixed(2)+'</b> (+'+Math.round(gainFrac*100)+'%)</span></div>';}}
+    if(tp>0){var wt=lng?(tp<=entry):(tp>=entry);if(!wt){var gainFrac=lev*Math.abs(tp-entry)/entry;
+      // REWARD TO RISK (2026-11-13): with a stop on the right side as well, the one figure that says whether the trade is worth taking - what the target pays per dollar the stop costs. Amber under 1 (it risks more than it makes), lime from 2.
+      var rr='';try{var _sw=lng?(sl>=entry):(sl<=entry);if(sl>0&&!_sw){var _lf=Math.min(1,lev*Math.abs(entry-sl)/entry);if(_lf>0){var _r=gainFrac/_lf;rr=' <i class="pr-rr '+(_r<1?'bad':_r>=2?'good':'')+'" title="'+__esT_home("rrTitle",'Reward to risk: what the target pays for every dollar the stop-loss costs')+'">R:R '+(_r>=10?_r.toFixed(0):_r.toFixed(1))+'</i>';}}}catch(_e){}
+      ht='<div class="pr-tp"><span>If take-profit hits</span><span class="v"><b>+$'+(margin*gainFrac).toFixed(2)+'</b> (+'+Math.round(gainFrac*100)+'%)'+rr+'</span></div>';}}
     setBox(rt,ht);}
   window.mpPlanRisk=updatePlanRisk;
   // Exchange margin preset (paper trade) - sets the maintenance-margin rate used for the liq estimate + opened position
@@ -4730,12 +4733,19 @@ window.mpSrvOpen=function(payload,ok,fail){
   window.mpCloseSheet=function(id,cb){var _t0=performance.now();var r=show(id,cb);try{requestAnimationFrame(function(){try{window.__mpUxm&&window.__mpUxm('mo',performance.now()-_t0);}catch(e){}});}catch(e){}return r;}; // UX budget: modal open → next paint
 })();
 
-;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level): edit stop-loss / take-profit
-   LEVELS on any OPEN ticket. window.mpSltpSheet(id, onDone). Up to 3 levels per side, each with a % of the
-   position to close at that price (100% = full close, smaller % = partial, remainder stays open). Every level
-   has an ✕ remove button - no levels = no SL/TP. Wrong-side values are rejected per level. Storage: a single
-   100% level stays in legacy e.stop/e.tp; anything richer goes to e.sls/e.tps=[{p,pct}] with the legacy field
-   mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays keep working unchanged). */
+;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level; v2 2026-11-13): edit stop-loss / take-profit
+   LEVELS on any OPEN ticket. window.mpSltpSheet(id, onDone). Up to 3 levels per side, each with a % of the position to close
+   at that price (100% = full close, smaller % = partial, remainder stays open). Every level has a remove button - no levels =
+   no SL/TP. Wrong-side values are rejected per level. Storage: a single 100% level stays in legacy e.stop/e.tp; anything richer
+   goes to e.sls/e.tps=[{p,pct}] with the legacy field mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays
+   keep working unchanged).
+   SL/TP sheet v2 (2026-11-13, owner: "za SL/TP mozemo da nudimo i opciju u % (ROE), a ne samo da unesu cenu"): every level has a
+   PRICE field and a ROE field bound to each other (ROE = percent of the margin, before fees: price = entry * (1 +- roe / lev)),
+   a readout under it (ROE, dollars at that level, distance from the live price), quick chips per side (-10 / -25 / -50% and
+   break-even for the stop, +25 / +50 / +100 / +200% for the target), the close-% is a labelled button that cycles 100-75-50-25-10
+   (the native select it replaces drew as an unlabelled pill on a phone), and the trailing stop + break-even trigger the order form
+   has carried since 2026-08 can be set here on an open position too (e.trail / e.be - applied by the terminal's own stop manager,
+   exactly as the form's; disabled while more than one stop level is set, which is that manager's rule). */
 (function(){ if(window.mpSltpSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
   function jstore(a){try{window.mpJStore(a);}catch(e){}}
@@ -4745,18 +4755,26 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(arr&&arr.length){var a=arr.slice().sort(function(x,y){return (isTp===lg)?(x.p-y.p):(y.p-x.p);});
       var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
     var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'-';};
-  var ov=null,curId=null,after=null,MAXL=3;
-  function rowHtml(p,pct){return __esT_home("inputTypeTextInputmode",'<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="price" value="')+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
+  var ov=null,curId=null,after=null,MAXL=3,PCS=[100,75,50,25,10],E=null;
+  var SLQ=[-10,-25,-50,0],TPQ=[25,50,100,200]; // quick chips, in % of margin (ROE); 0 = break-even
+  function dpOf(v){v=+v||0;try{if(window.mpPricePrec){var n=window.mpPricePrec(null,v);if(n>=0&&n<=10)return n;}}catch(e){}return v>=1000?1:v>=100?2:v>=1?4:v>=0.01?6:8;}
+  function roeOf(e,p){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;if(!(+e.entry>0)||!(p>0))return NaN;return (p/e.entry-1)*(long?1:-1)*lev*100;}
+  function pxOf(e,roe){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;return +(e.entry*(1+(roe/100/lev)*(long?1:-1))).toFixed(dpOf(e.entry));}
+  function fmtRoe(r){var a=Math.abs(r),t=a>=100||Math.abs(a-Math.round(a))<0.05?r.toFixed(0):r.toFixed(1);return (r>=0?'+':'')+t+'%';}
+  function fpx(p){return String(+(+p).toFixed(8));} // the stored level as typed, never float noise (a trail-moved stop is 69831.46800000001 in the journal)
+  function rowHtml(p,pct){pct=PCS.indexOf(+pct)>=0?+pct:100;return '<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="'+__esT_home("sltpPricePh",'price')+'" value="'+(p!=null?fpx(p):'')+'"><input type="text" inputmode="decimal" autocomplete="off" class="r" placeholder="ROE %" aria-label="'+__esT_home("sltpRoeAria",'Level as percent of margin (ROE)')+'" value="'+((p!=null&&E)?fmtRoe(roeOf(E,+p)):'')+'"><button type="button" class="pc" data-pc="'+pct+'" title="'+__esT_home("sltpPctT",'How much of the position closes at this level - tap to change')+'">'+pct+'%</button><button type="button" class="rm" aria-label="'+__esT_home("removeLevel",'Remove level')+'">✕</button><div class="mpss-ro"></div></div>';}
+  function quickHtml(isTp){return '<div class="mpss-q"><i>ROE</i>'+(isTp?TPQ:SLQ).map(function(q){return '<button type="button" data-q="'+q+'">'+(q===0?__esT_home("sltpBreakEven",'Break-even'):fmtRoe(q))+'</button>';}).join('')+'</div>';}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
       +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
       +'<div class="mpss-live"></div>'
-      +__esT_home("stopLossLevelsAdd",'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">Stop-loss levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add stop-loss</button></div>')
-      +__esT_home("takeProfitLevelsAdd",'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">Take-profit levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add take-profit</button></div>')
-      +__esT_home("eachLevelClosesIts",'<div class="mpss-hint">Each level closes its % of the position when the price touches it - 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>')
+      +'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">'+__esT_home("stopLossLevels",'Stop-loss levels')+'</div><div class="mpss-rows"></div>'+quickHtml(false)+'<button type="button" class="mpss-add">'+__esT_home("addStopLoss",'+ Add stop-loss')+'</button></div>'
+      +'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">'+__esT_home("takeProfitLevels",'Take-profit levels')+'</div><div class="mpss-rows"></div>'+quickHtml(true)+'<button type="button" class="mpss-add">'+__esT_home("addTakeProfit",'+ Add take-profit')+'</button></div>'
+      +'<div class="mpss-sec mpss-dynw" data-k="dyn"><div class="mpss-lab">'+__esT_home("sltpDynamic",'Dynamic stop')+'</div><div class="mpss-dyn"><label><span>'+__esT_home("sltpTrail",'Trailing stop')+'</span><div class="mpss-in"><input type="text" inputmode="decimal" autocomplete="off" class="tr" placeholder="'+__esT_home("off",'off')+'"><i>%</i></div></label><label><span>'+__esT_home("sltpBeAt",'Break-even at ROE')+'</span><div class="mpss-in"><input type="text" inputmode="decimal" autocomplete="off" class="be" placeholder="'+__esT_home("off",'off')+'"><i>%</i></div></label></div><div class="mpss-dynn"></div></div>'
+      +'<div class="mpss-hint">'+__esT_home("sltpHint3",'Type a price or an ROE (percent of your margin, before fees) - the other follows. Each level closes its % when the price touches it. The trail follows the best price at that distance; break-even moves the stop to the entry at the trigger.')+'</div>'
       +'<div class="mpss-warn" hidden></div>'
-      +__esT_home("saveSlTp",'<button type="button" class="mpcs-go up">Save SL / TP</button>')
+      +'<button type="button" class="mpcs-go up">'+__esT_home("saveSlTp2",'Save SL / TP')+'</button>'
       +'</div>';
     document.body.appendChild(ov);
     ov.addEventListener('click',function(e){ if(e.target===ov){hide();return;}
@@ -4764,28 +4782,54 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(add){var rows=add.parentNode.querySelector('.mpss-rows');if(rows.children.length<MAXL){rows.insertAdjacentHTML('beforeend',rowHtml(null,100));syncAdds();var inp=rows.lastElementChild.querySelector('.p');if(inp)try{inp.focus();}catch(_){}}return;}
       var rm=e.target.closest&&e.target.closest('.mpss-row .rm');
       if(rm){var row=rm.closest('.mpss-row');if(row)row.parentNode.removeChild(row);syncAdds();return;}
+      var pc=e.target.closest&&e.target.closest('.mpss-row .pc');
+      if(pc){var cur=+pc.getAttribute('data-pc')||100,nx=PCS[(PCS.indexOf(cur)+1)%PCS.length];pc.setAttribute('data-pc',String(nx));pc.textContent=nx+'%';paintRow(pc.closest('.mpss-row'));return;}
+      var q=e.target.closest&&e.target.closest('.mpss-q [data-q]');
+      if(q&&E){var sec=q.closest('.mpss-sec'),rows2=sec.querySelector('.mpss-rows'),roe=+q.getAttribute('data-q'),px=pxOf(E,roe);
+        var tgt=null;Array.prototype.forEach.call(rows2.querySelectorAll('.mpss-row'),function(rw){if(!tgt&&!String(rw.querySelector('.p').value||'').trim())tgt=rw;});
+        if(!tgt){if(rows2.children.length<MAXL){rows2.insertAdjacentHTML('beforeend',rowHtml(null,100));tgt=rows2.lastElementChild;}else tgt=rows2.lastElementChild;}
+        tgt.querySelector('.p').value=String(px);tgt.querySelector('.r').value=fmtRoe(roe);paintRow(tgt);syncAdds();
+        try{if(window.mpBuzz)window.mpBuzz([8]);}catch(_){}return;}
     });
+    ov.addEventListener('input',function(e){var t=e.target;if(!t||!E)return;var row=t.closest&&t.closest('.mpss-row');
+      if(row&&t.classList.contains('p')){var v=num(t.value);var r=row.querySelector('.r');if(r)r.value=isFinite(v)&&v>0?fmtRoe(roeOf(E,v)):'';paintRow(row);}
+      else if(row&&t.classList.contains('r')){var rv=num(t.value);var p=row.querySelector('.p');if(p)p.value=isFinite(rv)?String(pxOf(E,rv)):'';paintRow(row);}
+      else if(t.classList.contains('tr')||t.classList.contains('be'))paintDyn();});
     ov.querySelector('.mpcs-x').addEventListener('click',hide);
     document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
     ov.querySelector('.mpcs-go').addEventListener('click',save);
   }
-  function syncAdds(){Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){var n=sec.querySelector('.mpss-rows').children.length;sec.querySelector('.mpss-add').disabled=n>=MAXL;});}
+  function num(raw){raw=String(raw==null?'':raw).trim();if(raw==='')return NaN;return parseFloat(raw.replace(/\s/g,'').replace(/%/g,'').replace(',','.'));}
+  function paintRow(row){if(!row||!E)return;var ro=row.querySelector('.mpss-ro');if(!ro)return;var p=num(row.querySelector('.p').value);
+    if(!(isFinite(p)&&p>0)){ro.innerHTML='';return;}
+    var roe=roeOf(E,p),usd=(+E.margin||0)*roe/100,lv=live(E),dist=lv>0?(p/lv-1)*100:NaN,pct=+row.querySelector('.pc').getAttribute('data-pc')||100;
+    ro.innerHTML='<b class="'+(roe>=0?'g':'rd')+'">'+fmtRoe(roe)+' ROE</b> · <b class="'+(usd>=0?'g':'rd')+'">'+(usd>=0?'+':'−')+'$'+Math.abs(usd*pct/100).toFixed(2)+'</b>'+(pct<100?' <i>('+pct+'%)</i>':'')+(isFinite(dist)?' · '+Math.abs(dist).toFixed(2)+'% '+(dist>=0?__esT_home("aboveLive",'above live'):__esT_home("belowLive",'below live')):'');}
+  function paintDyn(){if(!ov||!E)return;var w=ov.querySelector('.mpss-dynw'),n=w.querySelector('.mpss-dynn');var nSl=ov.querySelectorAll('.mpss-sec[data-k="sl"] .mpss-row').length;
+    var multi=nSl>1;w.classList.toggle('off',multi);Array.prototype.forEach.call(w.querySelectorAll('input'),function(i){i.disabled=multi;});
+    if(multi){n.textContent=__esT_home("sltpDynOffMulti",'Off while more than one stop level is set - a trailing or break-even stop needs one stop to move.');return;}
+    var tr=num(w.querySelector('.tr').value),be=num(w.querySelector('.be').value),lv=live(E),long=E.side!=='short',bits=[];
+    if(isFinite(tr)&&tr>0&&lv>0)bits.push(__esT_home("sltpTrailNow",'trail would sit at')+' '+fp(long?lv*(1-tr/100):lv*(1+tr/100))+' '+__esT_home("sltpTrailNow2",'from the live price'));
+    if(isFinite(be)&&be>0)bits.push(__esT_home("sltpBeNow",'break-even arms at')+' '+fp(pxOf(E,be)));
+    n.textContent=bits.join(' · ');}
+  function syncAdds(){Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec[data-k="sl"],.mpss-sec[data-k="tp"]'),function(sec){var n=sec.querySelector('.mpss-rows').children.length;sec.querySelector('.mpss-add').disabled=n>=MAXL;});paintDyn();}
   function find(){var d=jload();for(var i=0;i<d.length;i++)if(d[i].id===curId)return {d:d,e:d[i]};return null;}
   function live(e){var lp=window.mpLivePrices&&window.mpLivePrices[e.sym];return (lp&&lp.p>0)?lp.p:e.entry;}
   function levelsOf(e,isTp){var arr=isTp?e.tps:e.sls;
     if(arr&&arr.length)return arr.map(function(L){return {p:+L.p,pct:+L.pct||100};});
     var v=isTp?e.tp:e.stop;return v!=null?[{p:+v,pct:100}]:[];}
   function show(id,cb){ curId=id;after=cb||null;
-    var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
+    var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;E=e;
     build();
     var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
     var liq=e.liq||(window.mpLiqPx?window.mpLiqPx(e.entry,lev,mmr,long,0):(long?e.entry*(1-1/lev+Math.min(mmr,1/(2*lev))):e.entry*(1+1/lev-Math.min(mmr,1/(2*lev))))); // the ONE formula (2026-09-25); was the retired one until 2026-10-09
     ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'-')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
-    ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
-    Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){
+    ov.querySelector('.mpss-live').innerHTML=__esT_home("liveLbl",'Live')+' <b>'+fp(live(e))+'</b> · '+__esT_home("entryLbl",'Entry')+' <b>'+fp(e.entry)+'</b> · '+__esT_home("liqLbl",'Liq')+' <b class="lq">'+fp(liq)+'</b>'+((+e.margin>0)?' · '+__esT_home("marginLbl",'Margin')+' <b>'+fp(e.margin)+'</b>':'');
+    Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec[data-k="sl"],.mpss-sec[data-k="tp"]'),function(sec){
       var isTp=sec.getAttribute('data-k')==='tp',rows=sec.querySelector('.mpss-rows');
       rows.innerHTML=levelsOf(e,isTp).slice(0,MAXL).map(function(L){return rowHtml(L.p,L.pct);}).join('');
+      Array.prototype.forEach.call(rows.querySelectorAll('.mpss-row'),paintRow);
     });
+    ov.querySelector('.mpss-dynw .tr').value=(+e.trail>0)?String(+e.trail):'';ov.querySelector('.mpss-dynw .be').value=(+e.be>0)?String(+e.be):'';
     syncAdds();
     var w=ov.querySelector('.mpss-warn');w.hidden=true;w.textContent='';
     ov.classList.add('on');
@@ -4803,14 +4847,18 @@ window.mpSrvOpen=function(payload,ok,fail){
       var raw=String(row.querySelector('.p').value||'').trim();if(raw==='')return; // empty price row = removed
       var v=parseFloat(raw.replace(/\s/g,'').replace(',','.'));
       if(!isFinite(v)||!(v>0)){if(bad)bad.push(raw.slice(0,16));return;}
-      out.push({p:v,pct:+row.querySelector('.pc').value||100});
+      out.push({p:v,pct:+row.querySelector('.pc').getAttribute('data-pc')||100});
     });return out;}
   function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
     var long=e.side!=='short',lv=live(e);
     var bad=[];var sls=collect(false,bad),tps=collect(true,bad);
-    if(bad.length){warn('\u201c'+bad[0]+__esT_home("u201dIsNotA",'\u201d is not a price. Use digits, with . or , for the decimals.'));return;} // never drop a level the trader cannot see was rejected
-    var had=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length));
-    if(!sls.length&&!tps.length&&!had){hide();return;} // nothing typed and nothing to clear: closing is not an instruction to wipe
+    if(bad.length){warn('“'+bad[0]+__esT_home("u201dIsNotA",'” is not a price. Use digits, with . or , for the decimals.'));return;} // never drop a level the trader cannot see was rejected
+    var trRaw=String(ov.querySelector('.mpss-dynw .tr').value||'').trim(),beRaw=String(ov.querySelector('.mpss-dynw .be').value||'').trim();
+    var tr=trRaw===''?0:num(trRaw),be=beRaw===''?0:num(beRaw);
+    if(!(isFinite(tr)&&tr>=0&&tr<=50)){warn(__esT_home("sltpTrailBad",'Trailing stop is a percent distance between 0.05 and 50, or empty for off.'));return;}
+    if(!(isFinite(be)&&be>=0)){warn(__esT_home("sltpBeBad",'Break-even trigger is a positive ROE percent, or empty for off.'));return;}
+    var had=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length)||e.trail>0||e.be>0);
+    if(!sls.length&&!tps.length&&!tr&&!be&&!had){hide();return;} // nothing typed and nothing to clear: closing is not an instruction to wipe
     for(var i=0;i<sls.length;i++){var s=sls[i];
       if(!isFinite(s.p)||!(s.p>0)){warn(__esT_home("stopLossPriceIs",'Stop-loss price is not a number.'));return;}
       if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?__esT_home("longEveryStopLoss",'LONG every stop-loss must be BELOW'):__esT_home("shortEveryStopLoss",'SHORT every stop-loss must be ABOVE'))+__esT_home("theLivePrice",' the live price (')+fp(lv)+') - otherwise it would trigger instantly.');return;}}
@@ -4826,6 +4874,11 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(isTp)e.tp=v;else e.stop=v;
     }
     put(sls,false);put(tps,true);
+    // the dynamic stop: the same two fields the order form writes (e.trail / e.be), applied by the terminal's stop manager;
+    // more than one stop level switches them off (the manager's own rule), and a trail turned on starts its high-water mark now
+    if(sls.length>1){tr=0;be=0;}
+    if(tr>0){if(!(e.trail>0))e.hwm=lv;e.trail=Math.max(0.05,tr);}else{delete e.trail;delete e.hwm;}
+    if(be>0)e.be=be;else delete e.be;
     jstore(r.d);hide();
     /* Server-first for server-filled trades (mirror of the close sheet): the journal sync already carries
        stop/tp within ~12s, but the cron sweep runs on the SERVER copy - until it syncs, a fresh SL/TP is
@@ -4847,6 +4900,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(after)try{after();}catch(_){}
   }
   window.mpSltpSheet=show;
+  window.__mpSltpRoe={roeOf:roeOf,pxOf:pxOf}; // read-only mirror for the suite: the two conversions the sheet binds its fields with
 })();
 
 ;/* $100k cap directly on the amount input (typing 250000 snaps to 100000; add() re-checks as a backstop) */

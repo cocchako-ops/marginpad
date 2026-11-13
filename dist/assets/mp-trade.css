@@ -467,3 +467,25 @@ undefined
 
 /* KEYBOARD ON iOS (2026-10-22): the documented WebKit remedy for a field that focuses and raises no keyboard - see build/add-keyboard-diag2.js */
 #chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}
+
+/* SL/TP sheet v2 (2026-11-13): price + ROE fields, a readout per level, quick chips, the close-% as a labelled button, the dynamic stop */
+.mpss .mpcs-card{max-height:calc(100vh - 8px);max-height:calc(100dvh - 8px);overflow-y:auto;overscroll-behavior:contain}
+.mpss-row{flex-wrap:wrap}
+.mpss-row .r{flex:0 0 86px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:11px 8px;color:#c2f64a;font-size:15px;font-family:'Space Mono',monospace;outline:none;min-width:0;text-align:right}
+.mpss-row .r:focus{border-color:#c2f64a}
+.mpss-row .pc{flex:0 0 60px;height:44px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#e9e7df;font:700 12px 'Space Mono',monospace;cursor:pointer;padding:0}
+.mpss-row .pc:hover{border-color:#c2f64a;color:#c2f64a}
+.mpss-ro{flex:1 1 100%;min-height:14px;font:10.5px 'Space Mono',monospace;color:#9aa3ad;margin:-3px 0 1px 2px;letter-spacing:.01em}
+.mpss-ro b{font-weight:700}.mpss-ro b.g{color:#34d99a}.mpss-ro b.rd{color:#ff7b72}.mpss-ro i{font-style:normal;color:#6b7684}
+.mpss-q{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.mpss-q>i{font:700 10px 'Space Mono',monospace;color:#5c656f;font-style:normal;letter-spacing:.06em;margin-right:2px}
+.mpss-q button{background:#0c0f13;border:1px solid #2f3742;border-radius:999px;color:#9aa3ad;font:700 10.5px 'Space Mono',monospace;padding:6px 10px;cursor:pointer;transition:.12s}
+.mpss-q button:hover{color:#c2f64a;border-color:#c2f64a}
+.mpss-dyn{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mpss-dyn label{display:block;min-width:0}.mpss-dyn label span{display:block;font:10.5px 'Space Mono',monospace;color:#9aa3ad;margin-bottom:5px;letter-spacing:.03em}
+.mpss-in{display:flex;align-items:center;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:0 10px 0 0}
+.mpss-in input{flex:1;min-width:0;background:none;border:0;padding:10px 10px;color:#e9e7df;font-size:15px;font-family:'Space Mono',monospace;outline:none}
+.mpss-in i{font-style:normal;color:#6b7684;font:700 11px 'Space Mono',monospace}
+.mpss-in:focus-within{border-color:#c2f64a}
+.mpss-dynw.off .mpss-dyn{opacity:.45}
+.mpss-dynn{min-height:14px;font:10.5px 'Space Mono',monospace;color:#9aa3ad;margin:6px 0 0 2px}
+@media(max-width:380px){.mpss-row .r{flex-basis:76px;font-size:14px}.mpss-row .pc{flex-basis:52px}}
