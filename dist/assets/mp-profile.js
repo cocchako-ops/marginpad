@@ -104,10 +104,35 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     + '.lbm-port.open{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}'
     + '.lbm-port svg{display:block;color:#c2f64a}.lbm-port b{background:linear-gradient(90deg,#c2f64a,#a06bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}'
     + '.lbm-portp{margin-top:12px;padding:12px 12px 10px;border-radius:12px;background:rgba(160,107,255,.05);border:1px solid rgba(160,107,255,.22)}'
-    + '.lbm-copyb.on{color:#c2f64a;border-color:rgba(194,246,74,.55);background:rgba(194,246,74,.1)}.lbm-copyb.open{border-color:#c2f64a}'
-    + '.lbm-copyp{margin-top:12px;padding:12px 12px 10px;border-radius:12px;background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22)}.lbm-cph{font:700 13px "Bricolage Grotesque",sans-serif;color:#fff;margin-bottom:8px}.lbm-cpr{display:flex;gap:6px;flex-wrap:wrap}'
-    + '.lbm-cpc{height:30px;padding:0 12px;border-radius:9px;border:1px solid #2c3849;background:rgba(255,255,255,.04);color:#dfe4ec;font:700 12px "Space Mono",monospace;cursor:pointer}.lbm-cpc.on{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.12)}.lbm-cpc.stop{color:#ff7b72;border-color:rgba(255,123,114,.4);margin-left:auto}.lbm-copyp[data-busy] .lbm-cpc{opacity:.5;pointer-events:none}'
-    + '.lbm-cpn{margin-top:8px;font-size:11px;line-height:1.45;color:#8b97a5}.lbm-cps{margin-top:7px;font-size:12px;color:#c2f64a}'
+    /* THE COPY TILE IS MONOCHROME (owner 2026-11-13: "ikonica crno bela (siva)"): a grey glyph on a graphite tile at rest, and
+       when the viewer copies this trader the tile INVERTS - near-white ground, dark glyph - so "on" reads with no colour at all.
+       It had no base rule of its own before (the page's button default showed through) and lit lime like everything else. */
+    + '.lbm-copyb{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:#aab3bf;cursor:pointer;transition:background .15s,color .15s,border-color .15s}.lbm-copyb:hover{background:rgba(255,255,255,.09);color:#fff;border-color:rgba(255,255,255,.28)}.lbm-copyb svg{display:block}'
+    + '.lbm-copyb.on{background:#e6e9ee;border-color:#e6e9ee;color:#0a0b0d}.lbm-copyb.on:hover{background:#fff;border-color:#fff}.lbm-copyb.open{border-color:rgba(255,255,255,.6)}.lbm-copyb.on.open{box-shadow:0 0 0 2px rgba(230,233,238,.35)}'
+    /* THE PANEL (owner 2026-11-13: "ceo prozor posle ikonice za copy trade ... bolje nego kako je trenutno"): graphite, no accent colour -
+       a kicker row with the glyph and an ON/OFF stamp, the title, one sentence that says what copying does, three margin CARDS (the
+       figure, "per trade", and the most that margin can have in play at the 10-open cap - a real number from the worker's constants,
+       never a feeling), a line saying who else you copy out of the three seats, Stop as a quiet red text button, three fact chips,
+       and the status of the last press. The chosen card inverts like the tile. Every piece reveals through WAAPI on open. */
+    + '.lbm-copyp{margin-top:12px;padding:14px 14px 12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),#0b0e13;border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 18px 40px -28px rgba(0,0,0,.9)}.lbm-copyp[hidden]{display:none}'
+    + '.lbm-cpt{display:flex;align-items:center;gap:8px;margin-bottom:9px}.lbm-cpi{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);color:#dfe4ec;flex:none}.lbm-cpi svg{display:block}'
+    + '.lbm-cpk{font:700 10px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#8b97a5;flex:1;min-width:0}'
+    + '.lbm-cpst{font:700 10px "Space Mono",monospace;letter-spacing:.08em;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#8b97a5;white-space:nowrap}.lbm-cpst.on{background:#e6e9ee;border-color:#e6e9ee;color:#0a0b0d}'
+    + '.lbm-cph{font:800 16px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em;color:#fff;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.lbm-cpl{font-size:11.5px;line-height:1.45;color:#8b97a5;margin-bottom:11px}'
+    + '.lbm-cpb{font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#6f7b89;margin-bottom:6px}'
+    + '.lbm-cpr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}'
+    + '.lbm-cpc{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;padding:9px 9px 8px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#dfe4ec;cursor:pointer;text-align:left;transition:background .14s,border-color .14s,transform .14s}'
+    + '.lbm-cpc:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.26);transform:translateY(-1px)}'
+    + '.lbm-cpc .v{font:800 17px "Space Mono",monospace;letter-spacing:-.02em;color:#fff;line-height:1}.lbm-cpc .s{font-size:10px;color:#8b97a5}.lbm-cpc .x{font:600 9.5px "Space Mono",monospace;color:#6f7b89;margin-top:3px;white-space:nowrap}'
+    + '.lbm-cpc.on{background:#e6e9ee;border-color:#e6e9ee;transform:none}.lbm-cpc.on .v{color:#0a0b0d}.lbm-cpc.on .s,.lbm-cpc.on .x{color:#3d4652}.lbm-cpc.on::after{content:"";position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:#0a0b0d}'
+    + '.lbm-copyp[data-busy] .lbm-cpc,.lbm-copyp[data-busy] .lbm-cpc.stop{opacity:.5;pointer-events:none}'
+    + '.lbm-cpm{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;min-height:22px;font-size:11px;color:#8b97a5}.lbm-cpm>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbm-cpm b{color:#dfe4ec;font-weight:700}'
+    + '.lbm-cpc.stop{display:inline-flex;flex-direction:row;align-items:center;flex:none;padding:4px 10px;border-radius:8px;background:transparent;border-color:rgba(255,123,114,.35);color:#ff7b72;font:700 11px "Space Mono",monospace;letter-spacing:.04em;transform:none}.lbm-cpc.stop:hover{background:rgba(255,123,114,.1);border-color:#ff7b72;transform:none}'
+    + '.lbm-cpx{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}.lbm-cpx span{font:600 9.5px "Space Mono",monospace;letter-spacing:.04em;padding:3px 7px;border-radius:6px;border:1px solid rgba(255,255,255,.1);color:#8b97a5;background:rgba(255,255,255,.03);white-space:nowrap}'
+    + '.lbm-cpn{margin-top:8px;font-size:10.5px;line-height:1.45;color:#6f7b89}'
+    + '.lbm-cps{margin-top:9px;padding:7px 9px;border-radius:8px;font-size:12px;line-height:1.4;color:#dfe4ec;background:rgba(255,255,255,.05);border-left:2px solid #e6e9ee}'
+    + '@media(max-width:374px){.lbm-cpc .v{font-size:15px}.lbm-cpc .x{font-size:9px}}'
     + '.lbm-portp[hidden]{display:none}'
     + '.lbm-pph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font:700 10px "Space Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8b97a5;margin-bottom:8px}.lbm-pph b{font:800 15px "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;color:#fff;text-transform:none;letter-spacing:0}.lbm-pph .up{color:#34d99a}.lbm-pph .dn{color:#ff6c5c}'
     + '.lbm-ppr{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:5px 0;font-size:12.5px}'
@@ -419,7 +444,7 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
         + ''
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + (+d.copiers > 0 ? ' <i class="lbm-cpn2">· <b>' + (+d.copiers) + '</b> ' + __esT_mpprofile("copying", 'copying') + '</i>' : '') + '</span>' + mBtn + '</div>'
         + '<div class="lbm-portp" id="lbmPortP" hidden></div>'
-        + '<div class="lbm-copyp" id="lbmCopyP" hidden data-copying="' + (+d.iCopy || 0) + '" data-uid="' + esc(d.uid) + '" data-name="' + esc(d.name) + '"></div>';
+        + '<div class="lbm-copyp" id="lbmCopyP" hidden data-copying="' + (+d.iCopy || 0) + '" data-copiers="' + (+d.copiers || 0) + '" data-uid="' + esc(d.uid) + '" data-name="' + esc(d.name) + '"></div>';
       try { folPaint(body.querySelector('.lbm-folb'), folSt, folFm); } catch (e) {}
       fitName(body); // own card has no follow button, so folPaint returns early and never fits it
       try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitName(body); }); } catch (e) {}
@@ -487,14 +512,36 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   /* PAPER COPY panel (feature #2): the tile opens it under the foot - three margins and Stop; every press asks the server and repaints
      from what came back (the copying margin rides back on the answer). A guest tile carries data-auth-open and mp-auth's own handler
      opens sign-in before this runs. */
-  var COPY_MARGINS = [50, 100, 250];
-  function renderCopy(el, st) {
-    var m = +el.getAttribute('data-copying') || 0, name = el.getAttribute('data-name') || '';
-    var chips = COPY_MARGINS.map(function (v) { return '<button type="button" class="lbm-cpc' + (m === v ? ' on' : '') + '" data-lbcopyset="' + v + '">$' + v + '</button>'; }).join('');
-    el.innerHTML = '<div class="lbm-cph">' + (m > 0 ? __esT_mpprofile("copyingAt", 'Copying @{u} at ${m} a trade').split('{u}').join(esc(name)).split('{m}').join(String(m)) : __esT_mpprofile("copyAsk", 'Copy @{u} on paper').split('{u}').join(esc(name))) + '</div>'
-      + '<div class="lbm-cpr">' + chips + (m > 0 ? '<button type="button" class="lbm-cpc stop" data-lbcopyset="0">' + __esT_mpprofile("copyStop", 'Stop') + '</button>' : '') + '</div>'
-      + '<div class="lbm-cpn">' + __esT_mpprofile("copyNote", 'Every server-filled trade they open is mirrored into your My Trades at that margin, at their entry, with their stop and target; their close and partials mirror too. Copied trades never count on any leaderboard, pay no XP or Ticks, and settle like any other position. Up to 3 traders.') + '</div>'
+  /* COPY_MARGINS / COPY_MAX_OPEN / COPY_MAX_LEADERS MIRROR the worker's constants (COPY_MARGINS, COPY_MAX_PER_LEADER, COPY_MAX_LEADERS) -
+     copy-e2e --pure compares the three against the worker source, so a change there that forgets this file is a red test. */
+  var COPY_MARGINS = [50, 100, 250], COPY_MAX_OPEN = 10, COPY_MAX_LEADERS = 3;
+  var CP_SVG = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg>';
+  function fmtUsd0(v) { return '$' + Math.round(+v || 0).toLocaleString('en-US'); }
+  /* renderCopy(el, status, mine?, reveal?) - `mine` is the viewer's own /api/lb/copy answer (who they copy already); it is kept on the
+     element so a repaint after a press does not lose it; `reveal` runs the WAAPI stagger (open only, never after a press). */
+  function renderCopy(el, st, mine, reveal) {
+    var T = __esT_mpprofile;
+    var m = +el.getAttribute('data-copying') || 0, name = el.getAttribute('data-name') || '', copiers = +el.getAttribute('data-copiers') || 0;
+    if (mine !== undefined) el._mine = mine; mine = el._mine;
+    var cards = COPY_MARGINS.map(function (v) {
+      return '<button type="button" class="lbm-cpc' + (m === v ? ' on' : '') + '" data-lbcopyset="' + v + '" aria-pressed="' + (m === v ? 'true' : 'false') + '"><span class="v">$' + v + '</span><span class="s">' + T("copyPerTrade", 'per trade') + '</span><span class="x">' + T("copyMaxPlay", 'max {x}').split('{x}').join(fmtUsd0(v * COPY_MAX_OPEN)) + '</span></button>';
+    }).join('');
+    var mineTxt = '';
+    if (mine && mine.leaders) {
+      var others = mine.leaders.filter(function (l) { return l && l.uid !== el.getAttribute('data-uid'); }).map(function (l) { return l.name ? '@' + l.name : ''; }).filter(Boolean);
+      var n = mine.leaders.length, max = +mine.max || COPY_MAX_LEADERS;
+      mineTxt = T("copyYouCopy", 'You copy <b>{n}</b> of {max}').split('{n}').join(String(n)).split('{max}').join(String(max)) + (others.length ? ' · ' + esc(others.join(', ')) : '');
+    } else if (copiers > 0) mineTxt = T("copyNCopyThem", '<b>{n}</b> members copy them').split('{n}').join(String(copiers));
+    el.innerHTML = '<div class="lbm-cpt"><span class="lbm-cpi">' + CP_SVG + '</span><span class="lbm-cpk">' + T("copyKicker", 'Copy trading') + '</span><span class="lbm-cpst' + (m > 0 ? ' on' : '') + '">' + (m > 0 ? T("copyStOn", 'ON · ${m} a trade').split('{m}').join(String(m)) : T("copyStOff", 'OFF')) + '</span></div>'
+      + '<div class="lbm-cph">' + (m > 0 ? T("copyingAt", 'Copying @{u} at ${m} a trade').split('{u}').join(esc(name)).split('{m}').join(String(m)) : T("copyAsk", 'Copy @{u} on paper').split('{u}').join(esc(name))) + '</div>'
+      + '<div class="lbm-cpl">' + T("copyLead", 'Every server-filled trade they open lands in your My Trades at the margin you pick - their entry, their stop, their target - and closes when theirs does.') + '</div>'
+      + '<div class="lbm-cpb">' + T("copyMarginPer", 'Margin per copied trade') + '</div>'
+      + '<div class="lbm-cpr">' + cards + '</div>'
+      + '<div class="lbm-cpm"><span>' + mineTxt + '</span>' + (m > 0 ? '<button type="button" class="lbm-cpc stop" data-lbcopyset="0">' + T("copyStop", 'Stop') + '</button>' : '') + '</div>'
+      + '<div class="lbm-cpx"><span>' + T("copyFact1", 'No leaderboard') + '</span><span>' + T("copyFact2", 'No XP or Ticks') + '</span><span>' + T("copyFact3", '{n} open per trader').split('{n}').join(String(COPY_MAX_OPEN)) + '</span><span>' + T("copyFact4", 'Up to {n} traders').split('{n}').join(String(COPY_MAX_LEADERS)) + '</span></div>'
+      + '<div class="lbm-cpn">' + T("copyNote2", 'Copied trades never count on any leaderboard, pay no XP or Ticks, and settle like any other position - a stopped copy leaves its open positions yours to close.') + '</div>'
       + (st ? '<div class="lbm-cps">' + esc(st) + '</div>' : '');
+    if (reveal) { try { var kids = el.children; for (var i = 0; i < kids.length; i++) kids[i].animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: i * 38, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' }); } catch (x) {} }
   }
   document.addEventListener('click', function (e) {
     var cb = e.target.closest && e.target.closest('[data-lbcopy]');
@@ -503,7 +550,9 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
       var el = document.getElementById('lbmCopyP'); if (!el) return;
       var pp = document.getElementById('lbmPortP'); if (pp && !pp.hidden) { pp.hidden = true; var pb0 = document.querySelector('[data-lbport].open'); if (pb0) pb0.classList.remove('open'); }
       if (!el.hidden) { el.hidden = true; cb.classList.remove('open'); return; }
-      el.hidden = false; cb.classList.add('open'); renderCopy(el, '');
+      el.hidden = false; cb.classList.add('open'); renderCopy(el, '', undefined, true);
+      // one read of the viewer's own copy list (who they copy, of the three seats) - never on card open, only when this panel is asked for
+      try { fetch('/api/lb/copy', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) { if (el.hidden || !d || !d.leaders) return; renderCopy(el, (el.querySelector('.lbm-cps') || {}).textContent || '', d); }).catch(function () {}); } catch (x3) {}
       try { window.__mpTrack && window.__mpTrack('profile', 'copy'); } catch (x) {}
       return;
     }
@@ -512,7 +561,12 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     var mg = +sb.getAttribute('data-lbcopyset') || 0; el2.setAttribute('data-busy', '1');
     fetch('/api/lb/copy', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ leader: el2.getAttribute('data-uid'), margin: mg }) }).then(function (r) { return r.json(); }).then(function (d) {
       el2.removeAttribute('data-busy'); window.__mpCopyLast = d;
-      if (d && d.ok) { el2.setAttribute('data-copying', String(+d.copying || 0)); var tile = document.querySelector('[data-lbcopy]'); if (tile) tile.classList.toggle('on', +d.copying > 0); renderCopy(el2, +d.copying > 0 ? __esT_mpprofile("copyOk", 'On. Their next server-filled open lands in your My Trades.') : __esT_mpprofile("copyOff", 'Stopped. Open copied positions stay yours to close.')); }
+      if (d && d.ok) {
+        el2.setAttribute('data-copying', String(+d.copying || 0)); var tile = document.querySelector('[data-lbcopy]'); if (tile) tile.classList.toggle('on', +d.copying > 0);
+        // keep the "you copy N of 3" line true to what was just done, without a second read
+        try { if (el2._mine && el2._mine.leaders) { var lu = el2.getAttribute('data-uid'), L2 = el2._mine.leaders.filter(function (l) { return l && l.uid !== lu; }); if (+d.copying > 0) L2.unshift({ uid: lu, name: el2.getAttribute('data-name') || '', margin: +d.copying }); el2._mine = { leaders: L2, max: el2._mine.max }; } } catch (x4) {}
+        renderCopy(el2, +d.copying > 0 ? __esT_mpprofile("copyOk", 'On. Their next server-filled open lands in your My Trades.') : __esT_mpprofile("copyOff", 'Stopped. Open copied positions stay yours to close.'));
+      }
       else renderCopy(el2, d && d.error === 'too_many' ? __esT_mpprofile("copyTooMany", 'You already copy three traders - stop one first.') : d && d.error === 'self' ? __esT_mpprofile("copySelf", 'That is you.') : d && d.error === 'login_required' ? __esT_mpprofile("copySignIn", 'Sign in to copy a trader.') : __esT_mpprofile("copyErr", 'Could not change that right now.'));
     }).catch(function () { el2.removeAttribute('data-busy'); renderCopy(el2, __esT_mpprofile("copyErr", 'Could not change that right now.')); });
   });
