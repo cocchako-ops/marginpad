@@ -9141,6 +9141,44 @@ const TOTD_XP = 100;
 const TOTD_USD_C = 100;
 const TOTD_AUTO_MAX = 3; // a shared win enters the vote by itself (2026-11-13); this many per author per day, so one member cannot fill the ballot
 function totdDayOf(ms) { return new Date(ms).toISOString().slice(0, 10); }
+/* THE ROOM IS THE SOURCE OF THE BALLOT, NOT THE MOMENT OF THE SHARE (2026-11-13, owner: "SamiSings je poslao trejd posle mene i taj trejd ne
+   moze da se glasa"). His AKE short (+14.8%) went into the room at 01:18 UTC, two and a half hours before a share started entering the vote by
+   itself, so nothing ever put it up. Entering only at share time leaves exactly that hole - and any other path that drops a `trade:<id>` into
+   the room without passing the share route. Every ten-minute cron pass walks the room's history for today's shares and enters each closed WIN that is
+   not on the ballot yet, resolving the author by the username the snapshot carries (the store refuses a name it cannot find or a restricted
+   account). Idempotent by construction: the store answers already_candidate, and ids already looked at are remembered for the day so a pass
+   reads only new snapshots. A test author is skipped outright. */
+async function totdBackfill(env, o) {
+  o = o || {}; const day = o.day || totdDayOf(Date.now()), d0 = Date.parse(day + 'T00:00:00Z'), d1 = d0 + 86400000;
+  if (!env.CHAT || !env.STATS || !env.USERS) return { ok: false, error: 'no_binding' };
+  let hist = [];
+  try { const r = await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/history')); const j = await r.json(); hist = (j && j.messages) || []; } catch (e) { return { ok: false, error: 'history' }; }
+  const seenK = 'totd:fill:' + day; let seen = []; try { seen = JSON.parse((await env.STATS.get(seenK)) || '[]'); } catch (e) { seen = []; }
+  const seenS = new Set(seen), out = { ok: true, day, shares: 0, looked: 0, entered: [], skipped: {} };
+  const skip = (k) => { out.skipped[k] = (out.skipped[k] || 0) + 1; };
+  for (const m of hist) {
+    if (!m || m.admin || !(+m.ts >= d0 && +m.ts < d1)) continue;
+    const ids = String(m.t || '').match(/trade:([a-z0-9]{6,16})/gi) || [];
+    for (const raw of ids) {
+      const id = raw.slice(6).replace(/[^a-z0-9]/gi, ''); out.shares++;
+      if (seenS.has(id) && !o.force) continue;
+      seenS.add(id); out.looked++;
+      let snap = null; try { snap = await env.STATS.get('tshr:' + id, 'json'); } catch (e) {}
+      if (!snap) { skip('gone'); continue; }
+      if (snap.status !== 'win') { skip(snap.status || 'open'); continue; }
+      if (/^e2e/i.test(String(snap.by || ''))) { skip('e2e'); continue; }
+      if (o.dry) { out.entered.push({ id, by: snap.by, sym: snap.sym, dry: true }); continue; }
+      let r = null; try { r = await usersDO(env, '/totd/nominate', { day, id, byName: snap.by || '', author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, auto: 1 }); } catch (e) { r = null; }
+      if (r && r.ok) out.entered.push({ id, by: snap.by, sym: snap.sym });
+      else { const er = (r && r.error) || 'store'; skip(er); if (['already_candidate', 'auto_cap', 'no_user', 'restricted'].indexOf(er) < 0) seenS.delete(id); } // only a FINAL answer is remembered - a store that did not answer, or that still runs the previous deploy (no_uid, measured on this very rollout), is asked again next pass
+    }
+  }
+  if (!o.dry) {
+    try { await env.STATS.put(seenK, JSON.stringify([...seenS].slice(-600)), { expirationTtl: 3 * 86400 }); } catch (e) {}
+    if (out.entered.length) { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + day)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + day + '_w')); } catch (e) {} }
+  }
+  return out;
+}
 async function handleTotd(url, request, env, ctx) {
   const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
   const tok = getCookie(request, SESS_COOKIE); const su = tok && env.USERS ? await sessionUser(env, tok) : null; const uid = su && su.id ? String(su.id) : '';
@@ -27038,6 +27076,7 @@ export default {
     }
     if (url.pathname === '/api/admin/totd' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the settle by hand: ?day=YYYY-MM-DD&settle=1 (the cron's own function; dry=1 only reads)
       const day = String(url.searchParams.get('day') || totdDayOf(Date.now() - 86400000)).replace(/[^0-9-]/g, '');
+      if (url.searchParams.get('fill') === '1') return new Response(JSON.stringify(await totdBackfill(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); // the room backfill, by hand (DRY with dry=1)
       if (url.searchParams.get('settle') === '1') return new Response(JSON.stringify(await totdSettle(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1', e2e: url.searchParams.get('e2e') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
       let bd = null; try { bd = await usersDO(env, '/totd/board', { day }); } catch (e) {}
       let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + day)) || 'null'); } catch (e) {}
@@ -32100,6 +32139,7 @@ export default {
     bg(payBingxPrizes, 'bingxprizes'); // BingX volume board (2026-10-30): pays an ended sealed season once, from BINGX_LB_START
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
+    bg(totdBackfill, 'totdfill'); // Trade of the day (2026-11-13): every closed win shared in the room today is on the ballot, whenever and however it was shared
     bg(totdSettle, 'totd'); // Trade of the day (2026-11-12): yesterday's vote settled once (KV flag), the author paid TOTD_XP, one house line
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(strategyLive, 'stratlive'); // once a closed UTC day, the strategy library's forward record
@@ -36558,6 +36598,13 @@ export class UserStore {
       };
       if (path === '/totd/board') return this.j({ ok: true, ...board(uid || null) });
       if (path === '/totd/nominate') {
+        let uid = String(b.uid || '');
+        if (!uid && b.byName && b.auto) { // the room backfill (2026-11-13) knows the author by the username the share snapshot carries
+          const nm = String(b.byName).slice(0, 24), ur = this.rows('SELECT id, status FROM users WHERE username=? COLLATE NOCASE', nm)[0];
+          if (!ur) return this.j({ error: 'no_user' });
+          if (ur.status && ur.status !== 'active') return this.j({ error: 'restricted' });
+          uid = String(ur.id);
+        }
         if (!uid || !id) return this.j({ error: 'no_uid' });
         const auto = !!b.auto; // the share itself (a closed win landing in the room) - capped per author per day, never spending the hand nomination
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
