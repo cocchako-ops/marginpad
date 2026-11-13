@@ -180,7 +180,7 @@
   .tg.real .tab .p small{-webkit-text-fill-color:var(--faint);}
   @media(max-width:900px){
     /* the eight tabs become one scrolling row pinned under the top of the screen, so a board can be switched from anywhere in the list */
-    .tabs{position:sticky;top:0;z-index:20;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -18px 10px;padding:6px 18px 8px;background:linear-gradient(180deg,var(--bg) 82%,rgba(10,11,13,0));gap:8px;}
+    .tabs{position:sticky;top:var(--lbTabsTop,calc(env(safe-area-inset-top) + 59px));z-index:20;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -18px 10px;padding:6px 18px 8px;background:linear-gradient(180deg,var(--bg) 82%,rgba(10,11,13,0));gap:8px;}
     .tabs::-webkit-scrollbar{display:none;}
     .tg,.tg.free,.tg.gold,.tg.real{flex:0 0 auto;}
     .tgh em{display:none;}
@@ -578,6 +578,17 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
 (function(){
   var $=function(id){return document.getElementById(id);};
   var T=__esT_leaderboardsindex;
+  /* THE TABS STICK UNDER THE HEADER, NOT UNDER THE TOP OF THE SCREEN (2026-11-13, owner's phone: "kartice vire malo kad skrolam
+     ... cilj je da se vide cele kako bi me pratile"). The header is itself sticky at top:0 and 59px tall on a phone, so a row
+     stuck at top:0 sat UNDER it - measured on production at 390px: header 0-59, tabs 0-119, the card 6-111, 53 of its 105px
+     covered and only the bottom sliver showing. The CSS default is the header's declared height plus the notch; this reads
+     the header's real bottom edge as the page scrolls (the cookie notice can stand above it on a first visit, the notch on an
+     installed phone), so the row follows the header exactly. One rAF per scroll burst, nothing written unless it changed. */
+  (function(){ var hh=document.querySelector('body>.wrap>header,body>header'); if(!hh) return; var last=-1, raf=0;
+    function m(){ raf=0; if(window.innerWidth>900) return; var b=hh.getBoundingClientRect().bottom; if(!(b>=30&&b<=200)) return; var v=Math.round(b); if(v!==last){ last=v; document.documentElement.style.setProperty('--lbTabsTop', v+'px'); } }
+    function q(){ if(!raf) raf=requestAnimationFrame(m); }
+    addEventListener('scroll',q,{passive:true}); addEventListener('resize',q); q();
+  })();
   function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
   /* STILL OPEN (2026-10-24): the count, and the losing share as the red part of a bar under it. An unpriced
