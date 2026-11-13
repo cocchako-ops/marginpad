@@ -80,6 +80,10 @@ export async function bybitMarkets() {
     const cur = new Map();
     for (const i of (d && d.result && d.result.list) || []) {
       if (String(i.status || '') !== 'Trading') continue;
+      // A DATED FUTURE IS NOT A LISTING (2026-11-13, owner: BTC wore 'New listing' + 'Delisting' on the chart): Bybit's linear list carries
+      // the quarterly/weekly delivery contracts (BTCUSDT-13NOV26, BTCUSDT-04DEC26), and every expiry and every new series read as a
+      // delisting and a listing of BTC itself. Only perpetuals - an expiry roll is a calendar, not a catalyst.
+      if (cat === 'linear' && (String(i.contractType || '') !== 'LinearPerpetual' || /-/.test(String(i.symbol || '')))) continue;
       const s = String(i.symbol || ''), base = String(i.baseCoin || '').replace(/^(1000|10000|1000000)/, '');
       if (!SYM_OK.test(base)) continue;
       if (cat === 'spot' && !/USDT$/.test(s)) continue;
@@ -180,7 +184,7 @@ export async function mexcFut() {
 export async function bitgetFut() {
   const d = await get('https://api.bitget.com/api/v2/mix/market/contracts?productType=USDT-FUTURES', { json: true, timeout: 20000 });
   const cur = new Map();
-  for (const c of (d && d.data) || []) { if (String(c.symbolStatus || '') !== 'normal') continue; const s = String(c.symbol || ''), base = String(c.baseCoin || '').replace(/^(1000|10000|1000000)/, ''); if (!SYM_OK.test(base)) continue; cur.set(s, { base }); }
+  for (const c of (d && d.data) || []) { if (String(c.symbolStatus || '') !== 'normal') continue; if (c.symbolType && String(c.symbolType) !== 'perpetual') continue; const s = String(c.symbol || ''), base = String(c.baseCoin || '').replace(/^(1000|10000|1000000)/, ''); if (!SYM_OK.test(base)) continue; cur.set(s, { base }); }
   return diff('bitget-fut', cur, {
     list: (id, m, now) => listRow('Bitget Futures', 'list', m.base, id + ' perpetual', 'https://www.bitget.com/futures/usdt/' + id, now),
     delist: (id, m, now) => listRow('Bitget Futures', 'delist', m.base, id + ' perpetual', 'https://www.bitget.com/futures/usdt/' + id, now),
