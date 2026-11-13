@@ -1341,7 +1341,8 @@ function bkSelect(cls, opts, cur) {
   function whAgeTxt(wh) {
     var at = +wh.at || 0; if (!at) return '';
     var m = Math.round((Date.now() - at) / 60000);
-    return m >= 5 ? ' · ' + __esT_mpheatmap('whReadAgo', 'read {m}m ago').split('{m}').join(String(m)) : '';
+    // the engine reads a $1M+ wallet every six minutes and the tracker publishes every four, so a healthy row is up to ten minutes old - the label is for a row that is BEHIND that, not for the routine age (measured live after the deploy: 4-8 minutes on every row)
+    return m >= 10 ? ' · ' + __esT_mpheatmap('whReadAgo', 'read {m}m ago').split('{m}').join(String(m)) : '';
   }
   function whaleRow() {
     var here = (S.whales || []).filter(function (x) { return Math.abs(+x.distPct || 0) <= 12 && !whCrossed(x); });
