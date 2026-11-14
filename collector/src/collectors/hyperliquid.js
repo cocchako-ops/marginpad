@@ -109,7 +109,12 @@ export class HyperliquidLiqCollector {
           const notional = px * sz; if (notional < MIN_NOTIONAL) continue;
           // BOTH participants become candidates - a liquidation shows up in EITHER side's fills (the liquidated
           // user's own fill AND the counterparty's fill both carry the liquidation metadata)
-          for (const user of (t.users || [])) {
+          // THE LIQUIDATED ACCOUNT IS THE TAKER (2026-11-14): its forced market order crosses the book, so it is the aggressor of the
+          // print (side B = the buyer users[0] took, A = the seller users[1]). Queuing both participants spent half the ~30 checks a
+          // minute on market makers, the queue overflowed and dropped the smaller liquidations - measured 75% of Coinglass's HL figure.
+          // (liqEventsOf still reads either participant's fill correctly; only who is QUEUED changes.)
+          const taker = t.side === 'B' ? (t.users || [])[0] : t.side === 'A' ? (t.users || [])[1] : null;
+          for (const user of (taker ? [taker] : (t.users || []))) {
             if (!user) continue;
             const last = this.checked.get(user) || 0; if (Date.now() - last < RECHECK_USER_MS) continue;
             if (this.queued.has(user)) continue; this.queued.add(user);
