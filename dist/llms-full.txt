@@ -180,7 +180,7 @@ schema.org `dateModified` stamped at measurement time, so a page fetched now and
 
 ## Exchange research
 
-- https://marginpad.io/exchanges/ - Bybit, Hyperliquid, Binance, OKX, Bitget, Fomo, MEXC, Gate, KuCoin, Kraken, Coinbase on fees, max leverage, liquidity, KYC, US access and trust.
+- https://marginpad.io/exchanges/ - Bybit, Hyperliquid, Aster, Binance, OKX, Bitget, Fomo, MEXC, Gate, KuCoin, Kraken, Coinbase on fees, max leverage, liquidity, KYC, US access and trust.
 - Head-to-head (21 pairs): /bybit-vs-binance/, /okx-vs-bybit/ … with measured per-venue 24h liquidation context.
 - Use-case picks: /best-crypto-futures-exchange/ with per-case pages (/best-crypto-exchange-for-shorting/, /-for-beginners/, /-for-solana-futures/, /-for-meme-coins/ …).
 - Regional: /blog/best-crypto-exchanges-us-traders/, /blog/best-crypto-exchanges-europe-mica/, /blog/best-crypto-exchanges-canada/, /crypto-trading-usa/, /crypto-trading-canada/; Brazil and Argentina context on the simulator landings above. Bybit, Binance.com and OKX geoblock US residents; Kraken and Coinbase serve the US; KuCoin pleaded guilty in the US (Jan 2025).

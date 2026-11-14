@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');
 
-const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad|hyperliquid\.xyz\/join\/MARGINPAD|fomo\.family\/r\/Marginpad/i;
+const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad|hyperliquid\.xyz\/join\/MARGINPAD|fomo\.family\/r\/Marginpad|asterdex\.com\/en\/referral\/7C114A/i;
 
 // Partner links. `d` is a deliberately language-neutral descriptor (numbers + proper nouns) so the card
 // needs no translation; only Moon's needs words, and that one is in the string table below.
@@ -35,6 +35,7 @@ const EX = {
   // Fomo is in this table so the detector and any future context can reach it. The CTX pairs below are deliberately
   // NOT changed: each page type gets two curated venues, and quietly displacing one to make room is the kind of
   // "push it everywhere" the owner asked against (2026-09-15).
+  aster:    { name: 'Aster',    href: 'https://www.asterdex.com/en/referral/7C114A',         accent: '#efbf8a', d: 'on-chain perps &middot; code 7C114A' },
   fomo:     { name: 'Fomo',     href: 'https://fomo.family/r/Marginpad',                    accent: '#ff4d8d', d: 'social perps &middot; flat 0.05%' },
 };
 

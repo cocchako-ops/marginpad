@@ -4329,7 +4329,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=c431e7cf';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=eae6f018';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -5852,7 +5852,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function () {
   try {
     if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
-    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=8f6898f7' : '/assets/mp-charts.js?v=8f11bd00', heatmap: '/assets/mp-heatmap.js?v=bc1d5e56', screener: '/assets/mp-screener.js?v=c431e7cf' };
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=8f6898f7' : '/assets/mp-charts.js?v=8f11bd00', heatmap: '/assets/mp-heatmap.js?v=bc1d5e56', screener: '/assets/mp-screener.js?v=eae6f018' };
     var done = {};
     function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
     function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }

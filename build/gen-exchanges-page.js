@@ -15,7 +15,7 @@ const url = 'https://marginpad.io/exchanges/';
 const title = 'Crypto Exchange Comparison 2026 - Fees, Leverage, Liquidity & Trust';
 const desc = 'A trader-first comparison of every major crypto exchange - Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken and more. Real futures fees, max leverage, liquidity, KYC, US access and a hard look at trust and safety (including the KuCoin controversy). No fluff.';
 const kw = 'crypto exchange comparison, best crypto futures exchange, bybit vs binance, lowest fee crypto exchange, best leverage exchange, kucoin safe, crypto exchange fees, best exchange for trading, moon trading platform, trade stocks and crypto in one account';
-const lg = id => id == null ? 'data:,' : 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png'; // null = no CMC logo (Hyperliquid): the empty data URL fails to decode, so the onerror letter mark renders with no network request
+const lg = id => id == null ? 'data:,' : typeof id === 'string' ? id : 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png'; // a string is a self-hosted path (/assets/ex/*.png) // null = no CMC logo (Hyperliquid): the empty data URL fails to decode, so the onerror letter mark renders with no network request
 
 // Editorial ratings are our take (0-100), meant for at-a-glance comparison - not financial advice. Fees are the
 // standard/base VIP-0 tier (VIP levels + the referral fee discount lower them). Pair counts & leverage are approximate.
@@ -32,6 +32,15 @@ const EX = [
     feel: 'Perps on a purpose-built chain instead of a company’s database. You connect a wallet, deposit USDC and trade an order book that anyone can read on-chain - positions, liquidations, funding, all public. Execution on majors is close to the big centralised books, funding settles hourly, and every account can hold sub-accounts with their own API keys, which is why bot builders like it. Fees drop with volume and a referred account pays 4% less from day one.',
     pro: ['Non-custodial: your wallet, your keys, no withdrawal queue', 'Public on-chain order book, positions and liquidations', 'Hourly funding, sub-accounts with separate API keys', 'No KYC - a wallet is the account'],
     con: ['Not available to US persons under its terms (the app geoblocks the US)', 'Thinner books on small alts than Binance/Bybit', 'You manage your own wallet security and gas'] },
+  // Aster (2026-11-14, owner). Every figure from Aster's own docs: General-perps VIP 1 taker 4.0 bps / maker 0 bps
+  // (docs.asterdex.com/program-and-rewards/vip-program), the 1001x mode (/trading/1001x), wallet or email login, and the
+  // US / Canada / UK as Prohibited Jurisdictions (/resources/terms-and-conditions). One of the venues our liquidation feed reads.
+  { key: 'aster', name: 'Aster', logo: '/assets/ex/aster.png', mark: 'A', color: '#efbf8a', href: 'https://www.asterdex.com/en/referral/7C114A',
+    lev: '1001×', tk: '0.04%', mk: '0.00%', pairs: 'Crypto + stock perps', kyc: 'None (wallet or email)', us: 'No', bonus: 'Referral code 7C114A',
+    r: { fees: 92, liq: 72, mkts: 76, lev: 96, trust: 70, easy: 76 }, badge: 'On-chain perps, zero maker fee',
+    feel: 'A decentralised perps exchange: you log in with a wallet or an email, and the order book, positions and liquidations settle on-chain. Maker orders cost nothing on any VIP tier and the base taker fee is 0.04%. Beside the crypto majors it lists equity perps, and a separate 1001x mode offers extreme leverage on a few majors - which is a liquidation machine for almost everyone who uses it.',
+    pro: ['0% maker fee on every tier, 0.04% taker at the base tier', 'No KYC - a wallet or an email is the account', 'Crypto and equity perps from one balance', 'On-chain liquidations, readable by anyone (our feed reads them)'],
+    con: ['Not available in the US, Canada or the UK under its own terms', 'Thinner books than Binance/Bybit away from the majors', '1001x mode wipes a position on a 0.1% move against you'] },
   { key: 'binance', name: 'Binance', logo: 270, color: '#f0b90b', href: 'https://www.binance.com/register?ref=MAOZM9DS',
     lev: '125×', tk: '0.05%', mk: '0.02%', pairs: '400+', kyc: 'Required', us: 'Binance.US', bonus: '20% off fees for life + welcome voucher',
     r: { fees: 88, liq: 100, mkts: 85, lev: 88, trust: 86, easy: 55 }, badge: 'Deepest liquidity on earth',

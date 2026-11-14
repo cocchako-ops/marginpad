@@ -1363,9 +1363,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 1,
-  "hit": 368,
-  "missing": 0
+  "cover": 0.949238578680203,
+  "hit": 374,
+  "missing": 20
  },
  {
   "rel": "fear-greed/index.html",
@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 242,
-  "missing": 0
+  "cover": 0.9917695473251029,
+  "hit": 241,
+  "missing": 2
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1790,13 +1790,13 @@
  {
   "rel": "liquidations/report/2026-10/index.html",
   "cover": 1,
-  "hit": 90,
+  "hit": 94,
   "missing": 0
  },
  {
   "rel": "liquidations/report/index.html",
   "cover": 1,
-  "hit": 12,
+  "hit": 16,
   "missing": 0
  },
  {

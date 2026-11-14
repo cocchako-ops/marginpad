@@ -3561,6 +3561,10 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US - a US
     // click is a dead click, so it goes last there like Bybit does. Users get 4% off fees with code MARGINPAD.
     Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: __esT_mpauth("4OffFeesWith",'4% off fees with code MARGINPAD'), code: 'MARGINPAD' },
+    /* Aster (2026-11-14, owner): on-chain perps DEX, also one of the venues our liquidation feed reads. The referral rides
+       on /referral/<code> only, so `deep: null` (the OKX/Hyperliquid rule). Its own Terms (docs.asterdex.com/resources/
+       terms-and-conditions) list the US, Canada and the UK as Prohibited Jurisdictions. Colour read off the official mark. */
+    Aster: { c: '#efbf8a', no: 'US,CA,GB', ref: 'https://www.asterdex.com/en/referral/7C114A', deep: null, perk: __esT_mpauth("onchainPerps",'on-chain perps'), code: '7C114A' },
     // Fomo (2026-09-15): social-first trading app - spot across six chains plus perpetuals on crypto, equities,
     // indices, commodities and pre-IPO, powered by Hyperliquid and Trade[XYZ]. Its own Terms state a flat
     // "fee of 0.05% per transaction" on perps, with no maker/taker split - that is the reason to link it.
@@ -3592,17 +3596,17 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     Coinbase: { c: '#0052ff', no: '', ref: 'https://base.app/invite/chakko/FHSFNY5H', deep: null, perk: 'US-regulated' },
     'Crypto.com': { c: '#0b2e7a', no: '', ref: 'https://crypto.com/app/sdf5hb6rkv', deep: null, perk: 'easy fiat' }
   };
-  var REGION = { US: __esT_mpauth("theUs",'the US'), CA: 'Canada' };
+  var REGION = { US: __esT_mpauth("theUs",'the US'), CA: 'Canada', GB: 'the UK' };
   // Display order per region. Outside the US this is OUR OWN measured click order (30 days: NG Bybit 70 / Moon 23 /
   // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) - not an opinion about quality.
   var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
   var ORD = {
     // Fomo has NO measured click order here yet - it went live 2026-09-15. It is placed mid-list on reasoning
     // (a mobile social app suits the NG/PK audience that carries `def`) and moves once there is data, like the rest.
-    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Fomo', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin'],
-    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
-    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
-    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Fomo', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
+    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Fomo', 'Hyperliquid', 'Aster', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin'],
+    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Aster', 'Bybit', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
+    west: ['Binance', 'Bybit', 'Hyperliquid', 'Aster', 'Kraken', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
+    def: ['Bybit', 'Binance', 'Hyperliquid', 'Aster', 'Moon', 'Fomo', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
   };
   function group(cc2) { cc2 = String(cc2 || '').toUpperCase(); if (cc2 === 'US') return 'us'; if (cc2 === 'CA') return 'ca'; return WEST.indexOf(cc2) >= 0 ? 'west' : 'def'; }
 

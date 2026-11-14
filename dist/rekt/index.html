@@ -389,6 +389,8 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   .rkm-ven-p{flex:1;min-width:0;text-align:right;font-size:11px;color:var(--lqink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rkm-ven-go{flex:0 0 auto;margin-left:auto;color:var(--vc,#c2f64a);font-weight:800;font-size:13px;transition:transform .18s} /* margin-left:auto so a venue with no perk line still puts the arrow on the right edge */
   .rkm-ven.off{opacity:.5;filter:saturate(.35)}
+  .rkm-ven-lg{flex:0 0 auto;width:20px;height:20px;border-radius:50%;object-fit:cover;background:#111;box-shadow:0 0 0 1px rgba(255,255,255,.1)}
+  .rkm-cta-lg{width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:-4px;margin-right:6px;background:#111}
   .rkm-share{display:block;width:100%;margin-top:9px;background:rgba(255,255,255,.04);color:var(--lqink2);border:1px solid var(--lqline);border-radius:11px;padding:12px;font-family:'Space Mono',monospace;font-size:12.5px;cursor:pointer;transition:.15s}
   .rkm-share:hover{border-color:rgba(255,255,255,.22);color:var(--lqink)}
   .rkm.long .rkm-dot,.rkm.short .rkm-dot{background:#ff5a4d;box-shadow:0 0 9px #ff5a4d}
@@ -849,9 +851,18 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   // clicking a ticket's pair name opens that exact perp pair under our affiliate link (commission).
   // Bybit & Binance support pair page + ?ref (opens the pair AND attributes); every other venue falls back to
   // our Bybit affiliate for the same pair so the click is always monetised and the pair still opens.
-  function affName(exchange){var ex=String(exchange||'').toLowerCase();return ex==='binance'?'Binance':ex==='okx'?'OKX':ex==='gate'?'Gate':'Bybit';} // the partner the pair name actually opens (money-click tracking)
+  // A feed venue that is also a partner in window.mpEx opens ITSELF under our referral (2026-11-14: Aster, Hyperliquid,
+  // Bitget, MEXC); anything else still falls back to Bybit for the same pair. mp-auth is deferred, so before it lands
+  // these four fall back too - the ticket window is opened later and always gets the real venue.
+  var AFF_MP={aster:'Aster',hyperliquid:'Hyperliquid',bitget:'Bitget',mexc:'MEXC'};
+  function affMp(exchange){var n=AFF_MP[String(exchange||'').toLowerCase()];var E=window.mpEx;return (n&&E&&E.P&&E.P[n]&&E.url)?n:'';}
+  function affName(exchange){var ex=String(exchange||'').toLowerCase();var m=affMp(ex);if(m)return m;return ex==='binance'?'Binance':ex==='okx'?'OKX':ex==='gate'?'Gate':'Bybit';} // the partner the pair name actually opens (money-click tracking)
+  // the venue's own mark beside its name in the ticket window (self-hosted /assets/ex/*.png); '' keeps the coloured dot
+  var EX_LOGO={bybit:1,binance:1,okx:1,bitget:1,gate:1,kucoin:1,kraken:1,coinbase:1,mexc:1,bingx:1,hyperliquid:1,fomo:1,aster:1};
+  function exLogo(name){var k=String(name||'').toLowerCase().replace(/[^a-z]/g,'');if(k==='moon')return '/assets/moon.png';return EX_LOGO[k]?'/assets/ex/'+k+'.png':'';}
   function affLink(exchange,sym){
     var s=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),ex=String(exchange||'').toLowerCase();
+    var m=affMp(ex);if(m)return window.mpEx.url(m,s);
     if(ex==='binance')return 'https://www.binance.com/en/futures/'+s+'USDT?ref=MAOZM9DS';
     if(ex==='okx')return 'https://okx.com/join/96160298';
     if(ex==='gate')return 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate';
@@ -880,7 +891,7 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     return list.slice(0,5).map(function(v){ // five keeps the ticket window short enough that the Share button stays near the fold
       var note=v.off?(__esT_rektindex("notAvailable",'not available')+(region?' in '+region:'')):v.perk;
       return '<a class="rkm-ven'+(v.off?' off':'')+'" data-mpex="'+esc(v.n)+'" href="'+v.url+'" target="_blank" rel="noopener sponsored" style="--vc:'+v.c+'">'
-        +'<span class="rkm-ven-d"></span><span class="rkm-ven-n">'+esc(v.n)+'</span>'
+        +(exLogo(v.n)?'<img class="rkm-ven-lg" src="'+exLogo(v.n)+'" alt="" width="20" height="20" loading="lazy" onerror="this.outerHTML=\'<span class=&quot;rkm-ven-d&quot;></span>\'">':'<span class="rkm-ven-d"></span>')+'<span class="rkm-ven-n">'+esc(v.n)+'</span>'
         +(note?'<span class="rkm-ven-p">'+esc(note)+'</span>':'')+'<span class="rkm-ven-go">→</span></a>';
     }).join('');
   }
@@ -1248,7 +1259,9 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
       '<div><div class="l">Notional wiped</div><div class="v">$'+money(d.not)+'</div></div>'+
       '<div><div class="l">Receipt №</div><div class="v">'+String(d.ts).slice(-6)+'</div></div>';
     var cta=document.getElementById('rkmCta');cta.href=affLink(d.exch,d.sym);cta.setAttribute('data-mpex',affName(d.exch));
-    document.getElementById('rkmCtaSym').textContent=d.sym;document.getElementById('rkmCtaEx').textContent=d.exch;
+    document.getElementById('rkmCtaSym').textContent=d.sym;
+    var ctaN=affName(d.exch),ctaL=exLogo(ctaN),ctaE=document.getElementById('rkmCtaEx'); // name the venue the button really opens, with its mark
+    ctaE.innerHTML=(ctaL?'<img class="rkm-cta-lg" src="'+ctaL+'" alt="" width="18" height="18">':'')+esc(ctaN);
     var vb=document.getElementById('rkmVens'),vh=venueRows(d.sym,d.exch); // the other venues, in this reader's country order
     if(vb){vb.innerHTML=vh;vb.hidden=!vh;}
     var vl=document.getElementById('rkmVensL');if(vl)vl.hidden=!vh;
@@ -1449,7 +1462,7 @@ function __esT_rektindex(k, en) { try { var d = (window.__mpUI && window.__mpUI.
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!bp.hidden)close();});
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=cac2adc0"></script>
+<script defer src="/assets/mp-auth.js?v=cdf4c9e7"></script>
 <script defer src="/assets/mp-profile.js?v=f4edc7bf"></script>
 <script src="/assets/mp-trade.js?v=d4f28d75" defer></script>
 <script>
@@ -1464,6 +1477,6 @@ if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
-<script defer src="/assets/mp-nav.js?v=28b19c1b"></script>
+<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
 </body>
 </html>
