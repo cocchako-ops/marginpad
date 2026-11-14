@@ -10479,7 +10479,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=32e085c9" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=73669c2c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -23205,7 +23205,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '0235c168';
+const ASSET_V = 'd4f52c26';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -37593,7 +37593,14 @@ export class UserStore {
                send it; the phone chart engine never did, and a tracker-blocking extension drops /api/track outright), so a member's own
                server-filled opens went uncounted. The journal is the fact: every row opened today that is the member's own (never a mirrored
                copy) counts, and the larger of the two readings stands. */
-            if (String(d.va) === 'paper') { try { const jo = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart).length; if (jo > c) c = jo; } catch (e9) {} } if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
+            if (String(d.va) === 'paper') { try { const jo = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart).length; if (jo > c) c = jo; } catch (e9) {} }
+            /* A STOP OR TARGET SET AT THE OPEN IS A STOP OR TARGET SET (2026-11-14): the `sltp` beacon is sent by the edit sheet
+               alone, so a member who typed the stop into the order form - the better habit - never completed the mission. The
+               journal (own rows opened today carrying a stop or a target) and the server's own sltp edits count too. */
+            if (String(d.va) === 'sltp') { try { const js = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart && ((+x.sl > 0) || (+x.stop > 0) || (+x.tp > 0))).length; const te = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND ts>=? AND kind='sltp'", uid, dayStart)[0] || {}).n || 0; if (js + te > c) c = js + te; } catch (e9) {} }
+            /* A PROFILE MISSION COUNTS PROFILES (2026-11-14): the card also sends `profile` for a medal, Copy and Portfolio click,
+               so one card opened and clicked twice read as "3 traders' profiles". Distinct names, the actions excluded. */
+            if (String(d.va) === 'profile') { try { const pc = (this.rows("SELECT COUNT(DISTINCT label) n FROM uevents WHERE user_id=? AND ts>=? AND type='profile' AND label NOT LIKE 'medal:%' AND label NOT IN ('copy','portfolio')", uid, dayStart)[0] || {}).n; if (pc) c = pc; } catch (e9) {} } /* 0 keeps the mev fallback: the ring may have evicted the rows */ if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
           else if (d.vt === 'pv') { c = (this.rows("SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type='pageview' AND path LIKE ?", uid, dayStart, String(d.va) + '%')[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'pv:' + String(d.va))[0] || {}).n || 0; }
           // social/academy missions - verified against the real tables (not client-trusted); uid stored without the 'u:' prefix
           else if (d.vt === 'follow') { c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; try { c += (this.rows('SELECT COUNT(*) n FROM followreq WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; } catch (e) {} } // follow is request-based now - a pending request counts as taking the action (else the mission is uncompletable by the user alone)
@@ -37617,7 +37624,9 @@ export class UserStore {
           else if (d.vt === 'winsl') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(sl,0)=1 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'winheld') { c = 0; for (const r of this.rows("SELECT ts, sym FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)) { const o = this.rows("SELECT MAX(ts) t FROM tradeev WHERE user_id=? AND kind='open' AND sym=? AND ts<?", uid, r.sym, r.ts)[0]; if (o && o.t && r.ts - o.t >= 4 * 3600000) c++; } }
           else if (d.vt === 'exam') c = (this.rows("SELECT COUNT(*) n FROM acadexam WHERE user_id=? AND status='pass' AND ts>=?", uid, dayStart)[0] || {}).n || 0;
-          else if (d.vt === 'review') c = (this.rows('SELECT COUNT(*) n FROM acadrevday WHERE user_id=? AND day=? AND ok=1', uid, Math.floor(dayStart / 864e5))[0] || {}).n || 0;
+          // `ok` is the NUMBER OF RIGHT ANSWERS, not a flag (2026-11-14, Squidward10timeX: "Finish Academy Daily Review doesn't book XP") -
+          // `ok=1` completed the mission only for a member who got exactly one question right. Finishing the review is the mission.
+          else if (d.vt === 'review') c = (this.rows('SELECT COUNT(*) n FROM acadrevday WHERE user_id=? AND day=?', uid, Math.floor(dayStart / 864e5))[0] || {}).n || 0;
           else if (d.vt === 'streak') c = +((this.rows('SELECT streak FROM users WHERE id=?', uid)[0] || {}).streak || 0);
         } catch (e) {}
         done[d.mid] = c >= (d.n || 1);
@@ -41147,7 +41156,7 @@ const MISSION_POOL = [
   { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one - the floor decides', tier: 'm', vt: 'comm', va: '', n: 1, cat: 'community' },
   { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', tier: 'm', vt: 'academy', va: '', n: 1, cat: 'academy' },
   { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', tier: 'm', vt: 'academy', va: '', n: 2, cat: 'academy' },
-  { mid: 'review', title: 'Finish the Academy daily review', desc: 'Five questions from lessons you already passed. Memory is a muscle', tier: 'm', vt: 'review', va: '', n: 1, cat: 'academy' },
+  { mid: 'review', title: 'Finish the Academy daily review', desc: 'Three questions from lessons you already passed. Memory is a muscle', tier: 'm', vt: 'review', va: '', n: 1, cat: 'academy' },
   { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', tier: 'm', vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
   { mid: 'spotsell', title: 'Sell a coin in Demo Spot', desc: 'Take a profit or cut a loss - exits are the skill', tier: 'm', vt: 'ev', va: 'spotsell', n: 1, cat: 'market' },
   { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', tier: 'm', vt: 'ev', va: 'alert', n: 1, cat: 'market' },
@@ -41182,6 +41191,19 @@ const MISSION_SET = { n: 8, xp: 60 };                                           
 const MISSION_WEEK = { n: 25, t: 100 };                                              // 25 claims since Monday -> +100 Ticks once a week
 const MISSION_COOLDOWN_DAYS = 3;
 function missionPay(m) { return MISSION_PAY[m.tier] || MISSION_PAY.e; }
+/* EVERY MISSION SAYS WHERE IT IS DONE (2026-11-14, ibrar0805: "How to complete mission Read what moved the market" - he was told to
+   switch the chart indicator on, did, and the mission never completed, because it is a visit to /catalysts/ and the card carried no
+   link). A mission with no `url` of its own gets the page its verifier reads; only a mission with no single place (the check-in,
+   the streak) stays without one. The SPA tool routes take no trailing slash, every hand-made page does. */
+const MISSION_EV_URL = { paper: '/paper-trade', sltp: '/paper-trade', share: '/paper-trade', watch: '/screener', profile: '/leaderboards/', like: '/community/', alert: '/alerts/', ai: '/charts', draw: '/charts', spotbuy: '/spot/', spotsell: '/spot/' };
+const MISSION_VT_URL = { win: '/paper-trade', winsl: '/paper-trade', winheld: '/paper-trade', coins: '/paper-trade', xpsum: '/paper-trade', follow: '/leaderboards/', follower: '/leaderboards/', dm: '/leaderboards/', duel: '/leaderboards/', duelw: '/leaderboards/', comm: '/community/', academy: '/academy/', review: '/academy/', exam: '/academy/' };
+const MISSION_SPA = { '/heatmap': 1, '/screener': 1, '/calculators': 1, '/charts': 1, '/paper-trade': 1 };
+function missionUrl(m) {
+  if (m.url) return m.url;
+  if (m.vt === 'pv') return MISSION_SPA[m.va] ? m.va : m.va + '/';
+  if (m.vt === 'ev') return MISSION_EV_URL[m.va] || undefined;
+  return MISSION_VT_URL[m.vt] || undefined;
+}
 // mulberry32 - tiny deterministic PRNG so a member's missions are STABLE within a day (claims re-derive the set) but differ from day to day and member to member
 function _missionRng(seed) { let s = (seed ^ 0x9e3779b9) >>> 0; return function () { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function _missionHash(str) { let h = 2166136261 >>> 0; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
@@ -41408,7 +41430,7 @@ async function handleMissions(url, request, env) {
   for (const m of defs) if (m.vt === 'comm') {
     try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) {}
   }
-  const missions = defs.map(m => { const p = missionPay(m); return { mid: m.mid, title: m.title, desc: m.desc, tier: m.tier, ticks: p.t, xp: p.xp, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }; });
+  const missions = defs.map(m => { const p = missionPay(m); return { mid: m.mid, title: m.title, desc: m.desc, tier: m.tier, ticks: p.t, xp: p.xp, url: missionUrl(m), done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }; });
   const bonus = () => ({ setN: SET_N, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekTicks: WEEK_T, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed });
   if (request.method === 'POST') {
     let b = {}; try { b = await request.json(); } catch (e) {}

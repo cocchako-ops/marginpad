@@ -1540,9 +1540,9 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 })();
 </script>
 <script src="/assets/mp-trade.js?v=c57b20fa" defer></script>
-<script defer src="/assets/mp-auth.js?v=0235c168"></script>
+<script defer src="/assets/mp-auth.js?v=d4f52c26"></script>
 <script defer src="/assets/mp-profile.js?v=f4edc7bf"></script>
-<script defer src="/assets/mp-nav.js?v=32e085c9"></script>
+<script defer src="/assets/mp-nav.js?v=73669c2c"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;
@@ -1561,7 +1561,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     list.innerHTML=d.missions.map(function(m){
       var rw='+'+(m.ticks||0)+' T \u00b7 +'+(m.xp||0)+' XP';
       var right=m.claimed?'<span class="claimed">CLAIMED \u2713</span>':(m.done?'<button data-msn="'+m.mid+'">Claim '+rw+'</button>':'<span class="amt">'+rw+'</span>');
-      var go=(m.url&&!m.claimed)?' <a class="msn-go" href="'+m.url+'" target="_blank" rel="noopener" data-msngo="'+m.mid+__esT_rewardsindex("openRarr",'">Open &rarr;</a>'):'';
+      var go=(m.url&&!m.claimed)?' <a class="msn-go" href="'+m.url+'"'+(/^https?:/.test(m.url)?' target="_blank" rel="noopener"':'')+' data-msngo="'+m.mid+__esT_rewardsindex("openRarr",'">Open &rarr;</a>'):'';
       return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+go+'</span></span>'+right+'</div>';
     }).join('');
     var doneN=d.missions.filter(function(m){return m.claimed;}).length;

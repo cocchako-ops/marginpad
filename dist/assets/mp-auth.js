@@ -4956,7 +4956,11 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       var n = { s: uniq(sv.s), ts: +sv.ts || Date.now(), m: 1 }; if (JSON.stringify(n.s) !== JSON.stringify(loc.s)) write(n); else write(n, true);
     }).catch(function () {}); } catch (e) {}
   }
-  function set(arr) { var o = read(); o.s = uniq(arr); o.ts = Date.now(); write(o); srvPut(o); return o.s.slice(); }
+  // THE ONE STORE SAYS WHEN A COIN IS STARRED (2026-11-14): the watchlist missions read a `watch` event and only the screener sent one,
+  // so a star in the terminal, on the phone charts or in Browse completed nothing. Every surface writes through set(), so this is the one
+  // place the event can come from; a sync from the account (srvPull) never calls set() and is never counted.
+  function starred(prev, next) { try { var n = 0; for (var i = 0; i < next.length && n < 3; i++) { if (prev.indexOf(next[i]) >= 0) continue; n++; var u = '/api/track?t=watch&e=' + encodeURIComponent(next[i]) + '&p=' + encodeURIComponent(location.pathname); if (navigator.sendBeacon) navigator.sendBeacon(u); else fetch(u, { keepalive: true }).catch(function () {}); } } catch (e) {} }
+  function set(arr) { var o = read(), prev = o.s.slice(); o.s = uniq(arr); o.ts = Date.now(); write(o); srvPut(o); starred(prev, o.s); return o.s.slice(); }
   window.mpWatch = {
     list: function () { return read().s.slice(); },
     has: function (s) { return read().s.indexOf(norm(s)) >= 0; },

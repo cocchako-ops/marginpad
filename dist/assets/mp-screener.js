@@ -254,7 +254,7 @@ function __esT_mpscreener(k, en) { try { var d = (window.__mpUI && window.__mpUI
   function findRow(sym){for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym)return DATA[i];}return null;}
   listEl.addEventListener('click',function(ev){
     var st=ev.target.closest&&ev.target.closest('[data-star]');
-    if(st){ev.stopPropagation();wlToggle(st.getAttribute('data-star'));st.classList.toggle('on');if(st.classList.contains('on')){try{window.__mpTrack&&window.__mpTrack('watch',(st.getAttribute('data-star')||'').toUpperCase());}catch(_){}}if(filterKey==='watch')render();return;}
+    if(st){ev.stopPropagation();wlToggle(st.getAttribute('data-star'));st.classList.toggle('on');if(st.classList.contains('on')&&!window.mpWatch){try{window.__mpTrack&&window.__mpTrack('watch',(st.getAttribute('data-star')||'').toUpperCase());}catch(_){}}if(filterKey==='watch')render();return;}
     var th=ev.target.closest&&ev.target.closest('th[data-k]');
     if(th){var k=th.getAttribute('data-k');setSort(k,(k===sortKey&&sortDir==='desc')?'asc':'desc');return;}
     var more=ev.target.closest&&ev.target.closest('#scrMore');
