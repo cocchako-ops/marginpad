@@ -2,7 +2,7 @@
 <html lang="pt" data-es-twin="/crypto-margin-calculator/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-pt.js?v=dbcfbbba"></script>
+<script src="/assets/ui-pt.js?v=2dd65ca3"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -113,6 +113,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,en=+document.getElementById('entry').value,l=+document.getElementById('lev').value,mm=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(p>0&&en>0&&l>0)){r.innerHTML='';return;}var im=p/l,qty=p/en,mmv=p*mm;r.innerHTML='<div class="rrow big"><span class="k">Initial margin required</span><span class="v">'+im.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Maintenance margin</span><span class="v">'+mmv.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Buffer before liquidation</span><span class="v">'+(im-mmv).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=07a2ecbb"></script>
+<script defer src="/assets/mp-nav.js?v=32e085c9"></script>
 </body>
 </html>

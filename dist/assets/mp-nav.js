@@ -700,20 +700,11 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
       try { var a = m.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-4px) scale(.97)' }], { duration: 120, easing: 'ease-in' }); a.onfinish = done; a.oncancel = done; } catch (e) { done(); }
     }
   }
-  // SOCIALS DIAGNOSTIC (2026-10-27 night, owner's third report: "otvori se na milisekundu ... odmah se ugasi" while every emulation
-  // here keeps it open): the phone itself reports WHO closed it - one `t=diag` row per close within 3 s of an open, naming the
-  // bundle version, iOS/standalone, the closing path and the delay; plus one `ok` row when the menu survived 2 s, so a phone
-  // running an OLD bundle is told apart from a new bundle with a new cause. Instrument rules: no observers, a hard cap of six rows
-  // a page, deadline timers only. Read at /api/admin/activity?h=24&n=5000&e2e=1, r.t==='diag', field e starting "soc ".
-  var socV = (function () { try { var s = (document.currentScript && document.currentScript.src) || ''; if (!s) { var q = document.querySelector('script[src*="mp-nav.js"]'); s = q ? q.src : ''; } var m = /[?&]v=([0-9a-f]+)/.exec(s); return m ? m[1].slice(0, 6) : 'nov'; } catch (e) { return 'err'; } })();
-  var socDiagN = 0, socOpenAt = 0, socClosedWhy = '';
-  function socDesc(t) { try { if (!t || t.nodeType !== 1) return String(t && t.nodeName || '?'); return (t.tagName + (t.id ? '#' + t.id : '') + (typeof t.className === 'string' && t.className ? '.' + t.className.trim().split(/\s+/).slice(0, 2).join('.') : '')).slice(0, 40); } catch (e) { return '?'; } }
-  function socDiag(s) { try { if (socDiagN++ >= 6) return; var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 1 : 0, sa = navigator.standalone ? 1 : 0; var lab = ('soc v' + socV + ' io' + ios + ' sa' + sa + ' ' + s).replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 110); var u = '/api/track?t=diag&e=' + encodeURIComponent(lab) + '&p=' + encodeURIComponent(location.pathname); if (navigator.sendBeacon) navigator.sendBeacon(u); else fetch(u, { keepalive: true }).catch(function () {}); } catch (e) {} }
-  function socWatch(w, m) { // deadline checks after an open: a menu that is gone or hidden with no recorded close is a DOM replacement or a CSS rule; one that lives says so once
-    var at = socOpenAt;
-    var chk = function (ms, last) { return function () { try { if (socOpenAt !== at) return; if (!w.isConnected || !m.isConnected) { socDiag('gone dt:' + ms + ' hdr:' + (document.querySelector('header .hsoc') ? 1 : 0)); return; } var on = w.classList.contains('on'), cs = getComputedStyle(m), r = m.getBoundingClientRect(); if (!on || m.hidden) { if (!socClosedWhy) socDiag('hid-unknown dt:' + ms + ' on' + (on ? 1 : 0) + ' hid' + (m.hidden ? 1 : 0)); return; } if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.05 || r.height < 10) { socDiag('invis dt:' + ms + ' d:' + cs.display + ' o:' + cs.opacity + ' h:' + Math.round(r.height)); return; } if (last) { var c = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(30, r.height / 2)); socDiag('ok dt:' + ms + ' h:' + Math.round(r.height) + ' top:' + socDesc(c)); } } catch (e) {} }; };
-    setTimeout(chk(150), 150); setTimeout(chk(600), 600); setTimeout(chk(2000, true), 2000);
-  }
+  // The socials diagnostic (2026-10-27) answered its question (WebKit's trusted haptic click, guarded below) and was removed
+  // 2026-11-14: an instrument is not a feature. socDesc stays - the close reason is still recorded in socClosedWhy.
+  var socOpenAt = 0, socClosedWhy = '';
+  function socDesc(t) { try { if (!t || t.nodeType !== 1) return String(t && t.nodeName || '?'); return (t.tagName + (t.id ? '#' + t.id : '')).slice(0, 40); } catch (e) { return '?'; } }
+  function socDiag() {}
   function socCloseAll(why) { try { var l = document.querySelectorAll('header .hsoc.on'); if (l.length && socOpenAt) { socClosedWhy = why || '?'; socDiag('close:' + socClosedWhy + ' dt:' + (Date.now() - socOpenAt)); } for (var i = 0; i < l.length; i++) socSet(l[i], false); } catch (e) {} }
   try {
     // capture phase: it runs before any page's own delegated handler, and a row's navigation (target=_blank) is left alone
@@ -729,7 +720,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
       // and nothing counts as an outside tap inside the first 350 ms after the open - a human cannot tap twice that fast.
       if (t.closest('[data-mp-haptic]') || (t.tagName === 'INPUT' && t.hasAttribute('switch'))) return;
       var b = t.closest('header .hsocb');
-      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll('toggle'); if (on) { socOpenY = window.scrollY || 0; socOpenAt = Date.now(); socClosedWhy = ''; socSet(w, true); socWatch(w, w.querySelector('.hsoc-m')); } return; }
+      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll('toggle'); if (on) { socOpenY = window.scrollY || 0; socOpenAt = Date.now(); socClosedWhy = ''; socSet(w, true); } return; }
       if (t.closest('header .hsoc-i')) { socBuzz(10); setTimeout(function () { socCloseAll('row'); }, 120); return; }
       if (!t.closest('header .hsoc')) { if (socOpenAt && Date.now() - socOpenAt < 350) { socDiag('ignored:' + socDesc(t) + ' dt:' + (Date.now() - socOpenAt)); return; } socCloseAll('out:' + socDesc(t) + ' ' + e.type + (e.pointerType ? ':' + e.pointerType : '')); }
     }, true);

@@ -45,6 +45,63 @@ function sweepOldProfiles() { // older than 6h: certainly not a live run, includ
   } catch (e) {}
 }
 
+// NETWORKIDLE ON THIS SITE NEVER FIRES (2026-10-27 font-preload round, fixed here 2026-11-14): puppeteer keeps the four
+// gstatic preload fonts and the preloaded mp-nav.js as in-flight requests for ever, so `networkidle2` timed out on every
+// page that carries them - 79 suites. Instead of rewriting each, a goto/reload/waitForNavigation asking for networkidle
+// waits for `load` and then for OUR idle: no more than 2 (idle2) or 0 (idle0) requests in flight that are younger than
+// STUCK_MS, for IDLE_MS. A request older than STUCK_MS is the stuck kind and is ignored, exactly what puppeteer could not.
+const STUCK_MS = 5000, IDLE_MS = 500;
+function patchIdle(page) {
+  const P = Object.getPrototypeOf(page);
+  if (!P || P.__mpIdle) return;
+  P.__mpIdle = true;
+  const fly = (pg) => {
+    if (pg.__mpFly) return pg.__mpFly;
+    const m = new Map();
+    pg.on('request', (r) => m.set(r, Date.now()));
+    pg.on('requestfinished', (r) => m.delete(r));
+    pg.on('requestfailed', (r) => m.delete(r));
+    pg.__mpFly = m;
+    return m;
+  };
+  const idleOf = (o) => {
+    const w = o && o.waitUntil;
+    const list = Array.isArray(w) ? w : [w];
+    if (list.indexOf('networkidle2') >= 0) return 2;
+    if (list.indexOf('networkidle0') >= 0) return 0;
+    return -1;
+  };
+  const settle = async (pg, max, allow) => {
+    const m = fly(pg), t0 = Date.now();
+    let quietSince = 0;
+    while (Date.now() - t0 < max) {
+      const now = Date.now();
+      let fresh = 0;
+      for (const ts of m.values()) if (now - ts < STUCK_MS) fresh++;
+      if (fresh <= allow) { if (!quietSince) quietSince = now; if (now - quietSince >= IDLE_MS) return; }
+      else quietSince = 0;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+  };
+  const wrap = (name) => {
+    const orig = P[name];
+    if (typeof orig !== 'function') return;
+    P[name] = async function (...a) {
+      const oi = name === 'goto' ? 1 : 0;
+      const o = a[oi];
+      const allow = idleOf(o);
+      if (allow < 0) return orig.apply(this, a);
+      fly(this);
+      const no = Object.assign({}, o, { waitUntil: 'load' });
+      a[oi] = no;
+      const res = await orig.apply(this, a);
+      await settle(this, Math.min(+(o.timeout) || 30000, 30000), allow);
+      return res;
+    };
+  };
+  wrap('goto'); wrap('reload'); wrap('waitForNavigation');
+}
+
 async function withBrowser(fn, { args = [], extraLaunch = {}, timeoutMs = 240000 } = {}) {
   sweepOldProfiles();
   const userDataDir = path.join(os.tmpdir(), TAG + '-' + process.pid + '-' + Date.now());
@@ -55,6 +112,7 @@ async function withBrowser(fn, { args = [], extraLaunch = {}, timeoutMs = 240000
     args: ['--no-sandbox', '--ignore-certificate-errors', ...args],
     ...extraLaunch,
   });
+  try { const pg0 = (await browser.pages())[0] || await browser.newPage(); patchIdle(pg0); } catch (e) {}
   const pid = browser.process() && browser.process().pid;
   let done = false;
   const rmProfile = () => { try { fs.rmSync(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 120 }); } catch (e) {} };
