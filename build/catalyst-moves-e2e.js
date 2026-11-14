@@ -312,7 +312,7 @@ async function prodLeg() {
   ok('every move leaves with a sentence, the unknown ones too', mv.every(m => typeof m.note === 'string' && m.note.length > 20), JSON.stringify(mv.filter(m => !m.note).slice(0, 2)));
   ok('a news cause carries its measured realism', mv.filter(m => m.catalyst).every(m => m.catalyst.realism && typeof m.catalyst.realism.text === 'string'));
   ok('the summary knows the two new causes', typeof s.stocks === 'number' && typeof s.flow === 'number', JSON.stringify(s));
-  ok('every catalyst named sits inside its window (90/30 min, a major story 6 h / 1 h)', mv.filter(m => m.catalyst).every(m => m.catalyst.leadMin <= (m.catalyst.major ? 360 : 90) && m.catalyst.leadMin >= (m.catalyst.major ? -60 : -30)), JSON.stringify(mv.filter(m => m.catalyst).map(m => m.catalyst.leadMin).slice(0, 20)));
+  ok('every catalyst named sits inside its window (90/30 min, a major story 6 h before / anywhere inside the move)', mv.filter(m => m.catalyst).every(m => m.catalyst.leadMin <= (m.catalyst.major ? 360 : 90) && m.catalyst.leadMin >= (m.catalyst.major ? -Math.max(60, Math.round(((+m.t1 || 0) - (+m.t0 || 0)) / 60000) + 1) : -30)), JSON.stringify(mv.filter(m => m.catalyst).map(m => m.catalyst.leadMin).slice(0, 20)));
   ok('unknown is said out loud for some moves (an engine that explains everything is lying)', s.unknown > 0, s.unknown);
   // THE PLACEBO - on SOL: since realism (2026-10-29) BTC has no media-news cause at all (media headlines measure ~1x on BTC), so the
   // news share to compare is an alt's, where listings, hacks and the occasional story still name a move

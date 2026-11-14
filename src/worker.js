@@ -1244,6 +1244,7 @@ function cxScoreAdj(score, im) { if (!im) return score; const m = Math.max(0.75,
 // exploits). The dollar figure is read off the headline and the model's summary; none = at most 28, under $1M 35, under
 // $10M 55, under $50M 72, $50M and up at least 80.
 function cxUsd(s) { const m = String(s || '').match(/\$\s?([0-9][0-9,.]*)\s*(k|m|mn|million|b|bn|billion)?\b/i); if (!m) return null; let v = parseFloat(m[1].replace(/,/g, '')); if (!(v > 0)) return null; const u = (m[2] || '').toLowerCase(); if (u === 'k') v *= 1e3; else if (u === 'm' || u === 'mn' || u === 'million') v *= 1e6; else if (u === 'b' || u === 'bn' || u === 'billion') v *= 1e9; return v; }
+const CX_VENUE_RE = /\b(binance|coinbase|kraken|okx|bybit|upbit|bithumb|robinhood|kucoin|gate\.?io|bitget|mexc|htx|huobi|hyperliquid|bitfinex|bitstamp|gemini|crypto\.com|bingx|lbank|bitmart|poloniex|nasdaq|nyse|cme)\b/i;
 function cxEnrich(items, labels) {
   const m = (labels && labels.m) || {};
   const out = (items || []).map(c => {
@@ -1262,11 +1263,14 @@ function cxEnrich(items, labels) {
       if (!(+c.expect) && l.expect) o.expect = l.expect;
       const im2 = cxImpactOf(o.kind, c.tier, !String(o.syms || '').length); o.impact = cxImpactPack(im2);
     }
+    // A LISTING NAMES A VENUE (2026-11-14): 'Expert Lists Key Conditions for Bitcoin to Rally' was filed as a listing by the word alone and
+    // explained a BTC leg; a media desk's unlabelled listing/delisting that names no exchange is ordinary news
+    if ((o.kind === 'listing' || o.kind === 'delisting') && !l && c.tier !== 'primary' && c.tier !== 'official' && !CX_VENUE_RE.test(String(c.title || ''))) { o.kind0 = o.kind; o.kind = 'news'; o.impact = cxImpactPack(cxImpactOf('news', c.tier, !String(o.syms || '').length)); }
     if (o.kind === 'hack') { const usd = cxUsd(String(c.title || '') + ' ' + ((l && l.sum) || '')); o.usd = usd; const cap = usd == null ? 20 : usd < CX_HACK_MIN_USD ? 25 : 100; o.score = Math.min(o.score, cap); if (usd != null && usd >= 5e7) o.score = Math.max(o.score, 80); }
     if (o.kind === 'promo' || o.kind === 'pair') o.score = 0;
     return o;
   });
-  cxStories(out);
+  cxStories(out, labels && labels.known);
   return out;
 }
 // A STORY IS ONE EVENT REPORTED BY MANY DESKS (2026-10-29, owner: seven desks carried the ICE x Hyperliquid story and every
@@ -1297,7 +1301,11 @@ const CX_HACK_MIN_USD = 5e7;
 function cxStoryName(slug) { const s = String(slug || ''); if (!s || /^s\d+$/.test(s)) return null; const w = s.split(/[-_]+/).filter(Boolean).map(x => x.length <= 3 ? x.toUpperCase() : x.charAt(0).toUpperCase() + x.slice(1)); const t = w.join(' '); return t.length > 30 ? t.slice(0, 29).replace(/\s+\S*$/, '') : t; }
 function cxMoney(v) { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(v >= 1e8 ? 0 : 1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'k' : '$' + Math.round(v); }
 function cxEntShared(a, b) { let s = 0; for (const k in a) if (b[k]) s += Math.min(a[k], b[k]); return s; }
-function cxStories(items) {
+const CX_HACK_SKIP = { crypto: 1, defi: 1, hack: 1, hacks: 1, hacked: 1, hacker: 1, hackers: 1, exploit: 1, exploited: 1, attack: 1, attacker: 1, protocol: 1, suspected: 1, record: 1, major: 1, the: 1, north: 1, korea: 1, fbi: 1, lazarus: 1, stolen: 1, funds: 1, security: 1, incident: 1, doj: 1, seizure: 1, seizes: 1, seized: 1, drain: 1, drained: 1, wallet: 1, wallets: 1, hot: 1 };
+function cxHackVictim(slug) { return String(slug || '').toLowerCase().split(/[^a-z0-9]+/).find(x => x.length >= 3 && !CX_HACK_SKIP[x] && !/^[0-9]/.test(x)) || ''; }
+// a follow-up is never older news's first report: an item whose story (or hacked victim) was already known twelve hours before it
+const CX_STALE_MS = 12 * 3600000, CX_VIC_MS = 40 * 86400000 /* the whole archive: an Arkham trace of the Bitget hack's coins 37 days on claimed a BTC leg */, CX_SCHEDULED = { macro: 1, earnings: 1, listing: 1, delisting: 1, unlock: 1, warning: 1 };
+function cxStories(items, known) {
   // A STORY IS READ IN TIME ORDER, AND ITS FIRST REPORT IS THE EVENT (2026-11-01, owner: "takve vesti se ponavljaju iz dana u dan a
   // validna je samo prva koja izadje ... iste vesti samo treba da dodaju na score-u"). Measured on the Binance hack: first desk
   // 2026-10-29 20:39, 301 follow-ups over three days, and the follow-ups were claiming later, smaller moves because (1) labels
@@ -1317,7 +1325,7 @@ function cxStories(items) {
     const c = items[i]; if (noise(c)) continue;
     const ts = +c.ts_src || 0, labelled = !!c.lbl, tok = cxTok((labelled ? (c.lbl.sum || '') + ' ' : '') + (c.title || '')), ent = cxEnt(c), slug = labelled ? String(c.lbl.story || '') : '';
     let hit = null;
-    if (slug && bySlug[slug] && ts - bySlug[slug].last <= SLUG_MS) hit = bySlug[slug];
+    if (slug && bySlug[slug] && ts - bySlug[slug].last <= SLUG_MS) hit = bySlug[slug];   // ten days from the last member; an older event is caught by the forty-day memory (cxKnownFrom), a generic slug never chains for weeks
     const isHack = c.kind === 'hack' || (labelled && c.lbl.kind === 'hack') || HACK_RE.test(String(c.title || '')), hw = {};
     if (isHack) { for (const w of (slug + ' ' + String(c.title || '')).toLowerCase().split(/[^a-z0-9]+/)) if (w) hw[w] = 1; if (!hit) for (const v in hackBy) if (hw[v] && ts - hackBy[v].last <= SLUG_MS) { hit = hackBy[v]; break; } }
     if (!hit) {
@@ -1332,14 +1340,14 @@ function cxStories(items) {
     }
     if (!hit && !labelled) continue;                                  // nothing read it and nothing claims it: it stays a lone row
     if (!hit) { hit = { first: ts, last: ts, members: [], recent: [], slugs: {} }; open.push(hit); groupsOf.push(hit); }
-    if (isHack && slug && !hit.victim) { const v = slug.split('-').find(w => w.length >= 3 && !HACK_SKIP[w] && !/^[0-9]/.test(w)); if (v) { hit.victim = v; hackBy[v] = hit; } }
+    if (isHack && slug && !hit.victim) { const v = cxHackVictim(slug); if (v) { hit.victim = v; hackBy[v] = hit; } }
     hit.members.push(i); hit.last = Math.max(hit.last, ts); if (slug) { bySlug[slug] = hit; hit.slugs[slug] = (hit.slugs[slug] || 0) + 1; }
     hit.recent.push({ tok, ent, kind: c.kind, lk: labelled ? c.lbl.kind : '' }); if (hit.recent.length > 8) hit.recent.shift();
   }
   for (const G of groupsOf) {
     const g = G.members; if (g.length < 2) continue;
     const srcs = {}, syms = {}; let first = Infinity, peak = 0, firstI = g[0];
-    for (const i of g) { const c = items[i]; srcs[String(c.source || '').replace(/^(rss|tg|x):/, '').toLowerCase()] = 1; for (const s of String(c.syms || '').split(',')) if (s) syms[s] = 1; if ((+c.ts_src || Infinity) < first) { first = +c.ts_src; firstI = i; } peak = Math.max(peak, +(c.lbl && c.lbl.imp) || 0); }
+    for (const i of g) { const c = items[i]; const sname = String(c.source || '').toLowerCase(); if (!/^(gnews:|cmc-news)/.test(sname)) srcs[sname.replace(/^(rss|tg|x):/, '')] = 1; /* an aggregator re-prints other desks: it is never an independent confirmation (Google News joined 11-12 and doubled every story's desk count) */ for (const s of String(c.syms || '').split(',')) if (s) syms[s] = 1; if ((+c.ts_src || Infinity) < first) { first = +c.ts_src; firstI = i; } peak = Math.max(peak, +(c.lbl && c.lbl.imp) || 0); }
     const nd = Object.keys(srcs).length, su = Object.keys(syms);
     const slug = Object.keys(G.slugs).sort((x, y) => G.slugs[y] - G.slugs[x])[0] || ('s' + g[0]);
     let name = cxStoryName(slug);
@@ -1353,10 +1361,31 @@ function cxStories(items) {
       c.story = story; c.conf = Math.max(+c.conf || 1, nd); c.first = first; c.repeat = i !== firstI;
       if (su.length && !String(c.syms || '').length) c.syms = su.join(','); else if (su.length) { const u = String(c.syms || '').split(',').filter(Boolean); for (const s of su) if (u.indexOf(s) < 0) u.push(s); c.syms = u.join(','); }
       if (c.kind !== 'promo' && c.kind !== 'pair') c.score = Math.min(100, (+c.score || 0) + bonus);
-      c.major = (peak >= 70 && nd >= 2) || peak >= 85;
+      c.major = c.kind !== 'whale' && ((peak >= 70 && nd >= 2) || peak >= 85);   // a transfer alert is never a big story (generic slugs chained them, 2026-11-14)
     }
   }
-  for (const c of items) if (!c.major) c.major = !!(c.lbl && +c.lbl.imp >= 85) || ((c.kind === 'listing' || c.kind === 'delisting' || c.kind === 'macro' || c.kind === 'earnings') && c.tier === 'primary');
+  for (const c of items) if (!c.major) c.major = (c.kind !== 'whale' && !!(c.lbl && +c.lbl.imp >= 85)) || ((c.kind === 'listing' || c.kind === 'delisting' || c.kind === 'macro' || c.kind === 'earnings') && c.tier === 'primary');
+  if (known) for (const c of items) {
+    const ts = +c.ts_src || 0; if (!(ts > 0)) continue; const own = c.first && +c.first > 0 ? Math.min(ts, +c.first) : ts;
+    if (CX_SCHEDULED[c.kind] || (c.lbl && CX_SCHEDULED[c.lbl.kind])) continue;   // a print, a listing or an unlock recurs under one slug every month and is new each time
+    const slug = c.lbl && c.lbl.story ? String(c.lbl.story) : ''; let kf = slug && known.slug ? +known.slug[slug] || 0 : 0;
+    const isHack = c.kind === 'hack' || (c.lbl && c.lbl.kind === 'hack');
+    if (!isHack) continue;   // only a hack is remembered: a whale transfer or a price note reuses a generic slug every day and is new each time; the rest of a hack's story follows below
+    // any word of the slug or the headline that names a victim already hacked (the first word of an unlabelled headline is the desk's
+    // name - "AggrNews: DOJ seizes ... Binance hack" read its victim as 'aggrnews', 2026-11-14)
+    if (isHack && known.vic) {
+      // THE VICTIM IS THE WORD THAT OWNS THE HACK ('... tied to B Binance hack', 'Binance's exploit'), never any name in the headline:
+      // the first cut read every word and made the Binance hack's own first report stale because it also named Coinbase and Solana
+      const vs = []; if (slug) vs.push(cxHackVictim(slug));
+      const mt = String(c.title || '').toLowerCase().match(/([a-z0-9]+)(?:'s)?\s+(?:hot\s+wallet\s+)?(?:hack|hacked|exploit|exploited|heist|drain|drained|breach)\b/);
+      if (mt && !CX_HACK_SKIP[mt[1]]) vs.push(mt[1]);
+      for (const v of vs) { const vf = v ? +known.vic[v] || 0 : 0; if (vf && own - vf <= CX_VIC_MS && (!kf || vf < kf)) kf = vf; }
+    }
+    if (kf && kf < own - CX_STALE_MS) { c.stale = kf; }
+  }
+  // a story with ONE member that belongs to an older event is aftermath as a whole (the DOJ seizure group of 11-12 carried an unlabelled
+  // 'regulation' copy the slug could not reach, and it would have claimed the next move from the group's own first report)
+  if (known) { const st = {}; for (const c of items) if (c.stale && c.story && (+c.ts_src || 0) <= +c.story.first) st[c.story.k] = +c.stale;   /* decided by the story's FIRST report alone: a later member naming another victim (an Aave freeze inside the Binance story) must not date the whole event */ for (const c of items) { const sk = c.story && st[c.story.k]; const kf = c.stale ? +c.stale : (sk && +c.story.first > sk + CX_STALE_MS ? sk : 0); if (!kf) continue; /* the whole story only when the story itself began after the event: a late member of the hack's own story must not erase its first report */ c.stale = true; c.first = kf; c.repeat = true; if (c.story) c.story = { ...c.story, first: kf }; } }
 }
 const CX_LBL_KINDS = { listing: 1, delisting: 1, macro: 1, hack: 1, etf: 1, regulation: 1, politics: 1, whale: 1, unlock: 1, protocol: 1, adoption: 1, filing: 1, news: 1, promo: 1, pair: 1, warning: 1 /* an exchange's own risk flag on a coin (Upbit, 2026-11-12) */ };
 // price printed the way the chart prints it
@@ -1456,7 +1485,23 @@ async function cxLabelsLive(env) { try { const j = JSON.parse(await env.STATS.ge
 // read "Long liquidations" two days later. cx:lblarch keeps the same reading without the prose for 40 days.
 let _cxArch = null, _cxArchAt = 0;
 async function cxLabelsArch(env, fresh) { try { if (fresh || Date.now() - _cxArchAt > 120000) { const a = JSON.parse(await env.STATS.get('cx:lblarch') || 'null'); _cxArch = a && a.m ? a.m : (_cxArch || {}); _cxArchAt = Date.now(); } } catch (e) {} return _cxArch || {}; }
-async function cxLabelsGet(env) { const lv = await cxLabelsLive(env), ar = await cxLabelsArch(env), a2 = {}; for (const k in ar) if (ar[k].imp != null) a2[k] = ar[k]; return { ...lv, m: Object.assign(a2, lv.m) }; }
+async function cxLabelsGet(env) { const lv = await cxLabelsLive(env), ar = await cxLabelsArch(env), a2 = {}; for (const k in ar) if (ar[k].imp != null) a2[k] = ar[k]; const m = Object.assign(a2, lv.m); return { ...lv, m, known: cxKnownFrom(m) }; }
+/* WHEN AN EVENT FIRST HAPPENED, OVER FORTY DAYS (2026-11-14, owner: "Sad kad BTC pada zbog likvidacija, on je napisao da je zbog binance
+   hack-a ... To je bilo pa proslo"). The BTC -3.9% of 11-13 03:00 was claimed by "DOJ seizes $1.2B ... tied to $6B Binance hack" - a
+   follow-up fourteen days after the hack, filed by the model under the hack's own slug. It became a 'first report' because the story
+   joining in cxStories stops ten days after a story's last member, and the live path reads only eight days of items, so the event it
+   belonged to was no longer in sight. The label archive keeps every slug for forty days with the time it was read, which is the
+   memory needed: the first time a slug (and a hacked victim) was seen. Memoised per archive object. */
+let _cxKnownSrc = null, _cxKnown = null;
+function cxKnownFrom(m) {
+  if (m === _cxKnownSrc && _cxKnown) return _cxKnown;
+  const slug = {}, vic = {}, vn = {};
+  for (const k in m) { const l = m[k]; if (!l || !l.story) continue; const t = +l.ts || +l.ts_src || 0; if (!(t > 0)) continue; const s = String(l.story);
+    if (!slug[s] || t < slug[s]) slug[s] = t;
+    if (l.kind === 'hack') { const v = cxHackVictim(s); if (v) { if (!vic[v] || t < vic[v]) vic[v] = t; vn[v] = (vn[v] || 0) + 1; } } }
+  for (const v in vic) if ((vn[v] || 0) < 3) delete vic[v];   // a victim is a hack the desks kept writing about, not one stray label (a 'near-intents' slug must not mute every later headline with 'near' in it)
+  _cxKnownSrc = m; _cxKnown = { slug, vic }; return _cxKnown;
+}
 const CX_ARCH_MS = 40 * 86400000, CX_ARCH_MAX = 12000;
 async function cxArchPut(env, add, now) {
   const m = Object.assign({}, await cxLabelsArch(env, true));
@@ -1662,6 +1707,7 @@ function cxAttribute(mv, cats, liq, opt) {
     const ts = +c.ts_src || +c.ts || 0; if (!(ts > 0)) continue;
     const score = +c.score || 0; if (score < CX_MIN_SCORE) continue;
     if (CX_SKIP_KIND[c.kind]) continue;
+    if (c.stale) continue;                                              // aftermath of an event already known (see cxKnownFrom)
     if (c.kind === 'hack') { const hu = c.usd != null ? +c.usd : cxUsd(String(c.title || '') + ' ' + ((c.lbl && c.lbl.sum) || '')); if (!(hu >= CX_HACK_MIN_USD)) continue; }
     let meta = c.meta; if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch (e) { meta = null; } }
     if (meta && meta.dayres) continue;                                 // a row dated to the day cannot name a candle
@@ -1672,10 +1718,13 @@ function cxAttribute(mv, cats, liq, opt) {
     const major = !!c.major; const tsFirst = c.first && +c.first > 0 ? Math.min(ts, +c.first) : ts;
     const lead = mv.t0 - tsFirst;                                      // + = the news came BEFORE the move started
     // a market that was shut heard everything since its close at once, so a gap reaches back over the whole closed span
-    const gapMs = +mv.gap || 0, winB = Math.max(major ? 6 * 3600000 : CX_BEFORE_MS, gapMs ? gapMs + 1800000 : 0), winA = major ? 3600000 : CX_AFTER_MS;
+    // A BIG STORY THAT BREAKS INSIDE A LONG MOVE EXPLAINS IT (2026-11-14): the Binance hack's first report came at 20:39 inside a BTC leg
+    // measured 16:15 -> 00:30, four hours after it started, and the one-hour after-window threw it away; a major story is accepted anywhere
+    // inside the move itself, an ordinary item keeps 30 minutes
+    const gapMs = +mv.gap || 0, winB = Math.max(major ? 6 * 3600000 : CX_BEFORE_MS, gapMs ? gapMs + 1800000 : 0), winA = major ? Math.max(3600000, (+mv.t1 || 0) - (+mv.t0 || 0)) : CX_AFTER_MS;
     if (lead > winB || lead < -winA) continue;
     const ex0 = +c.expect || 0;
-    if (major && lead > 2 * 3600000 && ex0 && ex0 !== mv.dir) continue;   // a retrace hours after a bullish story is not the story's doing
+    if (major && lead > 2 * 3600000 && !gapMs && ex0 !== mv.dir) continue;   /* a scheduled print moves price inside minutes; a leg starting two hours later is not its doing unless a closed market heard it at the open */   // hours after the story it must point the way the move went: a retrace is not its doing, and a story with no direction cannot claim a leg two to six hours later (the placebo matched as often as the truth, 2026-11-14)
     const syms = String(c.syms || '').split(',').filter(Boolean);
     let symW = 0;
     if (syms.indexOf(sym) >= 0) symW = 1;
@@ -1689,7 +1738,7 @@ function cxAttribute(mv, cats, liq, opt) {
     const isMacro = c.kind === 'macro';
     // after the move started = the market led the news (a leak, a cascade the desk reported late): 0.65 since the realism
     // factor took its own share, so a specific primary item arriving late keeps its claim and a vague one loses it
-    const timeW = major ? (lead < 0 ? 0.8 : lead <= 30 * 60000 ? 1 : lead <= 2 * 3600000 ? 0.9 : 0.75) : (lead < 0 ? 0.65 : lead <= 15 * 60000 ? 1 : lead <= 45 * 60000 ? 0.85 : (isMacro ? 0.9 : 0.6));
+    const timeW = major ? (lead < -3600000 ? 0.75 : lead < 0 ? 0.8 : lead <= 30 * 60000 ? 1 : lead <= 2 * 3600000 ? 0.9 : 0.75) : (lead < 0 ? 0.65 : lead <= 15 * 60000 ? 1 : lead <= 45 * 60000 ? 0.85 : (isMacro ? 0.9 : 0.6));
     const ex = +c.expect || 0; if (ex && ex !== mv.dir) continue; const dirW = ex === 0 ? 1 : 1.15;
     const confW = 1 + 0.1 * Math.min(3, Math.max(0, (+c.conf || 1) - 1));
     const perDay = rate[c.source + '|' + c.kind] || 1;
@@ -1697,7 +1746,9 @@ function cxAttribute(mv, cats, liq, opt) {
     const rateW = isMacro ? 1 : Math.max(major ? 0.8 : 0.1, 1 - chance);
     // REALISM: a kind that has measurably moved nothing keeps less than half its weight - it can still be named when it is
     // specific, confirmed and on time, but it can no longer claim a move on timing alone
-    const im = cxImpactOf(c.kind, c.tier, !syms.length); const realW = isMacro ? 1 : cxRealW(im);
+    // the first report of a major story keeps most of its weight (2026-11-14: the Binance hack's own first desk, 20:39 on 10-29 inside a
+    // -1.9% BTC leg, fell to 0.22 under the hack row's x15 0.58 - a number made mostly of follow-ups - and the move read 'liquidations' alone)
+    const im = cxImpactOf(c.kind, c.tier, !syms.length); const realW = isMacro ? 1 : (major && !c.repeat ? Math.max(0.85, cxRealW(im)) : cxRealW(im));
     const w = +((score / 100) * symW * timeW * dirW * confW * rateW * realW).toFixed(3);
     scored.push({ w, lead, c, after: lead < 0, im, major });
   }
@@ -2194,18 +2245,41 @@ async function handleCatalystMoves(url, env) {
     const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), ms);
     try { const r = await __realFetch(base + path, { signal: ctl.signal, cf: { cacheTtl: ttl, cacheEverything: true } }); return r.ok ? await r.json() : null; } catch (e) { return null; } finally { clearTimeout(tmr); }
   };
+  /* A MONTH OF CATALYSTS IS READ IN SLICES, OR IT IS TWO DAYS (2026-11-14, owner: "BTC pada zbog likvidacija, on je napisao da je zbog
+     binance hack-a"). The table answers at most 5,000 rows, newest first, and since Google News joined the sources on 11-12 a day
+     can hold 2,800 of them - measured: the 30-day read returned 5,000 rows reaching back only to 11-12 14:25. Every move older
+     than two days was judged with NO news at all (the Binance hack's own candle read 'liquidations'), and a follow-up of an old
+     event read as its first report because the event itself was out of sight. Slices are cut on UTC day boundaries so every slice
+     but the newest is the same URL all day (edge + collector memo hits); a slice that comes back full is halved, twice at most. */
+  const catRange = async (from, until, ms) => {
+    const DAY = 86400000, q = t => Math.floor(t / 120000) * 120000, D = Math.floor(until / DAY) * DAY, edges = [Math.ceil((until + 60000) / 120000) * 120000, D];
+    for (const k of [2, 5, 10, 17, 24, 31, 38]) { const e = D - k * DAY; if (e <= from) break; edges.push(e); }
+    edges.push(q(from));
+    const one = async (lo, hi, depth) => {
+      const j = await colFetch('/api/v1/catalysts?since=' + lo + '&until=' + hi + '&limit=5000&min=' + CX_MIN_SCORE, ms, 120);
+      if (!j) return { items: null };
+      const it = j.items || []; if (it.length < 5000 || depth >= 2 || hi - lo < 3600000) return { items: it, full: it.length >= 5000 };
+      const mid = q((lo + hi) / 2); const [a, b] = await Promise.all([one(lo, mid, depth + 1), one(mid, hi, depth + 1)]);
+      return { items: a.items && b.items ? a.items.concat(b.items) : (a.items || b.items), full: !!(a.full || b.full) };
+    };
+    const parts = await Promise.all(edges.slice(0, -1).map((hi, i) => one(edges[i + 1], hi, 0)));
+    if (parts.every(p => !p.items)) return null;
+    const seen = {}, items = [];
+    for (const p of parts) for (const c of p.items || []) { const id = c.id || (c.source + '|' + c.ts_src + '|' + c.title); if (seen[id]) continue; seen[id] = 1; items.push(c); }
+    return { items, slices: parts.length, missing: parts.filter(p => !p.items).length, full: parts.filter(p => p.full).length };
+  };
   if (at > 0) {
     // THE LIVE HALF: the chart measured a move starting at `at`; the cause is decided here, with the newest catalysts
     const pct = +url.searchParams.get('pct') || 0, nbars = Math.max(1, Math.min(32, +url.searchParams.get('n') || 1));
     const tfm = +tf * 60000, mv = { t0: at, t1: at + nbars * tfm, pct, dir: pct >= 0 ? 1 : -1 };
-    const ck = new Request('https://marginpad.io/__cxat_v9_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
+    const ck = new Request('https://marginpad.io/__cxat_v24_' + sym + '_' + Math.floor(at / 60000) + '_' + (pct >= 0 ? 'u' : 'd'));
     if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const [cj, lj] = await Promise.all([
       // eight days, not twelve hours: a follow-up to a story that broke two days ago must be seen as a follow-up, not as news
       // `since` on the minute and a 60 s edge TTL (2026-11-12): this 8-day read is ~1 MB from the droplet and the live path asked it
       // for every move start with a 15 s TTL - measured 90 pulls an hour of the same few URLs; the catalyst table itself moves on a
       // 2-minute labeller, so a minute of staleness decides nothing
-      colFetch('/api/v1/catalysts?since=' + (Math.floor((at - 8 * 86400000) / 600000) * 600000) + '&limit=3000&min=' + CX_MIN_SCORE, 2500, 120), // 10-minute grid: every move starting inside the same ten minutes shares ONE url (measured 14:50 UTC: four distinct `since` values, 26 pulls of 1.9 MB in ten minutes, on a minute grid)
+      catRange(at - 8 * 86400000, Math.max(at, now), 2500),   // eight days, in day slices (one 3,000-row read was ~one day since 11-12) // 10-minute grid: every move starting inside the same ten minutes shares ONE url (measured 14:50 UTC: four distinct `since` values, 26 pulls of 1.9 MB in ten minutes, on a minute grid)
       hasLiq ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.max(1440, Math.ceil((now - at) / 60000) + 60), 2500, 20) : Promise.resolve(null),
     ]);
     const cats = cxEnrich(((cj && cj.items) || []).concat(await cxEqCats(env, sym, cls)), await cxLabelsGet(env));
@@ -2226,7 +2300,7 @@ async function handleCatalystMoves(url, env) {
     if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
     return res;
   }
-  const ck = new Request('https://marginpad.io/__cxmv_v13_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
+  const ck = new Request('https://marginpad.io/__cxmv_v28_' + sym + '_' + tf + '_' + days + (+url.searchParams.get('shift') ? '_s' + (+url.searchParams.get('shift')) : ''));
   if (!nc) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const since = now - days * 86400000, tfm = +tf;
   const pages = Math.min(8, Math.ceil(days * 1440 / tfm / 1000) + 1);
@@ -2239,7 +2313,7 @@ async function handleCatalystMoves(url, env) {
        heap, then a 3 MB string; that churn is what has been walking the collector's RSS to pm2's 700 MB ceiling once a day
        since 10-30. Rounded to 2-minute boundaries the six markets of one pass share one URL, and the next pass inside the
        TTL is an edge hit. The window still covers [since - CX_BEFORE_MS, now + 60 s] - it only ever widens by under 2 min. */
-    colFetch('/api/v1/catalysts?since=' + (Math.floor((since - CX_BEFORE_MS) / 120000) * 120000) + '&until=' + (Math.ceil((now + 60000) / 120000) * 120000) + '&limit=5000&min=' + CX_MIN_SCORE, 4000, 120),
+    catRange(since - CX_BEFORE_MS, now, 4000),
     hasLiq ? colFetch('/api/v1/liqseries?symbol=' + sym + '&minutes=' + Math.min(43200, days * 1440), 4000, 300) : Promise.resolve(null),
   ]);
   const bars = (kl && kl.bars) || [];
@@ -2273,7 +2347,7 @@ async function handleCatalystMoves(url, env) {
   // month's biggest drop unexplained). notable = what the indicator must draw whatever the verdict.
   sum.explainedPct = moves.length ? Math.round(100 * (moves.length - sum.unknown - sum.tech) / moves.length) : null;
   sum.notable = moves.filter(m => m.big).length; sum.drawn = moves.filter(m => m.sure || m.big).length;
-  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, cls, leader: lead ? lead.sym : null, oiMeasured: !!(oiUse && oiUse.length), fundingMeasured: !!(fundS && fundS.length), shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
+  const body = { symbol: sym, tf: +tf, days, since, now, bars: bars.length, coversSince: !!(kl && kl.coversSince), scale: det.scale, floorPct: det.floorPct, mult: det.mult, collector: cj ? 'ok' : 'down', catalysts: cats.length, catSlices: cj ? { n: cj.slices, missing: cj.missing, full: cj.full } : null, liqMeasured: !!liq, whalesMeasured: !!whales, btcMeasured: !!btcMoves, cls, leader: lead ? lead.sym : null, oiMeasured: !!(oiUse && oiUse.length), fundingMeasured: !!(fundS && fundS.length), shift: shift || 0, moves, summary: sum, rules: { windowBeforeMin: CX_BEFORE_MS / 60000, windowAfterMin: CX_AFTER_MS / 60000, majorBeforeMin: 360, minScore: CX_MIN_SCORE, cascadeX: 6, liqFloor, episodeGapH: 6 } };
   const res = J(body, cj ? 300 : 60);
   if (!nc) { try { await caches.default.put(ck, res.clone()); } catch (e) {} }
   return res;
