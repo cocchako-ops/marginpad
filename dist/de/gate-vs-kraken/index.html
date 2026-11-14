@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/gate-vs-kraken/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=a692cb32"></script>
+<script src="/assets/ui-de.js?v=b9d2cb19"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -166,7 +166,7 @@ function __esT_gatevskrakenindex(k, en) { try { var d = (window.__mpUI && window
     <p>Gate wirbt mit <strong>100x</strong>, Kraken mit <strong>50x</strong>. Lies das als Obergrenze, nicht als Empfehlung: Bei 100x reicht eine Bewegung von etwa 1.00% gegen die Position, um sie zu beenden, beim niedrigeren Maximum sind es 2.00%. Wer überlebt, handelt selten in der Nähe einer dieser Zahlen - eine höhere Obergrenze ist nur dann ein Vorteil, wenn du bereits weißt, wozu du sie brauchst.</p>
 
     <h2>Auf welcher Börse Trader gerade wirklich ausgeräumt werden</h2>
-    <p>Gebührenordnungen veröffentlichen die Exchanges selbst; Zwangsschließungen nicht. Wir betreiben einen eigenen Collector an den öffentlichen Liquidations-Websockets von elf Börsen, daher ist der Block unten eine Messung dessen, was Gate in den letzten 24 Stunden liquidiert hat - keine Schätzung und keine Anbieterzahl. Kraken veröffentlicht keinen öffentlichen Liquidations-Websocket, also gibt es auf dieser Seite nichts zu messen, und wir zeigen lieber nichts, als zu raten.</p>
+    <p>Gebührenordnungen veröffentlichen die Exchanges selbst; Zwangsschließungen nicht. Wir betreiben einen eigenen Collector an den öffentlichen Liquidations-Websockets von zwölf Börsen, daher ist der Block unten eine Messung dessen, was Gate in den letzten 24 Stunden liquidiert hat - keine Schätzung und keine Anbieterzahl. Kraken veröffentlicht keinen öffentlichen Liquidations-Websocket, also gibt es auf dieser Seite nichts zu messen, und wir zeigen lieber nichts, als zu raten.</p>
     <div id="vstat" data-a="gate" data-b="kraken" data-an="Gate" data-bn="Kraken">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Lese die letzten 24 Stunden von unserem Collector&hellip;</p>
     </div>
@@ -197,7 +197,7 @@ function __esT_gatevskrakenindex(k, en) { try { var d = (window.__mpUI && window
       if(!v)return '<div class="vs-col"><b>'+n+__esT_gatevskrakenindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+__esT_gatevskrakenindex("ofAllEightVenues",'% of all eleven venues</span>')
+        +'<span class="vs-sub">'+v.share+__esT_gatevskrakenindex("ofAllEightVenues",'% of all twelve venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -208,7 +208,7 @@ function __esT_gatevskrakenindex(k, en) { try { var d = (window.__mpUI && window
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_gatevskrakenindex("xMoreThan",'x more than ')+smallN):(__esT_gatevskrakenindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_gatevskrakenindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML=__esT_gatevskrakenindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
@@ -217,6 +217,6 @@ function __esT_gatevskrakenindex(k, en) { try { var d = (window.__mpUI && window
     <span>© 2026 MarginPad</span> <span><a href="/de/">Rechner</a> · <a href="/de/blog/">Blog</a> · <a href="/de/glossary/">Glossar</a> &middot; <a href="/de/terms/">Nutzungsbedingungen</a> &middot; <a href="/de/privacy/">Datenschutz</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

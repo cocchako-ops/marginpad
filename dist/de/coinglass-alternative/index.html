@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/coinglass-alternative/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=a692cb32"></script>
+<script src="/assets/ui-de.js?v=b9d2cb19"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -47,7 +47,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist MarginPad wirklich eine kostenlose Alternative zu Coinglass?","acceptedAnswer":{"@type":"Answer","text":"Für das zentrale Derivate-Dashboard - Liquidationskarten, einen Live-Liquidations-Feed, Funding-Raten, Open Interest, Long/Short-Verhältnis und einen Hyperliquid-Wal-Tracker - ja, MarginPad ist kostenlos und ohne Account; die Live-Heatmap ist eine kostenlose 5-Minuten-Vorschau und mit Premium ($11.99/Monat) unbegrenzt. Coinglass geht bei historischer Recherche und Granularität über mehrere Börsen tiefer, wofür die Bezahlpläne da sind."}},{"@type":"Question","name":"Woher stammen die Liquidationsdaten von MarginPad?","acceptedAnswer":{"@type":"Answer","text":"MarginPad betreibt einen eigenen Collector, der die öffentlichen Liquidations-Websockets von 8 Börsen abonniert (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter) und die 24h-Summen pro Coin aus dem eigenen Archiv dieser Events aggregiert. Echte Events und Schätzungen sind immer getrennt gekennzeichnet."}},{"@type":"Question","name":"Hat MarginPad eine kostenlose Liquidations-API?","acceptedAnswer":{"@type":"Answer","text":"Ja - /api/v1/liquidations/recent, /api/v1/liquidations/live und /api/v1/clusters sind Endpunkte ohne Key, mit CORS, als JSON mit 60 Anfragen/Minute. Dokumentation unter marginpad.io/free-crypto-api/."}},{"@type":"Question","name":"Was macht Coinglass besser?","acceptedAnswer":{"@type":"Answer","text":"Tiefere Mehrjahres-Historie, granularere Aufschlüsselungen pro Börse, Optionsdaten und institutionelle Research-Tools. Wenn du die brauchst, lohnen sich die Bezahlpläne von Coinglass - MarginPad deckt die tägliche Live-Ansicht kostenlos ab."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist MarginPad wirklich eine kostenlose Alternative zu Coinglass?","acceptedAnswer":{"@type":"Answer","text":"Für das zentrale Derivate-Dashboard - Liquidationskarten, einen Live-Liquidations-Feed, Funding-Raten, Open Interest, Long/Short-Verhältnis und einen Hyperliquid-Wal-Tracker - ja, MarginPad ist kostenlos und ohne Account; die Live-Heatmap ist eine kostenlose 5-Minuten-Vorschau und mit Premium ($11.99/Monat) unbegrenzt. Coinglass geht bei historischer Recherche und Granularität über mehrere Börsen tiefer, wofür die Bezahlpläne da sind."}},{"@type":"Question","name":"Woher stammen die Liquidationsdaten von MarginPad?","acceptedAnswer":{"@type":"Answer","text":"MarginPad betreibt einen eigenen Collector, der die öffentlichen Liquidations-Websockets von 8 Börsen abonniert (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter, Kraken) und die 24h-Summen pro Coin aus dem eigenen Archiv dieser Events aggregiert. Echte Events und Schätzungen sind immer getrennt gekennzeichnet."}},{"@type":"Question","name":"Hat MarginPad eine kostenlose Liquidations-API?","acceptedAnswer":{"@type":"Answer","text":"Ja - /api/v1/liquidations/recent, /api/v1/liquidations/live und /api/v1/clusters sind Endpunkte ohne Key, mit CORS, als JSON mit 60 Anfragen/Minute. Dokumentation unter marginpad.io/free-crypto-api/."}},{"@type":"Question","name":"Was macht Coinglass besser?","acceptedAnswer":{"@type":"Answer","text":"Tiefere Mehrjahres-Historie, granularere Aufschlüsselungen pro Börse, Optionsdaten und institutionelle Research-Tools. Wenn du die brauchst, lohnen sich die Bezahlpläne von Coinglass - MarginPad deckt die tägliche Live-Ansicht kostenlos ab."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Start","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Kostenlose Coinglass-Alternative","item":"https://marginpad.io/de/coinglass-alternative/"}]}</script>
 <style>
 .alt-table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}
@@ -114,7 +114,7 @@
     <h2>Im direkten Vergleich</h2>
     <table class="alt-table"><thead><tr><th>Merkmal</th><th>MarginPad (kostenlos)</th><th>Coinglass</th></tr></thead><tbody>
       <tr><td>Liquidationskarte / Heatmap</td><td>Kostenlose 5-Minuten-Vorschau, unbegrenzt mit Premium ($11.99/Monat) - echte Events aus Börsen-Websockets + geschätzte Cluster, alle Coins</td><td>Kostenlose Stufe begrenzt; erweiterte Heatmaps in Bezahlplänen</td></tr>
-      <tr><td>Liquidations-Feed in Echtzeit</td><td>Kostenlos - 8 Börsen (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter)</td><td>Verfügbar; Tiefe je nach Plan unterschiedlich</td></tr>
+      <tr><td>Liquidations-Feed in Echtzeit</td><td>Kostenlos - 8 Börsen (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter, Kraken)</td><td>Verfügbar; Tiefe je nach Plan unterschiedlich</td></tr>
       <tr><td>Funding-Raten-Scanner</td><td>Kostenlos - 160 USDT-Perp-Märkte</td><td>Kostenlos mit Limits; volle Historie kostenpflichtig</td></tr>
       <tr><td>Open Interest nach Coin</td><td>Kostenlos - Live-Summen + 24h-Veränderung</td><td>Kostenlos mit Limits; granulare Historie kostenpflichtig</td></tr>
       <tr><td>Long/Short-Verhältnis</td><td>Kostenlos - 20 Majors</td><td>Kostenlos mit Limits</td></tr>
@@ -128,7 +128,7 @@
     <h3>Ist MarginPad wirklich eine kostenlose Alternative zu Coinglass?</h3>
     <p>Für das zentrale Derivate-Dashboard - Liquidationskarten, einen Live-Liquidations-Feed, Funding-Raten, Open Interest, Long/Short-Verhältnis und einen Hyperliquid-Wal-Tracker - ja, MarginPad ist kostenlos und ohne Account; die Live-Heatmap ist eine kostenlose 5-Minuten-Vorschau und mit Premium ($11.99/Monat) unbegrenzt. Coinglass geht bei historischer Recherche und Granularität über mehrere Börsen tiefer, wofür die Bezahlpläne da sind.</p>
     <h3>Woher stammen die Liquidationsdaten von MarginPad?</h3>
-    <p>MarginPad betreibt einen eigenen Collector, der die öffentlichen Liquidations-Websockets von 8 Börsen abonniert (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter) und die 24h-Summen pro Coin aus dem eigenen Archiv dieser Events aggregiert. Echte Events und Schätzungen sind immer getrennt gekennzeichnet.</p>
+    <p>MarginPad betreibt einen eigenen Collector, der die öffentlichen Liquidations-Websockets von 8 Börsen abonniert (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter, Kraken) und die 24h-Summen pro Coin aus dem eigenen Archiv dieser Events aggregiert. Echte Events und Schätzungen sind immer getrennt gekennzeichnet.</p>
     <h3>Hat MarginPad eine kostenlose Liquidations-API?</h3>
     <p>Ja - /api/v1/liquidations/recent, /api/v1/liquidations/live und /api/v1/clusters sind Endpunkte ohne Key, mit CORS, als JSON mit 60 Anfragen/Minute. Dokumentation unter marginpad.io/free-crypto-api/.</p>
     <h3>Was macht Coinglass besser?</h3>
@@ -160,6 +160,6 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     <span>© 2026 MarginPad</span> <span><a href="/de/paper-trade">Paper Trade</a> · <a href="/de/liquidations/">Liquidationen</a> · <a href="/de/blog/">Blog</a> &middot; <a href="/de/terms/">Nutzungsbedingungen</a> &middot; <a href="/de/privacy/">Datenschutz</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

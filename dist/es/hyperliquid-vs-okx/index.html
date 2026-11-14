@@ -2,7 +2,7 @@
 <html lang="es" data-es-twin="/hyperliquid-vs-okx/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-es.js?v=bf521830"></script>
+<script src="/assets/ui-es.js?v=8dd67369"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -166,7 +166,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
     <p>OKX anuncia <strong>125x</strong> frente a los <strong>40x</strong> de Hyperliquid. Lee eso como un techo, no como una recomendación: a 125x, un movimiento de apenas 0.80% en contra de la posición basta para acabarla, frente al 2.50% con el tope más bajo. Los traders que sobreviven casi nunca operan cerca de ninguna de las dos cifras, así que un tope más alto solo es una ventaja si ya sabes por qué lo necesitas.</p>
 
     <h2>Qué venue está reventando traders de verdad en este momento</h2>
-    <p>Las tablas de comisiones las publican los exchanges; el flujo de cierres forzados no. Nosotros operamos nuestro propio recolector sobre los websockets públicos de liquidación de once venues, así que el bloque de abajo es una medición de lo que liquidaron Hyperliquid y OKX en las últimas 24 horas, no una estimación ni una cifra de proveedor. Se actualiza en cada visita - trata un solo día como clima, no como el patrón general.</p>
+    <p>Las tablas de comisiones las publican los exchanges; el flujo de cierres forzados no. Nosotros operamos nuestro propio recolector sobre los websockets públicos de liquidación de doce venues, así que el bloque de abajo es una medición de lo que liquidaron Hyperliquid y OKX en las últimas 24 horas, no una estimación ni una cifra de proveedor. Se actualiza en cada visita - trata un solo día como clima, no como el patrón general.</p>
     <div id="vstat" data-a="hyperliquid" data-b="okx" data-an="Hyperliquid" data-bn="OKX">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Leyendo las últimas 24 horas de nuestro recolector&hellip;</p>
     </div>
@@ -197,7 +197,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
       if(!v)return '<div class="vs-col"><b>'+n+__esT_hyperliquidvsokxindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+__esT_hyperliquidvsokxindex("ofAllEightVenues",'% of all eleven venues</span>')
+        +'<span class="vs-sub">'+v.share+__esT_hyperliquidvsokxindex("ofAllEightVenues",'% of all twelve venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -208,7 +208,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_hyperliquidvsokxindex("xMoreThan",'x more than ')+smallN):(__esT_hyperliquidvsokxindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_hyperliquidvsokxindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML=__esT_hyperliquidvsokxindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
@@ -217,6 +217,6 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/glossary/">Glosario</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

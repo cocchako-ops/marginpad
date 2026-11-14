@@ -2,7 +2,7 @@
 <html lang="es" data-es-twin="/trading-api/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-es.js?v=bf521830"></script>
+<script src="/assets/ui-es.js?v=8dd67369"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -1119,7 +1119,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
 <section id="liq-api">
   <h2>API gratis de datos de liquidaciones <span class="tag data">DATOS EN VIVO</span></h2>
-  <p>Liquidaciones en tiempo real agregadas de <b>once exchanges</b> por nuestro propio colector - los datos detrás de nuestro <a href="/es/rekt/">feed Rekt</a> y del <a href="/es/heatmap">Mapa de Calor de Liquidaciones</a>, expuestos como JSON gratis. En otros lugares, datos comparables suelen estar detrás de un muro de pago de <b>$300+/mes</b>; aquí <b>no hace falta ninguna clave API</b>. Con caché en el edge y límite de peticiones, así que soporta sin problema a los bots que hacen polling.</p>
+  <p>Liquidaciones en tiempo real agregadas de <b>doce exchanges</b> por nuestro propio colector - los datos detrás de nuestro <a href="/es/rekt/">feed Rekt</a> y del <a href="/es/heatmap">Mapa de Calor de Liquidaciones</a>, expuestos como JSON gratis. En otros lugares, datos comparables suelen estar detrás de un muro de pago de <b>$300+/mes</b>; aquí <b>no hace falta ninguna clave API</b>. Con caché en el edge y límite de peticiones, así que soporta sin problema a los bots que hacen polling.</p>
   <div class="epg">
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/feed</span><span class="d">Las liquidaciones más recientes en TODOS los símbolos rastreados - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Los eventos llegan aquí segundos después de que ocurren (caché de borde de 3s). Haz polling cada 3-5s.</span></div>
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class="d">Eventos de liquidación crudos y recientes para un símbolo (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> es <code>long_liquidated</code> o <code>short_liquidated</code>, <code>notional</code> es el tamaño en USD.</span></div>
@@ -1165,7 +1165,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
 <section id="faq">
   <h2>FAQ</h2>
-  <details><summary>¿Hay una API gratis de datos de liquidaciones / mapa de calor?</summary><p>Sí - MarginPad expone liquidaciones en tiempo real agregadas de 11 exchanges como JSON gratis, sin necesidad de clave: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> y <code>/api/v1/clusters</code>. Los feeds comparables suelen costar $300+/mes. Consulta <a href="#liq-api">la sección de datos de liquidaciones</a>.</p></details>
+  <details><summary>¿Hay una API gratis de datos de liquidaciones / mapa de calor?</summary><p>Sí - MarginPad expone liquidaciones en tiempo real agregadas de 12 exchanges como JSON gratis, sin necesidad de clave: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> y <code>/api/v1/clusters</code>. Los feeds comparables suelen costar $300+/mes. Consulta <a href="#liq-api">la sección de datos de liquidaciones</a>.</p></details>
   <div class="faq"><b>¿La API para bots de trading es realmente gratis?</b><p>Sí. Es un simulador de paper trading: las posiciones usan precios reales de mercado en vivo, pero sin dinero real. Inicia sesión con un correo, genera una clave API y empieza a probar de inmediato, sin límite de tiempo y sin tarjeta. API Premium añade nuestro archivo de mercado, el ladder en bruto del libro de órdenes y webhooks para construir sobre él.</p></div>
   <div class="faq"><b>¿Qué lenguajes de programación puedo usar?</b><p>Cualquier lenguaje que pueda hacer una petición HTTPS: Python, JavaScript/Node.js, Go, Rust, PHP o curl a secas. REST estándar, respuestas JSON, un único header <code>X-API-Key</code>.</p></div>
   <div class="faq"><b>¿Con qué monedas puede operar mi bot?</b><p>Cualquier par USDT con precio en vivo en los principales exchanges: BTC, ETH, SOL y cientos de altcoins, además de acciones de EE. UU., pares forex principales, metales e índices como perpetuos. Comprueba un símbolo con <code>GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
@@ -1524,7 +1524,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 })();
 </script>
 
-<script defer src="/assets/mp-auth.js?v=cdf4c9e7"></script>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-auth.js?v=7114507d"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@ function monthPage(ym, D) {
   const dk = Object.keys(D.days).sort(), top5 = dk.slice().sort((a, b) => D.days[b].usd - D.days[a].usd).slice(0, 5), calm = dk.slice().sort((a, b) => D.days[a].usd - D.days[b].usd)[0];
   const avg = D.tot / dk.length, longShare = pct(D.L, D.tot);
   const title = 'Crypto Liquidations ' + mname + ': ' + usd(D.tot) + ' Report with Data | MarginPad';
-  const desc = 'Crypto futures liquidations in ' + mname + ': ' + usd(D.tot) + ' across eleven exchanges, ' + longShare + ' longs, the biggest days, coins and single liquidations. Free CSV downloads.';
+  const desc = 'Crypto futures liquidations in ' + mname + ': ' + usd(D.tot) + ' across twelve exchanges, ' + longShare + ' longs, the biggest days, coins and single liquidations. Free CSV downloads.';
   const dir = path.join(DIST, 'liquidations', 'report', ym);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'daily.csv'), csv([['date_utc', 'total_usd', 'longs_liquidated_usd', 'shorts_liquidated_usd', 'events']].concat(dk.map(k => [k, D.days[k].usd.toFixed(2), D.days[k].l.toFixed(2), D.days[k].s.toFixed(2), D.days[k].n]))));
@@ -92,7 +92,7 @@ ${GTAG}
   <article>
     <p style="font-size:13px"><a href="/liquidations/">Liquidations</a> / <a href="/liquidations/report/">Monthly reports</a></p>
     <h1>Crypto liquidations in ${mname}</h1>
-    <p class="lead">Leveraged crypto futures traders were forced out of <b>${usd(D.tot)}</b> of positions in ${mname}, counted event by event from eleven exchanges. Long positions took ${longShare} of it. Every figure below is a sum over our own archive, and the data is free to download.</p>
+    <p class="lead">Leveraged crypto futures traders were forced out of <b>${usd(D.tot)}</b> of positions in ${mname}, counted event by event from twelve exchanges. Long positions took ${longShare} of it. Every figure below is a sum over our own archive, and the data is free to download.</p>
     <div class="rk">
       <div><span>Total liquidated</span><b>${usd(D.tot)}</b></div>
       <div><span>Longs</span><b>${usd(D.L)}</b></div>
@@ -125,7 +125,7 @@ ${GTAG}
     <p class="rcite">${esc(cite)}</p>
 
     <h2>How these numbers are measured</h2>
-    <p>MarginPad runs its own collector subscribed to the public liquidation feeds of Binance (USD-M and COIN-M), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster and Lighter. Every event is stored with its time, exchange, market, side, price and size, and each day is archived and checked before it is written. Rows above a $50M sanity ceiling, which have only ever been duplicated exchange reports, are excluded.</p>
+    <p>MarginPad runs its own collector subscribed to the public liquidation feeds of Binance (USD-M and COIN-M), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster, Lighter and Kraken. Every event is stored with its time, exchange, market, side, price and size, and each day is archived and checked before it is written. Rows above a $50M sanity ceiling, which have only ever been duplicated exchange reports, are excluded.</p>
     <p>Treat the totals as a floor rather than a complete count. Binance publishes at most one liquidation per market per second, so in the busiest minutes some events are never broadcast, and exchanges we do not collect (for example Bitget) are not included. For the same reason, totals from other data providers can differ.</p>
     <p>Live figures for today are on the <a href="/liquidations/">liquidations tracker</a>, and where leverage is sitting right now is on the <a href="/heatmap">liquidation heatmap</a>.</p>
   </article>
@@ -149,7 +149,7 @@ function hub(list) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Monthly Crypto Liquidation Reports with Free Data | MarginPad</title>
-<meta name="description" content="Monthly reports of crypto futures liquidations across eleven exchanges: totals, longs vs shorts, biggest days, coins and single liquidations, with free CSV downloads.">
+<meta name="description" content="Monthly reports of crypto futures liquidations across twelve exchanges: totals, longs vs shorts, biggest days, coins and single liquidations, with free CSV downloads.">
 <link rel="canonical" href="${url}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:title" content="Monthly Crypto Liquidation Reports">
@@ -167,7 +167,7 @@ ${GTAG}
   </header>
   <article>
     <h1>Monthly crypto liquidation reports</h1>
-    <p class="lead">One report per month, summed from every liquidation our collector recorded on eleven exchanges. Each report has the daily totals, the exchanges, the coins and the biggest single liquidations, with the data as free CSV files.</p>
+    <p class="lead">One report per month, summed from every liquidation our collector recorded on twelve exchanges. Each report has the daily totals, the exchanges, the coins and the biggest single liquidations, with the data as free CSV files.</p>
     <ul>${rows}</ul>
     <p>For today's figures, see the <a href="/liquidations/">live liquidations tracker</a>.</p>
   </article>

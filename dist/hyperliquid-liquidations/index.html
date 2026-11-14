@@ -188,7 +188,7 @@
     <h2>What we can and cannot show you</h2>
     <p>Two different things get called "Hyperliquid liquidations", and it is worth being precise about which one you are looking at.</p>
     <p><strong>Open positions and their liquidation levels are public and exact.</strong> They are on-chain: the board on this page reads real positions, real leverage and the protocol's own liquidation price. Nothing is estimated.</p>
-    <p><strong>Individual executed liquidations are harder, and we will not pretend otherwise.</strong> Hyperliquid publishes no dedicated liquidation stream - a forced close resolves to an ordinary fill, with the liquidation detail visible only through the counterparty's fill history. Aggregators, MarginPad included, reconstruct them from that. It catches large events and cascades, which is what matters for market structure, but it is a sample rather than a complete tally. Our <a href="/rekt/">live liquidation feed</a> streams Hyperliquid alongside eight other venues on that basis. If you see a Hyperliquid 24-hour total quoted anywhere without that caveat, treat the number with suspicion.</p>
+    <p><strong>Individual executed liquidations are harder, and we will not pretend otherwise.</strong> Hyperliquid publishes no dedicated liquidation stream - a forced close resolves to an ordinary fill, with the liquidation detail visible only through the counterparty's fill history. Aggregators, MarginPad included, reconstruct them from that. It catches large events and cascades, which is what matters for market structure, but it is a sample rather than a complete tally. Our <a href="/rekt/">live liquidation feed</a> streams Hyperliquid alongside eleven other venues on that basis. If you see a Hyperliquid 24-hour total quoted anywhere without that caveat, treat the number with suspicion.</p>
 
     <h2>Frequently asked questions</h2>
     <h3>What price does Hyperliquid liquidate at?</h3>
@@ -279,6 +279,6 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   document.addEventListener('visibilitychange', function () { if (!document.hidden) load(); });
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

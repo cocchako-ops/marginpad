@@ -2,7 +2,7 @@
 <html lang="de" data-es-twin="/binance-vs-okx/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-de.js?v=a692cb32"></script>
+<script src="/assets/ui-de.js?v=b9d2cb19"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -166,7 +166,7 @@ function __esT_binancevsokxindex(k, en) { try { var d = (window.__mpUI && window
     <p>Beide enden bei <strong>125x</strong>, keine von beiden kann dich also vor der schlimmsten Positionsgröße der anderen retten. Bei diesem Limit löscht eine Bewegung von etwa 0.80% gegen dich die Margin aus - deshalb ist das Limit eine Marketing-Zahl und die Größe, die du tatsächlich wählst, die eigentliche Risiko-Entscheidung.</p>
 
     <h2>Auf welcher Börse Trader gerade wirklich ausgeräumt werden</h2>
-    <p>Gebührenmodelle werden von den Börsen veröffentlicht, Zwangsschließungen nicht. Wir betreiben einen eigenen Collector auf den öffentlichen Liquidations-Websockets von elf Börsen, daher ist der Block unten eine Messung dessen, was Binance und OKX in den letzten 24 Stunden liquidiert haben - keine Schätzung und keine Zahl eines Anbieters. Er lädt bei jedem Besuch neu - sieh einen einzelnen Tag als Wetter, nicht als Klima.</p>
+    <p>Gebührenmodelle werden von den Börsen veröffentlicht, Zwangsschließungen nicht. Wir betreiben einen eigenen Collector auf den öffentlichen Liquidations-Websockets von zwölf Börsen, daher ist der Block unten eine Messung dessen, was Binance und OKX in den letzten 24 Stunden liquidiert haben - keine Schätzung und keine Zahl eines Anbieters. Er lädt bei jedem Besuch neu - sieh einen einzelnen Tag als Wetter, nicht als Klima.</p>
     <div id="vstat" data-a="binance" data-b="okx" data-an="Binance" data-bn="OKX">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Lese die letzten 24 Stunden von unserem Collector&hellip;</p>
     </div>
@@ -197,7 +197,7 @@ function __esT_binancevsokxindex(k, en) { try { var d = (window.__mpUI && window
       if(!v)return '<div class="vs-col"><b>'+n+__esT_binancevsokxindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+__esT_binancevsokxindex("ofAllEightVenues",'% of all eleven venues</span>')
+        +'<span class="vs-sub">'+v.share+__esT_binancevsokxindex("ofAllEightVenues",'% of all twelve venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -208,7 +208,7 @@ function __esT_binancevsokxindex(k, en) { try { var d = (window.__mpUI && window
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_binancevsokxindex("xMoreThan",'x more than ')+smallN):(__esT_binancevsokxindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_binancevsokxindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML=__esT_binancevsokxindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
@@ -217,6 +217,6 @@ function __esT_binancevsokxindex(k, en) { try { var d = (window.__mpUI && window
     <span>© 2026 MarginPad</span> <span><a href="/de/">Rechner</a> · <a href="/de/blog/">Blog</a> · <a href="/de/glossary/">Glossar</a> &middot; <a href="/de/terms/">Nutzungsbedingungen</a> &middot; <a href="/de/privacy/">Datenschutz</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

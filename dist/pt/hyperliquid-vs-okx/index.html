@@ -2,7 +2,7 @@
 <html lang="pt" data-es-twin="/hyperliquid-vs-okx/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-pt.js?v=3ba67ed6"></script>
+<script src="/assets/ui-pt.js?v=0fca2a24"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -166,7 +166,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
     <p>A OKX anuncia <strong>125x</strong> contra os <strong>40x</strong> da Hyperliquid. Leia isso como um teto, não como recomendação: com 125x, um movimento de cerca de 0.80% contra a posição basta para encerrá-la, contra 2.50% no teto menor. Traders que sobrevivem raramente operam perto de qualquer um dos dois números, então um teto maior só é vantagem se você já sabe por que precisa dele.</p>
 
     <h2>Qual corretora está liquidando mais traders agora</h2>
-    <p>As tabelas de taxas são publicadas pelas corretoras; o fluxo de fechamentos forçados não. Rodamos nosso próprio coletor nos websockets públicos de liquidação de onze corretoras, então o bloco abaixo é uma medição do que a Hyperliquid e a OKX liquidaram nas últimas 24 horas, não uma estimativa nem um número de fornecedor. Ele recarrega a cada visita - trate um único dia como o tempo, não como o clima.</p>
+    <p>As tabelas de taxas são publicadas pelas corretoras; o fluxo de fechamentos forçados não. Rodamos nosso próprio coletor nos websockets públicos de liquidação de doze corretoras, então o bloco abaixo é uma medição do que a Hyperliquid e a OKX liquidaram nas últimas 24 horas, não uma estimativa nem um número de fornecedor. Ele recarrega a cada visita - trate um único dia como o tempo, não como o clima.</p>
     <div id="vstat" data-a="hyperliquid" data-b="okx" data-an="Hyperliquid" data-bn="OKX">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Lendo as últimas 24 horas do nosso coletor&hellip;</p>
     </div>
@@ -197,7 +197,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
       if(!v)return '<div class="vs-col"><b>'+n+__esT_hyperliquidvsokxindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+__esT_hyperliquidvsokxindex("ofAllEightVenues",'% of all eleven venues</span>')
+        +'<span class="vs-sub">'+v.share+__esT_hyperliquidvsokxindex("ofAllEightVenues",'% of all twelve venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -208,7 +208,7 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_hyperliquidvsokxindex("xMoreThan",'x more than ')+smallN):(__esT_hyperliquidvsokxindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_hyperliquidvsokxindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML=__esT_hyperliquidvsokxindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
@@ -217,6 +217,6 @@ function __esT_hyperliquidvsokxindex(k, en) { try { var d = (window.__mpUI && wi
     <span>© 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> · <a href="/pt/blog/">Blog</a> · <a href="/pt/glossary/">Glossário</a> &middot; <a href="/pt/terms/">Termos</a> &middot; <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

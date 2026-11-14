@@ -11,6 +11,9 @@
 // amount / price lands exactly on the contract's lot step (ETH 361.874 / 1809.37 = 0.2000, SOL 36.111 / 72.222 = 0.5000), in 5
 // the other way. Notional = amount, qty = amount / price. collector/tools/fix-bitget-quote.js re-priced the stored rows.
 // Keepalive: the literal text 'ping' every 25 s; the server answers 'pong'.
+// COVERAGE CEILING (2026-11-14 evening, read from Bitget's own doc): the channel covers UTA AND Classic accounts but pushes once a
+// second, only the largest long and the largest short per pair - the Binance throttle. That is why we read ~26% of Coinglass's
+// Bitget figure. The public trade channel carries no liquidation flag; USDC (~0.3%) and coin-M (none seen) add nothing material.
 import { BaseCollector } from './base.js';
 
 export class BitgetCollector extends BaseCollector {

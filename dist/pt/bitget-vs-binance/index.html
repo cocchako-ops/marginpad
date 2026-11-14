@@ -2,7 +2,7 @@
 <html lang="pt" data-es-twin="/bitget-vs-binance/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-pt.js?v=3ba67ed6"></script>
+<script src="/assets/ui-pt.js?v=0fca2a24"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -166,7 +166,7 @@ function __esT_bitgetvsbinanceindex(k, en) { try { var d = (window.__mpUI && win
     <p>As duas chegam a <strong>125x</strong>, então nenhuma pode te salvar do pior dimensionamento de posição da outra. Nesse teto, um movimento de cerca de 0.80% contra você zera a margem - por isso o limite é um número de marketing e o tamanho que você escolhe é a decisão de risco.</p>
 
     <h2>Qual corretora está liquidando mais traders agora</h2>
-    <p>As tabelas de taxas são publicadas pelas corretoras; o fluxo de fechamentos forçados não é. Rodamos nosso próprio coletor nos websockets públicos de liquidação de onze corretoras, então o bloco abaixo é uma medição do que a Binance liquidou nas últimas 24 horas, não uma estimativa nem um número de fornecedor. A Bitget não publica um websocket público de liquidações, então não há o que medir desse lado e não mostramos nada em vez de chutar.</p>
+    <p>As tabelas de taxas são publicadas pelas corretoras; o fluxo de fechamentos forçados não é. Rodamos nosso próprio coletor nos websockets públicos de liquidação de doze corretoras, então o bloco abaixo é uma medição do que a Binance liquidou nas últimas 24 horas, não uma estimativa nem um número de fornecedor. A Bitget não publica um websocket público de liquidações, então não há o que medir desse lado e não mostramos nada em vez de chutar.</p>
     <div id="vstat" data-a="bitget" data-b="binance" data-an="Bitget" data-bn="Binance">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Lendo as últimas 24 horas do nosso coletor&hellip;</p>
     </div>
@@ -197,7 +197,7 @@ function __esT_bitgetvsbinanceindex(k, en) { try { var d = (window.__mpUI && win
       if(!v)return '<div class="vs-col"><b>'+n+__esT_bitgetvsbinanceindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+__esT_bitgetvsbinanceindex("ofAllEightVenues",'% of all eleven venues</span>')
+        +'<span class="vs-sub">'+v.share+__esT_bitgetvsbinanceindex("ofAllEightVenues",'% of all twelve venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -208,7 +208,7 @@ function __esT_bitgetvsbinanceindex(k, en) { try { var d = (window.__mpUI && win
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_bitgetvsbinanceindex("xMoreThan",'x more than ')+smallN):(__esT_bitgetvsbinanceindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_bitgetvsbinanceindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML=__esT_bitgetvsbinanceindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
@@ -217,6 +217,6 @@ function __esT_bitgetvsbinanceindex(k, en) { try { var d = (window.__mpUI && win
     <span>© 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> · <a href="/pt/blog/">Blog</a> · <a href="/pt/glossary/">Glossário</a> &middot; <a href="/pt/terms/">Termos</a> &middot; <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

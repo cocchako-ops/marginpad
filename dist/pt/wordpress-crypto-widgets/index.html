@@ -2,7 +2,7 @@
 <html lang="pt" data-es-twin="/wordpress-crypto-widgets/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-pt.js?v=3ba67ed6"></script>
+<script src="/assets/ui-pt.js?v=0fca2a24"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -49,7 +49,7 @@
 <link rel="stylesheet" href="/assets/blog.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Widgets de Cripto do MarginPad","applicationCategory":"BrowserApplication","operatingSystem":"WordPress 5.0+","softwareVersion":"1.0.0","url":"https://marginpad.io/pt/wordpress-crypto-widgets/","downloadUrl":"https://marginpad.io/downloads/marginpad-widgets.zip","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Plugin grátis para WordPress com quatro widgets de cripto ao vivo: calculadora de liquidação, índice Fear and Greed, feed de liquidações ao vivo e calendário econômico cripto.","author":{"@type":"Organization","name":"MarginPad"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Widgets","item":"https://marginpad.io/widgets/"},{"@type":"ListItem","position":3,"name":"Plugin para WordPress","item":"https://marginpad.io/pt/wordpress-crypto-widgets/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"O plugin do MarginPad para WordPress é grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim, totalmente. Não existe plano pago, API key nem conta. Os widgets são os mesmos que rodam no marginpad.io."}},{"@type":"Question","name":"O plugin deixa meu site WordPress lento?","acceptedAnswer":{"@type":"Answer","text":"Não. Cada widget é um iframe com carregamento tardio, então nada é buscado até o visitante rolar até ele, e nenhum script ou folha de estilo é adicionado ao front end. O plugin não grava nada no seu banco de dados."}},{"@type":"Question","name":"Quais widgets de cripto estão incluídos?","acceptedAnswer":{"@type":"Answer","text":"Quatro: uma calculadora de liquidação ao vivo para qualquer moeda, o índice Crypto Fear and Greed, um feed de liquidações em tempo real agregado de onze corretoras e um calendário econômico cripto com datas de FOMC, CPI e NFP."}},{"@type":"Question","name":"Posso usar os widgets sem WordPress?","acceptedAnswer":{"@type":"Answer","text":"Sim. Todo widget também está disponível como embed em iframe simples, que funciona em qualquer site, incluindo Ghost, Webflow, Squarespace e HTML escrito à mão. Os códigos de embed estão na página de widgets."}},{"@type":"Question","name":"O plugin coleta dados dos visitantes?","acceptedAnswer":{"@type":"Answer","text":"Não. O plugin não define cookies, não adiciona rastreamento e não guarda nada no seu banco de dados. Ele apenas renderiza iframes servidos pelo marginpad.io."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"O plugin do MarginPad para WordPress é grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim, totalmente. Não existe plano pago, API key nem conta. Os widgets são os mesmos que rodam no marginpad.io."}},{"@type":"Question","name":"O plugin deixa meu site WordPress lento?","acceptedAnswer":{"@type":"Answer","text":"Não. Cada widget é um iframe com carregamento tardio, então nada é buscado até o visitante rolar até ele, e nenhum script ou folha de estilo é adicionado ao front end. O plugin não grava nada no seu banco de dados."}},{"@type":"Question","name":"Quais widgets de cripto estão incluídos?","acceptedAnswer":{"@type":"Answer","text":"Quatro: uma calculadora de liquidação ao vivo para qualquer moeda, o índice Crypto Fear and Greed, um feed de liquidações em tempo real agregado de doze corretoras e um calendário econômico cripto com datas de FOMC, CPI e NFP."}},{"@type":"Question","name":"Posso usar os widgets sem WordPress?","acceptedAnswer":{"@type":"Answer","text":"Sim. Todo widget também está disponível como embed em iframe simples, que funciona em qualquer site, incluindo Ghost, Webflow, Squarespace e HTML escrito à mão. Os códigos de embed estão na página de widgets."}},{"@type":"Question","name":"O plugin coleta dados dos visitantes?","acceptedAnswer":{"@type":"Answer","text":"Não. O plugin não define cookies, não adiciona rastreamento e não guarda nada no seu banco de dados. Ele apenas renderiza iframes servidos pelo marginpad.io."}}]}</script>
 <style>
   .embed-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start;margin:24px 0 8px}
   @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
@@ -115,7 +115,7 @@
         <tr><th>Shortcode</th><th>O que ele exibe</th></tr>
         <tr><td><code>[marginpad_liquidation_calculator coin="BTC"]</code></td><td>Calculadora de liquidação ao vivo para qualquer moeda - long e short, margem isolada, preço atual carregado automaticamente.</td></tr>
         <tr><td><code>[marginpad_fear_greed]</code></td><td>Índice Crypto Fear &amp; Greed com as leituras de ontem e da semana passada.</td></tr>
-        <tr><td><code>[marginpad_liquidations]</code></td><td>Feed de liquidações em tempo real agregado de onze corretoras, atualizado a cada dez segundos.</td></tr>
+        <tr><td><code>[marginpad_liquidations]</code></td><td>Feed de liquidações em tempo real agregado de doze corretoras, atualizado a cada dez segundos.</td></tr>
         <tr><td><code>[marginpad_calendar]</code></td><td>Calendário econômico cripto: datas de FOMC, CPI e NFP, além de eventos nativos do mercado cripto.</td></tr>
       </table>
     </div>
@@ -156,7 +156,7 @@
     <p>Cada widget é um iframe isolado (sandbox) servido pelo marginpad.io, então não consegue mexer no seu tema, entrar em conflito com outro plugin nem quebrar com uma atualização do WordPress. Remover o plugin o remove por completo - não sobra nada para limpar.</p>
 
     <h2>O que os widgets realmente puxam</h2>
-    <p>A calculadora usa preços ao vivo da nossa cascata de preços multi-exchange, o mesmo feed por trás da <a href="/pt/calculators?c=liq">calculadora de liquidação</a> e do <a href="/pt/paper-trade">Paper Trade</a>. O feed de liquidações vem de um coletor dedicado que monitora onze corretoras - o mesmo fluxo por trás do <a href="/pt/rekt/">feed do Rekt</a>. O calendário é o <a href="/pt/calendar/">calendário econômico cripto</a> curado, com as datas de FOMC e CPI mantidas à mão, e não extraídas automaticamente.</p>
+    <p>A calculadora usa preços ao vivo da nossa cascata de preços multi-exchange, o mesmo feed por trás da <a href="/pt/calculators?c=liq">calculadora de liquidação</a> e do <a href="/pt/paper-trade">Paper Trade</a>. O feed de liquidações vem de um coletor dedicado que monitora doze corretoras - o mesmo fluxo por trás do <a href="/pt/rekt/">feed do Rekt</a>. O calendário é o <a href="/pt/calendar/">calendário econômico cripto</a> curado, com as datas de FOMC e CPI mantidas à mão, e não extraídas automaticamente.</p>
 
     <h2>FAQ</h2>
     <h3>O plugin é grátis?</h3>
@@ -180,6 +180,6 @@
     <span>&copy; 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> &middot; <a href="/pt/blog/">Blog</a> &middot; <a href="/pt/glossary/">Glossário</a> &middot; <a href="/pt/terms/">Termos</a> &middot; <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=41bf750e"></script>
+<script defer src="/assets/mp-nav.js?v=5ed46252"></script>
 </body>
 </html>

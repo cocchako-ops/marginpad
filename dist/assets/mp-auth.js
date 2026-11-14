@@ -2709,7 +2709,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
   (function () {
     var FEATS = [
-      ['5 exclusive AI indicators', __esT_mpauth("cascadeRadarLiquidationMag",'Cascade Radar, Liquidation Magnet, Market Brain, Market Memory and Big Liquidations - the last one marks liquidations that really happened, from our own feed across eleven exchanges, and the other four grade their own hit-rate on the chart you are on.')],
+      ['5 exclusive AI indicators', __esT_mpauth("cascadeRadarLiquidationMag",'Cascade Radar, Liquidation Magnet, Market Brain, Market Memory and Big Liquidations - the last one marks liquidations that really happened, from our own feed across twelve exchanges, and the other four grade their own hit-rate on the chart you are on.')],
       ['Live liquidation heatmap', __esT_mpauth("theFullInteractiveMap",'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.')],
       [__esT_mpauth("askAiOnYour",'Ask AI on your charts'), __esT_mpauth("aBuiltInAnalyst",'A built-in analyst that reads the chart in front of you and draws the setup on it - five reads a day on Premium, 50 on Premium AI+.')],
       ['Balance Mode', __esT_mpauth("giveYourselfAPortfolio",'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.')],

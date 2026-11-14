@@ -150,7 +150,7 @@ const VSTAT_JS = `
       if(!v)return '<div class="vs-col"><b>'+n+'</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+'% of all eleven venues</span>'
+        +'<span class="vs-sub">'+v.share+'% of all twelve venues</span>'
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -161,7 +161,7 @@ const VSTAT_JS = `
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+'x more than '+smallN):('roughly the same as '+smallN))+' over the last 24 hours.</p>';
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across thirteen exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML='<p class="vstat-wait">Live venue figures are unavailable right now.</p>';});
 })();
 </script>`;
@@ -242,7 +242,7 @@ function comparePage(ak, bk, lang) {
     ${levPara}
 
 ${COVERED[ak] || COVERED[bk] ? `    <h2>Which venue is actually blowing traders up right now</h2>
-    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of eleven venues, so the block below is a measurement of what ${COVERED[ak] && COVERED[bk] ? `${a.name} and ${b.name}` : `${COVERED[ak] ? a.name : b.name}`} liquidated in the last 24 hours, not an estimate or a vendor figure.${COVERED[ak] && COVERED[bk] ? ' It reloads on every visit - treat a single day as weather, not climate.' : ` ${COVERED[ak] ? b.name : a.name} does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.`}</p>
+    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of twelve venues, so the block below is a measurement of what ${COVERED[ak] && COVERED[bk] ? `${a.name} and ${b.name}` : `${COVERED[ak] ? a.name : b.name}`} liquidated in the last 24 hours, not an estimate or a vendor figure.${COVERED[ak] && COVERED[bk] ? ' It reloads on every visit - treat a single day as weather, not climate.' : ` ${COVERED[ak] ? b.name : a.name} does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.`}</p>
     <div id="vstat" data-a="${ak}" data-b="${bk}" data-an="${a.name}" data-bn="${b.name}">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
     </div>
