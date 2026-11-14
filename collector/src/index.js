@@ -13,6 +13,7 @@ import { createApiServer } from './api/server.js';
 import { BinanceCollector } from './collectors/binance.js';
 import { BybitCollector } from './collectors/bybit.js';
 import { OkxCollector } from './collectors/okx.js';
+import { BitgetCollector } from './collectors/bitget.js'; // public UTA liquidation channel (2026-11-14)
 import { BitmexCollector } from './collectors/bitmex.js';
 // Deribit UNWIRED 2026-08-16 - their new matching engine dropped the `liquidation` flag from public
 // trades, and no liquidations channel/method exists any more (see the header of collectors/deribit.js
@@ -68,6 +69,7 @@ const collectors = [
   new BinanceCollector({ symbols: config.symbols, onEvent }),
   new BybitCollector({ symbols: config.symbols, onEvent }),
   new OkxCollector({ symbols: config.symbols, onEvent }),
+  ...(config.bitgetEnabled === false ? [] : [new BitgetCollector({ symbols: config.symbols, onEvent })]),
   ...(config.bitmexEnabled ? [new BitmexCollector({ symbols: config.symbols, onEvent })] : []),
   new BitfinexCollector({ symbols: config.symbols, onEvent }),
   new BinanceCoinCollector({ symbols: config.symbols, onEvent }),

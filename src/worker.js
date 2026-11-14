@@ -3471,7 +3471,7 @@ async function handleSsrCalendar(request, url, env) {
 const ASK_PAGES = { 'why-is-bitcoin-down-today': 'moved', 'leverage-report': 'levreport', 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded', 'what-leverage-should-a-beginner-use': 'leverage' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
-const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
+const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', bitget: 'Bitget', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
 // The one function that draws the answer on all five question pages. Redesigned 2026-09-16: it used to emit a
 // callout box inside a blog post, which is exactly what these pages read as - and the whole point of a page that
 // exists to answer ONE question is that the answer IS the page, not a highlighted paragraph in the middle of one.
@@ -3978,7 +3978,7 @@ async function handleSsrVenues(request, url, env, ctx) {
   const close = html.indexOf('</div>', open); if (close < 0) return pass();
   let d = null; try { d = await (await handleVenueStats(env, false, ctx)).json(); } catch (e) {}
   const vs = (d && Array.isArray(d.venues)) ? d.venues : [];
-  const NAMES = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
+  const NAMES = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', bitget: 'Bitget', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
   if (!vs.length) {
     const down = '<p class="vx-stamp">Our collector is not reporting right now, so this table is empty rather than showing yesterday’s numbers as if they were current. The <a href="/liquidations/">market totals</a> come from a separate source and are unaffected.</p>';
     html = ssrStampDate(html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + down + html.slice(close), Date.now());
