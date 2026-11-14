@@ -42,7 +42,7 @@ const MARKET_DS = new Function('return ' + liftConst('MARKET_DS') + ';')();
   // ---- the table itself ----
   const names = Object.keys(MARKET_DS);
   ok('MARKET_DS names at least the six collector datasets and mpad', ['liquidations', 'agg5m', 'oi', 'funding_oi', 'whale_fills', 'whale_pos', 'mpad'].every(k => names.includes(k)), names);
-  ok('every dataset has a header, a first day, a floor and a timestamp column', names.every(k => { const s = MARKET_DS[k]; return typeof s.cols === 'string' && s.cols.includes(',') && /^\d{4}-\d{2}-\d{2}$/.test(s.from) && s.minRows >= 1 && Number.isInteger(s.tsCol) && (s.src === 'collector' || s.src === 'opslog'); }), MARKET_DS);
+  ok('every dataset has a header, a first day, a floor and a timestamp column', names.every(k => { const s = MARKET_DS[k]; return typeof s.cols === 'string' && s.cols.includes(',') && /^\d{4}-\d{2}-\d{2}$/.test(s.from) && s.minRows >= 1 && Number.isInteger(s.tsCol) && (s.src === 'collector' || s.src === 'opslog' || s.src === 'opslog-ls'); }), MARKET_DS);
   ok('the liquidations dataset carries the $50M plausibility ceiling on its USD column', MARKET_DS.liquidations.usdCol === 6 && MARKET_DS.liquidations.maxUsd === 50e6);
   ok('the mpad dataset reads minutes (unit 60000)', MARKET_DS.mpad.tsUnit === 60000);
 

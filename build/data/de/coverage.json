@@ -1411,9 +1411,9 @@
  },
  {
   "rel": "free-crypto-api/index.html",
-  "cover": 0.9957264957264957,
-  "hit": 233,
-  "missing": 1
+  "cover": 1,
+  "hit": 234,
+  "missing": 0
  },
  {
   "rel": "funding-fee-calculator/index.html",
@@ -2600,7 +2600,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 541,
+  "hit": 494,
   "missing": 0
  },
  {

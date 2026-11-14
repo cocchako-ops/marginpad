@@ -125,11 +125,11 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   chk('bad key on the data API is 401 invalid_api_key', dr.status === 401, { status: dr.status });
 
   // ── Premium grant: webhooks end to end, report findings, AI ─────────────────────────────────────────────
-  let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 1, src: 'e2e' }); // 2026-09-15: the API has its own plans; a Premium grant buys nothing here
-  chk('API Pro granted to the e2e member', g.status === 200 && g.body.ok && g.body.plan === 'pro', g.body);
+  let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', days: 1, src: 'e2e' }); // 2026-09-15: the API has its own plans; a Premium grant buys nothing here
+  chk('API Premium granted to the e2e member', g.status === 200 && g.body.ok && g.body.plan === 'premium', g.body);
   await fetch(ORIGIN + '/api/bot/key', { method: 'GET', headers: { cookie } }); // re-resolves the tier onto the account's keys
   r = await bot('/usage');
-  chk('key now on the pro plan (600/min, webhooks 3, breakdowns)', r.status === 200 && r.body.data.plan === 'pro' && r.body.data.features.webhooks === 3 && r.body.data.features.report_breakdowns === true, r.body.data && { plan: r.body.data.plan, rpm: r.body.data.limits.requests_per_minute });
+  chk('key now on API Premium (2000/min, webhooks 15, breakdowns)', r.status === 200 && r.body.data.plan === 'premium' && r.body.data.features.webhooks === 15 && r.body.data.features.report_breakdowns === true, r.body.data && { plan: r.body.data.plan, rpm: r.body.data.limits.requests_per_minute });
   const TOKEN = 'e2e' + UID + Date.now().toString(36);
   const SINK = ORIGIN + '/api/whsink/' + TOKEN;
   r = await bot('/webhooks', { act: 'add', url: 'http://example.com/hook' });
@@ -157,9 +157,9 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   r = await bot('/webhooks');
   const listed = ((r.body.data && r.body.data.webhooks) || []).filter(h => h.id === hook.id)[0];
   chk('GET /webhooks counts the deliveries, zero consecutive failures, still active', r.status === 200 && listed && listed.deliveries >= 3 && listed.consecutive_failures === 0 && listed.active === true, listed && { deliveries: listed.deliveries, fails: listed.consecutive_failures, last_error: listed.last_error });
-  r = await bot('/webhooks', { act: 'add', url: SINK + 'b' }); r = await bot('/webhooks', { act: 'add', url: SINK + 'c' });
-  r = await bot('/webhooks', { act: 'add', url: SINK + 'd' });
-  chk('a fourth webhook is refused (too_many_webhooks, max 3)', r.status === 409 && r.body.error && r.body.error.code === 'too_many_webhooks', r.body.error);
+  for (let w = 1; w < 15; w++) r = await bot('/webhooks', { act: 'add', url: SINK + 'x' + w }); // fill the 15 API Premium allows
+  r = await bot('/webhooks', { act: 'add', url: SINK + 'over' });
+  chk('a sixteenth webhook is refused (too_many_webhooks, max 15)', r.status === 409 && r.body.error && r.body.error.code === 'too_many_webhooks', r.body.error);
   r = await bot('/webhooks', { act: 'delete', id: hook.id });
   chk('webhook deleted', r.status === 200 && r.body.ok, r.body.data);
   r = await bot('/report?days=30');
@@ -169,7 +169,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   r = await bot('/ai', { symbol: 'ZZZZNOPE', interval: '60' });
   chk('/v1/ai answers 410 before it ever looks at the symbol', r.status === 410, r.body.error);
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
-  chk('keyed data API on premium: limit 600', dr.headers.get('x-ratelimit-limit') === '600', { limit: dr.headers.get('x-ratelimit-limit') });
+  chk('keyed data API on API Premium: limit 2000', dr.headers.get('x-ratelimit-limit') === '2000', { limit: dr.headers.get('x-ratelimit-limit') });
 
   // ── fee venues (Bot API 2.4) ─────────────────────────────────────────────────────────────────────────────
   r = await bot('/fees');

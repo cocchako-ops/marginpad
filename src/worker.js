@@ -451,6 +451,7 @@ function handleOpenApi() {
       },
       // The endpoint a paying developer needs most and the one the spec never listed (2026-09-16): what plan am I
       // on, what are my ceilings, and when does it end. Leaving it undocumented while selling plans was the gap.
+      '/api/bot/v1/history': { get: { tags: ['Paper trading'], summary: 'The market archive (API Premium)', description: 'No parameters: every dataset with its columns and its first and last archived UTC day, readable on any key. dataset + day: that day as one gzip CSV (header row first), with X-MP-Rows and X-MP-Sha256. The download needs API Premium; on Free it answers 402 plan_required.', parameters: [{ name: 'dataset', in: 'query', required: false, schema: { type: 'string', enum: Object.keys(MARKET_DS) } }, { name: 'day', in: 'query', required: false, schema: { type: 'string', format: 'date' } }], responses: { 200: { description: 'The catalogue (JSON) or the day (application/gzip)' }, 402: { description: 'plan_required - the download is on API Premium' }, 404: { description: 'No file for that day' } } } },
       '/api/bot/v1/usage': { get: { tags: ['Paper trading'], summary: 'Your plan, limits and usage', description: 'Everything this key is allowed to do, read back from the server so a bot never has to hardcode a limit: the plan name and when it ends (plan_until), requests per minute and how many are left this window, keys, open positions, books, resting orders, webhooks, how many days of trade history this plan keeps (trade_history_days) and how far back the report may look (report_max_days), plus the catalogue of every plan and its price. If the account is inside a free month, free_month.days_left says so. Every keyed response also carries X-MP-Plan, and inside the last fourteen days X-MP-Plan-Expires and X-MP-Plan-Days-Left, so an unattended bot can warn its owner without calling this at all. Requires an API key.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: '{ plan, plan_until, limits:{requests_per_minute, max_keys, max_open_positions, max_books, max_resting_orders, trade_history_days, report_max_days, websocket}, features, used, plans, free_month }' }, '401': { description: 'missing_api_key / bad_api_key' } } } },
       '/api/bot/v1/sim': {
         get: { tags: ['Paper trading'], summary: 'The simulation profile', description: 'The whole paper-trading simulation, and what else it could be. Returns your profile, every field with its range, its default and what it changes, eight ready-made presets, and what a fill would actually look like under the current settings. Documented as /api/bot/v2/sim; the v1 spelling answers identically.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: '{ ok, profile, defaults, fields, presets, effective, precedence, applies_to }' } } },
@@ -4942,6 +4943,18 @@ function oiRingAt(pts, ago, tol) { // the point nearest `ago` ms back, within to
   const want = Date.now() - ago; let best = null, bd = Infinity;
   for (const p of pts) { const d = Math.abs((+p.t || 0) - want); if (d < bd) { bd = d; best = p; } }
   return (best && bd <= tol) ? best : null;
+}
+// ONE LONG/SHORT SNAPSHOT AN HOUR (2026-11-14). The */10 cron calls this every pass; a KV mark makes it once per UTC hour.
+// It reads the same edge-cached /api/cg/longshort the page reads, so it costs no extra upstream call in a busy hour.
+async function lsSnapTick(env) {
+  if (!env.OPSLOG) return;
+  const hr = Math.floor(Date.now() / 3600000) * 3600000, mk = 'ls:snap:' + hr;
+  if (await env.STATS.get(mk)) return;
+  const j = await (await handleCgLongShort(new URL('https://marginpad.io/api/cg/longshort'), env)).json();
+  const rows = ((j && j.coins) || []).map(c => ({ s: c.s, lp: +c.longPct, sp: +c.shortPct, n: +c.n || 0 })).filter(r => r.s && isFinite(r.lp) && isFinite(r.sp));
+  if (!rows.length) return; // nothing measured is nothing written - the next pass in this hour tries again
+  const r = await (await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/snap/ls/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ts: hr, rows }) }))).json();
+  if (r && r.ok) await env.STATS.put(mk, '1', { expirationTtl: 7200 });
 }
 async function oiRingTick(env) { // */10 cron: records one point per UTC hour; seeds the history once
   if (!env || !env.STATS) return;
@@ -10718,6 +10731,7 @@ const MARKET_DS = {
   whale_fills:  { src: 'collector', cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', from: '2026-10-29', minRows: 20, tsCol: 0, hourly: false, what: 'Hyperliquid whale trades over $250K, one row per grouped execution (both ends, average price, leverage when known, liquidation flag)' },
   whale_pos:    { src: 'collector', cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', from: '2026-10-29', minRows: 500, tsCol: 0, what: 'hourly snapshot of the published Hyperliquid whale board: positions over $1M with entry, liquidation, leverage, cross flag and account equity' },
   catalysts:    { src: 'collector', cols: 'id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url', from: '2026-10-30', minRows: 50, tsCol: 2, hourly: false, what: 'Catalyst Engine events: every dated announcement, filing and headline the collector classified, with the source clock and our own clock (phase 1, rules only)' },
+  longshort:    { src: 'opslog-ls', cols: 'ts,symbol,long_pct,short_pct,venues', from: '2026-11-15', minRows: 200, tsCol: 0, what: 'hourly account long/short ratio for 20 coins, averaged over Binance, OKX and Bybit, with how many venues answered' },
   mpad:         { src: 'opslog', cols: 'm,px,step,parts,inputs', from: '2026-10-15', minRows: 1000, tsCol: 0, tsUnit: 60000, what: 'the MarginPad (MPAD) index, one recorded point a minute with its per-component breakdown - the only copy of a series that cannot be recomputed' },
 };
 async function mktSha256(buf) { const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join(''); }
@@ -10825,6 +10839,16 @@ async function archiveMarket(env) {
             if (!(j.rows || []).length) { gone.add(day); run.gone.push(ds + ':' + day); continue; } // a day the store never had (before the launch seed)
             let text = spec.cols + '\n';
             for (const r of j.rows) text += [r.m, r.px, r.step, mktCsvCell(r.parts), mktCsvCell(r.inputs)].join(',') + '\n';
+            buf = await mktGzip(text); xrows = j.rows.length;
+          }
+          if (!buf && spec.src === 'opslog-ls') {
+            if (!env.OPSLOG) { run.errs.push(ds + ':' + day + ': no OPSLOG'); continue; }
+            const t0 = Date.parse(day + 'T00:00:00Z');
+            const j = await (await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/snap/ls/day?from=' + t0 + '&to=' + (t0 + 86400000)))).json();
+            if (!j || !j.ok) { run.errs.push(ds + ':' + day + ': opslog-ls'); continue; }
+            if (!(j.rows || []).length) { gone.add(day); run.gone.push(ds + ':' + day); continue; }
+            let text = spec.cols + '\n';
+            for (const r of j.rows) text += [r.ts, r.sym, r.lp, r.sp, r.n].join(',') + '\n';
             buf = await mktGzip(text); xrows = j.rows.length;
           }
           if (!buf) { run.errs.push(ds + ':' + day + ': no source'); continue; }
@@ -15740,9 +15764,9 @@ async function handleNowpayIpn(request, env) {
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
-    } else if (/^api_(pro|max)_[a-z0-9]{4,40}$/i.test(orderId)) {
+    } else if (/^api_[a-z]{2,12}_[a-z0-9]{4,40}$/i.test(orderId) && (API_PLAN_BY_ID(orderId.split('_')[1]) || {}).tier > 0) { // ANY paid API plan - this read (pro|max) for two months, so a Business invoice paid and granted nothing
       // API plan paid in crypto (2026-09-15). Deliberately NOT a Premium grant: this touches api:sub and nothing else.
-      const ma = /^api_(pro|max)_([a-z0-9]{4,40})$/i.exec(orderId);
+      const ma = /^api_([a-z]{2,12})_([a-z0-9]{4,40})$/i.exec(orderId);
       const pl = API_PLAN_BY_ID(ma[1]), auid = ma[2], payId = String(data.payment_id || data.id || '');
       const dup = payId ? await env.STATS.get('np:done:' + payId) : null;
       if (pl && !dup) {
@@ -21747,6 +21771,14 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-11-14', version: '3.2.0', title: 'Two plans: Free, and API Premium with the market archive',
+    changes: [
+      { type: 'changed', breaking: false, text: 'The paid API plans are one plan now: API Premium, $11.99 a month. Lab, Pro, Max and Business (including 3.1.0 Lab, published earlier the same day) are retired; an existing subscription to any of them reads as API Premium until it ends. Free is unchanged and has no time limit.' },
+      { type: 'added', breaking: false, text: 'GET /v1/history - the MarginPad market archive over the API: every liquidation since 2026-07-24, 5-minute aggregates, open interest per venue, hourly OI and funding for every Bybit perp, Hyperliquid whale trades and positions, catalysts, the long/short ratio (new) and the MPAD index, one verified gzip CSV per UTC day. The catalogue is free to read; downloads are API Premium.' },
+      { type: 'changed', breaking: false, text: 'plan_required now names plan_needed \"premium\". /v1/usage features carry market_archive and raw_order_book.' },
+    ],
+  },
+  {
     date: '2026-11-14', version: '3.1.0', title: 'Free has no time limit, and a $5 plan for testing a bot properly',
     changes: [
       { type: 'changed', breaking: false, text: 'The Free plan no longer ends: the 7-day engine trial introduced on 2026-10-13 is retired and no key is refused with trial_expired any more. The engine, replay, the WebSocket stream and all market data stay free with no time limit.' },
@@ -22311,15 +22343,16 @@ async function syncBotTiers(env) {
 // is what assistants cite and it is deliberately not for sale. What a plan buys is the RAW LADDER - every
 // price level, per venue - which is the part a bot actually builds on.
 // THE LIST PRICE. Everything else about a plan is derived from this row.
+// TWO PLANS (2026-11-14, owner: "ceo API, bukvalno svi planovi postanu jedan free i jedan premium. Taj premium nek bude
+// $11.99 a free nek bude skroz free ... ako neko hoce da testira ili pravi nesto advanced, onda mu treba API ... istorijske
+// podatke"). Free is the whole engine for testing a bot and never ends. API Premium is for building something serious on
+// it: the market archive over the API (/v1/history - eight measured datasets nobody else publishes), the raw order-book
+// ladder, many books, webhooks, 90 days of trade history and the higher ceilings. A SEPARATE subscription from site Premium
+// (owner's answer the same day), even though both cost $11.99. Lab/Pro/Max/Business were retired the same day; every
+// stored row of any of them reads as Premium (apiSubTier clamps to API_TIER_MAX).
 const API_PLANS_RAW = [
-  { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0, book: 0 },
-  // LAB, $5 (2026-11-14, owner: "API free svima, i neki plan od $5 koji daje nesto za advanced testing botova"). What a bot
-  // test needs beyond Free: several books to A/B a strategy side by side, webhooks so the bot reacts instead of polling,
-  // 90 days of trade history for the report (every paid tier gets it), and more headroom. Never discounted (nopromo).
-  { id: 'lab', tier: 1, cents: 500, label: 'Lab', rpm: 300, maxKeys: 5, maxOpen: 150, maxBooks: 5, hooks: 3, ai: 0, book: 0, nopromo: true },
-  { id: 'pro', tier: 2, cents: 3900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0, book: 0 },
-  { id: 'max', tier: 3, cents: 9900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1 },
-  { id: 'business', tier: 4, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0, book: 1 },
+  { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0, book: 0, hist: 0 },
+  { id: 'premium', tier: 1, cents: 1199, label: 'API Premium', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1, hist: 1, nopromo: true },
 ];
 // A PROMO IS A PERCENT OFF THE LIST, NEVER THREE RETYPED NUMBERS (owner 2026-10-25: "30% popusta na svaki API
 // plan"). `pct: 0` turns it off and every surface follows in one deploy - the catalogue, both BUY paths, every
@@ -22328,7 +22361,7 @@ const API_PLANS_RAW = [
 // NO END DATE, deliberately: API_PLANS is built ONCE per isolate, so a date compared here would go on being
 // true for as long as that isolate lives. An expiry has to be read lazily at request time, not baked into a
 // module-level const - the same trap as the `_trialMemo` note and the AI_DAILY startup crash.
-const API_PROMO = { pct: 30, label: '30% off' };
+const API_PROMO = { pct: 0, label: '' }; // off since 2026-11-14: the one paid plan is $11.99 flat
 // Rounded DOWN to the whole dollar, so the member always gets AT LEAST the percentage promised and the price is
 // a figure a human reads: $39 -> $27 (30.8% off), $99 -> $69 (30.3%), $199 -> $139 (30.2%).
 const apiPromoCents = (c) => (API_PROMO.pct > 0 && c > 0) ? Math.floor((c * (100 - API_PROMO.pct)) / 10000) * 100 : c;
@@ -22348,7 +22381,7 @@ const API_PLAN_BY_ID = (id) => API_PLANS.filter((p) => p.id === String(id || '')
 function BOT_TIER_LIMITS(tier) {
   const t = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+tier || 0)));
   const p = API_PLANS[t];
-  return { rpm: p.rpm, maxKeys: p.maxKeys, maxOpen: p.maxOpen, maxBooks: p.maxBooks, hooks: p.hooks, ai: p.ai, book: p.book || 0, name: p.id, label: p.label, price_usd: p.cents / 100 };
+  return { rpm: p.rpm, maxKeys: p.maxKeys, maxOpen: p.maxOpen, maxBooks: p.maxBooks, hooks: p.hooks, ai: p.ai, book: p.book || 0, hist: p.hist || 0, name: p.id, label: p.label, price_usd: p.cents / 100 };
 }
 // The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
@@ -22356,12 +22389,12 @@ const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
 // plans were repriced to $39/$99/$199 with no AI on any tier (audit 2026-09-25) - every 402/429 a bot received quoted it.
 // Every sentence that names a plan price reads one of these. The 2026-09-25 audit derived ONE sentence and
 // left two literals, which is how one response body came to quote $29 and $39 for the same plan.
-const API_PRICE = (id) => '$' + Math.round(((API_PLANS.find((x) => x.id === id) || {}).cents || 0) / 100);
+const API_USD = (c) => '$' + ((+c || 0) % 100 ? ((+c || 0) / 100).toFixed(2) : String(Math.round((+c || 0) / 100))); // $11.99 is not $12
+const API_PRICE = (id) => API_USD((API_PLANS.find((x) => x.id === id) || {}).cents);
 const API_HOOKS = (id) => (API_PLANS.find((x) => x.id === id) || {}).hooks;
-const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), lab = p('lab'), pro = p('pro'), max = p('max'), biz = p('business');
-  return 'API Lab is ' + usd(lab) + ' a month (' + lab.rpm + ' requests/minute, ' + lab.maxKeys + ' keys, ' + lab.maxBooks + ' books, ' + lab.hooks + ' webhooks, 90 days of history), API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min).'
-    + (pro.was ? ' Every plan is ' + API_PROMO.label + ' at the moment (list ' + usd({ cents: pro.was }) + ' / ' + usd({ cents: max.was }) + ' / ' + usd({ cents: biz.was }) + ').' : '')
-    + ' Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
+const API_UPGRADE_HINT = (() => { const pr = API_PLANS.find(x => x.id === 'premium') || {};
+  return 'API Premium is ' + API_USD(pr.cents) + ' a month: the market archive over the API (/v1/history), the raw order-book ladder, ' + pr.maxBooks + ' books, ' + pr.hooks + ' webhooks, 90 days of trade history, ' + pr.rpm + ' requests/minute, ' + pr.maxKeys + ' keys and ' + pr.maxOpen + ' open positions. Free stays free with no time limit.'
+    + ' Site Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
 // THE TIER NUMBERS MOVED ON 2026-11-14 when Lab took tier 1 (pro 1->2, max 2->3, business 3->4). A row written before
@@ -22468,7 +22501,7 @@ const BOT_ERR = {
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
   // DERIVED, never typed - see the API_PRICE note. This string is read by every 402 a developer meets.
   trial_expired: 'The ' + API_TRIAL_DAYS + '-day free trial of the paper-trading engine has ended on this account. Market data on /api/v1/* stays free and keyless with no account at all; the engine is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month): ' + API_UPGRADE,
-  plan_required: 'This is on API Lab (' + API_PRICE('lab') + '/month), Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month). Site Premium does not raise API limits: ' + API_UPGRADE + '',
+  plan_required: 'This is on API Premium (' + API_PRICE('premium') + '/month). Free stays free with no time limit. Site Premium does not raise API limits: ' + API_UPGRADE,
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -23047,12 +23080,35 @@ async function handleBot(url, request, env, ctx) {
       plan_until: sub.until || null, plan_days_left: sub.until ? sub.days_left : null, plan_source: sub.src || (paid ? 'paid' : 'free'),
       free_month: sub.trial ? { ends: new Date(sub.until).toISOString(), days_left: sub.days_left, note: 'You are on API Pro free until then because you were building on the API before plans existed. After that the key drops to Free (120 requests/minute) unless you pick a plan: ' + API_UPGRADE } : null,
       limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_books: L.maxBooks, max_resting_orders: PORDER_MAX, trade_history_days: paid ? 90 : 30, report_max_days: paid ? 90 : 30, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
-      features: { webhooks: L.hooks, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: paid, ai_market_read: L.ai ? L.ai + '/day' : false, fee_venues: Object.keys(FEE_VENUES) },
+      features: { webhooks: L.hooks, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: paid, market_archive: !!L.hist, raw_order_book: !!L.book, ai_market_read: L.ai ? L.ai + '/day' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
-      plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, ai_per_day: p.ai })),
-      upgrade: (+auth.tier || 0) < 2 ? API_UPGRADE : null,
+      plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, market_archive: !!p.hist, ai_per_day: p.ai })),
+      upgrade: (+auth.tier || 0) < API_TIER_MAX ? API_UPGRADE : null,
       note: 'API plans are separate from site Premium since 2026-09-15. A Premium subscription does not change any limit on this page.',
     });
+  }
+  /* THE MARKET ARCHIVE OVER THE API (2026-11-14, owner: "za taj plan sto se placa i istorijske podatke ... da dobiju nesto zapravo
+     vredno"). The archive (MARKET_DS, R2 v1/<ds>/<day>.csv.gz) holds every liquidation since 2026-07-24, the 5-minute aggregates,
+     open interest per venue, hourly OI + funding for every Bybit perp, Hyperliquid whale trades and positions, the catalysts, the
+     long/short ratio and the MPAD index - each day verified and carrying its own sha256. No call = the catalogue, open to every key
+     so a Free developer can see what Premium holds; ?dataset=&day= = that day's file, API Premium only. One day per call: a range is
+     a loop on the caller's side, which keeps every response a known size. */
+  if (path === '/v1/history') {
+    const L = BOT_TIER_LIMITS(+auth.tier || 0);
+    const ds = String(url.searchParams.get('dataset') || url.searchParams.get('ds') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const day = String(url.searchParams.get('day') || '');
+    if (!ds) {
+      const out = [];
+      for (const k of Object.keys(MARKET_DS)) { const s = MARKET_DS[k]; let last = null; try { last = await env.STATS.get('mkt:newest:' + k); } catch (e) {} out.push({ dataset: k, columns: s.cols.split(','), first_day: s.from, last_day: last, granularity: s.hourly === false ? 'per event' : 'per row timestamp', what: s.what }); }
+      return jb({ datasets: out, format: 'one gzip CSV per UTC day, header row first; every file carries its row count and sha256 in the response headers', your_plan_can_download: !!L.hist, download: '/api/bot/v1/history?dataset=<name>&day=YYYY-MM-DD', plan_needed: L.hist ? null : 'premium', upgrade: L.hist ? null : API_UPGRADE });
+    }
+    if (!MARKET_DS[ds]) return jb({ error: 'bad_dataset', datasets: Object.keys(MARKET_DS) }, 400);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return jb({ error: 'bad_day', hint: 'day=YYYY-MM-DD (UTC), one day per call' }, 400);
+    if (!L.hist) return jb({ error: 'plan_required', plan_needed: 'premium', hint: 'The market archive is on API Premium (' + API_PRICE('premium') + '/month). The catalogue (no dataset) is free to read. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    let o = null; try { if (env.MARKET) o = await env.MARKET.get('v1/' + ds + '/' + day + '.csv.gz'); } catch (e) {}
+    if (!o) return jb({ error: 'not_found', dataset: ds, first_day: MARKET_DS[ds].from, hint: 'No file for that day - before the dataset began, today (a day is archived once it has closed), or a day the source had already pruned.' }, 404);
+    const m = o.customMetadata || {};
+    return new Response(o.body, { headers: { 'content-type': 'application/gzip', 'content-disposition': 'attachment; filename="marginpad-' + ds + '-' + day + '.csv.gz"', 'x-mp-rows': String(m.rows || ''), 'x-mp-sha256': String(m.sha256 || ''), 'x-mp-rev': String(m.rev || '1'), 'cache-control': 'private, max-age=3600', ...CORS } });
   }
   if (path === '/v1/trades') { // the full closed-trade ledger - /positions is capped at 100, this pages through 30 days
     const limit = Math.min(500, Math.max(1, +url.searchParams.get('limit') || 100));
@@ -23089,7 +23145,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'lab', hint: 'Webhooks start on API Lab (' + API_PRICE('lab') + '/month, ' + API_HOOKS('lab') + ' hooks), then Pro (' + API_PRICE('pro') + '/month, ' + API_HOOKS('pro') + '), Max (' + API_PRICE('max') + '/month, ' + API_HOOKS('max') + ') and Business (' + API_PRICE('business') + '/month, ' + API_HOOKS('business') + '). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'premium', hint: 'Webhooks are on API Premium (' + API_PRICE('premium') + '/month, ' + API_HOOKS('premium') + ' hooks). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -23182,7 +23238,7 @@ async function handleBot(url, request, env, ctx) {
   // written against 2.4 gets a reason instead of a mystery, and every claim that the API carries it has been removed.
   if (path === '/v1/ai' && request.method === 'POST') return jb({ error: 'endpoint_retired', hint: 'AI market reads are no longer part of any API plan. Ask AI now lives on the charts at https://marginpad.io/charts as part of Premium (' + AI_DAILY.premium + ' reads a day) and ' + PREM_PLANS.plus.name + ' (' + AI_DAILY.plus + ').', moved_to: 'https://marginpad.io/premium/#plus' }, 410);
   if (false && path === '/v1/ai' && request.method === 'POST') { // retired body kept so the engine is one edit away if it ever returns
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'AI market reads are on API Pro (50 a day), Max (200 a day) and Business (500 a day). ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'premium', hint: 'AI market reads are not on any API plan at the moment. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     if (!sym) return jb({ error: 'symbol_required' }, 400);
@@ -26751,7 +26807,7 @@ export default {
         // reader cannot mistake "no discount" for "a discount of zero" - the same rule the `api` block on
         // /api/status follows for an unwritten figure.
         promo: API_PROMO.pct > 0 ? { percent_off: API_PROMO.pct, label: API_PROMO.label } : null,
-        plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks,webhooks: p.hooks, ai_per_day: p.ai })),
+        plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks,webhooks: p.hooks, market_archive: !!p.hist, raw_order_book: !!p.book, ai_per_day: p.ai })),
         current: mine ? { plan: mine.plan, tier: mine.tier, until: mine.until || null, days_left: mine.until ? mine.days_left : null, source: mine.src || 'free', free_month: mine.trial } : null,
         my_trial: null,
         free_trial: null, // retired 2026-11-14: Free does not end
@@ -28275,6 +28331,14 @@ export default {
     if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/progressdump', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/lssnap' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: today's long/short snapshots (?tick=1 runs the hourly pass now)
+      if (url.searchParams.get('tick') === '1') { try { await lsSnapTick(env); } catch (e) { return new Response(JSON.stringify({ error: String(e && e.message || e) }), { status: 500 }); } }
+      const t0 = Math.floor(Date.now() / 86400000) * 86400000;
+      const r = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/snap/ls/day?from=' + t0 + '&to=' + (t0 + 86400000)));
+      const j = await r.json().catch(() => ({}));
+      const hours = [...new Set((j.rows || []).map(x => x.ts))].map(t => new Date(t).toISOString().slice(11, 16));
+      return new Response(JSON.stringify({ ok: !!j.ok, rows: (j.rows || []).length, hours, sample: (j.rows || []).slice(0, 3) }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money - it only sets rate-limit tiers - so it is key-accessible like the neighbouring admin reads.
       let err = null, res = null; try { res = await syncBotTiers(env); } catch (e) { err = String(e && e.message || e); }
@@ -32127,6 +32191,7 @@ export default {
     // it is not IP-bound, so it lapses after 90 days and would stop both of the above in silence.
     // bybitAffSync now runs on the one-minute trigger - see the note there. It lost this race every time.
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
+    bg(lsSnapTick, 'lssnap'); // the long/short ratio, one snapshot per UTC hour, kept for the market archive (2026-11-14)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotBoardCron, 'memeboard'); // the Meme Spot season board into KV every ten minutes (2026-10-16) // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveMarket, 'mktarch'); // THE MARKET ARCHIVE (2026-10-28): every dataset in MARKET_DS, one verified UTC day per pull, into R2 marginpad-market; replaces archiveLiq (which now only delegates here)
@@ -32424,6 +32489,29 @@ export class OpsLog {
   async fetch(request) {
     const url = new URL(request.url); const path = url.pathname;
     await this.seed();
+    /* LONG/SHORT WAS MEASURED AND THROWN AWAY (2026-11-14, owner: "zaustavimo curenje ... ako negde ne cuvamo lepo te podatke").
+       The account long/short ratio of 20 coins across Binance, OKX and Bybit is read on every /long-short visit and nothing kept
+       it - CLAUDE.md has listed it as owed since the archive was built. One row per coin per hour, (ts, sym) PRIMARY KEY so a retried
+       pass cannot double a row; the market archive exports a day of it like any other dataset (longshort). */
+    if (path === '/snap/ls/add' || path === '/snap/ls/day') {
+      const sql = this.state.storage.sql;
+      try { sql.exec('CREATE TABLE IF NOT EXISTS lsnap(ts INTEGER, sym TEXT, lp REAL, sp REAL, n INTEGER, PRIMARY KEY(ts, sym))'); } catch (e) {}
+      if (path === '/snap/ls/add') {
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        const ts = Math.floor((+b.ts || 0) / 3600000) * 3600000; let n = 0;
+        if (!ts) return new Response(JSON.stringify({ ok: false, error: 'no_ts' }), { headers: { 'content-type': 'application/json' } });
+        for (const r of (Array.isArray(b.rows) ? b.rows : []).slice(0, 200)) {
+          const sym = String(r.s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20), lp = +r.lp, sp = +r.sp;
+          if (!sym || !isFinite(lp) || !isFinite(sp)) continue;
+          try { sql.exec('INSERT OR IGNORE INTO lsnap(ts,sym,lp,sp,n) VALUES(?,?,?,?,?)', ts, sym, lp, sp, Math.round(+r.n || 0)); n++; } catch (e) {}
+        }
+        if (Math.random() < 0.05) try { sql.exec('DELETE FROM lsnap WHERE ts < ?', Date.now() - 45 * 86400000); } catch (e) {} // the archive keeps every day; the store keeps 45
+        return new Response(JSON.stringify({ ok: true, wrote: n, ts }), { headers: { 'content-type': 'application/json' } });
+      }
+      const from = +url.searchParams.get('from') || 0, to = +url.searchParams.get('to') || 0;
+      const rows = [...sql.exec('SELECT ts, sym, lp, sp, n FROM lsnap WHERE ts >= ? AND ts < ? ORDER BY ts, sym', from, to)];
+      return new Response(JSON.stringify({ ok: true, rows }), { headers: { 'content-type': 'application/json' } });
+    }
     if (path.indexOf('/mpad/') === 0) {
       // `sql` and the parsed body are per-route in this class (see /upsample below) - they are NOT fetch-level locals
       const sub = path.slice(6), sql = this.state.storage.sql;

@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "id",
-  "generated": "2026-11-14T11:55:34.485Z",
+  "generated": "2026-11-14T12:44:14.146Z",
   "pages": 459,
-  "unique": 15847,
-  "words": 291529,
-  "untranslated": 2,
-  "untranslatedWords": 4,
-  "merged": "2026-11-14T11:56:52.682Z"
+  "unique": 15807,
+  "words": 291274,
+  "untranslated": 3,
+  "untranslatedWords": 7,
+  "merged": "2026-11-14T12:46:33.860Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -13076,7 +13076,7 @@
    ],
    "n": 1,
    "w": 2,
-   "id": ""
+   "id": "Pengaman makro"
   },
   "DBcptOxMwG": {
    "en": "<input type=\"checkbox\" id=\"planCalGate\"><span data-i18n=\"lCalGateSw\">No market entries in the 30 min before a macro print</span>",
@@ -102369,8 +102369,8 @@
    "id": "<span class=\"m get\">GET</span><code>/api/bot/v1/price?symbol=BTC</code><span class=\"m post\">POST</span><code>/api/bot/v1/open</code><span class=\"m post\">POST</span><code>/api/bot/v1/close</code><span class=\"m get\">GET</span><code>/api/bot/v1/positions</code>",
    "leaf": true
   },
-  "Eb4kgN2O0J": {
-   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream and webhooks (from API Lab, $5 a month), all free with no time limit - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
+  "zNXvhU4ZwL": {
+   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream, all free with no time limit (webhooks and the market archive are on API Premium, $11.99 a month) - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
    "kind": [
     "html"
    ],
@@ -102378,8 +102378,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 72,
-   "id": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; tambahkan <code>type:\"limit\"</code> atau <code>\"stop\"</code> dengan <code>limit_price</code> untuk order tertunda. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 untuk close parsial). <b>positions</b> mengembalikan mark price live dan PnL belum terealisasi. Ada juga: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, stream WebSocket, dan webhook (dari API Lab, $5 per bulan), semuanya gratis tanpa batas waktu - referensi lengkapnya ada di <a href=\"/trading-api/\">/trading-api/</a>."
+   "w": 76,
+   "id": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; tambahkan <code>type:\"limit\"</code> atau <code>\"stop\"</code> dengan <code>limit_price</code> untuk order tertunda. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 untuk penutupan sebagian). <b>positions</b> mengembalikan mark price live dan PnL belum terealisasi. Ada juga: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, stream WebSocket, semuanya gratis tanpa batas waktu (webhook dan arsip pasar ada di API Premium, $11.99 per bulan) - referensi lengkapnya ada di <a href=\"/trading-api/\">/trading-api/</a>."
   },
   "CHr3HTupqd": {
    "en": "<span class=\"m get\">GET</span><code>/api/v1/feed</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/venues</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/live?symbol=BTC</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/clusters?symbol=BTC</code>",
@@ -102479,8 +102479,8 @@
    "w": 6,
    "id": "<b>120</b><span>req / menit dengan key gratis</span>"
   },
-  "F-2rc0C0Uo": {
-   "en": "<b>600</b><span>req / min on API Pro</span>",
+  "POQx7NBTfx": {
+   "en": "<b>2000</b><span>req / min on API Premium</span>",
    "kind": [
     "html"
    ],
@@ -102489,7 +102489,7 @@
    ],
    "n": 1,
    "w": 6,
-   "id": "<b>600</b><span>req / menit di API Pro</span>"
+   "id": "<b>2000</b><span>request / menit di API Premium</span>"
   },
   "7nZJBgI4NR": {
    "en": "<b>*</b><span>CORS origin</span>",
@@ -102503,8 +102503,8 @@
    "w": 2,
    "id": "<b>*</b><span>origin CORS</span>"
   },
-  "74m6h0MJm8": {
-   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 300 on <a href=\"/trading-api/#plans\">API Lab</a>, 600 on Pro, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
+  "VvYH7H7D8w": {
+   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free and 2000 on <a href=\"/trading-api/#plans\">API Premium</a>. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
    "kind": [
     "html"
    ],
@@ -102512,8 +102512,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 69,
-   "id": "<b>Butuh lebih dari 60 per menit?</b> Kirim API key gratis (buat dalam hitungan detik di <a href=\"/trading-api/\">/trading-api/</a>) sebagai <code>X-API-Key</code> di panggilan yang sama, dan batasnya dihitung per <b>key-mu</b>, bukan per IP - 120 per menit gratis, 300 di <a href=\"/trading-api/#plans\">API Lab</a>, 600 di Pro, 2000 di Max, dan 5000 di Business. Yang lain tidak berubah: endpoint yang sama, envelope yang sama, dan akses tanpa key tetap seperti semula. <code>X-RateLimit-Scope</code> menunjukkan batas mana yang berlaku."
+   "w": 60,
+   "id": "<b>Butuh lebih dari 60 per menit?</b> Kirim API key gratis (buat dalam hitungan detik di <a href=\"/trading-api/\">/trading-api/</a>) sebagai <code>X-API-Key</code> di panggilan yang sama, lalu batasnya dihitung per <b>key-mu</b>, bukan per IP - 120 per menit gratis dan 2000 di <a href=\"/trading-api/#plans\">API Premium</a>. Selebihnya tidak berubah: endpoint sama, envelope sama, dan akses tanpa key tetap seperti sekarang. <code>X-RateLimit-Scope</code> memberi tahu batas mana yang berlaku."
   },
   "0Cayu7E32B": {
    "en": "Every data response includes rate-limit headers so your client can pace itself:",
@@ -177734,8 +177734,8 @@
    "w": 7,
    "id": "<a class=\"btn\" href=\"#akb\">Dapatkan API key gratis</a> <a class=\"btn sec\" href=\"#quickstart\">Baca quickstart</a>"
   },
-  "f2mcq2l5RF": {
-   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Lab is $5</a> to A/B five strategies with webhooks, <a href=\"#plans\">Pro is $27</a> when one bot becomes four. Market data stays keyless on every plan.",
+  "cI4WDlI0Lb": {
+   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">API Premium is $11.99</a> when you want our market archive, webhooks and many books. Market data stays keyless on every plan.",
    "kind": [
     "html"
    ],
@@ -177743,8 +177743,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 51,
-   "id": "Tanpa kartu, tanpa KYC, tanpa deposit. Semua kondisi fill kamu yang atur - ukuran book, slippage, latency, partial fill, penolakan, biaya. Gratis selamanya di 120 request per menit - <a href=\"#plans\">Lab $5</a> untuk A/B test lima strategi dengan webhook, <a href=\"#plans\">Pro $27</a> kalau satu bot sudah jadi empat. Data market tetap tanpa key di semua plan."
+   "w": 48,
+   "id": "Tanpa kartu, tanpa KYC, tanpa deposit. Setiap kondisi eksekusi kamu yang atur - ukuran book, slippage, latensi, eksekusi sebagian, penolakan, biaya. Gratis selamanya di 120 request per menit - <a href=\"#plans\">API Premium $11.99</a> kalau kamu butuh arsip pasar kami, webhook, dan banyak book. Data pasar tetap tanpa key di semua plan."
   },
   "B48mKJEUe6": {
    "en": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">live now</span>",
@@ -177890,8 +177890,8 @@
    "w": 1,
    "id": "<span class=\"kick\">Paket</span>"
   },
-  "zqUzejeA1C": {
-   "en": "Free is the whole engine. You pay to run more than one thing at once.",
+  "6g7SrdN5zY": {
+   "en": "Free is everything you need to test a bot. API Premium is for building on it.",
    "kind": [
     "html"
    ],
@@ -177900,10 +177900,10 @@
    ],
    "n": 1,
    "w": 15,
-   "id": "Plan Free sudah berisi engine lengkap. Kamu bayar untuk menjalankan lebih dari satu hal sekaligus."
+   "id": "Plan Gratis sudah cukup untuk menguji bot. API Premium untuk membangun di atasnya."
   },
-  "7ZmlsARWwy": {
-   "en": "Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise the ceilings and add <b>webhooks</b>, report breakdowns with written findings, 90 days of trade history instead of 30, and more keys and books. The engine itself is never held back.",
+  "I-OxP8CTE3": {
+   "en": "Free has no time limit and no card: the whole trading engine, real venue fees, limit and stop entries, trailing stops, replay, the configurable simulation, the WebSocket stream and all live market data. <b>API Premium</b> adds what a serious build needs - <b>our market archive over the API</b> (9 datasets nobody else publishes, every liquidation since July 2026), the raw order-book ladder, webhooks, many books and 90 days of trade history. It is a separate subscription from site Premium.",
    "kind": [
     "html"
    ],
@@ -177911,8 +177911,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 66,
-   "id": "Setiap akun mulai di Free dan mendapat produk lengkap: mesin trading, biaya venue sungguhan, entry limit dan stop, trailing stop, replay, book, stream WebSocket, dan semua data pasar tanpa key. Paket berbayar menaikkan batas dan menambahkan <b>webhook</b>, rincian laporan dengan temuan tertulis, riwayat trade 90 hari alih-alih 30, serta lebih banyak key dan book. Mesinnya sendiri tidak pernah ditahan."
+   "w": 76,
+   "id": "Gratis tanpa batas waktu dan tanpa kartu: seluruh engine trading, biaya exchange asli, limit dan stop entry, trailing stop, replay, simulasi yang bisa dikonfigurasi, stream WebSocket, dan semua data pasar live. <b>API Premium</b> menambahkan apa yang dibutuhkan build serius - <b>arsip pasar kami lewat API</b> (9 dataset yang tidak dipublikasikan siapa pun, setiap likuidasi sejak Juli 2026), ladder order book mentah, webhook, banyak book, dan riwayat trade 90 hari. Ini langganan terpisah dari Premium situs."
   },
   "dWp5k_KJhK": {
    "en": "<span class=\"apn\">Free</span>",
@@ -177939,8 +177939,8 @@
    "w": 3,
    "id": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">selamanya</small>"
   },
-  "DNVJZqy30l": {
-   "en": "The full engine, <b>free with no time limit</b> - no card, no trial, no countdown. Market data stays free and keyless with no account at all.",
+  "6USDt6225D": {
+   "en": "Everything you need to test a bot: the whole engine, the stream, replay and live market data. <b>No card, no trial, no countdown.</b>",
    "kind": [
     "html"
    ],
@@ -177948,11 +177948,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 25,
-   "id": "Engine lengkap, <b>gratis tanpa batas waktu</b> - tanpa kartu, tanpa trial, tanpa hitung mundur. Data market tetap gratis dan tanpa key, tanpa akun sama sekali."
+   "w": 22,
+   "id": "Semua yang kamu butuhkan untuk menguji bot: seluruh engine, stream, replay, dan data pasar live. <b>Tanpa kartu, tanpa trial, tanpa hitung mundur.</b>"
   },
-  "Mq24PqejcQ": {
-   "en": "<b>One strategy</b><span>one book, one journal, one balance</span>",
+  "zZHyyQXw4k": {
+   "en": "<b>Test a strategy end to end</b><span>one book &middot; one journal &middot; the full engine</span>",
    "kind": [
     "html"
    ],
@@ -177960,8 +177960,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8,
-   "id": "<b>Satu strategi</b><span>satu book, satu jurnal, satu saldo</span>"
+   "w": 12,
+   "id": "<b>Uji strategi dari awal sampai akhir</b><span>satu book &middot; satu jurnal &middot; engine lengkap</span>"
   },
   "ua9eLfw-HU": {
    "en": "<b>3</b> keys &middot; <b>50</b> open positions &middot; <b>120</b> req/min",
@@ -177987,8 +177987,44 @@
    "w": 11,
    "id": "Engine lengkap: market, limit &amp; stop order, trailing stop, dry run, replay"
   },
-  "I_wG5Qi4i2": {
-   "en": "Fee schedule of <a href=\"#fees\">9 real venues</a>",
+  "f0UK8iSjQd": {
+   "en": "The configurable simulation - fees, slippage, latency, partial fills - and <a href=\"#fees\">9 real venues</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11,
+   "id": "Simulasi yang bisa dikonfigurasi - biaya, slippage, latensi, eksekusi sebagian - dan <a href=\"#fees\">9 exchange asli</a>"
+  },
+  "MepMze_Dmb": {
+   "en": "WebSocket stream &middot; MCP &middot; keyless live market data",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7,
+   "id": "Stream WebSocket &middot; MCP &middot; data pasar live tanpa key"
+  },
+  "pAfgI7DG52": {
+   "en": "Trading report: totals, skill score and what fees and funding cost you",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12,
+   "id": "Trading report: total, skill score, dan berapa biaya serta funding yang kamu keluarkan"
+  },
+  "GV9tHzfqGn": {
+   "en": "<b>30 days</b> of trade history",
    "kind": [
     "html"
    ],
@@ -177997,31 +178033,7 @@
    ],
    "n": 1,
    "w": 5,
-   "id": "Jadwal biaya <a href=\"#fees\">9 venue sungguhan</a>"
-  },
-  "rWL_SF_Xqj": {
-   "en": "WebSocket stream &middot; MCP &middot; keyless market data",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6,
-   "id": "Stream WebSocket &middot; MCP &middot; data market tanpa key"
-  },
-  "wds4RAGb-b": {
-   "en": "Trading report: totals + skill score",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "Laporan trading: total + skor skill"
+   "id": "Riwayat trade <b>30 hari</b>"
   },
   "j0s1iUp1A3": {
    "en": "Free for ever",
@@ -178035,8 +178047,22 @@
    "w": 3,
    "id": "Gratis selamanya"
   },
-  "Hcnb3ii1Ir": {
-   "en": "<span class=\"apn\">Lab</span>",
+  "K_f01fZ8Mj": {
+   "en": "API Premium",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 2,
+   "w": 2,
+   "id": "API Premium",
+   "leaf": true
+  },
+  "BPWQQxZ9Jv": {
+   "en": "<span class=\"appill\">BUILD ON IT</span>",
    "kind": [
     "html"
    ],
@@ -178044,11 +178070,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 1,
-   "id": "<span class=\"apn\">Lab</span>"
+   "w": 3,
+   "id": "<span class=\"appill\">UNTUK MEMBANGUN</span>"
   },
-  "8hwkVCSK92": {
-   "en": "<span class=\"appill\">BOT TESTING</span>",
+  "HvFrEMelJx": {
+   "en": "$11.99<small>/month</small>",
    "kind": [
     "html"
    ],
@@ -178057,10 +178083,10 @@
    ],
    "n": 1,
    "w": 2,
-   "id": "<span class=\"appill\">UJI BOT</span>"
+   "id": "$11.99<small>/bulan</small>"
   },
-  "lIwyrgHtFa": {
-   "en": "$5<small>/month</small>",
+  "x_31iPA89o": {
+   "en": "For building something real: backtest on our measured history, react to webhooks, run a family of strategies side by side.",
    "kind": [
     "html"
    ],
@@ -178068,11 +178094,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2,
-   "id": "$5<small>/bulan</small>"
+   "w": 19,
+   "id": "Untuk membangun sesuatu yang serius: backtest di riwayat terukur kami, bereaksi lewat webhook, jalankan beberapa strategi berdampingan."
   },
-  "FZQOND7sLK": {
-   "en": "For testing a bot properly: run five versions of a strategy side by side and let the engine call your bot instead of being polled.",
+  "KS-jnm0Fw3": {
+   "en": "<b>The market archive, over the API</b><span>every liquidation since July 2026 &middot; open interest &middot; funding &middot; whale trades &middot; long/short</span>",
    "kind": [
     "html"
    ],
@@ -178080,11 +178106,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 23,
-   "id": "Untuk menguji bot dengan benar: jalankan lima versi strategi berdampingan, dan biarkan engine yang memanggil bot-mu, bukan kamu yang polling."
+   "w": 17,
+   "id": "<b>Arsip pasar, lewat API</b><span>setiap likuidasi sejak Juli 2026 &middot; open interest &middot; funding &middot; trade whale &middot; long/short</span>"
   },
-  "bT41dTyIKf": {
-   "en": "<b>5 books, webhooks, 90 days</b><span>A/B test strategies &middot; signed webhooks &middot; report breakdowns</span>",
+  "RSaZTZXOcV": {
+   "en": "<b>Market archive</b> on <code>/v1/history</code> - 9 datasets, one verified CSV per UTC day",
    "kind": [
     "html"
    ],
@@ -178093,10 +178119,10 @@
    ],
    "n": 1,
    "w": 11,
-   "id": "<b>5 book, webhook, 90 hari</b><span>A/B test strategi &middot; webhook bertanda tangan &middot; rincian report</span>"
+   "id": "<b>Arsip pasar</b> di <code>/v1/history</code> - 9 dataset, satu CSV terverifikasi per hari UTC"
   },
-  "UZy-mRoY1j": {
-   "en": "<b>5</b> books - a separate journal, balance and report per strategy",
+  "-YfiGzKbPM": {
+   "en": "<b>Raw order-book ladder</b> per venue",
    "kind": [
     "html"
    ],
@@ -178104,11 +178130,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8,
-   "id": "<b>5</b> book - jurnal, saldo, dan report terpisah per strategi"
+   "w": 5,
+   "id": "<b>Ladder order book mentah</b> per exchange"
   },
-  "UBPf2GcyoK": {
-   "en": "<b>Webhooks</b> - 3 signed, retried endpoints",
+  "N6j8zp7X8e": {
+   "en": "<b>20</b> books &middot; <b>15</b> signed webhooks",
    "kind": [
     "html"
    ],
@@ -178116,11 +178142,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4,
-   "id": "<b>Webhook</b> - 3 endpoint bertanda tangan, dengan retry"
+   "w": 5,
+   "id": "<b>20</b> book &middot; <b>15</b> webhook bertanda tangan"
   },
-  "yWuBf3df66": {
-   "en": "<b>90 days</b> of trade history and the report with breakdowns and findings",
+  "2r_nnVBHUQ": {
+   "en": "<b>90 days</b> of trade history, report breakdowns and written findings",
    "kind": [
     "html"
    ],
@@ -178128,226 +178154,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 12,
-   "id": "<b>90 hari</b> riwayat trading dan report dengan rincian serta temuan"
-  },
-  "-bw_S6eiJx": {
-   "en": "<b>5</b> keys &middot; <b>150</b> open positions &middot; <b>300</b> req/min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6,
-   "id": "<b>5</b> key &middot; <b>150</b> posisi terbuka &middot; <b>300</b> request/menit"
-  },
-  "IE5guAE3_v": {
-   "en": "Get Lab",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "Ambil Lab"
-  },
-  "ZtDF5rFw52": {
-   "en": "Pro",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 1,
-   "id": "Pro",
-   "leaf": true
-  },
-  "EiJ8rmk3R4": {
-   "en": "<span class=\"appill\">MOST BOTS</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<span class=\"appill\">PALING BANYAK DIPAKAI</span>"
-  },
-  "nZyx6HlgO8": {
-   "en": "$27<small>/month</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "$27<small>/bulan</small>"
-  },
-  "eVqKQ-HXfa": {
-   "en": "<s>$39</s> <b>30% off</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3,
-   "id": "<s>$39</s> <b>diskon 30%</b>"
-  },
-  "wjEuk4f9V_": {
-   "en": "For a bot that runs unattended, and for comparing strategies instead of guessing between them.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 14,
-   "id": "Untuk bot yang jalan tanpa diawasi, dan untuk membandingkan strategi alih-alih menebak di antara keduanya."
-  },
-  "Qqa4NjhN0i": {
-   "en": "<b>10 keys, and 90 days of history</b><span>a key per bot &middot; 5 books &middot; webhooks &middot; report breakdowns</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 14,
-   "id": "<b>10 key, dan riwayat 90 hari</b><span>satu key per bot &middot; 5 book &middot; webhook &middot; rincian laporan</span>"
-  },
-  "q3wLzPykgm": {
-   "en": "<b>10</b> keys &middot; <b>200</b> open positions &middot; <b>600</b> req/min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7,
-   "id": "<b>10</b> key &middot; <b>200</b> posisi terbuka &middot; <b>600</b> req/menit"
-  },
-  "_9aQeYS7LY": {
-   "en": "<b>Webhooks</b> - 3 signed, retried endpoints, delivered while you are offline",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 9,
-   "id": "<b>Webhook</b> - 3 endpoint bertanda tangan dengan retry, dikirim saat kamu sedang offline"
-  },
-  "lk14kjouH9": {
-   "en": "Trading report with breakdowns and written findings",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7,
-   "id": "Laporan trading dengan rincian dan temuan tertulis"
-  },
-  "m13oTeC4NE": {
-   "en": "<b>90 days</b> of trade history, report and equity curve - Free keeps 30",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 12,
-   "id": "<b>90 hari</b> riwayat trade, laporan, dan kurva ekuitas - Free menyimpan 30"
-  },
-  "w6lvuBgh0G": {
-   "en": "Get Pro",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "Ambil Pro"
-  },
-  "VA8xXKSqJE": {
-   "en": "<span class=\"apn\">Max</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 1,
-   "id": "<span class=\"apn\">Max</span>",
-   "leaf": true
-  },
-  "hLKkSTf2Ix": {
-   "en": "$69<small>/month</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "$69<small>/bulan</small>"
-  },
-  "6OdEqtrFUB": {
-   "en": "<s>$99</s> <b>30% off</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3,
-   "id": "<s>$99</s> <b>diskon 30%</b>"
-  },
-  "aIMZYyS_4M": {
-   "en": "For a fleet - a family of strategies, each with its own book, running at the same time.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 15,
-   "id": "Untuk armada - sekumpulan strategi, masing-masing dengan book sendiri, berjalan bersamaan."
-  },
-  "cVfkwnfS0z": {
-   "en": "<b>30 keys, 20 books</b><span>deeper order book &middot; 15 webhooks</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 9,
-   "id": "<b>30 key, 20 book</b><span>order book lebih dalam &middot; 15 webhook</span>"
+   "w": 10,
+   "id": "Riwayat trade <b>90 hari</b>, rincian report, dan temuan tertulis"
   },
   "rkYhr_sm6t": {
    "en": "<b>30</b> keys &middot; <b>500</b> open positions &middot; <b>2000</b> req/min",
@@ -178361,20 +178169,8 @@
    "w": 7,
    "id": "<b>30</b> key &middot; <b>500</b> posisi terbuka &middot; <b>2000</b> req/menit"
   },
-  "oK_eOmRm2Y": {
-   "en": "<b>15</b> webhooks",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>15</b> webhook"
-  },
-  "rgVyVCnndg": {
-   "en": "Everything in Pro",
+  "KP_ANzpmf7": {
+   "en": "Get API Premium",
    "kind": [
     "html"
    ],
@@ -178383,152 +178179,7 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "Semua yang ada di Pro"
-  },
-  "HcJ0X0zkFP": {
-   "en": "Get Max",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "Ambil Max"
-  },
-  "dm6RXkOm8p": {
-   "en": "<span class=\"apn\">Business</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 1,
-   "id": "<span class=\"apn\">Business</span>",
-   "leaf": true
-  },
-  "pcMvQD8Hry": {
-   "en": "$139<small>/month</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "$139<small>/bulan</small>"
-  },
-  "R8cqpCV6SF": {
-   "en": "<s>$199</s> <b>30% off</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3,
-   "id": "<s>$199</s> <b>diskon 30%</b>"
-  },
-  "OHtsRrs_mh": {
-   "en": "For an app or a desk trading on behalf of its own users - a key each, a book each.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 16,
-   "id": "Untuk aplikasi atau desk yang trading atas nama penggunanya sendiri - satu key masing-masing, satu book masing-masing."
-  },
-  "-rGYRDzXyH": {
-   "en": "<b>100 keys, 50 books</b><span>one key per end user, kept apart</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 11,
-   "id": "<b>100 key, 50 book</b><span>satu key per pengguna akhir, terpisah satu sama lain</span>"
-  },
-  "0PLKOSajAx": {
-   "en": "<b>1000</b> open positions &middot; <b>5000</b> req/min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5,
-   "id": "<b>1000</b> posisi terbuka &middot; <b>5000</b> req/menit"
-  },
-  "13QeOsd7ID": {
-   "en": "<b>50</b> webhooks",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>50</b> webhook"
-  },
-  "25He9UlTXp": {
-   "en": "Everything in Max",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3,
-   "id": "Semua yang ada di Max"
-  },
-  "MbhcJ0gKZ0": {
-   "en": "Get Business",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "Ambil Business"
-  },
-  "9olr5xYNT-": {
-   "en": "<b>Choose on keys and history, not on throughput - and here is the measurement.</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 13,
-   "id": "<b>Pilih berdasarkan key dan riwayat, bukan throughput - dan ini hasil pengukurannya.</b>"
-  },
-  "H4Zc5zhPhg": {
-   "en": "Across 125 accounts and 174 keys, the busiest bot in production peaks at <b>66 requests a minute of the 120 Free already allows</b>, and <b>no key has ever been rate-limited on any plan</b>. The one Free ceiling that does get reached is <b>keys</b>: 12 of those 125 accounts sit at or over the three-key limit, because a serious setup wants one key per bot so a backtest and a live strategy never share a rate budget. Webhooks and extra books are on the paid plans and <b>have had no uptake at all so far</b> - we would rather say that than sell you a tier for them. Everything that decides whether a result is real - the engine, every market, limit and stop orders, replay, the WebSocket stream, the whole configurable simulation and the cost breakdown on your report - is on Free.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 133,
-   "id": "Dari 125 akun dan 174 key, bot tersibuk di production memuncak di <b>66 request per menit dari 120 yang sudah diizinkan Free</b>, dan <b>belum pernah ada key yang kena rate limit di paket mana pun</b>. Satu-satunya batas Free yang benar-benar tercapai adalah <b>key</b>: 12 dari 125 akun itu ada di atau melewati batas tiga key, karena setup yang serius butuh satu key per bot supaya backtest dan strategi live tidak pernah berbagi jatah rate. Webhook dan book tambahan ada di paket berbayar dan <b>sejauh ini belum ada yang memakainya sama sekali</b> - kami lebih suka mengatakan itu daripada menjual tier untuk fitur tersebut. Semua yang menentukan apakah sebuah hasil itu nyata - mesinnya, setiap market, order limit dan stop, replay, stream WebSocket, seluruh simulasi yang bisa dikonfigurasi, dan rincian biaya di laporanmu - ada di Free."
+   "id": "Dapatkan API Premium"
   },
   "crELTr-Zz0": {
    "en": "What changes with the plan",
@@ -178542,8 +178193,8 @@
    "w": 5,
    "id": "Apa yang berubah sesuai paket"
   },
-  "8TQOr6UTHd": {
-   "en": "Lab &middot; $5",
+  "Ie04QbbuU5": {
+   "en": "API Premium &middot; $11.99",
    "kind": [
     "html"
    ],
@@ -178551,24 +178202,24 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2,
-   "id": "Lab &middot; $5"
-  },
-  "VVO5JHXqlf": {
-   "en": "Pro &middot; $27",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "Pro &middot; $27",
+   "w": 3,
+   "id": "API Premium &middot; $11.99",
    "leaf": true
   },
-  "eDMQi7xLHD": {
-   "en": "Max &middot; $69",
+  "KUpOehKx0i": {
+   "en": "<b>Market archive</b> <code>/v1/history</code><br><span class=\"sub\">liquidations, agg5m, oi, funding_oi, whale_fills, whale_pos, catalysts, longshort, mpad</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12,
+   "id": "<b>Arsip pasar</b> <code>/v1/history</code><br><span class=\"sub\">liquidations, agg5m, oi, funding_oi, whale_fills, whale_pos, catalysts, longshort, mpad</span>"
+  },
+  "TP26_rI_xk": {
+   "en": "the catalogue",
    "kind": [
     "html"
    ],
@@ -178577,99 +178228,10 @@
    ],
    "n": 1,
    "w": 2,
-   "id": "Max &middot; $69",
-   "leaf": true
+   "id": "katalog"
   },
-  "hQqpy7c_-v": {
-   "en": "<span class=\"apn\">Business</span> &middot; $139",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<span class=\"apn\">Business</span> &middot; $139",
-   "leaf": true
-  },
-  "eYSUJ8gI0q": {
-   "en": "Market-data API (<code>/api/v1/*</code>) with your key<br><span class=\"sub\">60 / min per IP without a key, on every plan</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 15,
-   "id": "API data pasar (<code>/api/v1/*</code>) dengan key-mu<br><span class=\"sub\">60 / menit per IP tanpa key, di semua paket</span>"
-  },
-  "_RoKjIQua9": {
-   "en": "120 / min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "120 / min",
-   "leaf": true
-  },
-  "mO00zF6RLF": {
-   "en": "<b>300 / min</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>300 / min</b>",
-   "leaf": true
-  },
-  "JInU8bezlq": {
-   "en": "<b>600 / min</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>600 / menit</b>"
-  },
-  "auvvOMuzpG": {
-   "en": "<b>2000 / min</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>2000 / menit</b>"
-  },
-  "qtTqNFWAgm": {
-   "en": "<b>5000 / min</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "<b>5000 / min</b>",
-   "leaf": true
-  },
-  "yIaIzJz7f0": {
-   "en": "API keys per account",
+  "7mpaPd72lQ": {
+   "en": "<b>every day, every dataset</b>",
    "kind": [
     "html"
    ],
@@ -178678,10 +178240,10 @@
    ],
    "n": 1,
    "w": 4,
-   "id": "API key per akun"
+   "id": "<b>setiap hari, setiap dataset</b>"
   },
-  "vtpmZXEb28": {
-   "en": "Open positions at once",
+  "Uy3YVcdhc6": {
+   "en": "Raw order-book ladder per venue",
    "kind": [
     "html"
    ],
@@ -178689,11 +178251,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4,
-   "id": "Posisi terbuka sekaligus"
+   "w": 5,
+   "id": "Ladder order book mentah per exchange"
   },
-  "yz2-JQN8iJ": {
-   "en": "<a href=\"#books\">Books</a> - a separate journal, balance and report per strategy<br><span class=\"sub\">the limit most people actually reach</span>",
+  "3Pk2GUU-wx": {
+   "en": "consolidated book only",
    "kind": [
     "html"
    ],
@@ -178701,8 +178263,32 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 14,
-   "id": "<a href=\"#books\">Buku</a> - jurnal, saldo, dan laporan terpisah per strategi<br><span class=\"sub\">batas yang paling sering benar-benar dicapai orang</span>"
+   "w": 3,
+   "id": "hanya book gabungan"
+  },
+  "Ycu88uTWc6": {
+   "en": "<b>yes</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<b>ya</b>"
+  },
+  "iEgEwebmTz": {
+   "en": "<a href=\"#books\">Books</a> - a separate journal, balance and report per strategy",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8,
+   "id": "<a href=\"#books\">Book</a> - jurnal, saldo, dan report terpisah untuk tiap strategi"
   },
   "2tsjf3jiyk": {
    "en": "<b>Webhooks</b> - signed, retried, delivered while you are offline",
@@ -178748,21 +178334,9 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 4,
+   "n": 1,
    "w": 2,
    "id": "<b>90 hari</b>"
-  },
-  "KBlyoq1S35": {
-   "en": "Requests per minute, per key<br><span class=\"sub\">measured: the busiest production bot uses 46, and nothing has ever been limited</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 18,
-   "id": "Request per menit, per key<br><span class=\"sub\">hasil ukur: bot production tersibuk memakai 46, dan belum pernah ada yang kena limit</span>"
   },
   "jwtET1XVkD": {
    "en": "Trading report <code>/v1/report</code>",
@@ -178776,8 +178350,8 @@
    "w": 3,
    "id": "Laporan trading <code>/v1/report</code>"
   },
-  "waQN7DvjW4": {
-   "en": "totals + skill score<br><span class=\"sub\">up to 30 days back</span>",
+  "_PW4Io6L4e": {
+   "en": "totals, skill score, costs",
    "kind": [
     "html"
    ],
@@ -178785,20 +178359,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8,
-   "id": "total + skor skill<br><span class=\"sub\">sampai 30 hari ke belakang</span>"
-  },
-  "yCanGQrbxM": {
-   "en": "<b>+ breakdowns &amp; findings</b><br><span class=\"sub\">up to 90 days back</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 7,
-   "id": "<b>+ rincian &amp; temuan</b><br><span class=\"sub\">sampai 90 hari ke belakang</span>"
+   "w": 4,
+   "id": "total, skill score, biaya"
   },
   "MpboSteX5t": {
    "en": "<b>+ breakdowns &amp; findings</b>",
@@ -178808,9 +178370,33 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 2,
    "id": "<b>+ rincian &amp; temuan</b>"
+  },
+  "6F93cv7siq": {
+   "en": "API keys &middot; open positions",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4,
+   "id": "API key &middot; posisi terbuka"
+  },
+  "6QJo6cmdp4": {
+   "en": "Requests per minute, per key (engine and <code>/api/v1/*</code> with the key)<br><span class=\"sub\">60 / min per IP without a key, on every plan</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 20,
+   "id": "Request per menit, per key (engine dan <code>/api/v1/*</code> dengan key)<br><span class=\"sub\">60 / menit per IP tanpa key, di semua plan</span>"
   },
   "4WGp651-a5": {
    "en": "<b>On every plan, Free included:</b> the whole trading engine - market, limit and stop orders, trailing stops, partial closes, dry run and <a href=\"#replay\">replay</a> - the <a href=\"#stream\">WebSocket stream</a>, the <a href=\"#mcp\">MCP server</a>, the <a href=\"#fees\">fee schedule of 9 real venues</a>, $1 to $100,000 of margin per trade at up to 1000&times; leverage, and every keyless market-data endpoint at full speed. The paid plans move ceilings. They do not unlock the product.",
@@ -179722,6 +179308,18 @@
    "w": 62,
    "id": "<span class=\"m get\">GET</span><span class=\"u\">/v1/klines<em>?symbol=BTC&amp;interval=60</em></span><span class=\"d\">Candle OHLC untuk strategimu (interval: 1, 5, 15, 30, 60, 240, 1440 menit). <b>Tanpa key.</b> Sampai <b>1000 candle</b> per panggilan, yang terbaru di akhir - sekitar 16 jam di 1m, 3 hari di 5m, 10 hari di 15m, 41 hari di 1h, 166 hari di 4h, dan kira-kira 3 tahun di 1d. Kirim <code>&amp;end=&lt;unix ms&gt;</code> untuk mundur lebih jauh.</span>"
   },
+  "vLgWGQYeGV": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/history</span><span class=\"d\"><b>The market archive</b> (API Premium). With no parameters it lists every dataset, its columns and the first and last archived day - free to read on any key. <code>?dataset=liquidations&amp;day=2026-10-07</code> returns that UTC day as a gzip CSV with its row count and sha256 in <code>X-MP-Rows</code> / <code>X-MP-Sha256</code>: every liquidation since 24 Jul 2026, 5-minute aggregates, open interest per venue, hourly OI and funding for every Bybit perp, Hyperliquid whale trades and positions, catalysts, the long/short ratio and the MPAD index.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 80,
+   "id": "<span class=\"m get\">GET</span><span class=\"u\">/v1/history</span><span class=\"d\"><b>Arsip pasar</b> (API Premium). Tanpa parameter, endpoint ini menampilkan daftar semua dataset, kolomnya, serta hari arsip pertama dan terakhir - gratis dibaca dengan key apa pun. <code>?dataset=liquidations&amp;day=2026-10-07</code> mengembalikan hari UTC itu sebagai CSV gzip, lengkap dengan jumlah baris dan sha256 di <code>X-MP-Rows</code> / <code>X-MP-Sha256</code>: setiap likuidasi sejak 24 Juli 2026, agregat 5 menit, open interest per exchange, OI dan funding per jam untuk setiap perp Bybit, trade dan posisi whale Hyperliquid, catalyst, rasio long/short, dan indeks MPAD.</span>"
+  },
   "tTc7ysv8dz": {
    "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/markets</span><span class=\"d\">Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</span>",
    "kind": [
@@ -180023,8 +179621,8 @@
    "w": 45,
    "id": "<span class=\"m get\">GET</span><span class=\"u\">/v1/fees</span><span class=\"d\">Jadwal biaya siapa yang dipakai untuk eksekusimu: venue yang kami modelkan dengan taker, maker, diskon referral kami, dan tarif efektifnya, plus default-mu saat ini. <code>POST {\"venue\":\"bybit\"}</code> mengatur default akun; <code>fee_venue</code> di <code>/open</code> menimpanya untuk satu posisi. Lihat <a href=\"#fees\">biaya per venue</a>.</span>"
   },
-  "5btvpMDhjM": {
-   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\">The <a href=\"/trading-report/\">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</span>",
+  "4KPTYj03Tf": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\">The <a href=\"/trading-report/\">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Premium (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</span>",
    "kind": [
     "html"
    ],
@@ -180032,8 +179630,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 64,
-   "id": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\"><a href=\"/trading-report/\">Laporan trading</a> untuk akun di balik key, diukur dari trade yang sudah ditutupnya sendiri: total dan <b>skor skill</b> di setiap paket; win rate dan return per <b>koin</b>, <b>rentang leverage</b>, <b>arah</b>, <b>jam</b>, dan <b>hari</b> plus <b>temuan</b> tertulis di API Pro dan Max (<code>locked[]</code> menyebut apa yang ditahan). Setiap temuan menyertakan <code>n</code> yang menjadi dasarnya dan tidak berkata apa pun di bawah 8 trade.</span>"
+   "w": 62,
+   "id": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\"><a href=\"/trading-report/\">Trading report</a> untuk akun di balik key, dihitung dari trade tertutupnya sendiri: total dan <b>skill score</b> di semua plan; win rate dan return per <b>koin</b>, <b>rentang leverage</b>, <b>sisi</b>, <b>jam</b>, dan <b>hari</b> plus <b>temuan</b> tertulis di API Premium (<code>locked[]</code> menyebut apa yang ditahan). Setiap temuan menyertakan <code>n</code> yang jadi dasarnya dan tidak menyimpulkan apa pun di bawah 8 trade.</span>"
   },
   "GTWvHHyK18": {
    "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/webhooks</span><span class=\"d\"><span class=\"tag pro\">API PRO</span>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href=\"#webhooks\">webhooks</a>. <code>POST {\"act\":\"add\",\"url\":\"https://…\"}</code> registers one, <code>{\"act\":\"test\",\"id\":…}</code> sends a ping and returns the status your server answered, <code>{\"act\":\"delete\",\"id\":…}</code> removes it.</span>",
@@ -181509,8 +181107,8 @@
    "w": 34,
    "id": "<b>Event yang tersedia:</b> <code>position.opened</code> · <code>position.updated</code> (stop atau target yang bergeser) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (membawa posisi yang dibuatnya) · <code>order.expired</code> · <code>order.cancelled</code>. Kosongkan <code>events</code> untuk menerima semuanya. Trade dari website di akun yang sama juga akan memicu event ini."
   },
-  "CrF0rM3wpO": {
-   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max, fifty on Business; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
+  "0Gsb3bvHjS": {
+   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. 15 hooks per account on API Premium; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
    "kind": [
     "html"
    ],
@@ -181518,8 +181116,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 90,
-   "id": "<b>Verifikasi setiap pengiriman.</b> <code>X-MP-Signature</code> adalah <code>sha256=HMAC_SHA256(secret, raw body)</code> dengan secret yang dikembalikan saat kamu menambahkan hook. Cocokkan sebelum mem-parse body; kedua SDK menyertakan <code>verify_webhook</code> / <code>verifyWebhook</code>. Balas <code>2xx</code> dalam 6 detik - selain itu akan di-retry 5 kali dengan backoff (30 dtk, 1, 2, 4 menit), dan hook <b>dijeda setelah 25 kegagalan berturut-turut</b>; <code>GET /webhooks</code> menampilkan <code>active</code>, <code>consecutive_failures</code> dan <code>last_error</code> supaya kamu tahu penyebabnya. Tiga hook per akun di Pro, lima belas di Max, lima puluh di Business; pengiriman bersifat best-effort, <code>snapshot</code> WebSocket dan <code>/positions</code> tetap jadi sumber kebenaran."
+   "w": 85,
+   "id": "<b>Verifikasi setiap pengiriman.</b> <code>X-MP-Signature</code> adalah <code>sha256=HMAC_SHA256(secret, raw body)</code> dengan secret yang kamu terima saat menambahkan hook. Bandingkan sebelum mem-parse body; kedua SDK menyertakan <code>verify_webhook</code> / <code>verifyWebhook</code>. Balas dengan <code>2xx</code> dalam 6 detik - selain itu akan dicoba ulang 5 kali dengan backoff (30 detik, 1, 2, 4 menit), dan hook <b>dijeda setelah 25 kegagalan beruntun</b>; <code>GET /webhooks</code> menampilkan <code>active</code>, <code>consecutive_failures</code>, dan <code>last_error</code> supaya kamu tahu penyebabnya. 15 hook per akun di API Premium; pengiriman bersifat best-effort, <code>snapshot</code> WebSocket dan <code>/positions</code> tetap jadi sumber kebenaran."
   },
   "jwafciE7gN": {
    "en": "<b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.",
@@ -181545,8 +181143,8 @@
    "w": 7,
    "id": "Book - satu strategi, satu hasil bersih <span class=\"tag ver\">2.5</span>"
   },
-  "AEfUFyGy39": {
-   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five, Max twenty and Business fifty.",
+  "NmnRNLIwKG": {
+   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Premium 20.",
    "kind": [
     "html"
    ],
@@ -181554,8 +181152,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 54,
-   "id": "<b>Book</b> adalah jurnal, saldo, laporan, dan kurva ekuitas terpisah di dalam akunmu. Buat key dengan nama book, dan setiap panggilan dengan key itu trading di book tersebut; akun utamamu dan book lain tidak pernah melihatnya. Akun Free dapat satu book di luar akun utama, API Pro lima, Max dua puluh, dan Business lima puluh."
+   "w": 49,
+   "id": "<b>Book</b> adalah jurnal, saldo, report, dan kurva ekuitas terpisah di dalam akunmu. Buat key dengan nama book dan setiap panggilan dengan key itu akan trading di book tersebut; akun utama dan book lainnya tidak melihatnya. Akun gratis dapat satu book selain akun utama, API Premium 20."
   },
   "8tgu7hreP1": {
    "en": "<b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account's hooks with <code>\"account\":\"rsi\"</code> in the payload, so one receiver serves every book.",
@@ -182085,8 +181683,8 @@
    "id": "<code>too_many_webhooks</code>",
    "leaf": true
   },
-  "ywtDS2jolw": {
-   "en": "Delete one first - three hooks on Pro, fifteen on Max, fifty on Business.",
+  "2SnaVjemDF": {
+   "en": "Delete one first - 15 hooks on API Premium.",
    "kind": [
     "html"
    ],
@@ -182094,8 +181692,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 13,
-   "id": "Hapus satu dulu - tiga hook di Pro, lima belas di Max, lima puluh di Business."
+   "w": 8,
+   "id": "Hapus satu dulu - 15 hook di API Premium."
   },
   "7MeBbY6JF6": {
    "en": "<code>bad_url</code> / <code>bad_event</code>",
@@ -182715,8 +182313,8 @@
    "w": 7,
    "id": "<b>Apakah API bot trading ini benar-benar gratis?</b>"
   },
-  "wcklt8b7H_": {
-   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately. Paid plans only raise the ceilings.",
+  "dlnbcTtgfv": {
+   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately, with no time limit and no card. API Premium adds our market archive, the raw order-book ladder and webhooks for building on it.",
    "kind": [
     "html"
    ],
@@ -182724,8 +182322,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 34,
-   "id": "Ya. Ini simulator paper trading - posisi memakai harga market live asli tapi tanpa uang sungguhan. Masuk dengan email, buat API key, dan langsung mulai uji. Plan berbayar hanya menaikkan batasnya."
+   "w": 51,
+   "id": "Ya. Ini simulator paper trading - posisi memakai harga pasar live yang asli tapi tanpa uang sungguhan. Masuk dengan email, buat API key, dan langsung mulai menguji, tanpa batas waktu dan tanpa kartu. API Premium menambahkan arsip pasar kami, ladder order book mentah, dan webhook untuk membangun di atasnya."
   },
   "sF9mIWv88e": {
    "en": "<b>Which programming languages can I use?</b>",
@@ -183150,8 +182748,8 @@
    "w": 4,
    "id": "Gratis selamanya, tanpa kartu"
   },
-  "luKUGKqM2d": {
-   "en": "API Lab",
+  "Gsy5cHOHOe": {
+   "en": "The MarginPad market archive over the API (9 datasets, every liquidation since July 2026), the raw order-book ladder, 20 books, 15 webhooks and 90 days of trade history.",
    "kind": [
     "ld"
    ],
@@ -183159,20 +182757,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2,
-   "id": "API Lab"
-  },
-  "i3oIkMk_4E": {
-   "en": "Five strategy books for A/B testing a bot, three webhooks, 90-day trade history and the report with findings.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 17,
-   "id": "Lima strategy book untuk A/B test bot, tiga webhook, riwayat trading 90 hari, dan report beserta temuannya."
+   "w": 28,
+   "id": "Arsip pasar MarginPad lewat API (9 dataset, setiap likuidasi sejak Juli 2026), ladder order book mentah, 20 book, 15 webhook, dan riwayat trade 90 hari."
   },
   "Rdb-5Wz-_S": {
    "en": "Per month, paid in crypto or from a MarginPad rewards balance. Nothing renews automatically.",
@@ -183182,84 +182768,9 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 4,
+   "n": 1,
    "w": 13,
    "id": "Per bulan, dibayar dengan kripto atau dari saldo reward MarginPad. Tidak ada yang diperpanjang otomatis."
-  },
-  "xn2IJ_eHs3": {
-   "en": "API Pro",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "API Pro",
-   "leaf": true
-  },
-  "ENA4jowU3k": {
-   "en": "Five strategy books, webhooks, 90-day trade history and the full trading report with findings.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 14,
-   "id": "Lima book strategi, webhook, riwayat trade 90 hari, dan laporan trading lengkap dengan temuan."
-  },
-  "TybmPkGa_k": {
-   "en": "API Max",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "API Max",
-   "leaf": true
-  },
-  "FWqZcy_Ns7": {
-   "en": "Twenty books, fifteen webhooks.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4,
-   "id": "Dua puluh book, lima belas webhook."
-  },
-  "scDtAJjkxs": {
-   "en": "API Business",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2,
-   "id": "API Business",
-   "leaf": true
-  },
-  "_CCxyddOZ5": {
-   "en": "Fifty books and fifty webhooks, and a hundred keys.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 8,
-   "id": "Lima puluh book, lima puluh webhook, dan seratus key."
   },
   "HHPIq6m4gc": {
    "en": "Paper Trading API",
@@ -183405,8 +182916,8 @@
    "w": 7,
    "id": "Apakah API bot trading ini benar-benar gratis?"
   },
-  "jQwPoKLn0F": {
-   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key, 3 keys and 50 open positions, with the whole trading engine, the WebSocket stream and all keyless market data included. Paid plans only raise the ceilings - they add no endpoint the free plan cannot reach except webhooks.",
+  "s6vAhmRSUU": {
+   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key, 3 keys and 50 open positions, with the whole trading engine, the WebSocket stream and all keyless market data included. Free has no time limit and no card. The one paid plan, API Premium, adds our market archive over the API (/v1/history), the raw order-book ladder and webhooks; everything you need to test a bot is on Free.",
    "kind": [
     "ld"
    ],
@@ -183414,8 +182925,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 72,
-   "id": "Ya. Ini simulator paper trading - posisi memakai harga pasar live sungguhan tapi tanpa uang sungguhan. Masuk dengan email, buat API key, dan langsung uji bot-mu. 120 request per menit per key, 3 key, dan 50 posisi terbuka, dengan seluruh mesin trading, stream WebSocket, dan semua data pasar tanpa key sudah termasuk. Paket berbayar hanya menaikkan batas - tidak ada endpoint tambahan yang tidak bisa dijangkau paket gratis, kecuali webhook."
+   "w": 92,
+   "id": "Ya. Ini simulator paper trading - posisi memakai harga pasar live yang asli tapi tanpa uang sungguhan. Masuk dengan email, buat API key, dan langsung mulai menguji botmu. 120 request per menit per key, 3 key, dan 50 posisi terbuka, termasuk seluruh engine trading, stream WebSocket, dan semua data pasar tanpa key. Plan Gratis tanpa batas waktu dan tanpa kartu. Satu-satunya plan berbayar, API Premium, menambahkan arsip pasar kami lewat API (/v1/history), ladder order book mentah, dan webhook; semua yang kamu butuhkan untuk menguji bot ada di plan Gratis."
   },
   "QCmbexdjYU": {
    "en": "How realistic is the simulation?",
@@ -183549,8 +183060,8 @@
    "w": 4,
    "id": "Apa saja batasnya?"
   },
-  "5Hq5xIPI8z": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions, with no time limit. API Lab ($5 a month): 300 requests per minute, 5 keys, 150 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Pro ($27 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($69 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($139 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
+  "_g3S9_VWIZ": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions, the whole engine and the WebSocket stream, with no time limit. API Premium ($11.99 a month): the market archive over the API, the raw order-book ladder, 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks and 90 days of trade history. No key has ever been rate-limited on any plan.",
    "kind": [
     "ld"
    ],
@@ -183558,8 +183069,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 103,
-   "id": "Gratis: 120 request per menit per key, 3 key per akun, 50 posisi terbuka, tanpa batas waktu. API Lab ($5 per bulan): 300 request per menit, 5 key, 150 posisi terbuka, 5 strategy book, 3 webhook, dan riwayat trading 90 hari. API Pro ($27 per bulan): 600 request per menit, 10 key, 200 posisi terbuka, 5 strategy book, 3 webhook, dan riwayat trading 90 hari. API Max ($69 per bulan): 2000 request per menit, 30 key, 500 posisi terbuka, 20 book, 15 webhook. API Business ($139 per bulan): 5000 request per menit, 100 key, 1000 posisi terbuka, 50 book, 50 webhook. Belum pernah ada key yang kena rate limit di plan mana pun."
+   "w": 66,
+   "id": "Gratis: 120 request per menit per key, 3 key per akun, 50 posisi terbuka, seluruh engine dan stream WebSocket, tanpa batas waktu. API Premium ($11.99 per bulan): arsip pasar lewat API, ladder order book mentah, 2000 request per menit, 30 key, 500 posisi terbuka, 20 book, 15 webhook, dan riwayat trade 90 hari. Belum pernah ada key yang kena rate limit di plan mana pun."
   },
   "40rLeTkS3b": {
    "en": "Does MarginPad Premium include the API?",

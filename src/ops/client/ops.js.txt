@@ -828,7 +828,7 @@
   // "who paid for what", but it is a SEPARATE book: the ledger's apipay table, never prempay. A $29 API
   // sale inside the Premium totals would move every figure on this page, so the two are rendered as two
   // blocks that never add up together. Empty until the first sale, and it says so rather than showing zeros.
-  var AP_PLAN = function (k) { k = String(k || ''); var c = k === 'business' ? 'lime' : k === 'max' ? 'amber' : k === 'lab' ? 'blue' : ''; return '<span class="badge ' + c + '">' + esc(k || '?') + '</span>'; };
+  var AP_PLAN = function (k) { k = String(k || ''); var c = k === 'premium' ? 'lime' : (k === 'business' || k === 'max' || k === 'pro' || k === 'lab') ? 'amber' : ''; return '<span class="badge ' + c + '">' + esc(k || '?') + '</span>'; };
   function apiRevenue(ap) {
     if (!ap) return card('API plans', failHtml('the API plan desk did not answer'));
     var pay = ap.payments || [], rows = (ap.rows || []).filter(function (r) { return r.live; });
@@ -1576,12 +1576,12 @@
       + card('Waiting to fill', tbl(cols, os, 'nothing resting right now'), 'a fill lands at the order price, not at the price the engine noticed - the 1m high/low decides · click the owner for the card');
   } });
   // 2026-09-15: the API has its own plans, so this view reads the plan desk beside the usage stats.
-  var API_PLAN = function (t) { t = +t || 0; return t >= 4 ? 'business' : t === 3 ? 'max' : t === 2 ? 'pro' : t === 1 ? 'lab' : 'free'; }; // tiers moved 2026-11-14 when Lab took 1
-  var API_PLAN_IDS = [['free', 'Free'], ['lab', 'Lab $5'], ['pro', 'Pro $27'], ['max', 'Max $69'], ['business', 'Business $139']];
+  var API_PLAN = function (t) { return (+t || 0) > 0 ? 'premium' : 'free'; }; // two API plans since 2026-11-14
+  var API_PLAN_IDS = [['free', 'Free'], ['premium', 'API Premium $11.99']];
   // The panel refreshes the table under itself after a change, and a refresh replaces the whole view - so the
   // confirmation has to survive its own repaint or the owner sees nothing happen. Same trap the Bybit volume
   // table hit: it wiped its own message a moment after writing it.
-  var AP_LAST = null, AP_USER = '', AP_PLAN_SEL = 'business', AP_DAYS_SEL = '3650';
+  var AP_LAST = null, AP_USER = '', AP_PLAN_SEL = 'premium', AP_DAYS_SEL = '3650';
   /* BOT API DESK (2026-10-24, owner: "ne prikazuje dobro koji su kljucevi aktivni i pre koliko su korisceni. Hocu jasno da
      vidim ko koristi API (websocket ili sta vec), koliko dugo jos ima do isteka svog plana"). What it could not say before:
      HOW a key calls (REST / MCP / the WebSocket stream - botkeys2.via + BotStream presence), WHAT it calls (per-key endpoint
@@ -1670,7 +1670,7 @@
             + card('Who is on a plan', apGrant + tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free = 7-day trial on the engine, market data always free · Pro $39 · Max $99 · Business $199 · site Premium does not raise any API limit');
         })()
       + card('What the API is used for', bars((d.byEp || []).map(function (e) { return { l: e.ep, n: e.n }; }), 'l', 'n'), 'calls per endpoint, last 14 days · price/klines are keyless and not attributed · data = market-data calls sent with a key')
-      + (d.webhooks ? card('Webhooks (API Pro and Max)', '<div class="grid g4">' + tile(N(d.webhooks.active), 'active hooks', d.webhooks.active ? '' : 'dim', N(d.webhooks.accounts) + ' account' + (d.webhooks.accounts === 1 ? '' : 's')) + tile(N(d.webhooks.paused), 'paused after failures', d.webhooks.paused ? 'amber' : 'dim') + tile(N(d.webhooks.delivered), 'deliveries, lifetime', 'dim') + tile(N(d.webhooks.pending), 'queued right now', d.webhooks.pending > 50 ? 'amber' : 'dim') + '</div>', 'a paused hook is one that failed 25 times in a row; its owner sees why in GET /v1/webhooks') : '')
+      + (d.webhooks ? card('Webhooks (API Premium)', '<div class="grid g4">' + tile(N(d.webhooks.active), 'active hooks', d.webhooks.active ? '' : 'dim', N(d.webhooks.accounts) + ' account' + (d.webhooks.accounts === 1 ? '' : 's')) + tile(N(d.webhooks.paused), 'paused after failures', d.webhooks.paused ? 'amber' : 'dim') + tile(N(d.webhooks.delivered), 'deliveries, lifetime', 'dim') + tile(N(d.webhooks.pending), 'queued right now', d.webhooks.pending > 50 ? 'amber' : 'dim') + '</div>', 'a paused hook is one that failed 25 times in a row; its owner sees why in GET /v1/webhooks') : '')
       + fold('Idle and revoked keys', tbl([{ h: 'owner · key', grow: true, f: ownerCell }, { h: 'plan · ends', f: planCell }, { h: 'how', f: howCell }, { h: 'lifetime', r: true, mono: true, f: function (k) { return N(k.calls); } }, { h: 'last call', mono: true, f: lastCell }, { h: 'created', mono: true, f: function (k) { return dt(k.created).slice(0, 10); } }], rest, 'none'), rest.length + ' keys with no call in 14 days', false);
   }, wire: function (el, d, paint) {
     var plan = AP_PLAN_SEL, days = AP_DAYS_SEL;

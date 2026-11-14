@@ -3,15 +3,13 @@
 // thing a future refactor could quietly undo.
 //   - a fresh member is on Free: 120/min, 3 keys, 50 positions, webhooks 402, /v1/ai 402
 //   - PREMIUM GRANTED -> every one of those numbers is unchanged (the regression test that matters)
-//   - API Pro granted -> 600/min, 3 webhooks, 50 AI reads, report breakdowns, keyed data limit 600
-//   - API Max granted -> 2000/min, 30 keys, 500 positions, 15 webhooks, 200 AI reads
-//   - API Business granted -> 5000/min, 100 keys, 1000 positions, 50 webhooks, 500 AI reads
+//   - API Premium granted -> 2000/min, 30 keys, 500 positions, 20 books, 15 webhooks, the market archive, keyed data limit 2000
 //   - the plan rides on every response as X-MP-Plan; inside 14 days the expiry and days left join it
 //   - a paid plan keeps 90 days of history and report; Free keeps 30 and says so rather than silently truncating
 //   - v2 /positions nudges a caller that ignores the ETag towards the stream; v1 stays byte-frozen
 //   - the free month (src:'trial') shows up as free_month.days_left on every /v1/usage
 //   - an expired plan falls back to Free on its own
-//   - GET /api/apiplan is a keyless catalogue and carries four plans with the published prices
+//   - GET /api/apiplan is a keyless catalogue and carries the two plans (Free, API Premium $11.99) since 2026-11-14
 //   - paying from the rewards balance: too little = 402 with the balance, enough = plan + a row in the book
 //   - buying a second month EXTENDS rather than replaces; buying a smaller plan while a bigger one runs is refused
 // Cleans up after itself (plan revoked, member scrubbed, payment rows purged).
@@ -40,11 +38,11 @@ const usage = async () => (await bot('/usage')).body.data || {};
   const kj = await kr.json().catch(() => ({}));
   KEY = kj.key || (kj.keys && kj.keys[0] && kj.keys[0].k) || '';
   chk('API key created', /^mpb_/.test(KEY));
-  chk('key response carries the plan catalogue, priced in ascending order', Array.isArray(kj.plans) && kj.plans.length === 5 && kj.plans[0].price_usd === 0 && kj.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
+  chk('key response carries the plan catalogue, priced in ascending order', Array.isArray(kj.plans) && kj.plans.length === 2 && kj.plans[0].price_usd === 0 && kj.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
 
   // ── the catalogue is public ───────────────────────────────────────────────────────────────────────────────
   const cat = await (await fetch(ORIGIN + '/api/apiplan')).json().catch(() => ({}));
-  chk('GET /api/apiplan is keyless and lists five plans', Array.isArray(cat.plans) && cat.plans.length === 5 && cat.plans.map(p => p.plan).join(',') === 'free,lab,pro,max,business', (cat.plans || []).map(p => p.plan));
+  chk('GET /api/apiplan is keyless and lists two plans', Array.isArray(cat.plans) && cat.plans.length === 2 && cat.plans.map(p => p.plan).join(',') === 'free,premium', (cat.plans || []).map(p => p.plan));
   chk('the catalogue starts free and every tier costs more than the one below', !!cat.plans && cat.plans[0].price_usd === 0 && cat.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (cat.plans || []).map(p => p.id + ':' + p.price_usd).join(' '));
   // keyed by whichever name the catalogue uses - the key response calls it `plan`, the catalogue `id`,
   // and reading only one of them left every price comparison against `undefined` and passing nothing
@@ -77,56 +75,32 @@ const usage = async () => (await bot('/usage')).body.data || {};
   chk('Premium leaves the keyed data limit at 120', dr.headers.get('x-ratelimit-limit') === '120', { limit: dr.headers.get('x-ratelimit-limit') });
   await admin('/api/admin/premium?remove=' + encodeURIComponent(USERNAME));
 
-  // ── Pro ───────────────────────────────────────────────────────────────────────────────────────────────────
-  let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 30, src: 'e2e' });
-  chk('API Pro granted', g.status === 200 && g.body.ok && g.body.plan === 'pro' && g.body.tier === 2, g.body);
+  // ── API Premium (the one paid plan since 2026-11-14) ─────────────────────────────────────────────────────
+  let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', days: 30, src: 'e2e' });
+  chk('API Premium granted', g.status === 200 && g.body.ok && g.body.plan === 'premium' && g.body.tier === 1, g.body);
   await resync();
   u = await usage();
-  chk('Pro: 600/min, 10 keys, 200 positions, 5 books', u.plan === 'pro' && u.limits.requests_per_minute === 600 && u.limits.max_keys === 10 && u.limits.max_open_positions === 200 && u.limits.max_books === 5, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
-  chk('Pro: 3 webhooks, and no AI allowance is advertised any more', u.features.webhooks === 3 && !u.features.ai_market_read, u.features && { wh: u.features.webhooks, ai: u.features.ai_market_read });
-  chk('Pro: report breakdowns on, plan end reported', u.features.report_breakdowns === true && u.plan_days_left > 28 && u.plan_days_left <= 30, { days: u.plan_days_left });
-  chk('Pro: usage prints the price of the plan it is on', u.plan_price_usd === PRICE.pro, { price: u.plan_price_usd, catalogue: PRICE.pro });
+  chk('Premium: 2000/min, 30 keys, 500 positions, 20 books', u.plan === 'premium' && u.limits.requests_per_minute === 2000 && u.limits.max_keys === 30 && u.limits.max_open_positions === 500 && u.limits.max_books === 20, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
+  chk('Premium: 15 webhooks, the market archive, the raw book, no AI', u.features.webhooks === 15 && u.features.market_archive === true && u.features.raw_order_book === true && !u.features.ai_market_read, u.features);
+  chk('Premium: report breakdowns on, plan end reported, priced as the catalogue says', u.features.report_breakdowns === true && u.plan_days_left > 28 && u.plan_days_left <= 30 && u.plan_price_usd === PRICE.premium, { days: u.plan_days_left, price: u.plan_price_usd });
   r = await bot('/webhooks');
-  chk('Pro can list webhooks (no 402)', r.status === 200 && Array.isArray(r.body.data.webhooks) && r.body.data.max === 3, r.body.data && { max: r.body.data.max });
+  chk('Premium can list webhooks, cap 15 in the DO too', r.status === 200 && Array.isArray(r.body.data.webhooks) && r.body.data.max === 15, r.body.data && { max: r.body.data.max });
   r = await bot('/report?days=30');
-  chk('Pro report: plan + breakdowns true, deprecated premium alias still true', r.status === 200 && r.body.data.plan === 'pro' && r.body.data.breakdowns === true && r.body.data.premium === true, r.body.data && { plan: r.body.data.plan });
+  chk('Premium report: breakdowns true, deprecated premium alias still true', r.status === 200 && r.body.data.breakdowns === true && r.body.data.premium === true, r.body.data && { plan: r.body.data.plan });
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
-  chk('keyed data limit is 600 on Pro', dr.headers.get('x-ratelimit-limit') === '600', { limit: dr.headers.get('x-ratelimit-limit') });
-
-  // ── Max ───────────────────────────────────────────────────────────────────────────────────────────────────
-  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'max', days: 30, src: 'e2e' });
-  chk('API Max granted', g.status === 200 && g.body.plan === 'max' && g.body.tier === 3, g.body && { plan: g.body.plan });
-  await resync();
-  u = await usage();
-  chk('Max: 2000/min, 30 keys, 500 positions, 20 books', u.plan === 'max' && u.limits.requests_per_minute === 2000 && u.limits.max_keys === 30 && u.limits.max_open_positions === 500 && u.limits.max_books === 20, { rpm: u.limits.requests_per_minute });
-  chk('Max: 15 webhooks, no AI allowance advertised', u.features.webhooks === 15 && !u.features.ai_market_read, u.features && { wh: u.features.webhooks });
-  r = await bot('/webhooks');
-  chk('Max webhook cap is 15 in the DO too', r.status === 200 && r.body.data.max === 15, r.body.data && { max: r.body.data.max });
-
-  // ── Business ──────────────────────────────────────────────────────────────────────────────────────────────
-  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'business', days: 30, src: 'e2e' });
-  chk('API Business granted', g.status === 200 && g.body.plan === 'business' && g.body.tier === 4, g.body && { plan: g.body.plan });
-  await resync();
-  u = await usage();
-  chk('Business: 5000/min, 100 keys, 1000 positions, 50 books', u.plan === 'business' && u.limits.requests_per_minute === 5000 && u.limits.max_keys === 100 && u.limits.max_open_positions === 1000 && u.limits.max_books === 50, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
-  chk('Business: 50 webhooks, no AI allowance advertised, priced as the catalogue says', u.features.webhooks === 50 && !u.features.ai_market_read && u.plan_price_usd === PRICE.business, u.features && { wh: u.features.webhooks, price: u.plan_price_usd, catalogue: PRICE.business });
-  r = await bot('/webhooks');
-  chk('Business webhook cap is 50 in the DO too', r.status === 200 && r.body.data.max === 50, r.body.data && { max: r.body.data.max });
-  dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
-  chk('keyed data limit is 5000 on Business', dr.headers.get('x-ratelimit-limit') === '5000', { limit: dr.headers.get('x-ratelimit-limit') });
-  // the ladder must be ordered - a smaller plan cannot be bought over a bigger live one
-  buy = await site('/api/apiplan/buy', { plan: 'pro' });
-  chk('buying a smaller plan while Business runs is refused', buy.status === 409 && buy.body.error === 'downgrade_blocked', buy.body && buy.body.error);
+  chk('keyed data limit is 2000 on Premium', dr.headers.get('x-ratelimit-limit') === '2000', { limit: dr.headers.get('x-ratelimit-limit') });
+  r = await bot('/history?dataset=liquidations&day=2026-10-07');
+  chk('Premium downloads a day of the market archive', r.status === 200 || r.status === 404, { status: r.status });
 
 
   // ── what a plan holder is TOLD (2026-09-15) ──────────────────────────────────────────────────────────────
   // A plan that lapses in silence is the worst thing that can happen to an unattended bot, so three things
   // have to hold: the plan rides on every response, the expiry appears once it is close enough to act on and
   // NOT before, and the human gets a mail before the bot gets a 429.
-  await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 5, src: 'e2e' });
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', days: 5, src: 'e2e' });
   await resync();
   let hr = await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY, 'x-admin-key': K } });
-  chk('every keyed response names the plan', hr.headers.get('x-mp-plan') === 'pro', { plan: hr.headers.get('x-mp-plan') });
+  chk('every keyed response names the plan', hr.headers.get('x-mp-plan') === 'premium', { plan: hr.headers.get('x-mp-plan') });
   chk('inside 14 days it also carries the date and the days left', !!hr.headers.get('x-mp-plan-expires') && +hr.headers.get('x-mp-plan-days-left') === 5,
     { expires: hr.headers.get('x-mp-plan-expires'), days: hr.headers.get('x-mp-plan-days-left') });
   u = await usage();
@@ -159,7 +133,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
     chk('the expiry notice would catch this account', !!expRow && expRow.days >= 4 && expRow.days <= 6, expRow || { listed: expRows.length, mine: 0 });
   }
 
-  await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 60, src: 'e2e' });
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', days: 60, src: 'e2e' });
   await resync();
   hr = await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY, 'x-admin-key': K } });
   chk('a plan that is far away raises no expiry noise', !hr.headers.get('x-mp-plan-expires'), { expires: hr.headers.get('x-mp-plan-expires') || 'none' });
@@ -188,16 +162,16 @@ const usage = async () => (await bot('/usage')).body.data || {};
   // every run with nothing wrong - the plan resolved to free exactly as designed. What the leg tests is the
   // MECHANISM (a src:trial grant gives the Pro ceilings and a free_month countdown), not a date in history.
   const monthEnd = Date.now() + 12 * 86400000;
-  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', until: monthEnd, src: 'trial' });
+  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', until: monthEnd, src: 'trial' });
   chk('free month granted (src trial)', g.status === 200 && g.body.src === 'trial', g.body && { src: g.body.src });
   await resync();
   u = await usage();
   chk('usage carries free_month with a countdown', !!u.free_month && u.free_month.days_left >= 0 && /30 September|free/i.test(u.free_month.note || 'free'), u.free_month && { days: u.free_month.days_left });
-  chk('free month still gives the Pro ceilings', u.plan === 'pro' && u.limits.requests_per_minute === 600);
+  chk('free month still gives the Premium ceilings', u.plan === 'premium' && u.limits.requests_per_minute === 2000);
   chk('plan_source says trial', u.plan_source === 'trial', { src: u.plan_source });
 
   // ── an expired plan falls back on its own ────────────────────────────────────────────────────────────────
-  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', until: Date.now() - 60000, src: 'e2e' });
+  g = await admin('/api/admin/apiplans', { uid: UID, plan: 'premium', until: Date.now() - 60000, src: 'e2e' });
   // api:sub is KV and KV is EVENTUALLY consistent: apiPlanGrant DELETES the row for an expiry in the past, and a
   // read in the same breath still returns the copy it replaced. Measured 2026-10-13 - the row was gone 8 s later,
   // so the mechanism was never wrong and this check was racing the store (the waitXpCache lesson, different cache).
@@ -207,20 +181,20 @@ const usage = async () => (await bot('/usage')).body.data || {};
 
   // ── paying from the rewards balance ──────────────────────────────────────────────────────────────────────
   await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });
-  buy = await site('/api/apiplan/buy', { plan: 'pro' });
+  buy = await site('/api/apiplan/buy', { plan: 'premium' });
   // a member who never claimed a reward has no ledger row at all; that must still read as "not enough", never as no_account
-  chk('buying with an empty balance is 402 insufficient and names the price', buy.status === 402 && buy.body.error === 'insufficient' && buy.body.price_usd === PRICE.pro && buy.body.balance === 0, buy.body);
-  const gift = await admin('/api/admin/credit', { uid: UID, usd: Math.ceil(PRICE.pro) + 6, note: 'apiplan-e2e' });
+  chk('buying with an empty balance is 402 insufficient and names the price', buy.status === 402 && buy.body.error === 'insufficient' && buy.body.price_usd === PRICE.premium && buy.body.balance === 0, buy.body);
+  const gift = await admin('/api/admin/credit', { uid: UID, usd: Math.ceil(PRICE.premium) + 6, note: 'apiplan-e2e' });
   const funded = gift.status === 200;
   if (funded) {
-    buy = await site('/api/apiplan/buy', { plan: 'pro' });
-    chk('paid from balance: Pro is active for ~30 days', buy.status === 200 && buy.body.ok && buy.body.plan === 'pro' && buy.body.days_left >= 29 && buy.body.days_left <= 30, buy.body && { plan: buy.body.plan, days: buy.body.days_left });
+    buy = await site('/api/apiplan/buy', { plan: 'premium' });
+    chk('paid from balance: API Premium is active for ~30 days', buy.status === 200 && buy.body.ok && buy.body.plan === 'premium' && buy.body.days_left >= 29 && buy.body.days_left <= 30, buy.body && { plan: buy.body.plan, days: buy.body.days_left });
     await resync();
     u = await usage();
-    chk('the paid plan applies to the key immediately, no cron wait', u.plan === 'pro' && u.limits.requests_per_minute === 600 && u.plan_source === 'paid', { plan: u.plan, src: u.plan_source });
+    chk('the paid plan applies to the key immediately, no cron wait', u.plan === 'premium' && u.limits.requests_per_minute === 2000 && u.plan_source === 'paid', { plan: u.plan, src: u.plan_source });
     const book = await admin('/api/admin/apiplans?e2e=1');
     const mine = (book.body.payments || []).filter(p => p.acct === 'u:' + UID);
-    chk('the payment landed in the API book (its own table, not the Premium one)', mine.length === 1 && mine[0].cents === Math.round(PRICE.pro * 100) && mine[0].via === 'balance', mine[0]);
+    chk('the payment landed in the API book (its own table, not the Premium one)', mine.length === 1 && mine[0].cents === Math.round(PRICE.premium * 100) && mine[0].via === 'balance', mine[0]);
     const prem = await admin('/api/admin/prempay?e2e=1');
     chk('the Premium book did NOT move', !((prem.body.rows || []).some(p => p.acct === 'u:' + UID)), (prem.body.rows || []).filter(p => p.acct === 'u:' + UID).length);
     buy = await site('/api/apiplan/buy', { plan: 'free' });
@@ -237,72 +211,46 @@ const usage = async () => (await bot('/usage')).body.data || {};
   const mk2 = await admin('/api/admin/e2euser', { uid: UID2, op: 'mk' });
   const se2 = await admin('/api/admin/e2euser', { uid: UID2, op: 'sess' });
   chk('second e2e member minted', mk2.status === 200 && !!se2.body.token);
-  await admin('/api/admin/apiplans', { uid: UID2, plan: 'pro', days: 7, src: 'e2e' }); // plan FIRST, key after
+  await admin('/api/admin/apiplans', { uid: UID2, plan: 'premium', days: 7, src: 'e2e' }); // plan FIRST, key after
   const kr2 = await fetch(ORIGIN + '/api/bot/key', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + se2.body.token }, body: JSON.stringify({ act: 'create', name: 'first' }) });
   const kj2 = await kr2.json().catch(() => ({}));
-  chk('the first key of an account already on Pro is minted ON Pro', kj2.plan && kj2.plan.tier === 'pro' && kj2.plan.requests_per_minute === 600 && kj2.plan.max_keys === 10, kj2.plan && { tier: kj2.plan.tier, rpm: kj2.plan.requests_per_minute });
+  chk('the first key of an account already on Premium is minted ON Premium', kj2.plan && kj2.plan.tier === 'premium' && kj2.plan.requests_per_minute === 2000 && kj2.plan.max_keys === 30, kj2.plan && { tier: kj2.plan.tier, rpm: kj2.plan.requests_per_minute });
   const KEY2 = kj2.key || (kj2.keys && kj2.keys[0] && kj2.keys[0].k) || '';
   const u2 = await (await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY2, 'x-admin-key': K } })).json().catch(() => ({}));
-  chk('and that key really authenticates at 600/min', u2.ok && u2.data && u2.data.plan === 'pro' && u2.data.limits.requests_per_minute === 600, u2.data && { plan: u2.data.plan, rpm: u2.data.limits.requests_per_minute });
+  chk('and that key really authenticates at 2000/min', u2.ok && u2.data && u2.data.plan === 'premium' && u2.data.limits.requests_per_minute === 2000, u2.data && { plan: u2.data.plan, rpm: u2.data.limits.requests_per_minute });
   await admin('/api/admin/apiplans', { uid: UID2, plan: 'free' });
   await admin('/api/admin/e2euser', { uid: UID2, op: 'rm' });
 
-  // ── EVERY PUBLIC SURFACE AGREES WITH API_PLANS (2026-10-10) ──────────────────────────────────────────────
-  // Added after a reprice to $39/$99/$199 on 2026-09-22 left FIVE surfaces on $29/$79/$159 for nineteen days:
-  // BOT_ERR.plan_required, the webhooks refusal hint, the page's hero note, its comparison table and its
-  // JSON-LD Offers - so one response body quoted two prices for one plan, and search engines indexed a 26%
-  // discount that did not exist. API_PLANS in src/worker.js is the authority; everything else must match it.
   {
+    // ── EVERY PUBLIC SURFACE AGREES WITH API_PLANS (2026-10-10; two plans since 2026-11-14) ─────────────────
+    // Added after a reprice left FIVE surfaces on an old price for nineteen days. API_PLANS in src/worker.js is the
+    // authority; the price has cents now ($11.99), so every figure is compared as a cents-exact number.
     const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
-    // API_PLANS is DERIVED since 2026-10-25 (list price minus API_PROMO), so the LIST table is the authority and
-    // the suite repeats the one discount rule: a percent off, rounded DOWN to the whole dollar so the buyer
-    // always gets at least the percentage promised. Reading `const API_PLANS = [` as a literal crashed here.
-    const tbl = src.slice(src.indexOf('const API_PLANS_RAW = ['), src.indexOf('\n];', src.indexOf('const API_PLANS_RAW = [')));
-    const PCT = (() => { const m = src.match(/API_PROMO = \{ pct: (\d+)/); return m ? +m[1] : 0; })();
-    const promoC = (c) => (PCT > 0 && c > 0) ? Math.floor((c * (100 - PCT)) / 10000) * 100 : c;
-    const PL = {};
-    for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'/g)) {
-      const noPromo = /nopromo:\s*true/.test(tbl.slice(m.index, tbl.indexOf('}', m.index))); // Lab is never discounted
-      const list = +m[2], now = noPromo ? list : promoC(list);
-      PL[m[1]] = { usd: Math.round(now / 100), wasUsd: now !== list ? Math.round(list / 100) : 0, label: m[3] };
-    }
-    chk('API_PLANS parses, five plans (Lab since 2026-11-14)', ['free', 'lab', 'pro', 'max', 'business'].every(id => PL[id]), Object.keys(PL));
-    const P1 = PL.pro, M1 = PL.max, B1 = PL.business;
+    const m0 = src.match(/\{ id: 'premium', tier: 1, cents: (\d+)/);
+    chk('API_PLANS has exactly free + premium', !!m0 && !/\{ id: '(lab|pro|max|business)'/.test(src.slice(src.indexOf('const API_PLANS_RAW = ['), src.indexOf('\n];', src.indexOf('const API_PLANS_RAW = [')))));
+    const USD = m0 ? +m0[1] / 100 : 0, S = String(USD.toFixed(2)).replace(/\.00$/, '');
 
-    // 1. the live plan catalogue
+    // 1. the live plan catalogue, and the two paths that take money
     const cat = await site('/api/apiplan');
     const byId = {}; ((cat.body && cat.body.plans) || []).forEach(p => { byId[p.plan] = p; });
-    chk('/api/apiplan prices match API_PLANS', ['pro', 'max', 'business'].every(id => byId[id] && +byId[id].price_usd === PL[id].usd),
-      ['pro', 'max', 'business'].map(id => id + ':' + (byId[id] && byId[id].price_usd)).join(' '));
-
-    // 1b. THE PROMO, AND THE TWO PATHS THAT TAKE MONEY (2026-10-25). An advertised discount charged at the old
-    //     price is the worst outcome available here, and NOWPayments publishes no way to read an invoice back,
-    //     so /api/apiplan/checkout takes `dry:true` (admin key) and returns the real invoice body unsent.
-    const promoOn = PCT > 0;
-    chk('the catalogue publishes the promo' + (promoOn ? '' : ' (none running)'),
-      promoOn ? !!(cat.body && cat.body.promo && +cat.body.promo.percent_off === PCT) : !(cat.body && cat.body.promo),
-      cat.body && JSON.stringify(cat.body.promo));
-    if (promoOn) {
-      chk('every paid plan carries its struck list price', ['pro', 'max', 'business'].every(id => byId[id] && +byId[id].list_price_usd === PL[id].wasUsd),
-        ['pro', 'max', 'business'].map(id => id + ':' + (byId[id] && byId[id].list_price_usd) + ' want ' + PL[id].wasUsd).join(' '));
-      chk('and the discount is really at least the percentage promised', ['pro', 'max', 'business'].every(id => (1 - PL[id].usd / PL[id].wasUsd) * 100 >= PCT - 0.01),
-        ['pro', 'max', 'business'].map(id => id + ':' + ((1 - PL[id].usd / PL[id].wasUsd) * 100).toFixed(1) + '%').join(' '));
-    }
+    chk('/api/apiplan prices API Premium from API_PLANS', byId.premium && +byId.premium.price_usd === USD && byId.premium.market_archive === true, byId.premium);
+    chk('no promo is published on the one paid plan', !(cat.body && cat.body.promo) && !(byId.premium && byId.premium.list_price_usd), cat.body && cat.body.promo);
     {
       const UIDQ = 'e2einv' + Math.random().toString(36).slice(2, 5);
       await admin('/api/admin/e2euser', { uid: UIDQ, op: 'mk' });
       const sq = await admin('/api/admin/e2euser', { uid: UIDQ, op: 'sess' });
-      for (const id of ['pro', 'max', 'business']) {
-        const d = await (await fetch(ORIGIN + '/api/apiplan/checkout', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token, 'x-admin-key': K }, body: JSON.stringify({ plan: id, dry: true }) })).json().catch(() => ({}));
-        chk('the crypto invoice for ' + id + ' collects $' + PL[id].usd, !!(d.invoice && +d.invoice.price_amount === PL[id].usd), d.invoice && d.invoice.price_amount);
-        const b = await (await fetch(ORIGIN + '/api/apiplan/buy', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token }, body: JSON.stringify({ plan: id }) })).json().catch(() => ({}));
-        chk('and the balance path prices ' + id + ' at $' + PL[id].usd, b.price_usd == null || +b.price_usd === PL[id].usd, b.price_usd);
+      const d = await (await fetch(ORIGIN + '/api/apiplan/checkout', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token, 'x-admin-key': K }, body: JSON.stringify({ plan: 'premium', dry: true }) })).json().catch(() => ({}));
+      chk('the crypto invoice collects $' + S + ' and is tagged api_premium_', !!(d.invoice && +d.invoice.price_amount === USD && /^api_premium_/.test(d.invoice.order_id || '')), d.invoice && { amt: d.invoice.price_amount, id: d.invoice.order_id });
+      const b = await (await fetch(ORIGIN + '/api/apiplan/buy', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token }, body: JSON.stringify({ plan: 'premium' }) })).json().catch(() => ({}));
+      chk('and the balance path prices it at $' + S, b.price_usd == null || +b.price_usd === USD, b.price_usd);
+      for (const old of ['pro', 'max', 'business', 'lab']) {
+        const bo = await (await fetch(ORIGIN + '/api/apiplan/buy', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token }, body: JSON.stringify({ plan: old }) })).json().catch(() => ({}));
+        chk('a retired plan (' + old + ') cannot be bought', bo.error === 'bad_plan', bo.error);
       }
       await admin('/api/admin/e2euser', { uid: UIDQ, op: 'rm' });
     }
 
-    // 2. THE REFUSAL A DEVELOPER ACTUALLY RECEIVES. A free key asking for webhooks gets plan_required plus
-    //    the upgrade hint; both used to be literals, and one of them was stale.
+    // 2. THE REFUSAL A DEVELOPER ACTUALLY RECEIVES
     const UIDP = 'e2eprice' + Math.random().toString(36).slice(2, 5);
     await admin('/api/admin/e2euser', { uid: UIDP, op: 'mk' });
     const sp = await admin('/api/admin/e2euser', { uid: UIDP, op: 'sess' });
@@ -310,52 +258,31 @@ const usage = async () => (await bot('/usage')).body.data || {};
     const KP = kp.key || (kp.keys && kp.keys[0] && kp.keys[0].key) || '';
     const wh = await (await fetch(ORIGIN + '/api/bot/v2/webhooks', { headers: { 'x-api-key': KP } })).json().catch(() => ({}));
     const whTxt = JSON.stringify(wh);
-    const stale = [29, 79, 159, 49, 89].filter(n => new RegExp('\\$' + n + '(?:/month| a month)').test(whTxt) && ![P1.usd, M1.usd, B1.usd].includes(n));
-    chk('the webhooks refusal quotes no stale price', stale.length === 0, 'stale: ' + stale.join(','));
-    chk('and it quotes the live ones', [P1.usd, M1.usd, B1.usd].every(n => whTxt.indexOf('$' + n) >= 0), [P1.usd, M1.usd, B1.usd].join('/'));
+    chk('the webhooks refusal quotes $' + S + ' and names premium', whTxt.indexOf('$' + S) >= 0 && /API Premium/.test(whTxt), whTxt.slice(0, 200));
+    chk('and no retired plan', !/API (Pro|Max|Business|Lab)\b/.test(whTxt));
+    const hc = await (await fetch(ORIGIN + '/api/bot/v2/history', { headers: { 'x-api-key': KP } })).json().catch(() => ({}));
+    chk('a Free key reads the archive catalogue', hc.ok && hc.data && Array.isArray(hc.data.datasets) && hc.data.datasets.length >= 8 && hc.data.your_plan_can_download === false, hc.data && { n: (hc.data.datasets || []).length });
+    const hd = await fetch(ORIGIN + '/api/bot/v2/history?dataset=liquidations&day=2026-10-07', { headers: { 'x-api-key': KP } });
+    chk('and a Free key is refused the download with 402 naming premium', hd.status === 402, { status: hd.status });
     await admin('/api/admin/e2euser', { uid: UIDP, op: 'rm' });
 
-    // 3. THE PAGE, including the structured data a search engine indexes rather than the price a human sees.
+    // 3. THE PAGE, including the structured data a search engine indexes rather than the price a human sees
     const pg = await (await fetch(ORIGIN + '/trading-api/?cb=' + Date.now())).text();
-    const offers = [...pg.matchAll(/"@type":"Offer","name":"API (\w+)","price":"(\d+)"/g)].map(m => [m[1], +m[2]]);
-    chk('the page JSON-LD Offers match API_PLANS', offers.length === 4 && offers.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
-      offers.map(o => o.join(':')).join(' '));
-    const card = [...pg.matchAll(/class="appx">\$(\d+)<small>/g)].map(m => +m[1]);
-    chk('the price CARDS match API_PLANS', card.length === 4 && card[0] === PL.lab.usd && card[1] === P1.usd && card[2] === M1.usd && card[3] === B1.usd, card.join('/'));
-    if (PCT > 0) {
-      const sk = [...pg.matchAll(/class="apwas"><s>\$(\d+)<\/s>/g)].map(m => +m[1]);
-      chk('and each card shows its struck LIST price, so the discount is visible', sk.length === 3 && sk[0] === P1.wasUsd && sk[1] === M1.wasUsd && sk[2] === B1.wasUsd, sk.join('/'));
-      const visible = pg.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<s>[\s\S]*?<\/s>/g, ' ');
-      const leak = [P1, M1, B1].filter(pl => pl.wasUsd && new RegExp('\\$' + pl.wasUsd + '\\b').test(visible)).map(pl => '$' + pl.wasUsd);
-      chk('and no list price is left on the page UNstruck', leak.length === 0, leak.join(' '));
-    }
-    const tblHdr = (pg.match(/Pro &middot; \$(\d+)<\/th><th>Max &middot; \$(\d+)/) || []).slice(1).map(Number);
-    chk('the comparison TABLE matches the cards (it disagreed by $10 for 19 days)', tblHdr.length === 2 && tblHdr[0] === P1.usd && tblHdr[1] === M1.usd, tblHdr.join('/'));
-    const faqP = +((pg.match(/API Pro \(\$(\d+) a month\)/) || [])[1] || 0);
-    chk('the JSON-LD FAQ answer matches too', faqP === P1.usd, faqP);
-    const heroP = +((pg.match(/Pro is \$(\d+)<\/a>/) || [])[1] || 0);
-    chk('and the hero note', heroP === P1.usd, heroP);
+    const offers = [...pg.matchAll(/"@type":"Offer","name":"([^"]+)","price":"(\d+(?:\.\d\d)?)"/g)].map(m => [m[1], +m[2]]);
+    chk('the page JSON-LD Offers are Free $0 and API Premium $' + S, offers.length === 2 && offers[0][1] === 0 && offers[1][0] === 'API Premium' && offers[1][1] === USD, offers.map(o => o.join(':')).join(' '));
+    const card = [...pg.matchAll(/class="appx">\$(\d+(?:\.\d\d)?)(?:<small>| <small)/g)].map(m => +m[1]);
+    chk('the price CARDS are $0 and $' + S, card.length === 2 && card[0] === 0 && card[1] === USD, card.join('/'));
+    const vis = pg.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ');
+    chk('no retired plan is named on the page', !/API (Pro|Max|Business|Lab)\b|Get (Pro|Max|Business|Lab)\b/.test(vis));
+    chk('the comparison TABLE matches', new RegExp('<th>API Premium &middot; \\$' + S.replace('.', '\\.') + '</th>').test(pg));
+    chk('the JSON-LD FAQ answer matches', new RegExp('API Premium \\(\\$' + S.replace('.', '\\.') + ' a month\\)').test(pg));
+    chk('and the hero note', new RegExp('API Premium is \\$' + S.replace('.', '\\.') + '</a>').test(pg));
+    chk('/v1/history is documented on the page', pg.indexOf('id="history"') >= 0);
 
     // 4. the AI layer, which is how an assistant answers "what does it cost"
     for (const f of ['/llms.txt', '/llms-full.txt']) {
-      const t = await (await fetch(ORIGIN + f)).text();
-      const m = t.match(/API Pro \$(\d+)\/mo, API Max \$(\d+)\/mo, API Business \$(\d+)\/mo/);
-      chk(f + ' quotes the live plan prices', !!m && +m[1] === P1.usd && +m[2] === M1.usd && +m[3] === B1.usd, m && m.slice(1).join('/'));
-    }
-
-    // 5. THE PACKAGE PAGE. npmjs.com and pypi.org render sdk/{js,python}/README.md as the SDK's own
-    //    documentation, so it is a price surface - and it was the one no script had ever looked at. It
-    //    still sold "Premium: 600/minute, 10 keys" on 2026-10-10, nineteen days after the reprice and
-    //    twenty-five after Premium stopped buying anything on this API at all.
-    //    `build/fix-sdk-readme.js` generates that table from API_PLANS; this is what notices if it is not re-run.
-    for (const rel of ['sdk/README.md', 'sdk/js/README.md', 'sdk/python/README.md']) {
-      let t = '';
-      try { t = require('fs').readFileSync(require('path').join(__dirname, '..', rel), 'utf8'); } catch (e) { t = ''; }
-      chk(rel + ' is readable', t.length > 400, t.length + ' bytes');
-      const rows = [...t.matchAll(/\|\s*(Free|Pro|Max|Business)\s+\$(\d+)\s*\|/g)].map((m2) => [m2[1], +m2[2]]);
-      chk(rel + ' prices every plan from API_PLANS', rows.length === 4 && rows.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
-        rows.map((r) => r.join(':')).join(' '));
-      chk(rel + ' no longer sells Premium as an API plan', !/Premium:\s*600\/minute/.test(t));
+      const t = await (await fetch(ORIGIN + f + '?cb=' + Date.now())).text();
+      chk(f + ' quotes API Premium at $' + S + ' and no retired plan as current', t.indexOf('API Premium $' + S) >= 0 || t.indexOf('API Premium ($' + S) >= 0, f);
     }
   }
   // ── cleanup ──────────────────────────────────────────────────────────────────────────────────────────────
