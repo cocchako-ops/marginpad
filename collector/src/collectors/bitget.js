@@ -5,10 +5,11 @@
 // Measured from here before writing this: subscribe ack, then one update per liquidation about 1.5 s after it happened.
 //   data[]: { symbol:'BTWUSDT', side:'buy'|'sell', price, amount, ts }
 // SIDE (Bitget doc: "Position side"): buy = a LONG position was liquidated, sell = a SHORT one.
-// AMOUNT IS THE BASE QUANTITY, WHATEVER THE DOC SAYS. The doc calls it "quote coin"; measured against live data it is not: BTC
-// rows carry 0.0055 and 0.0105 (dollars that small do not exist on a 66,000 BTC), every amount is a multiple of the
-// contract's lot step, and a 964.5 AVAX liquidation matched the 975-1004 AVAX of sells the tape printed in the same
-// millisecond. Notional = price x amount, the OKX bkPx shape (price is the liquidation price, not the fill).
+// AMOUNT IS THE QUOTE (USDT) VALUE, AS THE DOC SAYS (corrected 2026-11-14 the same afternoon). The first cut read it as the
+// base quantity from a small mismeasured sample and multiplied by the price again, so a $362 ETH liquidation was stored as
+// $654,764 and /rekt/'s top hits were all Bitget at $10-40M (owner noticed). Measured over the day's 253 rows: in 240 of them
+// amount / price lands exactly on the contract's lot step (ETH 361.874 / 1809.37 = 0.2000, SOL 36.111 / 72.222 = 0.5000), in 5
+// the other way. Notional = amount, qty = amount / price. collector/tools/fix-bitget-quote.js re-priced the stored rows.
 // Keepalive: the literal text 'ping' every 25 s; the server answers 'pong'.
 import { BaseCollector } from './base.js';
 
@@ -34,7 +35,7 @@ export class BitgetCollector extends BaseCollector {
       if (!(price > 0) || !(qty > 0)) continue;
       const side = d.side === 'buy' ? 'long_liquidated' : d.side === 'sell' ? 'short_liquidated' : null;
       if (!side) continue;
-      out.push({ ts: Number(d.ts) || Date.now(), exchange: 'bitget', symbol: m[1], side, price, qty, notional: price * qty });
+      out.push({ ts: Number(d.ts) || Date.now(), exchange: 'bitget', symbol: m[1], side, price, qty: qty / price, notional: qty });   // qty here is the published USDT amount
     }
     return out;
   }
