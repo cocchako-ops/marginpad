@@ -1031,7 +1031,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     + '.mpt-b{padding:12px 14px 14px}.mpt-stake{font-size:12.5px;line-height:1.45;color:#aab3bf;padding:10px 12px;border-radius:11px;background:rgba(240,195,90,.07);border:1px solid rgba(240,195,90,.22);margin-bottom:12px}.mpt-stake b{color:#f0c35a;font-weight:800;font-family:"Space Mono",monospace;letter-spacing:-.01em}'
     + '.mpt-win{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;font-size:12.5px;color:#c7cdd4;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:12px}.mpt-win .k{font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#6f7b89}.mpt-win b{color:#fff}.mpt-win .n{margin-left:auto;color:#8b97a5;font-size:11px}'
     + '.mpt-k{font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#6f7b89;margin:0 0 7px}.mpt-l{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:min(318px,40vh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:2px;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent)}.mpt-l.short{-webkit-mask-image:none;mask-image:none}.mpt-l::-webkit-scrollbar{width:4px}.mpt-l::-webkit-scrollbar-thumb{background:rgba(240,195,90,.35);border-radius:3px}'
-    + '.mpt-c{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}.mpt-c.mine{border-color:rgba(194,246,74,.35)}.mpt-ci{flex:1;min-width:0}.mpt-cs{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.mpt-cs b{font:800 14px "Space Mono",monospace;color:#fff}.mpt-cs i{font:700 9px "Space Mono",monospace;letter-spacing:.04em;padding:2px 6px;border-radius:4px;font-style:normal}.mpt-cs i.l{color:#34d99a;background:rgba(46,189,133,.15)}.mpt-cs i.s{color:#ff7b72;background:rgba(255,98,88,.15)}'
+    + '.mpt-c{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}.mpt-c.mine{border-color:rgba(194,246,74,.35)}.mpt-lev{font:600 11px/1.5 "Space Mono",monospace;font-style:normal;color:#dfe4ec;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:0 6px;border-radius:6px}.mpt-ci{flex:1;min-width:0}.mpt-cs{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.mpt-cs b{font:800 14px "Space Mono",monospace;color:#fff}.mpt-cs i{font:700 9px "Space Mono",monospace;letter-spacing:.04em;padding:2px 6px;border-radius:4px;font-style:normal}.mpt-cs i.l{color:#34d99a;background:rgba(46,189,133,.15)}.mpt-cs i.s{color:#ff7b72;background:rgba(255,98,88,.15)}'
     + '.mpt-roe{font:700 12px "Space Mono",monospace;color:#34d99a}.mpt-roe.l{color:#ff6c5c}.mpt-cb{font-size:11.5px;color:#8b97a5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpt-cb [data-lbu],.mpt-win [data-lbu]{color:#dfe4ec;font-weight:600;cursor:pointer}.mpt-cb [data-lbu]:hover,.mpt-win [data-lbu]:hover{color:#fff;text-decoration:underline}'
     + '.mpt-e{font-size:12.5px;color:#8b97a5;padding:12px;border-radius:11px;border:1px dashed rgba(255,255,255,.12);text-align:center;margin-bottom:12px}'
     + '.mpt-how{margin:0 0 12px;padding:0 0 0 18px;font-size:12px;line-height:1.5;color:#aab3bf}.mpt-how li{margin-bottom:4px}'
@@ -4085,9 +4085,21 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       + '<div class="ct-tk-f"><span>entry <code>' + fpx(t.entry) + '</code></span>' + (t.exit != null ? '<span>' + (open ? 'now' : 'exit') + ' <code>' + fpx(t.exit) + '</code></span>' : '') + '<em>' + (open ? 'live ticket' : __esT_mpauth("openTheTicket",'open the ticket')) + '</em></div>'
       + '</div>';
   }
+  /* The ids asked for in one tick go out as ONE request (?ids=, 40 a call) - opening a room used to send one per shared
+     trade in its history, 81 measured (2026-11-14). A snapshot is immutable, so a found one is kept for the page's life. */
+  var tsQ = [], tsT = 0, tsWait = {};
+  function tsFlush() {
+    tsT = 0; var q = tsQ; tsQ = [];
+    for (var i = 0; i < q.length; i += 40) (function (part) {
+      fetch('/api/tshare?ids=' + part.map(encodeURIComponent).join(',')).then(function (r) { return r.json(); }).then(function (d) {
+        var tk = (d && d.ok && d.tickets) || {};
+        part.forEach(function (id) { var w = tsWait[id]; delete tsWait[id]; if (!w) return; if (tk[id]) w.ok(tk[id]); else w.no(new Error('gone')); });
+      }).catch(function (e) { part.forEach(function (id) { var w = tsWait[id]; delete tsWait[id]; if (w) w.no(e); }); });
+    })(q.slice(i, i + 40));
+  }
   function load(id) {
     if (memo[id]) return memo[id];
-    memo[id] = fetch('/api/tshare?id=' + encodeURIComponent(id)).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok && d.ticket) return d.ticket; throw new Error('gone'); });
+    memo[id] = new Promise(function (ok, no) { tsWait[id] = { ok: ok, no: no }; tsQ.push(id); if (!tsT) tsT = setTimeout(tsFlush, 0); });
     memo[id].catch(function () { delete memo[id]; });
     return memo[id];
   }
@@ -4180,14 +4192,14 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     var mine = s && s.mine === c.id, cnt = +c.n || 0;
     var lbl = __esT_mpauth("totdVote", 'Vote') + (cnt ? ' · ' + cnt : '');
     var tip = c.own ? __esT_mpauth("totdOwn", 'Your nomination - the room votes') : __esT_mpauth("totdVoteT", 'Vote for this as the trade of the day');
-    return '<div class="mpt-c' + (mine ? ' mine' : '') + '" data-tpid="' + esc(c.id) + '"><div class="mpt-ci"><div class="mpt-cs"><b>' + esc(c.sym) + '</b><i class="' + (c.side === 'short' ? 's' : 'l') + '">' + (c.side === 'short' ? 'SHORT' : 'LONG') + '</i>' + tpRoe(c.roe) + '</div><div class="mpt-cb">' + __esT_mpauth("totdBy", 'by') + ' <span data-lbu="' + esc(c.by) + '" role="button" tabindex="0">@' + esc(c.by) + '</span>' + (c.own ? ' · ' + __esT_mpauth("totdYours", 'your nomination') : '') + '</div></div>'
+    return '<div class="mpt-c' + (mine ? ' mine' : '') + '" data-tpid="' + esc(c.id) + '"><div class="mpt-ci"><div class="mpt-cs"><b>' + esc(c.sym) + '</b><i class="' + (c.side === 'short' ? 's' : 'l') + '">' + (c.side === 'short' ? 'SHORT' : 'LONG') + '</i>' + (+c.lev > 0 ? '<em class="mpt-lev" title="' + __esT_mpauth('totdLev', 'Leverage') + '">' + (+c.lev % 1 ? (+c.lev).toFixed(1) : String(+c.lev)) + 'x</em>' : '') + tpRoe(c.roe) + '</div><div class="mpt-cb">' + __esT_mpauth("totdBy", 'by') + ' <span data-lbu="' + esc(c.by) + '" role="button" tabindex="0">@' + esc(c.by) + '</span>' + (c.own ? ' · ' + __esT_mpauth("totdYours", 'your nomination') : '') + '</div></div>'
       + '<button type="button" class="ct-tk-totdb cand' + (mine ? ' on' : '') + (c.own ? ' own' : '') + '" data-totdop="vote" data-totdid="' + esc(c.id) + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span>' + esc(lbl) + '</span></button></div>';
   }
   function tpPaint() {
     if (!tpEl) return; var s = totdS, body = tpEl.querySelector('.mpt-b'); if (!body) return;
     var cands = (s && s.cands) || [], n = cands.length;
     var h = '<div class="mpt-stake"><b>' + tpStake(s) + '</b> ' + __esT_mpauth("totdStake", 'to the author of the winning trade. The room votes until midnight UTC; the most votes wins, a tie goes to the bigger ROE.') + '</div>';
-    if (tpWin) h += '<div class="mpt-win"><span class="k">' + __esT_mpauth("totdYesterday", 'Yesterday') + '</span><b>' + esc(tpWin.sym) + ' ' + (tpWin.side === 'short' ? 'short' : 'long') + '</b>' + tpRoe(tpWin.roe) + ' <span data-lbu="' + esc(tpWin.by) + '" role="button" tabindex="0">@' + esc(tpWin.by) + '</span><span class="n">' + (+tpWin.n || 0) + ' ' + __esT_mpauth(+tpWin.n === 1 ? "totdVote1" : "totdVotes", +tpWin.n === 1 ? 'vote' : 'votes') + '</span></div>';
+    if (tpWin) h += '<div class="mpt-win"><span class="k">' + __esT_mpauth("totdYesterday", 'Yesterday') + '</span><b>' + esc(tpWin.sym) + ' ' + (tpWin.side === 'short' ? 'short' : 'long') + (+tpWin.lev > 0 ? ' ' + (+tpWin.lev % 1 ? (+tpWin.lev).toFixed(1) : String(+tpWin.lev)) + 'x' : '') + '</b>' + tpRoe(tpWin.roe) + ' <span data-lbu="' + esc(tpWin.by) + '" role="button" tabindex="0">@' + esc(tpWin.by) + '</span><span class="n">' + (+tpWin.n || 0) + ' ' + __esT_mpauth(+tpWin.n === 1 ? "totdVote1" : "totdVotes", +tpWin.n === 1 ? 'vote' : 'votes') + '</span></div>';
     h += '<div class="mpt-k">' + __esT_mpauth("totdToday", 'Today') + (n ? ' · ' + n : '') + '</div>';
     h += n ? '<div class="mpt-l' + (n <= 4 ? ' short' : '') + '">' + cands.map(function (c) { return tpRow(c, s); }).join('') + '</div>' : '<div class="mpt-e">' + __esT_mpauth("totdNone2", 'Nobody is running yet today - share a closed winning trade in the room and it is on the ballot.') + '</div>';
     // A SHARED WIN IS ON THE BALLOT BY ITSELF (2026-11-13): the second tap nobody made is gone from step one; Nominate stays for a loss or an older share

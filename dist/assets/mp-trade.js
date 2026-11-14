@@ -106,6 +106,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function fpDp(v){v=Math.abs(+v)||0;return v>=100?2:v>=10?3:v>=1?4:v>=0.1?5:v>=0.01?6:v>=0.001?7:8;}
   function fpx(x,dp){x=+x||0;dp=(dp!=null&&dp>=0)?dp:fpDp(x);return '$'+x.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
+  function liqPctS(x){x=+x;if(!isFinite(x))return '-';var a=Math.abs(x),d=a>=10?1:a>=1?2:a>=0.1?3:a>=0.01?4:a>=0.001?5:6;return (x>=0?'+':'-')+a.toFixed(d).replace(/(\.\d*?[1-9])0+$/,'$1').replace(/\.0+$/,'')+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   /* Mirror of home.js _tkFees - see the 2026-09-24 note there. Legacy rows carry feeRate 0 and collapse to
@@ -138,7 +139,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'-')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
-        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+pctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
+        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+liqPctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
         +'<div><span>SL</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b></div>'
         +'<div><span>TP</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b></div>'
       +'</div>'
@@ -584,7 +585,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_mptrade("priceStale",'stale'):'');if(lv.textContent!==lvv)lv.textContent=lvv;if(lv.classList.contains('stale')!==!!m.stale)lv.classList.toggle('stale',!!m.stale);}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
-      var bb=card.querySelector('.ppb');if(bb){var bbv=pctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
+      var bb=card.querySelector('.ppb');if(bb){var bbv=liqPctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
     });}
   var _jrScrollY=0,_jrLocked=false;
   function jrLockBody(){if(window.innerWidth<721&&!_jrLocked){_jrScrollY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_jrScrollY)+'px';document.documentElement.classList.add('jr-lock');_jrLocked=true;}}

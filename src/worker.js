@@ -9186,14 +9186,14 @@ async function totdBackfill(env, o) {
       if (snap.status !== 'win') { skip(snap.status || 'open'); continue; }
       if (/^e2e/i.test(String(snap.by || ''))) { skip('e2e'); continue; }
       if (o.dry) { out.entered.push({ id, by: snap.by, sym: snap.sym, dry: true }); continue; }
-      let r = null; try { r = await usersDO(env, '/totd/nominate', { day, id, byName: snap.by || '', author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, auto: 1 }); } catch (e) { r = null; }
+      let r = null; try { r = await usersDO(env, '/totd/nominate', { day, id, byName: snap.by || '', author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, auto: 1 }); } catch (e) { r = null; }
       if (r && r.ok) out.entered.push({ id, by: snap.by, sym: snap.sym });
       else { const er = (r && r.error) || 'store'; skip(er); if (['already_candidate', 'auto_cap', 'no_user', 'restricted'].indexOf(er) < 0) seenS.delete(id); } // only a FINAL answer is remembered - a store that did not answer, or that still runs the previous deploy (no_uid, measured on this very rollout), is asked again next pass
     }
   }
   if (!o.dry) {
     try { await env.STATS.put(seenK, JSON.stringify([...seenS].slice(-600)), { expirationTtl: 3 * 86400 }); } catch (e) {}
-    if (out.entered.length) { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + day)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + day + '_w')); } catch (e) {} }
+    if (out.entered.length) { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + day)); await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + day + '_w')); } catch (e) {} }
   }
   return out;
 }
@@ -9205,13 +9205,15 @@ async function handleTotd(url, request, env, ctx) {
     const day = /^\d{4}-\d{2}-\d{2}$/.test(String(url.searchParams.get('day') || '')) ? String(url.searchParams.get('day')) : today;
     const wantWin = url.searchParams.get('win') === '1';
     const e2e = url.searchParams.get('e2e') === '1'; // a test author's entry is hidden from the public ballot (the desk rule); the suite asks for it by name
-    if (!uid && !url.searchParams.get('nc') && !e2e) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
+    if (!uid && !url.searchParams.get('nc') && !e2e) { try { const hit = await caches.default.match(new Request('https://marginpad.io/__totd_v3_' + day + (wantWin ? '_w' : ''))); if (hit) return hit; } catch (e) {} }
     let bd = null; try { bd = await usersDO(env, '/totd/board', { day, uid, e2e }); } catch (e) { bd = null; }
     if (!bd || !bd.ok) return jt({ error: 'unavailable' }, 503);
+    // a candidate entered before the lev column existed reads it off its own share snapshot (one KV read each, behind the 20 s edge copy)
+    try { await Promise.all((bd.cands || []).filter(c => c.lev == null && c.id).map(async (c) => { const sn = await env.STATS.get('tshr:' + c.id, 'json'); if (sn && +sn.lev > 0) c.lev = +sn.lev; })); } catch (e) {}
     const out = { ok: true, day, today: day === today, cands: bd.cands, mine: uid ? bd.mine : null, nominated: uid ? !!bd.nominated : null, signedIn: !!uid, xp: TOTD_XP, usd: TOTD_USD_C / 100 };
     if (wantWin) { const yd = totdDayOf(Date.parse(day + 'T00:00:00Z') - 86400000); let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + yd)) || 'null'); } catch (e) {} if (win && /^e2e/i.test(String(win.by || ''))) win = null; out.win = win ? Object.assign({ day: yd }, win) : null; } // 2026-11-13: 11-12's only entry was the suite's, and "yesterday's winner" read e2e_... - a test author is never shown as a winner
     const resp = jt(out, 200, uid ? 'no-store' : 'public, max-age=20');
-    if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v2_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
+    if (!uid) { try { await caches.default.put(new Request('https://marginpad.io/__totd_v3_' + day + (wantWin ? '_w' : '')), resp.clone()); } catch (e) {} }
     return resp;
   }
   if (request.method !== 'POST') return jt({ error: 'method' }, 405);
@@ -9220,13 +9222,13 @@ async function handleTotd(url, request, env, ctx) {
   let b = {}; try { b = await request.json(); } catch (e) {}
   const id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), op = String(b.op || '');
   if (!id) return jt({ error: 'id_required' }, 400);
-  const bust = async () => { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + today)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + today + '_w')); } catch (e) {} };
+  const bust = async () => { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + today)); await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + today + '_w')); } catch (e) {} };
   if (op === 'nominate') {
     let snap = null; try { snap = env.STATS && await env.STATS.get('tshr:' + id, 'json'); } catch (e) {}
     if (!snap) return jt({ error: 'not_found' }, 404);
     if (snap.status !== 'win' && snap.status !== 'loss') return jt({ error: 'not_closed' }, 400); // a trade of the day is a finished trade
     const roe = snap.roe != null ? +snap.roe : (snap.margin > 0 && snap.pnl != null ? +snap.pnl / +snap.margin * 100 : null);
-    const r = await usersDO(env, '/totd/nominate', { day: today, id, uid, author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe, pnl: snap.pnl });
+    const r = await usersDO(env, '/totd/nominate', { day: today, id, uid, author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe, pnl: snap.pnl, lev: snap.lev });
     if (r && r.ok) { await bust(); try { if (ctx && ctx.waitUntil) ctx.waitUntil(evPush(env, request, 'totd', 'nominated ' + (snap.sym || '') + ' ' + (snap.side || '') + ' by @' + (snap.by || '?'), '/paper-trade?chat=1', {}, uid)); } catch (e) {} }
     return jt(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error ? 409 : 503));
   }
@@ -10492,7 +10494,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=73669c2c" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1d23ab08" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -21296,6 +21298,15 @@ async function handleAiChart(url, request, env, ectx) {
 async function handleTshare(url, request, env, ctx) {
   const jh = { 'content-type': 'application/json; charset=utf-8', ...CORS };
   const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { ...jh, 'cache-control': cc || 'no-store' } });
+  if (request.method === 'GET' && url.searchParams.get('ids')) {
+    /* ONE REQUEST FOR A WHOLE ROOM (2026-11-14): opening the chat hydrated every shared trade in the history with its own
+       request - measured 81 per open. Snapshots are immutable, so the batch is cached like the single read. */
+    const ids = [...new Set(String(url.searchParams.get('ids')).split(',').map(x => x.replace(/[^a-z0-9]/gi, '').slice(0, 16)).filter(Boolean))].slice(0, 40);
+    if (!ids.length) return jt({ error: 'id_required' }, 400);
+    const tickets = {};
+    await Promise.all(ids.map(async id => { try { const s = env.STATS && await env.STATS.get('tshr:' + id, 'json'); if (s) tickets[id] = s; } catch (e) {} }));
+    return jt({ ok: true, tickets }, 200, 'public, max-age=300');
+  }
   if (request.method === 'GET') {
     const id = String(url.searchParams.get('id') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
     if (!id) return jt({ error: 'id_required' }, 400);
@@ -21365,8 +21376,8 @@ async function handleTshare(url, request, env, ctx) {
     const enter = (async () => {
       try {
         const d = totdDayOf(Date.now());
-        const r = await usersDO(env, '/totd/nominate', { day: d, id, uid, author: snap.by || '', sym, side: snap.side, roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, auto: 1 });
-        if (r && r.ok) { await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + d)); await caches.default.delete(new Request('https://marginpad.io/__totd_v2_' + d + '_w')); }
+        const r = await usersDO(env, '/totd/nominate', { day: d, id, uid, author: snap.by || '', sym, side: snap.side, roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, auto: 1 });
+        if (r && r.ok) { await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + d)); await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + d + '_w')); }
       } catch (e) {}
     })();
     if (ctx && ctx.waitUntil) ctx.waitUntil(enter); else await enter;
@@ -23275,7 +23286,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd4f52c26';
+const ASSET_V = 'acbc0bd7';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -34976,6 +34987,7 @@ export class UserStore {
     // votes (one per member per day, replaceable) - in the store and not in KV, because a vote count in KV is a read-modify-write that
     // loses concurrent writes (measured 2026-10-18: five at once, one survived)
     try { s.exec('CREATE TABLE IF NOT EXISTS totdc(day TEXT, id TEXT, uid TEXT, author TEXT, sym TEXT, side TEXT, roe REAL, pnl REAL, ts INTEGER, PRIMARY KEY(day,id))'); } catch (e) {}
+    try { s.exec('ALTER TABLE totdc ADD COLUMN lev REAL'); } catch (e) {} // the leverage the trade ran at (2026-11-14, Emapola14: "el roi solo de por si no me dice mucho")
     try { s.exec('CREATE TABLE IF NOT EXISTS totdv(day TEXT, uid TEXT, id TEXT, ts INTEGER, PRIMARY KEY(day,uid))'); } catch (e) {}
     try { s.exec('ALTER TABLE totdc ADD COLUMN auto INTEGER DEFAULT 0'); } catch (e) {} // 2026-11-13: 1 = entered by the share itself, 0 = a hand nomination (the one-a-day quota counts these alone)
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
@@ -36698,10 +36710,10 @@ export class UserStore {
       // trade). Hidden unless the caller asks (`e2e`) or is itself a test account - the suite reads its own entries that way.
       const showE2e = !!b.e2e || /^e2e/i.test(uid);
       const board = (who) => {
-        const rows = this.rows("SELECT c.id, c.uid, c.author, c.sym, c.side, c.roe, c.pnl, c.ts, (SELECT COUNT(*) FROM totdv v WHERE v.day=c.day AND v.id=c.id) n FROM totdc c WHERE c.day=? AND (?=1 OR (c.author NOT LIKE 'e2e%' AND c.uid NOT LIKE 'e2e%')) ORDER BY n DESC, c.roe DESC, c.ts ASC LIMIT 50", day, showE2e ? 1 : 0);
+        const rows = this.rows("SELECT c.id, c.uid, c.author, c.sym, c.side, c.roe, c.pnl, c.lev, c.ts, (SELECT COUNT(*) FROM totdv v WHERE v.day=c.day AND v.id=c.id) n FROM totdc c WHERE c.day=? AND (?=1 OR (c.author NOT LIKE 'e2e%' AND c.uid NOT LIKE 'e2e%')) ORDER BY n DESC, c.roe DESC, c.ts ASC LIMIT 50", day, showE2e ? 1 : 0);
         const mine = who ? (this.rows('SELECT id FROM totdv WHERE day=? AND uid=?', day, who)[0] || {}).id || null : null;
         const nomd = who ? !!this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=? AND COALESCE(auto,0)=0', day, who)[0] : false; // the hand nomination spent - an automatic entry never spends it
-        return { day, cands: rows.map(r => ({ id: r.id, by: r.author || '', sym: r.sym || '', side: r.side || 'long', roe: r.roe == null ? null : +r.roe, pnl: r.pnl == null ? null : +r.pnl, n: +r.n || 0, ts: +r.ts || 0, own: !!(who && String(r.uid) === String(who)) })), mine, nominated: nomd };
+        return { day, cands: rows.map(r => ({ id: r.id, by: r.author || '', sym: r.sym || '', side: r.side || 'long', roe: r.roe == null ? null : +r.roe, pnl: r.pnl == null ? null : +r.pnl, lev: r.lev == null ? null : +r.lev, n: +r.n || 0, ts: +r.ts || 0, own: !!(who && String(r.uid) === String(who)) })), mine, nominated: nomd };
       };
       if (path === '/totd/board') return this.j({ ok: true, ...board(uid || null) });
       if (path === '/totd/nominate') {
@@ -36717,7 +36729,7 @@ export class UserStore {
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
         if (auto) { if ((this.rows('SELECT COUNT(*) c FROM totdc WHERE day=? AND uid=? AND auto=1', day, uid)[0] || { c: 0 }).c >= TOTD_AUTO_MAX) return this.j({ error: 'auto_cap', max: TOTD_AUTO_MAX, ...board(uid) }); }
         else if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=? AND COALESCE(auto,0)=0', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one hand nomination a day per member
-        this.state.storage.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts,auto) VALUES(?,?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now(), auto ? 1 : 0);
+        this.state.storage.sql.exec('INSERT INTO totdc(day,id,uid,author,sym,side,roe,pnl,ts,auto,lev) VALUES(?,?,?,?,?,?,?,?,?,?,?)', day, id, uid, String(b.author || '').slice(0, 24), String(b.sym || '').toUpperCase().slice(0, 12), b.side === 'short' ? 'short' : 'long', isFinite(+b.roe) ? +b.roe : null, isFinite(+b.pnl) ? +b.pnl : null, Date.now(), auto ? 1 : 0, (+b.lev > 0) ? +b.lev : null);
         return this.j({ ok: true, auto, ...board(uid) });
       }
       if (path === '/totd/vote') {

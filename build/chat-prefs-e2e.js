@@ -20,7 +20,14 @@ async function prep(p, tok) {
   await p.setCacheEnabled(false);
   await p.setCookie({ name: 'mp_sess', value: tok, domain: 'marginpad.io', path: '/' }, { name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/' });
   await p.setRequestInterception(true);
-  p.on('request', req => { const u = req.url(); if (/\/api\/tshare\?id=e2eprefs/.test(u)) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(TICKET) }); req.continue(); });
+  p.on('request', req => {
+    const u = req.url();
+    if (/\/api\/tshare\?id=e2eprefs/.test(u)) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(TICKET) });
+    // since 2026-11-14 a room's shares go out as one ?ids= batch: answer ours, ask the server for the rest
+    const m = /\/api\/tshare\?ids=([^&]+)/.exec(u);
+    if (m && /e2eprefs/.test(m[1])) { const tickets = {}; decodeURIComponent(m[1]).split(',').filter(id => /^e2eprefs/.test(id)).forEach(id => { tickets[id] = TICKET.ticket; }); return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, tickets }) }); }
+    req.continue();
+  });
 }
 // a chat row carrying a shared trade, exactly as linkifyMsg writes it
 const INJECT = (id) => `(function(){var ms=document.getElementById('ctMsgs');if(!ms)return false;var d=document.createElement('div');d.className='ct-msg';d.innerHTML='<span class="ct-body"><a class="ct-trade" data-trade="${id}" role="button" tabindex="0">trade:${id}</a></span>';ms.appendChild(d);return true;})()`;

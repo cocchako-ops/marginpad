@@ -637,6 +637,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function money(x){x=+x||0;var n=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return (x>=0?'+':'')+x.toFixed(2)+'%';}
+  function liqPctS(x){x=+x;if(!isFinite(x))return '-';var a=Math.abs(x),d=a>=10?1:a>=1?2:a>=0.1?3:a>=0.01?4:a>=0.001?5:6;return (x>=0?'+':'-')+a.toFixed(d).replace(/(\.\d*?[1-9])0+$/,'$1').replace(/\.0+$/,'')+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
   var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={},klCacheT={},_linesSig=null; /* klCacheT: when each window was stored - a set younger than 10 s is not fetched again (2026-10-22) */
@@ -764,7 +765,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'+(e.copy?'<div class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg><span>'+MT('jCopyFrom','Copied from')+(e.copyName?' <b data-lbu="'+esc(e.copyName)+'" role="button" tabindex="0">@'+esc(e.copyName)+'</b>':'')+'</span></div>':'')
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
-      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'-')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'-')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
+      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'-')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'-')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+liqPctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+__esT_home("closeButtonDataAct",'">Close</button><button data-act="edit" data-id="')+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
@@ -807,9 +808,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function _tkBar(e,m){var en=+e.entry||0,lq=+m.liq||0,lv=+m.live||0;
     if(!(en>0)||!(lq>0)||!(lv>0))return '';
     var span=Math.abs(en-lq);if(!(span>0)||!isFinite(span))return '';
-    var used=Math.max(0,Math.min(100,(1-Math.abs(lv-lq)/span)*100));
-    var away=Math.abs(+m.liqDist||0);
-    return '<div class="ptl-bar'+(used>=75?' hot':used>=45?' warm':'')+'" title="'+used.toFixed(0)+'% of the way from your entry to the liquidation price"><u><i style="width:'+used.toFixed(1)+'%"></i></u><em>'+away.toFixed(away<1?2:1)+'% to liq</em></div>';}
+    var gap=(m.long?lv-lq:lq-lv);/* signed: below 0 = past the liquidation price */
+    var used=Math.max(0,Math.min(100,(1-Math.max(0,gap)/span)*100));
+    var away=Math.max(0,gap)/lv*100,left=100-used;
+    var _dp=Math.max(2,Math.min(8,(String(lv).split('.')[1]||'').length));
+    var tip=left.toFixed(left<1?2:1)+'% of the buffer left: price can move '+Math.max(0,gap).toFixed(_dp)+' ('+liqPctS(away).slice(1)+') before liquidation at '+lq.toFixed(_dp);
+    return '<div class="ptl-bar'+(gap<=0||used>=90?' hot':used>=60?' warm':'')+'" title="'+tip+'"><u><i style="width:'+used.toFixed(2)+'%"></i></u><em>'+(gap<=0?'at liq':liqPctS(away).slice(1)+' to liq')+'</em></div>';}
   /* The one line the owner asked for: what a close costs, BEFORE it is pressed. */
   function _tkCost(e,m){var f=_tkFees(e,m);if(!f||f.book==null)return '';
     var b=f.book,bs=(b>=0?'+':'−')+'$'+Math.abs(b).toFixed(2);
@@ -1532,6 +1536,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat',__esT_home("shareToChat",'Share to chat'))+'" aria-label="'+MT('jShareChat',__esT_home("shareToChat",'Share to chat'))+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
+  function liqPctS(x){x=+x;if(!isFinite(x))return '-';var a=Math.abs(x),d=a>=10?1:a>=1?2:a>=0.1?3:a>=0.01?4:a>=0.001?5:6;return (x>=0?'+':'-')+a.toFixed(d).replace(/(\.\d*?[1-9])0+$/,'$1').replace(/\.0+$/,'')+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   /* SECOND COPY, on purpose. home.js is a stack of sibling IIFEs and this drawer lives in a different one from
@@ -1565,7 +1570,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'-')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
-        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+pctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
+        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+liqPctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
         +'<div><span>SL</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b></div>'
         +'<div><span>TP</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b></div>'
       +'</div>'
@@ -2188,7 +2193,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_home("priceStale",'stale'):'');if(lv.textContent!==lvv)lv.textContent=lvv;if(lv.classList.contains('stale')!==!!m.stale)lv.classList.toggle('stale',!!m.stale);}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
-      var bb=card.querySelector('.ppb');if(bb){var bbv=pctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
+      var bb=card.querySelector('.ppb');if(bb){var bbv=liqPctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
     });}
   var _jrScrollY=0,_jrLocked=false;
   function jrLockBody(){if(window.innerWidth<721&&!_jrLocked){_jrScrollY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_jrScrollY)+'px';document.documentElement.classList.add('jr-lock');_jrLocked=true;}}
