@@ -27,7 +27,7 @@ export class BybitCollector extends BaseCollector {
       const top = list
         .filter((t) => /USDT$/.test(t.symbol) && !/-/.test(t.symbol))
         .sort((a, b) => (parseFloat(b.turnover24h) || 0) - (parseFloat(a.turnover24h) || 0))
-        .slice(0, config.bybitTopN || 150)
+        .slice(0, config.bybitTopN > 0 ? config.bybitTopN : Infinity) // 0 = EVERY USDT perp (2026-11-14: 821 subscribe on one socket, measured)
         .map((t) => t.symbol);
       // always include the site's listed coins even if outside the top-N
       for (const s of this.symbols) { const sym = s + 'USDT'; if (!top.includes(sym)) top.push(sym); }

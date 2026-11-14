@@ -60,7 +60,10 @@ export class OkxCollector extends BaseCollector {
       const j = await r.json();
       let n = 0;
       for (const it of (j.data || [])) {
-        if (/^[A-Z0-9]+-USDT-SWAP$/.test(it.instId || '')) { this.ctVal[it.instId] = parseFloat(it.ctVal) || 1; n++; }
+        // USDT and USDC swaps: ctVal in the coin. USD (coin-margined) swaps: ctVal in USD (ctValCcy 'USD') - stored negative
+        // so parse() knows a contract is dollars, not coins (2026-11-14: USDC/USD swaps were dropped, ~0.5% of OKX).
+        if (/^[A-Z0-9]+-(USDT|USDC)-SWAP$/.test(it.instId || '')) { this.ctVal[it.instId] = parseFloat(it.ctVal) || 1; n++; }
+        else if (/^[A-Z0-9]+-USD-SWAP$/.test(it.instId || '') && it.ctValCcy === 'USD') { this.ctVal[it.instId] = -(parseFloat(it.ctVal) || 100); n++; }
       }
       log.info('[okx] loaded contract values', { count: n });
     } catch (e) {
@@ -84,7 +87,8 @@ export class OkxCollector extends BaseCollector {
           : d.posSide === 'short' ? 'short_liquidated'
           : d.side === 'sell' ? 'long_liquidated' : 'short_liquidated';
         const price = parseFloat(d.bkPx);
-        const qty = parseFloat(d.sz) * ct;
+        if (!this.ctVal[row.instId] && !/-USDT-SWAP$/.test(row.instId)) continue; // a USD/USDC swap whose contract value we never loaded: no guessing
+        const qty = ct < 0 ? (parseFloat(d.sz) * -ct) / price : parseFloat(d.sz) * ct; // negative ct = a USD contract (coin-margined)
         if (!(price > 0) || !(qty > 0)) continue;
         out.push({ ts: Number(d.ts) || Date.now(), exchange: 'okx', symbol: sym, side, price, qty, notional: price * qty });
       }
@@ -92,7 +96,7 @@ export class OkxCollector extends BaseCollector {
     return out;
   }
   _norm(instId) {
-    const m = /^([A-Z0-9]+)-USDT-SWAP$/.exec(instId || '');
-    return m ? m[1] : null;   // capture EVERY USDT-swap liquidation, market-wide
+    const m = /^([A-Z0-9]+)-(USDT|USDC|USD)-SWAP$/.exec(instId || '');
+    return m ? m[1] : null;   // capture EVERY swap liquidation, market-wide (USDT, USDC and coin-margined USD)
   }
 }

@@ -22,7 +22,7 @@ export class BitgetCollector extends BaseCollector {
     this.silenceMs = 40000;   // pongs arrive every 25 s, so 40 s of nothing is a dead socket
   }
   url() { return 'wss://ws.bitget.com/v3/ws/public'; }
-  subscribeFrames() { return [{ op: 'subscribe', args: [{ instType: 'usdt-futures', topic: 'liquidation' }] }]; }
+  subscribeFrames() { return [{ op: 'subscribe', args: [{ instType: 'usdt-futures', topic: 'liquidation' }, { instType: 'usdc-futures', topic: 'liquidation' }] }]; } // USDC perps arrive as NEARPERP (amount in USDC)
   pingFrame() { return 'ping'; }
   pingIntervalMs() { return 25000; }
 
@@ -33,7 +33,7 @@ export class BitgetCollector extends BaseCollector {
     if (j.event || !j.arg || j.arg.topic !== 'liquidation' || !Array.isArray(j.data)) return [];
     const out = [];
     for (const d of j.data) {
-      const m = /^([A-Z0-9]+)USDT$/.exec(String(d.symbol || '')); if (!m) continue;
+      const m = /^([A-Z0-9]+?)(USDT|PERP)$/.exec(String(d.symbol || '')); if (!m) continue;
       const price = parseFloat(d.price), qty = parseFloat(d.amount);
       if (!(price > 0) || !(qty > 0)) continue;
       const side = d.side === 'buy' ? 'long_liquidated' : d.side === 'sell' ? 'short_liquidated' : null;

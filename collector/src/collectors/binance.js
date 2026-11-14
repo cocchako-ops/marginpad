@@ -68,7 +68,8 @@ export class BinanceCollector extends BaseCollector {
     return out;
   }
   _norm(instr) {
-    if (!instr || !instr.endsWith(SUFFIX)) return null;
-    return instr.slice(0, -SUFFIX.length);   // all-market stream: keep every USDT-margined liquidation
+    // all-market stream: every USDT- AND USDC-margined perp (2026-11-14: USDC pairs were dropped here, ~0.5% of Binance)
+    const m = /^([A-Z0-9]+)(USDT|USDC)$/.exec(instr || '');
+    return m ? m[1] : null;
   }
 }

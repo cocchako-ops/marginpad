@@ -6,7 +6,7 @@ export const config = {
   // is rich and the staleness watchdog is reliable.
   symbols: ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'],
   bitmexEnabled: false,      // 2026-10-17: BitMEX 403s the droplet and Serbia alike (geo-block); 0 events ever. See src/index.js
-  bybitTopN: 400,            // subscribe to the 400 most-active Bybit linear perps (Bybit has no all-market topic). Was 150: measured 2026-10-17 against Coinglass for the same 24 h, Bybit read $24.4M here vs $34.3M there (71%) while Binance/OKX/Gate sat at 89-93% - the long tail below the top 150 was the gap
+  bybitTopN: 0,              // 0 = every Bybit linear USDT perp (2026-11-14: 821 measured to subscribe cleanly on one socket; 400 left ~420 small pairs unread).            // subscribe to the 400 most-active Bybit linear perps (Bybit has no all-market topic). Was 150: measured 2026-10-17 against Coinglass for the same 24 h, Bybit read $24.4M here vs $34.3M there (71%) while Binance/OKX/Gate sat at 89-93% - the long tail below the top 150 was the gap
 
   // Binance futures WebSocket is geo-blocked in some regions (socket opens, 0 data). Set BINANCE_PROXY to an
   // HTTP(S) CONNECT proxy in an allowed region (e.g. http://user:pass@host:port) to route ONLY Binance through
