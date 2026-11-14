@@ -3,25 +3,32 @@
 const { CLASSES } = require('./markets');
 
 /* ---------- English ---------- */
+/* A moving average or a rate of change of anything but the close names its input: "SMA(20)" alone read as an average of
+   price where the rule averages volume, OBV or our liquidation feed (2026-11-15: "Go long when ext is above 4 x SMA(336)"). */
+const EXT = { fund: 'the funding rate', liqL: "the bar's long liquidation total", liqS: "the bar's short liquidation total", oi: 'open interest' };
+const ofSrc = (a) => (Array.isArray(a) && a[0] === 'close' ? '' : ' of ' + say(a));
+const paren = (a) => (Array.isArray(a) && ['add', 'sub', 'mul', 'div'].includes(a[0]) ? '(' + say(a) + ')' : say(a));
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 function say(x) {
   if (typeof x === 'number') return String(x);
   const [k, a, b, c] = x;
   switch (k) {
     case 'close': case 'open': case 'high': case 'low': return k;
-    case 'vol': return 'volume';
-    case 'ema': return `EMA(${b})`; case 'sma': return `SMA(${b})`; case 'hma': return `HMA(${b})`; case 'wma': return `WMA(${b})`;
+    case 'vol': return 'volume'; case 'num': return String(a); case 'ext': return EXT[a] || a;
+    case 'ema': return `EMA(${b})${ofSrc(a)}`; case 'sma': return `SMA(${b})${ofSrc(a)}`; case 'hma': return `HMA(${b})${ofSrc(a)}`; case 'wma': return `WMA(${b})${ofSrc(a)}`;
     case 'rsi': return `RSI(${b})`; case 'atr': return `ATR(${a})`; case 'adx': return `ADX(${a})`; case 'diP': return `+DI(${a})`; case 'diM': return `-DI(${a})`;
-    case 'roc': return `${b}-bar rate of change`; case 'std': return `standard deviation(${b})`;
+    case 'roc': return `the ${b}-bar % change in ${Array.isArray(a) && a[0] === 'close' ? 'price' : say(a)}`; case 'std': return `standard deviation(${b})${ofSrc(a)}`;
     case 'hh': return `the ${b}-bar high`; case 'll': return `the ${b}-bar low`;
     case 'stoch': return `Stochastic(${a})`; case 'cci': return `CCI(${a})`; case 'mfi': return `MFI(${a})`; case 'obv': return 'OBV';
     case 'stDir': return `Supertrend(${a},${b}) direction`; case 'macd': return 'MACD'; case 'macdSig': return 'the MACD signal line';
     case 'prev': return `${say(a)} ${b} bar${b > 1 ? 's' : ''} ago`; case 'dow': return 'the UTC weekday';
-    case 'add': return `${say(a)} + ${say(b)}`; case 'sub': return `${say(a)} - ${say(b)}`; case 'mul': return `${b} x ${say(a)}`; case 'div': return `${say(a)} / ${say(b)}`;
+    case 'add': return `${say(a)} + ${say(b)}`; case 'sub': return `${say(a)} - ${say(b)}`; case 'mul': return `${b} x ${paren(a)}`; case 'div': return `${paren(a)} / ${paren(b)}`;
   }
   return k;
 }
 function sayCond(x) {
   const [k, a, b] = x;
+  if (k === 'and' && x.length === 3 && x[1][0] === 'gt' && x[2][0] === 'lt' && x[1][1][0] === 'dow' && x[2][1][0] === 'dow' && x[2][2] - x[1][2] === 2) return `the bar is a ${DAYS[x[1][2] + 1]} (UTC)`;
   if (k === 'and') return x.slice(1).map(sayCond).join(' and ');
   if (k === 'or') return x.slice(1).map(sayCond).join(' or ');
   if (k === 'not') return 'not ' + sayCond(a);

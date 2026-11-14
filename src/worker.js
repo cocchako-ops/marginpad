@@ -5,7 +5,7 @@
    - everything else   → static assets (the website) */
 // mp-ops v2 shell (2026-09-03): real files under src/ops/, bundled as text modules (wrangler.toml [[rules]] type=Text).
 import OPS_SHELL from './ops/shell.html';
-import STRAT from '../dist/assets/mp-strat.js?v=ce260405';
+import STRAT from '../dist/assets/mp-strat.js?v=fc2b79be';
 import { RULES as STRAT_RULES } from '../build/strategies/rules.js';
 import { MARKETS as STRAT_MARKETS, CLASSES as STRAT_CLASSES } from '../build/strategies/markets.js';
 import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
@@ -10568,7 +10568,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=5ed46252" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=70f1b517" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19492,6 +19492,7 @@ async function bybitAffSync(env, opts) {
   if (!env.STATS || !env.BYBIT_AFF_KEY) return null;
   const now = Date.now(), ws = lbPeriodStart(now), prevWs = ws - LB_PERIOD;
   const out = { current: await bybitAffSyncSeason(env, ws) };
+  try { out.pending = await bybitPendSweep(env); } catch (e) { out.pending = { error: String((e && e.message) || e).slice(0, 80) }; }
   if (prevWs >= BYBIT_LB_START && now - (prevWs + LB_PERIOD) < 4 * 86400000) out.previous = await bybitSeasonSeal(env, prevWs, !!(opts && opts.force));
   return out;
 }
@@ -23360,7 +23361,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '7114507d';
+const ASSET_V = 'b6622b57';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -25626,6 +25627,8 @@ async function handleReward(url, request, env) {
     if (/^[0-9]{5,15}$/.test(uid9)) {
       try {
         const set9 = await bybitUidSet(env);
+        let live9 = null; // the same late-report trap as /bybitlink: ask Bybit live before refusing a brand-new account (2026-11-15)
+        if (set9.size > 0 && !set9.has(uid9)) { try { if (_byAffMemo && Date.now() - _byAffMemo.t > 15000) _byAffMemo = null; live9 = await bybitAffLookup(env, uid9); if (live9 && live9.found) { set9.add(uid9); await env.STATS.put('bybit:uids', [...set9].join(String.fromCharCode(10))); } } catch (e) {} }
         if (set9.size > 0 && !set9.has(uid9)) {
           try { await evPush(env, request, 'wdreject', 'UID ' + uid9 + ' not on affiliate list (blocked at request)', '/rewards/'); } catch (e) {}
           return jr({ error: 'uid_not_ours', message: 'This Bybit UID is not registered through MarginPad’s Bybit link, so we can’t send a payout to it. An existing Bybit account can’t be linked afterwards - either create a NEW Bybit account through our link and use that UID, or simply switch the payout method to Moon (just your Moon username, no linking needed). If you DID sign up through our link, contact support and we’ll verify your UID - your balance is untouched.' }, 403);
@@ -25759,13 +25762,29 @@ async function handleReward(url, request, env) {
         if (!adminUnlink) { await bylog('unlink_blocked'); return jr({ error: 'unlink_blocked', message: 'A registered Bybit UID stays with the account for the season. If it is wrong, contact support and we will correct it.' }, 403); }
       }
       if (buid && !/^[0-9]{5,15}$/.test(buid)) { await bylog('bad_uid'); return jr({ error: 'bad_uid' }, 400); }
-      if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) { await bylog('uid_not_ours'); return jr({ error: 'uid_not_ours', ref: BYBIT_REF_URL, hint: 'This Bybit UID was not opened through MarginPad. Open a Bybit account with our link, then link that UID.' }, 403); }
+      /* A NEW BYBIT ACCOUNT IS NOT REFUSED FOR BEING NEW (2026-11-15, owner: "otvorili Bybit account preko naseg linka i odmah
+         posle toga pokusali da se prijave ... informacija od Bybit-a je kasnila i covek je odbijen"). The allowlist is a copy
+         of Bybit's affiliate list refreshed by the sync, and Bybit itself reports a fresh referral late, so a member who
+         registered minutes after opening the account was told it was "not opened through MarginPad". Measured in the bylog
+         ring: 7 accounts refused that way whose UID is on the list today; two had never come back. Now: ask Bybit live first,
+         and if Bybit does not know the UID yet either, KEEP it (bybit:pend) - bybitPendSweep re-asks on every sync for
+         BYBIT_PEND_H hours, links the account the moment Bybit confirms it and tells the member either way. */
+      if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) {
+        let live = null; try { if (_byAffMemo && Date.now() - _byAffMemo.t > 15000) _byAffMemo = null; live = await bybitAffLookup(env, buid); } catch (e) {} // at most one fresh affiliate read per 15 s per isolate, however often somebody presses
+        if (live && live.found) { try { allow9.add(buid); await env.STATS.put('bybit:uids', [...allow9].join('\n')); } catch (e) {} }
+        else {
+          if (!/^e2e/i.test(uid9)) { try { await bybitPendAdd(env, { uid: uid9, buid, ts: Date.now() }); } catch (e) {} } // a test account gets the answer, never a queue row
+          await bylog('uid_pending');
+          return jr({ ok: false, error: 'uid_pending', pending: true, buid, hours: BYBIT_PEND_H, ref: BYBIT_REF_URL, message: 'Bybit has not confirmed this UID yet. A Bybit account opened through our link can take up to an hour to reach us. We have saved it and keep checking for ' + BYBIT_PEND_H + ' hours - you will get a notification the moment Bybit confirms it, and you are on the board from then. An account opened outside our link will not be confirmed.' }, 202);
+        }
+      }
       // A BANNED account holding the same UID must not block the live one (2026-09-15): the board skips it, so it cannot
       // be "taken" by it either - otherwise the real owner is refused a registration nobody can benefit from.
       if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const bn = (own && own.ban) || {}; const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct && !bn[a]); if (others.length) { await bylog('uid_taken'); return jr({ error: 'uid_taken' }, 409); } } catch (e) {} }
       const r9 = await usersDO(env, '/bybitlink', { uid: uid9, buid });
       if (!r9 || r9.error) { await bylog((r9 && r9.error) || 'unavailable'); return jr({ error: (r9 && r9.error) || 'unavailable' }, r9 && r9.error === 'uid_taken' ? 409 : 503); }
       await bylog('');
+      if (buid) { try { const pl = await bybitPendList(env); if (pl.some(x => x.uid === uid9)) await env.STATS.put('bybit:pend', JSON.stringify(pl.filter(x => x.uid !== uid9))); } catch (e) {} } // linked: nothing left to wait for
       try { await evPush(env, request, 'bybitlink', buid ? 'linked Bybit UID for the volume board' : 'unlinked Bybit UID', '/season/'); } catch (e) {}
       // THE BOARD SHOWS THE MEMBER THE MOMENT THE UID IS LINKED (2026-09-26, owner: "kad unese UID on ce odma da se pojavi na tablici").
       // The season report already carries this UID's volume (bybitAffSync reads the whole affiliate list every 10 minutes); only the
@@ -25774,6 +25793,7 @@ async function handleReward(url, request, env) {
       return jr({ ok: true, uid: buid, eligible: !!buid });
     }
     let cur9 = ''; try { const pg = await usersDO(env, '/prefsget', { uid: uid9, keys: ['bybit_uid'] }); cur9 = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
+    let pend9 = null; if (!cur9) { try { const pl = await bybitPendList(env); const p = pl.find(x => x.uid === uid9); if (p) pend9 = { buid: p.buid, ts: p.ts, hours: BYBIT_PEND_H }; } catch (e) {} }
     let src9 = cur9 ? 'linked' : '';
     // THE PAGE MUST NOT SAY "REGISTERED" WHEN THE BOARD WOULD NOT AGREE (2026-09-15). The payout fallback stands - a UID
     // we have already paid to is a UID we know - but it is only this account's if the board would resolve it here too.
@@ -25793,7 +25813,7 @@ async function handleReward(url, request, env) {
       } catch (e) {}
     }
     const ws9 = lbPeriodStart(Date.now()); let vol9 = 0; if (cur9) { try { const up9 = await bybitUpload(env, ws9); const r9 = ((up9 && up9.rows) || []).filter(r => String(r.uid) === cur9)[0]; vol9 = r9 ? (+r9.vol || 0) : 0; } catch (e) {} } // the member's own volume this season + the floor (2026-10-30)
-    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL, seasonVol: Math.round(vol9 * 100) / 100, minVol: volBoardMin(ws9) });
+    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, pending: pend9, listed: allow9.size > 0, ref: BYBIT_REF_URL, seasonVol: Math.round(vol9 * 100) / 100, minVol: volBoardMin(ws9) });
   }
   // PAST SEASONS, PUBLIC (2026-10-12, owner: "da biraju sezonu i da vide ishode ... ko je tad pobedio i koja je
   // bila nagrada"). Built from the ledger's `lbpay` (+ the legacy ROE-only `lbpayouts`), which is the PAYMENT
@@ -26183,6 +26203,45 @@ async function handleReward(url, request, env) {
 // tab from the Bybit Affiliate Portal ("9 Results" list). Used to gate withdrawals: we only pay to Bybit accounts
 // created through OUR affiliate link. An EMPTY list disables the gate (fail-open so a lost KV key can't block payouts).
 async function bybitUidSet(env) { try { return new Set(((await env.STATS.get('bybit:uids')) || '').split(/\s+/).filter(Boolean)); } catch (e) { return new Set(); } }
+/* A Bybit UID registration waiting for Bybit to report the account (see /bybitlink). One row per MarginPad account, newest
+   wins; the sweep that drains it runs inside bybitAffSync, i.e. on every pass that has just read the affiliate list. */
+const BYBIT_PEND_H = 48;
+async function bybitPendList(env) { try { const a = JSON.parse((await env.STATS.get('bybit:pend')) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+async function bybitPendAdd(env, row) {
+  const a = (await bybitPendList(env)).filter(x => x.uid !== row.uid);
+  a.push({ uid: String(row.uid), buid: String(row.buid), ts: row.ts || Date.now() });
+  await env.STATS.put('bybit:pend', JSON.stringify(a.slice(-300)));
+}
+async function bybitPendSweep(env) {
+  const list = await bybitPendList(env); if (!list.length) return { n: 0 };
+  _byAffMemo = null; // one fresh read of the affiliate list for the whole pass
+  const keep = [], out = { n: list.length, linked: [], expired: [], held: 0 };
+  let allow = null;
+  for (const p of list) {
+    const live = await bybitAffLookup(env, p.buid);
+    if (live && live.found) {
+      let r = null; try { r = await usersDO(env, '/bybitlink', { uid: p.uid, buid: p.buid }); } catch (e) {}
+      if (r && !r.error) {
+        try { allow = allow || await bybitUidSet(env); allow.add(p.buid); } catch (e) {}
+        try { await usersDO(env, '/notify', { uid: p.uid, kind: 'gift', body: 'Bybit confirmed your UID ' + p.buid + '. You are registered on the Bybit volume leaderboard, and your trading on that Bybit account counts there from now on.', link: '/leaderboards/#bybit' }); } catch (e) {}
+        try { await bybitLinkLog(env, null, { uid: p.uid, buid: p.buid, err: '', ok: 1, auto: 1 }); } catch (e) {}
+        out.linked.push(p.buid); continue;
+      }
+      if (r && r.error === 'uid_taken') { try { await usersDO(env, '/notify', { uid: p.uid, kind: 'system', body: 'Bybit confirmed UID ' + p.buid + ', but it is already registered on another MarginPad account. Contact support if it is yours.', link: '/leaderboards/#bybit' }); } catch (e) {} out.expired.push(p.buid); continue; }
+      keep.push(p); out.held++; continue; // the store did not answer: ask again next pass
+    }
+    if (live && !live.ok) { keep.push(p); out.held++; continue; } // Bybit could not be read: that is no answer, never an expiry
+    if (Date.now() - p.ts > BYBIT_PEND_H * 3600000) {
+      try { await usersDO(env, '/notify', { uid: p.uid, kind: 'system', body: 'Bybit has not confirmed UID ' + p.buid + ' as opened through the MarginPad link in ' + BYBIT_PEND_H + ' hours, so it could not join the Bybit leaderboard. If you are sure it came through our link, contact support and we will check it by hand.', link: '/leaderboards/#bybit' }); } catch (e) {}
+      out.expired.push(p.buid); continue;
+    }
+    keep.push(p);
+  }
+  try { if (allow && out.linked.length) await env.STATS.put('bybit:uids', [...allow].join('\n')); } catch (e) {}
+  try { await env.STATS.put('bybit:pend', JSON.stringify(keep)); } catch (e) {}
+  if (out.linked.length) { try { await bybitSnapshotRebuild(env, lbPeriodStart(Date.now())); } catch (e) {} try { await tgAdmin(env, '<b>Bybit UID confirmed</b> after waiting for Bybit: ' + out.linked.join(', ') + ' - linked and the members told.', { kind: 'bybit uids', sev: 'info' }); } catch (e) {} }
+  return out;
+}
 /* IS THIS PAYOUT SAFE TO SEND - ONE READING OF IT, FOR THE DESK THAT SENDS THE MONEY (2026-10-28, owner: "zelim
    odlican uvid u to da li je neko abuser ili nije i bas da imam sazeto o njemu bas na stranici za povlacenje").
    PURE, so wd-risk-e2e drives the function that ships.

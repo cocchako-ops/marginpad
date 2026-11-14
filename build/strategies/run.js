@@ -9,7 +9,13 @@ const { MARKETS, CLASSES } = require('./markets');
 const { RULES, STYLES } = require('./rules');
 const DATA = path.join(__dirname, '..', 'data', 'strategies'), OUT = path.join(__dirname, '..', '..', 'dist', 'strategies', 'data');
 const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
-const only = arg('--only'), START = Date.UTC(2000, 0, 1), WARM = 220, MIN_TRADES = 30;
+/* How much evidence a result needs before the page will judge it. MEASURED, not guessed: the liquidation rules run on the
+   collector's own history, which starts 2026-07-31, and over 2.5 months one of them read Sharpe 1.63 in its first 70% and
+   -5.80 in the last 30% - the numbers of noise, printed beside 26-year tests as if they were the same kind of fact.
+   Under EARLY_YEARS a result is "too early" (no Sharpe, no verdict, out of every count); under MIN_YEARS or MIN_TRADES it is
+   "few trades" (Sharpe greyed); a last-30% Sharpe needs MIN_OOS trades of its own or it is not printed. */
+const only = arg('--only'), START = Date.UTC(2000, 0, 1), WARM = 220, MIN_TRADES = 100, MIN_YEARS = 2, EARLY_YEARS = 1, MIN_OOS = 30;
+const median = (a) => { const s = a.slice().sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : 0; };
 const rules = only ? RULES.filter((r) => only.split(',').includes(r.slug)) : RULES;
 const rd = (f) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')); } catch (e) { return null; } };
 const fx = (x, d = 2) => (x == null || !isFinite(x) ? null : +x.toFixed(d));
@@ -54,14 +60,27 @@ function summary(rets, year, tr) {
   const m = S.metrics(rets, year), t = S.tradeStats(tr);
   return { ret: fx(m.ret, 1), cagr: fx(m.cagr), sharpe: fx(m.sharpe), sortino: fx(m.sortino), calmar: fx(m.calmar), mdd: fx(m.mdd), vol: fx(m.vol), win: fx(t.win, 1), pf: fx(t.pf), trades: t.trades, hold: fx(t.hold, 1), years: fx(m.years, 1) };
 }
-/* Equal weight across whichever markets existed that day. */
+/* Equal weight, REBALANCED ONCE A MONTH and whenever a market joins or leaves, drifting in between - the portfolio a reader
+   could actually hold. Until 2026-11-15 it re-weighted EVERY DAY, i.e. averaged daily returns, and that is not a portfolio:
+   a short sitting at 1.6% of its stake that bounced back to 66% the next day (+4,033%, XAG on 2026-01-27) entered the
+   basket at a fifth of its weight, which printed +3,755% for a commodities basket whose five markets had all lost money.
+   A market belongs to the basket from its first day to its last; a day it did not trade inside that span is a flat day. */
 function basket(rows) {
-  const by = new Map();
-  for (const r of rows) for (let i = 0; i < r.days.length; i++) {
-    const a = by.get(r.days[i]) || [0, 0, 0]; a[0] += r.rets[i]; a[1] += r.bench[i]; a[2]++; by.set(r.days[i], a);
-  }
-  const days = [...by.keys()].sort((a, b) => a - b);
-  return { days, rets: days.map((d) => by.get(d)[0] / by.get(d)[2]), bench: days.map((d) => by.get(d)[1] / by.get(d)[2]), n: days.map((d) => by.get(d)[2]) };
+  const sl = rows.map((r) => { const m = new Map(); r.days.forEach((d, i) => m.set(d, [r.rets[i], r.bench[i]])); return { m, a: r.days[0], z: r.days[r.days.length - 1] }; });
+  const all = new Set(); for (const r of rows) for (const d of r.days) all.add(d);
+  const days = [...all].sort((a, b) => a - b);
+  const run = (k) => {
+    const w = new Float64Array(sl.length), out = []; let nav = 1, key = '', mon = -1;
+    for (const d of days) {
+      const act = []; for (let j = 0; j < sl.length; j++) if (d >= sl[j].a && d <= sl[j].z) act.push(j);
+      const ak = act.join(','), mo = new Date(d * 864e5).getUTCMonth();
+      if (ak !== key || mo !== mon) { w.fill(0); for (const j of act) w[j] = nav / act.length; key = ak; mon = mo; }
+      let nn = 0; for (const j of act) { const x = sl[j].m.get(d); const r = x ? x[k] : 0; w[j] *= 1 + r; nn += w[j]; }
+      out.push(nav > 0 ? nn / nav - 1 : 0); nav = nn;
+    }
+    return out;
+  };
+  return { days, rets: run(0), bench: run(1), n: days.map((d) => sl.filter((x) => d >= x.a && d <= x.z).length) };
 }
 function curve(days, rets, bench, pts) {
   const step = Math.max(1, Math.floor(days.length / pts)), o = [];
@@ -128,13 +147,15 @@ for (const r of rules) {
       const rows = store[`${r.slug}|${cn}|${tf}`]; if (!rows) continue;
       const inB = rows.filter((x) => x.basket); if (!inB.length) continue;
       const bk = basket(inB), allTr = inB.flatMap((x) => x.trades);
-      const cut = Math.floor(bk.days.length * 0.7);
+      const cut = Math.floor(bk.days.length * 0.7), years0 = bk.days.length / cls.year;
+      const oosTr = allTr.filter((x) => Math.floor(x.et / 864e5) >= bk.days[cut]).length;
       tfs[tf] = {
         m: summary(bk.rets, cls.year, allTr),
         bench: summary(bk.bench, cls.year, []),
-        is: fx(S.metrics(bk.rets.slice(0, cut), cls.year).sharpe), oos: fx(S.metrics(bk.rets.slice(cut), cls.year).sharpe),
+        is: fx(S.metrics(bk.rets.slice(0, cut), cls.year).sharpe), oos: oosTr < MIN_OOS ? null : fx(S.metrics(bk.rets.slice(cut), cls.year).sharpe),
         oosFrom: bk.days[cut], from: bk.days[0], to: bk.days[bk.days.length - 1],
-        thin: allTr.length < MIN_TRADES, markets: inB.length,
+        thin: allTr.length < MIN_TRADES || years0 < MIN_YEARS, early: years0 < EARLY_YEARS, markets: inB.length,
+        perMkt: median(inB.map((x) => x.trades.length)), oosTr, oosB: fx(S.metrics(bk.bench.slice(cut), cls.year).sharpe),
         months: monthsUp(bk.days, bk.rets), monthly: monthly(bk.days, bk.rets), years: years(bk.days, bk.rets), curve: curve(bk.days, bk.rets, bk.bench, 400),
         spark: curve(bk.days, bk.rets, bk.bench, 110).map((x) => x[1]),
         rows: rows.map((x) => ({ sym: x.sym, basket: x.basket, ...summary(x.rets, cls.year, x.trades), bh: fx(S.metrics(x.bench, cls.year).ret, 1) })),
@@ -143,7 +164,7 @@ for (const r of rules) {
     if (!Object.keys(tfs).length) continue;
     detail.classes[cn] = tfs;
     const head = tfs[cls.tfs.includes(r.tf) ? r.tf : '1d'] || tfs[Object.keys(tfs)[0]], tf = Object.keys(tfs).find((k) => tfs[k] === head);
-    card.classes[cn] = { tf, m: head.m, bench: head.bench.ret, benchS: head.bench.sharpe, benchD: head.bench.mdd, thin: head.thin, oos: head.oos, is: head.is, spark: head.spark, from: head.from, to: head.to };
+    card.classes[cn] = { tf, m: head.m, bench: head.bench.ret, benchS: head.bench.sharpe, benchD: head.bench.mdd, thin: head.thin, early: head.early, markets: head.markets, perMkt: head.perMkt, oos: head.oos, oosB: head.oosB, is: head.is, spark: head.spark, from: head.from, to: head.to };
   }
   fs.writeFileSync(path.join(OUT, r.slug + '.json'), JSON.stringify(detail));
   index.push(card);

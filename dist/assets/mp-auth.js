@@ -2143,6 +2143,8 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
             go.disabled = false;
             if (d && d.ok) { m.innerHTML = __esT_mpauth("registeredYouAreOn",'<span style="color:#34d99a">Registered. You are on the Bybit board.</span>'); setTimeout(renderCompetitions, 1200); return; }
             var e = (d && d.error) || '';
+            // Bybit reports a fresh referral late: the UID is kept and the server registers it the moment Bybit confirms it (2026-11-15)
+            if (e === 'uid_pending') { m.innerHTML = '<span style="color:#8b97a5">' + __esT_mpauth("bybitPendShort",'Bybit has not confirmed this UID yet - a new account opened through our link can take up to an hour. We keep checking and register you automatically; you will get a notification.') + '</span>'; return; }
             m.innerHTML = '<span style="color:#ffb347">' + (
               e === 'uid_not_ours' ? __esT_mpauth("thatUidIsNot",'That UID is not on our affiliate list. Only an account opened through our link counts - open one below, then come back.')
               : e === 'uid_taken' ? __esT_mpauth("thatUidIsAlready",'That UID is already registered to another account.')

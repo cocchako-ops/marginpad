@@ -223,7 +223,8 @@
     var close = function (px, i, why, noSlip) {
       var fill = noSlip ? px : px * (1 - dir * slip);
       var val = Math.max(0, base * (1 + dir * (fill / ent - 1))) * (1 - fee);
-      trades.push({ et: b.t[entI], xt: b.t[i], d: dir, ep: ent, xp: fill, r: val / (trades.eq0 || eq) - 1, n: i - entI, why: why });
+      var e0 = trades.eq0 > 0 ? trades.eq0 : eq;
+      trades.push({ et: b.t[entI], xt: b.t[i], d: dir, ep: ent, xp: fill, r: e0 > 0 ? val / e0 - 1 : -1, n: i - entI, why: why });
       eq = val; dir = 0;
     };
     for (var i = 1; i < n; i++) {
@@ -232,7 +233,7 @@
         if (act === 2 && dir) close(b.o[i], i, 'signal');
         else if (act !== 2) {
           if (dir && dir !== act) close(b.o[i], i, 'reverse');
-          if (!dir && !isNaN(atr[i - 1])) { trades.eq0 = eq; open(act, b.o[i], i); }
+          if (!dir && !isNaN(atr[i - 1]) && eq > 1e-9) { trades.eq0 = eq; open(act, b.o[i], i); } // a bust account opens nothing
         }
       }
       if (dir) {
@@ -251,6 +252,7 @@
         var hitT = !isNaN(tp) && (dir > 0 ? b.h[i] >= tp : b.l[i] <= tp);
         if (hitS) close(dir > 0 ? Math.min(b.o[i], stop) : Math.max(b.o[i], stop), i, 'stop');
         else if (hitT) close(dir > 0 ? Math.max(b.o[i], tp) : Math.min(b.o[i], tp), i, 'target', true);
+        else if (dir < 0 && b.h[i] >= 2 * ent) close(Math.max(b.o[i], 2 * ent), i, 'bust', true); // an unlevered short is worth nothing at twice its entry: it is closed there, never left to "recover"
       }
       curEq = dir ? Math.max(0, base * (1 + dir * (b.c[i] / ent - 1))) : eq;
       equity[i] = curEq;
@@ -270,10 +272,10 @@
     var days = [], rets = [], last = NaN, prev = 1;
     for (var i = 0; i < t.length; i++) {
       var d = Math.floor(t[i] / 86400000);
-      if (d !== last && !isNaN(last)) { rets.push(equity[i - 1] / prev - 1); days.push(last); prev = equity[i - 1]; }
+      if (d !== last && !isNaN(last)) { rets.push(prev > 0 ? equity[i - 1] / prev - 1 : 0); days.push(last); prev = equity[i - 1]; }
       last = d;
     }
-    rets.push(equity[t.length - 1] / prev - 1); days.push(last);
+    rets.push(prev > 0 ? equity[t.length - 1] / prev - 1 : 0); days.push(last); // an account at zero stays at zero: no 0/0
     return { days: days, rets: rets };
   }
 

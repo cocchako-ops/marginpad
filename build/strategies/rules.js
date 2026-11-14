@@ -66,7 +66,9 @@ const RULES = [
   r('stretch-below-sma', 'Stretch Below SMA 20', 'reversion', '1d', 'Buy 2% below the 20 SMA, sell back at it.', { entryL: lt(C, mul(S(20), 0.98)), exitL: gt(C, S(20)) }),
   r('cci-reversion', 'CCI Reversion', 'reversion', '1d', 'Buy CCI crossing back above -100, sell over +100.', { entryL: xu(['cci', 20], -100), exitL: gt(['cci', 20], 100) }),
   r('mfi-reversion', 'Money Flow Reversion', 'reversion', '1d', 'Buy the Money Flow Index under 20, sell over 80.', { vol: true, entryL: lt(['mfi', 14], 20), exitL: gt(['mfi', 14], 80) }),
-  r('zscore-reversion', 'Z-Score Reversion', 'reversion', '1d', 'Buy two standard deviations under the mean, sell back at it.', { entryL: lt(Z(20), -2), exitL: gt(Z(20), 0) }),
+  // Until 2026-11-15 this was z(20) < -2 out at z > 0, which is Bollinger Dip written another way: the two drew the SAME trades
+  // on every market. A slower mean, a deeper stretch, an earlier exit and a clock make it a rule of its own.
+  r('zscore-reversion', 'Z-Score Reversion 50', 'reversion', '1d', 'Buy 2.5 deviations under the 50-day mean, sell once back within half a deviation, 20 bars at most.', { entryL: lt(Z(50), -2.5), exitL: gt(Z(50), -0.5), maxBars: 20 }),
   r('three-down-days', 'Three Down Closes', 'reversion', '1d', 'Buy after three lower closes in a row, hold five bars.', { entryL: and(lt(C, ['prev', C, 1]), lt(['prev', C, 1], ['prev', C, 2]), lt(['prev', C, 2], ['prev', C, 3])), maxBars: 5 }),
   r('ibs-reversion', 'Close Near The Low', 'reversion', '1d', 'Buy a close in the bottom fifth of the bar, in an uptrend.', { entryL: and(lt(IBS, 0.2), gt(C, S(200))), exitL: gt(IBS, 0.8) }),
   r('volume-climax', 'Volume Climax Reversal', 'reversion', '1d', 'Buy a heavy down bar on three times the volume, hold five bars.', { vol: true, entryL: and(lt(C, ['open']), VX(3), lt(R(14), 35)), maxBars: 5 }),
@@ -90,7 +92,7 @@ const RULES = [
 
   // Calendar
   r('monday-effect', 'Sunday Close To Monday', 'calendar', '1d', 'Hold one day from the Sunday close. A test of a well-known crypto folk rule.', { only: ['crypto'], entryL: ['and', ['gt', ['dow'], -1], ['lt', ['dow'], 1]], maxBars: 1 }),
-  r('weekend-hold', 'Friday To Monday', 'calendar', '1d', 'Hold over the weekend only. Nothing but the calendar decides.', { only: ['crypto'], entryL: ['and', ['gt', ['dow'], 4], ['lt', ['dow'], 6]], maxBars: 3 }),
+  r('weekend-hold', 'Friday To Monday', 'calendar', '1d', 'Hold over the weekend only, Friday close to Monday open. Nothing but the calendar decides.', { only: ['crypto'], entryL: ['and', ['gt', ['dow'], 4], ['lt', ['dow'], 6]], maxBars: 2 }), // 3 held Monday too (fixed 2026-11-15)
 
   // Found by our own simulations, 2026-10-29
   r('edge-fade-short', 'Hourly Edge Fade', 'reversion', '1h', 'Short a 60-bar high at market: 3 ATR stop, 2R target. The most stable row of our October study.', { only: ['crypto'], entryS: gt(['high'], HH(60)), stop: { atr: 3 }, tp: { r: 2 }, maxBars: 48 }),
