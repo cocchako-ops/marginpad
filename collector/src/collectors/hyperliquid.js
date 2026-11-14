@@ -30,6 +30,9 @@ export class HyperliquidLiqCollector {
     this.coins = [];                 // full subscription list (core + builder dexs)
     this.candidates = [];            // {user, notional} - unique users seen on sizeable trades
     this.queued = new Set();
+    this.hashes = new Map();         // trade hash -> { takers, small prints, t } - recognises the engine's system transactions
+    this.byUser = new Map();         // user -> its candidate (notional and hashes accumulate)
+    this.stat = { checks: 0, engineChecks: 0, engineHits: 0, ordinaryHits: 0 };
     this.checked = new Map();        // user -> last checked ts
     this.seenTid = new Set();        // emitted fill tids
     this.ws = null; this.workerT = null; this.reT = null; this.coinT = null; this.pingT = null; this.wdT = null; this.connStartedAt = null;
@@ -59,7 +62,7 @@ export class HyperliquidLiqCollector {
       } catch (e) {}
     }, REFRESH_COINS_MS);
   }
-  status() { const now = Date.now(); return { name: this.name, connected: this.connected, lastMsgAt: this.lastMsgAt, lastEventAt: this.lastEventAt, eventsTotal: this.eventsTotal, silentMs: this.lastMsgAt ? now - this.lastMsgAt : null, coins: this.coins.length }; }
+  status() { const now = Date.now(); return { name: this.name, connected: this.connected, lastMsgAt: this.lastMsgAt, lastEventAt: this.lastEventAt, eventsTotal: this.eventsTotal, silentMs: this.lastMsgAt ? now - this.lastMsgAt : null, coins: this.coins.length, queue: this.candidates.length, harvest: this.stat || null }; }
 
   start() {
     this.connect();
@@ -106,21 +109,13 @@ export class HyperliquidLiqCollector {
         for (const t of d.data) {
           if (this.onUser) for (const u of (t.users || [])) this.onUser(u);
           const px = +t.px, sz = +t.sz; if (!(px > 0) || !(sz > 0)) continue;
-          const notional = px * sz; if (notional < MIN_NOTIONAL) continue;
-          // BOTH participants become candidates - a liquidation shows up in EITHER side's fills (the liquidated
-          // user's own fill AND the counterparty's fill both carry the liquidation metadata)
+          const notional = px * sz;
           // THE LIQUIDATED ACCOUNT IS THE TAKER (2026-11-14): its forced market order crosses the book, so it is the aggressor of the
-          // print (side B = the buyer users[0] took, A = the seller users[1]). Queuing both participants spent half the ~30 checks a
-          // minute on market makers, the queue overflowed and dropped the smaller liquidations - measured 75% of Coinglass's HL figure.
-          // (liqEventsOf still reads either participant's fill correctly; only who is QUEUED changes.)
+          // print (side B = the buyer users[0] took, A = the seller users[1]). (liqEventsOf reads either participant's fill.)
           const taker = t.side === 'B' ? (t.users || [])[0] : t.side === 'A' ? (t.users || [])[1] : null;
-          for (const user of (taker ? [taker] : (t.users || []))) {
-            if (!user) continue;
-            const last = this.checked.get(user) || 0; if (Date.now() - last < RECHECK_USER_MS) continue;
-            if (this.queued.has(user)) continue; this.queued.add(user);
-            this.candidates.push({ user, notional });
-          }
-          if (this.candidates.length > 500) { this.candidates.sort((a, b) => b.notional - a.notional); this.candidates.length = 250; this.queued = new Set(this.candidates.map(x => x.user)); }
+          if (!taker) continue;
+          this.noteHash(t.hash, taker, notional, +t.time || Date.now());
+          if (notional >= MIN_NOTIONAL) this.enqueue(taker, notional, t.hash, +t.time || Date.now());
         }
       } catch (e) {}
     };
@@ -129,18 +124,56 @@ export class HyperliquidLiqCollector {
   }
   reconnect() { if (this.reT) return; this.reT = setTimeout(() => { this.reT = null; this.connect(); }, 3000); }
 
+  /* ENGINE TRADES FIRST (2026-11-14 evening, owner: "Ovo zelim da podignemo na veci %"). Hyperliquid executes liquidations (and
+     triggered stops) inside its own system transaction, so their trades carry that transaction's hash - all-zero, or ONE hash shared
+     by trades of several different takers, which an ordinary order never has (one order, one taker). Measured over 6 minutes and
+     37,368 trades: takers of such engine trades were liquidated 12 times in 25 checks, takers of ordinary trades 1 in 25. The harvest
+     can afford ~30 checks a minute (the info API's 1,200 weight is shared with the whale tracker), so WHO it checks is everything:
+     engine takers outrank any ordinary trade, are queued at any size (a small liquidation counts), and are re-checked if the trade
+     came after their last check (a trader checked for an ordinary trade at 12:00 and liquidated at 12:02 used to wait ten minutes and
+     was usually never looked at again). */
+  isEngine(h) { if (!h) return false; if (/^0x0+$/.test(h)) return true; const g = this.hashes.get(h); return !!(g && g.takers.size >= 2); }
+  noteHash(h, taker, notional, t) {
+    if (!h) return;
+    if (!this.hashes) { this.hashes = new Map(); this.stat = { checks: 0, engineChecks: 0, engineHits: 0, ordinaryHits: 0 }; }
+    let g = this.hashes.get(h);
+    if (!g) { g = { takers: new Set(), small: [], t }; this.hashes.set(h, g); }
+    const wasEngine = this.isEngine(h);
+    g.takers.add(taker);
+    if (notional < MIN_NOTIONAL && g.small.length < 50) g.small.push({ taker, notional, t });
+    if (!wasEngine && this.isEngine(h)) { for (const s of g.small) this.enqueue(s.taker, s.notional, h, s.t); g.small = []; } // promote the small prints once the hash proves to be the engine's
+    else if (this.isEngine(h) && notional < MIN_NOTIONAL) this.enqueue(taker, notional, h, t);
+    if (this.hashes.size > 30000) { const cut = Date.now() - 120000; for (const [k, v] of this.hashes) if (v.t < cut) this.hashes.delete(k); }
+  }
+  enqueue(user, notional, hash, t) {
+    if (!this.byUser) this.byUser = new Map();
+    const engine = this.isEngine(hash);
+    const last = this.checked.get(user) || 0;
+    if (Date.now() - last < RECHECK_USER_MS && !(engine && t > last)) return; // an engine trade AFTER the last check always earns a new look
+    let c = this.byUser.get(user);
+    if (!c) { c = { user, notional: 0, hashes: [], t }; this.byUser.set(user, c); this.candidates.push(c); }
+    c.notional += notional; c.t = Math.max(c.t, t); if (c.hashes.length < 6 && c.hashes.indexOf(hash) < 0) c.hashes.push(hash);
+    if (this.candidates.length > 600) { this.candidates.sort((a, b) => this.score(b) - this.score(a)); for (const x of this.candidates.splice(300)) this.byUser.delete(x.user); }
+  }
+  score(c) { return c.notional * (c.hashes.some(h => this.isEngine(h)) ? 1000 : 1); }
+
   async checkNext() {
     if (!this.candidates.length) return;
-    this.candidates.sort((a, b) => b.notional - a.notional);
-    const c = this.candidates.shift(); this.queued.delete(c.user);
-    if (Date.now() - (this.checked.get(c.user) || 0) < RECHECK_USER_MS) return;
+    this.candidates.sort((a, b) => this.score(b) - this.score(a));
+    const c = this.candidates.shift(); if (this.byUser) this.byUser.delete(c.user);
+    const engine = c.hashes.some(h => this.isEngine(h));
+    const last = this.checked.get(c.user) || 0;
+    if (Date.now() - last < RECHECK_USER_MS && !(engine && c.t > last)) return;
     this.checked.set(c.user, Date.now());
     if (this.checked.size > 6000) this.checked.clear();
+    if (!this.stat) this.stat = { checks: 0, engineChecks: 0, engineHits: 0, ordinaryHits: 0 };
+    this.stat.checks++; if (engine) this.stat.engineChecks++;
     let fills;
     try {
       fills = await hlPost({ type: 'userFillsByTime', user: c.user, startTime: Date.now() - FILLS_WINDOW_MS }, { who: 'liq-harvest', timeoutMs: 8000 });
     } catch (e) { return; }
     if (!Array.isArray(fills)) return;
+    if (fills.some(f => f && f.liquidation)) { if (engine) this.stat.engineHits++; else this.stat.ordinaryHits++; }
     for (const ev of liqEventsOf(fills, c.user, this.seenTid)) {
       this.lastEventAt = Date.now(); this.eventsTotal++;
       this.onEvent({ ts: ev.ts, exchange: 'hyperliquid', symbol: ev.symbol, side: ev.side, price: ev.price, qty: ev.qty, notional: ev.notional });
