@@ -2709,7 +2709,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
   (function () {
     var FEATS = [
-      ['5 exclusive AI indicators', __esT_mpauth("cascadeRadarLiquidationMag",'Cascade Radar, Liquidation Magnet, Market Brain, Market Memory and Big Liquidations - the last one marks liquidations that really happened, from our own feed across eight exchanges, and the other four grade their own hit-rate on the chart you are on.')],
+      ['5 exclusive AI indicators', __esT_mpauth("cascadeRadarLiquidationMag",'Cascade Radar, Liquidation Magnet, Market Brain, Market Memory and Big Liquidations - the last one marks liquidations that really happened, from our own feed across eleven exchanges, and the other four grade their own hit-rate on the chart you are on.')],
       ['Live liquidation heatmap', __esT_mpauth("theFullInteractiveMap",'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.')],
       [__esT_mpauth("askAiOnYour",'Ask AI on your charts'), __esT_mpauth("aBuiltInAnalyst",'A built-in analyst that reads the chart in front of you and draws the setup on it - five reads a day on Premium, 50 on Premium AI+.')],
       ['Balance Mode', __esT_mpauth("giveYourselfAPortfolio",'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.')],
@@ -3117,6 +3117,22 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       try { if (navigator.vibrate) navigator.vibrate([20, 40, 20, 40, 70]); } catch (e) {}
     }
     window.mpPremiumCelebrate = premiumCelebrate;
+    /* A NOTE FROM MARGINPAD (2026-11-14, owner: "da mu izadje kao gift, samo da ne bude gift jer je obavestenje"): the owner's own message to
+       one member gets the gift's centre stage - the moment people actually read - with the brand as the headline, a megaphone instead of a
+       box and no word claiming anything was given. Language-neutral chrome; the message itself is written in the member's language. */
+    function noteCelebrate(body9, link9) {
+      var ov = document.getElementById('mpxpLv'); if (!ov) { ov = document.createElement('div'); ov.id = 'mpxpLv'; document.body.appendChild(ov); }
+      var col = '#c2f64a';
+      var conf = '';   /* no confetti: a message, not a celebration (owner: "nemoj animacija da bude gift animacija") */
+      var ic = '<svg viewBox="0 0 24 24" width="88" height="88" fill="none" stroke="#c2f64a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4a1 1 0 0 0 1 1h2l5 4V5L6 9H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+      var lk = String(link9 || ''); var go = /^\/[A-Za-z0-9\-_\/?=&.%]*$/.test(lk) && lk !== '/' ? '<a class="mpxp-x mpxp-see" href="' + esc(lk) + '">' + esc(lk.replace(/^\/|\/$/g, '').split('/')[0] || 'MarginPad') + '</a>' : '';
+      ov.style.setProperty('--lc', col);
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + ';--lca:' + lcA(col, .14) + '"><div class="mpxp-badge">' + ic + '</div><div class="mpxp-up">MarginPad</div><div class="mpxp-sub" style="white-space:pre-line;text-align:left;font-size:14px;line-height:1.55;max-height:46vh;overflow:auto">' + esc(body9 || '') + '</div>' + go + '<button class="mpxp-x2" type="button" aria-label="Close">OK</button></div>';
+      requestAnimationFrame(function () { ov.classList.add('on'); });
+      var close9 = function () { ov.classList.remove('on'); };
+      var xb = ov.querySelector('.mpxp-x2'); if (xb) xb.addEventListener('click', close9);
+      ov.addEventListener('click', function (e) { if (e.target === ov) close9(); });
+    }
     function giftCelebrate(fromUn, body9, link9) { // center-stage moment when someone gifts you an MP Shop item - a plain bell row undersold the most personal event on the site
       // A MONEY gift lands here too (chat /gift $, owner credit, giveaway prizes) and used to be sent to MP Shop to "equip it".
       // The notification's own link says which it is: /rewards/ = cash, anything else = an item.
@@ -3161,7 +3177,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
           window.__mpGiftBusy = true;
           fetch('/api/auth/notifs').then(function (r) { return r.json(); }).then(function (nd) {
             window.__mpGiftBusy = false;
-            var gl = ((nd && nd.notifs) || []).filter(function (n) { return n.kind === 'gift' && !n.seen && (Date.now() - n.ts) < 604800000; });
+            var gl = ((nd && nd.notifs) || []).filter(function (n) { return (n.kind === 'gift' || n.kind === 'note') && !n.seen && (Date.now() - n.ts) < 604800000; });
             if (!gl.length) return;
             var gk = 'mp_gift_cel_' + ((ME && ME.id) || ''); var seen9 = [];
             try { seen9 = JSON.parse(localStorage.getItem(gk) || '[]'); } catch (e) {}
@@ -3170,7 +3186,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
             var g9 = fresh9[0];
             try { localStorage.setItem(gk, JSON.stringify(seen9.concat(fresh9.map(function (n) { return n.ts; })).slice(-20))); } catch (e) {}
             var m9 = /^@(\S+) /.exec(String(g9.body || ''));
-            setTimeout(function () { try { giftCelebrate(m9 ? m9[1] : '', g9.body, g9.link); } catch (e) {} }, 600);
+            setTimeout(function () { try { if (g9.kind === 'note') noteCelebrate(g9.body, g9.link); else giftCelebrate(m9 ? m9[1] : '', g9.body, g9.link); } catch (e) {} }, 600);
           }).catch(function () { window.__mpGiftBusy = false; });
         } catch (e) { window.__mpGiftBusy = false; } }
         window.__mpGiftPrev = nu9;

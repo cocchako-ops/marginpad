@@ -2,7 +2,7 @@
 <html lang="es" data-es-twin="/api/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-es.js?v=c972f5a2"></script>
+<script src="/assets/ui-es.js?v=bf521830"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -117,7 +117,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / API</div>
   <article>
     <h1>API de MarginPad</h1>
-    <p class="lead">Todo lo que sabe el sitio, en JSON: precios en vivo y velas, un screener puntuado, funding, interés abierto, long/short, liquidaciones medidas en ocho exchanges y un calendario económico, todo sin clave. Además, una <b>Bot API de paper trading</b> completa para probar un bot con precios reales y sin dinero real, un <b>servidor MCP</b> remoto para que un asistente de IA lo use todo de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo en Python y JavaScript.</p>
+    <p class="lead">Todo lo que sabe el sitio, en JSON: precios en vivo y velas, un screener puntuado, funding, interés abierto, long/short, liquidaciones medidas en once exchanges y un calendario económico, todo sin clave. Además, una <b>Bot API de paper trading</b> completa para probar un bot con precios reales y sin dinero real, un <b>servidor MCP</b> remoto para que un asistente de IA lo use todo de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo en Python y JavaScript.</p>
     <div class="chips"><span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>Premium · 600 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 23 herramientas</span><span>Bot API 2.4.0</span></div>
 
     <div class="ways">
@@ -136,7 +136,7 @@
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/funding</code></td><td>Tasas de funding en ~160 pares, medidas desde los endpoints públicos de los exchanges.</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/open-interest</code></td><td>Interés abierto (USD) en ~160 pares.</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/long-short</code></td><td>Ratio long/short de cuentas en los principales (Binance + OKX + Bybit).</td></tr>
-      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations</code></td><td>Totales de liquidaciones 24h por moneda, longs frente a shorts, desde nuestro propio colector de ocho exchanges.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations</code></td><td>Totales de liquidaciones 24h por moneda, longs frente a shorts, desde nuestro propio colector de once exchanges.</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/venues</code></td><td>Liquidaciones por exchange: total 24h, cuota y reparto long/short.</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/feed</code></td><td>Los eventos de liquidación más recientes en todos los símbolos (con segundos de retraso frente a los exchanges).</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations/live?symbol=BTC</code></td><td>Eventos de liquidación recientes en bruto para un símbolo.</td></tr>
@@ -299,6 +299,6 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
   }, 100);
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=1d23ab08"></script>
+<script defer src="/assets/mp-nav.js?v=28b19c1b"></script>
 </body>
 </html>

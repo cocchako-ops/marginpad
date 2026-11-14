@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" data-es-twin="/biggest-liquidation-today/"><head>
 <meta charset="UTF-8">
-<script src="/assets/ui-es.js?v=c972f5a2"></script>
+<script src="/assets/ui-es.js?v=bf521830"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>La Mayor Liquidación Cripto de Hoy - El Mayor Cierre Forzado en Vivo | MarginPad</title>
@@ -137,7 +137,7 @@ article details p{margin:0 0 18px;max-width:68ch}
     <p>El total del día te dice cuánto apalancamiento murió. El evento individual más grande te dice qué tipo de trader murió, y son historias distintas. Un día de cien millones de dólares formado por veinte mil posiciones pequeñas es una purga minorista. El mismo total con una sola posición de cuarenta millones dentro es un fondo, un market maker con una mala cobertura, o alguien que creyó poder sostener ese tamaño durante un evento. El segundo tipo mueve el libro al salir, porque deshacerlo significa órdenes a mercado contra la profundidad que haya disponible en ese momento.</p><p>El tamaño se mide como valor nocional en dólares estadounidenses: precio de ejecución multiplicado por cantidad, tal como lo publicó el exchange. Esa es la posición que se cerró, no el dinero que perdió el trader - una posición liquidada a cincuenta veces de apalancamiento le cuesta a su dueño aproximadamente una cincuentava parte del nocional más comisiones.</p>
 
     <h2>El método, completo</h2>
-    <p>MarginPad ejecuta su propio colector suscrito al websocket público de liquidaciones de ocho exchanges: Binance (con margen en USD y en cripto), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX y Bitfinex. Cada cierre forzado se normaliza a símbolo, lado, precio de ejecución y valor nocional en dólares, y luego se agrega en una ventana móvil de 24 horas. Estos son eventos observados, no un modelo ni un feed de un proveedor. Nada se rellena cuando un exchange queda en silencio, y si el propio colector está caído, la página lo indica en lugar de mostrar las cifras de ayer como si fueran actuales.</p><p>&ldquo;La mayor&rdquo; aquí significa el evento individual publicado más grande. Un exchange que deshace una posición grande en varias ejecuciones publica varios eventos, así que una posición más grande que la mostrada puede fragmentarse en partes que individualmente quedan más abajo en la clasificación. Nosotros reportamos lo que publicó el exchange en lugar de unir ejecuciones, porque unirlas requiere suposiciones y esta cifra no debería necesitar ninguna.</p>
+    <p>MarginPad ejecuta su propio colector suscrito al websocket público de liquidaciones de once exchanges: Binance (con margen en USD y en cripto), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster y Lighter. Cada cierre forzado se normaliza a símbolo, lado, precio de ejecución y valor nocional en dólares, y luego se agrega en una ventana móvil de 24 horas. Estos son eventos observados, no un modelo ni un feed de un proveedor. Nada se rellena cuando un exchange queda en silencio, y si el propio colector está caído, la página lo indica en lugar de mostrar las cifras de ayer como si fueran actuales.</p><p>&ldquo;La mayor&rdquo; aquí significa el evento individual publicado más grande. Un exchange que deshace una posición grande en varias ejecuciones publica varios eventos, así que una posición más grande que la mostrada puede fragmentarse en partes que individualmente quedan más abajo en la clasificación. Nosotros reportamos lo que publicó el exchange en lugar de unir ejecuciones, porque unirlas requiere suposiciones y esta cifra no debería necesitar ninguna.</p>
 
     <h2>Toma los datos</h2>
     <p>Gratis como JSON, sin clave: <code>GET https://marginpad.io/api/v1/liquidations</code> y lee <code>data.big</code> para obtener el exchange, símbolo, lado y valor nocional en dólares, junto con los totales del mercado y el desglose por moneda. Los eventos individuales a medida que llegan están en <code>/api/v1/liquidations/recent</code>.</p>
@@ -159,6 +159,6 @@ article details p{margin:0 0 18px;max-width:68ch}
     <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=1d23ab08"></script>
+<script defer src="/assets/mp-nav.js?v=28b19c1b"></script>
 </body>
 </html>

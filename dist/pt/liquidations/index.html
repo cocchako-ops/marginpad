@@ -2,7 +2,7 @@
 <html lang="pt" data-es-twin="/liquidations/">
 <head>
 <meta charset="UTF-8" />
-<script src="/assets/ui-pt.js?v=2dd65ca3"></script>
+<script src="/assets/ui-pt.js?v=3ba67ed6"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
@@ -161,7 +161,7 @@
   @media(min-width:861px){.wrap{max-width:1180px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Rastreador de liquidações cripto","url":"https://marginpad.io/pt/liquidations/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Liquidações em futuros cripto, últimas 24 horas","description":"Fechamentos forçados de posições alavancadas de futuros perpétuos em oito corretoras, medidos continuamente pelo coletor próprio da MarginPad: totais do mercado, long vs short, por moeda e por corretora.","url":"https://marginpad.io/pt/liquidations/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"license":"https://marginpad.io/terms/","isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/venues"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Liquidações em futuros cripto, últimas 24 horas","description":"Fechamentos forçados de posições alavancadas de futuros perpétuos em onze corretoras, medidos continuamente pelo coletor próprio da MarginPad: totais do mercado, long vs short, por moeda e por corretora.","url":"https://marginpad.io/pt/liquidations/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"license":"https://marginpad.io/terms/","isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/venues"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidações","item":"https://marginpad.io/pt/liquidations/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"O que é uma liquidação em cripto?","acceptedAnswer":{"@type":"Answer","text":"Uma liquidação acontece quando uma posição alavancada de futuros é fechada à força pela corretora porque a margem do trader não consegue mais cobrir a perda. As liquidações de long ocorrem quando o preço cai; as de short, quando o preço sobe."}},{"@type":"Question","name":"Quanta cripto é liquidada em 24 horas?","acceptedAnswer":{"@type":"Answer","text":"Oscila com a volatilidade. Dias calmos eliminam dezenas de milhões de dólares em todos os mercados de futuros perpétuos; um movimento brusco pode eliminar mais de um bilhão em um único dia. O número ao vivo desta página é medido continuamente nos websockets de liquidação das corretoras e traz seu próprio horário."}},{"@type":"Question","name":"Por que os rastreadores de liquidação mostram números diferentes?","acceptedAnswer":{"@type":"Answer","text":"As corretoras publicam os fechamentos forçados em níveis de detalhe diferentes, algumas agrupam cascatas em eventos únicos, e os feeds sofrem limitação justamente sob a carga que produz mais liquidações. Rastreadores que modelam os dados ausentes informam totais maiores do que os que só contam eventos observados. A MarginPad conta apenas eventos observados, o que deixa nossos números no extremo conservador."}},{"@type":"Question","name":"Stop-losses contam como liquidações?","acceptedAnswer":{"@type":"Answer","text":"Não. Um stop-loss é uma saída voluntária que você mesmo definiu; uma liquidação é um fechamento forçado executado pela corretora quando a margem não consegue mais cobrir a perda. Só a segunda aparece em um feed de liquidações. Os totais aqui também excluem opções, futuros com vencimento e liquidações de empréstimos on-chain."}},{"@type":"Question","name":"Qual corretora tem mais liquidações?","acceptedAnswer":{"@type":"Answer","text":"Muda todo dia. A Binance costuma ser a maior em valor absoluto porque concentra mais alavancagem aberta, mas a participação muda bruscamente durante as cascatas. O detalhamento por plataforma com a divisão entre long e short está nesta página e em marginpad.io/liquidations/by-exchange/."}},{"@type":"Question","name":"Posso obter os dados de liquidação como API grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim, sem chave e com CORS habilitado: /api/v1/liquidations para os totais do mercado, /api/v1/venues para o detalhamento por corretora, /api/v1/liquidations/live para eventos individuais recentes e /api/v1/clusters para as faixas do mapa de calor."}}]}</script>
 
@@ -210,7 +210,7 @@
   <div class="crumb"><a href="/pt/">Início</a> / Liquidações <span class="crumb-upd"><i></i>Ao vivo · oito feeds de corretoras</span></div>
   <article>
     <h1>Liquidações de Cripto Hoje</h1>
-    <p class="lead">Cada fechamento forçado em oito corretoras de futuros perpétuos, contado pelo coletor próprio da MarginPad assim que acontece: quanto foi eliminado em 24 horas, qual lado pagou, quais moedas e quais plataformas.</p>
+    <p class="lead">Cada fechamento forçado em onze corretoras de futuros perpétuos, contado pelo coletor próprio da MarginPad assim que acontece: quanto foi eliminado em 24 horas, qual lado pagou, quais moedas e quais plataformas.</p>
 
     <section class="lq-top" id="lqTop" aria-label="Totais de 24 horas">
       <div class="lq-stat big"><div class="k"><i class="lqdot"></i>Liquidado · 24h</div><div class="v" id="lqTot">…</div><div class="s" id="lqTotS">medindo</div></div>
@@ -385,7 +385,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   load(); setInterval(load,60000);
   window.__lq={rows:rows,get:function(){return D;}};
 })();</script>
-<script defer src="/assets/mp-auth.js?v=acbc0bd7"></script>
-<script defer src="/assets/mp-nav.js?v=1d23ab08"></script>
+<script defer src="/assets/mp-auth.js?v=cac2adc0"></script>
+<script defer src="/assets/mp-nav.js?v=28b19c1b"></script>
 </body>
 </html>

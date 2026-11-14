@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt" data-es-twin="/biggest-liquidation-today/"><head>
 <meta charset="UTF-8">
-<script src="/assets/ui-pt.js?v=2dd65ca3"></script>
+<script src="/assets/ui-pt.js?v=3ba67ed6"></script>
 <script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Maior Liquidação de Cripto Hoje - Ao Vivo | MarginPad</title>
-<meta name="description" content="A maior liquidação de cripto das últimas 24 horas: qual moeda, qual corretora, qual lado e quanto, observada ao vivo em feeds de oito corretoras. Grátis, atualizada continuamente.">
+<meta name="description" content="A maior liquidação de cripto das últimas 24 horas: qual moeda, qual corretora, qual lado e quanto, observada ao vivo em feeds de onze corretoras. Grátis, atualizada continuamente.">
 <link rel="canonical" href="https://marginpad.io/pt/biggest-liquidation-today/">
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/biggest-liquidation-today/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/biggest-liquidation-today/" />
@@ -16,7 +16,7 @@
 <link rel="alternate" hreflang="id" href="https://marginpad.io/id/biggest-liquidation-today/" />
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta property="og:title" content="Maior Liquidação de Cripto Hoje - Ao Vivo | MarginPad">
-<meta property="og:description" content="A maior liquidação de cripto das últimas 24 horas: qual moeda, qual corretora, qual lado e quanto, observada ao vivo em feeds de oito corretoras. Grátis, atualizada continuamente.">
+<meta property="og:description" content="A maior liquidação de cripto das últimas 24 horas: qual moeda, qual corretora, qual lado e quanto, observada ao vivo em feeds de onze corretoras. Grátis, atualizada continuamente.">
 <meta property="og:url" content="https://marginpad.io/pt/biggest-liquidation-today/">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -137,7 +137,7 @@ article details p{margin:0 0 18px;max-width:68ch}
     <p>O total do dia mostra quanta alavancagem morreu. O maior evento individual mostra que tipo de trader morreu, e essas são histórias diferentes. Um dia de cem milhões de dólares feito de vinte mil posições pequenas é uma limpeza de varejo. O mesmo total com uma posição de quarenta milhões de dólares dentro é um fundo, um market maker com um hedge ruim, ou alguém que achou que podia carregar tamanho durante um evento. O segundo tipo move o livro na saída, porque desfazê-lo significa ordens a mercado contra a profundidade que houver.</p><p>O tamanho é medido como valor nocional em dólares americanos: preço de execução vezes quantidade, como a corretora publicou. Essa é a posição que foi fechada, não o dinheiro que o trader perdeu - uma posição liquidada com alavancagem de cinquenta vezes custa ao dono cerca de um cinquenta avos do nocional mais taxas.</p>
 
     <h2>O método, por inteiro</h2>
-    <p>O MarginPad roda o próprio coletor, inscrito no websocket público de liquidações de oito corretoras: Binance (margem em USD e em moeda), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX e Bitfinex. Cada fechamento forçado é normalizado em símbolo, lado, preço de execução e nocional em dólares, e depois agregado em uma janela móvel de 24 horas. São eventos observados, não um modelo nem um feed de fornecedor. Nada é preenchido quando uma corretora fica em silêncio e, se o próprio coletor estiver fora do ar, a página diz isso em vez de mostrar os números de ontem como se fossem atuais.</p><p>&ldquo;Maior&rdquo; aqui significa o maior evento individual publicado. Uma corretora que desfaz uma posição grande em várias execuções publica vários eventos, então uma posição maior do que a exibida pode ser dividida em partes que, isoladamente, ficam mais abaixo no ranking. Informamos o que a corretora publicou em vez de juntar execuções, porque juntar exige suposições e este número não deveria precisar de nenhuma.</p>
+    <p>O MarginPad roda o próprio coletor, inscrito no websocket público de liquidações de onze corretoras: Binance (margem em USD e em moeda), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex, Bitget, Aster e Lighter. Cada fechamento forçado é normalizado em símbolo, lado, preço de execução e nocional em dólares, e depois agregado em uma janela móvel de 24 horas. São eventos observados, não um modelo nem um feed de fornecedor. Nada é preenchido quando uma corretora fica em silêncio e, se o próprio coletor estiver fora do ar, a página diz isso em vez de mostrar os números de ontem como se fossem atuais.</p><p>&ldquo;Maior&rdquo; aqui significa o maior evento individual publicado. Uma corretora que desfaz uma posição grande em várias execuções publica vários eventos, então uma posição maior do que a exibida pode ser dividida em partes que, isoladamente, ficam mais abaixo no ranking. Informamos o que a corretora publicou em vez de juntar execuções, porque juntar exige suposições e este número não deveria precisar de nenhuma.</p>
 
     <h2>Pegue os dados</h2>
     <p>Grátis em JSON, sem chave: <code>GET https://marginpad.io/api/v1/liquidations</code> e leia <code>data.big</code> para a corretora, o símbolo, o lado e o nocional em dólares, junto com os totais do mercado e o detalhamento por moeda. Os eventos individuais, conforme chegam, estão em <code>/api/v1/liquidations/recent</code>.</p>
@@ -159,6 +159,6 @@ article details p{margin:0 0 18px;max-width:68ch}
     <span>&copy; 2026 MarginPad</span> <span><a href="/pt/">Calculadoras</a> &middot; <a href="/pt/blog/">Blog</a> &middot; <a href="/pt/terms/">Termos</a> &middot; <a href="/pt/privacy/">Privacidade</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=1d23ab08"></script>
+<script defer src="/assets/mp-nav.js?v=28b19c1b"></script>
 </body>
 </html>
