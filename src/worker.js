@@ -21747,6 +21747,14 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-11-14', version: '3.1.0', title: 'Free has no time limit, and a $5 plan for testing a bot properly',
+    changes: [
+      { type: 'changed', breaking: false, text: 'The Free plan no longer ends: the 7-day engine trial introduced on 2026-10-13 is retired and no key is refused with trial_expired any more. The engine, replay, the WebSocket stream and all market data stay free with no time limit.' },
+      { type: 'added', breaking: false, text: 'API Lab, $5 a month: 5 strategy books, 3 webhooks, 90 days of trade history and report breakdowns, 300 requests a minute, 5 keys, 150 open positions. Listed on GET /api/apiplan as plan "lab".' },
+      { type: 'changed', breaking: false, text: 'A webhook call on Free now answers plan_required with plan_needed "lab" (it said "pro"); webhooks start on Lab. The tier numbers in /v1/usage moved by one (lab is 1, pro 2, max 3, business 4); the plan NAME is unchanged and is the field to read.' },
+    ],
+  },
+  {
     date: '2026-10-10', version: '3.0.0', title: 'The whole simulation is yours to configure - and side:"sell" no longer opens a long',
     changes: [
       { type: 'fixed', breaking: false, text: 'side:"sell" OPENED A LONG. The reading was `side === "short" ? "short" : "long"` and nothing else, on all three order paths, so of fifteen spellings tested against production FOURTEEN became a long - "sell", "SELL", "SHORT", "ask", an empty string, null, even "banana" - every one with a 200. Every futures API you port from says BUY/SELL, so the commonest first request to this endpoint traded the opposite way round in silence. side now accepts long/short/buy/sell/bid/ask/l/s/b/up/down/bull/bear/1/-1 in any case, and REFUSES anything it does not recognise (400 side_required) instead of guessing. If your bot was relying on an unrecognised side meaning long, it will now be told.' },
@@ -22155,7 +22163,7 @@ async function checkApiPlanExpiry(env, dry) {
     const mark = 'api:exp:' + uid + ':' + step + ':' + new Date(+v.until).toISOString().slice(0, 10);
     const already = !!(await env.STATS.get(mark));
     if (already && !dry) continue;
-    const tier = Math.max(0, Math.min(API_TIER_MAX, Math.round(+v.p || 0)));
+    const tier = apiSubTier(v);
     const plan = API_PLANS[tier];
     let who = null; try { who = await usersDO(env, '/xpdiag', { uid }); } catch (e) {}
     const u = (who && who.user) || {};
@@ -22305,9 +22313,13 @@ async function syncBotTiers(env) {
 // THE LIST PRICE. Everything else about a plan is derived from this row.
 const API_PLANS_RAW = [
   { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0, book: 0 },
-  { id: 'pro', tier: 1, cents: 3900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0, book: 0 },
-  { id: 'max', tier: 2, cents: 9900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1 },
-  { id: 'business', tier: 3, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0, book: 1 },
+  // LAB, $5 (2026-11-14, owner: "API free svima, i neki plan od $5 koji daje nesto za advanced testing botova"). What a bot
+  // test needs beyond Free: several books to A/B a strategy side by side, webhooks so the bot reacts instead of polling,
+  // 90 days of trade history for the report (every paid tier gets it), and more headroom. Never discounted (nopromo).
+  { id: 'lab', tier: 1, cents: 500, label: 'Lab', rpm: 300, maxKeys: 5, maxOpen: 150, maxBooks: 5, hooks: 3, ai: 0, book: 0, nopromo: true },
+  { id: 'pro', tier: 2, cents: 3900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0, book: 0 },
+  { id: 'max', tier: 3, cents: 9900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1 },
+  { id: 'business', tier: 4, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0, book: 1 },
 ];
 // A PROMO IS A PERCENT OFF THE LIST, NEVER THREE RETYPED NUMBERS (owner 2026-10-25: "30% popusta na svaki API
 // plan"). `pct: 0` turns it off and every surface follows in one deploy - the catalogue, both BUY paths, every
@@ -22323,7 +22335,7 @@ const apiPromoCents = (c) => (API_PROMO.pct > 0 && c > 0) ? Math.floor((c * (100
 // `cents` stays the price that is CHARGED, so all ten existing readers - including /apiplan/buy and the
 // NOWPayments invoice - are correct with no call site touched. `was` is the struck-through list price, 0 when
 // there is no promo, exactly the shape /premium/ already uses for Premium AI+ (`cents` + `was`).
-const API_PLANS = API_PLANS_RAW.map((p) => { const c = apiPromoCents(p.cents); return { ...p, cents: c, was: c !== p.cents ? p.cents : 0 }; });
+const API_PLANS = API_PLANS_RAW.map((p) => { const c = p.nopromo ? p.cents : apiPromoCents(p.cents); return { ...p, cents: c, was: c !== p.cents ? p.cents : 0 }; });
 // The tier at which the raw order-book ladder unlocks. Read it, never write the number 2 anywhere else -
 // that literal is exactly how a new plan silently collapses into the one below it.
 const API_BOOK_TIER = API_PLANS.filter((p) => p.book)[0].tier;
@@ -22346,18 +22358,26 @@ const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
 // left two literals, which is how one response body came to quote $29 and $39 for the same plan.
 const API_PRICE = (id) => '$' + Math.round(((API_PLANS.find((x) => x.id === id) || {}).cents || 0) / 100);
 const API_HOOKS = (id) => (API_PLANS.find((x) => x.id === id) || {}).hooks;
-const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), pro = p('pro'), max = p('max'), biz = p('business');
-  return 'API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min).'
+const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), lab = p('lab'), pro = p('pro'), max = p('max'), biz = p('business');
+  return 'API Lab is ' + usd(lab) + ' a month (' + lab.rpm + ' requests/minute, ' + lab.maxKeys + ' keys, ' + lab.maxBooks + ' books, ' + lab.hooks + ' webhooks, 90 days of history), API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min).'
     + (pro.was ? ' Every plan is ' + API_PROMO.label + ' at the moment (list ' + usd({ cents: pro.was }) + ' / ' + usd({ cents: max.was }) + ' / ' + usd({ cents: biz.was }) + ').' : '')
     + ' Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
+// THE TIER NUMBERS MOVED ON 2026-11-14 when Lab took tier 1 (pro 1->2, max 2->3, business 3->4). A row written before
+// that carries no `v` and its `p` is the OLD number, so it is read one step up; every write since carries v:2. This is
+// the ONE reading of a stored row - three readers used to compute it themselves.
+function apiSubTier(v) {
+  if (!v) return 0;
+  const p = Math.round(+v.p || 0); if (!(p > 0)) return 0;
+  return Math.max(0, Math.min(API_TIER_MAX, (+v.v || 0) >= 2 ? p : p + 1));
+}
 async function apiPlanOf(env, uid) {
   const none = { tier: 0, plan: 'free', until: 0, src: '', trial: false, days_left: null };
   if (!uid || !env.STATS) return none;
   let row = null; try { row = JSON.parse((await env.STATS.get('api:sub:' + String(uid))) || 'null'); } catch (e) {}
   if (!row || !(+row.until > Date.now())) return none;
-  const tier = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+row.p || 0)));
+  const tier = apiSubTier(row);
   if (!tier) return none;
   const src = String(row.src || '');
   return { tier, plan: API_PLANS[tier].id, until: +row.until, src, trial: src === 'trial', days_left: apiPlanDays(+row.until) };
@@ -22391,6 +22411,8 @@ async function apiTrialStart(env, uid, startAt) {
   _trialMemo.delete(u);
   return await apiTrialState(env, u);
 }
+// FREE FOR GOOD (2026-11-14). One sentence for the key response and the catalogue.
+const API_FREE_NOTE = 'The Free plan has no time limit: the paper-trading engine, the WebSocket stream, replay and all market data are free for as long as you use them. A paid plan adds headroom and tools, never access.';
 // One sentence, read by the refusal, the catalogue, /v1/usage and the page - never typed twice.
 const API_TRIAL_NOTE = (t) => t && t.active
   ? 'Your free trial of the paper-trading engine runs until ' + new Date(t.until).toISOString().slice(0, 10) + ' (' + t.days_left + ' day' + (t.days_left === 1 ? '' : 's') + ' left). Market data on /api/v1/* stays free and keyless after that; the engine needs a plan.'
@@ -22403,7 +22425,7 @@ async function apiPlanGrant(env, uid, tier, until, src) {
   const ttl = Math.max(60, Math.ceil(((+until || 0) - Date.now()) / 1000) + 7 * 86400);
   try {
     if (!t || !(+until > Date.now())) await env.STATS.delete('api:sub:' + u);
-    else await env.STATS.put('api:sub:' + u, JSON.stringify({ p: t, until: +until, src: String(src || 'paid'), ts: Date.now() }), ttl > 3e8 ? undefined : { expirationTtl: ttl });
+    else await env.STATS.put('api:sub:' + u, JSON.stringify({ p: t, v: 2, until: +until, src: String(src || 'paid'), ts: Date.now() }), ttl > 3e8 ? undefined : { expirationTtl: ttl });
   } catch (e) { return { error: 'kv_failed', detail: String(e && e.message || e) }; }
   try {
     const users = env.USERS.get(env.USERS.idFromName('main'));
@@ -22446,7 +22468,7 @@ const BOT_ERR = {
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
   // DERIVED, never typed - see the API_PRICE note. This string is read by every 402 a developer meets.
   trial_expired: 'The ' + API_TRIAL_DAYS + '-day free trial of the paper-trading engine has ended on this account. Market data on /api/v1/* stays free and keyless with no account at all; the engine is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month): ' + API_UPGRADE,
-  plan_required: 'This is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month). Site Premium does not raise API limits: ' + API_UPGRADE + '',
+  plan_required: 'This is on API Lab (' + API_PRICE('lab') + '/month), Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month). Site Premium does not raise API limits: ' + API_UPGRADE + '',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -22525,7 +22547,6 @@ async function handleBot(url, request, env, ctx) {
     // every time the user opens this endpoint, plus every 10 minutes by syncBotTiers.
     // 2026-09-15: this used to read Premium. It does not any more - Premium buys nothing on the API.
     const sub = await apiPlanOf(env, kuid);
-    const trial = (await apiTrialStart(env, kuid)) || (await apiTrialState(env, kuid)); // minting a key starts the seven days; idempotent, so a second key never restarts them
     const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, until: sub.until || 0, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
@@ -22538,7 +22559,7 @@ async function handleBot(url, request, env, ctx) {
       if (ctx && ctx.waitUntil) ctx.waitUntil(pn4);
     } catch (e) {} }
     if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; }
-    r.trial = trial && !trial.missing ? { days: API_TRIAL_DAYS, ends: new Date(trial.until).toISOString(), days_left: trial.days_left, active: trial.active, note: API_TRIAL_NOTE(trial) } : null; // what the page prints // the countdown the page prints
+    r.trial = null; r.free = { forever: true, note: API_FREE_NOTE }; // the Free plan has no end since 2026-11-14
     r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
     return jb(r, 200);
   }
@@ -22617,16 +22638,9 @@ async function handleBot(url, request, env, ctx) {
     if (dleft > 0 && dleft <= 14) { planH['x-mp-plan-expires'] = new Date(+auth.until).toISOString().slice(0, 10); planH['x-mp-plan-days-left'] = String(dleft); }
   }
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-  // THE TRIAL GATE. Only the engine - market data is a different product and is never refused here.
-  // A missing row FAILS OPEN and starts the clock, so a key that predates this can never be locked out by an
-  // absent row; it gets its seven days from the moment it is first seen.
-  if (!(+auth.tier > 0) && auth.uid) {
-    let tr = await apiTrialState(env, auth.uid);
-    if (tr.missing) tr = (await apiTrialStart(env, auth.uid)) || tr;
-    if (tr && tr.expired) return jb({ error: 'trial_expired', trial_ended: new Date(tr.until).toISOString(),
-      hint: API_TRIAL_NOTE(tr) + ' ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
-    if (tr && tr.active) { planH = Object.assign(planH || {}, { 'x-mp-trial-expires': new Date(tr.until).toISOString().slice(0, 10), 'x-mp-trial-days-left': String(tr.days_left) }); }
-  }
+  // THE TRIAL GATE IS GONE (2026-11-14, owner: "ajde da damo nas API free svima"). From 2026-10-13 a Free key ran the
+  // paper-trading engine for seven days and was then refused 402 trial_expired; Free is free for good now. The
+  // api:trial rows stay in KV and are read by nothing on this path - no key is ever refused for its age.
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   let uid = auth.uid; const uidLive = auth.uid;
   botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
@@ -23075,7 +23089,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro (' + API_PRICE('pro') + '/month, ' + API_HOOKS('pro') + ' hooks), Max (' + API_PRICE('max') + '/month, ' + API_HOOKS('max') + ') and Business (' + API_PRICE('business') + '/month, ' + API_HOOKS('business') + '). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'lab', hint: 'Webhooks start on API Lab (' + API_PRICE('lab') + '/month, ' + API_HOOKS('lab') + ' hooks), then Pro (' + API_PRICE('pro') + '/month, ' + API_HOOKS('pro') + '), Max (' + API_PRICE('max') + '/month, ' + API_HOOKS('max') + ') and Business (' + API_PRICE('business') + '/month, ' + API_HOOKS('business') + '). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -26732,7 +26746,6 @@ export default {
     if (url.pathname === '/api/apiplan') { // the catalogue + where the caller stands. Public catalogue, personal part only when signed in.
       const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
       const mine = u && u.id ? await apiPlanOf(env, String(u.id)) : null;
-      const myTrial = u && u.id ? await apiTrialState(env, String(u.id)) : null; // the page prints the caller's OWN deadline, not the policy
       return J({
         // The promo the page draws its struck prices from. ABSENT rather than false when there is none, so a
         // reader cannot mistake "no discount" for "a discount of zero" - the same rule the `api` block on
@@ -26740,8 +26753,9 @@ export default {
         promo: API_PROMO.pct > 0 ? { percent_off: API_PROMO.pct, label: API_PROMO.label } : null,
         plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks,webhooks: p.hooks, ai_per_day: p.ai })),
         current: mine ? { plan: mine.plan, tier: mine.tier, until: mine.until || null, days_left: mine.until ? mine.days_left : null, source: mine.src || 'free', free_month: mine.trial } : null,
-        my_trial: myTrial && !myTrial.missing ? { ends: new Date(myTrial.until).toISOString(), days_left: myTrial.days_left, active: myTrial.active } : null,
-        free_trial: { days: API_TRIAL_DAYS, note: 'The paper-trading engine is free for ' + API_TRIAL_DAYS + ' days from the day the first key is minted. After that it needs a plan. Market data on /api/v1/* is keyless and free with no account and no trial.' },
+        my_trial: null,
+        free_trial: null, // retired 2026-11-14: Free does not end
+        free: { forever: true, note: API_FREE_NOTE },
         signedIn: !!(u && u.id), crypto: !!env.NOWPAY_API_KEY,
         note: 'API plans are separate from site Premium. Premium does not raise any API limit.',
       });
@@ -27790,7 +27804,7 @@ export default {
         for (const k of l.keys || []) {
           const uid = k.name.slice(8); let v = null; try { v = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
           if (!v) continue;
-          const tier = Math.max(0, Math.min(API_TIER_MAX, Math.round(+v.p || 0)));
+          const tier = apiSubTier(v);
           rows.push({ uid, plan: API_PLANS[tier].id, tier, until: +v.until || 0, days_left: apiPlanDays(+v.until || 0), src: String(v.src || ''), live: (+v.until || 0) > Date.now(), ts: +v.ts || 0 });
         }
       } catch (e) {}

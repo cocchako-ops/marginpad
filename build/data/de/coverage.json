@@ -1411,9 +1411,9 @@
  },
  {
   "rel": "free-crypto-api/index.html",
-  "cover": 1,
-  "hit": 234,
-  "missing": 0
+  "cover": 0.9957264957264957,
+  "hit": 233,
+  "missing": 1
  },
  {
   "rel": "funding-fee-calculator/index.html",
@@ -2005,15 +2005,15 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.935251798561151,
-  "hit": 130,
-  "missing": 9
+  "cover": 0.9928057553956835,
+  "hit": 138,
+  "missing": 1
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.9840637450199203,
-  "hit": 247,
-  "missing": 4
+  "cover": 0.9960159362549801,
+  "hit": 250,
+  "missing": 1
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2600,7 +2600,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 524,
+  "hit": 541,
   "missing": 0
  },
  {
@@ -2743,8 +2743,8 @@
  },
  {
   "rel": "app.html → app-de.html",
-  "cover": 0.982,
-  "hit": 491,
-  "missing": 9
+  "cover": 0.998,
+  "hit": 499,
+  "missing": 1
  }
 ]

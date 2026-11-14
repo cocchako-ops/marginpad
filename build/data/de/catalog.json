@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "de",
-  "generated": "2026-11-12T00:35:42.450Z",
+  "generated": "2026-11-14T11:55:34.121Z",
   "pages": 459,
-  "unique": 15826,
-  "words": 291303,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-11-12T00:38:33.097Z"
+  "unique": 15847,
+  "words": 291529,
+  "untranslated": 2,
+  "untranslatedWords": 74,
+  "merged": "2026-11-14T11:56:52.380Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -13013,6 +13013,42 @@
    "w": 135,
    "de": "Standardmäßig wird eine Market-Order zum <b>Live-Preis</b> ausgeführt und die Maintenance Margin beträgt pauschal <b>0.5%</b> - die Einstiegslinie liegt genau dort, wo du geklickt hast, und eine neue Position zeigt 0.00. Das ist einfacher als an einer echten Börse. <b>Slippage</b> bewegt den Fill gegen dich, so wie beim Durchlaufen eines echten Orderbuchs: 0.01% bei den Majors, 0.05% bei dünneren Kryptowerten, 0.005% bei Forex, 0.02% bei Aktien, Metallen und Indizes. <b>Margin-Stufen</b> erhöhen die Maintenance Margin mit wachsender Position, so wie eine Risk-Limit-Tabelle einer Börse, sodass eine große Position früher liquidiert wird - eine höhere Maintenance-Anforderung lässt weniger Spielraum, bevor sie dich schließt. Beides ist aus, solange du es nicht einschaltest, gilt für <b>ab jetzt eröffnete Positionen</b>, und eine Position behält immer die Maintenance Margin, mit der sie ausgeführt wurde. Dieselbe Einstellung nutzen deine Bots über die API."
   },
+  "gvh4lPjKF4": {
+   "en": "Macro guardrail",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Makro-Leitplanke"
+  },
+  "DBcptOxMwG": {
+   "en": "<input type=\"checkbox\" id=\"planCalGate\"><span data-i18n=\"lCalGateSw\">No market entries in the 30 min before a macro print</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 10,
+   "de": "<input type=\"checkbox\" id=\"planCalGate\"><span data-i18n=\"lCalGateSw\">Keine Market-Einstiege in den 30 Min vor einer Makro-Veröffentlichung</span>"
+  },
+  "WGTE4rvpk7": {
+   "en": "<b>FOMC, CPI, NFP and the other scheduled prints</b> move BTC four to five times its usual bar, in a direction nobody can call from the chart. With this on, the Open button refuses a market order inside the 30 minutes before one and tells you which print and how long. Limit orders are a level, not a bet on the print, and stay allowed. The countdown chip above the chart shows from an hour before.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 71,
+   "de": "<b>FOMC, CPI, NFP und die anderen terminierten Veröffentlichungen</b> bewegen BTC auf das Vier- bis Fünffache seiner üblichen Kerze, in eine Richtung, die niemand aus dem Chart ableiten kann. Ist die Option aktiv, lehnt der Open-Button eine Market-Order in den 30 Minuten davor ab und nennt dir, welche Veröffentlichung ansteht und wie lange es noch dauert. Limit-Orders sind ein Preisniveau, keine Wette auf die Veröffentlichung, und bleiben erlaubt. Der Countdown-Chip über dem Chart erscheint ab einer Stunde vorher."
+  },
   "XIfnOuScDy": {
    "en": "Stop-loss",
    "kind": [
@@ -14930,20 +14966,48 @@
    "w": 1,
    "de": "<span data-i18n=\"jrBack\">Zurück</span>"
   },
-  "vhDxm40scZ": {
-   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+  "Fre3HoepQ_": {
+   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/app.html",
-    "/",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 3,
+   "w": 2,
+   "de": ""
+  },
+  "CcpVylLSB_": {
+   "en": "Share",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/liquidations/report/2026-10/",
     "/rekt/",
     "/rewards/"
    ],
    "n": 4,
-   "w": 3,
-   "de": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Vollständige Trading-Statistiken\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
+   "w": 1,
+   "de": "Anteil"
+  },
+  "TnqgwAphXJ": {
+   "en": "<a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 3,
+   "w": 1,
+   "de": "<a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
   },
   "7xQulZvKkI": {
    "en": "No tickets yet. Plan a trade and tap “Save to journal”.",
@@ -15739,6 +15803,30 @@
    "w": 5,
    "de": "Was ändern realistische Fills?"
   },
+  "Wec68LBCat": {
+   "en": "planCalHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "planCalHint"
+  },
+  "EMkFi7oi4R": {
+   "en": "What is the macro guardrail",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5,
+   "de": "Was ist die Makro-Leitplanke"
+  },
   "IJfDNyO2HH": {
    "en": "price",
    "kind": [
@@ -15982,6 +16070,21 @@
    "n": 4,
    "w": 1,
    "de": "Zurück"
+  },
+  "pOLNJenudf": {
+   "en": "Share your report card",
+   "kind": [
+    "attr:title",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 6,
+   "w": 4,
+   "de": "Teile dein Zeugnis"
   },
   "me-jHMZF_R": {
    "en": "Full trading stats",
@@ -102089,8 +102192,8 @@
    "de": "<span class=\"m get\">GET</span><code>/api/bot/v1/price?symbol=BTC</code><span class=\"m post\">POST</span><code>/api/bot/v1/open</code><span class=\"m post\">POST</span><code>/api/bot/v1/close</code><span class=\"m get\">GET</span><code>/api/bot/v1/positions</code>",
    "leaf": true
   },
-  "HaBtK388Ee": {
-   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream and (API Pro) webhooks - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
+  "Eb4kgN2O0J": {
+   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream and webhooks (from API Lab, $5 a month), all free with no time limit - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
    "kind": [
     "html"
    ],
@@ -102098,8 +102201,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 63,
-   "de": "<b>open</b>-Body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - Margin $1&ndash;100000, Hebel 1&ndash;1000; füge <code>type:\"limit\"</code> oder <code>\"stop\"</code> mit <code>limit_price</code> für eine offene Order hinzu. <b>close</b>-Body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 für einen Teil-Close). <b>positions</b> liefert den Live-Mark-Price und den unrealisierten PnL. Außerdem: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, ein WebSocket-Stream und (API Pro) Webhooks - die vollständige Referenz findest du unter <a href=\"/trading-api/\">/trading-api/</a>."
+   "w": 72,
+   "de": ""
   },
   "CHr3HTupqd": {
    "en": "<span class=\"m get\">GET</span><code>/api/v1/feed</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/venues</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/live?symbol=BTC</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/clusters?symbol=BTC</code>",
@@ -102223,8 +102326,8 @@
    "w": 2,
    "de": "<b>*</b><span>CORS-Origin</span>"
   },
-  "_ssDKLNxLp": {
-   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
+  "74m6h0MJm8": {
+   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 300 on <a href=\"/trading-api/#plans\">API Lab</a>, 600 on Pro, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
    "kind": [
     "html"
    ],
@@ -102232,8 +102335,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 66,
-   "de": "<b>Du brauchst mehr als 60 pro Minute?</b> Sende einen kostenlosen API-Key (in Sekunden erstellt unter <a href=\"/trading-api/\">/trading-api/</a>) als <code>X-API-Key</code> bei denselben Aufrufen, dann werden sie gegen <b>deinen Key</b> statt gegen deine IP gezählt - 120 pro Minute kostenlos, 600 bei <a href=\"/trading-api/#plans\">API Pro</a>, 2000 bei Max und 5000 bei Business. Sonst ändert sich nichts: gleiche Endpoints, gleiches Envelope, und ohne Key bleibt alles wie bisher. <code>X-RateLimit-Scope</code> sagt dir, welches Limit gegriffen hat."
+   "w": 69,
+   "de": "<b>Du brauchst mehr als 60 pro Minute?</b> Sende einen kostenlosen API-Key (in Sekunden erstellt unter <a href=\"/trading-api/\">/trading-api/</a>) als <code>X-API-Key</code> bei denselben Aufrufen, und sie werden über <b>deinen Key</b> statt über deine IP gezählt - 120 pro Minute kostenlos, 300 mit <a href=\"/trading-api/#plans\">API Lab</a>, 600 mit Pro, 2000 mit Max und 5000 mit Business. Sonst ändert sich nichts: gleiche Endpunkte, gleiches Format, und ohne Key bleibt alles wie bisher. <code>X-RateLimit-Scope</code> zeigt dir, welches Limit gegriffen hat."
   },
   "0Cayu7E32B": {
    "en": "Every data response includes rate-limit headers so your client can pace itself:",
@@ -120735,6 +120838,18 @@
    "w": 1,
    "de": "<span>Zurück</span>"
   },
+  "vhDxm40scZ": {
+   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "de": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Vollständige Trading-Statistiken\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
+  },
   "vuihM_Wnnk": {
    "en": "No tickets yet. Open one from <a href=\"/paper-trade\" style=\"color:#c2f64a;text-decoration:none\">Paper Trade</a>.",
    "kind": [
@@ -131265,18 +131380,6 @@
    "n": 2,
    "w": 1,
    "de": "Liquidiert"
-  },
-  "CcpVylLSB_": {
-   "en": "Share",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/liquidations/report/2026-10/"
-   ],
-   "n": 1,
-   "w": 1,
-   "de": "Anteil"
   },
   "KPy3ZqSI2r": {
    "en": "Binance USD-M",
@@ -146894,8 +146997,8 @@
    "w": 3,
    "de": "Live-Krypto-Liquidationen"
   },
-  "-45JNl4wGg": {
-   "en": "<i></i>Live · every major exchange · last 24 hours",
+  "wWO95I9vTR": {
+   "en": "<i></i>Live · every major exchange · today, UTC",
    "kind": [
     "html"
    ],
@@ -146903,11 +147006,11 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 7,
-   "de": "<i></i>Live · jede große Börse · letzte 24 Stunden"
+   "w": 6,
+   "de": "<i></i>Live · alle großen Börsen · heute, UTC"
   },
-  "on5RJaKuOV": {
-   "en": "<span id=\"rkhTot\">-</span><small> liquidated</small>",
+  "9OTrFZfqxA": {
+   "en": "<span id=\"rkhTot\">-</span><small> liquidated today</small>",
    "kind": [
     "html"
    ],
@@ -146915,8 +147018,8 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 1,
-   "de": "<span id=\"rkhTot\">-</span><small> liquidiert</small>"
+   "w": 2,
+   "de": "<span id=\"rkhTot\">-</span><small> heute liquidiert</small>"
   },
   "2U1BcKUZur": {
    "en": "Every forced long and short liquidation from 8 exchanges, streamed within seconds of happening - size, price, side and time, <b>free with no login</b>. When leverage runs out of margin, it prints here: <b>watch who's getting rekt, in real time</b>. Pair it with the free <a href=\"/heatmap\" style=\"color:#c2f64a\">liquidation heatmap</a> and <a href=\"/btc-liquidation-map/\" style=\"color:#c2f64a\">per-coin liquidation maps</a>.",
@@ -146942,8 +147045,8 @@
    "w": 11,
    "de": "<span class=\"t\">Live-Stream von</span><span class=\"chip\" data-x=\"binance\"><i></i>Binance</span><span class=\"chip\" data-x=\"bybit\"><i></i>Bybit</span><span class=\"chip\" data-x=\"okx\"><i></i>OKX</span><span class=\"chip\" data-x=\"hyperliquid\"><i></i>Hyperliquid</span><span class=\"chip\" data-x=\"gate\"><i></i>Gate</span><span class=\"chip\" data-x=\"htx\"><i></i>HTX</span><span class=\"chip\" data-x=\"dydx\"><i></i>dYdX</span><span class=\"chip\" data-x=\"bitfinex\"><i></i>Bitfinex</span>"
   },
-  "diNFsDbhBA": {
-   "en": "Positions rekt · 24h",
+  "NwDrj9tjXB": {
+   "en": "Positions rekt · today",
    "kind": [
     "html"
    ],
@@ -146952,7 +147055,7 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "Positionen rekt · 24h"
+   "de": "Positionen rekt · heute"
   },
   "kVqrugPXv0": {
    "en": "Most rekt · 24h",
@@ -147003,8 +147106,8 @@
    "de": "<span class=\"ll\" id=\"rkhMLl\">Longs -</span><span class=\"ls\" id=\"rkhMSl\">- Shorts</span>",
    "leaf": true
   },
-  "TOOUULrGeC": {
-   "en": "Liquidated<span class=\"ls\"> · last 24h</span>",
+  "1MHt9VUozi": {
+   "en": "Liquidated<span class=\"ls\"> · today, UTC</span>",
    "kind": [
     "html"
    ],
@@ -147013,10 +147116,10 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "Liquidiert<span class=\"ls\"> · letzte 24h</span>"
+   "de": "Liquidiert<span class=\"ls\"> · heute, UTC</span>"
   },
-  "G0t2k6aaH5": {
-   "en": "Positions<span class=\"ls\"> · last 24h</span>",
+  "5THaqL8PA0": {
+   "en": "Positions<span class=\"ls\"> · today, UTC</span>",
    "kind": [
     "html"
    ],
@@ -147025,7 +147128,7 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "Positionen<span class=\"ls\"> · letzte 24h</span>"
+   "de": "Positionen<span class=\"ls\"> · heute, UTC</span>"
   },
   "qW25RFclOS": {
    "en": "Most rekt<span class=\"ls\"> · last 24h</span>",
@@ -177322,8 +177425,8 @@
    "w": 7,
    "de": "<a class=\"btn\" href=\"#akb\">Kostenlosen API-Key holen</a> <a class=\"btn sec\" href=\"#quickstart\">Quickstart lesen</a>"
   },
-  "WvzQ1tNojn": {
-   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $27</a> when one bot becomes four. Market data stays keyless on every plan.",
+  "f2mcq2l5RF": {
+   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Lab is $5</a> to A/B five strategies with webhooks, <a href=\"#plans\">Pro is $27</a> when one bot becomes four. Market data stays keyless on every plan.",
    "kind": [
     "html"
    ],
@@ -177331,8 +177434,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 42,
-   "de": "Keine Karte, kein KYC, keine Einzahlung. Jede Ausführungsbedingung legst du selbst fest - Book-Größe, Slippage, Latenz, Teilausführungen, Ablehnungen, Gebühren. Für immer kostenlos bei 120 Anfragen pro Minute - <a href=\"#plans\">Pro kostet $27</a>, wenn aus einem Bot vier werden. Marktdaten bleiben in jedem Plan keylos."
+   "w": 51,
+   "de": "Keine Karte, kein KYC, keine Einzahlung. Jede Ausführungsbedingung legst du selbst fest - Book-Größe, Slippage, Latenz, Teilausführungen, Ablehnungen, Gebühren. Dauerhaft kostenlos mit 120 Anfragen pro Minute - <a href=\"#plans\">Lab kostet $5</a>, um fünf Strategien per A/B-Test mit Webhooks zu prüfen, <a href=\"#plans\">Pro kostet $27</a>, wenn aus einem Bot vier werden. Marktdaten bleiben bei jedem Plan ohne Key."
   },
   "B48mKJEUe6": {
    "en": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">live now</span>",
@@ -177502,20 +177605,20 @@
    "w": 66,
    "de": "Jedes Konto startet auf Free und bekommt das komplette Produkt: die Trading-Engine, echte Börsengebühren, Limit- und Stop-Entries, Trailing Stops, Replay, Books, den WebSocket-Stream und alle keyless Marktdaten. Die bezahlten Pläne heben die Limits an und bringen <b>Webhooks</b>, Report-Aufschlüsselungen mit geschriebenen Findings, 90 Tage Trade-Historie statt 30 sowie mehr Keys und Books. Die Engine selbst wird nie gedrosselt."
   },
-  "5NA1FSYa5z": {
-   "en": "<span class=\"apn\">Free trial</span>",
+  "dWp5k_KJhK": {
+   "en": "<span class=\"apn\">Free</span>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/trading-api/"
    ],
-   "n": 1,
-   "w": 2,
-   "de": "<span class=\"apn\">Gratis-Test</span>"
+   "n": 2,
+   "w": 1,
+   "de": "<span class=\"apn\">Free</span>"
   },
-  "pM4J1yutsa": {
-   "en": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">for 7 days</small>",
+  "MmW1FCb0ab": {
+   "en": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">for ever</small>",
    "kind": [
     "html"
    ],
@@ -177524,10 +177627,10 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">für 7 Tage</small>"
+   "de": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">für immer</small>"
   },
-  "6mQOjArBlS": {
-   "en": "The full engine, free for <b>7 days</b> from the day you mint your first key. After that the engine needs a plan - <b>market data stays free and keyless for ever</b>, with no account at all.",
+  "DNVJZqy30l": {
+   "en": "The full engine, <b>free with no time limit</b> - no card, no trial, no countdown. Market data stays free and keyless with no account at all.",
    "kind": [
     "html"
    ],
@@ -177535,8 +177638,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 33,
-   "de": "Die komplette Engine, kostenlos für <b>7 Tage</b> ab dem Tag, an dem du deinen ersten Key erstellst. Danach braucht die Engine einen Plan - <b>Marktdaten bleiben für immer kostenlos und keyless</b>, ganz ohne Konto."
+   "w": 25,
+   "de": "Die komplette Engine, <b>kostenlos und ohne Zeitlimit</b> - keine Karte, keine Testphase, kein Countdown. Marktdaten bleiben kostenlos und ohne Key, ganz ohne Konto."
   },
   "Mq24PqejcQ": {
    "en": "<b>One strategy</b><span>one book, one journal, one balance</span>",
@@ -177610,8 +177713,8 @@
    "w": 5,
    "de": "Trading Report: Summen + Skill-Score"
   },
-  "8OlQq7lMVM": {
-   "en": "Your 7-day trial",
+  "j0s1iUp1A3": {
+   "en": "Free for ever",
    "kind": [
     "html"
    ],
@@ -177620,7 +177723,127 @@
    ],
    "n": 1,
    "w": 3,
-   "de": "Dein 7-Tage-Test"
+   "de": "Für immer kostenlos"
+  },
+  "Hcnb3ii1Ir": {
+   "en": "<span class=\"apn\">Lab</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1,
+   "de": "<span class=\"apn\">Lab</span>"
+  },
+  "8hwkVCSK92": {
+   "en": "<span class=\"appill\">BOT TESTING</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<span class=\"appill\">BOT-TESTS</span>"
+  },
+  "lIwyrgHtFa": {
+   "en": "$5<small>/month</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "$5<small>/Monat</small>"
+  },
+  "FZQOND7sLK": {
+   "en": "For testing a bot properly: run five versions of a strategy side by side and let the engine call your bot instead of being polled.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 23,
+   "de": "Zum sauberen Testen eines Bots: Lass fünf Versionen einer Strategie parallel laufen und die Engine deinen Bot aufrufen, statt ihn abzufragen."
+  },
+  "bT41dTyIKf": {
+   "en": "<b>5 books, webhooks, 90 days</b><span>A/B test strategies &middot; signed webhooks &middot; report breakdowns</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11,
+   "de": "<b>5 Books, Webhooks, 90 Tage</b><span>Strategien per A/B-Test prüfen &middot; signierte Webhooks &middot; Report-Aufschlüsselungen</span>"
+  },
+  "UZy-mRoY1j": {
+   "en": "<b>5</b> books - a separate journal, balance and report per strategy",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8,
+   "de": "<b>5</b> Books - eigenes Journal, eigenes Guthaben und eigener Report pro Strategie"
+  },
+  "UBPf2GcyoK": {
+   "en": "<b>Webhooks</b> - 3 signed, retried endpoints",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4,
+   "de": "<b>Webhooks</b> - 3 signierte Endpunkte mit Wiederholungsversuchen"
+  },
+  "yWuBf3df66": {
+   "en": "<b>90 days</b> of trade history and the report with breakdowns and findings",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12,
+   "de": "<b>90 Tage</b> Trade-Historie und der Report mit Aufschlüsselungen und Erkenntnissen"
+  },
+  "-bw_S6eiJx": {
+   "en": "<b>5</b> keys &middot; <b>150</b> open positions &middot; <b>300</b> req/min",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6,
+   "de": "<b>5</b> Keys &middot; <b>150</b> offene Positionen &middot; <b>300</b> Req/Min"
+  },
+  "IE5guAE3_v": {
+   "en": "Get Lab",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "Lab holen"
   },
   "ZtDF5rFw52": {
    "en": "Pro",
@@ -178006,8 +178229,8 @@
    "w": 5,
    "de": "Was sich mit dem Plan ändert"
   },
-  "dWp5k_KJhK": {
-   "en": "<span class=\"apn\">Free</span>",
+  "8TQOr6UTHd": {
+   "en": "Lab &middot; $5",
    "kind": [
     "html"
    ],
@@ -178015,8 +178238,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 1,
-   "de": "<span class=\"apn\">Free</span>"
+   "w": 2,
+   "de": "Lab &middot; $5"
   },
   "VVO5JHXqlf": {
    "en": "Pro &middot; $27",
@@ -178078,6 +178301,19 @@
    "n": 1,
    "w": 2,
    "de": "120 / min",
+   "leaf": true
+  },
+  "mO00zF6RLF": {
+   "en": "<b>300 / min</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "<b>300 / min</b>",
    "leaf": true
   },
   "JInU8bezlq": {
@@ -178197,7 +178433,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 3,
+   "n": 4,
    "w": 2,
    "de": "<b>90 Tage</b>"
   },
@@ -178245,7 +178481,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 7,
    "de": "<b>+ Aufschlüsselungen &amp; Erkenntnisse</b><br><span class=\"sub\">bis zu 90 Tage zurück</span>"
   },
@@ -182562,6 +182798,42 @@
    "w": 4,
    "de": "Für immer kostenlos, keine Karte"
   },
+  "luKUGKqM2d": {
+   "en": "API Lab",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "de": "API Lab"
+  },
+  "i3oIkMk_4E": {
+   "en": "Five strategy books for A/B testing a bot, three webhooks, 90-day trade history and the report with findings.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17,
+   "de": "Fünf Strategie-Books für A/B-Tests deines Bots, drei Webhooks, 90 Tage Trade-Historie und der Report mit Erkenntnissen."
+  },
+  "Rdb-5Wz-_S": {
+   "en": "Per month, paid in crypto or from a MarginPad rewards balance. Nothing renews automatically.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 4,
+   "w": 13,
+   "de": "Pro Monat, bezahlt in Crypto oder aus einem MarginPad-Rewards-Guthaben. Nichts verlängert sich automatisch."
+  },
   "xn2IJ_eHs3": {
    "en": "API Pro",
    "kind": [
@@ -182585,18 +182857,6 @@
    "n": 1,
    "w": 14,
    "de": "Fünf Strategie-Books, Webhooks, 90 Tage Trade-Historie und der volle Trading-Report mit Findings."
-  },
-  "Rdb-5Wz-_S": {
-   "en": "Per month, paid in crypto or from a MarginPad rewards balance. Nothing renews automatically.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 3,
-   "w": 13,
-   "de": "Pro Monat, bezahlt in Crypto oder aus einem MarginPad-Rewards-Guthaben. Nichts verlängert sich automatisch."
   },
   "TybmPkGa_k": {
    "en": "API Max",
@@ -182936,8 +183196,8 @@
    "w": 4,
    "de": "Was sind die Limits?"
   },
-  "UU1n9UttaG": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($27 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($69 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($139 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
+  "5Hq5xIPI8z": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions, with no time limit. API Lab ($5 a month): 300 requests per minute, 5 keys, 150 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Pro ($27 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($69 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($139 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
    "kind": [
     "ld"
    ],
@@ -182945,8 +183205,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 78,
-   "de": "Kostenlos: 120 Anfragen pro Minute pro Key, 3 Keys pro Account, 50 offene Positionen. API Pro ($27 im Monat): 600 Anfragen pro Minute, 10 Keys, 200 offene Positionen, 5 Strategie-Books, 3 Webhooks und 90 Tage Trade-Historie. API Max ($69 im Monat): 2000 Anfragen pro Minute, 30 Keys, 500 offene Positionen, 20 Books, 15 Webhooks. API Business ($139 im Monat): 5000 Anfragen pro Minute, 100 Keys, 1000 offene Positionen, 50 Books, 50 Webhooks. Kein Key wurde in irgendeinem Plan je ratenbegrenzt."
+   "w": 103,
+   "de": "Kostenlos: 120 Anfragen pro Minute und Key, 3 Keys pro Konto, 50 offene Positionen, ohne Zeitlimit. API Lab ($5 im Monat): 300 Anfragen pro Minute, 5 Keys, 150 offene Positionen, 5 Strategie-Books, 3 Webhooks und 90 Tage Trade-Historie. API Pro ($27 im Monat): 600 Anfragen pro Minute, 10 Keys, 200 offene Positionen, 5 Strategie-Books, 3 Webhooks und 90 Tage Trade-Historie. API Max ($69 im Monat): 2000 Anfragen pro Minute, 30 Keys, 500 offene Positionen, 20 Books, 15 Webhooks. API Business ($139 im Monat): 5000 Anfragen pro Minute, 100 Keys, 1000 offene Positionen, 50 Books, 50 Webhooks. Bei keinem Plan wurde je ein Key gedrosselt."
   },
   "40rLeTkS3b": {
    "en": "Does MarginPad Premium include the API?",

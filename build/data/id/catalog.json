@@ -1,13 +1,13 @@
 {
  "meta": {
   "lang": "id",
-  "generated": "2026-11-12T00:35:42.790Z",
+  "generated": "2026-11-14T11:55:34.485Z",
   "pages": 459,
-  "unique": 15826,
-  "words": 291303,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-11-12T00:38:33.339Z"
+  "unique": 15847,
+  "words": 291529,
+  "untranslated": 2,
+  "untranslatedWords": 4,
+  "merged": "2026-11-14T11:56:52.682Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -13066,6 +13066,42 @@
    "w": 135,
    "id": "Secara default, market order tereksekusi di <b>harga live</b> dan maintenance margin tetap <b>0.5%</b> - garis entry ada persis di tempat kamu klik dan posisi baru menunjukkan 0.00. Ini lebih mudah daripada venue sungguhan. <b>Slippage</b> menggeser harga eksekusi melawanmu seperti saat menembus order book sungguhan: 0.01% di koin besar, 0.05% di kripto yang lebih tipis, 0.005% di forex, 0.02% di saham, logam dan indeks. <b>Tingkat margin</b> menaikkan maintenance margin seiring posisi membesar, seperti tabel risk-limit di exchange, jadi posisi besar dilikuidasi lebih cepat - kebutuhan maintenance yang lebih tinggi menyisakan ruang lebih sempit sebelum posisimu ditutup. Keduanya mati kecuali kamu menyalakannya, berlaku untuk <b>posisi yang dibuka mulai sekarang</b>, dan sebuah posisi selalu mempertahankan maintenance margin saat ia tereksekusi. Pengaturan yang sama juga dipakai bot-mu lewat API."
   },
+  "gvh4lPjKF4": {
+   "en": "Macro guardrail",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": ""
+  },
+  "DBcptOxMwG": {
+   "en": "<input type=\"checkbox\" id=\"planCalGate\"><span data-i18n=\"lCalGateSw\">No market entries in the 30 min before a macro print</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 10,
+   "id": "<input type=\"checkbox\" id=\"planCalGate\"><span data-i18n=\"lCalGateSw\">Tanpa market entry 30 menit sebelum rilis data makro</span>"
+  },
+  "WGTE4rvpk7": {
+   "en": "<b>FOMC, CPI, NFP and the other scheduled prints</b> move BTC four to five times its usual bar, in a direction nobody can call from the chart. With this on, the Open button refuses a market order inside the 30 minutes before one and tells you which print and how long. Limit orders are a level, not a bet on the print, and stay allowed. The countdown chip above the chart shows from an hour before.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 71,
+   "id": "<b>FOMC, CPI, NFP, dan rilis terjadwal lainnya</b> menggerakkan BTC empat sampai lima kali lipat dari candle biasanya, ke arah yang tidak bisa ditebak dari chart. Kalau ini aktif, tombol Open menolak market order dalam 30 menit sebelum rilis dan memberi tahu rilis apa serta berapa lama lagi. Limit order adalah level, bukan taruhan pada rilis, jadi tetap boleh. Chip hitung mundur di atas chart muncul dari satu jam sebelumnya."
+  },
   "XIfnOuScDy": {
    "en": "Stop-loss",
    "kind": [
@@ -14986,20 +15022,48 @@
    "w": 1,
    "id": "<span data-i18n=\"jrBack\">Kembali</span>"
   },
-  "vhDxm40scZ": {
-   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+  "Fre3HoepQ_": {
+   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/app.html",
-    "/",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 3,
+   "w": 2,
+   "id": ""
+  },
+  "CcpVylLSB_": {
+   "en": "Share",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/liquidations/report/2026-10/",
     "/rekt/",
     "/rewards/"
    ],
    "n": 4,
-   "w": 3,
-   "id": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Statistik trading lengkap\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
+   "w": 1,
+   "id": "Porsi"
+  },
+  "TnqgwAphXJ": {
+   "en": "<a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 3,
+   "w": 1,
+   "id": "<a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Statistik trading lengkap\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
   },
   "7xQulZvKkI": {
    "en": "No tickets yet. Plan a trade and tap “Save to journal”.",
@@ -15799,6 +15863,30 @@
    "w": 5,
    "id": "Apa yang berubah dengan eksekusi realistis?"
   },
+  "Wec68LBCat": {
+   "en": "planCalHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "planCalHint"
+  },
+  "EMkFi7oi4R": {
+   "en": "What is the macro guardrail",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5,
+   "id": "Apa itu macro guardrail"
+  },
   "IJfDNyO2HH": {
    "en": "price",
    "kind": [
@@ -16044,6 +16132,21 @@
    "n": 4,
    "w": 1,
    "id": "Kembali"
+  },
+  "pOLNJenudf": {
+   "en": "Share your report card",
+   "kind": [
+    "attr:title",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html",
+    "/rekt/",
+    "/rewards/"
+   ],
+   "n": 6,
+   "w": 4,
+   "id": "Bagikan report card-mu"
   },
   "me-jHMZF_R": {
    "en": "Full trading stats",
@@ -102266,8 +102369,8 @@
    "id": "<span class=\"m get\">GET</span><code>/api/bot/v1/price?symbol=BTC</code><span class=\"m post\">POST</span><code>/api/bot/v1/open</code><span class=\"m post\">POST</span><code>/api/bot/v1/close</code><span class=\"m get\">GET</span><code>/api/bot/v1/positions</code>",
    "leaf": true
   },
-  "HaBtK388Ee": {
-   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream and (API Pro) webhooks - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
+  "Eb4kgN2O0J": {
+   "en": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; add <code>type:\"limit\"</code> or <code>\"stop\"</code> with <code>limit_price</code> for a resting order. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 for a partial close). <b>positions</b> returns live mark price and unrealized PnL. Also: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, a WebSocket stream and webhooks (from API Lab, $5 a month), all free with no time limit - the full reference is on <a href=\"/trading-api/\">/trading-api/</a>.",
    "kind": [
     "html"
    ],
@@ -102275,8 +102378,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 63,
-   "id": "Body <b>open</b>: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; untuk order tertunda, tambahkan <code>type:\"limit\"</code> atau <code>\"stop\"</code> beserta <code>limit_price</code>. Body <b>close</b>: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 untuk menutup sebagian posisi). <b>positions</b> mengembalikan mark price live dan PnL yang belum terealisasi. Juga ada: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, stream WebSocket, dan webhook (API Pro) - referensi lengkapnya di <a href=\"/trading-api/\">/trading-api/</a>."
+   "w": 72,
+   "id": "<b>open</b> body: <code>{ symbol, side, margin_usd, leverage, sl?, tp?, trail_pct?, client_order_id?, dry_run? }</code> - margin $1&ndash;100000, leverage 1&ndash;1000; tambahkan <code>type:\"limit\"</code> atau <code>\"stop\"</code> dengan <code>limit_price</code> untuk order tertunda. <b>close</b> body: <code>{ id, symbol?, pct? }</code> (pct 1&ndash;100 untuk close parsial). <b>positions</b> mengembalikan mark price live dan PnL belum terealisasi. Ada juga: <code>/sltp</code>, <code>/orders</code>, <code>/modify_order</code>, <code>/cancel_order</code>, <code>/trades</code>, <code>/account</code>, <code>/report</code>, stream WebSocket, dan webhook (dari API Lab, $5 per bulan), semuanya gratis tanpa batas waktu - referensi lengkapnya ada di <a href=\"/trading-api/\">/trading-api/</a>."
   },
   "CHr3HTupqd": {
    "en": "<span class=\"m get\">GET</span><code>/api/v1/feed</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/venues</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/live?symbol=BTC</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/clusters?symbol=BTC</code>",
@@ -102400,8 +102503,8 @@
    "w": 2,
    "id": "<b>*</b><span>origin CORS</span>"
   },
-  "_ssDKLNxLp": {
-   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
+  "74m6h0MJm8": {
+   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 300 on <a href=\"/trading-api/#plans\">API Lab</a>, 600 on Pro, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
    "kind": [
     "html"
    ],
@@ -102409,8 +102512,8 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 66,
-   "id": "<b>Butuh lebih dari 60 per menit?</b> Kirim API key gratis (buat dalam hitungan detik di <a href=\"/trading-api/\">/trading-api/</a>) sebagai <code>X-API-Key</code> di panggilan yang sama, dan kuotanya dihitung per <b>key-mu</b>, bukan per IP - 120 per menit gratis, 600 di <a href=\"/trading-api/#plans\">API Pro</a>, 2000 di Max, dan 5000 di Business. Selebihnya tidak berubah: endpoint sama, envelope sama, dan akses tanpa key tetap seperti sekarang. <code>X-RateLimit-Scope</code> memberi tahu batas mana yang berlaku."
+   "w": 69,
+   "id": "<b>Butuh lebih dari 60 per menit?</b> Kirim API key gratis (buat dalam hitungan detik di <a href=\"/trading-api/\">/trading-api/</a>) sebagai <code>X-API-Key</code> di panggilan yang sama, dan batasnya dihitung per <b>key-mu</b>, bukan per IP - 120 per menit gratis, 300 di <a href=\"/trading-api/#plans\">API Lab</a>, 600 di Pro, 2000 di Max, dan 5000 di Business. Yang lain tidak berubah: endpoint yang sama, envelope yang sama, dan akses tanpa key tetap seperti semula. <code>X-RateLimit-Scope</code> menunjukkan batas mana yang berlaku."
   },
   "0Cayu7E32B": {
    "en": "Every data response includes rate-limit headers so your client can pace itself:",
@@ -120984,6 +121087,18 @@
    "w": 1,
    "id": "<span>Kembali</span>"
   },
+  "vhDxm40scZ": {
+   "en": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Full trading stats\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Stats</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 3,
+   "id": "<span class=\"jr-title\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-3px;margin-right:8px\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</span><a class=\"jr-stats-lnk\" href=\"/trading-journal/\" title=\"Statistik trading lengkap\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:-2px;margin-right:5px\"><path d=\"M3 3v18h18\"/><path d=\"M7 14l3-3 3 3 5-6\"/></svg>Statistik</a>"
+  },
   "vuihM_Wnnk": {
    "en": "No tickets yet. Open one from <a href=\"/paper-trade\" style=\"color:#c2f64a;text-decoration:none\">Paper Trade</a>.",
    "kind": [
@@ -131536,18 +131651,6 @@
    "n": 2,
    "w": 1,
    "id": "Dilikuidasi"
-  },
-  "CcpVylLSB_": {
-   "en": "Share",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/liquidations/report/2026-10/"
-   ],
-   "n": 1,
-   "w": 1,
-   "id": "Porsi"
   },
   "KPy3ZqSI2r": {
    "en": "Binance USD-M",
@@ -147200,8 +147303,8 @@
    "w": 3,
    "id": "Likuidasi Kripto Live"
   },
-  "-45JNl4wGg": {
-   "en": "<i></i>Live · every major exchange · last 24 hours",
+  "wWO95I9vTR": {
+   "en": "<i></i>Live · every major exchange · today, UTC",
    "kind": [
     "html"
    ],
@@ -147209,11 +147312,11 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 7,
-   "id": "<i></i>Live · semua exchange besar · 24 jam terakhir"
+   "w": 6,
+   "id": "<i></i>Live · semua exchange besar · hari ini, UTC"
   },
-  "on5RJaKuOV": {
-   "en": "<span id=\"rkhTot\">-</span><small> liquidated</small>",
+  "9OTrFZfqxA": {
+   "en": "<span id=\"rkhTot\">-</span><small> liquidated today</small>",
    "kind": [
     "html"
    ],
@@ -147221,8 +147324,8 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 1,
-   "id": "<span id=\"rkhTot\">-</span><small> dilikuidasi</small>"
+   "w": 2,
+   "id": "<span id=\"rkhTot\">-</span><small> dilikuidasi hari ini</small>"
   },
   "2U1BcKUZur": {
    "en": "Every forced long and short liquidation from 8 exchanges, streamed within seconds of happening - size, price, side and time, <b>free with no login</b>. When leverage runs out of margin, it prints here: <b>watch who's getting rekt, in real time</b>. Pair it with the free <a href=\"/heatmap\" style=\"color:#c2f64a\">liquidation heatmap</a> and <a href=\"/btc-liquidation-map/\" style=\"color:#c2f64a\">per-coin liquidation maps</a>.",
@@ -147248,8 +147351,8 @@
    "w": 11,
    "id": "<span class=\"t\">Streaming live dari</span><span class=\"chip\" data-x=\"binance\"><i></i>Binance</span><span class=\"chip\" data-x=\"bybit\"><i></i>Bybit</span><span class=\"chip\" data-x=\"okx\"><i></i>OKX</span><span class=\"chip\" data-x=\"hyperliquid\"><i></i>Hyperliquid</span><span class=\"chip\" data-x=\"gate\"><i></i>Gate</span><span class=\"chip\" data-x=\"htx\"><i></i>HTX</span><span class=\"chip\" data-x=\"dydx\"><i></i>dYdX</span><span class=\"chip\" data-x=\"bitfinex\"><i></i>Bitfinex</span>"
   },
-  "diNFsDbhBA": {
-   "en": "Positions rekt · 24h",
+  "NwDrj9tjXB": {
+   "en": "Positions rekt · today",
    "kind": [
     "html"
    ],
@@ -147258,7 +147361,7 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "Posisi rekt · 24j"
+   "id": "Posisi rekt · hari ini"
   },
   "kVqrugPXv0": {
    "en": "Most rekt · 24h",
@@ -147309,8 +147412,8 @@
    "id": "<span class=\"ll\" id=\"rkhMLl\">Longs -</span><span class=\"ls\" id=\"rkhMSl\">- Shorts</span>",
    "leaf": true
   },
-  "TOOUULrGeC": {
-   "en": "Liquidated<span class=\"ls\"> · last 24h</span>",
+  "1MHt9VUozi": {
+   "en": "Liquidated<span class=\"ls\"> · today, UTC</span>",
    "kind": [
     "html"
    ],
@@ -147319,10 +147422,10 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "Dilikuidasi<span class=\"ls\"> · 24 jam terakhir</span>"
+   "id": "Dilikuidasi<span class=\"ls\"> · hari ini, UTC</span>"
   },
-  "G0t2k6aaH5": {
-   "en": "Positions<span class=\"ls\"> · last 24h</span>",
+  "5THaqL8PA0": {
+   "en": "Positions<span class=\"ls\"> · today, UTC</span>",
    "kind": [
     "html"
    ],
@@ -147331,7 +147434,7 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "Posisi<span class=\"ls\"> · 24 jam terakhir</span>"
+   "id": "Posisi<span class=\"ls\"> · hari ini, UTC</span>"
   },
   "qW25RFclOS": {
    "en": "Most rekt<span class=\"ls\"> · last 24h</span>",
@@ -177631,8 +177734,8 @@
    "w": 7,
    "id": "<a class=\"btn\" href=\"#akb\">Dapatkan API key gratis</a> <a class=\"btn sec\" href=\"#quickstart\">Baca quickstart</a>"
   },
-  "WvzQ1tNojn": {
-   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $27</a> when one bot becomes four. Market data stays keyless on every plan.",
+  "f2mcq2l5RF": {
+   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Lab is $5</a> to A/B five strategies with webhooks, <a href=\"#plans\">Pro is $27</a> when one bot becomes four. Market data stays keyless on every plan.",
    "kind": [
     "html"
    ],
@@ -177640,8 +177743,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 42,
-   "id": "Tanpa kartu, tanpa KYC, tanpa deposit. Semua kondisi eksekusi kamu yang atur - ukuran akun, slippage, latensi, eksekusi sebagian, penolakan, biaya. Gratis selamanya di 120 request per menit - <a href=\"#plans\">Pro $27</a> saat satu bot jadi empat. Data market tetap tanpa key di semua plan."
+   "w": 51,
+   "id": "Tanpa kartu, tanpa KYC, tanpa deposit. Semua kondisi fill kamu yang atur - ukuran book, slippage, latency, partial fill, penolakan, biaya. Gratis selamanya di 120 request per menit - <a href=\"#plans\">Lab $5</a> untuk A/B test lima strategi dengan webhook, <a href=\"#plans\">Pro $27</a> kalau satu bot sudah jadi empat. Data market tetap tanpa key di semua plan."
   },
   "B48mKJEUe6": {
    "en": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">live now</span>",
@@ -177811,20 +177914,21 @@
    "w": 66,
    "id": "Setiap akun mulai di Free dan mendapat produk lengkap: mesin trading, biaya venue sungguhan, entry limit dan stop, trailing stop, replay, book, stream WebSocket, dan semua data pasar tanpa key. Paket berbayar menaikkan batas dan menambahkan <b>webhook</b>, rincian laporan dengan temuan tertulis, riwayat trade 90 hari alih-alih 30, serta lebih banyak key dan book. Mesinnya sendiri tidak pernah ditahan."
   },
-  "5NA1FSYa5z": {
-   "en": "<span class=\"apn\">Free trial</span>",
+  "dWp5k_KJhK": {
+   "en": "<span class=\"apn\">Free</span>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/trading-api/"
    ],
-   "n": 1,
-   "w": 2,
-   "id": "<span class=\"apn\">Uji coba gratis</span>"
+   "n": 2,
+   "w": 1,
+   "id": "<span class=\"apn\">Free</span>",
+   "leaf": true
   },
-  "pM4J1yutsa": {
-   "en": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">for 7 days</small>",
+  "MmW1FCb0ab": {
+   "en": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">for ever</small>",
    "kind": [
     "html"
    ],
@@ -177833,10 +177937,10 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">selama 7 hari</small>"
+   "id": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">selamanya</small>"
   },
-  "6mQOjArBlS": {
-   "en": "The full engine, free for <b>7 days</b> from the day you mint your first key. After that the engine needs a plan - <b>market data stays free and keyless for ever</b>, with no account at all.",
+  "DNVJZqy30l": {
+   "en": "The full engine, <b>free with no time limit</b> - no card, no trial, no countdown. Market data stays free and keyless with no account at all.",
    "kind": [
     "html"
    ],
@@ -177844,8 +177948,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 33,
-   "id": "Mesin lengkap, gratis selama <b>7 hari</b> sejak kamu membuat key pertama. Setelah itu mesinnya butuh paket - <b>data pasar tetap gratis dan tanpa key selamanya</b>, bahkan tanpa akun sama sekali."
+   "w": 25,
+   "id": "Engine lengkap, <b>gratis tanpa batas waktu</b> - tanpa kartu, tanpa trial, tanpa hitung mundur. Data market tetap gratis dan tanpa key, tanpa akun sama sekali."
   },
   "Mq24PqejcQ": {
    "en": "<b>One strategy</b><span>one book, one journal, one balance</span>",
@@ -177919,8 +178023,8 @@
    "w": 5,
    "id": "Laporan trading: total + skor skill"
   },
-  "8OlQq7lMVM": {
-   "en": "Your 7-day trial",
+  "j0s1iUp1A3": {
+   "en": "Free for ever",
    "kind": [
     "html"
    ],
@@ -177929,7 +178033,127 @@
    ],
    "n": 1,
    "w": 3,
-   "id": "Uji coba 7 harimu"
+   "id": "Gratis selamanya"
+  },
+  "Hcnb3ii1Ir": {
+   "en": "<span class=\"apn\">Lab</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1,
+   "id": "<span class=\"apn\">Lab</span>"
+  },
+  "8hwkVCSK92": {
+   "en": "<span class=\"appill\">BOT TESTING</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "<span class=\"appill\">UJI BOT</span>"
+  },
+  "lIwyrgHtFa": {
+   "en": "$5<small>/month</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "$5<small>/bulan</small>"
+  },
+  "FZQOND7sLK": {
+   "en": "For testing a bot properly: run five versions of a strategy side by side and let the engine call your bot instead of being polled.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 23,
+   "id": "Untuk menguji bot dengan benar: jalankan lima versi strategi berdampingan, dan biarkan engine yang memanggil bot-mu, bukan kamu yang polling."
+  },
+  "bT41dTyIKf": {
+   "en": "<b>5 books, webhooks, 90 days</b><span>A/B test strategies &middot; signed webhooks &middot; report breakdowns</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11,
+   "id": "<b>5 book, webhook, 90 hari</b><span>A/B test strategi &middot; webhook bertanda tangan &middot; rincian report</span>"
+  },
+  "UZy-mRoY1j": {
+   "en": "<b>5</b> books - a separate journal, balance and report per strategy",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8,
+   "id": "<b>5</b> book - jurnal, saldo, dan report terpisah per strategi"
+  },
+  "UBPf2GcyoK": {
+   "en": "<b>Webhooks</b> - 3 signed, retried endpoints",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4,
+   "id": "<b>Webhook</b> - 3 endpoint bertanda tangan, dengan retry"
+  },
+  "yWuBf3df66": {
+   "en": "<b>90 days</b> of trade history and the report with breakdowns and findings",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12,
+   "id": "<b>90 hari</b> riwayat trading dan report dengan rincian serta temuan"
+  },
+  "-bw_S6eiJx": {
+   "en": "<b>5</b> keys &middot; <b>150</b> open positions &middot; <b>300</b> req/min",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6,
+   "id": "<b>5</b> key &middot; <b>150</b> posisi terbuka &middot; <b>300</b> request/menit"
+  },
+  "IE5guAE3_v": {
+   "en": "Get Lab",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "Ambil Lab"
   },
   "ZtDF5rFw52": {
    "en": "Pro",
@@ -178318,8 +178542,8 @@
    "w": 5,
    "id": "Apa yang berubah sesuai paket"
   },
-  "dWp5k_KJhK": {
-   "en": "<span class=\"apn\">Free</span>",
+  "8TQOr6UTHd": {
+   "en": "Lab &middot; $5",
    "kind": [
     "html"
    ],
@@ -178327,9 +178551,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 1,
-   "id": "<span class=\"apn\">Free</span>",
-   "leaf": true
+   "w": 2,
+   "id": "Lab &middot; $5"
   },
   "VVO5JHXqlf": {
    "en": "Pro &middot; $27",
@@ -178393,6 +178616,19 @@
    "n": 1,
    "w": 2,
    "id": "120 / min",
+   "leaf": true
+  },
+  "mO00zF6RLF": {
+   "en": "<b>300 / min</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "<b>300 / min</b>",
    "leaf": true
   },
   "JInU8bezlq": {
@@ -178512,7 +178748,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 3,
+   "n": 4,
    "w": 2,
    "id": "<b>90 hari</b>"
   },
@@ -178560,7 +178796,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 7,
    "id": "<b>+ rincian &amp; temuan</b><br><span class=\"sub\">sampai 90 hari ke belakang</span>"
   },
@@ -182914,6 +183150,42 @@
    "w": 4,
    "id": "Gratis selamanya, tanpa kartu"
   },
+  "luKUGKqM2d": {
+   "en": "API Lab",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2,
+   "id": "API Lab"
+  },
+  "i3oIkMk_4E": {
+   "en": "Five strategy books for A/B testing a bot, three webhooks, 90-day trade history and the report with findings.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17,
+   "id": "Lima strategy book untuk A/B test bot, tiga webhook, riwayat trading 90 hari, dan report beserta temuannya."
+  },
+  "Rdb-5Wz-_S": {
+   "en": "Per month, paid in crypto or from a MarginPad rewards balance. Nothing renews automatically.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 4,
+   "w": 13,
+   "id": "Per bulan, dibayar dengan kripto atau dari saldo reward MarginPad. Tidak ada yang diperpanjang otomatis."
+  },
   "xn2IJ_eHs3": {
    "en": "API Pro",
    "kind": [
@@ -182938,18 +183210,6 @@
    "n": 1,
    "w": 14,
    "id": "Lima book strategi, webhook, riwayat trade 90 hari, dan laporan trading lengkap dengan temuan."
-  },
-  "Rdb-5Wz-_S": {
-   "en": "Per month, paid in crypto or from a MarginPad rewards balance. Nothing renews automatically.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 3,
-   "w": 13,
-   "id": "Per bulan, dibayar dengan kripto atau dari saldo reward MarginPad. Tidak ada yang diperpanjang otomatis."
   },
   "TybmPkGa_k": {
    "en": "API Max",
@@ -183289,8 +183549,8 @@
    "w": 4,
    "id": "Apa saja batasnya?"
   },
-  "UU1n9UttaG": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($27 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($69 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($139 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
+  "5Hq5xIPI8z": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions, with no time limit. API Lab ($5 a month): 300 requests per minute, 5 keys, 150 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Pro ($27 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($69 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($139 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
    "kind": [
     "ld"
    ],
@@ -183298,8 +183558,8 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 78,
-   "id": "Gratis: 120 request per menit per key, 3 key per akun, 50 posisi terbuka. API Pro ($27 per bulan): 600 request per menit, 10 key, 200 posisi terbuka, 5 buku strategi, 3 webhook, dan riwayat trade 90 hari. API Max ($69 per bulan): 2000 request per menit, 30 key, 500 posisi terbuka, 20 buku, 15 webhook. API Business ($139 per bulan): 5000 request per menit, 100 key, 1000 posisi terbuka, 50 buku, 50 webhook. Belum pernah ada key yang kena rate limit di plan mana pun."
+   "w": 103,
+   "id": "Gratis: 120 request per menit per key, 3 key per akun, 50 posisi terbuka, tanpa batas waktu. API Lab ($5 per bulan): 300 request per menit, 5 key, 150 posisi terbuka, 5 strategy book, 3 webhook, dan riwayat trading 90 hari. API Pro ($27 per bulan): 600 request per menit, 10 key, 200 posisi terbuka, 5 strategy book, 3 webhook, dan riwayat trading 90 hari. API Max ($69 per bulan): 2000 request per menit, 30 key, 500 posisi terbuka, 20 book, 15 webhook. API Business ($139 per bulan): 5000 request per menit, 100 key, 1000 posisi terbuka, 50 book, 50 webhook. Belum pernah ada key yang kena rate limit di plan mana pun."
   },
   "40rLeTkS3b": {
    "en": "Does MarginPad Premium include the API?",

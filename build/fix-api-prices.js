@@ -30,10 +30,12 @@ const PROMO_LABEL = (() => { const m = src.match(/API_PROMO = \{[^}]*label: '([^
 const promoCents = (c) => (PROMO_PCT > 0 && c > 0) ? Math.floor((c * (100 - PROMO_PCT)) / 10000) * 100 : c;
 const PLANS = {};
 for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'[^}]*?rpm:\s*(\d+)[^}]*?maxKeys:\s*(\d+)[^}]*?maxOpen:\s*(\d+)[^}]*?maxBooks:\s*(\d+)[^}]*?hooks:\s*(\d+)/g)) {
-  PLANS[m[1]] = { id: m[1], usd: Math.round(promoCents(+m[2]) / 100), wasUsd: promoCents(+m[2]) !== +m[2] ? Math.round(+m[2] / 100) : 0, label: m[3], rpm: +m[4], keys: +m[5], open: +m[6], books: +m[7], hooks: +m[8] };
+  // a plan marked nopromo (Lab, 2026-11-14) is never discounted - the worker's own rule, repeated here
+  const noPromo = /nopromo:\s*true/.test(tbl.slice(m.index, tbl.indexOf('}', m.index))), pc = noPromo ? +m[2] : promoCents(+m[2]);
+  PLANS[m[1]] = { id: m[1], usd: Math.round(pc / 100), wasUsd: pc !== +m[2] ? Math.round(+m[2] / 100) : 0, label: m[3], rpm: +m[4], keys: +m[5], open: +m[6], books: +m[7], hooks: +m[8] };
 }
-for (const id of ['free', 'pro', 'max', 'business']) if (!PLANS[id]) { console.error('REFUSING: could not read plan "' + id + '" out of API_PLANS'); process.exit(1); }
-const P = PLANS.pro, M = PLANS.max, B = PLANS.business, F = PLANS.free;
+for (const id of ['free', 'lab', 'pro', 'max', 'business']) if (!PLANS[id]) { console.error('REFUSING: could not read plan "' + id + '" out of API_PLANS'); process.exit(1); }
+const P = PLANS.pro, M = PLANS.max, B = PLANS.business, F = PLANS.free, L = PLANS.lab;
 console.log('API_PLANS says: Pro $' + P.usd + ' / Max $' + M.usd + ' / Business $' + B.usd
   + (PROMO_PCT ? '   (' + PROMO_LABEL + ', list $' + P.wasUsd + ' / $' + M.wasUsd + ' / $' + B.wasUsd + ')' : ''));
 
@@ -50,7 +52,7 @@ function sub(from, to, label, optional) {
 }
 
 // ---- 1. the JSON-LD Offers: what search engines and assistants actually read
-for (const pl of [P, M, B]) {
+for (const pl of [L, P, M, B]) {
   const re = new RegExp('("@type":"Offer","name":"API ' + pl.label + '","price":")(\\d+)(")', 'g');
   const m = [...h.matchAll(re)];
   if (m.length !== 1) { console.error('REFUSING: expected 1 Offer for API ' + pl.label + ', found ' + m.length); process.exit(1); }
@@ -67,11 +69,12 @@ for (const pl of [P, M, B]) {
 
 // ---- 2. the JSON-LD FAQ answer (one sentence, rebuilt whole so every figure in it comes from the table)
 {
-  const re = /"Free: 120 requests per minute per key, 3 keys per account, 50 open positions\. API Pro \(\$\d+ a month\)[^"]*"/;
+  const re = /"Free: 120 requests per minute per key, 3 keys per account, 50 open positions[^"]*?API Pro \(\$\d+ a month\)[^"]*"/;
   const m = h.match(re);
   if (!m) { console.error('REFUSING: the limits FAQ answer no longer matches'); process.exit(1); }
   const next = '"Free: ' + F.rpm + ' requests per minute per key, ' + F.keys + ' keys per account, ' + F.open
-    + ' open positions. API Pro ($' + P.usd + ' a month): ' + P.rpm + ' requests per minute, ' + P.keys + ' keys, ' + P.open
+    + ' open positions, with no time limit. API Lab ($' + L.usd + ' a month): ' + L.rpm + ' requests per minute, ' + L.keys + ' keys, ' + L.open
+    + ' open positions, ' + L.books + ' strategy books, ' + L.hooks + ' webhooks and 90 days of trade history. API Pro ($' + P.usd + ' a month): ' + P.rpm + ' requests per minute, ' + P.keys + ' keys, ' + P.open
     + ' open positions, ' + P.books + ' strategy books, ' + P.hooks + ' webhooks and 90 days of trade history. API Max ($' + M.usd
     + ' a month): ' + M.rpm + ' requests per minute, ' + M.keys + ' keys, ' + M.open + ' open positions, ' + M.books + ' books, ' + M.hooks
     + ' webhooks. API Business ($' + B.usd + ' a month): ' + B.rpm + ' requests per minute, ' + B.keys + ' keys, ' + B.open
@@ -97,12 +100,13 @@ for (const pl of [P, M, B]) {
 }
 
 // ---- 5. the price cards (already correct, but assert them rather than assume)
-for (const pl of [P, M, B]) {
+for (const pl of [L, P, M, B]) {
   // `data-plan="max"` also appears inside the stylesheet (`.apcard[data-plan="max"] .thr-t i{...}`), so the
   // MARKUP occurrence is the one carrying the closing bracket. Anchoring on the attribute alone found the CSS.
   const i = h.indexOf('data-plan="' + pl.id + '">');
   if (i < 0) { console.error('REFUSING: no card markup for plan ' + pl.id); process.exit(1); }
-  const card = h.slice(i, i + 1400);
+  const cardEnd = (k) => { const n = h.indexOf('<div class="apcard', k + 10); return n > 0 && n - k < 1400 ? n : k + 1400; }; // a card ends where the next begins - Lab is short and a fixed window reached into Pro
+  const card = h.slice(i, cardEnd(i));
   const m = card.match(/class="appx">\$(\d+)<small>/);
   if (!m) { console.error('REFUSING: card ' + pl.id + ' has no price'); process.exit(1); }
   if (m[1] !== String(pl.usd)) {
@@ -116,7 +120,7 @@ for (const pl of [P, M, B]) {
   // (API_PROMO.pct = 0) takes it off again on the next run, which is why the strip is cut before it is written.
   {
     const j = h.indexOf('data-plan="' + pl.id + '">');
-    const seg = h.slice(j, j + 1400);
+    const seg = h.slice(j, cardEnd(j));
     // The newline and indent BEFORE the strip belong to the strip. Cutting only the <div> left the blank line
     // behind, so every re-run inserted a fresh one and the patcher was not idempotent (caught on run two).
     const cut = seg.replace(/(?:\r?\n)[ \t]*<div class="apwas">[\s\S]*?<\/div>/, '');
@@ -133,7 +137,7 @@ for (const pl of [P, M, B]) {
 // ---- GUARDS: no stale price may survive, and nothing structural may have moved
 const visible = h.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ');
 // A list price is allowed on the page ONLY struck through, so it joins the live set; anything else is stale.
-const live = new Set([String(F.usd), String(P.usd), String(M.usd), String(B.usd),
+const live = new Set([String(F.usd), String(L.usd), String(P.usd), String(M.usd), String(B.usd),
   String(P.wasUsd || P.usd), String(M.wasUsd || M.usd), String(B.wasUsd || B.usd)]);
 const bad = [];
 for (const m of visible.matchAll(/\$(\d+)(?:<small>\/month|\s*&middot;|\s*a month|\/month)/g)) if (!live.has(m[1])) bad.push('$' + m[1] + ' in visible text');

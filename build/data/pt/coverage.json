@@ -2005,15 +2005,15 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.935251798561151,
-  "hit": 130,
-  "missing": 9
+  "cover": 1,
+  "hit": 139,
+  "missing": 0
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.9840637450199203,
-  "hit": 247,
-  "missing": 4
+  "cover": 1,
+  "hit": 251,
+  "missing": 0
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2600,7 +2600,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 524,
+  "hit": 541,
   "missing": 0
  },
  {
@@ -2743,8 +2743,8 @@
  },
  {
   "rel": "app.html → app-pt.html",
-  "cover": 0.982,
-  "hit": 491,
-  "missing": 9
+  "cover": 1,
+  "hit": 500,
+  "missing": 0
  }
 ]

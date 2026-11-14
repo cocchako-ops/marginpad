@@ -40,11 +40,11 @@ const usage = async () => (await bot('/usage')).body.data || {};
   const kj = await kr.json().catch(() => ({}));
   KEY = kj.key || (kj.keys && kj.keys[0] && kj.keys[0].k) || '';
   chk('API key created', /^mpb_/.test(KEY));
-  chk('key response carries the plan catalogue, priced in ascending order', Array.isArray(kj.plans) && kj.plans.length === 4 && kj.plans[0].price_usd === 0 && kj.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
+  chk('key response carries the plan catalogue, priced in ascending order', Array.isArray(kj.plans) && kj.plans.length === 5 && kj.plans[0].price_usd === 0 && kj.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
 
   // ── the catalogue is public ───────────────────────────────────────────────────────────────────────────────
   const cat = await (await fetch(ORIGIN + '/api/apiplan')).json().catch(() => ({}));
-  chk('GET /api/apiplan is keyless and lists four plans', Array.isArray(cat.plans) && cat.plans.length === 4 && cat.plans.map(p => p.plan).join(',') === 'free,pro,max,business', (cat.plans || []).map(p => p.plan));
+  chk('GET /api/apiplan is keyless and lists five plans', Array.isArray(cat.plans) && cat.plans.length === 5 && cat.plans.map(p => p.plan).join(',') === 'free,lab,pro,max,business', (cat.plans || []).map(p => p.plan));
   chk('the catalogue starts free and every tier costs more than the one below', !!cat.plans && cat.plans[0].price_usd === 0 && cat.plans.every((p, i, a) => !i || p.price_usd > a[i - 1].price_usd), (cat.plans || []).map(p => p.id + ':' + p.price_usd).join(' '));
   // keyed by whichever name the catalogue uses - the key response calls it `plan`, the catalogue `id`,
   // and reading only one of them left every price comparison against `undefined` and passing nothing
@@ -79,7 +79,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
 
   // ── Pro ───────────────────────────────────────────────────────────────────────────────────────────────────
   let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 30, src: 'e2e' });
-  chk('API Pro granted', g.status === 200 && g.body.ok && g.body.plan === 'pro' && g.body.tier === 1, g.body);
+  chk('API Pro granted', g.status === 200 && g.body.ok && g.body.plan === 'pro' && g.body.tier === 2, g.body);
   await resync();
   u = await usage();
   chk('Pro: 600/min, 10 keys, 200 positions, 5 books', u.plan === 'pro' && u.limits.requests_per_minute === 600 && u.limits.max_keys === 10 && u.limits.max_open_positions === 200 && u.limits.max_books === 5, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
@@ -95,7 +95,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
 
   // ── Max ───────────────────────────────────────────────────────────────────────────────────────────────────
   g = await admin('/api/admin/apiplans', { uid: UID, plan: 'max', days: 30, src: 'e2e' });
-  chk('API Max granted', g.status === 200 && g.body.plan === 'max' && g.body.tier === 2, g.body && { plan: g.body.plan });
+  chk('API Max granted', g.status === 200 && g.body.plan === 'max' && g.body.tier === 3, g.body && { plan: g.body.plan });
   await resync();
   u = await usage();
   chk('Max: 2000/min, 30 keys, 500 positions, 20 books', u.plan === 'max' && u.limits.requests_per_minute === 2000 && u.limits.max_keys === 30 && u.limits.max_open_positions === 500 && u.limits.max_books === 20, { rpm: u.limits.requests_per_minute });
@@ -105,7 +105,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
 
   // ── Business ──────────────────────────────────────────────────────────────────────────────────────────────
   g = await admin('/api/admin/apiplans', { uid: UID, plan: 'business', days: 30, src: 'e2e' });
-  chk('API Business granted', g.status === 200 && g.body.plan === 'business' && g.body.tier === 3, g.body && { plan: g.body.plan });
+  chk('API Business granted', g.status === 200 && g.body.plan === 'business' && g.body.tier === 4, g.body && { plan: g.body.plan });
   await resync();
   u = await usage();
   chk('Business: 5000/min, 100 keys, 1000 positions, 50 books', u.plan === 'business' && u.limits.requests_per_minute === 5000 && u.limits.max_keys === 100 && u.limits.max_open_positions === 1000 && u.limits.max_books === 50, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
@@ -262,10 +262,11 @@ const usage = async () => (await bot('/usage')).body.data || {};
     const promoC = (c) => (PCT > 0 && c > 0) ? Math.floor((c * (100 - PCT)) / 10000) * 100 : c;
     const PL = {};
     for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'/g)) {
-      const list = +m[2], now = promoC(list);
+      const noPromo = /nopromo:\s*true/.test(tbl.slice(m.index, tbl.indexOf('}', m.index))); // Lab is never discounted
+      const list = +m[2], now = noPromo ? list : promoC(list);
       PL[m[1]] = { usd: Math.round(now / 100), wasUsd: now !== list ? Math.round(list / 100) : 0, label: m[3] };
     }
-    chk('API_PLANS parses, four plans', ['free', 'pro', 'max', 'business'].every(id => PL[id]), Object.keys(PL));
+    chk('API_PLANS parses, five plans (Lab since 2026-11-14)', ['free', 'lab', 'pro', 'max', 'business'].every(id => PL[id]), Object.keys(PL));
     const P1 = PL.pro, M1 = PL.max, B1 = PL.business;
 
     // 1. the live plan catalogue
@@ -317,10 +318,10 @@ const usage = async () => (await bot('/usage')).body.data || {};
     // 3. THE PAGE, including the structured data a search engine indexes rather than the price a human sees.
     const pg = await (await fetch(ORIGIN + '/trading-api/?cb=' + Date.now())).text();
     const offers = [...pg.matchAll(/"@type":"Offer","name":"API (\w+)","price":"(\d+)"/g)].map(m => [m[1], +m[2]]);
-    chk('the page JSON-LD Offers match API_PLANS', offers.length === 3 && offers.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
+    chk('the page JSON-LD Offers match API_PLANS', offers.length === 4 && offers.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
       offers.map(o => o.join(':')).join(' '));
     const card = [...pg.matchAll(/class="appx">\$(\d+)<small>/g)].map(m => +m[1]);
-    chk('the price CARDS match API_PLANS', card.length === 3 && card[0] === P1.usd && card[1] === M1.usd && card[2] === B1.usd, card.join('/'));
+    chk('the price CARDS match API_PLANS', card.length === 4 && card[0] === PL.lab.usd && card[1] === P1.usd && card[2] === M1.usd && card[3] === B1.usd, card.join('/'));
     if (PCT > 0) {
       const sk = [...pg.matchAll(/class="apwas"><s>\$(\d+)<\/s>/g)].map(m => +m[1]);
       chk('and each card shows its struck LIST price, so the discount is visible', sk.length === 3 && sk[0] === P1.wasUsd && sk[1] === M1.wasUsd && sk[2] === B1.wasUsd, sk.join('/'));
