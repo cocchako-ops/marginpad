@@ -3355,11 +3355,16 @@ function noindexFollow(r) {
   if ((h.get('content-type') || '').indexOf('text/html') < 0) return out;
   return new HTMLRewriter().on('meta[name="robots"]', { element(e) { e.setAttribute('content', 'noindex, follow'); } }).transform(out);
 }
-async function handleSsrCoin(request, url, env) {
+async function handleSsrCoin(request, url, env, ctx, force) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
+  /* STALE WHILE REVALIDATE (2026-11-15, performance audit: when the 10-minute copy had expired, the reader waited for the slowest
+     market source - /api/cg/coin for BTC answered in 2-5 s - before the first byte). The last good render is kept a day under its own
+     key; a miss serves it at once and rebuilds behind the response. A colo that has never rendered the page still renders inline. */
+  const ck2 = new Request('https://marginpad.io/__ssrpage_last' + new URL(request.url).pathname);
+  if (!force && !url.searchParams.get('nc') && ctx && ctx.waitUntil) { try { const hit = await caches.default.match(ck); if (hit) return hit; const st = await caches.default.match(ck2); if (st) { ctx.waitUntil(handleSsrCoin(request, url, env, null, true).catch(() => null)); return st; } } catch (e) {} }
   // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
   // cached page - which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
-  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  if (!force && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -3418,6 +3423,7 @@ async function handleSsrCoin(request, url, env) {
   const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10, table) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  try { await caches.default.put(ck2, new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=86400', 'x-mp-ssr': 'coin-last' } })); } catch (e) {}
   return resp;
 }
 // ---- data blog posts: a "LIVE MARKET DATA" box from our own endpoints, injected before the first <h2> ----
@@ -9057,7 +9063,7 @@ async function handleTrack(url, request, env, ctx) {
   {
     const _ipP = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
     const _e2e = !!adminKeyFrom(request, url) && isAdminKey(env, adminKeyFrom(request, url));
-    if (_ipP && env.STATS && !_e2e) { try { if (await env.STATS.get('probe:ip:' + _ipP)) return new Response('', { status: 204, headers: okHeaders }); } catch (e) {} }
+    if (_ipP && env.STATS && !_e2e) { try { const PM = globalThis.__probeOk = globalThis.__probeOk || new Map(); const pk = PM.get(_ipP); if (!(pk && Date.now() - pk < 120000)) { if (await env.STATS.get('probe:ip:' + _ipP)) return new Response('', { status: 204, headers: okHeaders }); PM.set(_ipP, Date.now()); if (PM.size > 2000) PM.clear(); } } catch (e) {} } // a clean address is re-checked every 2 min per isolate, not on every beacon (53k KV reads a day)
     const _pp = p.get('p') || '', _pl = p.get('l') || '', _pr = p.get('r') || '';
     const _probeRe = /union[\s+]+(all[\s+]+)?select|extractvalue\s*\(|concat\s*\(|0x7e|sleep\s*\(|waitfor[\s+]+delay|benchmark\s*\(|information_schema|\/\*|--\s|'\)+|"\)+|%27|<script|javascript:/i;
     const _isProbe = _probeRe.test(_pp + ' ' + _pl + ' ' + _pr) || (_pp && !/^\/[^\s'"<>`]{0,600}$/.test(_pp));
@@ -15881,7 +15887,7 @@ function rngApplyReg(list) {
 }
 function rngCoinSync(sym) { const s = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (s === MPAD.sym) return MPAD; for (const c of RNG_REG.coins) if (c.sym === s) return c; return null; }
 async function rngCoins(env, force) {
-  if (!force && Date.now() - RNG_REG.at < 60000) return RNG_REG.coins;
+  if (!force && Date.now() - RNG_REG.at < 300000) return RNG_REG.coins; // 5 min (2026-11-15): once a minute per isolate was 207k KV reads a day; a cast refreshes its own isolate at once
   let list = null; try { list = JSON.parse(await env.STATS.get('rng:coins') || 'null'); } catch (e) {}
   if (Array.isArray(list)) rngApplyReg(list); else if (!RNG_REG.at) rngApplyReg([]);
   RNG_REG.at = Date.now();
@@ -27702,7 +27708,11 @@ export default {
         + '</channel></rss>';
       return new Response(xml, { headers: { 'content-type': 'application/rss+xml; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
     }
-    if (url.pathname === '/api/status') return handleStatusApi(env); // public status: live checks + 90 days of sampled uptime (Phase 0)
+    if (url.pathname === '/api/status') { // 60 s edge copy (2026-11-15): every call read ~95 KV keys (90 days of up:day) - 170k KV reads a day
+      const sck = new Request('https://marginpad.io/__status_v1'); try { const h = await caches.default.match(sck); if (h) return h; } catch (e) {}
+      const sr = await handleStatusApi(env); try { if (sr && sr.ok) { const body = await sr.clone().text(); const hh = new Headers(sr.headers); hh.set('cache-control', 'public, max-age=60'); ctx.waitUntil(caches.default.put(sck, new Response(body, { status: 200, headers: hh }))); } } catch (e) {}
+      return sr;
+    } // public status: live checks + 90 days of sampled uptime (Phase 0)
     // "MY BOT, LIVE" WIDGET (2026-09-26): a developer embeds their own arena standing + open book on their site (iframe) or
     // README (SVG badge). The token is a public read handle to ONE account's paper book - it moves nothing, and the owner
     // of the account mints or rotates it from /widgets/#bot while signed in.
@@ -32628,7 +32638,7 @@ export default {
       }
       return rw.transform(base);
     }
-    if (request.method === 'GET' && (url.pathname.indexOf('/coin/') === 0 || /^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//.test(url.pathname))) return noindexFollow(await handleSsrCoin(request, url, env)); // 0 Google clicks in 3 months on 50 coin URLs, ~3,000 bingbot crawls each a month (2026-11-02)
+    if (request.method === 'GET' && (url.pathname.indexOf('/coin/') === 0 || /^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//.test(url.pathname))) return noindexFollow(await handleSsrCoin(request, url, env, ctx)); // 0 Google clicks in 3 months on 50 coin URLs, ~3,000 bingbot crawls each a month (2026-11-02)
     if (request.method === 'GET') {
       const mLiq = url.pathname.match(/^\/([a-z0-9]+)-liquidation-(calculator|map)\/$/);
       if (mLiq) {
