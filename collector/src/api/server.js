@@ -310,6 +310,22 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         const m = h.match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || h.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); const img = m ? m[1].replace(/&amp;/g, '&') : '';
         promoCache.set('og:' + pu, { t: Date.now(), img }); return res.json({ img }); } catch (e) { return res.status(502).json({ error: 'og_unreachable' }); }
     }
+    if (String(req.query.src) === 'img') { // a campaign's own picture; the worker's egress is refused by these hosts, the droplet is not
+      const v = String(req.query.v || ''), pu = String(req.query.u || '');
+      const HOST = { bybit: /^https:\/\/announcements\.bybit\.com\//, kucoin: /^https:\/\/www\.kucoin\.com\//, binance: /^https:\/\/www\.binance\.com\//, okx: /^https:\/\/www\.okx\.com\//, mexc: /^https:\/\/www\.mexc\.com\// };
+      if (!HOST[v] || !HOST[v].test(pu) || pu.length > 400) return res.status(400).json({ error: 'host_not_allowed' });
+      const ck = 'img:' + pu, hi = promoCache.get(ck); if (hi && Date.now() - hi.t < 86400000) return res.json({ img: hi.img });
+      try {
+        let fu = pu; if (v === 'binance') { const code = (pu.match(/detail\/([a-z0-9]+)/i) || [])[1]; if (!code) return res.json({ img: '' }); fu = 'https://www.binance.com/bapi/composite/v1/public/cms/article/detail/query?articleCode=' + code; }
+        const r = await fetch(fu, { signal: AbortSignal.timeout(9000), headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36' } });
+        if (!r.ok) return res.status(502).json({ error: 'http_' + r.status });
+        const h = await r.text(); let img = '';
+        if (v === 'binance') img = (h.match(/https:\/\/public\.bnbstatic\.com\/image\/cms\/content\/body\/[^"'\s\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
+        else if (v === 'kucoin') img = (h.match(/https:\/\/assets\.staticimg\.com\/cms\/media\/[^"'\s)\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
+        else { const m = h.match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || h.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); img = m ? m[1].replace(/&amp;/g, '&') : ''; }
+        promoCache.set(ck, { t: Date.now(), img }); return res.json({ img });
+      } catch (e) { return res.status(502).json({ error: 'img_unreachable' }); }
+    }
     const u = PROMO_URL[String(req.query.src || '')]; if (!u) return res.status(400).json({ error: 'src_not_allowed' });
     const hit = promoCache.get(u); if (hit && Date.now() - hit.t < 600000) return res.type('application/json').send(hit.body);
     try { const r = await fetch(u, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)' } }); const body = await r.text(); if (r.status === 200) promoCache.set(u, { t: Date.now(), body }); else if (hit) return res.type('application/json').send(hit.body); return res.status(r.status).type('application/json').send(body); }
