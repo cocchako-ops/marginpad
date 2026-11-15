@@ -11310,6 +11310,79 @@ async function archiveMarket(env) {
     throw e;
   }
 }
+// THE TRADE ARCHIVE (2026-11-15, owner: "Uradi, to nam je bitno"). tradeev - every open and close a member made - is
+// pruned at 30 days (90 for a paid API account) and the nightly backup keeps 7 nights, so trade history older than a
+// month was gone for good. One verified UTC day per file goes to the PRIVATE backup bucket (never MARKET: that bucket
+// is published over /v1/history, and these rows name members). Same verification as the market archive (header, every
+// timestamp inside the day, row count equal to what the store counted, sha256 in the metadata). Immutable once written;
+// the API's 30/90-day rule is untouched - this is our copy, not something a member reads.
+const TRADE_ARCH = { cols: 'id,user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,src,via,tid,fee,fund,sl,slpx,rz,entry,exit,cp', tsCol: 2, minRows: 50, hourly: true, from: '2026-10-17', prefix: 'trades/tradeev/' };
+const TRADE_ARCH_PER_RUN = 6;
+async function tradeArchDays(env) {
+  const out = new Map(); let cursor;
+  do {
+    const l = await env.BACKUP.list({ prefix: TRADE_ARCH.prefix, limit: 1000, cursor, include: ['customMetadata'] });
+    for (const o of (l.objects || [])) { const m = o.key.match(/(\d{4}-\d{2}-\d{2})\.csv\.gz$/); if (m) out.set(m[1], { size: o.size || 0, meta: o.customMetadata || {} }); }
+    cursor = l.truncated ? l.cursor : null;
+  } while (cursor);
+  return out;
+}
+async function tradeArchDay(env, day) {
+  const t0 = Date.parse(day + 'T00:00:00Z'), t1 = t0 + 86400000;
+  const C = TRADE_ARCH.cols.split(',');
+  let text = TRADE_ARCH.cols + '\n', n = 0, total = null, after = 0;
+  for (let page = 0; page < 60; page++) {
+    const j = await usersDO(env, '/tradeev/day', { from: t0, to: t1, after, n: 5000 });
+    if (!j || !j.ok) return { ok: false, why: 'store: ' + ((j && (j.why || j.error)) || 'no answer') };
+    if (page === 0) total = j.total;
+    for (const r of (j.rows || [])) { text += C.map(c => mktCsvCell(r[c])).join(',') + '\n'; n++; }
+    if (!j.next) break; after = j.next;
+  }
+  if (total === 0) return { ok: true, empty: true };
+  if (total != null && n !== total) return { ok: false, why: 'rows_mismatch:' + total + ':' + n };
+  const buf = await mktGzip(text);
+  const v = mktVerifyText(text, TRADE_ARCH, day);
+  if (!v.ok) return v;
+  const sha = await mktSha256(buf);
+  await env.BACKUP.put(TRADE_ARCH.prefix + day + '.csv.gz', buf, { httpMetadata: { contentType: 'application/gzip' }, customMetadata: { ds: 'tradeev', day, rows: String(v.rows), hours: String(v.hours), q: v.q.join('|'), sha256: sha, at: String(Date.now()) } });
+  try { const nw = await env.STATS.get('tarch:newest'); if (!nw || day > nw) await env.STATS.put('tarch:newest', day); } catch (e) {}
+  return { ...v, sha256: sha, bytes: buf.byteLength };
+}
+async function archiveTrades(env, force) {
+  if (!env.BACKUP || !env.STATS || !env.USERS) return;
+  const now = new Date();
+  if (!force && now.getUTCHours() < 1) return; // late client syncs land rows with yesterday's close time
+  const today = now.toISOString().slice(0, 10), yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (!force && await env.STATS.get('tarch:ran:' + today)) return;
+  await env.STATS.put('tarch:ran:' + today, '1', { expirationTtl: 172800 });
+  const run = { ts: Date.now(), wrote: [], empty: [], errs: [], missing: 0 };
+  try {
+    const have = await tradeArchDays(env);
+    let gone = new Set(); try { gone = new Set(JSON.parse(await env.STATS.get('tarch:gone') || '[]')); } catch (e) {}
+    const want = mktDaysBetween(TRADE_ARCH.from, yday).filter(d => !have.has(d) && !gone.has(d));
+    want.sort(); if (want[want.length - 1] === yday) { want.pop(); want.unshift(yday); }
+    let budget = TRADE_ARCH_PER_RUN;
+    for (const day of want) {
+      if (budget <= 0) { run.missing++; continue; }
+      budget--;
+      try {
+        const v = await tradeArchDay(env, day);
+        if (v.empty) { gone.add(day); run.empty.push(day); }
+        else if (!v.ok) run.errs.push(day + ': ' + v.why);
+        else run.wrote.push(day + ':' + v.rows + (v.q.length ? ':' + v.q.join('|') : ''));
+      } catch (e) { run.errs.push(day + ': ' + String((e && e.message) || e).slice(0, 120)); }
+    }
+    try { await env.STATS.put('tarch:gone', JSON.stringify([...gone].sort())); } catch (e) {}
+    run.ms = Date.now() - run.ts;
+    await env.STATS.put('tarch:run', JSON.stringify(run));
+    if (run.errs.length) throw new Error('trade archive: ' + run.errs.slice(0, 3).join('; '));
+    if (run.missing > 0) await env.STATS.delete('tarch:ran:' + today);
+    return run;
+  } catch (e) {
+    try { await env.STATS.delete('tarch:ran:' + today); } catch (e2) {}
+    throw e;
+  }
+}
 // THE READ: coverage per dataset from the bucket listing + the KV gone-list, with an optional per-day grid for the
 // dashboard. Everything here is a measurement of what the bucket holds right now - nothing is inferred from a log.
 async function mktStatus(env, opts) {
@@ -11661,6 +11734,21 @@ async function checkOpsAlerts(env) {
             await env.STATS.put('alrt:mktgap', String(Date.now()), { expirationTtl: 3 * 86400 });
             let run = null; try { run = JSON.parse(await env.STATS.get('mkt:run') || 'null'); } catch (e) {}
             await tgAdmin(env, '<b>MARKET ARCHIVE GAP</b> - ' + gaps.join(', ') + '\nThe collector prunes raw rows at 14 days, so a gap that stands for two weeks is a day lost for good. Last run: ' + (run && run.ts ? Math.round((Date.now() - run.ts) / 60000) + ' min ago' + (run.errs && run.errs.length ? ', errors: ' + run.errs.slice(0, 2).join('; ').slice(0, 160) : '') : 'never') + '.\nmp-ops Health > Market archive, or GET /api/admin/market?run=1', { kind: 'market-archive-gap', sev: 'warn' });
+          }
+        }
+      }
+    } catch (e) {}
+    // THE TRADE ARCHIVE HAS A GAP (2026-11-15): tradeev is pruned at 30 days, so a day not archived within a month is lost.
+    try {
+      if (env.BACKUP) {
+        const twoAgo = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
+        const nw = await env.STATS.get('tarch:newest');
+        if (!nw || nw < twoAgo) {
+          const last = +(await env.STATS.get('alrt:tarchgap') || 0);
+          if (Date.now() - last > 12 * 3600000) {
+            await env.STATS.put('alrt:tarchgap', String(Date.now()), { expirationTtl: 3 * 86400 });
+            let run = null; try { run = JSON.parse(await env.STATS.get('tarch:run') || 'null'); } catch (e) {}
+            await tgAdmin(env, '<b>TRADE ARCHIVE GAP</b> - newest archived day ' + (nw || 'none') + '. tradeev is pruned at 30 days, so a day that stays missing for a month is lost.' + (run && run.errs && run.errs.length ? ' Errors: ' + run.errs.slice(0, 2).join('; ').slice(0, 160) : '') + '\nGET /api/admin/tradearch?run=1', { kind: 'trade-archive-gap', sev: 'warn' });
           }
         }
       }
@@ -31106,6 +31194,21 @@ export default {
     // THE MARKET ARCHIVE DESK (2026-10-28). GET = coverage per dataset (?grid=N for the per-day grid, ?run=1 runs a
     // pass first, ?ds=&day= heads one object). POST ops: correct {ds, day, dropOver, why, apply} (DRY RUN without
     // apply), forget {ds, day} (take a day off the gone-list so it is pulled again), recap {day} (rebuild one recap).
+    if (url.pathname === '/api/admin/tradearch' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the trade archive: coverage, last run, ?run=1 runs a pass now, ?day= heads one file
+      const JH = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.BACKUP) return new Response(JSON.stringify({ error: 'no_backup_bucket' }), { status: 503, headers: JH });
+      let ran = null;
+      if (url.searchParams.get('run') === '1') { try { ran = await archiveTrades(env, true); } catch (e) { ran = { error: String((e && e.message) || e).slice(0, 300) }; } }
+      const day = url.searchParams.get('day');
+      if (day && /^\d{4}-\d{2}-\d{2}$/.test(day)) { const o = await env.BACKUP.head(TRADE_ARCH.prefix + day + '.csv.gz'); return new Response(JSON.stringify({ day, present: !!o, size: o ? o.size : 0, meta: o ? o.customMetadata : null }, null, 1), { headers: JH }); }
+      const have = await tradeArchDays(env);
+      const yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      let gone = []; try { gone = JSON.parse(await env.STATS.get('tarch:gone') || '[]'); } catch (e) {}
+      const owed = mktDaysBetween(TRADE_ARCH.from, yday), missing = owed.filter(d => !have.has(d) && gone.indexOf(d) < 0);
+      let rows = 0, bytes = 0; for (const v of have.values()) { rows += +(v.meta.rows || 0); bytes += v.size; }
+      let last = null; try { last = JSON.parse(await env.STATS.get('tarch:run') || 'null'); } catch (e) {}
+      return new Response(JSON.stringify({ ok: true, from: TRADE_ARCH.from, days: have.size, rows, bytes, missing, empty: gone, newest: await env.STATS.get('tarch:newest'), lastRun: last, ran }, null, 1), { headers: JH });
+    }
     if (url.pathname === '/api/admin/market' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const JH = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (!env.MARKET) return new Response(JSON.stringify({ error: 'no_market_bucket', hint: 'MARKET r2 binding missing' }), { status: 503, headers: JH });
@@ -32841,6 +32944,7 @@ export default {
     bg(lsSnapTick, 'lssnap'); // the long/short ratio, one snapshot per UTC hour, kept for the market archive (2026-11-14)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotBoardCron, 'memeboard'); // the Meme Spot season board into KV every ten minutes (2026-10-16) // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
+    bg(archiveTrades, 'tradearch'); // THE TRADE ARCHIVE (2026-11-15): tradeev one UTC day at a time into the private backup bucket - member trade history outlives the 30/90-day prune
     bg(archiveMarket, 'mktarch'); // THE MARKET ARCHIVE (2026-10-28): every dataset in MARKET_DS, one verified UTC day per pull, into R2 marginpad-market; replaces archiveLiq (which now only delegates here)
     bg(liqRecordsCron, 'liqrecords'); // the record book over the recaps, once a UTC day (feature #14)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
@@ -37543,6 +37647,16 @@ export class UserStore {
         return this.j({ ok: true, ...bd, winner: (top && top.n > 0) ? top : null });
       }
       return this.j({ error: 'not_found' });
+    }
+    if (path === '/tradeev/day') { // THE TRADE ARCHIVE (2026-11-15): one UTC day of tradeev, paged by id, for the private R2 copy (tradeev itself is pruned at 30/90 days)
+      const from = +b.from || 0, to = +b.to || 0, after = +b.after || 0, n = Math.min(5000, Math.max(1, +b.n || 5000));
+      if (!(to > from)) return this.j({ error: 'bad_window' });
+      let rows = [], total = null;
+      try {
+        rows = this.rows('SELECT id, user_id, ts, kind, sym, side, lev, margin, pnl, roe, liq, src, via, tid, fee, fund, sl, slpx, rz, entry, exit, cp FROM tradeev WHERE ts >= ? AND ts < ? AND id > ? ORDER BY id ASC LIMIT ?', from, to, after, n);
+        if (!after) total = +((this.rows('SELECT COUNT(*) AS c FROM tradeev WHERE ts >= ? AND ts < ?', from, to)[0] || {}).c || 0);
+      } catch (e) { return this.j({ error: 'unavailable', why: String((e && e.message) || e).slice(0, 160) }); }
+      return this.j({ ok: true, rows, total, next: rows.length === n ? rows[rows.length - 1].id : null });
     }
     if (path === '/tradeone') { // THE AUTOPSY (2026-11-12, feature #1): one trade's close row and its open time, by tid - the record of what happened
       const uid = String(b.uid || ''), tid = String(b.id || '').slice(0, 80); if (!uid || !tid) return this.j({ error: 'no_uid' });
