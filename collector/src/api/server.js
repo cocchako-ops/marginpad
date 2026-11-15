@@ -303,6 +303,13 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   const PROMO_URL = { okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20' };
   const promoCache = new Map();
   app.get('/api/v1/promo', async (req, res) => {
+    if (String(req.query.src) === 'og') { // a campaign page's og:image, for the two venues that refuse the worker - their own hosts only
+      const pu = String(req.query.u || ''); if (!/^https:\/\/(www\.)?(okx\.com|mexc\.com)\/[^\s]{1,300}$/.test(pu)) return res.status(400).json({ error: 'host_not_allowed' });
+      const ho = promoCache.get('og:' + pu); if (ho && Date.now() - ho.t < 86400000) return res.json({ img: ho.img });
+      try { const r = await fetch(pu, { signal: AbortSignal.timeout(9000), headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36' } }); const h = await r.text();
+        const m = h.match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || h.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); const img = m ? m[1].replace(/&amp;/g, '&') : '';
+        promoCache.set('og:' + pu, { t: Date.now(), img }); return res.json({ img }); } catch (e) { return res.status(502).json({ error: 'og_unreachable' }); }
+    }
     const u = PROMO_URL[String(req.query.src || '')]; if (!u) return res.status(400).json({ error: 'src_not_allowed' });
     const hit = promoCache.get(u); if (hit && Date.now() - hit.t < 600000) return res.type('application/json').send(hit.body);
     try { const r = await fetch(u, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)' } }); const body = await r.text(); if (r.status === 200) promoCache.set(u, { t: Date.now(), body }); else if (hit) return res.type('application/json').send(hit.body); return res.status(r.status).type('application/json').send(body); }
