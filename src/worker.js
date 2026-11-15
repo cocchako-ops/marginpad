@@ -8852,6 +8852,31 @@ async function handlePromotions(url, request, env, ctx) {
   if (p === '/promotions') return Response.redirect(url.origin + '/promotions/' + url.search, 301);
   const a = await env.ASSETS.fetch(new Request(url.origin + '/promotions/', request));
   const h = new Headers(a.headers); h.set('cache-control', 'no-store'); if (!pub) h.set('x-robots-tag', 'noindex, nofollow');
+  // The cards are drawn by the page's own script, so a crawler (and an assistant reading the page) saw a headline and
+  // two skeletons. The same composed feed is written into the static HTML as a folded text list + an ItemList, so the
+  // campaigns are readable before any script runs (2026-11-15).
+  if (pub && a.ok) {
+    try {
+      const html = await a.text();
+      const feed = await promoFeed(env, ctx, false);
+      const c = promoCompose(feed, st, { all: false });
+      const E = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      const day = (t) => t ? new Date(t).toISOString().slice(0, 10) : '';
+      const vens = (c.venues || []).filter(v => (v.items || []).length);
+      let n = 0; const ld = [];
+      const secs = vens.map(v => '<h3>' + E(v.n) + '</h3><ul>' + v.items.map(it => {
+        n++; if (ld.length < 40) ld.push({ '@type': 'ListItem', position: ld.length + 1, name: promoTxt(it.t, 140), url: it.u });
+        const when = it.e ? ' (until ' + day(it.e) + ')' : (it.ts ? ' (' + day(it.ts) + ')' : '');
+        return '<li><a href="' + E(it.u) + '" rel="nofollow noopener" target="_blank">' + E(promoTxt(it.t, 160)) + '</a>' + E(when) + (it.d ? ' - ' + E(promoTxt(it.d, 200)) : '') + '</li>';
+      }).join('') + '</ul>').join('');
+      const asof = new Date(feed && feed.at || Date.now()).toISOString().slice(0, 16).replace('T', ' ');
+      const block = n ? '<details class="ssrl"><summary>All ' + n + ' campaigns from ' + vens.length + ' exchanges as a list (updated ' + asof + ' UTC)</summary>' + secs + '<p>JSON: <a href="/api/promotions">/api/promotions</a></p></details>' : '';
+      const ldj = n ? '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Live exchange promotions', numberOfItems: n, dateModified: new Date(feed && feed.at || Date.now()).toISOString(), itemListElement: ld }).replace(/</g, '\\u003c') + '</script>' : '';
+      const out = html.split('<!--PROMO_SSR-->').join(block).split('<!--PROMO_LD-->').join(ldj);
+      h.delete('content-length'); h.set('cache-control', 'public, max-age=300'); h.set('x-mp-ssr', 'promotions:' + n);
+      return new Response(out, { status: 200, headers: h });
+    } catch (e) { return new Response(await (await env.ASSETS.fetch(new Request(url.origin + '/promotions/', request))).body, { status: 200, headers: h }); }
+  }
   return new Response(a.body, { status: a.status, headers: h });
 }
 const PARTNERS = {
