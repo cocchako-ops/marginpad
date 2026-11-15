@@ -4765,6 +4765,21 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   };
   /* One compact line: the crest, the number, the bar. This is the whole strip in the room - 30px, and it
      is the same 30px whether the squad has one member or five. */
+  /* @RAIDROOM - the running raid as one 22px line under the XP strip: coin, a slim boss bar, members in, time left.
+     It links to the squads page, which carries the rules and the full card (2026-11-15). */
+  var RWHY = { margin: __esT_mpauth('rwMargin', 'margin over $10,000'), early: __esT_mpauth('rwEarly', 'opened before the raid'), lev: __esT_mpauth('rwLev', 'over 50x'), capped: 'capped' };
+  function raidLine(r) {
+    if (!r || r.status !== 'active' || !r.live) return '';
+    var L = r.live, t = +r.target || 1, tot = +L.total || 0, pct = Math.max(0, Math.min(100, tot / t * 100));
+    var left = Math.max(0, (+r.end || 0) - Date.now()), h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000);
+    var inN = +L.inN || 0, need = +L.need || 0;
+    return '<a class="mpsq-raid" href="/squads/#raidBox" title="Raid on ' + esc(r.coin) + ': ' + money(tot) + ' of $' + Math.round(t) + '">'
+      + '<b>' + esc(r.coin) + '</b>'
+      + '<span class="mpsq-rb"><i style="width:' + pct.toFixed(1) + '%"></i></span>'
+      + '<span class="mpsq-rv">' + money(tot).replace('+', '') + ' / $' + Math.round(t) + '</span>'
+      + '<span class="mpsq-rn' + (inN >= need ? ' ok' : '') + '">' + inN + '/' + need + ' ' + __esT_mpauth('rtIn', 'joined') + '</span>'
+      + '<span class="mpsq-rl">' + h + 'h ' + (m < 10 ? '0' : '') + m + 'm</span></a>';
+  }
   window.mpSquadStripHtml = function (d, open) {
     if (!d || !d.squad) return '';
     var tot = (d.season && d.season.total) || 0, lv = (d.squad.level && d.squad.level.lv) || 0;
@@ -4779,6 +4794,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       + window.mpSquadBar(d.season, { slim: true })
       + '<span class="mpsq-c">' + (d.squad.n || 0) + '/' + (d.squad.max || 5) + '</span>'
       + '</div>'
+      + raidLine(d.raid)
       + '<div class="mpsq-lane' + (open ? ' op' : '') + '"' + ((d.feed || []).length > 1 ? ' role="button" tabindex="0" title="' + (open ? __esT_mpauth("showLess",'Show less') : __esT_mpauth("showMore",'Show more')) + '"' : '') + '>' + lane + '</div>';
   };
   window.__mpSquadStripHtmlOld = function (d) {
@@ -4803,6 +4819,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       + '<span class="mpsq-sym">' + esc(a.sym) + '</span>'
       + '<span class="mpsq-side ' + (a.side === 'short' ? 'dn' : 'up') + '">' + esc(String(a.side || '').slice(0, 5)) + '</span>'
       + val
+      + (a.raid ? (a.raid.why && a.raid.why !== 'capped' ? '<span class="mpsq-rt no" title="' + esc(RWHY[a.raid.why] || a.raid.why) + '">' + __esT_mpauth('rtNo', 'no raid') + '</span>' : '<span class="mpsq-rt">' + __esT_mpauth('rtYes', 'raid') + ' ' + money(a.raid.add || 0) + '</span>') : '')
       + '<span class="mpsq-ago">' + ago(a.ts) + '</span>';
   };
   try {
@@ -4822,6 +4839,10 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       + '.mpsq-line .mpsq-side{font-size:9px;letter-spacing:.08em;text-transform:uppercase}'
       + '.mpsq-line .up{color:#2ebd85}.mpsq-line .dn{color:#ff6258}.mpsq-line .nu{color:#7a838f}'
       + '.mpsq-line b span{font-weight:400;opacity:.75}'
+      + '.mpsq-raid{display:flex;align-items:center;gap:7px;height:22px;padding:0 10px;border-bottom:1px solid rgba(255,255,255,.07);font:700 10.5px/1 "Space Mono",ui-monospace,monospace;color:#8b9099;text-decoration:none;white-space:nowrap;overflow:hidden}'
+      + '.mpsq-raid b{color:#ffb547;letter-spacing:.04em}.mpsq-raid .mpsq-rb{flex:1 1 auto;min-width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}.mpsq-raid .mpsq-rb i{display:block;height:100%;background:linear-gradient(90deg,#ff8a3d,#ffb547);transition:width .6s}'
+      + '.mpsq-raid .mpsq-rv{color:#e9e7df}.mpsq-raid .mpsq-rn{color:#ff6258}.mpsq-raid .mpsq-rn.ok{color:#2ebd85}.mpsq-raid .mpsq-rl{color:#5c656f;font-weight:400}.mpsq-raid:hover .mpsq-rv{text-decoration:underline}'
+      + '.mpsq-line .mpsq-rt{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#ffb547;flex:0 0 auto}.mpsq-line .mpsq-rt.no{color:#5c656f;text-decoration:line-through}'
       + '.mpsq-line .mpsq-ago{margin-left:auto;color:#5c656f;font-size:9.5px;flex:0 0 auto}'
       + '@media(max-width:420px){.mpsq-line .mpsq-side{display:none}}'
       + '.mpsq-strip{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);min-height:30px}'

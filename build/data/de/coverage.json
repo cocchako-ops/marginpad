@@ -2095,9 +2095,9 @@
  },
  {
   "rel": "squads/index.html",
-  "cover": 1,
-  "hit": 35,
-  "missing": 0
+  "cover": 0.9444444444444444,
+  "hit": 34,
+  "missing": 2
  },
  {
   "rel": "status/index.html",

@@ -5918,3 +5918,46 @@ window.mpSrvOpen=function(payload,ok,fail){
     setTimeout(wireSwitch, 1500); setTimeout(wireSwitch, 5000);
   } catch (e) {}
 })();
+
+/* @RAIDCHIP (2026-11-15) - beside Open: will this trade count for the squad's running raid? One line, shown only while
+   the member's squad has a raid on the coin in the form. It reads the SAME poll the squad room uses (mpSquadLive), so it
+   costs nothing extra, and it states the server's own limits (raid.levMax, raid.marginMax) - never a copy of them. */
+(function () {
+  if (window.__mpRaidChip) return; window.__mpRaidChip = 1;
+  if (!/^\/(es\/|pt\/|de\/|fr\/|id\/)?paper-trade/.test(location.pathname)) return;
+  var raid = null, off = null;
+  
+  function el() {
+    var c = document.getElementById('ptRaidChip'); if (c) return c;
+    var btn = document.getElementById('planSave'); if (!btn || !btn.parentNode) return null;
+    c = document.createElement('div'); c.id = 'ptRaidChip'; c.className = 'pt-raidchip'; c.hidden = true;
+    btn.parentNode.insertBefore(c, btn.nextSibling); return c;
+  }
+  function sym() {
+    var v = String((document.getElementById('planSym') || {}).value || window.__mpChartSym || '').toUpperCase();
+    return v.replace(/[-_\/]?(USDT|USDC|USD|PERP)$/, '');
+  }
+  function paint() {
+    var c = el(); if (!c) return;
+    if (!raid || raid.status !== 'active' || sym() !== String(raid.coin).toUpperCase()) { c.hidden = true; return; }
+    var lev = parseFloat((document.getElementById('planLev') || {}).value) || 1;
+    var mg = parseFloat((document.getElementById('planAmt') || {}).value) || 0;
+    var why = '';
+    if (raid.levMax && lev > raid.levMax) why = __esT_home('rcLev', 'Won’t count for the raid: over {n}x').replace('{n}', raid.levMax);
+    else if (raid.marginMax && mg > raid.marginMax) why = __esT_home('rcMargin', 'Won’t count for the raid: margin over ${n}').replace('{n}', Number(raid.marginMax).toLocaleString('en-US'));
+    c.className = 'pt-raidchip' + (why ? ' no' : '');
+    c.innerHTML = '<i></i>' + (why || __esT_home('rcYes', 'Counts for the {c} raid').replace('{c}', String(raid.coin).toUpperCase()));
+    c.hidden = false;
+  }
+  function start() {
+    if (off || !window.mpSquadLive || !window.mpSquad) return;
+    off = window.mpSquadLive.on(function (d) { raid = (d && d.raid) || null; paint(); });
+  }
+  ['input', 'change', 'click'].forEach(function (ev) { document.addEventListener(ev, function (e) {
+    var t = e.target; if (!raid || !t || !t.closest) return;
+    if (t.closest('#plan') || t.closest('.ptmk') || t.closest('#ptMkt')) setTimeout(paint, 30);
+  }, true); });
+  window.addEventListener('mp-squad-change', start);
+  var tries = 0, iv = setInterval(function () { start(); if (off || ++tries > 40) clearInterval(iv); }, 1500);
+  try { var st = document.createElement('style'); st.textContent = '.pt-raidchip{display:flex;align-items:center;gap:6px;margin:6px 0 0;font:700 10px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#ffb547}.pt-raidchip i{width:6px;height:6px;border-radius:50%;background:#ffb547;flex:0 0 auto}.pt-raidchip.no{color:#7a838f}.pt-raidchip.no i{background:#5c656f}.pt-raidchip[hidden]{display:none}'; document.head.appendChild(st); } catch (e) {}
+})();

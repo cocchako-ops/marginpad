@@ -306,6 +306,51 @@
   .rh{font-family:'Space Mono',ui-monospace,monospace;font-size:10.5px;padding:3px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--faint)}
   .rh.win{color:var(--up);border-color:rgba(46,189,133,.34)}
   .rh.lose{color:var(--faint)}
+  /* @TEAMRAID the team raid (2026-11-15): a boss bar, who is in, what did not count */
+  .rboss{display:flex;align-items:center;gap:10px;margin:12px 0 6px}
+  .rboss-hp{position:relative;flex:1;height:14px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+  .rboss-hp i{position:absolute;inset:0 auto 0 0;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--rc) 55%,#fff),var(--rc));box-shadow:0 0 14px -2px var(--rc);transition:width .7s cubic-bezier(.2,.7,.3,1)}
+  .rboss-hp b{position:absolute;right:7px;top:50%;transform:translateY(-50%);font:700 9.5px 'Space Mono',ui-monospace,monospace;color:#0a0b0d;mix-blend-mode:luminosity;opacity:.85}
+  .rboss-pct{font:700 12px 'Space Mono',ui-monospace,monospace;color:var(--rc);min-width:38px;text-align:right}
+  .rsq{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:11px}
+  .rsq-m{display:flex;align-items:center;gap:8px;min-width:0;padding:7px 9px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .rsq-m.in{border-color:color-mix(in srgb,var(--rc) 45%,var(--line));background:color-mix(in srgb,var(--rc) 7%,transparent)}
+  .rsq-ring{--p:0;flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:conic-gradient(var(--rc) calc(var(--p) * 1%),rgba(255,255,255,.08) 0);display:grid;place-items:center;transition:background .6s}
+  .rsq-ring span{width:18px;height:18px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font:700 9px 'Space Mono',ui-monospace,monospace;color:var(--dim)}
+  .rsq-m.in .rsq-ring span{color:var(--rc)}
+  .rsq-t{min-width:0;flex:1}.rsq-t b{display:block;font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rsq-t small{font:11px 'Space Mono',ui-monospace,monospace;color:var(--faint)}.rsq-t small.pos{color:var(--up)}.rsq-t small.neg{color:var(--red)}
+  .rmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:10px;font:11.5px 'Space Mono',ui-monospace,monospace;color:var(--faint)}
+  .rmeta b{color:var(--ink)}.rmeta .ok{color:var(--up)}.rmeta .wait{color:var(--amber)}
+  .rskip{margin-top:8px;font-size:12px;color:var(--faint)}.rskip b{color:var(--dim);font-weight:600}
+  .raid-act{flex-wrap:wrap}
+  .btn.arm{border-color:var(--amber);color:var(--amber)}
+  .rshelf{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .rshelf span{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c,#c2f64a) 34%,var(--line2));font:11px 'Space Mono',ui-monospace,monospace;color:var(--dim)}
+  .rshelf span b{color:var(--c,#c2f64a)}
+  .rshelf .stk{border-color:rgba(255,191,64,.4);color:var(--amber)}
+  .rh{display:inline-flex;align-items:center;gap:6px}.rh .rh-sh{border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0}
+  .hd-act{display:flex;gap:8px;margin-top:12px}
+  .rules-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 14px}
+  .rules-tabs button{border:1px solid var(--line2);background:rgba(255,255,255,.03);color:var(--dim);border-radius:999px;padding:6px 12px;font:600 12.5px 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer}
+  .rules-tabs button.on{background:var(--ink);color:#0a0b0d;border-color:var(--ink)}
+  .rules-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .rules-l li{position:relative;padding-left:16px;font-size:13.5px;line-height:1.5;color:var(--dim)}
+  .rules-l li::before{content:'';position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:2px;background:var(--sq,#c2f64a)}
+  .rules-l b{color:var(--ink)}
+  .rules-mine{margin:14px 0 4px;padding:11px 13px;border-radius:12px;border:1px solid color-mix(in srgb,var(--sq,#c2f64a) 30%,var(--line));background:color-mix(in srgb,var(--sq,#c2f64a) 6%,transparent);font-size:13px;color:var(--dim)}
+  .rules-mine b{color:var(--ink)}
+  .rules-t{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  .rules-t th,.rules-t td{padding:6px 8px;border-top:1px solid var(--line);text-align:right;font-family:'Space Mono',ui-monospace,monospace}
+  .rules-t th{color:var(--faint);font-weight:600}.rules-t td:first-child,.rules-t th:first-child{text-align:left}
+  .why{margin-top:14px}.why h4{margin:0 0 8px;font-size:13.5px}
+  .why-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font:12px 'Space Mono',ui-monospace,monospace}
+  .why-r .k{color:var(--up)}.why-r .x{color:var(--amber)}
+  .sqlb-sw{display:inline-flex;gap:4px;margin-left:10px;vertical-align:middle}
+  .sqlb-sw button{border:1px solid var(--line2);background:transparent;color:var(--faint);border-radius:999px;padding:3px 10px;font:600 11.5px 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer}
+  .sqlb-sw button.on{color:var(--ink);border-color:var(--ink)}
+  .dsq-rd{font:11px 'Space Mono',ui-monospace,monospace;color:var(--faint)}.dsq-rd b{color:var(--ink)}
+  @media(max-width:560px){.rsq{grid-template-columns:repeat(2,minmax(0,1fr))}.rmeta{gap:5px 10px}}
   /* MVP marks */
   .tagpill.mvp{color:#0a0b0d;background:var(--amber);border:none;display:inline-flex;align-items:center;gap:3px}
   .mvpstar{width:16px;height:16px;color:var(--amber);flex:0 0 auto}.mvpstar svg{width:100%;height:100%}
@@ -446,7 +491,8 @@
 <div class="hd">
   <div class="crumb"><a href="/">MarginPad</a> <span>/</span> <span>Squads</span></div>
   <h1>Five traders, one logo</h1>
-  <p class="lead">A squad is up to five people. The leader designs a logo, and it appears on every member's profile card across the whole site. You get a room only the squad can open, and you can challenge other squads for Ticks. Win, draw or lose, everyone who traded earns XP.</p>
+  <p class="lead">A squad is up to five people. The leader designs a logo, and it appears on every member’s profile card across the whole site. You get a room only the squad can open, team raids on the major coins, and duels against other squads for Ticks.</p>
+  <div class="hd-act"><button class="btn sm" type="button" data-rules="raid">Squad rules</button></div>
 </div>
 
 <div id="app">
@@ -517,7 +563,8 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         need_level: __esT_squadsindex("youNeedPlatinumTo",'You need Platinum to found a squad.'), insufficient: __esT_squadsindex("notEnoughBalanceFor",'Not enough balance for that.'),
     in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.'),
     need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.'),
-    coin_daily_limit: __esT_squadsindex("coinDailyLimit",'That coin is used up for today. Raids per coin per day grow with your level - five at level 10.'), raid_running: __esT_squadsindex("raidRunning",'A raid is already running. Finish or abandon it first.'), bad_coin: __esT_squadsindex("badCoin",'Pick a major coin.')
+    coin_daily_limit: __esT_squadsindex("coinDailyLimit",'That coin is used up for today. Raids per coin per day grow with your level - five at level 10.'),
+    daily_limit: __esT_squadsindex("raidDailyLimit", 'Your squad has started all its raids for today. A new day starts at 00:00 UTC.'), coin_locked: __esT_squadsindex("raidCoinLocked", 'That coin was abandoned less than 24 hours ago and is locked until then.'), already_rallied: __esT_squadsindex("alreadyRallied", 'You already rallied the squad for this raid.'), raid_running: __esT_squadsindex("raidRunning",'A raid is already running. Finish or abandon it first.'), bad_coin: __esT_squadsindex("badCoin",'Pick a major coin.')
   };
   function say(el, j, good) {
     if (!el) return;
@@ -722,16 +769,22 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
 
   var RAIDCOIN = { BTC: '#f7931a', ETH: '#7c8cff', SOL: '#19d6a0', XRP: '#4aa3f6', BNB: '#f3ba2f' };
   function raidSection(s, isL) {
-    var r = S.me.raid, hist = S.me.raidHistory || [], coins = S.me.raidCoins || ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'];
-    var h = '<div class="sect"><h2>' + __esT_squadsindex("raidsH", 'Raids') + '</h2>'
-      + '<p class="sub">' + __esT_squadsindex("raidsSub", 'Pick a major coin and fill its pool with the profit your squad closes on it in 48 hours. A losing trade pulls the pool down - this is the squad trading together, not one lucky bet. Positions over $10,000 margin do not count, and no single trade can fill more than half.') + '</p>';
-    if (r) h += raidCard(r, isL);
-    else if (isL) h += raidPicker(coins, s);
-    else h += '<div class="empty">' + __esT_squadsindex("noRaidMember", 'No raid running. Your leader starts one.') + '</div>';
+    var r = S.me.raid, hist = S.me.raidHistory || [], coins = S.me.raidCoins || ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'], R = S.me.raidRules || {};
+    var h = '<div class="sect"><h2>' + __esT_squadsindex("raidsH", 'Raids') + ' <button type="button" class="btn sm" data-rules="raid" style="margin-left:6px">' + __esT_squadsindex("rulesSp", 'Rules') + '</button></h2>'
+      + '<p class="sub">' + __esT_squadsindex("raidsSub2", 'A team goal: pick a major coin and close enough profit on it together in 48 hours. Most of the squad has to take part, a loss counts against you, and nothing clears before 24 hours - a raid can fail.') + '</p>';
+    h += shelfHtml(S.me.trophies);
+    h += '<div id="raidBox">' + (r ? raidCard(r, isL) : isL ? raidPicker(coins, s) : '<div class="empty">' + __esT_squadsindex("noRaidMember", 'No raid running. Your leader starts one.') + '</div>') + '</div>';
     if (hist.length) h += '<div class="rhist">' + hist.map(function (x) {
-      var cl = x.status === 'cleared'; return '<span class="rh ' + (cl ? 'win' : 'lose') + '"><b>' + esc(x.coin) + '</b> ' + (cl ? '&#10003; $' + Math.round(x.progress) : '$' + Math.round(x.progress) + ' / ' + Math.round(x.target)) + '</span>';
+      var cl = x.status === 'cleared', ab = x.status === 'abandoned';
+      return '<span class="rh ' + (cl ? 'win' : 'lose') + '"><b>' + esc(x.coin) + '</b> ' + (cl ? '&#10003; $' + Math.round(x.progress).toLocaleString() : (ab ? __esT_squadsindex("abandonedSp", 'abandoned') : '$' + Math.round(x.progress).toLocaleString() + ' / ' + Math.round(x.target).toLocaleString())) + (cl ? ' <button type="button" class="rh-sh" data-rshare="' + esc(x.id) + '">' + __esT_squadsindex("shareSp", 'Share') + '</button>' : '') + '</span>';
     }).join('') + '</div>';
     return h + '</div>';
+  }
+  /* The shelf: clears per coin and the current run of clears. Nothing at all until the first clear - an empty shelf is noise. */
+  function shelfHtml(t) {
+    if (!t || !t.total) return '';
+    return '<div class="rshelf">' + Object.keys(t.coins || {}).sort(function (a, b) { return t.coins[b] - t.coins[a]; }).map(function (c) { return '<span style="--c:' + (RAIDCOIN[c] || '#c2f64a') + '"><b>' + esc(c) + '</b> &times;' + t.coins[c] + '</span>'; }).join('')
+      + (t.streak > 1 ? '<span class="stk">' + t.streak + ' ' + __esT_squadsindex("inARow", 'in a row') + '</span>' : '') + '</div>';
   }
   /* THE FOUNDRY (2026-11-12, owner: "svidja mi se i moze da se uradi, ali treba da bude jako jako tesko da se mintuje svoj RNG coin").
      The treasury of five parts against the cost, where each kind comes from, the cast form for the leader once everything is there,
@@ -791,36 +844,58 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   });
   document.addEventListener('input', function (e) { var t = e.target; if (!t || !t.id) return; var d = fdDraft(); if (t.id === 'fdSym') { d.sym = String(t.value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5); if (t.value !== d.sym) t.value = d.sym; } else if (t.id === 'fdName') d.name = String(t.value || '').slice(0, 24); else if (t.id === 'fdStart') d.start = +t.value || 0; else return; var go = document.getElementById('fdGo'), f = S.me && S.me.foundry, g = (S.me && S.me.forge) || {}; if (go && f) { var lvOk = (+g.level || 0) >= (+g.minLevel || 5) && (+g.members || 0) >= (+g.minMembers || 4); go.disabled = !(f.ready && lvOk && fdRand(d) >= (g.randMin || 15) && /^[A-Z]{3,5}$/.test(d.sym) && +d.start >= (g.startMin || 1) && +d.start <= (g.startMax || 100)); go.textContent = __esT_squadsindex("fdCastBtn", 'Cast') + (d.sym ? ' ' + d.sym : ''); } });
   function raidPicker(coins, s) {
-    var tgt = Math.round((S.me.raidTargetHint) || 350);
-    var cap = S.me.raidDailyCap || 1, today = S.me.raidToday || {};
-    var note = __esT_squadsindex("raidPickCap", 'Up to ') + cap + ' ' + (cap === 1 ? __esT_squadsindex("raidSingular", 'raid') : __esT_squadsindex("raidPlural", 'raids')) + ' ' + __esT_squadsindex("raidPickCap2", 'per coin per day (5 at level 10). The target is the realized profit your squad closes on that coin in 48 hours - it grows with your level and squad size. Each closed trade adds at most half the target, a loss pulls it down, and a position opened with over $10,000 margin does not count.');
+    var R = S.me.raidRules || {}, tgt = Math.round(S.me.raidTargetHint || 0), cap = S.me.raidDailyCap || 1, used = S.me.raidUsed || 0, locks = S.me.raidLocks || {}, need = S.me.raidNeed || 1, dayLeft = Math.max(0, cap - used);
     return '<div class="card rpick"><div class="rpick-g">' + coins.map(function (c) {
-      var used = today[String(c).toUpperCase()] || 0, left = Math.max(0, cap - used), full = left <= 0;
-      return '<button type="button" class="rc' + (full ? ' off' : '') + '"' + (full ? ' disabled' : '') + ' data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt.toLocaleString() + '</span><span class="rc-left">' + (full ? __esT_squadsindex("usedUpToday", 'used up today') : left + ' ' + __esT_squadsindex("leftToday", 'left today')) + '</span></button>';
-    }).join('') + '</div><div class="note">' + note + '</div><div class="msg" id="raidMsg"></div></div>';
+      var lk = locks[String(c).toUpperCase()], off = !dayLeft || !!lk;
+      return '<button type="button" class="rc' + (off ? ' off' : '') + '"' + (off ? ' disabled' : '') + ' data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt.toLocaleString() + '</span><span class="rc-left">' + (lk ? __esT_squadsindex("lockedFor", 'locked') + ' ' + left(lk).replace(/ left$/, '') : !dayLeft ? __esT_squadsindex("usedUpToday", 'used up today') : __esT_squadsindex("readySp", 'ready')) + '</span></button>';
+    }).join('') + '</div><div class="rmeta"><span>' + __esT_squadsindex("raidsToday", 'Raids today') + ' <b>' + used + '/' + cap + '</b></span><span>' + __esT_squadsindex("needMembers", 'Members needed') + ' <b>' + need + '/' + (s.n || 1) + '</b></span><span>' + __esT_squadsindex("upToLev", 'Counts up to') + ' <b>' + (R.levMax || 50) + 'x</b></span><span>' + __esT_squadsindex("clearsAfter", 'Clears after') + ' <b>' + (R.minHours || 24) + 'h</b></span></div><div class="msg" id="raidMsg"></div></div>';
   }
+  /* THE RAID CARD (2026-11-15): the coin as a boss whose bar the squad's counted profit takes down, every member's share against what
+     taking part needs, the clock (nothing clears before 24 h), and what did not count and why - one card, the same height for 1 member or 5. */
   function raidCard(r, isL) {
-    var col = RAIDCOIN[r.coin] || '#c2f64a', live = r.live || {};
-    var prog = (live && typeof live.total === 'number') ? live.total : (r.progress || 0);
-    var pct = Math.max(0, Math.min(100, Math.round((prog / Math.max(1, r.target)) * 100)));
-    var ended = r.status !== 'active', cl = r.status === 'cleared';
-    var ms = Math.max(0, r.end - Date.now()), hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
-    var neg = prog < 0;
-    var h = '<div class="card raid" style="--rc:' + col + '">'
-      + '<div class="raid-top"><div class="raid-coin">' + esc(r.coin) + '</div>'
-      + '<div class="raid-st">' + (ended ? (cl ? '<span class="rwin">' + __esT_squadsindex("clearedSp", 'Cleared') + '</span>' : '<span class="rlose">' + __esT_squadsindex("failedSp", 'Failed') + '</span>') : '<span class="rlive">' + hh + 'h ' + mm + 'm ' + __esT_squadsindex("leftSp", 'left') + '</span>') + '</div></div>'
-      + '<div class="raid-nums"><b class="' + (neg ? 'neg' : '') + '">' + (neg ? '-$' + Math.abs(prog).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '$' + prog.toLocaleString(undefined, { maximumFractionDigits: 0 })) + '</b><span>' + __esT_squadsindex("ofSp", 'of') + ' $' + r.target.toLocaleString() + '</span></div>'
-      + '<div class="raid-bar"><i style="width:' + pct + '%"></i></div>';
-    // Why a big win does not fill the bar in one go (owner 2026-10-01: closed $500, bar moved ~$200 and wondered why).
-    // State the per-trade cap in real dollars right where the number is, so the partial fill explains itself.
-    h += (function () { var capEach = Math.round((+r.target || 0) * (r.oneShare || 0.5)); var mm2 = (r.marginMax || 10000); return '<div class="raid-how"><b>' + __esT_squadsindex("howItFills", 'How the bar fills') + '</b> ' + __esT_squadsindex("raidFillA", 'Each closed trade adds up to') + ' <b>$' + capEach.toLocaleString() + '</b> ' + __esT_squadsindex("raidFillB", '- half the target - so it takes the whole squad, not one big win, to clear it. A loss pulls the pool down, and a position opened with over') + ' $' + mm2.toLocaleString() + ' ' + __esT_squadsindex("raidFillC", 'margin does not count.') + '</div>'; })();
-    var mem = (live.members || []).filter(function (m) { return m.n > 0; });
-    if (mem.length) h += '<div class="raid-m">' + mem.map(function (m) {
-      return '<span class="rm"><b>' + esc(m.name) + '</b> <span class="' + (m.pnl < 0 ? 'neg' : 'pos') + '">' + (m.pnl < 0 ? '-$' + Math.abs(m.pnl).toFixed(0) : '+$' + m.pnl.toFixed(0)) + '</span></span>';
+    var col = RAIDCOIN[r.coin] || '#c2f64a', live = r.live || {}, ended = r.status !== 'active', cl = r.status === 'cleared';
+    var prog = typeof live.total === 'number' ? live.total : (r.progress || 0), tgt = Math.max(1, +r.target || 1), pct = Math.max(0, Math.min(100, Math.round(prog / tgt * 100)));
+    var now = Date.now(), toEnd = Math.max(0, r.end - now), toMin = Math.max(0, (r.minAt || 0) - now), hh = function (ms) { var h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000); return h + 'h ' + m + 'm'; };
+    var need = live.need || r.need || 1, inN = live.inN || 0, inMin = live.inMin || tgt * (r.inShare || 0.1), memCap = live.memCap || tgt * (r.memberMax || 0.4);
+    var st = ended ? (cl ? '<span class="rwin">' + __esT_squadsindex("clearedSp", 'Cleared') + '</span>' : '<span class="rlose">' + __esT_squadsindex("failedSp", 'Failed') + '</span>') : '<span class="rlive">' + hh(toEnd) + ' ' + __esT_squadsindex("leftSp", 'left') + '</span>';
+    var h = '<div class="card raid" style="--rc:' + col + '" data-raidid="' + esc(r.id) + '">'
+      + '<div class="raid-top"><div class="raid-coin">' + esc(r.coin) + '</div><div class="raid-st">' + st + '</div></div>'
+      + '<div class="raid-nums"><b class="' + (prog < 0 ? 'neg' : '') + '">' + (prog < 0 ? '-' : '') + '$' + Math.abs(Math.round(prog)).toLocaleString() + '</b><span>' + __esT_squadsindex("ofSp", 'of') + ' $' + Math.round(tgt).toLocaleString() + '</span></div>'
+      + '<div class="rboss"><div class="rboss-hp"><i style="width:' + pct + '%"></i></div><span class="rboss-pct">' + pct + '%</span></div>';
+    var mem = live.members || (r.detail && r.detail.members) || [];
+    if (mem.length) h += '<div class="rsq">' + mem.map(function (m) {
+      var p = Math.max(0, Math.min(100, Math.round((m.pnl > 0 ? m.pnl : 0) / Math.max(1, inMin) * 100)));
+      return '<div class="rsq-m' + (m.inn ? ' in' : '') + '"><div class="rsq-ring" style="--p:' + p + '"><span>' + (m.inn ? '&#10003;' : p + '') + '</span></div><div class="rsq-t"><b>' + esc(m.name) + '</b><small class="' + (m.pnl < 0 ? 'neg' : m.pnl > 0 ? 'pos' : '') + '">' + (m.n ? (m.pnl < 0 ? '-' : '+') + '$' + Math.abs(Math.round(m.pnl)).toLocaleString() + (m.capped ? ' ' + __esT_squadsindex("cappedSp", 'cap') : '') : __esT_squadsindex("notYet", 'not yet')) + '</small></div></div>';
     }).join('') + '</div>';
-    else if (!ended) h += '<div class="note">' + __esT_squadsindex("raidNobodyYet", __esT_squadsindex("nobodyHasTraded",'Nobody has traded ') + r.coin + __esT_squadsindex("yetOpenAPosition",' yet. Open a position to start filling the pool.')) + '</div>';
-    if (isL && !ended) h += '<div class="raid-act"><a class="btn sm p" href="/paper-trade?coin=' + esc(r.coin) + '">' + __esT_squadsindex("tradeSp", 'Trade') + ' ' + esc(r.coin) + '</a><button class="btn sm" data-raidab type="button">' + __esT_squadsindex("abandonSp", 'Abandon') + '</button></div>';
+    h += '<div class="rmeta"><span class="' + (inN >= need ? 'ok' : '') + '">' + __esT_squadsindex("tookPart", 'Took part') + ' <b>' + inN + '/' + need + '</b></span>'
+      + '<span>' + __esT_squadsindex("perMemberMax", 'Per member max') + ' <b>$' + Math.round(memCap).toLocaleString() + '</b></span>'
+      + '<span>' + __esT_squadsindex("takePartAt", 'Taking part from') + ' <b>$' + Math.round(inMin).toLocaleString() + '</b></span>'
+      + (!ended ? (toMin > 0 ? '<span class="wait">' + __esT_squadsindex("canClearIn", 'Can clear in') + ' <b>' + hh(toMin) + '</b></span>' : '<span class="ok">' + __esT_squadsindex("canClearNow", 'Can clear now') + '</span>') : '') + '</div>';
+    var sk = [], k = live;
+    if (k.skippedEarly) sk.push(k.skippedEarly + ' ' + __esT_squadsindex("skEarly", 'opened before the raid'));
+    if (k.skippedLev) sk.push(k.skippedLev + ' ' + __esT_squadsindex("skLev", 'over') + ' ' + (r.levMax || 50) + 'x');
+    if (k.skippedMargin) sk.push(k.skippedMargin + ' ' + __esT_squadsindex("skMargin", 'over $10,000 margin'));
+    if (k.capped) sk.push(k.capped + ' ' + __esT_squadsindex("skCap", 'capped at') + ' $' + Math.round(live.tradeCap || tgt * (r.oneShare || 0.2)).toLocaleString());
+    if (sk.length) h += '<div class="rskip"><b>' + __esT_squadsindex("notCounted", 'Not counted') + ':</b> ' + sk.join(' &middot; ') + ' <a href="#" data-rules="raid">' + __esT_squadsindex("whySp", 'Why?') + '</a></div>';
+    if (!ended) {
+      h += '<div class="raid-act"><a class="btn sm p" href="/paper-trade?coin=' + esc(r.coin) + '">' + __esT_squadsindex("tradeSp", 'Trade') + ' ' + esc(r.coin) + '</a>';
+      if (isL) h += (!r.rallied && inN < need ? '<button class="btn sm" data-rrally type="button">' + __esT_squadsindex("rallySp", 'Rally the squad') + '</button>' : '') + '<button class="btn sm" data-raidab type="button">' + __esT_squadsindex("abandonSp", 'Abandon') + '</button>';
+      h += '</div>';
+    }
     return h + '<div class="msg" id="raidMsg"></div></div>';
+  }
+  /* The card follows the room's one poll (mpSquadLive), so the boss bar moves while the page is open; the width is a CSS transition,
+     which plays with animation effects off. */
+  function raidLive() {
+    if (!window.mpSquadLive || S._raidLive) return;
+    S._raidLive = window.mpSquadLive.on(function (d) {
+      if (!S.me || !S.me.squad || !d || !d.raid) return;
+      var box = document.getElementById('raidBox'); if (!box || !box.querySelector('[data-raidid="' + d.raid.id + '"]')) return;
+      if (d.raid.status !== 'active') { load(true); return; }
+      var hp = box.querySelector('.rboss-hp i'), old = hp ? hp.style.width : '';
+      S.me.raid = d.raid; box.innerHTML = raidCard(d.raid, S.me.isLeader);
+      var nh = box.querySelector('.rboss-hp i'); if (nh && old && nh.style.width !== old) { var to = nh.style.width; nh.style.width = old; requestAnimationFrame(function () { requestAnimationFrame(function () { nh.style.width = to; }); }); }
+    });
   }
   function duelCard(d, sid) {
     var mineA = d.a && d.a.sid === sid, us = mineA ? d.a : d.b, them = mineA ? d.b : d.a;
@@ -864,6 +939,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     h += '<div class="card"><h2 style="font-size:16px;font-weight:800;margin-bottom:8px">' + __esT_squadsindex("membersSp", 'Members') + ' <small class="cnt">' + (s.members || []).length + '/' + s.max + '</small> ' + seatDots((s.members || []).length, s.max, s.cap) + '</h2>' + (s.members || []).map(memberRow).join('') + empties
       + '<div class="row" style="margin-top:13px">'
       + '<button class="btn" type="button" id="roomGo" data-room="' + esc(s.sid) + '">' + __esT_squadsindex("openSquadRoom2", 'Open squad room') + '</button>'
+      + '<button class="btn" type="button" data-rules="raid">' + __esT_squadsindex("rulesSp", 'Rules') + '</button>'
       + (isL && s.n < s.max ? '<button class="btn" id="invBtn" type="button">Invite someone</button>' : '')
       + '</div>'
       + (isL ? '<div id="invBox" hidden style="margin-top:11px"><div class="row"><div class="grow"><input type="text" id="invName" placeholder="username" maxlength="24" autocomplete="off" /></div><button class="btn p" id="invGo" type="button">Send invite</button></div><div class="msg" id="invMsg"></div>' + pendingInvHtml() + '</div>' : '')
@@ -873,6 +949,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     //    ne da trpamo sve na stranicu"). Hero + members stay; Raids / Shop / Duels / Settings are one tap apart and
     //    the choice is remembered. Panels are rendered once and shown/hidden on tab click, so no tab switch refetches.
     var TABL = ['raids', 'foundry', 'shop', 'duels', 'settings'];
+    if (!S._hashDone && location.hash === '#raidBox') S._tab = 'raids';
     var tab = S._tab; if (TABL.indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (TABL.indexOf(tab) < 0) tab = 'raids'; }
     S._tab = tab;
     var liveN = live.length, nBadge = function (n) { return n ? ' <span class="tabn">' + n + '</span>' : ''; };
@@ -953,7 +1030,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
           : '';
         return '<div class="dsq" data-sid="' + esc(s.sid) + '" style="--sq:' + esc((s.crest && s.crest.bg) || '#c2f64a') + '" role="button" tabindex="0">'
           + '<div class="dsq-top">' + crest(s.crest, 48, s.tag, lv) + '<div class="dsq-id"><div class="n">' + esc(s.name) + '</div><div class="dsq-tg"><span class="stamp">' + esc(s.tag) + '</span>' + lvlMark(lv) + '</div></div>' + st + '</div>'
-          + '<div class="dsq-bot">' + seatDots(s.n, s.max, s.cap) + '<span class="dsq-rec"><b class="w">' + s.wins + 'W</b> <b class="l">' + s.losses + 'L</b></span><span class="dsq-go">' + (act || '<span class="dsq-open">' + __esT_squadsindex("viewSp", 'View') + '</span>') + '</span></div></div>';
+          + '<div class="dsq-bot">' + seatDots(s.n, s.max, s.cap) + '<span class="dsq-rec"><b class="w">' + s.wins + 'W</b> <b class="l">' + s.losses + 'L</b></span>' + (s.trophies && s.trophies.total ? '<span class="dsq-rd"><b>' + s.trophies.total + '</b> ' + __esT_squadsindex("raidsLower", 'raids') + '</span>' : '') + '<span class="dsq-go">' + (act || '<span class="dsq-open">' + __esT_squadsindex("viewSp", 'View') + '</span>') + '</span></div></div>';
       }).join('');
       reveal(el);
     }).catch(function () { el.innerHTML = __esT_squadsindex("couldNotLoad",'<div class="empty">Could not load.</div>'); });
@@ -962,6 +1039,22 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
      outside #app, ranked by squad XP, rendered in every state - member, founder or guest. Tap a row to open the sheet. */
   function loadLeaderboard() {
     var el = $('#sqlb'); if (!el) return;
+    var hd = el.previousElementSibling && el.previousElementSibling.tagName === 'H2' ? el.previousElementSibling : (el.parentNode && el.parentNode.querySelector('h2'));
+    if (hd && !hd.querySelector('.sqlb-sw')) hd.insertAdjacentHTML('beforeend', '<span class="sqlb-sw"><button type="button" data-lbsw="xp">XP</button><button type="button" data-lbsw="raids">' + __esT_squadsindex("raidsH", 'Raids') + '</button></span>');
+    if (hd) Array.prototype.forEach.call(hd.querySelectorAll('[data-lbsw]'), function (b) { b.classList.toggle('on', b.getAttribute('data-lbsw') === (S._lbMode || 'xp')); });
+    if (S._lbMode === 'raids') {
+      fetch('/api/squad/raidboard').then(function (r) { return r.json(); }).then(function (j) {
+        var list = (j && j.squads) || [];
+        if (!list.length) { el.innerHTML = '<div class="empty">' + __esT_squadsindex("noClearsYet", 'No raid cleared this season yet.') + '</div>'; return; }
+        var top = Math.max(1, list[0].cleared), mySid = (S.me && S.me.squad && S.me.squad.sid) || '';
+        el.innerHTML = list.map(function (s, i) { var col = (s.crest && s.crest.bg) || '#c2f64a', lv = (s.level && s.level.lv) || 1;
+          return '<div class="sqlb-row' + (s.sid === mySid ? ' me' : '') + '" data-sid="' + esc(s.sid) + '" style="--sq:' + esc(col) + '" role="button" tabindex="0"><span class="sqlb-rk">' + (i + 1) + '</span>' + crest(s.crest, 34, s.tag, lv)
+            + '<div class="sqlb-id"><div class="n">' + esc(s.name) + '</div><div class="sqlb-sub"><span class="stamp">' + esc(s.tag) + '</span><span class="sqlb-mem">$' + s.pool.toLocaleString() + (s.streak > 1 ? ' &middot; ' + s.streak + ' ' + __esT_squadsindex("inARow", 'in a row') : '') + '</span></div></div>'
+            + '<div class="sqlb-xp"><div class="sqlb-bar"><i style="width:' + Math.max(4, Math.round(s.cleared / top * 100)) + '%;background:' + esc(col) + '"></i></div><span class="sqlb-xn">' + s.cleared + '<small> ' + __esT_squadsindex("clearedLower", 'cleared') + '</small></span></div></div>';
+        }).join(''); reveal(el);
+      }).catch(function () { el.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoad2", 'Could not load.') + '</div>'; });
+      return;
+    }
     api('leaderboard').then(function (j) {
       var list = (j && j.squads) || [];
       if (!list.length) { el.innerHTML = __esT_squadsindex("noSquadsYetFound", '<div class="empty">No squads yet. Found the first one.</div>'); return; }
@@ -1033,8 +1126,9 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     var bld = $('#bld', app);
     if (bld) wireBuilder(bld, function () { var n = $('#cName'); return n ? n.value : (S.me.squad && S.me.squad.name); }, function () { var t = $('#cTag'); return t ? t.value : (S.me.squad && S.me.squad.tag); });
     ['#cName', '#cTag'].forEach(function (sel) { var el = $(sel); if (el) el.addEventListener('input', function () { if (sel === '#cTag') el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); repaintPrev(bld, function () { return $('#cName').value; }, function () { return $('#cTag').value; }); }); });
-    if (S.me.squad) { loadOpen(); loadShop(); } else loadDir();
+    if (S.me.squad) { loadOpen(); loadShop(); raidLive(); } else loadDir();
     reveal(app);
+    if (!S._hashDone && location.hash === '#raidBox' && S.me.squad) { S._hashDone = 1; var rb = document.getElementById('raidBox'); if (rb) setTimeout(function () { rb.scrollIntoView({ block: 'center' }); }, 60); }
   }
 
   function load(soft) {
@@ -1045,8 +1139,23 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     }).catch(function () { app.innerHTML = __esT_squadsindex("couldNotLoadRetry",'<div class="card"><div class="empty">Could not load. <button class="btn sm" onclick="location.reload()">Retry</button></div></div>'); });
   }
 
+  /* A consequential button asks twice ON ITSELF - no native confirm(), which a phone can suppress for good (the mp-ops rule). */
+  function armed(btn, label) {
+    if (btn._armT && btn.classList.contains('arm')) { clearTimeout(btn._armT); btn.classList.remove('arm'); btn.innerHTML = btn._armH; btn._armT = 0; return true; }
+    btn._armH = btn.innerHTML; btn.classList.add('arm'); btn.textContent = label;
+    btn._armT = setTimeout(function () { btn.classList.remove('arm'); btn.innerHTML = btn._armH; btn._armT = 0; }, 5000);
+    return false;
+  }
+  function shareRaid(id) {
+    var url = location.origin + '/api/squad/raidcard.svg?id=' + encodeURIComponent(id);
+    try { if (window.mpBuzz) window.mpBuzz(); } catch (e) {}
+    if (navigator.share) { navigator.share({ title: __esT_squadsindex("raidClearedTitle", 'Raid cleared'), url: url }).catch(function () {}); return; }
+    try { navigator.clipboard.writeText(url); toast(__esT_squadsindex("linkCopied", 'Link to the card copied.'), 'good'); } catch (e) { window.open(url, '_blank', 'noopener'); }
+  }
   document.addEventListener('click', function (e) {
     var t = e.target;
+    var rul = t.closest && t.closest('[data-rules]'); if (rul) { e.preventDefault(); openRules(rul.getAttribute('data-rules')); return; }
+    var lbs = t.closest && t.closest('[data-lbsw]'); if (lbs) { e.preventDefault(); S._lbMode = lbs.getAttribute('data-lbsw'); loadLeaderboard(); return; }
     var tb = t.closest && t.closest('.sqtab[data-tab]');
     if (tb && app.contains(tb)) { e.preventDefault(); var tid = tb.getAttribute('data-tab'); S._tab = tid; try { localStorage.setItem('mp_sq_tab', tid); } catch (x) {} Array.prototype.forEach.call(app.querySelectorAll('.sqtab'), function (x) { x.classList.toggle('on', x === tb); }); Array.prototype.forEach.call(app.querySelectorAll('.sqpanel'), function (p) { p.hidden = p.getAttribute('data-panel') !== tid; }); try { if (window.mpNovaSweep) window.mpNovaSweep(); } catch (x2) {} return; }
     var openBtn = t.closest && t.closest('[data-open]');
@@ -1077,8 +1186,10 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       return;
     }
     var raidBtn = t.closest && t.closest('[data-raid]');
-    if (raidBtn) { e.preventDefault(); if (!confirm(__esT_squadsindex("startA48Hour",'Start a 48-hour raid on ') + raidBtn.getAttribute('data-raid') + '?')) return; go('raid', { op: 'start', coin: raidBtn.getAttribute('data-raid') }, '#raidMsg', __esT_squadsindex("raidStarted", 'Raid started.')); return; }
-    if (b.getAttribute && b.getAttribute('data-raidab') != null) { e.preventDefault(); if (!confirm(__esT_squadsindex("abandonTheRaid",'Abandon the raid?'))) return; go('raid', { op: 'abandon' }, '#raidMsg', __esT_squadsindex("raidAbandoned", 'Raid abandoned.')); return; }
+    if (raidBtn) { e.preventDefault(); if (!armed(raidBtn, __esT_squadsindex("tapToStart", 'Tap again to start'))) return; go('raid', { op: 'start', coin: raidBtn.getAttribute('data-raid') }, '#raidMsg', __esT_squadsindex("raidStarted", 'Raid started.')); return; }
+    if (b.getAttribute && b.getAttribute('data-raidab') != null) { e.preventDefault(); if (!armed(b, __esT_squadsindex("tapToAbandon", 'Tap again: locks this coin for 24h'))) return; go('raid', { op: 'abandon' }, '#raidMsg', __esT_squadsindex("raidAbandoned", 'Raid abandoned.')); return; }
+    if (b.getAttribute && b.getAttribute('data-rrally') != null) { e.preventDefault(); b.disabled = true; api('raid', { op: 'rally' }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || __esT_squadsindex("thatDidNotWork", 'That did not work.'), 'warn'); return; } toast(__esT_squadsindex("rallySent", 'Rally sent to') + ' ' + (j.sent || 0) + ' ' + __esT_squadsindex("membersSp2", 'members'), 'good'); load(true); }); return; }
+    if (b.getAttribute && b.getAttribute('data-rshare')) { e.preventDefault(); shareRaid(b.getAttribute('data-rshare')); return; }
     if (b.id === 'bRand') {
       e.preventDefault();
       S.draft = randomCrest();
@@ -1115,8 +1226,8 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     return h + '</span>';
   }
   function lvlMark(lv) { return lv ? '<span class="lvm">' + __esT_squadsindex("lvlShort", 'LVL') + ' ' + lv + '</span>' : ''; }
-  function openSquadSheet(sid) {
-    if (!sid) return;
+  function openSquadSheet(sid, bare) {
+    if (!sid && !bare) return;
     if (!SH) {
       SH = document.createElement('div'); SH.className = 'sqsh'; SH.setAttribute('role', 'dialog'); SH.setAttribute('aria-modal', 'true');
       SH.innerHTML = '<div class="sqsh-bd"></div><div class="sqsh-p"><button type="button" class="sqsh-x" aria-label="Close">&times;</button><div class="sqsh-b"><div class="skel" style="width:40%"></div></div></div>';
@@ -1130,6 +1241,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     var body = SH.querySelector('.sqsh-b');
     body.innerHTML = '<div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div>';
     SH.classList.add('on'); document.body.classList.add('sqsh-open');
+    if (bare) return;
     api('get?sid=' + encodeURIComponent(sid)).then(function (j) {
       if (!j || !j.squad) { body.innerHTML = '<div class="empty">' + __esT_squadsindex("notFound", 'Not found.') + '</div>'; return; }
       var q = j.squad, lv = (q.level && q.level.lv) || 1, col = (q.crest && q.crest.bg) || '#c2f64a';
@@ -1146,7 +1258,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         + '<div class="sqsh-tg"><span class="stamp">' + esc(q.tag) + '</span>' + lvlMark(lv) + seatDots(q.n, q.max, q.cap) + '</div>'
         + (q.motto ? '<div class="sqsh-mt">' + esc(q.motto) + '</div>' : '') + '</div></div>'
         + '<div class="rec3"><div><b>' + q.wins + '</b><span>' + __esT_squadsindex("wonSp", 'Won') + '</span></div><div><b>' + q.draws + '</b><span>' + __esT_squadsindex("drawnSp", 'Drawn') + '</span></div><div><b>' + q.losses + '</b><span>' + __esT_squadsindex("lostSp", 'Lost') + '</span></div></div>'
-        + lvlRow(q)
+        + lvlRow(q) + shelfHtml(q.trophies)
         + '<h3 class="sqsh-h">' + __esT_squadsindex("membersSp", 'Members') + ' <small>' + q.n + '/' + q.max + '</small></h3>'
         + '<div class="sqsh-m">' + (q.members || []).map(function (m) {
           var c = (m.level && m.level.col) || '#9aa3ad';
@@ -1158,6 +1270,56 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         + '<div class="sqsh-cta">' + cta + '</div>';
       reveal(body);
     }).catch(function () { body.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoad2", 'Could not load.') + '</div>'; });
+  }
+  /* THE RULES (2026-11-15, owner: "ispisemo negde pravila na click ... da izlista pravila za squads"). Every figure comes from
+     /api/squad/rules, built from the tables the store enforces; the "mine" line is this squad's own numbers. One sheet, five tabs. */
+  var RULES = null;
+  function openRules(tab) {
+    openSquadSheet('', true);
+    var body = SH.querySelector('.sqsh-b'); SH.style.setProperty('--sq', (S.me && S.me.squad && S.me.squad.crest && S.me.squad.crest.bg) || '#c2f64a');
+    var paint = function (tb) {
+      var d = RULES, R = d.raid, sq = S.me && S.me.squad, money = function (v) { return '$' + Math.round(v).toLocaleString(); };
+      var TABS = [['raid', __esT_squadsindex("raidsH", 'Raids')], ['duel', __esT_squadsindex("duelsH", 'Duels')], ['levels', __esT_squadsindex("levelsH", 'Levels')], ['foundry', __esT_squadsindex("foundryH", 'Foundry')], ['rewards', __esT_squadsindex("rewardsH", 'Rewards')]];
+      var L = [], extra = '';
+      if (tb === 'raid') {
+        L = [__esT_squadsindex("rlR1", 'The leader picks one of') + ' <b>' + R.coins.join(', ') + '</b>. ' + __esT_squadsindex("rlR1b", 'The squad has') + ' <b>' + R.hours + 'h</b> ' + __esT_squadsindex("rlR1c", 'to close enough profit on it together.'),
+          __esT_squadsindex("rlR2", 'The target is') + ' <b>' + money(R.perMember) + '</b> ' + __esT_squadsindex("rlR2b", 'per member, +15% for every squad level above 1, fixed when the raid starts.'),
+          __esT_squadsindex("rlR3", 'At least') + ' <b>' + Math.round(R.part * 100) + '%</b> ' + __esT_squadsindex("rlR3b", 'of the members must take part. Taking part means a counted net of') + ' <b>' + Math.round(R.inShare * 100) + '%</b> ' + __esT_squadsindex("rlR3c", 'of the target or more.'),
+          __esT_squadsindex("rlR4", 'One member fills at most') + ' <b>' + Math.round(R.memberMax * 100) + '%</b> ' + __esT_squadsindex("rlR4b", 'of the target and one winning trade at most') + ' <b>' + Math.round(R.tradeMax * 100) + '%</b>. ' + __esT_squadsindex("rlR4c", 'A loss counts in full.'),
+          __esT_squadsindex("rlR5", 'A trade counts only if it was opened after the raid started, at') + ' <b>' + R.levMax + 'x</b> ' + __esT_squadsindex("rlR5b", 'or under, with') + ' <b>' + money(R.marginMax) + '</b> ' + __esT_squadsindex("rlR5c", 'margin or less. Copied trades never count.'),
+          __esT_squadsindex("rlR6", 'Nothing clears before') + ' <b>' + R.minHours + 'h</b>. ' + __esT_squadsindex("rlR6b", 'At that point the pool and the members must both still be met - a lead can be lost. Not met by the end, the raid fails.'),
+          __esT_squadsindex("rlR7", 'Up to') + ' <b>' + R.dayMax + '</b> ' + __esT_squadsindex("rlR7b", 'raids a day for the whole squad (fewer at low levels). An abandoned raid counts as one and locks that coin for') + ' <b>' + R.lockHours + 'h</b>.'];
+        if (sq) extra = '<div class="rules-mine">' + __esT_squadsindex("rlMine", 'Your squad') + ': <b>' + sq.n + '</b> ' + __esT_squadsindex("membersSp2", 'members') + ', ' + __esT_squadsindex("rlMine2", 'target') + ' <b>' + money(S.me.raidTargetHint || 0) + '</b>, ' + __esT_squadsindex("rlMine3", 'needs') + ' <b>' + (S.me.raidNeed || 1) + '</b> ' + __esT_squadsindex("rlMine4", 'to take part') + '.</div>';
+        var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null, my = me && me.username, lg = (S.me && S.me.raid && S.me.raid.live && S.me.raid.live.log) || [];
+        var mine = my ? lg.filter(function (x) { return x.name === my; }) : [];
+        if (S.me && S.me.raid) extra += '<div class="why"><h4>' + __esT_squadsindex("whyH", 'Your trades in this raid') + '</h4>' + (mine.length ? mine.map(function (x) {
+          var why = { early: __esT_squadsindex("skEarly", 'opened before the raid'), lev: __esT_squadsindex("skLev", 'over') + ' ' + R.levMax + 'x', margin: __esT_squadsindex("skMargin", 'over $10,000 margin'), capped: __esT_squadsindex("skCap", 'capped at') + ' ' + money(S.me.raid.live.tradeCap || 0) }[x.why] || '';
+          var counted = x.why === '' || x.why === 'capped';
+          return '<div class="why-r"><span>' + new Date(x.ts).toISOString().slice(5, 16).replace('T', ' ') + ' &middot; ' + (x.pnl < 0 ? '-' : '+') + '$' + Math.abs(Math.round(x.pnl)).toLocaleString() + '</span><span class="' + (counted ? 'k' : 'x') + '">' + (counted ? __esT_squadsindex("countedSp", 'counted') + ' ' + (x.add < 0 ? '-' : '+') + '$' + Math.abs(Math.round(x.add)).toLocaleString() + (why ? ' (' + why + ')' : '') : __esT_squadsindex("notCountedSp", 'not counted') + ': ' + why) + '</span></div>';
+        }).join('') : '<div class="why-r"><span>' + __esT_squadsindex("noTradesYet", 'No closed trade on this coin since the raid started.') + '</span></div>') + '</div>';
+      } else if (tb === 'duel') {
+        L = [__esT_squadsindex("rlD1", 'The leader challenges another squad on a metric for a stake in Ticks. Only as many members as the smaller squad has count, best first.'),
+          __esT_squadsindex("rlD2", 'Every member who traded in the window earns XP') + ': <b>' + d.duel.xp.win + '</b> ' + __esT_squadsindex("winSp", 'win') + ', <b>' + d.duel.xp.draw + '</b> ' + __esT_squadsindex("drawSp", 'draw') + ', <b>' + d.duel.xp.loss + '</b> ' + __esT_squadsindex("lossSp", 'loss') + ', ' + __esT_squadsindex("rlD3", 'up to') + ' <b>' + d.duel.xp.dayCap + '</b> ' + __esT_squadsindex("rlD4", 'a day.'),
+          __esT_squadsindex("rlD5", 'The winning squad splits the other side\'s stake. A member who did not trade earns nothing.')];
+      } else if (tb === 'levels') {
+        L = [__esT_squadsindex("rlL1", 'A squad grows on what its members do: it gets') + ' <b>' + Math.round(d.share * 100) + '%</b> ' + __esT_squadsindex("rlL2", 'of every XP a member earns, plus raids, duels and the MVP.'),
+          __esT_squadsindex("rlL3", 'Founding needs') + ' <b>' + esc(d.create.level) + '</b> ' + __esT_squadsindex("rlL4", 'and') + ' <b>' + d.create.ticks.toLocaleString() + ' Ticks</b> ' + __esT_squadsindex("rlL5", 'or') + ' <b>$' + (d.create.cents / 100).toFixed(2) + '</b>. ' + __esT_squadsindex("rlL6", 'Joining is free. One squad per account.')];
+        extra = '<table class="rules-t"><thead><tr><th>' + __esT_squadsindex("lvlShort", 'LVL') + '</th><th>XP</th><th>' + __esT_squadsindex("seatsSp", 'Seats') + '</th><th>' + __esT_squadsindex("raidsPerDay", 'Raids/day') + '</th><th>' + __esT_squadsindex("rewardSp", 'Reward') + '</th></tr></thead><tbody>'
+          + d.levels.map(function (x) { return '<tr><td>' + x.lv + '</td><td>' + x.min.toLocaleString() + '</td><td>' + x.seats + '</td><td>' + x.raidsDay + '</td><td>' + (x.ticks ? x.ticks + ' T + ' + x.xp + ' XP' : '-') + '</td></tr>'; }).join('') + '</tbody></table>';
+      } else if (tb === 'foundry') {
+        var F = d.foundry; L = [__esT_squadsindex("rlF1", 'From level') + ' <b>' + F.minLevel + '</b> ' + __esT_squadsindex("rlF2", 'with') + ' <b>' + F.minMembers + '</b> ' + __esT_squadsindex("rlF3", 'members a squad can cast its own coin in the RNG section, from five kinds of parts.')]
+          .concat(Object.keys(F.cost).map(function (k) { return '<b>' + F.cost[k].toLocaleString() + ' ' + esc(k.charAt(0).toUpperCase() + k.slice(1)) + '</b> - ' + esc(F.from[k] || ''); }));
+      } else {
+        L = [__esT_squadsindex("rlW1", 'A cleared raid pays every member who took part') + ' <b>' + R.pay.ticks + '</b> ' + __esT_squadsindex("rlW2", 'Ticks (+') + R.pay.ticksPerLevel + ' ' + __esT_squadsindex("rlW3", 'per squad level) and') + ' <b>' + R.pay.xp + ' XP</b>; ' + __esT_squadsindex("rlW4", 'the squad gets') + ' <b>' + R.pay.squadXp + '</b> ' + __esT_squadsindex("rlW5", 'squad XP and') + ' <b>' + d.valor.raidClear + '</b> Valor.',
+          __esT_squadsindex("rlW6", 'Raid rewards are capped at') + ' <b>' + R.xpDay + ' XP</b> ' + __esT_squadsindex("rlW7", 'and') + ' <b>' + R.ticksDay + ' Ticks</b> ' + __esT_squadsindex("rlW8", 'a day per member. A failed or abandoned raid pays nobody.'),
+          __esT_squadsindex("rlW9", 'MVP of the week: the member who earned the most XP for the squad gets') + ' <b>' + d.mvp.ticks + ' Ticks</b> ' + __esT_squadsindex("rlW10", 'and wears the mark for') + ' <b>' + d.mvp.days + '</b> ' + __esT_squadsindex("daysSp", 'days') + '.'];
+      }
+      body.innerHTML = '<h3 class="sqsh-h" style="margin-top:0">' + __esT_squadsindex("squadRulesH", 'Squad rules') + '</h3><div class="rules-tabs">' + TABS.map(function (x) { return '<button type="button" data-rtab="' + x[0] + '" class="' + (x[0] === tb ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div><ul class="rules-l">' + L.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' + extra;
+    };
+    if (!body._rtab) { body._rtab = 1; body.addEventListener('click', function (e) { var b = e.target.closest('[data-rtab]'); if (b && RULES) paint(b.getAttribute('data-rtab')); }); }
+    if (RULES) { paint(tab || 'raid'); return; }
+    body.innerHTML = '<div class="skel" style="width:40%"></div><div class="skel" style="width:80%;margin-top:9px"></div>';
+    fetch('/api/squad/rules').then(function (r) { return r.json(); }).then(function (j) { RULES = j; paint(tab || 'raid'); }).catch(function () { body.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoad2", 'Could not load.') + '</div>'; });
   }
   function closeSquadSheet() { if (!SH) return; SH.classList.remove('on'); document.body.classList.remove('sqsh-open'); try { if (new URLSearchParams(location.search).get('sid')) history.replaceState(null, '', location.pathname); } catch (e) {} }
   var CROWN = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 18h18l-1.6-9.3-4.4 3.6L12 5l-3 7.3-4.4-3.6z"/></svg>';
@@ -1185,7 +1347,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b6622b57"></script>
-<script defer src="/assets/mp-nav.js?v=70f1b517"></script>
+<script defer src="/assets/mp-auth.js?v=b4a413ee"></script>
+<script defer src="/assets/mp-nav.js?v=8f5149af"></script>
 </body>
 </html>

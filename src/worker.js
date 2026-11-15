@@ -10579,7 +10579,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=70f1b517" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8f5149af" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11076,6 +11076,24 @@ async function checkMorningBrief(env) {
   } catch (e) {}
 }
 // Friend duels: settle every active duel whose 7-day window has ended → decide winner + grant XP (idempotent in the DO).
+/* The share card of a settled raid. System fonts on purpose (the report card's rule): an SVG rendered by a social site loads no webfont. */
+function raidCardSvg(r, sq) {
+  const e = (x) => String(x == null ? '' : x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const COL = { BTC: '#f7931a', ETH: '#7c8cff', SOL: '#19d6a0', XRP: '#4aa3f6', BNB: '#f3ba2f' }, col = COL[r.coin] || '#c2f64a';
+  const cl = r.status === 'cleared', det = r.detail || {}, mem = (det.members || []).filter((m) => m.n > 0).slice(0, 5);
+  const pct = Math.max(0, Math.min(1, (+r.progress || 0) / Math.max(1, +r.target || 1)));
+  const hrs = Math.max(0, Math.round(((det.at || r.end) - r.start) / 3600000));
+  const rows = mem.map((m, i) => { const y = 400 + i * 42, w = Math.round(Math.max(0, Math.min(1, (m.pnl || 0) / Math.max(1, (+r.target || 1) * 0.4))) * 300); return `<text x="80" y="${y}" fill="#e9e7df" font-size="24" font-weight="600">${e(m.name)}</text><rect x="420" y="${y - 18}" width="300" height="14" rx="7" fill="#1b2027"/><rect x="420" y="${y - 18}" width="${w}" height="14" rx="7" fill="${col}"/><text x="750" y="${y}" fill="${m.pnl >= 0 ? '#2ebd85' : '#ff5a4d'}" font-size="24" font-family="ui-monospace,Menlo,monospace">${m.pnl >= 0 ? '+' : '-'}$${Math.abs(Math.round(m.pnl)).toLocaleString('en-US')}</text>`; }).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">`
+    + `<rect width="1200" height="630" fill="#0a0b0d"/><rect x="0" y="0" width="1200" height="6" fill="${col}"/>`
+    + `<text x="80" y="110" fill="#8b94a0" font-size="24" letter-spacing="3">SQUAD RAID</text>`
+    + `<text x="80" y="185" fill="#e9e7df" font-size="64" font-weight="800">${e(sq.name || 'Squad')} <tspan fill="${col}">${e(r.coin)}</tspan></text>`
+    + `<text x="1120" y="110" text-anchor="end" fill="${cl ? '#c2f64a' : '#ff5a4d'}" font-size="30" font-weight="800">${cl ? 'CLEARED' : 'FAILED'}</text>`
+    + `<rect x="80" y="232" width="1040" height="22" rx="11" fill="#1b2027"/><rect x="80" y="232" width="${Math.round(1040 * pct)}" height="22" rx="11" fill="${col}"/>`
+    + `<text x="80" y="310" fill="#e9e7df" font-size="34" font-weight="700" font-family="ui-monospace,Menlo,monospace">$${Math.round(+r.progress || 0).toLocaleString('en-US')}<tspan fill="#8b94a0" font-size="26"> of $${Math.round(+r.target || 0).toLocaleString('en-US')}</tspan></text>`
+    + `<text x="1120" y="310" text-anchor="end" fill="#8b94a0" font-size="26">${det.inN != null ? det.inN + ' of ' + (r.members || '?') + ' members took part · ' : ''}${hrs}h</text>`
+    + rows + `<text x="1120" y="595" text-anchor="end" fill="#5c6570" font-size="22">marginpad.io/squads</text></svg>`;
+}
 async function settleRaids(env) {
   try { if (!env.USERS) return; await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/squad/raidsettle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); } catch (e) {}
 }
@@ -16551,7 +16569,8 @@ const TICK_SOURCES = [
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
-  { k: 'thesis', label: 'Theses published', cap: 10 }, // 2026-10-16: 5 T a thesis, two a day - a thesis is a Community post, the quality gate stands
+  { k: 'thesis', label: 'Theses published', cap: 10 },
+  { k: 'raid', label: 'Squad raids cleared', cap: 260 }, // 2026-11-15: raids paid uncapped Ticks (logged as 'duel') - two clears a day at level 10 // 2026-10-16: 5 T a thesis, two a day - a thesis is a Community post, the quality gate stands
   // 'predict' (Daily call, cap 13) left this table 2026-09-28: the call is a paid season board now and pays no Ticks
   { k: 'goal', label: 'Season goals', cap: 80 },
   { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T - a season-end "Claim all" must fit in one day
@@ -16580,16 +16599,33 @@ const SQUAD_XP_SHARE = 0.25;            // of every member's XP grant, so a less
 const RAID_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'];
 const RAID_MS = 48 * 3600000;
 const RAID_MARGIN_MAX = 10000;
-const RAID_ONE_SHARE = 0.5;
+const RAID_ONE_SHARE = 0.2;                   // one WINNING close fills at most a fifth of the target (was half until 2026-11-15)
 const RAID_TARGET_DEFAULT = 350;              // USD of realized PnL, a SOLO level-1 squad; KV raid:cfg.target overrides, calibrated from /api/admin/raidcal
 const RAID_PAY = { ticks: 40, ticksPerLevel: 10, xp: 80, squadXp: 300 };
 // The pool a squad has to fill, scaling with the LEVEL (the squad's investment). The base was raised 200 -> 350 on
 // 2026-10-01 (owner: a solo test bar felt too small); `members` is accepted but no longer multiplies the target -
 // scaling by size only penalised the small real squads this feature is meant to serve. Tunable via KV raid:cfg.target.
-function raidTarget(base, sxp, members) { const lv = squadLevel(sxp).lv; return Math.round((+base || RAID_TARGET_DEFAULT) * (1 + 0.15 * (lv - 1))); }
+function raidTarget(base, sxp, members) { const lv = squadLevel(sxp).lv; return Math.round(RAID.perMember * Math.max(1, +members || 1) * (1 + 0.15 * (lv - 1))); } // per member since 2026-11-15 (the team raid); base is the retired solo figure, kept in the signature for old callers
 // How many raids a squad may START on ONE coin in a UTC day. It grows with the level and reaches FIVE only at
 // level 10 (owner 2026-10-01: "maks 5 raids dnevno za jedan coin i to tek na lvl 10"). Replaces the old post-clear cooldown.
 function raidsPerDayCap(lv) { return [0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5][Math.max(1, Math.min(10, lv | 0))] || 1; }
+/* THE TEAM RAID (2026-11-15, owner: "mora da bude malo teze ... da mogu nekad i da fail ... mnogo teze da se raid zavrsi ako ne rade
+   vecina iz squad-a zajedno"). RAID_RULES_V2. MEASURED before it: in one squad's last six raids one member closed 58 of the 63 counted
+   trades; two 1000x wins on $100 cleared an $822 target inside minutes; a raid in the red was abandoned and restarted at zero (twice in a
+   day, at -$22,841 and -$19,998); up to 25 raids a day; and the Ticks a clear paid had no day cap at all.
+   Now a raid is a TEAM goal that can fail:
+   - the target scales with the members the squad has when the raid starts (perMember x members x the level step);
+   - it clears only when the pool is met AND part (60%) of those members each took part (a counted net of inShare of the target);
+   - one member fills at most memberMax of the target, one winning close at most tradeMax, a loss counts in full;
+   - only positions at levMax or under count, opened after the raid started, at RAID_MARGIN_MAX margin or under, never a paper copy;
+   - nothing clears before minMs (24 h), and the pool must still be met then - a lead can be lost;
+   - dayMax raids a day for the whole squad (fewer at low levels), and an abandoned coin is locked for lockMs;
+   - the pay goes to the members who took part, under a day cap (xpDay XP, ticksDay Ticks via TICK_CAP.raid). */
+const RAID = { perMember: 175, part: 0.6, inShare: 0.1, memberMax: 0.4, tradeMax: RAID_ONE_SHARE, levMax: 50, minMs: 24 * 3600000, dayMax: 2, lockMs: 24 * 3600000, xpDay: 300, ticksDay: 260 };
+function raidNeed(members) { return Math.max(1, Math.ceil(RAID.part * Math.max(1, +members || 1) - 1e-9)); }
+function raidDayMax(lv) { return Math.min(RAID.dayMax, raidsPerDayCap(lv)); }
+/* The rules as the page prints them - built from the same constants the store enforces, never typed twice. */
+function raidRulesPub() { return { coins: RAID_COINS, hours: RAID_MS / 3600000, minHours: RAID.minMs / 3600000, perMember: RAID.perMember, levelStep: 0.15, part: RAID.part, inShare: RAID.inShare, memberMax: RAID.memberMax, tradeMax: RAID.tradeMax, levMax: RAID.levMax, marginMax: RAID_MARGIN_MAX, dayMax: RAID.dayMax, lockHours: RAID.lockMs / 3600000, xpDay: RAID.xpDay, ticksDay: RAID.ticksDay, pay: RAID_PAY }; }
 // MVP OF THE WEEK (owner): the member who put the most XP into the squad over a Monday-to-Monday week wears
 // a mark on their profile card for seven days and is paid. Weeks are UTC Mondays, like the season anchor.
 const MVP_TICKS = 100, MVP_SQUAD_XP = 100, MVP_WEAR_MS = 7 * 86400000;
@@ -23372,7 +23408,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'b6622b57';
+const ASSET_V = 'b4a413ee';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -31701,7 +31737,20 @@ export default {
       const sub = url.pathname.slice('/api/squad/'.length);
       const call = async (p, bd) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bd) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       // ── public reads (no account needed): the squad directory is how a newcomer finds anyone at all
-      if (sub === 'browse' || sub === 'board' || sub === 'leaderboard' || sub === 'openduels' || sub === 'stats') {
+      /* SQUAD_RULES_PUB - every squad rule the page prints, read off the tables the store enforces (2026-11-15). Public, cached. */
+      if (sub === 'rules') {
+        const lv = SQUAD_LEVELS.map(x => ({ lv: x.lv, min: x.min, seats: squadSlots(x.min), ticks: x.ticks || 0, xp: x.xp || 0, note: x.note || '', raidsDay: raidDayMax(x.lv), target4: raidTarget(0, x.min, 4) }));
+        const body = JSON.stringify({ v: 2, max: SQUAD_MAX, create: { level: SQUAD_CREATE_LEVEL, ticks: SQUAD_CREATE_TICKS, cents: squadCreateCents() }, levels: lv, share: SQUAD_XP_SHARE,
+          raid: raidRulesPub(), duel: { xp: SQUAD_XP }, mvp: { ticks: MVP_TICKS, squadXp: MVP_SQUAD_XP, days: MVP_WEAR_MS / 86400000 }, valor: SQUAD_VALOR,
+          foundry: { minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, from: FOUNDRY.from } });
+        return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+      }
+      if (sub === 'raidcard.svg') { // a settled raid as a share card (1200x630), names and figures only
+        let d = null; try { const r = await stub.fetch(new Request('https://do/squad/raidget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: url.searchParams.get('id') || '' }) })); d = await r.json(); } catch (e) {}
+        if (!d || !d.raid) return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#0a0b0d"/><text x="600" y="320" fill="#8b94a0" font-size="34" text-anchor="middle" font-family="sans-serif">Raid not found</text></svg>', { status: 404, headers: { 'content-type': 'image/svg+xml' } });
+        return new Response(raidCardSvg(d.raid, d.squad || {}), { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+      }
+      if (sub === 'browse' || sub === 'board' || sub === 'leaderboard' || sub === 'openduels' || sub === 'stats' || sub === 'raidboard') {
         const ck = new Request('https://marginpad.io/__squad_' + sub + '_v1');
         if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
         let body = '{}'; try { const r = await stub.fetch(new Request('https://do/squad/' + sub, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); body = await r.text(); } catch (e) {}
@@ -35326,6 +35375,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS squadinv(k TEXT PRIMARY KEY, sid TEXT, uid TEXT, byname TEXT, ts INTEGER)'); // k = sid|uid
     s.exec('CREATE TABLE IF NOT EXISTS sduels(id TEXT PRIMARY KEY, a_sid TEXT, b_sid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0, dur INTEGER, stake INTEGER, escrowed INTEGER, rules TEXT, detail TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS raids(id TEXT PRIMARY KEY, sid TEXT, coin TEXT, start_ts INTEGER, end_ts INTEGER, target REAL, status TEXT, progress REAL, settled INTEGER DEFAULT 0, detail TEXT, created INTEGER)'); // squad raids (2026-10-01): status active / cleared / failed / abandoned
+    ['members INTEGER', 'rally INTEGER'].forEach(c => { try { s.exec('ALTER TABLE raids ADD COLUMN ' + c); } catch (e) {} }); // the team raid (2026-11-15): members at the start, the leader's one rally
     s.exec('CREATE TABLE IF NOT EXISTS squadwk(uid TEXT, wk INTEGER, base INTEGER, PRIMARY KEY(uid, wk))'); // xp_life at a member's FIRST grant of a UTC week -> weekly gain = xp_life - base (trim-proof, same idea as xpseason)
     ['mvp TEXT', 'mvp_name TEXT', 'mvp_until INTEGER', 'valor INTEGER DEFAULT 0', 'shop TEXT', 'hidden INTEGER DEFAULT 0'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} }); // valor = squad shop currency, shop = JSON of unlocked ids, hidden = MP-One style squad (2026-10-01)
     try { s.exec('CREATE INDEX IF NOT EXISTS raids_sid ON raids(sid, status)'); } catch (e) {}
@@ -35516,6 +35566,7 @@ export class UserStore {
     const lead = this.rows('SELECT username FROM users WHERE id=?', s.leader)[0];
     o.leaderName = (lead && lead.username) || '';
     o.mvp = (s.mvp && +s.mvp_until > Date.now()) ? { name: s.mvp_name || '', until: +s.mvp_until } : null;
+    o.trophies = this._raidTrophies(s.id);
     if (withMembers) {
       o.members = this.rows('SELECT m.uid, m.role, m.ts, u.username, u.xp, u.avatar, u.frame FROM squadm m LEFT JOIN users u ON u.id=m.uid WHERE m.sid=? ORDER BY m.ts ASC', s.id)
         .map(r => { const L = xpLevelOf(+r.xp || 0); return { name: r.username || '', role: r.role || 'member', ts: +r.ts || 0, level: { k: L.k, name: L.name, col: L.col }, avatar: r.avatar || '', leader: String(r.uid) === String(s.leader), mvp: !!(s.mvp && +s.mvp_until > Date.now() && String(r.uid) === String(s.mvp)) }; });
@@ -35674,47 +35725,76 @@ export class UserStore {
     this._sqBusy = false;
   }
   // ── Raids (2026-10-01) ──
-  _raidPub(r) { let det = null; try { det = r.detail ? JSON.parse(r.detail) : null; } catch (e) {} return { id: r.id, sid: r.sid, coin: r.coin, start: +r.start_ts || 0, end: +r.end_ts || 0, target: +r.target || 0, status: r.status, progress: r.progress == null ? 0 : +r.progress, settled: +r.settled || 0, detail: det, marginMax: RAID_MARGIN_MAX, oneShare: RAID_ONE_SHARE }; }
+  _raidPub(r) { let det = null; try { det = r.detail ? JSON.parse(r.detail) : null; } catch (e) {} const mem = +r.members || this._squadN(r.sid) || 1; return { id: r.id, sid: r.sid, coin: r.coin, start: +r.start_ts || 0, end: +r.end_ts || 0, target: +r.target || 0, status: r.status, progress: r.progress == null ? 0 : +r.progress, settled: +r.settled || 0, detail: det, members: mem, need: raidNeed(mem), minAt: (+r.start_ts || 0) + RAID.minMs, rallied: !!r.rally, marginMax: RAID_MARGIN_MAX, oneShare: RAID.tradeMax, levMax: RAID.levMax, memberMax: RAID.memberMax, inShare: RAID.inShare }; }
   _raidActive(sid) { return this.rows("SELECT * FROM raids WHERE sid=? AND status='active' AND settled=0 ORDER BY created DESC LIMIT 1", sid)[0] || null; }
-  _raidProgress(r) { // realized PnL on the coin by the squad's members inside the window; losses count, a huge trade is capped
-    const uids = this._squadUids(r.sid), per = {}, cap = (+r.target || 0) * RAID_ONE_SHARE;
-    let total = 0, n = 0, skippedMargin = 0, skippedEarly = 0;
+  /* Every close on the coin by a member inside the window, judged once: counted (and how much, after the caps) or skipped (and why).
+     The same judgement feeds the pool, who took part, the room's raid lines and the "why didn't my trade count" check. */
+  _raidProgress(r) {
+    const uids = this._squadUids(r.sid), tgt = +r.target || 0, tradeCap = tgt * RAID.tradeMax, memCap = tgt * RAID.memberMax, inMin = tgt * RAID.inShare;
+    const per = {}, log = []; let n = 0, skippedMargin = 0, skippedEarly = 0, skippedLev = 0, capped = 0;
+    const names = {}; try { inChunks(uids, (part, ph) => this.rows('SELECT id, username FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { names[String(u.id)] = u.username || ''; }); } catch (e) {}
     for (const uid of uids) {
-      const rows = this.rows("SELECT ts, pnl, margin, tid FROM tradeev WHERE user_id=? AND kind='close' AND UPPER(sym)=? AND ts>=? AND ts<? AND COALESCE(cp,0)=0 ORDER BY ts ASC", uid, String(r.coin).toUpperCase(), +r.start_ts, +r.end_ts); // a paper copy fills no raid (feature #2)
+      const rows = this.rows("SELECT ts, pnl, margin, lev, tid FROM tradeev WHERE user_id=? AND kind='close' AND UPPER(sym)=? AND ts>=? AND ts<? AND COALESCE(cp,0)=0 ORDER BY ts ASC", uid, String(r.coin).toUpperCase(), +r.start_ts, +r.end_ts); // a paper copy fills no raid (feature #2)
       for (const e of rows) {
-        const ot = tradeOpenTs(String(e.tid || '')); if (ot != null && ot < +r.start_ts) { skippedEarly++; continue; }
-        if ((+e.margin || 0) > RAID_MARGIN_MAX) { skippedMargin++; continue; }
-        let p = +e.pnl || 0; if (!isFinite(p)) continue;
-        if (p > cap) p = cap;                      // one close fills at most half the target
-        per[uid] = per[uid] || { pnl: 0, n: 0 }; per[uid].pnl += p; per[uid].n++; total += p; n++;
+        const raw = +e.pnl || 0; if (!isFinite(raw)) continue;
+        const L = { ts: +e.ts || 0, name: names[uid] || '', pnl: +raw.toFixed(2), lev: +e.lev || 0, add: 0, why: '' };
+        const ot = tradeOpenTs(String(e.tid || ''));
+        if (ot != null && ot < +r.start_ts) { skippedEarly++; L.why = 'early'; log.push(L); continue; }
+        if ((+e.margin || 0) > RAID_MARGIN_MAX) { skippedMargin++; L.why = 'margin'; log.push(L); continue; }
+        if ((+e.lev || 0) > RAID.levMax) { skippedLev++; L.why = 'lev'; log.push(L); continue; }
+        let p = raw; if (p > tradeCap) { p = tradeCap; capped++; L.why = 'capped'; }
+        const m = per[uid] || (per[uid] = { raw: 0, n: 0 }); m.raw += p; m.n++; n++; L.add = +p.toFixed(2); log.push(L);
       }
     }
-    const names = {}; try { inChunks(uids, (part, ph) => this.rows('SELECT id, username FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { names[String(u.id)] = u.username || ''; }); } catch (e) {}
-    const members = uids.map(u => ({ name: names[u] || '', pnl: +((per[u] || {}).pnl || 0).toFixed(2), n: (per[u] || {}).n || 0 })).sort((a, b) => b.pnl - a.pnl);
-    return { total: +total.toFixed(2), n, members, contributors: Object.keys(per), skippedMargin, skippedEarly };
+    let total = 0, inN = 0; const members = [];
+    for (const uid of uids) {
+      const m = per[uid] || { raw: 0, n: 0 }, counted = Math.min(m.raw, memCap), isIn = m.n > 0 && counted >= inMin;
+      total += counted; if (isIn) inN++;
+      members.push({ name: names[uid] || '', pnl: +counted.toFixed(2), raw: +m.raw.toFixed(2), n: m.n, inn: isIn, capped: m.raw > memCap });
+    }
+    members.sort((a, b) => b.pnl - a.pnl);
+    const contributors = uids.filter(u => { const m = per[u]; return m && m.n > 0 && Math.min(m.raw, memCap) >= inMin; }); // only the members who took part are paid
+    log.sort((a, b) => b.ts - a.ts);
+    const mem = +r.members || uids.length || 1;
+    return { total: +total.toFixed(2), n, members, contributors, inN, need: raidNeed(mem), inMin: +inMin.toFixed(2), memCap: +memCap.toFixed(2), tradeCap: +tradeCap.toFixed(2), skippedMargin, skippedEarly, skippedLev, capped, log: log.slice(0, 40) };
   }
-  _raidSettle(r, force) {
+  _raidMet(r, pr, now) { return pr.total >= (+r.target || 0) && pr.inN >= pr.need && (now || Date.now()) >= (+r.start_ts || 0) + RAID.minMs; }
+  /* force = settle now whatever the clock says (support, E2E, the end of the window): met -> cleared, else failed. Without force a raid is
+     closed only when it is met (and the 24 h have passed); it fails at its end. */
+  _raidSettle(r, force, now) {
+    now = now || Date.now();
     const sql = this.state.storage.sql, pr = this._raidProgress(r);
-    const cleared = pr.total >= (+r.target || 0);
-    if (!cleared && !force && Date.now() < +r.end_ts) return null;   // still running
+    const cleared = this._raidMet(r, pr, now);
+    if (!cleared && !force && now < +r.end_ts) return null;   // still running
     const status = cleared ? 'cleared' : 'failed';
-    sql.exec('UPDATE raids SET status=?, progress=?, settled=1, detail=? WHERE id=?', status, pr.total, JSON.stringify({ members: pr.members, n: pr.n, skippedMargin: pr.skippedMargin, skippedEarly: pr.skippedEarly, at: Date.now() }), r.id);
+    sql.exec('UPDATE raids SET status=?, progress=?, settled=1, detail=? WHERE id=?', status, pr.total, JSON.stringify({ members: pr.members, n: pr.n, inN: pr.inN, need: pr.need, skippedMargin: pr.skippedMargin, skippedEarly: pr.skippedEarly, skippedLev: pr.skippedLev, capped: pr.capped, at: now }), r.id);
     const sq = this.rows('SELECT name, sxp FROM squads WHERE id=?', r.sid)[0] || {};
     if (cleared) {
       const lv = squadLevel(+sq.sxp || 0).lv, tk = RAID_PAY.ticks + RAID_PAY.ticksPerLevel * (lv - 1);
-      for (const uid of pr.contributors) { // only members who closed a COUNTED trade on the coin are paid
-        try { this._giveTicks(uid, tk, 'Raid cleared: ' + r.coin); } catch (e) {}
-        try { this._grantXp(uid, 'raid', RAID_PAY.xp, { dayCap: 800, note: 'Raid cleared on ' + r.coin }); } catch (e) {}
+      for (const uid of pr.contributors) { // only members who took part are paid, under a day cap
+        try { this._grantTicks(uid, 'raid', tk, { dayCap: TICK_CAP.raid, note: 'Raid cleared: ' + r.coin }); } catch (e) {}
+        try { this._grantXp(uid, 'raid', RAID_PAY.xp, { dayCap: RAID.xpDay, note: 'Raid cleared on ' + r.coin }); } catch (e) {}
       }
       try { this._sqAddXp(r.sid, RAID_PAY.squadXp); } catch (e) {}
     }
-    const line = cleared ? ('Raid cleared: ' + (sq.name || 'your squad') + ' took ' + r.coin + ' - $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Everyone who traded it is paid.')
-      : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Try again in a day.');
+    const line = cleared ? ('Raid cleared: ' + (sq.name || 'your squad') + ' took ' + r.coin + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target) + ', ' + pr.inN + ' members took part. They are paid.')
+      : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target) + (pr.inN < pr.need ? ', ' + pr.inN + ' of ' + pr.need + ' members needed took part' : '') + '.');
     for (const uid of this._squadUids(r.sid)) this._pushNotif(uid, 'squad', line, '/squads/');
     if (cleared) this._sqAddValor(r.sid, SQUAD_VALOR.raidClear, 'raid cleared'); // Valor for clearing a raid (2026-10-01)
     try { this._fdAddSquad(r.sid, 'ore', cleared ? FOUNDRY.rate.raidClear : FOUNDRY.rate.raidFail, this._squadLeader(r.sid) || '', 'raid ' + r.coin + (cleared ? ' cleared' : ' failed')); } catch (e) {} // the Foundry: Ore per raid, to the squad
-    try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target), '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
+    try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target) + ', ' + pr.inN + '/' + pr.need + ' took part', '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
     return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
+  }
+  /* One reading of the active raid for every surface: met and past 24 h -> settled now (cleared); else the live view. */
+  _raidView(sid) { const ra = this._raidActive(sid); if (!ra) return null; const pr = this._raidProgress(ra); if (this._raidMet(ra, pr)) return this._raidSettle(ra, false); return Object.assign(this._raidPub(ra), { live: pr }); }
+  /* The shelf: clears per coin, the total, and the run of clears from the newest settled raid back (abandoned and failed break it). */
+  _raidTrophies(sid) {
+    const out = { coins: {}, total: 0, streak: 0 };
+    try {
+      for (const r of this.rows("SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND status='cleared' GROUP BY coin", sid)) { out.coins[String(r.coin).toUpperCase()] = +r.c || 0; out.total += +r.c || 0; }
+      for (const r of this.rows("SELECT status FROM raids WHERE sid=? AND settled=1 ORDER BY created DESC LIMIT 50", sid)) { if (r.status === 'cleared') out.streak++; else break; }
+    } catch (e) {}
+    return out;
   }
   _mvpSettle(wk) { // the member who gained the most XP in that UTC week, per squad
     const out = [], now = Date.now(), sql = this.state.storage.sql;
@@ -40427,14 +40507,15 @@ export class UserStore {
       if (!sq) { try { this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', uid); } catch (e) {} return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can }); }
       // A raid clears the MOMENT the target is hit, on this read too - not only when the room polls or the cron runs
       // (owner 2026-10-01: "skupio sam koliko treba, sta sad? moze odmah da se zavrsi"). Same early-settle as /squad/live.
-      let raidPub = null; { const raidA = this._raidActive(m.sid); if (raidA) { const pr = this._raidProgress(raidA); raidPub = (pr.total >= +raidA.target) ? this._raidSettle(raidA, true) : Object.assign(this._raidPub(raidA), { live: pr }); } }
+      let raidPub = null; try { raidPub = this._raidView(m.sid); } catch (e) {}
       const raidHist = this.rows('SELECT * FROM raids WHERE sid=? AND settled=1 ORDER BY created DESC LIMIT 6', m.sid).map(r => this._raidPub(r));
-      const _rlv = squadLevel(+sq.sxp || 0).lv, _rcap = raidsPerDayCap(_rlv);
+      const _rlv = squadLevel(+sq.sxp || 0).lv, _rcap = raidDayMax(_rlv);
       const _rday = (function () { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
-      const _rToday = {}; try { for (const row of this.rows('SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND created>=? GROUP BY coin', m.sid, _rday)) _rToday[String(row.coin).toUpperCase()] = +row.c || 0; } catch (e) {}
+      const _rToday = {}; let _rUsed = 0; try { for (const row of this.rows('SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND created>=? GROUP BY coin', m.sid, _rday)) { _rToday[String(row.coin).toUpperCase()] = +row.c || 0; _rUsed += +row.c || 0; } } catch (e) {}
+      const _rLock = {}; try { for (const row of this.rows("SELECT coin, MAX(end_ts) t FROM raids WHERE sid=? AND status='abandoned' AND end_ts>? GROUP BY coin", m.sid, Date.now() - RAID.lockMs)) _rLock[String(row.coin).toUpperCase()] = (+row.t || 0) + RAID.lockMs; } catch (e) {}
       let foundry = null; try { foundry = this._fdState(m.sid); } catch (e) {}
       const forge = { drivers: RNG_PICK.map(k => ({ k, label: RNG_DRIVERS[k].label })), mixN: FOUNDRY.mixN, randMin: FOUNDRY.randMin, wMin: FOUNDRY.wMin, startMin: FOUNDRY.startMin, startMax: FOUNDRY.startMax, minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, level: squadLevel(+sq.sxp || 0).lv, members: sq.n };
-      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday, foundry, forge,
+      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday, raidUsed: _rUsed, raidLocks: _rLock, raidNeed: raidNeed(sq.n), raidRules: raidRulesPub(), trophies: this._raidTrophies(m.sid), foundry, forge,
         duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
     if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
@@ -40465,7 +40546,9 @@ export class UserStore {
             .filter(x => x.who);
         } catch (e) { feed = []; }
       }
-      let raidL = null; try { const ra = this._raidActive(sq.id); if (ra) { const pr = this._raidProgress(ra); if (pr.total >= +ra.target) { raidL = this._raidSettle(ra, true); } else raidL = Object.assign(this._raidPub(ra), { live: pr }); } } catch (e) {} // a clear is settled the moment the room sees it, not at the next cron
+      let raidL = null; try { raidL = this._raidView(sq.id); } catch (e) {} // a met raid is settled the moment the room sees it (after its 24 h), not at the next cron
+      // the room's lines know what the raid made of each close: counted (+ how much) or skipped (and why)
+      if (raidL && raidL.live && raidL.live.log) { const by = {}; for (const L of raidL.live.log) by[L.ts + '|' + L.name] = L; feed = feed.map(x => { if (x.kind !== 'close' || String(x.sym).toUpperCase() !== raidL.coin) return x; const L = by[x.ts + '|' + x.who]; return L ? Object.assign({}, x, { raid: { add: L.add, why: L.why } }) : x; }); }
       return this.j({ squad: { sid: sq.id, name: sq.name, tag: sq.tag, crest: crestNorm(sq.crest), n: rows.length, max: squadSlots(+sq.sxp || 0), level: squadLevel(+sq.sxp || 0), mvp: (sq.mvp && +sq.mvp_until > Date.now()) ? { name: sq.mvp_name || '' } : null }, season: { start: ws, end: we, total, members }, feed, raid: raidL });
     }
     if (path === '/squad/shop') { // the squad shop: catalogue + the squad's treasury + what it owns (member view)
@@ -40812,26 +40895,38 @@ export class UserStore {
       const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
       if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
       const op = String((b && b.op) || 'start'), now = Date.now(), sql = this.state.storage.sql;
-      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=? WHERE id=?", this._raidProgress(r0).total, r0.id); this._opsEv(uid, 'raid', sq.name + ' abandoned the ' + r0.coin + ' raid', '/squads/', { coin: r0.coin, act: 'abandon' }); return this.j({ ok: true, abandoned: r0.coin }); }
+      if (op === 'rally') { // the leader's one call per raid to the members who have not taken part yet
+        const r1 = this._raidActive(sq.id); if (!r1) return this.j({ error: 'no_raid' }, 404);
+        if (r1.rally) return this.j({ error: 'already_rallied' }, 409);
+        const pr1 = this._raidProgress(r1), inSet = new Set(pr1.contributors), hrs = Math.max(1, Math.round((+r1.end_ts - now) / 3600000));
+        const need = Math.max(0, pr1.need - pr1.inN); let sent = 0;
+        for (const m of this._squadUids(sq.id)) { if (m === uid || inSet.has(m)) continue; this._pushNotif(m, 'squad', 'Rally: your squad needs ' + (need || 1) + ' more member' + (need === 1 ? '' : 's') + ' on the ' + r1.coin + ' raid, ' + hrs + 'h left. A ' + r1.coin + ' trade at ' + RAID.levMax + 'x or under counts.', '/squads/'); sent++; }
+        sql.exec('UPDATE raids SET rally=? WHERE id=?', now, r1.id);
+        return this.j({ ok: true, sent, need });
+      }
+      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=?, end_ts=? WHERE id=?", this._raidProgress(r0).total, now, r0.id); /* end_ts = the moment it was abandoned: that coin is locked for RAID.lockMs from here */ this._opsEv(uid, 'raid', sq.name + ' abandoned the ' + r0.coin + ' raid', '/squads/', { coin: r0.coin, act: 'abandon' }); return this.j({ ok: true, abandoned: r0.coin }); }
       const coin = String((b && b.coin) || '').toUpperCase();
       if (RAID_COINS.indexOf(coin) < 0) return this.j({ error: 'bad_coin', coins: RAID_COINS }, 400);
       if (this._raidActive(sq.id)) return this.j({ error: 'raid_running' }, 409);
       // Per-coin DAILY cap, growing with the level and reaching 5 only at level 10 (2026-10-01).
-      const _lv = squadLevel(+sq.sxp || 0).lv, _cap = raidsPerDayCap(_lv);
+      // A DAY IS dayMax RAIDS FOR THE WHOLE SQUAD, any coin, abandoned ones included (2026-11-15); an abandoned coin waits lockMs
+      const _lv = squadLevel(+sq.sxp || 0).lv, _cap = raidDayMax(_lv);
       const _dayMs = (function () { const d = new Date(now); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
-      const _usedToday = (this.rows('SELECT COUNT(*) c FROM raids WHERE sid=? AND coin=? AND created>=?', sq.id, coin, _dayMs)[0] || { c: 0 }).c;
-      if (_usedToday >= _cap) return this.j({ error: 'coin_daily_limit', cap: _cap, coin, lv: _lv, atLv10: _cap >= 5 ? 1 : 0 }, 429);
-      const target = raidTarget(+((b && b.targetBase)) || RAID_TARGET_DEFAULT, +sq.sxp || 0, this._squadN(sq.id));
+      const _usedToday = (this.rows('SELECT COUNT(*) c FROM raids WHERE sid=? AND created>=?', sq.id, _dayMs)[0] || { c: 0 }).c;
+      if (_usedToday >= _cap) return this.j({ error: 'daily_limit', cap: _cap, lv: _lv }, 429);
+      const _lock = this.rows("SELECT MAX(end_ts) t FROM raids WHERE sid=? AND coin=? AND status='abandoned' AND end_ts>?", sq.id, coin, now - RAID.lockMs)[0];
+      if (_lock && _lock.t) return this.j({ error: 'coin_locked', coin, until: +_lock.t + RAID.lockMs }, 429);
+      const _mem = this._squadN(sq.id), target = raidTarget(0, +sq.sxp || 0, _mem), _need = raidNeed(_mem);
       const id = 'rd' + now.toString(36) + Math.random().toString(36).slice(2, 6);
-      sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created) VALUES(?,?,?,?,?,?,?,0,0,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now);
-      for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target + ' of realized profit between you in 48 hours. Losses count against it. Positions over $' + RAID_MARGIN_MAX.toLocaleString() + ' margin do not count.', '/squads/');
+      sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created,members) VALUES(?,?,?,?,?,?,?,0,0,?,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now, _mem);
+      for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target.toLocaleString() + ' of realized profit in 48 hours, and ' + _need + ' of you must each take part. ' + coin + ' trades at ' + RAID.levMax + 'x or under count; losses count against it.', '/squads/');
       this._opsEv(uid, 'raid', sq.name + ' started a raid on ' + coin + ' - target $' + target, '/squads/', { sid: sq.id, coin: coin, target: target, act: 'start' });
       return this.j({ ok: true, raid: this._raidPub(this.rows('SELECT * FROM raids WHERE id=?', id)[0]) });
     }
     if (path === '/squad/raidsettle') { // the cron, and {id} for one raid on demand (support + E2E)
       const now = +((b && b.now)) || Date.now(); const out = [];
-      if (b && b.id) { const r = this.rows('SELECT * FROM raids WHERE id=?', String(b.id))[0]; if (!r) return this.j({ error: 'not_found' }, 404); if (r.status !== 'active') return this.j({ error: 'not_active', status: r.status }, 409); const x = this._raidSettle(r, true); return this.j({ ok: true, raid: x }); }
-      for (const r of this.rows("SELECT * FROM raids WHERE status='active' AND settled=0 LIMIT 40")) { const x = (+r.end_ts <= now) ? this._raidSettle(r, true) : this._raidSettle(r, false); if (x) out.push(x); }
+      if (b && b.id) { const r = this.rows('SELECT * FROM raids WHERE id=?', String(b.id))[0]; if (!r) return this.j({ error: 'not_found' }, 404); if (r.status !== 'active') return this.j({ error: 'not_active', status: r.status }, 409); const x = this._raidSettle(r, true, +((b && b.now)) || Date.now()); return this.j({ ok: true, raid: x }); }
+      for (const r of this.rows("SELECT * FROM raids WHERE status='active' AND settled=0 LIMIT 40")) { const x = (+r.end_ts <= now) ? this._raidSettle(r, true, now) : this._raidSettle(r, false, now); if (x) out.push(x); }
       return this.j({ settled: out.length, raids: out });
     }
     if (path === '/squad/mvp') { // {wk} settle that UTC week for every squad (idempotent per week from the worker's KV flag)
@@ -40864,6 +40959,19 @@ export class UserStore {
       const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
       return this.j({ squads: out });
+    }
+    if (path === '/squad/raidboard') { // the season's raids per squad: clears, then the pool those clears filled (2026-11-15)
+      const ws = lbPeriodStart(Date.now()), out = [];
+      for (const r of this.rows("SELECT r.sid, COUNT(*) c, SUM(r.progress) p FROM raids r JOIN squads q ON q.id=r.sid WHERE r.status='cleared' AND r.created>=? AND COALESCE(q.hidden,0)=0 AND COALESCE(q.leader,'') NOT LIKE 'e2e%' GROUP BY r.sid ORDER BY c DESC, p DESC LIMIT 30", ws)) {
+        const s = this._squadPub(r.sid, false); if (!s) continue;
+        out.push({ sid: s.sid, name: s.name, tag: s.tag, crest: s.crest, level: s.level, n: s.n, cleared: +r.c || 0, pool: Math.round(+r.p || 0), streak: (s.trophies || {}).streak || 0 });
+      }
+      return this.j({ season: { start: ws, end: ws + LB_PERIOD }, squads: out });
+    }
+    if (path === '/squad/raidget') { // one SETTLED raid, public, for the share card - names and figures, never a uid
+      const r = this.rows("SELECT * FROM raids WHERE id=? AND settled=1", String((b && b.id) || url.searchParams.get('id') || ''))[0];
+      if (!r) return this.j({ error: 'not_found' }, 404);
+      return this.j({ raid: this._raidPub(r), squad: this._squadPub(r.sid, false) });
     }
     if (path === '/squad/leaderboard') { // EVERY squad ranked by squad XP - the one view everyone sees, member or not (2026-10-04)
       const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY sxp DESC, wins DESC, created ASC LIMIT 100');
