@@ -6,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Exchange Promotions - live campaigns from MarginPad partners</title>
 <meta name="description" content="Live campaigns, trading competitions, deposit bonuses and giveaways from the exchanges MarginPad works with, gathered in one place and sorted by exchange." />
-<meta name="robots" content="noindex, nofollow" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://marginpad.io/promotions/" />
 <meta name="theme-color" content="#0a0b0d" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -187,7 +188,10 @@
   }
   function order(venues) {
     var rank = null; try { if (window.mpEx) rank = window.mpEx.rank(window.mpEx.ccNow()); } catch (e) {}
+    var FIRST = ['bybit', 'bingx']; // owner 2026-11-15: Bybit first, BingX second, the rest by the reader's region
     return venues.slice().sort(function (a, b) {
+      var fa = FIRST.indexOf(a.k), fb = FIRST.indexOf(b.k); if (fa < 0) fa = 99; if (fb < 0) fb = 99;
+      if (fa !== fb) return fa - fb;
       var pa = a.items.some(function (x) { return x.pin; }) ? 1 : 0, pb = b.items.some(function (x) { return x.pin; }) ? 1 : 0;
       if (pa !== pb) return pb - pa;
       if (rank) { var ia = rank.indexOf((VEN[a.k] || {}).n), ib = rank.indexOf((VEN[b.k] || {}).n); if (ia < 0) ia = 99; if (ib < 0) ib = 99; if (ia !== ib) return ia - ib; }
@@ -228,7 +232,7 @@
   }).catch(function () { document.getElementById('list').innerHTML = '<p class="err">Could not load the campaigns. Try again in a moment.</p>'; });
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=647753d9"></script>
+<script defer src="/assets/mp-nav.js?v=47631058"></script>
 <script defer src="/assets/mp-auth.js?v=9148ad65"></script>
 </body>
 </html>
