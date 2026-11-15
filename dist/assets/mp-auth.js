@@ -1994,7 +1994,8 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       function standing(id) {
         var list = (lb && lb[LBKEY[id]]) || []; if (!meName || !list.length) return null;
         for (var i = 0; i < list.length; i++) { var w = String(list[i].who || list[i].name || '').toLowerCase(); if (w === meName) { var rk = +list[i].rank || (i + 1); return { rank: rk, n: list.length, reg: !(list[i].rank > 0) && (id === 'bybit' || id === 'bingx') }; } }
-        return { rank: 0, n: list.length };
+        var pd = id === 'winrate' && lb && lb.wrPend; if (pd) { for (var j = 0; j < pd.length; j++) { if (String(pd[j].who || '').toLowerCase() === meName) return { rank: 0, n: list.length, pend: { c: (+pd[j].w || 0) + (+pd[j].l || 0), min: +lb.wrMin || 20 } }; } } // under the 20-result bar: say how far, never 'you are in'
+        return { rank: 0, n: list.length, out: true };
       }
       var spotHas = !!(spot && !spot.none && !spot.error), spotIn = spotHas && ((((spot.holds || []).length > 0)) || !!((spot.season || {}).rank));
       if (!comp || !comp.boards) { box.innerHTML = __esT_mpauth("couldNotLoadThe",'<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'); return; }
@@ -2067,12 +2068,12 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
           + list.map(function (r) {
             var own = !shared && !r.in, st = standing(r.id), href = '/leaderboards/#' + r.id;
             var pos = r.in
-              ? (st && st.rank > 0 ? '#' + st.rank + (st.n ? ' of ' + st.n : '') : (st && st.reg ? 'registered' : __esT_mpauth("youAreIn",'you are in')))
+              ? (st && st.rank > 0 ? '#' + st.rank + (st.n ? ' of ' + st.n : '') : (st && st.reg ? 'registered' : st && st.pend ? st.pend.c + '/' + st.pend.min + __esT_mpauth("countedL",' counted') : st && st.out ? __esT_mpauth("notRankedYet",'not ranked yet') : __esT_mpauth("youAreIn",'you are in')))
               : __esT_mpauth("notYet",'not yet');
             return '<div class="mpa-cpr' + (r.in ? ' in' : '') + (shared ? ' slim' : '') + (st && st.rank > 0 && st.rank <= 3 ? ' top' : '') + '" data-lb="' + esc(href) + '" role="link" tabindex="0">'
               + '<a class="mpa-cpr-n" href="' + esc(href) + '">' + esc(r.name) + ic('chev') + '</a>'
               + '<span class="mpa-cpr-p">' + (r.id === 'bybit' ? '$' + (+r.pool || 0).toFixed(2) + __esT_mpauth("andGrowing",' and growing') : r.id === 'bingx' ? '$' + (+r.pool || 0).toFixed(2) + __esT_mpauth("board28",' · 28-day board') : money(r.pool)) + '</span>'
-              + '<span class="mpa-cpr-s" title="' + (r.in ? (st && st.rank > 0 ? __esT_mpauth("yourPlaceOnThis",'Your place on this board right now') : __esT_mpauth("onTheBoardOpen",'On the board - open it to see the standings')) : __esT_mpauth("openTheBoard",'Open the board')) + '">' + pos + '</span>'
+              + '<span class="mpa-cpr-s" title="' + (r.in ? (st && st.pend ? __esT_mpauth("wrPendTitle",'The board ranks from 20 counted results. A win counts only above +5% ROE and a 0.2% price move; a loss always counts.') : st && st.rank > 0 ? __esT_mpauth("yourPlaceOnThis",'Your place on this board right now') : __esT_mpauth("onTheBoardOpen",'On the board - open it to see the standings')) : __esT_mpauth("openTheBoard",'Open the board')) + '">' + pos + '</span>'
               + (own && r.why ? '<span class="mpa-cpr-w">' + esc(r.why) + '</span>' : '')
               + (own ? actHtml(r.act) : '')
               + '</div>';

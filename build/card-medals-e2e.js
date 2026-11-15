@@ -225,6 +225,8 @@ const WINS = {
             badgeOffName: Math.round(Math.abs(badge.top - nr.top)), fs: Math.round(parseFloat(getComputedStyle(nm).fontSize)) };
         });
       };
+      // The board-positions row (2026-11-15) differs by member, so it is held empty here: this block measures the HEAD row.
+      await page.evaluate(() => { window.__mpLbFull = { t: Date.now() + 1e9, p: Promise.resolve(null) }; });
       const gShort = await geo('Elli');
       const gLong = await geo('Squidward10timeX');
       const gMax = await geo('Wwwwwwwwwwwwwwwwwwww');           // the longest the DO will ever issue, widest glyph
