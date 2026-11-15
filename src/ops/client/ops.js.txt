@@ -83,7 +83,7 @@
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'premfunnel', title: 'Premium page' }, { id: 'pnl', title: 'Profit and loss' }, { id: 'members', title: 'Costliest members' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'squads', title: 'Squads' }, { id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }, { id: 'moved', title: 'What moved it' }] },
-    { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'movers', title: 'Movers' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
+    { id: 'growth', title: 'Growth', views: [{ id: 'promos', title: 'Promotions' }, { id: 'seo', title: 'Traffic & SEO' }, { id: 'movers', title: 'Movers' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }, { id: 'incidents', title: 'Incidents' }, { id: 'market', title: 'Market archive' }] },
     { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }, { id: 'codes', title: 'Codes' }] }
   ];
@@ -1135,6 +1135,74 @@
   // ---------- MONEY / KING OF THE MOON ----------
   // The READ view: who can compete, the stored START/END snapshots, the standings. The editor (paste, one-at-a-time, the table you
   // type into, final, clear) sits beside the Bybit board in Settings > Reward config - the owner asked for the same options in the same place.
+  /* Growth > Promotions (2026-11-15, owner: "opcija na MP-ops da mogu da dodajem promocije"). The public page /promotions/ is one section
+     per exchange: six venues fill themselves from their own APIs, the rest (Moon giveaways on X, Fomo, Hyperliquid...) come from this form.
+     Publish is ONE switch here; until it is on, the page and /api/promotions answer 404 to everybody but the owner. */
+  VIEWS['growth/promos'] = { render: function (el) {
+    var st = { v: 'moon', pin: false };
+    try { var sv = JSON.parse(localStorage.getItem('ops_promo_form') || 'null'); if (sv && sv.v) st.v = sv.v; } catch (e) {}
+    var D = null;
+    var day = function (ms) { return ms ? new Date(ms).toISOString().slice(0, 10) : ''; };
+    function itemRow(it) {
+      var w = it.e ? 'ends ' + day(it.e) : it.ts ? 'posted ' + ago(it.ts) + ' ago' : '';
+      var act = it.src === 'man'
+        ? '<button class="btn sm' + (it.pin ? ' on' : '') + '" data-ppin="' + esc(it.id) + '">' + (it.pin ? 'Featured' : 'Feature') + '</button> <button class="btn sm warn" data-pdel="' + esc(it.id) + '">Delete</button>'
+        : '<button class="btn sm' + (it.hidden ? ' warn on' : '') + '" data-phide="' + esc(it.id) + '" data-on="' + (it.hidden ? 0 : 1) + '">' + (it.hidden ? 'Hidden - show' : 'Hide') + '</button>'
+        + '<div style="display:flex;gap:6px;margin-top:6px"><input class="in" style="width:190px;padding:5px 8px;font-size:12px" data-pimgin="' + esc(it.id) + '" placeholder="' + (it.img ? 'replace image link' : 'image link (optional)') + '" value="' + (it.imgset ? esc(it.img) : '') + '"><button class="btn sm" data-pimg="' + esc(it.id) + '">Set</button></div>';
+      return '<div class="line" style="align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)' + (it.hidden ? ';opacity:.5' : '') + '">'
+        + '<div style="flex:1;min-width:0"><b>' + esc(it.t) + '</b>' + (it.img ? ' <img src="' + esc(it.img) + '" alt="" referrerpolicy="no-referrer" style="height:22px;border-radius:4px;vertical-align:middle;margin-left:6px">' : ' <span class="badge amber">no image</span>') + (it.x ? ' <span class="badge">X post</span>' : '') + (it.prize ? ' <span class="badge ok">' + esc(it.prize) + '</span>' : '')
+        + '<div class="meta" style="font-size:12px">' + (it.src === 'man' ? 'added by you' : 'from their API') + (w ? ' · ' + w : '') + ' · <a href="' + esc(it.u) + '" target="_blank" rel="noopener">open</a></div>'
+        + (it.d ? '<div class="meta" style="font-size:12px;overflow-wrap:anywhere">' + esc(it.d.slice(0, 220)) + '</div>' : '') + '</div>'
+        + '<div style="flex:0 0 auto;white-space:nowrap">' + act + '</div></div>';
+    }
+    function paint() {
+      var pub = !!(D.cfg && D.cfg.public);
+      var src = Object.keys(D.src || {}).map(function (k) { var s = D.src[k]; return '<span class="chip">' + esc(k) + ' ' + (s.ok ? '<b style="color:var(--up)">' + s.kept + '</b>/' + s.read : '<b style="color:var(--red)" title="' + esc(s.err || '') + '">failed</b>') + '</span>'; }).join('');
+      var head = card('Promotions page', '<div class="line" style="gap:10px;flex-wrap:wrap">'
+        + '<span class="chip ' + (!pub ? 'on' : '') + '" data-ppub="0">Private - only you</span><span class="chip ' + (pub ? 'on' : '') + '" data-ppub="1">Published to everyone</span>'
+        + '<a class="btn sm" href="/promotions/" target="_blank" rel="noopener">Open the page</a><button class="btn sm" data-prefresh>Re-read the exchanges now</button></div>'
+        + '<div class="line" style="font-size:12px;margin-top:8px;gap:6px;flex-wrap:wrap"><span class="meta">Read ' + (D.updated ? ago(D.updated) + ' ago' : 'never') + ' (every 30 min):</span>' + src + '</div>',
+        pub ? 'live for every member' : 'members get a 404 until you publish');
+      var venues = (D.venuesAll || []).map(function (v) { return '<span class="chip ' + (st.v === v.k ? 'on' : '') + '" data-pv="' + esc(v.k) + '">' + esc(v.n) + '</span>'; }).join('');
+      var form = card('Add a promotion', '<div class="chips" style="margin:0 0 10px">' + venues + '</div>'
+        + '<div class="fr"><label for="prU">Link<small>the campaign page, or the X post</small></label><input class="in" id="prU" placeholder="https://x.com/... or https://..."></div>'
+        + '<div class="fr"><label for="prT">Title<small>optional for an X post</small></label><input class="in" id="prT" maxlength="160" placeholder="Moon giveaway: 3 x $50 for reposts"></div>'
+        + '<div class="fr"><label for="prD">What to do<small>one or two sentences, shown under the title</small></label><textarea class="in" id="prD" rows="3" maxlength="600" placeholder="Follow, repost and tag two friends. Winners picked Friday."></textarea></div>'
+        + '<div class="fr"><label for="prI">Image<small>optional - a picture link; without one the card gets a branded panel</small></label><input class="in" id="prI" placeholder="https://...png"></div>'
+        + '<div class="fr"><label for="prP">Prize<small>optional, short</small></label><input class="in" id="prP" maxlength="60" placeholder="$150 pool"></div>'
+        + '<div class="fr"><label for="prS">Starts<small>optional</small></label><input class="in" type="date" id="prS"></div>'
+        + '<div class="fr"><label for="prE">Ends<small>optional - it disappears after this day</small></label><input class="in" type="date" id="prE"></div>'
+        + '<div class="line" style="gap:10px;margin-top:6px"><span class="chip ' + (st.pin ? 'on' : '') + '" data-ppinf>Featured (top of its section)</span><button class="btn lime" data-padd>Add to the page</button><span class="stat" id="prSt"></span></div>', 'shows at once');
+      var by = (D.venues || []).filter(function (v) { return v.items.length; });
+      var lists = by.length ? by.map(function (v) { return fold(esc(v.n) + ' <span class="meta">' + v.items.length + '</span>', v.items.map(itemRow).join(''), v.api ? 'fills itself from ' + esc(v.n) + "'s API" : 'only what you add', false); }).join('') : '<div class="empty">nothing yet</div>';
+      el.innerHTML = head + form + card('What is on the page', lists, 'hide anything you do not want shown');
+    }
+    function load(r) { J('/api/admin/promotions' + (r ? '?refresh=1' : '')).then(function (d) { if (!d || d.error) { el.innerHTML = failHtml('could not load'); return; } D = d; paint(); }).catch(function () { el.innerHTML = failHtml('could not load'); }); }
+    function keep() { try { localStorage.setItem('ops_promo_form', JSON.stringify({ v: st.v })); } catch (e) {} }
+    el.onclick = function (e) {
+      var t = e.target.closest ? e.target : null; if (!t) return;
+      var c;
+      if ((c = t.closest('[data-retry]'))) { load(); return; }
+      if ((c = t.closest('[data-pv]'))) { st.v = c.getAttribute('data-pv'); keep(); Array.prototype.forEach.call(el.querySelectorAll('[data-pv]'), function (x) { x.classList.toggle('on', x === c); }); return; }
+      if ((c = t.closest('[data-ppinf]'))) { st.pin = !st.pin; c.classList.toggle('on', st.pin); return; }
+      if ((c = t.closest('[data-ppub]'))) { var on = c.getAttribute('data-ppub') === '1'; if (on && !confirmed('Publish /promotions/ to every member?')) return; post('/api/admin/promotions', { op: 'public', on: on }).then(function (r) { toast(r && r.ok ? (on ? 'Published' : 'Private again') : 'failed'); load(); }); return; }
+      if ((c = t.closest('[data-prefresh]'))) { c.textContent = 'Reading...'; load(true); return; }
+      if ((c = t.closest('[data-padd]'))) {
+        var item = { v: st.v, u: $('prU').value.trim(), t: $('prT').value.trim(), d: $('prD').value.trim(), prize: $('prP').value.trim(), img: $('prI').value.trim(), s: $('prS').value, e: $('prE').value, pin: st.pin };
+        $('prSt').textContent = 'saving...';
+        post('/api/admin/promotions', { op: 'add', item: item }).then(function (r) {
+          if (!r || !r.ok) { $('prSt').textContent = (r && (r.hint || r.error)) || 'failed'; return; }
+          toast('Added to ' + st.v); st.pin = false; load();
+        });
+        return;
+      }
+      if ((c = t.closest('[data-pdel]'))) { if (!confirmed('Delete this promotion?')) return; post('/api/admin/promotions', { op: 'del', id: c.getAttribute('data-pdel') }).then(function () { toast('Deleted'); load(); }); return; }
+      if ((c = t.closest('[data-ppin]'))) { post('/api/admin/promotions', { op: 'pin', id: c.getAttribute('data-ppin') }).then(function () { load(); }); return; }
+      if ((c = t.closest('[data-pimg]'))) { var pid = c.getAttribute('data-pimg'), inp = el.querySelector('[data-pimgin="' + pid + '"]'); post('/api/admin/promotions', { op: 'img', id: pid, img: inp ? inp.value.trim() : '' }).then(function (r) { toast(r && r.ok ? 'Image saved' : ((r && (r.hint || r.error)) || 'failed')); if (r && r.ok) load(); }); return; }
+      if ((c = t.closest('[data-phide]'))) { var h = c.getAttribute('data-on') === '1'; post('/api/admin/promotions', { op: 'hide', id: c.getAttribute('data-phide'), on: h }).then(function () { toast(h ? 'Hidden' : 'Shown'); load(); }); return; }
+    };
+    load();
+  } };
   VIEWS['money/moon'] = { render: function (el) {
     var contest = ''; try { contest = localStorage.getItem('ops_moon_contest') || ''; } catch (e) {}
     var ST = { ok: '<span class="badge ok">registered</span>', unregistered: '<span class="badge amber">not registered</span>' };

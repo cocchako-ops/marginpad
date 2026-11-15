@@ -8631,6 +8631,229 @@ function botPresence(env, ctx, request, key, auth, ep) {
 // (33%) were injection strings from one French scanner, and they outranked Bitget and Coinbase in the byEx list.
 // A label now has to resolve to a real partner or the hit never touches a money counter. Canonical names are the
 // ones the site already puts in data-ex, so nothing downstream (ops Revenue, geo, per-page reports) has to change.
+// ===================== PROMOTIONS (2026-11-15, owner: "stranica Promotions gde cemo da kacimo sve nove kampanje od menjacnica sa kojima
+// radimo ... da ode live ali da korisnici ne vide dok ti ne kazem ... opcija na MP-ops da mogu da dodajem promocije"). One section per partner
+// venue. Six venues publish their campaigns keylessly and were MEASURED the day this shipped (scratchpad/promo-probe.js):
+//   Bybit   /v5/announcements/index type=latest_activities - the only one with a real start AND end, so it is filtered to what is LIVE
+//   BingX   open-api /openApi/content/v1/announcement contentType=LatestPromotions - an UNKNOWN contentType silently answers spot
+//           listings, so the type name is load-bearing
+//   OKX     /api/v5/support/announcements annType=latest-events
+//   Binance bapi CMS catalog 93 "Latest Activities" (Binance blocks CF egress for most routes - a failure is reported, never fatal)
+//   KuCoin  /api/v3/announcements annType=activities
+//   MEXC    help-centre section 15425930840825 (its events section; 360000254192 is every announcement mixed together)
+// Bitget publishes announcements but no campaign type (40020 for every one we tried); Moon, Fomo, Hyperliquid, Aster, Gate, Kraken,
+// Coinbase and Crypto.com publish nothing - those arrive through the owner's mp-ops form (KV promo:man), X giveaways included.
+// Without a published end date an item is shown for PROMO_FRESH_DAYS after it was posted, and the card says "posted", never "ends".
+const PROMO_VENUES = [
+  { k: 'bybit', n: 'Bybit' }, { k: 'bingx', n: 'BingX' }, { k: 'moon', n: 'Moon' }, { k: 'mexc', n: 'MEXC' }, { k: 'okx', n: 'OKX' },
+  { k: 'binance', n: 'Binance' }, { k: 'kucoin', n: 'KuCoin' }, { k: 'bitget', n: 'Bitget' }, { k: 'hyperliquid', n: 'Hyperliquid' },
+  { k: 'fomo', n: 'Fomo' }, { k: 'aster', n: 'Aster' }, { k: 'gate', n: 'Gate' }, { k: 'kraken', n: 'Kraken' }, { k: 'coinbase', n: 'Coinbase' },
+  { k: 'cryptocom', n: 'Crypto.com' },
+];
+const PROMO_FRESH_DAYS = 21, PROMO_PER_VENUE = 8, PROMO_FEED_TTL = 30 * 60000, PROMO_MAN_MAX = 120;
+function promoTxt(s, n) { return String(s == null ? '' : s).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim().slice(0, n || 240); }
+function promoId(v, url) { let h = 2166136261; const s = v + '|' + url; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return v + '-' + (h >>> 0).toString(36); }
+async function promoGet(url, ms) {
+  const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 6000);
+  try { const r = await __realFetch(url, { signal: ac.signal, headers: { 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)', accept: 'application/json' } }); const tx = await r.text(); if (!r.ok) throw new Error('http ' + r.status); return JSON.parse(tx); }
+  finally { clearTimeout(t); }
+}
+async function promoGetVia(env, src, url) { // OKX 400s and MEXC 403s the Cloudflare egress (measured 2026-11-15): try direct, then the droplet's fixed-url proxy
+  try { return await promoGet(url, 4000); } catch (e) {}
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, ''); if (!base) throw new Error('no collector');
+  return await promoGet(base + '/api/v1/promo?src=' + src, 9000);
+}
+async function promoTextVia(env, src, url) {
+  try { return await promoText(url, 5000); } catch (e) {}
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, ''); if (!base) throw new Error('no collector');
+  return await promoText(base + '/api/v1/promo?src=' + src, 9000);
+}
+const PROMO_OFFER_RE = /bonus|challenge|compet|giveaway|reward|prize|campaign|airdrop|cashback|win |earn up to|get up to|\$\d[\d,]*\s*(?:in|worth|prize|pool)/i;
+const PROMO_SRC = {
+  async bybit() {
+    const j = await promoGet('https://api.bybit.com/v5/announcements/index?locale=en-US&type=latest_activities&limit=50');
+    if (!j || j.retCode !== 0) throw new Error('retCode ' + (j && j.retCode));
+    const now = Date.now();
+    return (j.result.list || []).filter(x => +x.endDateTimestamp > now && +x.startDateTimestamp <= now + 7 * 864e5)
+      .map(x => ({ t: promoTxt(x.title, 160), d: promoTxt(x.description, 260), u: x.url, s: +x.startDateTimestamp || 0, e: +x.endDateTimestamp || 0, ts: +x.publishTime || +x.dateTimestamp || 0 }));
+  },
+  async bingx() {
+    const j = await promoGet('https://open-api.bingx.com/openApi/content/v1/announcement?contentType=LatestPromotions&language=en-us&page=1');
+    if (!j || j.code !== 0) throw new Error('code ' + (j && j.code));
+    return (j.data || []).map(x => ({ t: promoTxt(x.title, 160), d: promoTxt(x.content, 260), u: x.url, ts: +x.releaseTime || Date.parse(x.releaseTime) || 0, img: (String(x.content || '').match(/https:\/\/bingxservice\.zendesk\.com\/hc\/article_attachments\/\d+(?:\/[^"'\s<)]*)?/i) || [''])[0], act: (String(x.content || '').match(/https:\/\/bingx\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?activity\/[^"'\s<)]+/i) || [''])[0].replace(/&amp;/g, '&') }));
+  },
+  async okx(env) {
+    const j = await promoGetVia(env, 'okx', 'https://www.okx.com/api/v5/support/announcements?annType=latest-events');
+    if (!j || j.code !== '0') throw new Error('code ' + (j && j.code));
+    return ((j.data && j.data[0] && j.data[0].details) || []).map(x => ({ t: promoTxt(x.title, 160), d: '', u: x.url, ts: +x.businessPTime || +x.pTime || 0 }));
+  },
+  async binance() {
+    const j = await promoGet('https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=93&pageNo=1&pageSize=20');
+    const c = j && j.data && j.data.catalogs && j.data.catalogs[0];
+    if (!c) throw new Error('no catalog');
+    return (c.articles || []).map(x => ({ t: promoTxt(x.title, 160), d: '', u: 'https://www.binance.com/en/support/announcement/detail/' + x.code, ts: +x.releaseDate || 0 }));
+  },
+  async kucoin() {
+    const j = await promoGet('https://api.kucoin.com/api/v3/announcements?annType=activities&lang=en_US&pageSize=20');
+    if (!j || j.code !== '200000') throw new Error('code ' + (j && j.code));
+    return ((j.data && j.data.items) || []).map(x => ({ t: promoTxt(x.annTitle, 160), d: x.annDesc && x.annDesc !== x.annTitle ? promoTxt(x.annDesc, 260) : '', u: x.annUrl, ts: +x.cTime || 0 }));
+  },
+  async kraken(env) {
+    const x = await promoTextVia(env, 'kraken', 'https://blog.kraken.com/feed');
+    return x.split('<item>').slice(1).map(it => {
+      const g = re => { const m = it.match(re); return m ? m[1] : ''; };
+      const t = promoTxt(g(/<title>([\s\S]*?)<\/title>/).replace(/&#0?38;/g, '&'), 160);
+      const img = (it.match(/https:\/\/[^"'\s<]+\.(?:png|jpe?g|webp)/i) || [''])[0];
+      return { t, d: promoTxt(g(/<description>([\s\S]*?)<\/description>/).replace(/<!\[CDATA\[|\]\]>/g, '').replace(/&lt;[\s\S]*?&gt;/g, ' ').replace(/&#[0-9]+;/g, ' '), 260), u: g(/<link>([^<]+)<\/link>/).trim(), ts: Date.parse(g(/<pubDate>([^<]+)<\/pubDate>/)) || 0, img };
+    }).filter(r => PROMO_OFFER_RE.test(r.t));
+  },
+  async mexc(env) {
+    const j = await promoGetVia(env, 'mexc', 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20');
+    const rs = j && j.data && j.data.results; if (!rs) throw new Error('no results');
+    return rs.map(x => ({ t: promoTxt(x.title, 160), d: '', u: 'https://www.mexc.com' + (x.routerUrl || ('/announcements/' + x.id)), ts: Date.parse(x.createdAt) || 0 }));
+  },
+};
+// A campaign's own picture (owner, same day: "oni daju i slike uz promocije"). None of the six feeds carries one, so it is read from
+// the announcement itself, ONCE per item (KV promo:img, keyed by item id, 45 days): Bybit, OKX and MEXC put the campaign banner in
+// og:image; KuCoin's og:image is a site-wide card, so the first CMS media image in the article is taken; Binance's detail API body
+// carries the banner. BingX gives every article the same share card, so it gets none and the page draws a branded panel instead.
+// An image two different items of one venue share is a site card, not a campaign picture, and is dropped.
+const PROMO_IMG_NEW_PER_PASS = 16;
+const PROMO_UA_WEB = { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36', accept: 'text/html,application/json' };
+async function promoText(url, ms) {
+  const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 6000);
+  try { const r = await __realFetch(url, { signal: ac.signal, headers: PROMO_UA_WEB }); if (!r.ok) throw new Error('http ' + r.status); return await r.text(); }
+  finally { clearTimeout(t); }
+}
+function promoOg(h) { const m = String(h || '').match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || String(h || '').match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); return m ? m[1].replace(/&amp;/g, '&') : ''; }
+async function promoImgFor(env, it) {
+  const ok = u => /^https:\/\/[^\s"'<>]+$/.test(u || '') ? u : '';
+  // MEASURED 2026-11-15: every one of these pages refuses the worker's egress (16 of 16 reads failed), and MEXC refuses the droplet too
+  // (its help API answers there, its pages do not, and its API carries an empty thumbnail) - so MEXC and BingX get the branded panel.
+  if (it.v === 'mexc' || (it.v === 'bingx' && !it.act)) return '';
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, ''); if (!base) return '';
+  const j = await promoGet(base + '/api/v1/promo?src=img&v=' + it.v + '&u=' + encodeURIComponent(it.v === 'bingx' ? it.act : it.u), 10000);
+  return ok(j && j.img);
+}
+async function promoImgFill(env, items) {
+  let map = {}; try { map = (await env.STATS.get('promo:img4', 'json')) || {}; } catch (e) {}
+  items.forEach(x => { if (x.img0) { map[x.id] = { u: x.img0, t: Date.now() }; delete x.img0; } });
+  const now = Date.now(), todo = items.filter(x => !map[x.id]).slice(0, PROMO_IMG_NEW_PER_PASS);
+  await Promise.all(todo.map(async x => { try { map[x.id] = { u: await promoImgFor(env, x), t: now }; } catch (e) { map[x.id] = { u: '', t: now, err: String(e && e.message || e).slice(0, 80) }; } }));
+  Object.keys(map).forEach(k => { const r = map[k]; if (!r || now - (r.t || 0) > (r.err ? 6 * 3600000 : 45 * 864e5)) delete map[k]; }); // a failed read is retried after six hours
+  if (todo.length) { try { await env.STATS.put('promo:img4', JSON.stringify(map)); } catch (e) {} }
+  const seen = {}; items.forEach(x => { const u = map[x.id] && map[x.id].u; if (u) { const k = x.v + '|' + u; seen[k] = (seen[k] || 0) + 1; } });
+  items.forEach(x => { const u = map[x.id] && map[x.id].u; if (u && seen[x.v + '|' + u] === 1) x.img = u; });
+}
+async function promoFeedBuild(env) {
+  const out = { at: Date.now(), items: [], src: {} };
+  const fresh = Date.now() - PROMO_FRESH_DAYS * 864e5;
+  await Promise.all(Object.keys(PROMO_SRC).map(async v => {
+    const t0 = Date.now();
+    try {
+      let rows = await PROMO_SRC[v](env);
+      const all = rows.length;
+      const fr = v === 'bingx' ? Date.now() - 45 * 864e5 : fresh; // BingX's promotions list is short and curated, and a SuperX month runs past three weeks
+      rows = rows.filter(r => r.t && /^https:\/\//.test(r.u || '') && (r.e ? true : (r.ts >= fr)));
+      rows.sort((a, b) => (b.ts || b.s || 0) - (a.ts || a.s || 0));
+      rows = rows.slice(0, PROMO_PER_VENUE);
+      rows.forEach(r => out.items.push({ id: promoId(v, r.u), v, src: 'api', t: r.t, d: r.d || '', u: r.u, s: r.s || 0, e: r.e || 0, ts: r.ts || r.s || 0, act: r.act || undefined, img0: r.img || undefined }));
+      out.src[v] = { ok: true, read: all, kept: rows.length, ms: Date.now() - t0 };
+    } catch (e) { out.src[v] = { ok: false, err: String(e && e.message || e).slice(0, 120), ms: Date.now() - t0 }; }
+  }));
+  try { await promoImgFill(env, out.items); } catch (e) {}
+  return out;
+}
+async function promoFeed(env, ctx, force) {
+  let cur = null; try { cur = await env.STATS.get('promo:feed', 'json'); } catch (e) {}
+  const stale = !cur || Date.now() - (cur.at || 0) > PROMO_FEED_TTL;
+  if (!stale && !force) return cur;
+  const job = (async () => {
+    const nu = await promoFeedBuild(env);
+    // a source that failed this pass keeps what it had last time - an outage must not empty a venue's section
+    if (cur && cur.items) Object.keys(nu.src).forEach(v => { if (!nu.src[v].ok) { cur.items.filter(x => x.v === v).forEach(x => nu.items.push(x)); nu.src[v].kept_from = cur.at; } });
+    try { await env.STATS.put('promo:feed', JSON.stringify(nu)); } catch (e) {}
+    return nu;
+  })();
+  if (cur && !force && ctx && ctx.waitUntil) { ctx.waitUntil(job.catch(() => {})); return cur; }
+  try { return await job; } catch (e) { return cur || { at: 0, items: [], src: {} }; }
+}
+async function promoState(env) {
+  const g = async (k, d) => { try { return (await env.STATS.get(k, 'json')) || d; } catch (e) { return d; } };
+  return { man: await g('promo:man', []), hide: await g('promo:hide', []), cfg: await g('promo:cfg', { public: false }), imgset: await g('promo:imgset', {}) };
+}
+async function promoStaff(env, request, url) {
+  try { const k = adminKeyFrom(request, url); if (k && k === adminKeyOf(env)) return 'key'; } catch (e) {}
+  try { if (await adminCookieOk(request, env)) return 'ops'; } catch (e) {}
+  try { const u = await sessionUser(env, getCookie(request, 'mp_sess')); const un = String((u && u.username) || '').toLowerCase(); if (un && PREM_FOUNDERS.indexOf(un) >= 0) return 'owner'; } catch (e) {}
+  return '';
+}
+function promoCompose(feed, st, opts) {
+  const hide = new Set(st.hide || []), now = Date.now();
+  const man = (st.man || []).filter(x => !(x.e && x.e < now) && !(x.s && x.s > now && !opts.all));
+  let items = man.map(x => Object.assign({ src: 'man' }, x)).concat((feed.items || []).map(x => Object.assign({}, x)));
+  items.forEach(x => { x.hidden = hide.has(x.id); const iu = st.imgset && st.imgset[x.id]; if (iu) { x.img = iu; x.imgset = 1; } });
+  if (!opts.all) items = items.filter(x => !x.hidden);
+  const byV = {};
+  items.forEach(x => { (byV[x.v] = byV[x.v] || []).push(x); });
+  const venues = PROMO_VENUES.map(v => {
+    const list = (byV[v.k] || []).sort((a, b) => ((b.pin ? 1 : 0) - (a.pin ? 1 : 0)) || ((b.ts || 0) - (a.ts || 0)));
+    return { k: v.k, n: v.n, api: !!PROMO_SRC[v.k], items: list };
+  }).filter(v => opts.all || v.items.length);
+  return { updated: feed.at || 0, venues };
+}
+async function handlePromotions(url, request, env, ctx) {
+  const p = url.pathname;
+  const J = (o, s, cc) => new Response(JSON.stringify(o), { status: s || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', 'x-robots-tag': 'noindex' } });
+  if (p === '/api/admin/promotions') {
+    const who = await promoStaff(env, request, url);
+    if (who !== 'key' && who !== 'ops') return J({ error: 'unauthorized' }, 401);
+    const st = await promoState(env);
+    if (request.method === 'GET') {
+      const feed = await promoFeed(env, ctx, url.searchParams.get('refresh') === '1');
+      if (url.searchParams.get('imgdbg') === '1') { let mp = {}; try { mp = (await env.STATS.get('promo:img4', 'json')) || {}; } catch (e) {} return J({ img: mp }); }
+      return J(Object.assign(promoCompose(feed, st, { all: true }), { cfg: st.cfg, src: feed.src || {}, venuesAll: PROMO_VENUES, man: st.man }));
+    }
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    const op = String(b.op || '');
+    if (op === 'add' || op === 'edit') {
+      const it = b.item || {};
+      const v = String(it.v || '').toLowerCase(); if (!PROMO_VENUES.some(x => x.k === v)) return J({ error: 'bad_venue' }, 400);
+      const u = String(it.u || '').trim(); if (!/^https:\/\/[^\s<>"']{4,400}$/.test(u)) return J({ error: 'bad_url', hint: 'A link starting with https://' }, 400);
+      const isX = /^https:\/\/(www\.)?(x|twitter)\.com\//i.test(u);
+      const t = promoTxt(it.t, 160) || (isX ? 'Giveaway on X' : ''); if (!t) return J({ error: 'need_title' }, 400);
+      const day = s => { const n = Date.parse(String(s || '')); return isFinite(n) ? n : 0; };
+      const row = { id: op === 'edit' && it.id ? String(it.id).slice(0, 40) : 'm-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), v, t, d: promoTxt(it.d, 600), u, x: isX ? 1 : 0, prize: promoTxt(it.prize, 60), img: (String(it.img || '').trim().match(/^https:\/\/[^\s<>"']{8,500}$/) || [''])[0], s: day(it.s), e: it.e ? day(it.e) + 86399000 : 0, ts: Date.now(), pin: it.pin ? 1 : 0 };
+      let man = (st.man || []).filter(x => x.id !== row.id);
+      if (op === 'edit') { const old = (st.man || []).find(x => x.id === row.id); if (old) row.ts = old.ts; }
+      man.unshift(row); man = man.slice(0, PROMO_MAN_MAX);
+      await env.STATS.put('promo:man', JSON.stringify(man));
+      return J({ ok: true, item: row });
+    }
+    if (op === 'del') { const man = (st.man || []).filter(x => x.id !== String(b.id || '')); await env.STATS.put('promo:man', JSON.stringify(man)); return J({ ok: true, n: man.length }); }
+    if (op === 'pin') { const man = (st.man || []).map(x => x.id === String(b.id || '') ? Object.assign({}, x, { pin: x.pin ? 0 : 1 }) : x); await env.STATS.put('promo:man', JSON.stringify(man)); return J({ ok: true }); }
+    if (op === 'hide') { const id = String(b.id || '').slice(0, 40); let h = (st.hide || []).filter(x => x !== id); if (b.on) h.push(id); h = h.slice(-400); await env.STATS.put('promo:hide', JSON.stringify(h)); return J({ ok: true, hidden: !!b.on }); }
+    if (op === 'img') { const id = String(b.id || '').slice(0, 40); const iu = String(b.img || '').trim(); if (iu && !/^https:\/\/[^\s<>"']{8,500}$/.test(iu)) return J({ error: 'bad_url', hint: 'An image link starting with https://' }, 400); const m = Object.assign({}, st.imgset || {}); if (iu) m[id] = iu; else delete m[id]; await env.STATS.put('promo:imgset', JSON.stringify(m)); return J({ ok: true }); }
+    if (op === 'public') { const cfg = Object.assign({}, st.cfg, { public: !!b.on, at: Date.now() }); await env.STATS.put('promo:cfg', JSON.stringify(cfg)); return J({ ok: true, cfg }); }
+    if (op === 'refresh') { const feed = await promoFeed(env, ctx, true); return J({ ok: true, at: feed.at, src: feed.src }); }
+    return J({ error: 'bad_op' }, 400);
+  }
+  const st = await promoState(env);
+  const pub = !!(st.cfg && st.cfg.public);
+  const who = pub ? '' : await promoStaff(env, request, url);
+  if (!pub && !who) {
+    if (p === '/api/promotions') return J({ error: 'not_found' }, 404);
+    return new Response('<!doctype html><meta charset="utf-8"><title>Not found</title><meta name="robots" content="noindex"><body style="background:#0a0b0d;color:#9aa3ad;font:15px system-ui;display:grid;place-items:center;height:100vh;margin:0"><p>Page not found. <a href="/" style="color:#c2f64a">MarginPad</a></p>', { status: 404, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+  }
+  if (p === '/api/promotions') {
+    const feed = await promoFeed(env, ctx, false);
+    return J(Object.assign(promoCompose(feed, st, { all: false }), { public: pub, preview: !pub }), 200, pub ? 'public, max-age=60' : 'no-store');
+  }
+  if (p === '/promotions') return Response.redirect(url.origin + '/promotions/' + url.search, 301);
+  const a = await env.ASSETS.fetch(new Request(url.origin + '/promotions/', request));
+  const h = new Headers(a.headers); h.set('cache-control', 'no-store'); if (!pub) h.set('x-robots-tag', 'noindex, nofollow');
+  return new Response(a.body, { status: a.status, headers: h });
+}
 const PARTNERS = {
   bybit: 'Bybit', binance: 'Binance', okx: 'OKX', bitget: 'Bitget', kraken: 'Kraken', coinbase: 'Coinbase',
   kucoin: 'KuCoin', mexc: 'MEXC', moon: 'Moon', gate: 'Gate', gateio: 'Gate', 'gate.io': 'Gate',
@@ -10579,7 +10802,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1f008fdd" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=647753d9" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -24254,6 +24477,7 @@ async function handleAuth(url, request, env, ctx) {
       if (d.renew) { const o9 = '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE; h.append('set-cookie', SESS_COOKIE + '=' + tok + o9); h.append('set-cookie', 'mp_uid=' + d.user.id + o9); } // the store just slid the session: re-issue the credential itself so the browser's cookie expiry slides too (same token)
     } // keep the display name + the non-HttpOnly session marker fresh for existing sessions (also migrates pre-marker logins on their first /me)
     else h.append('set-cookie', 'mp_li=; Secure; SameSite=Lax; Path=/; Max-Age=0'); // session invalid/expired → clear the stale marker so the client stops probing /me
+    try { const unP = String((d.user && d.user.username) || '').toLowerCase(); h.append('set-cookie', 'mp_pv=' + (unP && PREM_FOUNDERS.indexOf(unP) >= 0 ? '1; Max-Age=' + SESS_MAXAGE : '; Max-Age=0') + '; Secure; SameSite=Lax; Path=/'); } catch (e) {}
     return new Response(JSON.stringify({ user: d.user || null, banned: !!d.banned }), { headers: h });
   }
   if (path === '/username') { // user changes their own username
@@ -26713,6 +26937,7 @@ export default {
       return J({ days: dN, mode: "report-only", byDay: total, byDirective: srt(byDirective), byOrigin: srt(byOrigin),
         note: "nothing is blocked while the policy is report-only. Turn it into content-security-policy once byOrigin holds nothing we do not recognise." });
     }
+    if (url.pathname === '/api/promotions' || url.pathname === '/api/admin/promotions' || url.pathname === '/promotions' || url.pathname === '/promotions/') return handlePromotions(url, request, env, ctx);
     if (url.pathname.startsWith('/api/hl/')) return handleHlProxy(url, env);
     if (/^\/hyperliquid\/?$/.test(url.pathname)) return Response.redirect('https://marginpad.io/hyperliquid-whales/' + url.hash, 301);
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)

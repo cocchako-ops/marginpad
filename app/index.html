@@ -94,6 +94,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
+
+
+
+
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
@@ -139,6 +143,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   s=String(s||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12)||'BTC';
   window.__preK={key:s+'|5',p:fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=5',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})};
 }catch(e){}})();</script>
+
 
 
 
@@ -895,6 +900,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 <script src="/assets/home.js?v=842dd824"></script>
-<script defer src="/assets/mp-nav.js?v=1f008fdd"></script>
+<script defer src="/assets/mp-nav.js?v=647753d9"></script>
 </body>
 </html>

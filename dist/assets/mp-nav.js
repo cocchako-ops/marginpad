@@ -288,6 +288,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
   // chart = Charts + Bitcoin cycle), so the icon told you nothing about where a row went.
   function SV(p, w) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || '1.9') + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
   var PT = {
+    megaphone: '<path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.5 6a8.5 8.5 0 0 1 0 12"/>',
     /* trade & practice */
     plan: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
     spot: '<rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/>',
@@ -427,6 +428,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     + row('brCompT', 'brCompS', '/trading-competition/', '#ffd75a', 'podium', __esT_mpnav("competitionCompetitionsCon",'competition competitions contest tournament prize prizes pool win money free entry leaderboard compete'))
     + row('brArenaT', 'brArenaS', '/arena/', '#7cc4ff', 'arena', __esT_mpnav("arenaBotArenaBots",'arena bot arena bots bot ranking api bots robot leaderboard win rate'))
     + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', __esT_mpnav("rewardsFaucetClaimFree",'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite affiliate referral commission payout withdrawal invite friend earn'))
+    + (/(?:^|;\s*)mp_pv=1(?:;|$)/.test(document.cookie) ? row('Promotions', 'Exchange campaigns - preview, only you see this', '/promotions/', '#ff9f43', 'megaphone', 'promotions promo campaigns campaign giveaway giveaways bonus exchange offers airdrop competition', 'NEW') : '') // @PROMO staff preview (2026-11-15): the page 404s to everyone else until it is published from mp-ops
     + row('brVaultT', 'brVaultS', '/vault/', '#c792ff', 'vault', 'vault cosmetics frames skins ticks shop store backgrounds ticket themes buy legendary')
     + row('brLevelsT', 'brLevelsS', '/levels/', '#8b5cff', 'starr', __esT_mpnav("levelsLevelXpExperience",'levels level xp experience bronze silver gold platinum diamond prestige rank ranks progress'))
     + row('brPremT', 'brPremS', '/premium/', '#ffd75a', 'crown', __esT_mpnav("premiumSubscriptionSubscri",'premium subscription subscribe upgrade plan plans paid founder pro member membership price'))
