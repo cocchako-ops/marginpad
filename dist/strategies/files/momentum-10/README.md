@@ -4,8 +4,8 @@ Long while price is above where it was ten bars ago.
 
 ## The rule
 
-- Go long when 10-bar rate of change crosses above 0.
-- Exit the long when 10-bar rate of change crosses below 0.
+- Go long when the 10-bar % change in price crosses above 0.
+- Exit the long when the 10-bar % change in price crosses below 0.
 
 Declared timeframe: 1d.
 

@@ -4,8 +4,8 @@ Buy a close in the bottom fifth of the bar, in an uptrend.
 
 ## The rule
 
-- Go long when close - low / high - low is below 0.2 and close is above SMA(200).
-- Exit the long when close - low / high - low is above 0.8.
+- Go long when (close - low) / (high - low) is below 0.2 and close is above SMA(200).
+- Exit the long when (close - low) / (high - low) is above 0.8.
 
 Declared timeframe: 1d.
 

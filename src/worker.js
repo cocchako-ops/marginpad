@@ -7843,46 +7843,57 @@ async function handleKlines(url, env, klSrc, ctx) {
    klines, for the same equal-weight baskets the page shows. Compounded in KV and advanced one closed UTC day at a time, so a
    missed run catches up. Crypto is before funding here (the file figures include it), and the page says so. */
 const STRAT_LIVE_FROM = Date.UTC(2026, 10, 1) / 864e5;
+/* ONE ASSET CLASS A PASS, EACH WITH ITS OWN "THROUGH" (2026-11-15). The first cut ran every class in one pass of the shared
+   ten-minute cron and advanced ONE date for all of them: measured after two weeks, crypto held 13 days, forex 6, commodities
+   4, and stocks and indices had NEVER appeared - the pass was cut off after crypto (it is 26 s and ~90 kline fetches on its
+   own) while the date moved on for everybody, so the missing days were gone for good. Now a pass takes the class that is
+   furthest behind, finishes it, and records that class's own date; a missed class is caught up on the next pass. v:2 resets
+   the record once (the rules it replays changed the same day: Z-Score Reversion, Friday To Monday). */
 async function strategyLive(env, dryDays) {
-  const today = Math.floor(Date.now() / 864e5), last = today - 1;
-  const st = dryDays ? { from: last - dryDays + 1, rules: {}, through: last - dryDays } : ((await env.STATS.get('strat:live', 'json')) || { from: STRAT_LIVE_FROM, rules: {}, through: STRAT_LIVE_FROM - 1 });
-  if (st.through >= last) return st;
+  const today = Math.floor(Date.now() / 864e5), last = today - 1, CLS = Object.keys(STRAT_CLASSES);
+  let st = dryDays ? null : await env.STATS.get('strat:live', 'json');
+  if (dryDays) st = { v: 2, from: last - dryDays + 1, rules: {}, thr: {} };
+  if (!st || st.v !== 2) st = { v: 2, from: STRAT_LIVE_FROM, rules: {}, thr: {} };
+  for (const cn of CLS) if (st.thr[cn] == null) st.thr[cn] = st.from - 1;
+  st.through = Math.min(...CLS.map((cn) => st.thr[cn]));
+  const todo = CLS.filter((cn) => st.thr[cn] < last).sort((x, y) => st.thr[x] - st.thr[y]);
+  if (!todo.length) return st;
   const rules = STRAT_RULES.filter((r) => !r.own), IV = { '1h': 60, '4h': 240, '1d': 1440 };
-  const days = []; for (let d = st.through + 1; d <= last; d++) days.push(d);
-  const acc = {};
-  for (const m of STRAT_MARKETS) {
-    if (!m.basket) continue;
-    const cls = STRAT_CLASSES[m.cls];
-    for (const tf of cls.tfs) {
-      const use = rules.filter((r) => (!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex') && (cls.tfs.includes(r.tf) ? r.tf : '1d') === tf);
-      if (!use.length) continue;
-      let rows = null;
-      try { rows = await (await handleKlines(new URL(`https://marginpad.io/api/klines?symbol=${m.sym}&interval=${IV[tf]}`), env)).json(); } catch (e) { continue; }
-      if (!Array.isArray(rows) || rows.length < 260) continue;
-      const ms = IV[tf] * 6e4, c = rows.filter((x) => x.time * 1000 + ms <= today * 864e5);
-      const raw = { t: c.map((x) => x.time * 1000), o: c.map((x) => +x.open), h: c.map((x) => +x.high), l: c.map((x) => +x.low), c: c.map((x) => +x.close), v: c.map((x) => +x.vol || 0) };
-      const b = STRAT.bars(raw), bh = STRAT.daily(b.t, Float64Array.from(b.c));
-      for (const r of use) {
-        const res = STRAT.run(r, b, cls, null), dd = STRAT.daily(b.t, res.equity);
-        for (const d of days) {
-          const i = dd.days.indexOf(d); if (i < 0) continue;
-          const k = r.slug + '|' + m.cls + '|' + d, a = acc[k] || (acc[k] = { r: 0, b: 0, n: 0, t: 0 });
-          a.r += dd.rets[i]; a.b += bh.rets[bh.days.indexOf(d)] || 0; a.n++;
-          a.t += res.trades.filter((x) => Math.floor(x.xt / 864e5) === d).length;
+  for (const cn of dryDays ? todo : todo.slice(0, 1)) {
+    const cls = STRAT_CLASSES[cn], days = []; for (let d = st.thr[cn] + 1; d <= last; d++) days.push(d);
+    const acc = {}; let fetched = 0;
+    for (const m of STRAT_MARKETS) {
+      if (!m.basket || m.cls !== cn) continue;
+      for (const tf of cls.tfs) {
+        const use = rules.filter((r) => (!r.only || r.only.includes(m.cls)) && !(r.vol && m.cls === 'forex') && (cls.tfs.includes(r.tf) ? r.tf : '1d') === tf);
+        if (!use.length) continue;
+        let rows = null;
+        try { rows = await (await handleKlines(new URL(`https://marginpad.io/api/klines?symbol=${m.sym}&interval=${IV[tf]}`), env)).json(); } catch (e) { continue; }
+        if (!Array.isArray(rows) || rows.length < 200) continue;
+        fetched++;
+        const ms = IV[tf] * 6e4, c = rows.filter((x) => x.time * 1000 + ms <= today * 864e5);
+        const raw = { t: c.map((x) => x.time * 1000), o: c.map((x) => +x.open), h: c.map((x) => +x.high), l: c.map((x) => +x.low), c: c.map((x) => +x.close), v: c.map((x) => +x.vol || 0) };
+        const b = STRAT.bars(raw), bh = STRAT.daily(b.t, Float64Array.from(b.c));
+        for (const r of use) {
+          const res = STRAT.run(r, b, cls, null), dd = STRAT.daily(b.t, res.equity);
+          for (const d of days) {
+            const i = dd.days.indexOf(d); if (i < 0) continue;
+            const k = r.slug + '|' + d, x = acc[k] || (acc[k] = { r: 0, b: 0, n: 0, t: 0 });
+            x.r += dd.rets[i]; x.b += bh.rets[bh.days.indexOf(d)] || 0; x.n++;
+            x.t += res.trades.filter((q) => Math.floor(q.xt / 864e5) === d).length;
+          }
         }
       }
     }
-  }
-  for (const d of days) {
-    let any = false;
-    for (const r of rules) for (const cn of Object.keys(STRAT_CLASSES)) {
-      const a = acc[r.slug + '|' + cn + '|' + d]; if (!a || !a.n) continue;
-      any = true;
+    if (!fetched) continue; // no market of this class could be read: try the same days again next pass
+    for (const d of days) for (const r of rules) {
+      const x = acc[r.slug + '|' + d]; if (!x || !x.n) continue;
       const row = ((st.rules[r.slug] = st.rules[r.slug] || {})[cn] = st.rules[r.slug][cn] || { e: 1, b: 1, n: 0, t: 0 });
-      row.e = +(row.e * (1 + a.r / a.n)).toFixed(6); row.b = +(row.b * (1 + a.b / a.n)).toFixed(6); row.n++; row.t += a.t;
+      row.e = +(row.e * (1 + x.r / x.n)).toFixed(6); row.b = +(row.b * (1 + x.b / x.n)).toFixed(6); row.n++; row.t += x.t;
     }
-    if (any) st.through = d;
+    st.thr[cn] = last;
   }
+  st.through = Math.min(...CLS.map((cn) => st.thr[cn]));
   if (!dryDays) await env.STATS.put('strat:live', JSON.stringify(st)); // a dry run proves the pass on production and stores nothing
   return st;
 }

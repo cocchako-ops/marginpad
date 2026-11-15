@@ -4,8 +4,8 @@ Absolute momentum: long while the last three months are positive.
 
 ## The rule
 
-- Go long when 90-bar rate of change crosses above 0.
-- Exit the long when 90-bar rate of change crosses below 0.
+- Go long when the 90-bar % change in price crosses above 0.
+- Exit the long when the 90-bar % change in price crosses below 0.
 
 Declared timeframe: 1d.
 

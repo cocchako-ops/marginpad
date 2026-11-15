@@ -139,7 +139,7 @@ for (const m of MARKETS) {
 fs.mkdirSync(OUT, { recursive: true });
 const index = [];
 for (const r of rules) {
-  const detail = { id: r.id, slug: r.slug, name: r.name, style: r.style, styleLabel: STYLES[r.style], tf: r.tf, summary: r.summary, classes: {} };
+  const detail = { id: r.id, slug: r.slug, name: r.name, style: r.style, styleLabel: STYLES[r.style], tf: r.tf, summary: r.summary, own: r.own || null, classes: {} };
   const card = { id: r.id, slug: r.slug, name: r.name, style: r.style, summary: r.summary, tf: r.tf, stop: r.stop || null, tp: r.tp || null, own: r.own || null, classes: {} };
   for (const cn of Object.keys(CLASSES)) {
     const cls = CLASSES[cn], tfs = {};

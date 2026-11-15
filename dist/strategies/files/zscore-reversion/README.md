@@ -1,11 +1,12 @@
-# Z-Score Reversion
+# Z-Score Reversion 50
 
-Buy two standard deviations under the mean, sell back at it.
+Buy 2.5 deviations under the 50-day mean, sell once back within half a deviation, 20 bars at most.
 
 ## The rule
 
-- Go long when close - SMA(20) / standard deviation(20) is below -2.
-- Exit the long when close - SMA(20) / standard deviation(20) is above 0.
+- Go long when (close - SMA(50)) / standard deviation(50) is below -2.5.
+- Exit the long when (close - SMA(50)) / standard deviation(50) is above -0.5.
+- Leave after 20 bars at most.
 
 Declared timeframe: 1d.
 

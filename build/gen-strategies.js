@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..');
 const { RULES } = require('./strategies/rules');
 const { MARKETS, CLASSES } = require('./strategies/markets');
 const { describe, toPine, toPython, toBot } = require('./strategies/emit');
-const { cardHtml, fmtRet, fmtPct, fmtNum, CLSLBL } = require('../dist/assets/mp-strategies.js');
+const { cardHtml, fmtRet, fmtPct, fmtNum, CLSLBL, span } = require('../dist/assets/mp-strategies.js');
 const REF = 'https://app.3commas.io/auth/registration?utm_source=referral&utm_medium=cabinet&c=tc2235309';
 const OUT = path.join(root, 'dist/strategies');
 const D = JSON.parse(fs.readFileSync(path.join(OUT, 'data/index.json'), 'utf8'));
@@ -96,7 +96,7 @@ const hub = `<main>
   <div class="mk" role="tablist" aria-label="Market">${Object.keys(CLASSES).map((k) => `<button type="button" data-m="${k}" class="${k === 'crypto' ? 'on' : ''}">${CLSLBL[k]}</button>`).join('')}</div>
   <div class="wh"><div id="wLbl"><b>${rows.length} strategies on Crypto.</b> Growth of $1, log scale, after fees. Against simply holding: ${beat} returned more, ${calm} had a better Sharpe, ${rows.filter((r) => r.classes.crypto.m.mdd > r.classes.crypto.benchD).length} had a smaller drawdown.</div><div class="wlg"><span><i></i>Ended up</span><span class="x"><i></i>Ended down</span></div></div>
   <div class="wall" id="wFrame"><svg id="wSvg" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"></svg><div class="wdot" id="wDot" hidden></div><div class="wtip" id="wTip" hidden></div></div>
-  <p class="wnote">Every line is a real backtest on an equal-weight basket of that market class. Point at one to see which strategy drew it. Results to ${LATEST}.</p>
+  <p class="wnote">Every line is a real backtest on an equal-weight basket of that market class, rebalanced monthly. Point at one to see which strategy drew it. Results to ${LATEST}.</p>
 </div>
 <section class="s" id="library"><div class="w">
   <h2>Every strategy, every result</h2>
@@ -127,18 +127,19 @@ const hub = `<main>
     <div><h3>Max drawdown</h3><p>The largest fall from a peak. This is the loss you would have had to sit through to earn the return.</p></div>
     <div><h3>Win rate</h3><p>The share of closed trades that made money. A high figure often hides small wins and the occasional large loss.</p></div>
     <div><h3>Profit factor</h3><p>Gross profit divided by gross loss. 1.0 is breakeven. 2.0 means winners earned twice what losers lost.</p></div>
-    <div><h3>Last 30%</h3><p>The history is split in two. A rule that only worked in the first part did not work.</p></div>
+    <div><h3>Last 30%</h3><p>The history is split in two. A rule that only worked in the first part did not work. It is only printed when the last 30% holds 30 trades of its own.</p></div>
   </div>
+  <p class="evid"><b>How much evidence.</b> Every card says how many years and markets a figure stands on. Under a year of data a result is marked <em>too early</em> and gets no Sharpe and no verdict; under two years or 100 trades it is marked <em>few trades</em>. Those results are left out of every count above.</p>
 </div></section>
 <section class="s" id="how"><div class="w">
   <h2>How the tests are run</h2>
   <div class="g3">
     <div><h3>Fills we would accept</h3><p>A signal is read on a closed bar and fills at the next open, with slippage against the trade. A stop that gaps fills at the open. When one bar touches stop and target, the stop counts.</p></div>
     <div><h3>Real costs</h3><p>The fee and slippage Paper Trade charges for that market, on both sides. Crypto also pays or earns the actual funding prints.</p></div>
-    <div><h3>Picked winners, stated</h3><p>The crypto basket is the first twenty perpetuals Binance ever listed, including the ones that faded. The stock basket is ten of today's large companies, so it carries that bias: read stock results relative to holding them, not as absolute returns.</p></div>
+    <div><h3>Picked winners, stated</h3><p>The crypto basket is the first twenty perpetuals Binance ever listed, including the ones that faded, held in equal weight and rebalanced once a month. The stock basket is ten of today's large companies, so it carries that bias: read stock results relative to holding them, not as absolute returns.</p></div>
     <div><h3>No tuning</h3><p>Textbook parameters, and a timeframe declared before the test. Change a number until the curve looks good and you have measured nothing.</p></div>
     <div><h3>Three implementations, one result</h3><p>The engine and the Python download are compared trade by trade on every rule. Pine runs on TradingView's own fills, so its figures will differ a little.</p></div>
-    <div><h3>What it leaves out</h3><p>No leverage, no liquidation, no market impact, and no swap outside crypto. Forex and commodities come from daily public data. Treat small edges as noise.</p></div>
+    <div><h3>What it leaves out</h3><p>No leverage, so no liquidation: an unlevered short is closed at nothing when price doubles against it, never left to recover. No market impact, and no swap outside crypto. Forex and commodities come from daily public data. Treat small edges as noise.</p></div>
   </div>
   <p class="warn"><b>These are research examples, not recommendations.</b> Past results do not predict future ones, and nothing here is investment advice.</p>
 </div></section>
@@ -190,7 +191,7 @@ RULES.forEach((r, i) => {
   const staticTable = `<div class="tbw"><table class="st"><thead><tr><th>Market class</th><th>Return</th><th>Holding</th><th>Sharpe</th><th>Max DD</th><th>Win rate</th><th>Trades</th></tr></thead><tbody>${cls.map(([k, c]) => `<tr><td class="nm">${CLSLBL[k]}, ${c.tf}</td><td>${fmtRet(c.m.ret)}</td><td>${fmtRet(c.bench)}</td><td>${c.thin ? '-' : fmtNum(c.m.sharpe)}</td><td>${fmtPct(c.m.mdd, 1)}</td><td>${fmtNum(c.m.win, 1)}%</td><td>${c.m.trades.toLocaleString('en-US')}</td></tr>`).join('')}</tbody></table></div>`;
   const faqS = [
     [`What is the ${r.name} strategy?`, `${r.summary} ${logic.join(' ')}`],
-    [`Did ${r.name} beat buy and hold?`, `On the ${CLSLBL[cn0]} basket, ${r.tf} bars, after fees: ${fmtRet(c0.m.ret)} against ${fmtRet(c0.bench)} for holding, with a maximum drawdown of ${fmtPct(c0.m.mdd, 1)}.`],
+    [`Did ${r.name} beat buy and hold?`, c0.early ? `Too early to say: the test covers ${span(c0.m.years)} of data. Over that stretch, on the ${CLSLBL[cn0]} basket after fees, it returned ${fmtRet(c0.m.ret)} against ${fmtRet(c0.bench)} for holding.` : `On the ${CLSLBL[cn0]} basket, ${r.tf} bars, after fees: ${fmtRet(c0.m.ret)} against ${fmtRet(c0.bench)} for holding, with a maximum drawdown of ${fmtPct(c0.m.mdd, 1)}, over ${span(c0.m.years)} of data${c0.thin ? ' and too few trades to call it a result' : ''}.`],
   ];
   const page = `<main class="pg">
 <div class="crumb"><a href="/strategies/">Strategies</a> / ${r.id}</div>
@@ -203,7 +204,7 @@ RULES.forEach((r, i) => {
 <h2>The exact rule</h2>
 <ul>${logic.map((l) => `<li>${esc(l)}</li>`).join('')}<li>Declared timeframe: ${esc(r.tf)}.</li></ul>
 <p><a class="ln" href="/charts?coin=BTC&amp;ai=1" data-explain="${esc('Explain this trading rule in plain words, and say where it would have entered and left on this chart: ' + logic.join(' '))}">Explain it with Ask AI</a> <span style="color:var(--d)">(Premium, on a desktop)</span></p>
-${r.own ? `<p class="warn"><b>Runs on MarginPad data.</b> This rule reads ${ { fund: 'our funding history', liq: 'our own liquidation feed', oi: 'our hourly open interest' }[r.own] }, which TradingView cannot see, so it has no Pine or Python file and no live lab.${r.own === 'fund' ? '' : ' The sample is short: months, not years.'}</p>` : `<h2 id="lab">Watch it trade</h2>
+${r.own ? `<p class="warn"><b>Runs on MarginPad data.</b> This rule reads ${ { fund: 'our funding history', liq: 'our own liquidation feed', oi: 'our hourly open interest' }[r.own] }, which TradingView cannot see, so it has no Pine or Python file and no live lab.${r.own !== 'liq' ? '' : ' The sample is short: months, not years.'}</p>` : `<h2 id="lab">Watch it trade</h2>
 <p>This runs the same engine in your browser on the latest candles, with your own costs. Press Replay to watch every entry and exit arrive bar by bar.</p>
 <div id="sLab"></div>
 <h2 id="download">Download</h2>

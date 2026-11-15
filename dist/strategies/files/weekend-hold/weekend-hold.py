@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Friday To Monday - Hold over the weekend only. Nothing but the calendar decides.
+"""Friday To Monday - Hold over the weekend only, Friday close to Monday open. Nothing but the calendar decides.
 
 From the MarginPad strategy library: https://marginpad.io/strategies/weekend-hold/
 Research, not advice. A backtest is evidence, never a promise. Licence: MIT.
@@ -306,7 +306,7 @@ def backtest(rule, b, fee=0.00055, slip=0.0002):
         nonlocal eq, d
         fill = px if no_slip else px * (1 - d * slip)
         val = max(0.0, base * (1 + d * (fill / ent - 1))) * (1 - fee)
-        trades.append(dict(entry_i=ent_i, exit_i=i, side=d, entry=ent, exit=fill, why=why, ret=val / eq0[0] - 1))
+        trades.append(dict(entry_i=ent_i, exit_i=i, side=d, entry=ent, exit=fill, why=why, ret=val / eq0[0] - 1 if eq0[0] > 0 else -1.0))
         eq, d = val, 0
 
     eq0 = [1.0]
@@ -318,7 +318,7 @@ def backtest(rule, b, fee=0.00055, slip=0.0002):
             elif act != 2:
                 if d and d != act:
                     close_pos(o[i], i, "reverse")
-                if not d and a[i - 1] == a[i - 1]:
+                if not d and a[i - 1] == a[i - 1] and eq > 1e-9:  # a bust account opens nothing
                     eq0[0] = eq
                     open_pos(act, o[i], i)
         if d:
@@ -332,6 +332,8 @@ def backtest(rule, b, fee=0.00055, slip=0.0002):
                 close_pos(min(o[i], stop) if d > 0 else max(o[i], stop), i, "stop")
             elif hit_t:
                 close_pos(max(o[i], tp) if d > 0 else min(o[i], tp), i, "target", True)
+            elif d < 0 and h[i] >= 2 * ent:  # an unlevered short is worth nothing at twice its entry
+                close_pos(max(o[i], 2 * ent), i, "bust", True)
         if i == n - 1:
             break
         if d and rule["max_bars"] and i - ent_i + 1 >= rule["max_bars"]:
@@ -379,7 +381,7 @@ RULE = dict(
     stop=None,
     target=None,
     trail=None,
-    max_bars=3,
+    max_bars=2,
 )
 
 if __name__ == "__main__":

@@ -1,11 +1,11 @@
 # Friday To Monday
 
-Hold over the weekend only. Nothing but the calendar decides.
+Hold over the weekend only, Friday close to Monday open. Nothing but the calendar decides.
 
 ## The rule
 
-- Go long when the UTC weekday is above 4 and the UTC weekday is below 6.
-- Leave after 3 bars at most.
+- Go long when the bar is a Friday (UTC).
+- Leave after 2 bars at most.
 
 Declared timeframe: 1d.
 

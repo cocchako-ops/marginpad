@@ -81,6 +81,11 @@ const ready = (p) => p.waitForFunction(() => window.mpStrategies && window.mpStr
     await p.keyboard.press('Escape'); await sleep(200);
     ok(await p.evaluate(() => document.querySelector('#dr').hidden && !location.hash), 'Escape closes it');
 
+    // evidence: every card says what it stands on; a result under a year carries no Sharpe and no verdict (2026-11-15)
+    const ev = await p.evaluate(() => [...document.querySelectorAll('.sc')].map((c) => ({ s: c.dataset.open, ev: !!c.querySelector('.sc-ev'), early: !!c.querySelector('.sc-tags .early'), beat: !!c.querySelector('.sc-tags .beat'), sh: [...c.querySelectorAll('dt')].find((d) => d.textContent === 'Sharpe').nextSibling.textContent })));
+    const earlyIdx = IDX.rules.filter((r) => r.classes.crypto && r.classes.crypto.early).map((r) => r.slug);
+    ok(ev.length && ev.every((x) => x.ev), 'every card says how many years and markets it stands on', ev.filter((x) => !x.ev).map((x) => x.s));
+    ok(earlyIdx.length > 0 && earlyIdx.every((sl) => { const x = ev.find((y) => y.s === sl); return x && x.early && !x.beat && x.sh === '-'; }), 'a result under a year is marked too early, with no Sharpe and no verdict', earlyIdx);
     // market switch
     await p.evaluate(() => document.querySelector('[data-m="stocks"]').click()); await sleep(300);
     const m = await p.evaluate(() => ({ url: location.search, n: document.querySelectorAll('.sc').length, lbl: document.querySelector('#wLbl').textContent }));
@@ -101,7 +106,7 @@ const ready = (p) => p.waitForFunction(() => window.mpStrategies && window.mpStr
     await p.evaluate(() => document.querySelector('[data-v="cards"]').click()); await sleep(150);
     await p.evaluate(() => document.querySelector('#fBeat').click()); await sleep(200);
     const nb = await p.evaluate(() => document.querySelectorAll('.sc').length);
-    ok(nb === IDX.rules.filter((r) => r.classes.crypto && r.classes.crypto.m.ret > r.classes.crypto.bench).length, 'Beat holding is exactly the rows that beat holding', nb);
+    ok(nb === IDX.rules.filter((r) => r.classes.crypto && !r.classes.crypto.early && !r.classes.crypto.thin && r.classes.crypto.m.ret > r.classes.crypto.bench).length, 'Beat holding is exactly the judged rows that beat holding (too early and few trades are never a verdict)', nb);
     await p.evaluate(() => document.querySelector('#fBeat').click()); await sleep(150);
 
     // compare
@@ -144,6 +149,13 @@ const ready = (p) => p.waitForFunction(() => window.mpStrategies && window.mpStr
     await sleep(500); // the sheet slides in; a rect read during the slide is 30px low
     const sh = await f.evaluate(() => { const r = document.querySelector('#dr').getBoundingClientRect(); return { b: r.bottom <= innerHeight + 1, t: r.top >= 0, w: r.width }; });
     ok(sh.b && sh.t && sh.w <= 390, 'the drawer is a sheet inside the screen', sh);
+    // a phone opens on a screenful of cards and the rest one tap away (66 cards were 25,000px)
+    await f.evaluate(() => { document.querySelector('#drX') && document.querySelector('#drX').click(); }); await sleep(400);
+    const pm = await f.evaluate(() => ({ n: document.querySelectorAll('#lib .sc').length, more: !!document.querySelector('#libMore') }));
+    ok(pm.n === 12 && pm.more, 'a phone shows twelve cards and a Show all button', pm);
+    await f.evaluate(() => document.querySelector('#libMore').click()); await sleep(300);
+    const pm2 = await f.evaluate(() => document.querySelectorAll('#lib .sc').length);
+    ok(pm2 === IDX.rules.filter((r) => r.classes.crypto).length, 'Show all lists every strategy', pm2);
     ok(e2.length === 0, 'no page errors on a phone', e2.slice(0, 3));
   }, { timeoutMs: 170000 });
   console.log(`\n${pass} ok, ${fail} failed`);

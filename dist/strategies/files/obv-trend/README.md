@@ -4,8 +4,8 @@ Long while On-Balance Volume is above its own average.
 
 ## The rule
 
-- Go long when OBV crosses above EMA(20).
-- Exit the long when OBV crosses below EMA(20).
+- Go long when OBV crosses above EMA(20) of OBV.
+- Exit the long when OBV crosses below EMA(20) of OBV.
 
 Declared timeframe: 1d.
 

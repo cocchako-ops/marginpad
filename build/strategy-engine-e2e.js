@@ -83,6 +83,27 @@ const on = ['gt', ['close'], ['num', 104]]; // true on the bar that closes at 10
   }
   ok(!bad.length, 'no rule can read the future: rewriting the last 300 bars changes no earlier trade', bad);
 }
+// an unlevered short is worth nothing at twice its entry: closed there, and a bust account never trades again (2026-11-15)
+{
+  const goS = ['gt', ['close'], ['num', 104]];
+  const rows = [...flat(16), [100, 106, 100, 105], [100, 101, 99, 100], [150, 210, 149, 205], [205, 206, 204, 205], [100, 106, 100, 105], [100, 101, 99, 100], [100, 101, 99, 100]];
+  const r = S.run({ entryS: goS, exitS: ['lt', ['close'], ['num', 1]] }, mk(rows), FREE, null);
+  ok(r.trades.length === 1 && r.trades[0].why === 'bust' && near(r.trades[0].xp, 200) && near(r.trades[0].r, -1), 'a short is closed at nothing when price doubles, never left to recover', r.trades);
+  const d = S.daily(mk(rows).t, r.equity);
+  ok(d.rets.every((x) => isFinite(x)), 'an account at zero has daily returns of zero, never 0/0', d.rets.filter((x) => !isFinite(x)).length);
+}
+// no two rules are the same rule written twice: they must not draw identical trades (Z-Score Reversion was Bollinger Dip until 2026-11-15)
+if (!process.argv.includes('--pure') || fs.existsSync(path.join(__dirname, 'data/strategies/BTC-1d.json'))) {
+  const sig = {};
+  for (const sym of ['BTC', 'ETH', 'XRP']) {
+    const f = path.join(__dirname, 'data/strategies/' + sym + '-1d.json'); if (!fs.existsSync(f)) continue;
+    const b = S.bars(JSON.parse(fs.readFileSync(f, 'utf8')));
+    for (const r of RULES) if (!r.own) sig[r.slug] = (sig[r.slug] || '') + '|' + S.run(r, b, { fee: 0.055, slip: 0.02 }, null).trades.map((x) => x.et + ':' + x.xt + ':' + x.d).join(',');
+  }
+  const by = {}; for (const [k, v] of Object.entries(sig)) (by[v] = by[v] || []).push(k);
+  const dup = Object.values(by).filter((g) => g.length > 1);
+  ok(Object.keys(sig).length && !dup.length, 'no two rules draw the same trades on BTC, ETH and XRP daily', dup);
+}
 // the table itself
 ok(RULES.length >= 60, 'at least sixty rules', RULES.length);
 ok(new Set(RULES.map((r) => r.slug)).size === RULES.length, 'every slug is unique');

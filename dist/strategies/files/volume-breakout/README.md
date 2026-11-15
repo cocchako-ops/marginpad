@@ -4,7 +4,7 @@ A 20-bar high on twice the normal volume.
 
 ## The rule
 
-- Go long when close is above the 20-bar high and volume is above 2 x SMA(20).
+- Go long when close is above the 20-bar high and volume is above 2 x SMA(20) of volume.
 - Exit the long when close is below EMA(20).
 
 Declared timeframe: 4h.

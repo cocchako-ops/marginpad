@@ -4,7 +4,7 @@ Hold one day from the Sunday close. A test of a well-known crypto folk rule.
 
 ## The rule
 
-- Go long when the UTC weekday is above -1 and the UTC weekday is below 1.
+- Go long when the bar is a Sunday (UTC).
 - Leave after 1 bar at most.
 
 Declared timeframe: 1d.

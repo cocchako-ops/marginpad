@@ -4,7 +4,7 @@ Buy a heavy down bar on three times the volume, hold five bars.
 
 ## The rule
 
-- Go long when close is below open and volume is above 3 x SMA(20) and RSI(14) is below 35.
+- Go long when close is below open and volume is above 3 x SMA(20) of volume and RSI(14) is below 35.
 - Leave after 5 bars at most.
 
 Declared timeframe: 1d.
