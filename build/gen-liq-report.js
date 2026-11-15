@@ -157,6 +157,7 @@ function hub(list) {
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
+${'<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'CollectionPage', url, name: 'Monthly crypto liquidation reports', description: 'One report per month of crypto futures liquidations across twelve exchanges, with free CSV data.', isPartOf: { '@type': 'WebSite', name: 'MarginPad', url: 'https://marginpad.io/' }, hasPart: list.map(r => ({ '@type': 'Dataset', name: 'Crypto liquidations ' + r.mname, url: 'https://marginpad.io' + r.slug })) }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Liquidations', item: 'https://marginpad.io/liquidations/' }, { '@type': 'ListItem', position: 2, name: 'Monthly reports', item: url }] }] }) + '</script>'}
 ${GTAG}
 </head>
 <body>

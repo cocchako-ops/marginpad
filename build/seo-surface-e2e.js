@@ -109,7 +109,7 @@ function robots(txt) {
       ok(c === S + pth, pth + ' canonicalises to itself', c);
     } }
   { // the frozen language subpages are copies of an English page and must not compete with it
-    for (const pth of ['/fr/funding/', '/tr/long-short/', '/ar/defi/']) { // /de/ is a full twin since 2026-10-29, so the frozen-page rule is checked on /fr/
+    for (const pth of ['/ja/funding/', '/tr/long-short/', '/ar/defi/']) { // de/fr/pt/id/es are full twins now (self-canonical by design), so the frozen-page rule is checked on ja/tr/ar
       const h = (await get(pth)).t;
       const c = (h.match(/<link rel="canonical" href="([^"]*)"/) || [])[1] || '';
       ok(/^https:\/\/marginpad\.io\/(funding|long-short|defi)\/$/.test(c), pth + ' canonicalises to the English original', c);
