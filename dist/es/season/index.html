@@ -846,15 +846,19 @@ function __esT_seasonindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   function loadFeeds(){J('/api/trades/feed').then(function(d){paintFeeds((d&&d.closes)||[],null);});J('/api/duel/feed').then(function(d){paintFeeds(null,(d&&d.duels)||[]);});}
   function loadAll(){loadPass();loadGoals();loadPred();loadLB();loadHH();loadFeeds();}
   loadAll();
-  window.addEventListener('mp-auth-change',function(){setTimeout(loadAll,400);});
+  /* RELOAD ONLY WHEN WHO IS READING CHANGED (2026-11-15, performance audit: every visit fetched all seven season reads twice -
+     mp-auth announces the restored state once on every load, guest included, and that first announcement repeated a load the
+     cookies had already made for the same person). A sign-in, a sign-out or a different account still reloads. */
+  var _lbId;try{_lbId=/(?:^|;\s*)mp_li=/.test(document.cookie)?'?':'';}catch(e){_lbId='';}
+  window.addEventListener('mp-auth-change',function(e){var u=e&&e.detail&&e.detail.user,id=u?String(u.id||u.uid||u.username||'u'):'';if(_lbId==='?'&&id){_lbId=id;return;}if(id===_lbId)return;_lbId=id;setTimeout(loadAll,400);});
   window.addEventListener('mp:xp',function(){setTimeout(function(){loadPass();loadGoals();},1500);});
   setInterval(function(){if(document.hidden)return;loadFeeds();},45000);
   setInterval(function(){if(document.hidden)return;loadPred();loadHH();loadLB();},300000);
   if(location.hash&&document.querySelector(location.hash)){setTimeout(function(){try{document.querySelector(location.hash).scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}},600);}
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=3d8d7b99"></script>
-<script defer src="/assets/mp-nav.js?v=fd0ad4ed"></script>
+<script defer src="/assets/mp-auth.js?v=7d39c8b0"></script>
+<script defer src="/assets/mp-nav.js?v=a5025994"></script>
 <script defer src="/assets/mp-profile.js?v=e9f6658e"></script>
 
 <script>

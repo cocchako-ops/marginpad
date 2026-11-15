@@ -1061,8 +1061,8 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=3d8d7b99', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=3d8d7b99"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=7d39c8b0', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=7d39c8b0"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -1188,7 +1188,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
 (function () {
   try {
     if (window.__mpAnn) return; // home.js already fetches + renders the announcement on the app shell - this copy is for standalone pages
-    fetch('/api/announce').then(function (r) { return r.ok ? r.json() : null; }).then(function (a) {
+    (window.__mpAnnP = fetch('/api/announce').then(function (r) { return r.ok ? r.json() : null; })).then(function (a) { // one shared read (2026-11-15): mp-auth's version check reuses it
       if (!a || !a.level || !a.msg) return;
       try { if (sessionStorage.getItem('mp_ann_x') === String(a.ts)) return; } catch (e) {}
       if (document.getElementById('mpAnnounce')) return;

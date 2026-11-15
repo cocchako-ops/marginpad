@@ -871,7 +871,7 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
     var cb=$('dcChg');if(cb)cb.onclick=function(){box.setAttribute('data-edit','1');paintCallbox();var i=$('dcIn');if(i)i.focus();};
     var f=$('dcForm');if(f)f.addEventListener('submit',function(e){e.preventDefault();if(dcBusy)return;var v=parseFloat(String($('dcIn').value).replace(/[^0-9.]/g,''));var sub=$('dcSub');if(!(v>0)){sub.innerHTML=T("typeAPriceFirst",__esT_leaderboardsindex("typeAPriceFirst",'<b class="err">Type a price first.</b>'));return;}dcBusy=true;$('dcGo').disabled=true;
       fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){dcBusy=false;if(d&&d.ok){box.removeAttribute('data-edit');toast(T("callLocked",__esT_leaderboardsindex("callLocked",'Call locked: <b>$'))+px(d.guess)+'</b>');track('call');loadPred();load();}else{var g=$('dcGo');if(g)g.disabled=false;sub.innerHTML='<b class="err">'+(d&&d.error==='range'?T("thatIsMoreThan",__esT_leaderboardsindex("thatIsMoreThan",'That is more than 30% from the price right now.')):d&&d.error==='closed'?T("callsClosedForToday",__esT_leaderboardsindex("callsClosedForToday",'Calls closed for today.')):d&&d.error==='not_signed_in'?T("signInFirst",__esT_leaderboardsindex("signInFirst",'Sign in first.')):T("couldNotSaveYour",__esT_leaderboardsindex("couldNotSaveYour",'Could not save your call.')))+'</b>';}}).catch(function(){dcBusy=false;var g=$('dcGo');if(g)g.disabled=false;});});}
-  function loadPred(){return J('/api/predict').then(function(d){if(d&&d.day){PRED=d;if(!SEL)paintCallbox();if(CUR==='call'&&LB&&!SEL)$('bBanner').innerHTML=bannerHtml(((LB.boardPrizes||{})[PK[CUR]])||[]);}});}
+  function loadPred(){window.__lpT=Date.now();return J('/api/predict').then(function(d){if(d&&d.day){PRED=d;if(!SEL)paintCallbox();if(CUR==='call'&&LB&&!SEL)$('bBanner').innerHTML=bannerHtml(((LB.boardPrizes||{})[PK[CUR]])||[]);}});}
   /* everything under and above the table that is not the table: the banner, the note, the three boxes */
   /* VOLUME REWARDS (2026-10-30 evening, owner: "progress bar koji ce da se dopunjuje kako raste volumen i da pise koliko otkljucava u
      nagradama ... na klik ... kako ce da se distribuira ... isto za Bybit na iste novcane cifre"). The rungs come from /api/reward/lb
@@ -1044,11 +1044,11 @@ function __esT_leaderboardsindex(k, en) { try { var d = (window.__mpUI && window
       tw.hidden=false;
     }).catch(function(){});
   })();
-  window.addEventListener('mp-auth-change',function(){MOONME=null;BYL=null;MOL=null;if(LB){paintSeason();paintBoard({keep:true});}loadPred();});
+  window.addEventListener('mp-auth-change',function(){MOONME=null;BYL=null;MOL=null;if(LB){paintSeason();paintBoard({keep:true});}if(Date.now()-(window.__lpT||0)>4000)loadPred();}); /* 2026-11-15: mp-auth's first announcement repeated the load's own read */
   window.__lbPage={get:function(){return LB;},cur:function(){return CUR;},set:setBoard};
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=3d8d7b99"></script>
-<script defer src="/assets/mp-nav.js?v=fd0ad4ed"></script>
+<script defer src="/assets/mp-auth.js?v=7d39c8b0"></script>
+<script defer src="/assets/mp-nav.js?v=a5025994"></script>
 </body>
 </html>

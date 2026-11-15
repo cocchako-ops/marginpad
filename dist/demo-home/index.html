@@ -1492,7 +1492,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     if(el.style.animationDuration!==dur)el.style.animationDuration=dur;
     if(!el.children.length){ el.innerHTML=tapeNext; tapeNext=null; }
   }
-  fetch('/api/screener').then(function(r){return r.json();}).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
+  (window.__scrP=window.__scrP||fetch('/api/screener').then(function(r){return r.json();})).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
     var ps=(d&&d.pairs)||[];if(!ps.length)return;
     window.__lastPairs=ps;
@@ -1524,7 +1524,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   }).catch(function(){});
 
   // ---- screener → movers ----
-  fetch('/api/screener').then(function(r){return r.json();}).then(function(d){
+  (window.__scrP=window.__scrP||fetch('/api/screener').then(function(r){return r.json();})).then(function(d){
     var rows=(d&&d.rows)||[];if(!rows.length)return;
     var mv=rows.slice().sort(function(a,b){return Math.abs(+b.chg)-Math.abs(+a.chg);}).slice(0,6);
     document.getElementById('movers').innerHTML=mv.map(function(r){var v=+r.chg;return '<div class="mv-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-pill '+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span></div>';}).join('');
@@ -2322,8 +2322,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=d4f28d75"></script>
-<script defer src="/assets/mp-auth.js?v=3d8d7b99"></script>
-<script defer src="/assets/mp-nav.js?v=fd0ad4ed"></script>
+<script defer src="/assets/mp-auth.js?v=7d39c8b0"></script>
+<script defer src="/assets/mp-nav.js?v=a5025994"></script>
 
 <script>
 (function(){try{
@@ -2482,6 +2482,6 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 })();
 </script>
 
-<script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=sect&e=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=nav&e=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=sect&e=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=nav&e=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}(window.__mpGeoP=fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();})).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>

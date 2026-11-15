@@ -26,7 +26,34 @@ let COL_BASE = '', COL_DOWN_UNTIL = 0, COL_TRIPS = 0;
    `env` through every caller, the isolate keeps it - armed in `fetch` and `scheduled` beside colBase, which is the
    pattern this file already uses for exactly this reason. A function that finds no env answers null, never throws. */
 let MP_ENV = null;
-function mpEnvArm(env) { try { if (env && env.OPSLOG) MP_ENV = env; } catch (e) {} }
+function mpEnvArm(env) { try { if (env && env.OPSLOG) MP_ENV = env; } catch (e) {} kvMeterArm(env); }
+/* WHO SPENDS THE KV BILL (2026-11-15, owner: the Cloudflare invoice went $6 -> $134 -> $149 and KV was $73 of it - 11.8M writes,
+   45.7M reads a month). Cloudflare's analytics count operations per namespace, never per key, so the binding is wrapped once per
+   env object and every get/put/delete/list is counted by a NORMALISED key prefix (hex ids and numbers folded) in a per-isolate
+   map, flushed to Analytics Engine as one data point per prefix every 30 s (index 'kvm', blobs [op, prefix], double = count).
+   Read at GET /api/admin/kvmeter?h=. Counting only - the wrapped calls behave exactly as before. */
+const KVM = { m: new Map(), t: Date.now() };
+function kvmKey(k) { return String(k || '').replace(/[0-9a-f]{8,}/gi, '#').replace(/\d+/g, 'N').split(':').slice(0, 3).join(':').slice(0, 48); }
+function kvmNote(env, op, k) {
+  try {
+    const key = op + '|' + kvmKey(k); KVM.m.set(key, (KVM.m.get(key) || 0) + 1);
+    if (Date.now() - KVM.t > 30000 && env.AE) { const m = KVM.m; KVM.m = new Map(); KVM.t = Date.now(); m.forEach((n, kk) => { const i = kk.indexOf('|'); try { env.AE.writeDataPoint({ indexes: ['kvm'], blobs: ['kvm', kk.slice(0, i), kk.slice(i + 1)], doubles: [n] }); } catch (e) {} }); }
+  } catch (e) {}
+}
+function kvMeterArm(env) {
+  try {
+    const S = env && env.STATS; if (!S || S.__kvm) return;
+    const W = {
+      __kvm: 1,
+      get(k, o) { kvmNote(env, 'get', k); return S.get(k, o); },
+      getWithMetadata(k, o) { kvmNote(env, 'get', k); return S.getWithMetadata(k, o); },
+      put(k, v, o) { kvmNote(env, 'put', k); return S.put(k, v, o); },
+      delete(k) { kvmNote(env, 'del', k); return S.delete(k); },
+      list(o) { kvmNote(env, 'list', (o && o.prefix) || ''); return S.list(o); },
+    };
+    env.STATS = W;
+  } catch (e) {}
+}
 function colBase(env) { try { const b = String((env && env.COLLECTOR_URL) || '').replace(/\/$/, ''); if (b) COL_BASE = b; } catch (e) {} }
 function colTrip() { COL_DOWN_UNTIL = Date.now() + 60000; COL_TRIPS++; }
 async function colGuardedFetch(u, init) {
@@ -3353,17 +3380,19 @@ async function handleSsrCoin(request, url, env) {
   const _lm = _rp.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//) || url.pathname.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//);
   const L10 = _lm ? SSR_L10N[_lm[1]] : null; // translated block on the lang variants (696 pages were AI-invisible without it)
   let cg = null, gk = null;
-  try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {}
-  try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
+  /* THE FOUR SOURCES RUN AT ONCE (2026-11-15, performance audit: an uncached /coin/btc/ answered its first byte after 1.9-5.4 s,
+     because the two market reads, the seven recap days and the cluster read were awaited one after another). */
+  const _pCg = (async () => { try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {} })();
+  const _pGk = (async () => { try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {} })();
   // our own collector's per-symbol liquidation clusters - the one thing on this page no competing
   // tool page can copy. Fail-soft: no clusters simply means those sentences are not written.
   let cl = null, hist = null;
   // seven days of OUR measured liquidations for this symbol, straight from the daily recap records.
   // Eight KV reads on a cold render, behind the 10-minute SSR page cache, on six pages.
-  try {
+  const _pHist = (async () => { try {
     const days = [];
     for (let i = 1; i <= 7; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
-    const recs = await Promise.all(days.map(d => env.STATS.get('liqrecap:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null)));
+    const recs = await Promise.all(days.map(d => recapGet(env, d).catch(() => null)));
     const rows = [];
     for (let i = 0; i < recs.length; i++) {
       const r = recs[i]; if (!r || !Array.isArray(r.top)) continue;
@@ -3371,14 +3400,15 @@ async function handleSsrCoin(request, url, env) {
       if (e && +e.usd > 0) rows.push({ day: days[i], usd: +e.usd, n: +e.n || 0, longPct: +e.longPct || 0 });
     }
     if (rows.length >= 3) hist = rows;
-  } catch (e) {}
-  try {
+  } catch (e) {} })();
+  const _pCl = (async () => { try {
     const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
     if (base) { const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 1800);
       const r = await fetch(base + '/api/v1/clusters?symbol=' + encodeURIComponent(sym), { signal: ctl.signal, cf: { cacheTtl: 300 } });
       clearTimeout(tm);
       if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.clusters) && j.clusters.length) cl = j; } }
-  } catch (e) {}
+  } catch (e) {} })();
+  await Promise.all([_pCg, _pGk, _pHist, _pCl]);
   let sentences = [];
   try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk, _lm && _lm[1]) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
     try { const cs = ssrLiqClusterProse(sym, cg, cl, _lm && _lm[1]); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
@@ -5738,14 +5768,14 @@ const _cgFail = {}; // kvKey -> last upstream failure this isolate saw (status, 
 async function handleGeckoMarkets(url, env) {
   const cat = (url.searchParams.get('cat') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 40);
   const slim = url.searchParams.get('slim') === '1'; // logos/prices only, no sparkline - ~400KB -> ~10KB (mobile perf 2026-07-14)
-  const ck = new Request('https://marginpad.io/__gecko_markets_' + (cat || 'all') + (slim ? '_slim' : ''));
+  const ck = new Request('https://marginpad.io/__gecko_markets_' + (cat || 'all') + (slim ? '_slim2' : '')); // slim2 (2026-11-15): the icon is the 64 px 'small' size - 'large' was ~16 KB per 24 px tile
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let data = null, stale = false;
   const cgu = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=' + (cat ? 100 : 250) + '&page=1&sparkline=true&price_change_percentage=1h,24h,7d' + (cat ? '&category=' + cat : '');
  try { data = await cgCached(env, cgu, 2700); } catch (e) {}
   if (!(Array.isArray(data) && data.length)) { const lg = await cgLast(env, cgu); if (Array.isArray(lg) && lg.length) { data = lg; stale = true; } } // an outage must not blank the icons
   let ok = Array.isArray(data) && data.length;
-  if (ok && slim) data = data.map(c => ({ symbol: c.symbol, name: c.name, image: c.image, current_price: c.current_price, price_change_percentage_24h: c.price_change_percentage_24h }));
+  if (ok && slim) data = data.map(c => ({ symbol: c.symbol, name: c.name, image: String(c.image || '').replace('/large/', '/small/'), current_price: c.current_price, price_change_percentage_24h: c.price_change_percentage_24h }));
   const _fm = _cgFail['cg:c:' + cgu.slice(30, 160)];
   const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable', upstream: _fm ? { status: _fm.status, body: _fm.body, ago_s: Math.round((Date.now() - _fm.ts) / 1000) } : null }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? (stale ? 'public, max-age=60' : 'public, max-age=120') : 'no-store', ...(stale ? { 'x-mp-stale': '1' } : {}), ...CORS } });
   if (ok) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -8566,7 +8596,7 @@ async function evPush(env, request, type, label, pg, extra) {
     const xuid = extra && extra.uid ? String(extra.uid).slice(0, 32) : (a.uid || '');
     if (!u && xuid) u = await usernameOf(env, xuid);
     await opslogPush(env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc, v: a.v, di: a.di, ip: a.ip, u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() }, a.e2 ? { e2: 1 } : {}, xuid ? { uid: xuid } : {}, extra && typeof extra === 'object' ? { x: extra } : {}), EVLOG_CAP, EVLOG_CUT);
-    try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
+    kvInc(env, null, 'ev:' + type); // batched (2026-11-15)
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
   } catch (e) {}
 }
@@ -8584,8 +8614,28 @@ function uevForward(env, ctx, request, uid, type, label, path9) {
 // approximate-by-design (AE holds exact analytics); an isolate evict loses at most one tiny batch. ----
 async function kvIncFlush(env, batch) {
   for (const [k, e] of batch) {
-    try { const c = await env.STATS.getWithMetadata(k); const v = ((c && c.metadata && c.metadata.c) || 0) + e.d; const o = { metadata: { c: v } }; if (e.ttl) o.expirationTtl = e.ttl; await env.STATS.put(k, String(v), o); } catch (e2) {}
+    try { const c = await env.STATS.getWithMetadata(k); const v = ((c && c.metadata && c.metadata.c != null) ? +c.metadata.c : (+(c && c.value) || 0)) + e.d; /* a key written by a plain read-modify-write carries its count in the value only */ const o = { metadata: { c: v } }; if (e.ttl) o.expirationTtl = e.ttl; await env.STATS.put(k, String(v), o); } catch (e2) {}
   }
+}
+/* ONE BATCHED COUNTER FOR THE WHOLE WORKER (2026-11-15, the Cloudflare bill: 11.8M KV writes a month, $55). The old in-request
+   `inc()` flushed the moment its buffer held 12 distinct keys, and a single pageview touches 10-14 keys - so it wrote on
+   practically every pageview, and three other paths (CSP reports, datacentre beacons, the evPush `ev:` counter) wrote a
+   read-modify-write per hit with no batching at all. Here every increment lands in one per-isolate map; the first increment
+   of a window schedules ONE flush 20 s later through waitUntil (so a quiet isolate still flushes), and the flush writes each
+   key once with its summed delta. Same keys, same values, same TTLs - counters were already approximate by design (AE holds
+   the exact analytics); an evicted isolate loses at most one 20-second window. */
+function kvInc(env, ctx, k, ttl, d) {
+  try {
+    const G = globalThis.__kvIncG = globalThis.__kvIncG || { m: new Map(), armed: false };
+    const e = G.m.get(k) || { d: 0, ttl }; e.d += (d || 1); if (ttl) e.ttl = ttl; G.m.set(k, e);
+    if (G.m.size >= 400) { const b = G.m; G.m = new Map(); const p = kvIncFlush(env, b); if (ctx && ctx.waitUntil) ctx.waitUntil(p); return; }
+    if (G.armed && Date.now() - (G.at || 0) > 40000) { G.armed = false; const b = G.m; G.m = new Map(); const p = kvIncFlush(env, b); try { (ctx || globalThis.__mpCtx).waitUntil(p); } catch (e3) {} return; } // a timer that never fired (its request ended first) must not strand the counts
+    ctx = ctx || globalThis.__mpCtx; // a caller with no ctx in scope (evPush) borrows the newest request's
+    if (!G.armed) {
+      try { ctx.waitUntil(new Promise(r => setTimeout(r, 20000)).then(() => { const b = G.m; G.m = new Map(); G.armed = false; return kvIncFlush(env, b); })); G.armed = true; G.at = Date.now(); }
+      catch (e2) { const b = G.m; G.m = new Map(); return kvIncFlush(env, b); } // no live request to hang the timer on - write through, never drop
+    }
+  } catch (e) {}
 }
 function opslogDo(env) { return env.OPSLOG.get(env.OPSLOG.idFromName('main')); }
 // Single-writer ring push via the OpsLog DO. Fallback = the legacy KV read-modify-write, which can lose
@@ -8942,7 +8992,7 @@ async function handleTrack(url, request, env, ctx) {
   // a click-out is a MEASUREMENT, so its label is resolved to a known partner before anything is counted (see PARTNERS)
   let partner = '', rawLabel = '';
   if (type === 'exchange' || type === 'tool') { rawLabel = label; partner = partnerOf(label); label = partner || 'other'; }
-  const inc = (k, ttl) => { try { const B = globalThis.__incB = globalThis.__incB || { m: new Map(), t: Date.now() }; const e = B.m.get(k) || { d: 0, ttl }; e.d++; if (ttl) e.ttl = ttl; B.m.set(k, e); if (B.m.size >= 12 || Date.now() - B.t > 20000) { const batch = B.m; globalThis.__incB = { m: new Map(), t: Date.now() }; if (ctx) ctx.waitUntil(kvIncFlush(env, batch)); } } catch (e) {} }; // A5: batched - one KV RMW per key per ~12 events/20s instead of per event
+  const inc = (k, ttl) => kvInc(env, ctx, k, ttl); // one batched counter for the worker (2026-11-15) - the old 12-key buffer flushed on nearly every pageview
   // A SIGNED-IN user is a real person (they logged in with email) → always record their per-user activity (powers the
   // admin activity trail AND daily-mission verification), even if their UA looks bot-like. In-app browsers (WhatsApp,
   // some Android okhttp webviews) trip the isBot filter below, which was silently dropping their pageviews so pv-based
@@ -8970,12 +9020,12 @@ async function handleTrack(url, request, env, ctx) {
       const _d = new Date().toISOString().slice(0, 10);
       const _o = _org.replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 28);
       try {
-        { const k = 'dc:day:' + _d; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
-        { const k = 'dc:org:' + _o; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
+        kvInc(env, ctx, 'dc:day:' + _d, 3456000); // batched (2026-11-15)
+        kvInc(env, ctx, 'dc:org:' + _o, 3456000);
         // AND THE USER-AGENT - the only identifying mark a machine leaves. Keyed by the string itself so
         // a fleet that switches tools appears as a second key instead of overwriting the first.
         { const _ua = String(request.headers.get('user-agent') || '(none)').replace(/[^ -~]/g, '').slice(0, 110);
-          const k = 'dc:ua:' + _ua; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
+          kvInc(env, ctx, 'dc:ua:' + _ua, 3456000); }
       } catch (e) {}
       return new Response('', { status: 204, headers: okHeaders });
     }
@@ -10858,7 +10908,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=fd0ad4ed" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a5025994" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -10876,7 +10926,7 @@ async function handleLiqRecap(url, env) {
     return new Response(_rcShell('Daily Crypto Liquidation Recaps - Dated Archive | MarginPad', 'How much crypto was liquidated each day - a permanent dated archive measured from a live multi-exchange liquidation feed. Totals, long/short split, biggest single liquidation.', 'https://marginpad.io/liquidations/recap/', body), { headers: jh });
   }
   const day = m[1];
-  let rec = null; try { rec = JSON.parse(await env.STATS.get('liqrecap:' + day) || 'null'); } catch (e) {}
+  let rec = null; try { rec = await recapGet(env, day); } catch (e) {}
   if (!rec) return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain' } });
   let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
   const di = idx.findIndex(x => x.day === day);
@@ -10955,11 +11005,21 @@ function liqRecordsCompute(recs) {
   return { built: Date.now(), span: { first: recs[0].day, last: recs[recs.length - 1].day, days: recs.length, totalUsd: Math.round(totalUsd), n, longUsd: Math.round(longUsd), shortUsd: Math.round(shortUsd), longPct: totalUsd > 0 ? Math.round(longUsd / totalUsd * 100) : 0, medianDay: Math.round(medianDay), avgDay: Math.round(totalUsd / recs.length) },
     biggestEvents, biggestDays, quietestDays, biggestHours, hourOfDay: { peak: peakHod, share: hodTotal > 0 ? +(hod[peakHod] / hodTotal * 100).toFixed(1) : 0, hist: hod.map(v => Math.round(v)) }, topCoins, exchanges, streak: best.len ? best : null };
 }
+/* A PAST DAY'S RECAP NEVER CHANGES (2026-11-15, the Cloudflare bill: KV reads). The coin pages read seven of them on every cold render
+   in every language and every colo, the records page all ~100. An isolate keeps what it has read; a correction (the market desk)
+   deletes and rewrites the key, so the memo honours only days before yesterday and is dropped after six hours. */
+async function recapGet(env, day) {
+  const M = globalThis.__recapM = globalThis.__recapM || new Map(), h = M.get(day), old = day < new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
+  if (old && h && Date.now() - h.t < 21600000) return h.v;
+  let v = null; try { v = JSON.parse((await env.STATS.get('liqrecap:' + day)) || 'null'); } catch (e) {}
+  if (old && v) { M.set(day, { t: Date.now(), v }); if (M.size > 200) M.delete(M.keys().next().value); }
+  return v;
+}
 async function liqRecordsBuild(env) {
   let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
   const days = idx.map(x => x.day).filter(Boolean);
   const recs = [];
-  for (let i = 0; i < days.length; i += 20) { const part = await Promise.all(days.slice(i, i + 20).map(d => env.STATS.get('liqrecap:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); for (const r of part) if (r) recs.push(r); }
+  for (let i = 0; i < days.length; i += 20) { const part = await Promise.all(days.slice(i, i + 20).map(d => recapGet(env, d).catch(() => null))); for (const r of part) if (r) recs.push(r); }
   const out = liqRecordsCompute(recs);
   if (out) { try { await env.STATS.put('liqrecords', JSON.stringify(out)); await env.STATS.put('liqrecords:day', new Date().toISOString().slice(0, 10)); } catch (e) {} }
   return out;
@@ -23723,7 +23783,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '3d8d7b99';
+const ASSET_V = '7d39c8b0';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26763,8 +26823,11 @@ const CSP_REPORT = [
   "frame-ancestors 'self'",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
-  "report-uri /api/csp"
+  "form-action 'self'"
+  /* `report-uri /api/csp` REMOVED 2026-11-15 (the Cloudflare bill + the performance audit): the policy was meant to collect a week
+     of reports in September and kept collecting for two months - 10 to 30 POSTs on EVERY page load (measured: homepage 30, most
+     pages 17), each one a billed Worker request and, until today, three KV read-modify-writes. A report-only policy enforces
+     nothing, so dropping the reporting changes no protection. To collect again for a day before enforcing, add it back. */
 ].join('; ');
 function secureResponse(res, request) {
   try {
@@ -26784,7 +26847,7 @@ export default {
   /* Every response leaves through here so the security headers cannot be forgotten on a new route.
      The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
-    colBase(env); mpEnvArm(env); // arm the collector circuit breaker + the house-coin store for this isolate (see the top of the file)
+    colBase(env); mpEnvArm(env); globalThis.__mpCtx = ctx; // arm the collector circuit breaker + the house-coin store for this isolate (see the top of the file)
     if (request.url.indexOf('/api/') > 0 && Date.now() - RNG_REG.at > 15000) { try { await rngCoins(env); } catch (e) {} } // the squad-coin registry (the Foundry): one KV read per isolate per minute, so assetClassOf / maxLevFor / lbExcluded know a cast coin before any trade route asks
     const res = await this._fetchInner(request, env, ctx);
     return secureResponse(res, request);
@@ -26975,7 +27038,7 @@ export default {
         const day = new Date().toISOString().slice(0, 10);
         if (env.STATS) ctx.waitUntil((async () => {
           for (const k of ['csp:day:' + day, 'csp:d:' + d + ':' + day, 'csp:o:' + o.replace(/[^\x20-\x7e]/g, '').slice(0, 60) + ':' + day]) {
-            try { await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 2592000 }); } catch (e) {}
+            kvInc(env, ctx, k, 2592000); // batched (2026-11-15): a broken page sends thousands of reports
           }
         })());
       } catch (e) {}
@@ -28822,6 +28885,27 @@ export default {
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 1; } catch (e) { sj.referralUsd = 1; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/cfusage' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Cloudflare's own per-day, per-Durable-Object-class usage (GraphQL), for the bill
+      if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) return new Response(JSON.stringify({ error: 'no_token' }), { headers: { 'content-type': 'application/json' } });
+      const days = Math.min(31, Math.max(1, +url.searchParams.get('days') || 3));
+      const since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 10), until = new Date().toISOString().slice(0, 10);
+      const q = 'query($a:String!,$s:Date!,$u:Date!){viewer{accounts(filter:{accountTag:$a}){'
+        + 'dur:durableObjectsPeriodicGroups(limit:1000,filter:{date_geq:$s,date_leq:$u}){dimensions{date namespaceId}sum{rowsRead rowsWritten activeTime cpuTime}}'
+        + 'inv:durableObjectsInvocationsAdaptiveGroups(limit:1000,filter:{date_geq:$s,date_leq:$u}){dimensions{date namespaceId}sum{requests}}'
+        + 'wk:workersInvocationsAdaptive(limit:1000,filter:{date_geq:$s,date_leq:$u}){dimensions{date scriptName}sum{requests subrequests}}'
+        + 'kv:kvOperationsAdaptiveGroups(limit:1000,filter:{date_geq:$s,date_leq:$u}){dimensions{date actionType}sum{requests}}'
+        + '}}}';
+      let j = null, err = '';
+      try { const r = await fetch('https://api.cloudflare.com/client/v4/graphql', { method: 'POST', headers: { Authorization: 'Bearer ' + env.CF_API_TOKEN, 'content-type': 'application/json' }, body: JSON.stringify({ query: q, variables: { a: env.CF_ACCOUNT_ID, s: since, u: until } }) }); j = await r.json(); } catch (e) { err = String(e && e.message || e); }
+      return new Response(JSON.stringify({ since, until, err, errors: j && j.errors, data: j && j.data && j.data.viewer && j.data.viewer.accounts && j.data.viewer.accounts[0] }), { headers: { 'content-type': 'application/json' } });
+    }
+    if (url.pathname === '/api/admin/kvmeter' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // KV operations by key prefix (see kvMeterArm)
+      const h = Math.min(720, Math.max(1, +url.searchParams.get('h') || 6));
+      const r = await aeQuery(env, "SELECT blob2 AS op, blob3 AS k, SUM(double1 * _sample_interval) AS n FROM marginpad_events WHERE index1 = 'kvm' AND timestamp > now() - INTERVAL '" + h + "' HOUR GROUP BY op, k ORDER BY n DESC LIMIT 200");
+      if (!r) return new Response(JSON.stringify({ error: 'ae_unavailable', why: aeQuery.lastErr || '' }), { headers: { 'content-type': 'application/json' } });
+      const tot = {}; r.forEach(x => { tot[x.op] = (tot[x.op] || 0) + (+x.n || 0); });
+      return new Response(JSON.stringify({ ok: true, hours: h, totals: tot, perDay: Object.fromEntries(Object.entries(tot).map(([o, n]) => [o, Math.round(n * 24 / h)])), rows: r.map(x => ({ op: x.op, k: x.k, n: Math.round(+x.n || 0), perDay: Math.round((+x.n || 0) * 24 / h) })) }), { headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname === '/api/admin/perfhist' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // DAY-OVER-DAY perf, which the 8h ring structurally cannot give. This is what turns "p95 breached" into an
@@ -35576,6 +35660,7 @@ export class UserStore {
     // 1,178 - both run on EVERY 60-second /xp poll of every signed-in tab, on the single-threaded store
     try { s.exec('CREATE INDEX IF NOT EXISTS ufollows_tuid ON ufollows(tuid, ts)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS duels_b ON duels(b_uid, status)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS duels_a ON duels(a_uid, status)'); s.exec('CREATE INDEX IF NOT EXISTS duels_st ON duels(status)'); } catch (e) {} // 2026-11-15: (a_uid=? OR b_uid=?) and status= scans read the whole table on every /duel/mine + /duel/openlist (doprof: 11.7k + 4.1k rows a call)
     s.exec('CREATE TABLE IF NOT EXISTS udwell(user_id TEXT, path TEXT, secs INTEGER DEFAULT 0, hits INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(user_id, path))'); // accumulated time-on-page per path
     s.exec('CREATE TABLE IF NOT EXISTS alerts(id TEXT PRIMARY KEY, uid TEXT, email TEXT, sym TEXT, dir TEXT, target REAL, note TEXT, active INTEGER DEFAULT 1, created INTEGER, fired_ts INTEGER DEFAULT 0)'); // price alerts (account-based)
     try { s.exec("ALTER TABLE alerts ADD COLUMN channel TEXT DEFAULT 'email'"); } catch (e) {} // delivery channel: 'email' or 'telegram'
@@ -40405,6 +40490,11 @@ export class UserStore {
          SERVER-SETTLED closes alone (a row synced from a browser is the browser's word, so `via='client'` stays off it) and never the
          RNG class. Under three closes nothing is drawn - a line through two points is not a record. */
       let curve = null;
+      /* MEMOISED PER MEMBER FOR TWO MINUTES (2026-11-15, the Cloudflare bill): doprof read 26-33k rows per card open, almost all of it this
+         30-day scan over a heavy trader's closes, and the same card is opened again and again from the boards. A curve of daily sums is
+         not live to the second; two minutes is far inside its meaning. */
+      const _cm = this._curveMemo = this._curveMemo || new Map(); const _ch = _cm.get(u.id);
+      if (_ch && now - _ch.t < 120000) curve = _ch.v; else
       try {
         const from30 = Math.floor(now / 86400000) * 86400000 - 29 * 86400000;
         /* aggregated PER DAY in SQL - no row cap. The first cut pulled rows with LIMIT 5000 and a heavy account's card read
@@ -40415,6 +40505,7 @@ export class UserStore {
         let cn = 0; for (const r of cr) { const i = +r.di; if (i >= 0 && i < 30 && isFinite(+r.s)) { days[i][1] += +r.s; days[i][2] += +r.c || 0; cn += +r.c || 0; } }
         let acc = 0; const cum = days.map(d => { acc += d[1]; return +acc.toFixed(2); });
         curve = { from: from30, days: days.map(d => [d[0], +d[1].toFixed(2), d[2]]), cum, n: cn, serverOnly: true };
+        _cm.set(u.id, { t: now, v: curve }); if (_cm.size > 400) _cm.delete(_cm.keys().next().value);
       } catch (e) { curve = null; }
       // viewer-relative relationship (mutual follow = "friends") - only when a signed-in viewer is passed
       const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
@@ -41009,8 +41100,14 @@ export class UserStore {
       let feed = [];
       if (ids.length) {
         try {
-          const ph = ids.map(() => '?').join(',');
-          feed = this.rows("SELECT ts, kind, sym, side, lev, margin, pnl, roe, liq, user_id FROM tradeev WHERE user_id IN (" + ph + ") AND kind IN ('open','close') ORDER BY id DESC LIMIT 24", ...ids)
+          /* ONE INDEXED READ PER MEMBER (2026-11-15, the Cloudflare bill): `user_id IN (...) ORDER BY id DESC LIMIT 24` walked the
+             whole table backwards by rowid until 24 squad rows turned up - doprof measured 59,104 rows per call, 36% of every row this
+             store read, polled by every open squad room. Each member's newest 24 come off tradeev_uid(user_id, ts) instead, merged
+             and cut to 24: at most 5 x 24 rows. */
+          const per = [];
+          for (const id9 of ids) { try { this.rows("SELECT id, ts, kind, sym, side, lev, margin, pnl, roe, liq, user_id FROM tradeev WHERE user_id=? AND kind IN ('open','close') ORDER BY ts DESC LIMIT 24", id9).forEach(r => per.push(r)); } catch (e) {} }
+          per.sort((a, c) => ((+c.ts || 0) - (+a.ts || 0)) || ((+c.id || 0) - (+a.id || 0)));
+          feed = per.slice(0, 24)
             .map(r => { const m = byUid[String(r.user_id)] || {}; return { ts: +r.ts || 0, kind: r.kind, who: m.name || '', col: m.col || '#9aa3ad', sym: r.sym || '', side: r.side || '', lev: +r.lev || 0, margin: +r.margin || 0, pnl: r.pnl == null ? null : +r.pnl, roe: r.roe == null ? null : +r.roe, liq: r.liq ? 1 : 0 }; })
             .filter(x => x.who);
         } catch (e) { feed = []; }

@@ -3622,7 +3622,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
     if (_waiting) { _waiting.push(cb); return; }
     _waiting = [cb];
     var done = function (v) { _cc = v || ''; try { localStorage.setItem('mp_cc', JSON.stringify({ cc: _cc, ts: Date.now() })); } catch (e) {} var q = _waiting || []; _waiting = null; q.forEach(function (f) { try { f(_cc); } catch (e) {} }); };
-    try { fetch('/api/geo', { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (d) { done(d && d.cc); }).catch(function () { done(''); }); } catch (e) { done(''); }
+    try { (window.__mpGeoP || fetch('/api/geo', { credentials: 'omit' }).then(function (r) { return r.json(); })).then(function (d) { /* the homepage's own geo read is reused (2026-11-15) */ done(d && d.cc); }).catch(function () { done(''); }); } catch (e) { done(''); }
   }
 
   var mpEx = {
@@ -3943,6 +3943,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   function ask() {
     try {
       if (window.__mpAnn && window.__mpAnn.av) { check(window.__mpAnn); return; } // the page already fetched it once
+      if (window.__mpAnnP && !ask._shared) { ask._shared = 1; window.__mpAnnP.then(function (j) { if (j) { try { window.__mpAnn = j; } catch (e) {} check(j); } }).catch(function () {}); return; } // the page's own read is in flight - reuse it (2026-11-15: every page asked twice)
       fetch("/api/announce", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { try { window.__mpAnn = j; } catch (e) {} check(j); }).catch(function () {});
     } catch (e) {}
   }

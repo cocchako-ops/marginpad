@@ -8,7 +8,7 @@
    this no-store HTML - the one channel that is always fresh even when the SW is stale - it unregisters every SW and
    clears every cache ONCE, then reloads clean; home.js re-registers the push-only SW afterwards. Owner could not see a
    shipped charts update for days on iOS and a Safari reset did not clear the SW; this breaks it from the page side. */
-(function(){try{if(!('serviceWorker'in navigator))return;var done;try{done=localStorage.getItem('mp_swreset')==='3';}catch(e){}if(done)return;try{localStorage.setItem('mp_swreset','3');}catch(e){}var jobs=[];try{jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all((rs||[]).map(function(r){return r.unregister();}));}));}catch(e){}try{if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){return Promise.all((ks||[]).map(function(k){return caches.delete(k);}));}));}catch(e){}Promise.all(jobs).then(function(){try{location.reload();}catch(e){}}).catch(function(){});}catch(e){}})();</script>
+(function(){try{if(!('serviceWorker'in navigator))return;var done;try{done=localStorage.getItem('mp_swreset')==='3';}catch(e){}if(done)return;try{localStorage.setItem('mp_swreset','3');}catch(e){}var jobs=[],hit=0;try{jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){hit+=(rs||[]).length;return Promise.all((rs||[]).map(function(r){return r.unregister();}));}));}catch(e){}try{if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){hit+=(ks||[]).length;return Promise.all((ks||[]).map(function(k){return caches.delete(k);}));}));}catch(e){}Promise.all(jobs).then(function(){if(hit){try{location.reload();}catch(e){}}}).catch(function(){});/* 2026-11-15: reload ONLY when a worker or a cache was really cleared - it reloaded every first-time visitor, doubling their first load */}catch(e){}})();</script>
 <style>html{background:#0a0b0d;color-scheme:dark}.fl-row{display:flex;align-items:center;gap:6px}.fl-row label{margin-bottom:0}.fl-row{margin-bottom:7px}
 .ptt-q{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border-radius:50%;border:1px solid #2f3742;background:transparent;color:#8b97a5;text-decoration:none;font:700 11px/1 "Space Mono",monospace;cursor:pointer;flex:0 0 auto}
 .ptt-q:hover,.ptt-q.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
@@ -126,7 +126,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=5b4058db">
+<link rel="stylesheet" href="/assets/home.css?v=4062c29f">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -891,7 +891,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script defer src="/assets/mp-auth.js?v=3d8d7b99"></script>
+<script defer src="/assets/mp-auth.js?v=7d39c8b0"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -899,7 +899,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=5b4058db"></script>
-<script defer src="/assets/mp-nav.js?v=fd0ad4ed"></script>
+<script src="/assets/home.js?v=4062c29f"></script>
+<script defer src="/assets/mp-nav.js?v=a5025994"></script>
 </body>
 </html>
