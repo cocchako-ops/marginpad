@@ -321,7 +321,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         if (!r.ok) return res.status(502).json({ error: 'http_' + r.status });
         const h = await r.text(); let img = '';
         if (v === 'binance') img = (h.match(/https:\/\/public\.bnbstatic\.com\/image\/cms\/content\/body\/[^"'\s\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
-        else if (v === 'bingx') img = (h.match(/https:\/\/static-app\.bb-os\.com\/social_feed_pictures\/[^"'\s\\<]+\.(?:png|jpe?g|webp|gif)/i) || [''])[0];
+        else if (v === 'bingx') img = (h.match(/https:\/\/static-app\.bb-os\.com\/social_feed_pictures\/[^"'\s\\<]+\.(?:png|jpe?g|webp|gif)/i) || h.match(/https:\/\/static-app\.bb-os\.com\/fe-common\/aurora\/[^"'\s\\<]+\/kv\/[^"'\s\\<]*pc[^"'\s\\<]*\.(?:png|jpe?g|webp)/i) || [''])[0];
         else if (v === 'kucoin') img = (h.match(/https:\/\/assets\.staticimg\.com\/cms\/media\/[^"'\s)\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
         else { const m = h.match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || h.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); img = m ? m[1].replace(/&amp;/g, '&') : ''; }
         promoCache.set(ck, { t: Date.now(), img }); return res.json({ img });
