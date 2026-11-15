@@ -298,6 +298,16 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   const CY_ALLOW = /^\/(dolar|usdt\/ars\/1|usdt\/brl\/1|btc\/brl\/1|usdc\/ars\/1)$/;
   const latamCache = new Map();
   setInterval(() => { const c = Date.now() - 600000; for (const [k, v] of latamCache) if (v.t < c) latamCache.delete(k); }, 120000).unref?.();
+  // Exchange campaign feeds the worker cannot read itself (2026-11-15): OKX answers the Cloudflare egress 400 and MEXC 403, both answer here.
+  // FIXED urls only - the caller names a source, never a path - cached 10 minutes.
+  const PROMO_URL = { okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20' };
+  const promoCache = new Map();
+  app.get('/api/v1/promo', async (req, res) => {
+    const u = PROMO_URL[String(req.query.src || '')]; if (!u) return res.status(400).json({ error: 'src_not_allowed' });
+    const hit = promoCache.get(u); if (hit && Date.now() - hit.t < 600000) return res.type('application/json').send(hit.body);
+    try { const r = await fetch(u, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)' } }); const body = await r.text(); if (r.status === 200) promoCache.set(u, { t: Date.now(), body }); else if (hit) return res.type('application/json').send(hit.body); return res.status(r.status).type('application/json').send(body); }
+    catch (e) { if (hit) return res.type('application/json').send(hit.body); return res.status(502).json({ error: 'promo_unreachable' }); }
+  });
   app.get('/api/v1/latam', async (req, res) => {
     const src = String(req.query.src || 'cy'), p3 = String(req.query.path || '');
     let url, ttl;
