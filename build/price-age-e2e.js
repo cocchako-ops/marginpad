@@ -104,6 +104,8 @@ const isOpen = t => t && t.status !== 'win' && t.status !== 'loss';
         await EV((id, px) => { window.mpLivePrices.BTC = { p: px, t: Date.now() - 120000 }; }, r1.id, r1.entry * 1.01);
         let st = null; for (let w = 0; w < 12; w++) { await sleep(500); st = await EV((id) => { const row = document.querySelector('.pt-last[data-tid="' + id + '"]'); if (!row) return { row: false }; const lv = row.querySelector('.ptl-live'); const old = row.querySelector('.ptl-old'); return { row: true, stale: !!(lv && lv.classList.contains('stale')), mark: old ? old.textContent : '', col: lv ? getComputedStyle(lv.querySelector('b')).color : '' }; }, r1.id); if (st && st.stale) break; }
         chk('B1 a price older than 30 s is marked STALE on the open ticket', !!(st && st.row && st.stale && /stale/i.test(st.mark)), st);
+        // the mark fades in through a colour transition - read it once the transition has settled, not mid-way (2026-11-15)
+        for (let w = 0; w < 8 && !(st && /240, 179, 90/.test(st.col)); w++) { await sleep(400); const c2 = await EV((id) => { const row = document.querySelector('.pt-last[data-tid="' + id + '"]'); const lv = row && row.querySelector('.ptl-live'); const bb = lv && lv.querySelector('b'); return bb ? getComputedStyle(bb).color : null; }, r1.id); if (c2 && st) st.col = c2; }
         chk('B2 the stale price is painted amber, not hidden', !!(st && /240, 179, 90/.test(st.col)), st && st.col);
         await page.setOfflineMode(false);
         let gone = false; for (let w = 0; w < 60; w++) { await sleep(500); gone = await EV((id) => { const row = document.querySelector('.pt-last[data-tid="' + id + '"]'); return !!row && !row.querySelector('.ptl-live.stale') && !row.querySelector('.ptl-old'); }, r1.id); if (gone) break; }
@@ -171,6 +173,8 @@ const isOpen = t => t && t.status !== 'win' && t.status !== 'loss';
         for (let w = 0; w < 30; w++) { await sleep(500); s2 = await sheetState(); lr3 = await localRow(r3.id); tt = await toastText(); if (s2 && !s2.disabled && closeReqs >= 2) break; }
         chk('E2 the request was retried exactly once, then given up', closeReqs === 2, { closeReqs });
         chk('E3 the position STAYS OPEN - no local invention', !!(lr3 && isOpen(lr3)), lr3 && { status: lr3.status });
+        // ONE NOTICE AT A TIME since 2026-10-28: the failure waits behind the notice already on screen - wait for its turn
+        for (let w = 0; w < 24 && !/Could not reach the server|No se pudo contactar/.test(tt); w++) { await sleep(500); tt = await toastText(); }
         chk('E4 the button comes back and the reader is told', !!(s2 && !s2.disabled && !/Closing/.test(s2.text) && /Could not reach the server|No se pudo contactar/.test(tt)), { s2, toast: tt.slice(0, 120) });
         chk('E5 no close beacon fired for a close that did not happen', beacons.length === nb0, { before: nb0, after: beacons.length });
         // now let it through: the same sheet, one more press, a real close

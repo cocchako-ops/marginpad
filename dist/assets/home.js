@@ -192,6 +192,25 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   window.mpMarketName=function(s){return ({SNDK:'SanDisk',MU:'Micron',KLAC:'KLA',CRCL:'Circle',SOXL:'Semiconductors 3x',SOXS:'Semiconductors -3x',NOW:'ServiceNow',SNOW:'Snowflake',CRWD:'CrowdStrike',PANW:'Palo Alto Networks',DDOG:'Datadog',NET:'Cloudflare',ZS:'Zscaler',MDB:'MongoDB',TEAM:'Atlassian',ROKU:'Roku',PINS:'Pinterest',LYFT:'Lyft',ZM:'Zoom',DOCU:'Docusign',TWLO:'Twilio',U:'Unity',TTWO:'Take-Two',SONY:'Sony',BIDU:'Baidu',JD:'JD.com',PDD:'PDD Holdings',NTES:'NetEase',TCEHY:'Tencent',LI:'Li Auto',XPEV:'XPeng',TM:'Toyota',HMC:'Honda',RACE:'Ferrari',STLA:'Stellantis',GM:'General Motors',CAT:'Caterpillar',DE:'John Deere',MMM:'3M',GE:'GE Aerospace',HON:'Honeywell',LMT:'Lockheed Martin',RTX:'RTX',NOC:'Northrop Grumman',UPS:'UPS',FDX:'FedEx',CVX:'Chevron',COP:'ConocoPhillips',SLB:'SLB',OXY:'Occidental',PFE:'Pfizer',MRK:'Merck',ABBV:'AbbVie',AMGN:'Amgen',GILD:'Gilead',BMY:'Bristol Myers',TMO:'Thermo Fisher',DHR:'Danaher',ISRG:'Intuitive Surgical',MDT:'Medtronic',CVS:'CVS Health',CI:'Cigna',ELV:'Elevance',MCD:'McDonald\'s',SBUX:'Starbucks',NKE:'Nike',LULU:'Lululemon',TGT:'Target',LOW:'Lowe\'s',TJX:'TJX',DG:'Dollar General',KHC:'Kraft Heinz',MDLZ:'Mondelez',MO:'Altria',PM:'Philip Morris',CL:'Colgate',KMB:'Kimberly-Clark',GIS:'General Mills',HSY:'Hershey',SYY:'Sysco',ADM:'ADM',BG:'Bunge',CF:'CF Industries',MOS:'Mosaic',NEM:'Newmont',FCX:'Freeport',AA:'Alcoa',CLF:'Cleveland-Cliffs',VALE:'Vale',RIO:'Rio Tinto',BHP:'BHP',GOLD:'Barrick',AEM:'Agnico Eagle',WPM:'Wheaton Precious',PAAS:'Pan American Silver',HL:'Hecla',AG:'First Majestic',OIL:'Crude Oil (WTI)',BRENT:'Brent Crude',NATGAS:'Natural Gas',COPPER:'Copper',USDCHF:'USD/CHF',NZDUSD:'NZD/USD',EURGBP:'EUR/GBP',EURJPY:'EUR/JPY',GBPJPY:'GBP/JPY',AUDJPY:'AUD/JPY',EURCHF:'EUR/CHF',USDMXN:'USD/MXN',USDSEK:'USD/SEK',USDNOK:'USD/NOK',FRA40:'CAC 40',EU50:'Euro Stoxx 50',HK50:'Hang Seng',AUS200:'ASX 200',ESP35:'IBEX 35',SWI20:'SMI 20',US2000:'Russell 2000',VIX:'Volatility Index',XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',UK100:'FTSE 100',JPN225:'Nikkei 225',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',AAPL:'Apple',TSLA:'Tesla',NVDA:'NVIDIA',MSFT:'Microsoft',AMZN:'Amazon',GOOGL:'Alphabet',META:'Meta',AMD:'AMD',NFLX:'Netflix',COIN:'Coinbase',MSTR:'Strategy',PLTR:'Palantir',HOOD:'Robinhood',AVGO:'Broadcom',INTC:'Intel',JPM:'JPMorgan',DIS:'Disney',BABA:'Alibaba',SKHY:'SK hynix',SPCX:'SpaceX',KORU:'South Korea 3x',SKHYNIX:'SK hynix (Korea)',SPY:'S&P 500 ETF',QQQ:'Nasdaq 100 ETF',MARA:'MARA Holdings',RIOT:'Riot Platforms',CLSK:'CleanSpark',HUT:'Hut 8',CIFR:'Cipher Mining',WULF:'TeraWulf',GLXY:'Galaxy Digital',BMNR:'Bitmine',SBET:'SharpLink',TSM:'TSMC',QCOM:'Qualcomm',ARM:'Arm',SMCI:'Super Micro',ASML:'ASML',TXN:'Texas Instruments',ORCL:'Oracle',CRM:'Salesforce',ADBE:'Adobe',GME:'GameStop',AMC:'AMC',SOFI:'SoFi',RIVN:'Rivian',LCID:'Lucid',NIO:'NIO',UBER:'Uber',ABNB:'Airbnb',RBLX:'Roblox',DKNG:'DraftKings',SNAP:'Snap',PYPL:'PayPal',SHOP:'Shopify',SPOT:'Spotify',F:'Ford',BA:'Boeing',LLY:'Eli Lilly',V:'Visa',MA:'Mastercard',WMT:'Walmart',COST:'Costco',XOM:'Exxon',JNJ:'Johnson & Johnson',PG:'Procter & Gamble',UNH:'UnitedHealth',HD:'Home Depot',BAC:'Bank of America',GS:'Goldman Sachs',KO:'Coca-Cola',PEP:'PepsiCo',T:'AT&T',IWM:'Russell 2000 ETF',DIA:'Dow ETF',ARKK:'ARK Innovation',TQQQ:'Nasdaq 3x ETF',SQQQ:'Nasdaq -3x ETF',GLD:'Gold ETF',SLV:'Silver ETF',TLT:'20Y Treasury ETF',VOO:'Vanguard S&P 500',XLE:'Energy ETF'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
+    /* DEFINED BEFORE THE SYMBOL LIST, NOT INSIDE ITS ANSWER (2026-11-15): these three only read window globals, and inside the .then they did
+       not exist until /api/symbols answered - an Open pressed before that threw "window.mpFeeRate is not a function" (found by price-age-e2e
+       once the first-visit double load was gone and the page became ready sooner). */
+    /* FEE VENUES (2026-09-11) - MIRROR of FEE_VENUES in src/worker.js (taker % and referral discount %). The trader can have
+       fills charged at a real exchange's taker rate less the discount a MarginPad sign-up gets there (crypto only; the
+       MarginPad class rate for everything else). The choice is the ACCOUNT default (uprefs 'feevenue', shared with the
+       Bot API's GET|POST /v1/fees); guests keep it in localStorage. add() below stamps t.feeRate from THIS table and the
+       server stamps the same rate from its own - they must agree, so change both. */
+    window.mpFeeVenues={bybit:{n:'Bybit',t:0.055,d:20},binance:{n:'Binance',t:0.050,d:20},okx:{n:'OKX',t:0.050,d:0},bitget:{n:'Bitget',t:0.060,d:20},mexc:{n:'MEXC',t:0.020,d:0},gate:{n:'Gate',t:0.050,d:20},kucoin:{n:'KuCoin',t:0.060,d:0},kraken:{n:'Kraken',t:0.050,d:0},hyperliquid:{n:'Hyperliquid',t:0.045,d:4}};
+    try{window.mpFeeVenue=String(localStorage.getItem('mp_feevenue')||'');if(!window.mpFeeVenues[window.mpFeeVenue])window.mpFeeVenue='';}catch(e){window.mpFeeVenue='';}
+    /* WHERE A MARGINPAD POSITION REALLY DIES (2026-09-24). Mirror of the worker's mpcLiq: the open leg is
+       taken at the fill, so what backs the position is margin*(1-lev*rate) and the liq distance carries that
+       factor. rate omitted reproduces the old formula exactly, which is what the leverage guides and the
+       standalone calculator want. lev*rate can never exceed 0.1, so this cannot invert at any leverage. */
+    /* 2026-09-25: the EXCHANGE formula (Bybit: entry*(1 - IM + MM)), mirror of the worker's mpcLiq. IM is what backs the
+       position after the open fee (1/lev - rate); MM can never exceed half of it (Hyperliquid's rule), which is what keeps
+       200x-1000x from printing a liquidation above the entry. rate 0 = Bybit's own no-fee number (10x -> 9.5%). */
+    window.mpLiqPx=function(entry,lev,mmr,long,rate){lev=Math.max(1,+lev||1);mmr=Math.max(0,+mmr||0);var im=Math.max(1e-6,1/lev-Math.min(0.1/lev,Math.max(0,+rate||0)));var me=Math.min(mmr,im/2);return long?entry*(1-im+me):entry*(1+im-me);};
+    window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
     (window.__mpSymJ=window.__mpSymJ||fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(j){ /* shared with mp-nav.js - the same list was fetched twice per load */
       var byb={};                                             // Bybit set: raw (1000PEPE) + de-prefixed clean (PEPE)
       // Bybit uses a 1000x multiplier as a PREFIX (1000PEPE) on some and a SUFFIX (SHIB1000) on others - normalize BOTH to the clean ticker.
@@ -342,22 +361,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // Per-MARKET fee (not the crypto taker fee for everything). Real-world cost by class: crypto perp taker ~0.055%/side;
       // stocks = tight CFD spread/commission ~0.02%; forex majors = fraction of a pip ~0.008%; metals/indices ~0.015%.
       // Applied once at close (round-trip), capped so it can never exceed ~10% of margin at extreme leverage.
-      /* FEE VENUES (2026-09-11) - MIRROR of FEE_VENUES in src/worker.js (taker % and referral discount %). The trader can have
-         fills charged at a real exchange's taker rate less the discount a MarginPad sign-up gets there (crypto only; the
-         MarginPad class rate for everything else). The choice is the ACCOUNT default (uprefs 'feevenue', shared with the
-         Bot API's GET|POST /v1/fees); guests keep it in localStorage. add() below stamps t.feeRate from THIS table and the
-         server stamps the same rate from its own - they must agree, so change both. */
-      window.mpFeeVenues={bybit:{n:'Bybit',t:0.055,d:20},binance:{n:'Binance',t:0.050,d:20},okx:{n:'OKX',t:0.050,d:0},bitget:{n:'Bitget',t:0.060,d:20},mexc:{n:'MEXC',t:0.020,d:0},gate:{n:'Gate',t:0.050,d:20},kucoin:{n:'KuCoin',t:0.060,d:0},kraken:{n:'Kraken',t:0.050,d:0},hyperliquid:{n:'Hyperliquid',t:0.045,d:4}};
-      try{window.mpFeeVenue=String(localStorage.getItem('mp_feevenue')||'');if(!window.mpFeeVenues[window.mpFeeVenue])window.mpFeeVenue='';}catch(e){window.mpFeeVenue='';}
-      /* WHERE A MARGINPAD POSITION REALLY DIES (2026-09-24). Mirror of the worker's mpcLiq: the open leg is
-         taken at the fill, so what backs the position is margin*(1-lev*rate) and the liq distance carries that
-         factor. rate omitted reproduces the old formula exactly, which is what the leverage guides and the
-         standalone calculator want. lev*rate can never exceed 0.1, so this cannot invert at any leverage. */
-      /* 2026-09-25: the EXCHANGE formula (Bybit: entry*(1 - IM + MM)), mirror of the worker's mpcLiq. IM is what backs the
-         position after the open fee (1/lev - rate); MM can never exceed half of it (Hyperliquid's rule), which is what keeps
-         200x-1000x from printing a liquidation above the entry. rate 0 = Bybit's own no-fee number (10x -> 9.5%). */
-      window.mpLiqPx=function(entry,lev,mmr,long,rate){lev=Math.max(1,+lev||1);mmr=Math.max(0,+mmr||0);var im=Math.max(1e-6,1/lev-Math.min(0.1/lev,Math.max(0,+rate||0)));var me=Math.min(mmr,im/2);return long?entry*(1-im+me):entry*(1+im-me);};
-      window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
+      /* fee tables + mpLiqPx + mpFeeRate moved above the /api/symbols read (2026-11-15) - see there */
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */
       /* the "?" circles next to the two exchange pickers (and the calculators' margin picker) toggle a plain-words hint under the
@@ -2294,9 +2298,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(connT){clearTimeout(connT);connT=null;}
     try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();}/* USDT-perp stream: covers TRX & virtually every pair (spot was missing many) + matches futures pricing */
     connT=setTimeout(function(){connT=null;if(!ws||ws.readyState!==1){try{ws&&(ws.onclose=null,ws.close());}catch(_){}reconnect();}},10000); // handshake stuck in CONNECTING (mobile radio hand-off / captive portal) never fires onopen/onclose → force a retry
-    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect - sendOp chunks at 10/req
+    ws.onopen=function(){alive=true;window.__mpWsUp=1;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect - sendOp chunks at 10/req
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
-    ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.ts&&isFinite(+m.ts)){var _wl=Date.now()-(+m.ts);if(_wl>-2000&&_wl<30000){var _ww=window.__mpWsLatW;if(!_ww||Date.now()-_ww.t>60000){window.__mpWsLatW={t:Date.now(),v:_wl};}else if(_wl<_ww.v){_ww.v=_wl;}window.__mpWsLat=(window.__mpWsLatW||{}).v;}}if(!m.topic)return;
+    ws.onmessage=function(ev){window.__mpWsT=Date.now();try{var m=JSON.parse(ev.data);if(m.ts&&isFinite(+m.ts)){var _wl=Date.now()-(+m.ts);if(_wl>-2000&&_wl<30000){var _ww=window.__mpWsLatW;if(!_ww||Date.now()-_ww.t>60000){window.__mpWsLatW={t:Date.now(),v:_wl};}else if(_wl<_ww.v){_ww.v=_wl;}window.__mpWsLat=(window.__mpWsLatW||{}).v;}}if(!m.topic)return;
       if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');
         var TK=window.mpTicks1m=window.mpTicks1m||{},tk=TK[sym]; // EXACT per-minute OHLC from EVERY trade in the batch, bucketed by the trade's own exchange timestamp (T) - immune to device-clock skew. The forming candle merges these extremes so wicks are exact instead of rAF-sampled (the old path kept only the batch's LAST trade → missed extremes → the 30s re-sync visibly grew wicks).
         for(var _ti=0;_ti<m.data.length;_ti++){var _tr=m.data[_ti],_tp=parseFloat(_tr.p),_tt=Math.floor((+_tr.T||Date.now())/60000)*60;
@@ -2321,7 +2325,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
-    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT&&!document.hidden)window.__mpWsDownT=Date.now();}catch(e){}/* ws-recon must mean "how long the price was frozen WHILE THE USER WATCHED". A socket that dies in a backgrounded tab (or is closed by our own 20s battery saver) and re-opens on return was measuring the whole away period - p95 40s against a 2.5s budget, a permanent false alarm. Downtime that starts hidden is not measured; downtime that GOES hidden is voided below. */if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
+    ws.onclose=function(){alive=false;window.__mpWsUp=0;try{if(!window.__mpWsDownT&&!document.hidden)window.__mpWsDownT=Date.now();}catch(e){}/* ws-recon must mean "how long the price was frozen WHILE THE USER WATCHED". A socket that dies in a backgrounded tab (or is closed by our own 20s battery saver) and re-opens on return was measuring the whole away period - p95 40s against a 2.5s budget, a permanent false alarm. Downtime that starts hidden is not measured; downtime that GOES hidden is voided below. */if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
   function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2000,3000,3000,3000][retry-1]||3000);} // fast first retry (250ms), then backoff CAPPED at 3s (was 8s): the `online` event is unreliable on mobile radio hand-offs, so a network that returns mid-backoff could sit dead for up to 8s → 3s cap halves that worst case (ws-recon p95). Retries during a real outage are cheap failed WS handshakes.
@@ -3946,7 +3950,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=d8814a82'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=335af48f'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -4493,7 +4497,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=8f6898f7'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=a72dfc7c'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
@@ -5004,6 +5008,7 @@ window.mpSrvOpen=function(payload,ok,fail){
         var _cs=null;try{_cs=window.__mpChartSym||null;}catch(e){}
         var _a=_age(_cs);if(_a!=null)payload.pa=_a;
         var _b=_age('BTC');if(_b!=null)payload.pm=_b;
+        payload.wu=(window.__mpWsUp&&window.__mpWsT&&n2-window.__mpWsT<10000)?1:0; /* 2026-11-15: was the socket live at the sample - splits a stale BTC price into feed-on-socket vs REST fallback */
       }catch(e){}
       try{navigator.sendBeacon('/api/perf',new Blob([JSON.stringify(payload)],{type:'application/json'}));}catch(e){}
     });
@@ -5853,7 +5858,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function () {
   try {
     if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
-    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=8f6898f7' : '/assets/mp-charts.js?v=d8814a82', heatmap: '/assets/mp-heatmap.js?v=a673cc3f', screener: '/assets/mp-screener.js?v=eae6f018' };
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=a72dfc7c' : '/assets/mp-charts.js?v=335af48f', heatmap: '/assets/mp-heatmap.js?v=a673cc3f', screener: '/assets/mp-screener.js?v=eae6f018' };
     var done = {};
     function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
     function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }

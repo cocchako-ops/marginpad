@@ -143,7 +143,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function isMobile(){return !!(window.matchMedia && window.matchMedia('(max-width:880px)').matches);}
   function MAXn(){return isMobile()?1:MAX_DESKTOP;}
   function loadLib(cb){ if(window.LightweightCharts)return cb(); libCbs.push(cb); if(libLoading)return; libLoading=true;
-    var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js';
+    var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';
     s.onload=function(){var f=libCbs.splice(0);f.forEach(function(fn){try{fn();}catch(e){}});}; s.onerror=function(){}; document.head.appendChild(s); }
   function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
   function ema(v,p){var k=2/(p+1),o=[],e;for(var i=0;i<v.length;i++){e=i?v[i]*k+o[i-1]*(1-k):v[i];o.push(e);}return o;}

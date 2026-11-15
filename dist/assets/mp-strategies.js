@@ -244,7 +244,7 @@
 
   function lwc() {
     if (window.LightweightCharts) return Promise.resolve();
-    return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = '/assets/lightweight-charts-4.2.0.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+    return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = '/assets/lightweight-charts-4.2.0.js?v=46fc6953'; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
   }
   /* The entries and exits of the run above, drawn where they happened. Replay feeds the bars one at a time from a timer. */
   function labChart(out, raw, tr) {
