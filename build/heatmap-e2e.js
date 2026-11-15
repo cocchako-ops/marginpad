@@ -377,8 +377,11 @@ const LAYOUT = () => {
       }
       return '';
     });
-    ok('a zone still standing quotes what bands this heavy have really liquidated, with its n',
-      !cal || (/have liquidated a median of/.test(cal) && /measured on \d+ of our own swept levels/.test(cal)), cal.slice(0, 220));
+    // 2026-11-15 (owner: "$6.3M" against swept bands of $10M+): a standing zone quotes the RANGE its most similar past
+    // sweeps really took plus the self-test behind it, or says it is heavier than anything swept - never one median
+    ok('a zone still standing quotes the range similar sweeps really took (with the test), or says none compares',
+      !cal || ((/most similar bands the price went through/.test(cal) && /held the real figure \d+% of the time/.test(cal)) || /heavier than every band the price went through/.test(cal)), cal.slice(0, 260));
+    ok('and it never prints one median dollar figure for a standing zone', !cal || !/have liquidated a median of/.test(cal), cal.slice(0, 160));
     ok('and it still refuses to price the model itself', !cal || /not a dollar figure/.test(cal), cal.slice(0, 120));
     ok('clicking a cut line says it was swept, and when', !!swRead.skip || /^SWEPT/i.test(swRead.txt || ''),
       (swRead.txt || '').slice(0, 90));

@@ -1003,7 +1003,7 @@ async function heatCalibCron(env) {
       let pub = null; try { pub = JSON.parse(await env.STATS.get('hmp:pub:' + sym) || 'null'); } catch (e) {}
       const dead = (pub && pub.dead) || [];
       const binH = +(pub && pub.binH) || 0;
-      if (dead.length < 12 || !(binH > 0)) continue;   // too few sweeps to quote a median from
+      if (dead.length < 12 || !(binH > 0)) { out[sym] = { skip: 'dead=' + dead.length + ' binH=' + binH }; continue; }   // too few sweeps to quote a median from
       // A CASCADE IS WIDER THAN ONE BIN, AND MEASURING IT IN ONE BIN UNDER-READ EVERY WALL BY 5-12x
       // (2026-10-12, owner: "iznosi koje oni daju su zapravo dosta manji od realnosti"). A bin is 0.1% of
       // price; price punches through several of them in seconds, so +-half a bin saw a slice of the event and
@@ -1021,18 +1021,18 @@ async function heatCalibCron(env) {
       // the whole event rather than its middle - and `calibWin` is published so the figure can be explained.
       const half = binH * CALIB_CASCADE_BINS;
       const wins = dead.slice(0, 400).map((d) => [d.tsw * 1000 - 30 * 60000, d.tsw * 1000 + 30 * 60000, d.p - half, d.p + half]);
-      let sums = null;
+      let sums = null, sumErr = '';
       try {
         const r = await fetch(base + '/api/v1/liqsum', {
           method: 'POST', headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ symbol: sym, wins }), signal: AbortSignal.timeout(20000),
         });
-        if (r.ok) { const j = await r.json(); sums = j && j.sums; }
-      } catch (e) {}
-      if (!sums || sums.length !== wins.length) continue;
+        if (r.ok) { const j = await r.json(); sums = j && j.sums; } else sumErr = 'http ' + r.status;
+      } catch (e) { sumErr = String((e && e.message) || e).slice(0, 80); }
+      if (!sums || sums.length !== wins.length) { out[sym] = { skip: 'liqsum ' + (sumErr || 'shape') }; continue; }
       const rows = [];
       for (let i = 0; i < wins.length; i++) if (sums[i] && sums[i].v > 0) rows.push({ w: +dead[i].w || 0, v: +sums[i].v });
-      if (rows.length < 12) continue;
+      if (rows.length < 12) { out[sym] = { skip: 'rows=' + rows.length }; continue; }
       rows.sort((a, b) => a.w - b.w);
       // Buckets by the model's own weight, each answering with the MEASURED median of its members.
       // A median, not a mean: one $80M cascade would otherwise set the expectation for every ordinary band.
@@ -1062,7 +1062,37 @@ async function heatCalibCron(env) {
       if (!bands.length) continue;
       // `win` states the measurement width so the figure can be explained rather than just asserted, and so a
       // later change to it is visible in the published data instead of silently re-scaling every wall
-      const cal = { t: Date.now(), n: rows.length, days: 8, win: CALIB_CASCADE_BINS, bands };
+      // A READER SEES A BAND, NOT A BIN, AND ONE NUMBER WAS NOT A PREDICTION (2026-11-15, owner's screenshot: a level
+      // quoted "a median of $6.3M" while the yellow swept bands above it had each taken $10M+, and the column beside it
+      // said 47x while the box said 3.8x). Two faults, both measured (scratchpad calib-study.js, BTC/ETH/SOL/XRP):
+      // (1) what looks like one band is several adjacent 0.1% bins - the box read the lighter neighbour (3.8x) of a 47x
+      //     bin - and the dollars of a sweep belong to the whole run of bins the price went through (BTC: 107G over 11
+      //     bins took $80.8M, 41G over 11 bins $118M); (2) a single median quoted from weight landed within 2x of what
+      //     really liquidated only 27-51% of the time, with the outcome anywhere from a tenth to five times it.
+      // So the record is kept PER SWEPT CLUSTER (adjacent same-side bins crossed within two hours, measured over their
+      // whole span) and the page quotes the RANGE of the nine most similar past sweeps, which held the real figure
+      // 79-84% of the time in a leave-one-out test - and states that test, computed here on every run.
+      let cl = null, acc = null;
+      try {
+        const srt = dead.slice(0, 400).filter((d) => d.tsw).sort((a, b) => (a.long - b.long) || (a.p - b.p));
+        const cs = [];
+        for (const d of srt) { const c = cs[cs.length - 1]; if (c && c.long === d.long && d.p - c.pHi <= binH * 1.5 && Math.abs(d.tsw - c.t1) <= 7200) { c.pHi = d.p; c.w += +d.w || 0; c.t0 = Math.min(c.t0, d.tsw); c.t1 = Math.max(c.t1, d.tsw); c.k++; } else cs.push({ long: d.long ? 1 : 0, pLo: d.p, pHi: d.p, w: +d.w || 0, t0: d.tsw, t1: d.tsw, k: 1 }); }
+        const r2 = await fetch(base + '/api/v1/liqsum', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ symbol: sym, wins: cs.slice(0, 500).map((c) => [c.t0 * 1000 - 30 * 60000, c.t1 * 1000 + 30 * 60000, c.pLo - binH / 2, c.pHi + binH / 2]) }), signal: AbortSignal.timeout(20000) });
+        const j2 = r2.ok ? await r2.json() : null, s2 = j2 && j2.sums;
+        if (s2 && s2.length === Math.min(500, cs.length)) {
+          cl = []; for (let i = 0; i < s2.length; i++) if (s2[i] && s2[i].v > 0 && cs[i].w > 0) cl.push([Math.round(cs[i].w), Math.round(s2[i].v), cs[i].k, cs[i].t1, cs[i].long, Math.round(cs[i].pLo * 1e6) / 1e6, Math.round(cs[i].pHi * 1e6) / 1e6]);
+          if (cl.length >= 15) {
+            const K = CALIB_NN_K, L = cl.map((x) => Math.log(x[0])); let cov = 0, w2 = 0;
+            for (let k = 0; k < cl.length; k++) {
+              const nb = cl.map((x, i) => [Math.abs(L[i] - L[k]), i]).filter((x) => x[1] !== k).sort((a, b) => a[0] - b[0]).slice(0, K).map((x) => cl[x[1]][1]).sort((a, b) => a - b);
+              const v = cl[k][1]; if (v >= nb[0] && v <= nb[nb.length - 1]) cov++;
+              const r = v / nb[Math.floor(nb.length / 2)]; if (r >= 0.5 && r <= 2) w2++;
+            }
+            acc = { k: K, n: cl.length, cover: Math.round(cov / cl.length * 100), within2x: Math.round(w2 / cl.length * 100) };
+          } else cl = null;
+        }
+      } catch (e) { cl = null; acc = null; }
+      const cal = { t: Date.now(), n: rows.length, days: 8, win: CALIB_CASCADE_BINS, bands, cl, acc };
       await env.STATS.put('hmp:cal:' + sym, JSON.stringify(cal), { expirationTtl: 30 * 86400 });
       out[sym] = { sweeps: rows.length, bands: bands.length, medians: bands.map((b) => b.med) };
       await new Promise((r) => setTimeout(r, 120));
@@ -1187,6 +1217,7 @@ function liqevPick(all, max) {
 // control window at the same prices six hours earlier: the control is $0 out to +-7 bins on BTC, ETH, SOL and
 // XRP, so everything inside is the cascade itself; background only appears past it. See heatCalibCron.
 const CALIB_CASCADE_BINS = 0.5;
+const CALIB_NN_K = 9; // how many past swept clusters a standing band is compared with; 9 held the real figure 79-84% of the time (2026-11-15)
 // CATALYST ENGINE, phase 1 (2026-10-29): GET /api/catalysts?sym=BTC&min=40&kind=listing&limit=100 - dated events
 // (exchange announcements, SEC/CFTC/Federal Register, media RSS, official Telegram channels) classified by rules
 // and scored on the collector, read off its 48-hour memory ring. Keyless. ONE collector read behind a 30 s edge key

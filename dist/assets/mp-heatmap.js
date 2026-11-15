@@ -1100,6 +1100,33 @@ function bkSelect(cls, opts, cur) {
     var first = c.bands[0], last = c.bands[c.bands.length - 1];
     return z.w < first.wFrom ? first : last;
   }
+  // WHAT A READER SEES AS ONE BAND IS A RUN OF 0.1% BINS (2026-11-15, owner: the box said 3.8x and $6.3M for a level the
+  // column beside it called 47x). The click lands on one bin; its heavier neighbour is the same band on screen. The
+  // band is the run of standing same-side bins no more than a bin and a half apart, walked out from the one clicked,
+  // that are at least as crowded as an average price on screen - the faint bins between bands are not part of one
+  // (measured: without that floor nearly every price has a faint bin and a BTC "band" ran 33 levels, 74,413 to 77,063).
+  function clusterOf(z) {
+    var P = S && S.pools; if (!P || !P.alive || !z) return null;
+    var gap = (P.binH || z.price * 0.001) * 1.5, side = P.alive.filter(function (x) { return !!x.long === !!z.long && !zoneDead(x); }).sort(function (a, b) { return a.price - b.price; });
+    var i0 = side.indexOf(z); if (i0 < 0) return null;
+    var lo = i0, hi = i0, on = function (x) { return relOf(x) >= 1; };
+    if (on(z)) { while (lo > 0 && side[lo].price - side[lo - 1].price <= gap && on(side[lo - 1])) lo--; while (hi < side.length - 1 && side[hi + 1].price - side[hi].price <= gap && on(side[hi + 1])) hi++; }
+    var w = 0, top = side[i0]; for (var i = lo; i <= hi; i++) { w += (+side[i].w || 0); if ((+side[i].w || 0) > (+top.w || 0)) top = side[i]; }
+    return { pLo: side[lo].price, pHi: side[hi].price, k: hi - lo + 1, w: w, top: top };
+  }
+  // WHAT THE NEAREST PAST SWEEPS REALLY TOOK - A RANGE, NEVER ONE NUMBER. The server keeps every cluster the price went
+  // through in the last 8 days with what our collector recorded across its whole span, and tests the method on itself:
+  // the K most similar by weight held the real figure `acc.cover`% of the time, while their middle was within 2x of it
+  // only `acc.within2x`% - which is why the page prints the range and the test, and no single "expected" dollar figure.
+  function sweepRange(w) {
+    var c = S && S.calib, cl = c && c.cl, acc = c && c.acc;
+    if (!cl || !acc || cl.length < 15 || !(w > 0)) return null;
+    var K = Math.min(acc.k || 9, cl.length), lw = Math.log(w), wMax = 0, i;
+    for (i = 0; i < cl.length; i++) if (cl[i][0] > wMax) wMax = cl[i][0];
+    var nb = cl.map(function (x) { return [Math.abs(Math.log(x[0]) - lw), x]; }).sort(function (a, b) { return a[0] - b[0]; }).slice(0, K).map(function (x) { return x[1]; });
+    var vs = nb.map(function (x) { return x[1]; }).sort(function (a, b) { return a - b; });
+    return { k: K, lo: vs[0], hi: vs[vs.length - 1], near: nb[0], beyond: w > wMax * 1.5, days: c.days || 8, acc: acc };
+  }
   function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
   function relTxt(r) { return r > 0 && r < 0.1 ? 'under 0.1x' : (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
   // "HEAVIER THAN A TYPICAL LEVEL" MEANT NOTHING (owner, 2026-09-22): heavier than WHAT, lighter than WHAT?
@@ -1622,12 +1649,20 @@ function bkSelect(cls, opts, cur) {
           + (dPct != null ? __esT_mpheatmap("priceHasTo",'Price has to ') + (dPct >= 0 ? 'rise' : 'fall') + ' <b>' + Math.abs(dPct).toFixed(2) + __esT_mpheatmap("toReachIt",'%</b> to reach it.<br>') : '')
           + (relOf(pl2) > 0 ? relSwatch(pl2) + relPhrase(relOf(pl2), 1) + '. ' + __esT_mpheatmap("thatIsOurEstimate",' <span style="color:#8b95a1">That is our estimate from price history, not a dollar figure.</span><br>') : '')
           + (function () {
-            var cb = calibFor(pl2);
-            if (!cb || !(cb.med > 0)) return '';
-            return __esT_mpheatmap('calibA', __esT_mpheatmap("bandsThisHeavyHave",'Bands this heavy have liquidated a median of')) + ' <b style="color:#c2f64a">' + usdShort(cb.med) + '</b> '
-              + __esT_mpheatmap('calibB', __esT_mpheatmap("whenThePriceReached",'when the price reached them')) + ' <span style="color:#8b95a1">('
-              + __esT_mpheatmap('calibC', __esT_mpheatmap("measuredOn",'measured on')) + ' ' + cb.n + ' ' + __esT_mpheatmap('calibD', __esT_mpheatmap("ofOurOwnSwept",'of our own swept levels; half fell between')) + ' '
-              + usdShort(cb.lo) + ' ' + __esT_mpheatmap('calibE', 'and') + ' ' + usdShort(cb.hi) + ')</span>.<br>';
+            var cu = clusterOf(pl2), out = '';
+            if (cu && cu.k > 1) {
+              out += __esT_mpheatmap('clSpanA', 'On the map this is one band from') + ' <b>' + fpx(cu.pLo) + '</b> ' + __esT_mpheatmap('clSpanTo', 'to') + ' <b>' + fpx(cu.pHi) + '</b> (' + cu.k + ' ' + __esT_mpheatmap('clSpanB', 'price levels')
+                + (cu.top !== pl2 && relOf(cu.top) > 0 ? ', ' + __esT_mpheatmap('clSpanC', 'the heaviest') + ' ' + relTxt(relOf(cu.top)) + ' ' + __esT_mpheatmap('clSpanD', 'at') + ' ' + fpx(cu.top.price) : '') + ').<br>';
+            }
+            var sr = sweepRange(cu ? cu.w : pl2.w);
+            if (!sr) return out;
+            if (sr.beyond) return out + __esT_mpheatmap('srBeyondA', 'This band is heavier than every band the price went through in the last') + ' ' + sr.days + ' ' + __esT_mpheatmap('srDays', 'days')
+              + __esT_mpheatmap('srBeyondB', ' - the') + ' ' + sr.k + ' ' + __esT_mpheatmap('srBeyondB2', 'heaviest of those liquidated between') + ' <b>' + usdShort(sr.lo) + '</b> ' + __esT_mpheatmap('calibE', 'and') + ' <b>' + usdShort(sr.hi) + '</b>. '
+              + '<span style="color:#8b95a1">' + __esT_mpheatmap('srBeyondC', 'There is no record of a band this heavy being swept, so we give no dollar figure for it.') + '</span><br>';
+            return out + __esT_mpheatmap('srA', 'The') + ' ' + sr.k + ' ' + __esT_mpheatmap('srB', 'most similar bands the price went through in the last') + ' ' + sr.days + ' ' + __esT_mpheatmap('srDays', 'days')
+              + ' ' + __esT_mpheatmap('srC', 'liquidated between') + ' <b style="color:#c2f64a">' + usdShort(sr.lo) + '</b> ' + __esT_mpheatmap('calibE', 'and') + ' <b style="color:#c2f64a">' + usdShort(sr.hi) + '</b>'
+              + (sr.near && sr.near[3] ? '; ' + __esT_mpheatmap('srNearA', 'the closest in weight,') + ' ' + fpx(sr.near[5]) + (sr.near[6] > sr.near[5] ? '-' + fpx(sr.near[6]) : '') + ' ' + ago2(sr.near[3] * 1000) + ', ' + __esT_mpheatmap('srNearB', 'took') + ' ' + usdShort(sr.near[1]) : '') + '. '
+              + '<span style="color:#8b95a1">' + __esT_mpheatmap('srTestA', 'Tested on our own sweeps, a range like this held the real figure') + ' ' + sr.acc.cover + '% ' + __esT_mpheatmap('srTestB', 'of the time; a single number was within 2x of it only') + ' ' + sr.acc.within2x + '%' + __esT_mpheatmap('srTestC', ', so we do not print one.') + '</span><br>';
           })()
           + (pl2.obs > 0
               ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + __esT_mpheatmap("obsReallyIn", '</b> really was liquidated here in ') + obsWinTxt() + '.'
