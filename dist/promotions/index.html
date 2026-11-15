@@ -68,9 +68,17 @@
   .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
   .card:hover .ph img{transform:scale(1.025)}
   .ph.art{background:radial-gradient(120% 140% at 85% 10%,color-mix(in srgb,var(--vc) 55%,transparent),transparent 55%),radial-gradient(90% 120% at 0% 100%,color-mix(in srgb,var(--vc) 22%,transparent),transparent 60%),#0c0f13}
-  .ph.art .lg{position:absolute;right:18px;bottom:16px;width:58px;height:58px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
-  .ph.art b{position:absolute;left:18px;top:16px;right:90px;font:800 clamp(17px,2.2vw,22px)/1.12 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+  .ph.art::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(118deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px);mask-image:linear-gradient(90deg,transparent 35%,#000)}
+  .ph.art .lg{position:absolute;right:18px;bottom:16px;width:52px;height:52px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .ph.art .wm{position:absolute;right:-6%;top:50%;width:46%;aspect-ratio:1;transform:translateY(-50%) rotate(-12deg);opacity:.12;filter:grayscale(.2) blur(.3px);border-radius:50%;overflow:hidden}
+  .ph.art .wm img{width:100%;height:100%;object-fit:cover}
+  .ph.art .k{position:absolute;left:18px;top:16px;font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:5px 8px;border-radius:6px;background:color-mix(in srgb,var(--vc) 45%,rgba(0,0,0,.4))}
+  .ph.art .pz{position:absolute;left:18px;right:84px;top:44px;font:800 clamp(30px,4.6vw,46px)/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 4px 24px color-mix(in srgb,var(--vc) 55%,transparent)}
+  .ph.art .pz small{display:block;margin-top:6px;font:700 11px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+  .ph.art b{position:absolute;left:18px;right:84px;bottom:16px;font:800 clamp(15px,1.8vw,18px)/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+  .ph.art.np b{top:44px;bottom:auto;-webkit-line-clamp:3;font-size:clamp(18px,2.3vw,23px)}
   .ph.art i{position:absolute;left:18px;bottom:16px;font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+  .card.cvt h3{display:none}
   .card:hover{background:var(--panel2)}
   .card.pin{background:linear-gradient(180deg,color-mix(in srgb,var(--vc) 7%,var(--panel)),var(--panel))}
   .tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -160,14 +168,38 @@
     if (it.ts) return { tag: '', foot: 'Posted ' + span(now - it.ts) + ' ago' };
     return { tag: '', foot: '' };
   }
+  // A campaign with no picture of its own gets a cover drawn from its title: what kind of campaign, and the prize as the headline figure
+  // (the one thing every exchange banner leads with). MEXC refuses our servers, and some posts simply carry no banner.
+  var KINDS = [[/compet|leaderboard|tournament|battle|wsot/i, 'Trading competition'], [/airdrop/i, 'Airdrop'], [/giveaway|lucky draw|draw daily|raffle/i, 'Giveaway'], [/0-fee|zero.fee|fee holiday/i, 'Zero fees'], [/cashback|rebate/i, 'Cashback'], [/apr|earn|staking|savings|wealth/i, 'Earn'], [/welcome|new user|newcomer|sign.?up|register/i, 'Welcome bonus'], [/bonus|reward|voucher|coupon/i, 'Bonus'], [/carnival|festival|party|season|event/i, 'Event']];
+  function kindOf(t) { for (var i = 0; i < KINDS.length; i++) if (KINDS[i][0].test(t)) return KINDS[i][1]; return 'Campaign'; }
+  function prizeOf(t) {
+    t = String(t || '');
+    var m = t.match(/\$\s?\d[\d,.]*\s?(?:[KMB]\b|million|billion)?/i);
+    if (m) return { v: m[0].replace(/\s+/g, '').replace(/million/i, 'M').replace(/billion/i, 'B'), u: '' };
+    m = t.match(/(\d[\d,.]*\s?[KM]?)\s+(USDT|USDC|BTC|ETH|BNB|SOL|[A-Z]{2,6})\b/);
+    if (m && /\d{3,}|[KM]/.test(m[1]) && !/^20\d\d$/.test(m[1])) return { v: m[1].replace(/\s+/g, ''), u: m[2] };
+    m = t.match(/(\d{1,3})%\s?(APR|APY|off|cashback|rebate)/i);
+    if (m) return { v: m[1] + '%', u: m[2].toUpperCase() };
+    return null;
+  }
+  function artCover(it, m) {
+    var pz = prizeOf(it.t), k = it.x ? 'Giveaway on X' : kindOf(it.t);
+    var wm = m.logo ? '<span class="wm"><img src="' + m.logo + '" alt="" loading="lazy"></span>' : '';
+    var short = it.t.replace(/\s*[\[(][^\])]*[\])]\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    return '<a class="ph art' + (pz ? '' : ' np') + '" href="' + esc(safeUrl(it.u)) + '" target="_blank" rel="noopener" data-pgo="' + esc(it.v) + '" tabindex="-1" aria-hidden="true">' + wm
+      + '<span class="k">' + esc(k) + '</span>'
+      + (pz ? '<span class="pz">' + esc(pz.v) + (pz.u ? ' <span style="font-size:.5em;letter-spacing:0">' + esc(pz.u) + '</span>' : '') + '<small>' + (/APR|APY/.test(pz.u) ? 'up to' : 'in rewards') + '</small></span>' : '')
+      + (pz ? '' : '<b>' + esc(short) + '</b>') + '<i>' + esc(m.n) + '</i>' + logo(it.v) + '</a>';
+  }
   function card(it) {
     var w = when(it);
     var tags = (it.pin ? '<span class="tg pin">Featured</span>' : '') + (it.x ? '<span class="tg x">Giveaway on X</span>' : '') + w.tag + (it.prize ? '<span class="tg prize">' + esc(it.prize) + '</span>' : '');
     var m = VEN[it.v] || { n: it.v };
     var pic = it.img
       ? '<a class="ph" href="' + esc(safeUrl(it.u)) + '" target="_blank" rel="noopener" data-pgo="' + esc(it.v) + '" tabindex="-1" aria-hidden="true"><img src="' + esc(safeUrl(it.img)) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add(\'art\');this.parentNode.innerHTML=\'<i>' + esc(m.n) + '</i>\'"></a>'
-      : '<a class="ph art" href="' + esc(safeUrl(it.u)) + '" target="_blank" rel="noopener" data-pgo="' + esc(it.v) + '" tabindex="-1" aria-hidden="true"><b>' + esc(it.t) + '</b><i>' + esc(m.n) + (it.x ? ' &middot; on X' : '') + '</i>' + logo(it.v) + '</a>';
-    return '<article class="card' + (it.pin ? ' pin' : '') + '">' + pic + '<div class="cb">'
+      : artCover(it, m);
+    var cvt = !it.img && !prizeOf(it.t); // the drawn cover already carries the title, so the body does not repeat it
+    return '<article class="card' + (it.pin ? ' pin' : '') + (cvt ? ' cvt' : '') + '">' + pic + '<div class="cb">'
       + (tags ? '<div class="tags">' + tags + '</div>' : '')
       + '<h3>' + esc(it.t) + '</h3>'
       + (it.d ? '<p class="d">' + esc(it.d) + '</p>' : '')
