@@ -10735,7 +10735,12 @@ function doImportRows(self, sqlX, body) {
   for (const [tn, rows2, append] of jobs) {
     if (!/^[a-z][a-z0-9_]{1,23}$/.test(tn)) continue;
     if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
-    if (!append) { try { sqlX.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; } }
+    if (!append) { try { sqlX.exec('DELETE FROM ' + tn); } catch (e) {
+      // a table the store creates lazily and nobody has listed in its /import yet: build it from the rows' own columns so the data is
+      // provably restorable, and SAY so - a generic table has no primary key, which a real recovery must still put right (2026-11-15)
+      const c0 = rows2[0] && typeof rows2[0] === 'object' ? Object.keys(rows2[0]).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c)) : [];
+      if (!c0.length) { counts[tn] = null; continue; }
+      try { sqlX.exec('CREATE TABLE ' + tn + '(' + c0.join(',') + ')'); (added[tn] = added[tn] || []).push('generic-table'); } catch (e2) { counts[tn] = null; continue; } } }
     for (const r2 of rows2.slice(0, 200000)) {
       if (!r2 || typeof r2 !== 'object') continue;
       const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
@@ -33137,6 +33142,8 @@ export class OpsLog {
       let bi = {}; try { bi = await request.json(); } catch (e) {}
       const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
       if (!marked) { let realN = 0; try { realN = (this.rows('SELECT COUNT(*) n FROM mpadpx')[0] || {}).n || 0; } catch (e) {} if (realN > 0) return this.j({ error: 'refused_real_instance', rows: realN }); try { this.state.storage.sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {} }
+      // tables this store creates lazily (in their own handlers) must exist with their REAL schema before rows land - primary keys included
+      try { this.state.storage.sql.exec('CREATE TABLE IF NOT EXISTS lsnap(ts INTEGER, sym TEXT, lp REAL, sp REAL, n INTEGER, PRIMARY KEY(ts, sym))'); this.state.storage.sql.exec('CREATE TABLE IF NOT EXISTS rngpx(sym TEXT, m INTEGER, px REAL NOT NULL, step REAL DEFAULT 0, parts TEXT, inputs TEXT, ts INTEGER, PRIMARY KEY(sym,m))'); } catch (e) {}
       const im = doImportRows(this, this.state.storage.sql, bi); return this.j({ ok: true, counts: im.counts, errs: im.errs, added: im.added });
     }
     await this.seed();
@@ -39513,7 +39520,8 @@ export class UserStore {
         if (realN > 0) return this.j({ error: 'refused_real_instance', realUsers: realN });
         try { sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
       }
-      const im = doImportRows(this, sql, b); return this.j({ ok: true, counts: im.counts, errs: im.errs });
+      try { sql.exec('CREATE TABLE IF NOT EXISTS achievements(user_id TEXT, ach_id TEXT, ts INTEGER, PRIMARY KEY(user_id,ach_id))'); } catch (e) {} // created lazily by its route - the real schema must exist before its rows land (2026-11-15)
+      const im = doImportRows(this, sql, b); return this.j({ ok: true, counts: im.counts, errs: im.errs, added: im.added });
     }
     if (path === '/mktestuser') { // admin tooling for the E2E suites (test-multidevice/test-trading): /trades sync + tradeev feeds are guarded on a real users row. HARD-limited to 'e2e-' ids so it can never touch a real account.
       const tu = String(b.uid || ''); if (!/^e2e-[a-z0-9-]{2,40}$/.test(tu)) return this.j({ error: 'bad_uid' });
