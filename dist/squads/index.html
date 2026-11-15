@@ -457,6 +457,73 @@
   .sqpanel>.sect:first-child{margin-top:16px}
   @media(max-width:560px){.sqtabs{gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-top:18px}.sqtab{flex:0 0 auto;padding:9px 14px}}
   @media(max-width:560px){.sqshop{grid-template-columns:1fr 1fr;gap:10px}.sqpv{height:78px}.valn{font-size:22px}.valh{margin-left:0;width:100%}}
+  /* @SQX the squad round (2026-11-15): one status strip, one action row, everything else on a click */
+  .sqx-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px;position:relative}
+  .sqx-c{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.022);transition:border-color .18s,background .18s,transform .12s;-webkit-tap-highlight-color:transparent}
+  .sqx-c:hover{border-color:color-mix(in srgb,var(--sq,#c2f64a) 45%,var(--line));background:color-mix(in srgb,var(--sq,#c2f64a) 6%,transparent)}
+  .sqx-c:active{transform:scale(.98)}
+  .sqx-c:focus-visible{outline:2px solid var(--sq,#c2f64a);outline-offset:2px}
+  .sqx-k{font:700 9.5px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
+  .sqx-v{display:flex;align-items:center;gap:5px;font:800 19px/1.1 'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sqx-v small{font:600 11px 'Space Mono',ui-monospace,monospace;color:var(--dim)}
+  .sqx-s{font-size:11.5px;line-height:1.25;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sqx-c.hot .sqx-v svg{color:#ff8a3d;filter:drop-shadow(0 0 6px rgba(255,138,61,.55))}
+  .sqx-c.up .sqx-s{color:var(--up)}.sqx-c.dn .sqx-s{color:var(--red)}
+  .sqx-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+  .sqx-acts .btn{width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sqx-acts .btn svg{flex:0 0 auto}
+  .sqx-acts .btn[disabled]{opacity:.55;cursor:default}
+  .sqx-note{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;padding:9px 12px;border-radius:11px;background:color-mix(in srgb,var(--amber) 8%,transparent);border:1px solid color-mix(in srgb,var(--amber) 28%,var(--line))}
+  .sqx-note a{color:var(--amber);font-weight:700;font-size:13px;text-decoration:none}.sqx-note a:hover{text-decoration:underline}
+  @media(max-width:620px){.sqx-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.sqx-acts{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.sqx-acts .btn{font-size:11.5px;padding:7px 6px;gap:4px}.sqx-v{font-size:17px}}
+  .mem .mon{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:transparent;margin-right:-2px}
+  .mem .mon.on{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 22%,transparent),0 0 8px color-mix(in srgb,var(--up) 60%,transparent)}
+  .tagpill.rl{color:var(--blue);border-color:color-mix(in srgb,var(--blue) 40%,transparent)}
+  .sqx-goals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .sqx-g{display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.022);min-width:0}
+  .sqx-g.done{border-color:color-mix(in srgb,var(--sq,#c2f64a) 45%,var(--line))}
+  .sqx-gt{font-weight:700;font-size:13.5px;color:var(--ink);min-height:2.5em;line-height:1.25}
+  .sqx-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}.sqx-bar i{display:block;height:100%;background:var(--sq,#c2f64a);transition:width .6s}
+  .sqx-gf{display:flex;align-items:center;justify-content:flex-end;min-height:32px}
+  .sqx-gn{font:700 12px 'Space Mono',ui-monospace,monospace;color:var(--dim)}.sqx-ok{font:700 11px 'Space Mono',ui-monospace,monospace;color:var(--up);letter-spacing:.06em;text-transform:uppercase}
+  .sqx-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+  .sqx-sm{margin:0;padding:13px}.sqx-sm p{margin:6px 0 0;font-size:12.5px;color:var(--dim);line-height:1.45}.sqx-sm b{color:var(--ink)}
+  .sqx-big{display:flex;align-items:center;gap:6px;margin-top:6px;font:800 24px/1 'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink)}.sqx-big small{font:600 12px 'Familjen Grotesk',system-ui,sans-serif;color:var(--dim)}.sqx-big svg{color:#ff8a3d}
+  .sqx-rv{margin-top:8px;padding:13px}.sqx-rv.empty-rv{display:flex;align-items:center;justify-content:space-between;gap:12px}.sqx-rv.empty-rv p{margin:0;font-size:13px;color:var(--dim)}
+  .sqx-rvh{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:6px}
+  .sqx-rvs{display:flex;align-items:center;gap:8px;font:800 14px 'Space Mono',ui-monospace,monospace;color:var(--ink)}.sqx-rvs.r{justify-content:flex-end}
+  .sqx-vsx{font:800 11px 'Space Mono',ui-monospace,monospace;color:var(--faint);letter-spacing:.1em}
+  .sqx-vr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+  .sqx-vr span{font-size:12px;color:var(--faint);text-align:center;white-space:nowrap}.sqx-vr b{font:700 14px 'Space Mono',ui-monospace,monospace;color:var(--dim)}.sqx-vr b:last-child{text-align:right}.sqx-vr b.w{color:var(--ink)}
+  .sqx-vr b.w::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sq,#c2f64a);margin:0 0 2px 6px}.sqx-vr b:last-child.w::after{display:none}.sqx-vr b:last-child.w::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sq,#c2f64a);margin:0 6px 2px 0}
+  .sqx-rvf{display:flex;justify-content:flex-end;margin-top:8px}
+  .sqx-h3{font-size:15px;font-weight:800;margin:0 0 9px}.sqx-p{margin:0 0 11px;color:var(--dim);font-size:13px;line-height:1.45}
+  .sqx-app{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+  .sqx-appw{flex:1;min-width:0;font-size:13.5px}.sqx-appw a{color:var(--ink);font-weight:700;text-decoration:none}.sqx-appw span{font-size:12px}.sqx-ago{color:var(--faint)!important;margin-left:8px}
+  .sqx-msg{margin-top:3px;color:var(--dim);font-size:12.5px;overflow-wrap:anywhere}.sqx-appb{display:flex;gap:6px;flex:0 0 auto}
+  .sqx-role{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .sqx-rn{font-weight:700;font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sqx-rc{display:flex;gap:5px;flex:0 0 auto}.sqx-rc .chip{padding:5px 9px;font-size:12px}
+  .sqx-vsin{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:11px 13px;border-color:color-mix(in srgb,var(--amber) 35%,var(--line))}.sqx-vsin.out{border-color:var(--line)}
+  .sqx-vsit{flex:1;min-width:0;font-size:13px;color:var(--dim)}.sqx-vsit b{color:var(--ink)}.sqx-vsit small{display:block;color:var(--faint);font-size:11px;margin-top:2px}.sqx-vsib{display:flex;gap:6px;flex:0 0 auto}
+  .sqx-opp{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-top:8px;font:700 11.5px 'Space Mono',ui-monospace,monospace;color:var(--dim)}
+  .sqx-oppn{display:inline-flex;align-items:center;gap:5px;color:var(--ink)}.sqx-oppb{height:6px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}.sqx-oppb i{display:block;height:100%;background:var(--faint);transition:width .6s}
+  .sqx-tl{list-style:none;margin:0;padding:0}.sqx-tl li{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:8px 0 8px 14px;border-left:2px solid var(--line);margin-left:4px;position:relative;font-size:13px}
+  .sqx-tl li::before{content:'';position:absolute;left:-5px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--line2)}
+  .sqx-tl li.k-raid::before,.sqx-tl li.k-vs::before{background:#ff8a3d}.sqx-tl li.k-level::before,.sqx-tl li.k-season::before{background:var(--sq,#c2f64a)}.sqx-tl li.k-join::before{background:var(--up)}.sqx-tl li.k-mvp::before{background:var(--amber)}
+  .sqx-tl span{font:600 11px 'Space Mono',ui-monospace,monospace;color:var(--faint);padding-top:2px}.sqx-tl b{font-weight:600;color:var(--ink)}
+  .sqx-find{width:100%;box-sizing:border-box;margin:0 0 9px}
+  .sqx-list{display:flex;flex-direction:column;gap:5px;max-height:min(52vh,420px);overflow:auto}
+  .sqx-li{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:border-color .15s,background .15s}
+  .sqx-li:hover{border-color:var(--line2);background:rgba(255,255,255,.03)}.sqx-li.arm{border-color:var(--amber)}
+  .sqx-lin{display:flex;flex-direction:column;min-width:0}.sqx-lin b{font-size:13.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sqx-lin small{font:600 11px 'Space Mono',ui-monospace,monospace;color:var(--faint)}
+  .sqx-coins{margin:0 0 10px}
+  .sqx-ta{width:100%;box-sizing:border-box;resize:none;font:15px 'Familjen Grotesk',system-ui,sans-serif;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:11px;padding:10px}
+  .sqx-race{margin-top:10px;display:flex;justify-content:center}
+  .sqx-mrow{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}.sqx-mrow>.btn{width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media(max-width:620px){.sqx-mrow>.btn{font-size:12.5px;padding:10px 6px}}
+  .sqsh-x2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+  .sqsh-x2>div{padding:9px 11px;border:1px solid var(--line);border-radius:11px}.sqsh-x2 b{display:block;font:800 17px 'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink)}.sqsh-x2 span{font:700 9.5px 'Space Mono',ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  @media(max-width:620px){.sqx-goals{grid-template-columns:minmax(0,1fr)}.sqx-g{flex-direction:row;align-items:center;gap:10px}.sqx-gt{min-height:0;flex:1}.sqx-g .sqx-bar{flex:0 0 70px}.sqx-gf{min-height:0}.sqx-two{grid-template-columns:minmax(0,1fr)}.sqx-app{flex-wrap:wrap}.sqx-role{flex-wrap:wrap}.sqx-rv.empty-rv{flex-direction:column;align-items:flex-start}}
 </style>
 <meta property="og:image" content="https://marginpad.io/assets/og/squads.jpg" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/squads.jpg" />
@@ -565,6 +632,10 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.'),
     coin_daily_limit: __esT_squadsindex("coinDailyLimit",'That coin is used up for today. Raids per coin per day grow with your level - five at level 10.'),
     daily_limit: __esT_squadsindex("raidDailyLimit", 'Your squad has started all its raids for today. A new day starts at 00:00 UTC.'), coin_locked: __esT_squadsindex("raidCoinLocked", 'That coin was abandoned less than 24 hours ago and is locked until then.'), already_rallied: __esT_squadsindex("alreadyRallied", 'You already rallied the squad for this raid.'), raid_running: __esT_squadsindex("raidRunning",'A raid is already running. Finish or abandon it first.'), bad_coin: __esT_squadsindex("badCoin",'Pick a major coin.')
+    , recruit_wait: __esT_squadsindex("sxErrRecruitWait", 'The squad was posted to the chat less than 6 hours ago.'), not_allowed: __esT_squadsindex("sxErrNotAllowed", 'Your role cannot do that.'), hidden: __esT_squadsindex("notFound", 'Not found.'),
+    open_join: __esT_squadsindex("sxErrOpenJoin", 'That squad is open - you can join it straight away.'), already_applied: __esT_squadsindex("sxErrApplied", 'You already asked to join that squad.'), too_many_apps: __esT_squadsindex("sxErrTooManyApps", 'You have three applications waiting - wait for an answer first.'),
+    no_application: __esT_squadsindex("sxErrNoApp", 'That application is gone.'), claimed: __esT_squadsindex("sxErrClaimed", 'Already claimed this week.'), not_done: __esT_squadsindex("sxErrNotDone", 'Not done yet.'), challenge_pending: __esT_squadsindex("sxErrPending", 'You already have a race challenge out.'),
+    self: __esT_squadsindex("sxErrSelf", 'That is your own squad.'), not_pending: __esT_squadsindex("sxErrNotPending", 'That challenge is no longer open.'), bad_role: __esT_squadsindex("sxErrBad", 'Not possible.'), not_member: __esT_squadsindex("noMemberWithThat", 'No member with that username.'), is_leader: __esT_squadsindex("sxErrBad", 'Not possible.')
   };
   function say(el, j, good) {
     if (!el) return;
@@ -757,12 +828,13 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     var live = window.mpSquadLive && window.mpSquadLive.get(), tot = (live && live.season && live.season.total) || 0;
     var mine = 0; if (live && live.season) (live.season.members || []).forEach(function (x) { if (x.name === m.name) mine = x.xp || 0; });
     var share = tot > 0 ? Math.round(mine / tot * 100) : 0;
-    return '<div class="mem"><div class="av" style="color:' + esc(col) + ';box-shadow:inset 0 0 0 1.5px ' + esc(col) + '55">' + init + '</div>'
+    return '<div class="mem"><i class="mon' + (m.on ? ' on' : '') + '"' + (m.on ? ' title="' + TX("sxActiveNow", 'Active now') + '"' : '') + '></i><div class="av" style="color:' + esc(col) + ';box-shadow:inset 0 0 0 1.5px ' + esc(col) + '55">' + init + '</div>'
       + '<div style="min-width:0;flex:1"><div class="who"><a href="#" data-lbu="' + esc(m.name) + '" style="color:inherit;text-decoration:none">' + esc(m.name) + '</a><span class="lv"> ' + esc((m.level && m.level.name) || '') + '</span></div>'
       + (mine > 0 ? '<div class="mxp"><i style="width:' + share + '%;background:' + esc(col) + '"></i></div>' : '')
       + '</div>'
       + '<div class="sp">' + (mine > 0 ? '<span class="mxn">' + nfm(mine) + '<small> XP</small></span>' : '<span class="mxn dim">-</span>')
       + (m.mvp ? '<span class="tagpill mvp" title="' + __esT_squadsindex("mvpThisWeek", 'MVP this week') + '">' + MVPSVG + ' MVP</span>' : '')
+      + (m.role === 'captain' ? '<span class="tagpill rl">' + TX("sxRoleCaptain", 'Captain') + '</span>' : m.role === 'recruiter' ? '<span class="tagpill rl">' + TX("sxRoleRecruiter", 'Recruiter') + '</span>' : '')
       + (m.leader ? '<span class="tagpill ld">' + __esT_squadsindex("leaderSp", 'Leader') + '</span>' : '')
       + (S.me && S.me.isLeader && !m.leader ? '<button class="btn sm d" data-kick="' + esc(m.name) + '">' + __esT_squadsindex("removeSp", 'Remove') + '</button>' : '') + '</div></div>';
   }
@@ -770,10 +842,11 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   var RAIDCOIN = { BTC: '#f7931a', ETH: '#7c8cff', SOL: '#19d6a0', XRP: '#4aa3f6', BNB: '#f3ba2f' };
   function raidSection(s, isL) {
     var r = S.me.raid, hist = S.me.raidHistory || [], coins = S.me.raidCoins || ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'], R = S.me.raidRules || {};
+    if (!isL && sxMay('raid')) isL = true; // a captain runs raids too (@SQX)
     var h = '<div class="sect"><h2>' + __esT_squadsindex("raidsH", 'Raids') + ' <button type="button" class="btn sm" data-rules="raid" style="margin-left:6px">' + __esT_squadsindex("rulesSp", 'Rules') + '</button></h2>'
       + '<p class="sub">' + __esT_squadsindex("raidsSub2", 'A team goal: pick a major coin and close enough profit on it together in 48 hours. Most of the squad has to take part, a loss counts against you, and nothing clears before 24 hours - a raid can fail.') + '</p>';
-    h += shelfHtml(S.me.trophies);
-    h += '<div id="raidBox">' + (r ? raidCard(r, isL) : isL ? raidPicker(coins, s) : '<div class="empty">' + __esT_squadsindex("noRaidMember", 'No raid running. Your leader starts one.') + '</div>') + '</div>';
+    h += shelfHtml(S.me.trophies) + vsInHtml();
+    h += '<div id="raidBox">' + (r ? raidCard(r, isL) : isL ? raidPicker(coins, s) + ((sqx().vsOut || []).length ? '' : '<div class="sqx-race"><button class="btn sm" type="button" data-vsopen>' + SXI.vs + TX("sxRace", 'Race another squad') + '</button></div>') : '<div class="empty">' + __esT_squadsindex("noRaidMember", 'No raid running. Your leader starts one.') + '</div>') + '</div>';
     if (hist.length) h += '<div class="rhist">' + hist.map(function (x) {
       var cl = x.status === 'cleared', ab = x.status === 'abandoned';
       return '<span class="rh ' + (cl ? 'win' : 'lose') + '"><b>' + esc(x.coin) + '</b> ' + (cl ? '&#10003; $' + Math.round(x.progress).toLocaleString() : (ab ? __esT_squadsindex("abandonedSp", 'abandoned') : '$' + Math.round(x.progress).toLocaleString() + ' / ' + Math.round(x.target).toLocaleString())) + (cl ? ' <button type="button" class="rh-sh" data-rshare="' + esc(x.id) + '">' + __esT_squadsindex("shareSp", 'Share') + '</button>' : '') + '</span>';
@@ -861,7 +934,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     var h = '<div class="card raid" style="--rc:' + col + '" data-raidid="' + esc(r.id) + '">'
       + '<div class="raid-top"><div class="raid-coin">' + esc(r.coin) + '</div><div class="raid-st">' + st + '</div></div>'
       + '<div class="raid-nums"><b class="' + (prog < 0 ? 'neg' : '') + '">' + (prog < 0 ? '-' : '') + '$' + Math.abs(Math.round(prog)).toLocaleString() + '</b><span>' + __esT_squadsindex("ofSp", 'of') + ' $' + Math.round(tgt).toLocaleString() + '</span></div>'
-      + '<div class="rboss"><div class="rboss-hp"><i style="width:' + pct + '%"></i></div><span class="rboss-pct">' + pct + '%</span></div>';
+      + '<div class="rboss"><div class="rboss-hp"><i style="width:' + pct + '%"></i></div><span class="rboss-pct">' + pct + '%</span></div>' + vsOppHtml(r);
     var mem = live.members || (r.detail && r.detail.members) || [];
     if (mem.length) h += '<div class="rsq">' + mem.map(function (m) {
       var p = Math.max(0, Math.min(100, Math.round((m.pnl > 0 ? m.pnl : 0) / Math.max(1, inMin) * 100)));
@@ -893,7 +966,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       var box = document.getElementById('raidBox'); if (!box || !box.querySelector('[data-raidid="' + d.raid.id + '"]')) return;
       if (d.raid.status !== 'active') { load(true); return; }
       var hp = box.querySelector('.rboss-hp i'), old = hp ? hp.style.width : '';
-      S.me.raid = d.raid; box.innerHTML = raidCard(d.raid, S.me.isLeader);
+      S.me.raid = d.raid; box.innerHTML = raidCard(d.raid, S.me.isLeader || sxMay('raid'));
       var nh = box.querySelector('.rboss-hp i'); if (nh && old && nh.style.width !== old) { var to = nh.style.width; nh.style.width = old; requestAnimationFrame(function () { requestAnimationFrame(function () { nh.style.width = to; }); }); }
     });
   }
@@ -919,9 +992,161 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     return h + '</div>';
   }
 
+  /* @SQX (2026-11-15, owner: "moze sve osim broja 3 ... lepo organizovano da informacije korisnici dobijaju na klik").
+     One status strip of four equal cells under the hero (streak, season, this week, rival), one row of three equal actions
+     (share card, history, find members), a quiet notice when something waits, a "This week" tab, roles and applications in
+     Settings, the raid race inside Raids. Everything else opens on a click, in the one sheet the page already has. */
+  var TX = __esT_squadsindex;
+  function sqLum(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.replace(/./g, function (c) { return c + c; }); if (!/^[0-9a-f]{6}$/i.test(h)) return 0; return 0.299 * parseInt(h.slice(0, 2), 16) + 0.587 * parseInt(h.slice(2, 4), 16) + 0.114 * parseInt(h.slice(4, 6), 16); }
+  function sqAccent(c) { c = c || {}; if (sqLum(c.bg) >= 80) return c.bg; if (sqLum(c.fg) >= 80) return c.fg; return '#c2f64a'; }
+  var SXI = {
+    flame: '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2c1 3.2-.6 5-2 6.6C8.6 10.2 7 12 7 14.6A5 5 0 0 0 12 20a5 5 0 0 0 5-5.2c0-2-1-3.4-2.1-4.6.1 1.5-.4 2.7-1.6 3.2.4-2.6-.2-6.5-1.3-11.4z"/></svg>',
+    share: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12M7 8l5-5 5 5"/></svg>',
+    hist: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+    mega: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6l-6 4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>',
+    vs: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l7 7M5 19l14-14M15 15l4 4M13 19l6-6"/></svg>'
+  };
+  function sqx() { return (S.me && S.me.sqx) || {}; }
+  function sxMay(k) { var m = sqx().may || {}; return !!m[k]; }
+  function sxHm(ms) { ms = Math.max(0, ms); var h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000); return h ? h + 'h ' + m + 'm' : m + 'm'; }
+  function sxCell(attr, k, v, sub, cls) { return '<button type="button" class="sqx-c' + (cls ? ' ' + cls : '') + '" ' + attr + '><span class="sqx-k">' + k + '</span><span class="sqx-v">' + v + '</span><span class="sqx-s">' + sub + '</span></button>'; }
+  function sqxHero(s) {
+    var X = sqx(), st = X.streak || {}, se = X.season || {}, wk = X.week || {}, rv = X.rival;
+    var h = '<div class="sqx-strip">'
+      + sxCell('data-sqx="streak"', TX("sxStreak", 'Streak'), SXI.flame + (st.days || 0) + '<small>d</small>', st.today ? TX("sxTodayDone", 'today is in') : (st.todayN || 0) + '/' + (st.need || 1) + ' ' + TX("sxClosedToday", 'traded today'), st.days ? 'hot' : '')
+      + sxCell('data-sqx="season"', TX("sxSeason", 'Season'), se.rank ? '#' + se.rank : '&ndash;', se.rank ? TX("sxOf", 'of') + ' ' + (se.of || 0) + ' ' + TX("sxSquads", 'squads') : TX("sxNoSeason", 'no squad XP yet'))
+      + sxCell('data-tabgo="week"', TX("sxWeek", 'This week'), '+' + nfm(wk.xp || 0) + '<small> XP</small>', (wk.closes || 0) + ' ' + TX("sxCloses", 'closes') + ' &middot; ' + (wk.raids || 0) + ' ' + TX("sxRaids", 'raids'))
+      + sxCell('data-sqx="rival"', TX("sxRival", 'Rival'), rv ? esc(rv.tag) : '&ndash;', rv ? (wk.xp >= ((rv.week && rv.week.xp) || 0) ? TX("sxAhead", 'you lead this week') : TX("sxBehind", 'they lead this week')) : (sxMay('rival') ? TX("sxPickOne", 'pick one') : TX("sxNoRival", 'no rival yet')), rv ? (wk.xp >= ((rv.week && rv.week.xp) || 0) ? 'up' : 'dn') : '')
+      + '</div>';
+    var rec;
+    if (sxMay('recruit')) {
+      var wait = (X.recruitNext || 0) - Date.now();
+      rec = s.n >= s.max ? '<button class="btn sm" type="button" disabled>' + SXI.mega + TX("sxFull", 'Squad is full') + '</button>'
+        : wait > 0 ? '<button class="btn sm" type="button" disabled>' + SXI.mega + TX("sxPostIn", 'Post again in') + ' ' + sxHm(wait) + '</button>'
+        : '<button class="btn sm p" type="button" data-sqrecruit>' + SXI.mega + TX("sxFindMembers", 'Find members') + '</button>';
+    } else rec = '<button class="btn sm" type="button" data-rules="squad">' + TX("sxHowItWorks", 'How squads work') + '</button>';
+    h += '<div class="sqx-acts"><button class="btn sm" type="button" data-sqshare>' + SXI.share + TX("sxShare", 'Share card') + '</button>'
+      + '<button class="btn sm" type="button" data-sqhist>' + SXI.hist + TX("sxHistory", 'History') + '</button>' + rec + '</div>';
+    var nA = (X.apps || []).length, nV = (X.vsIn || []).length;
+    if (nA || nV) h += '<div class="sqx-note">' + (nA ? '<a href="#" data-tabgo="settings">' + nA + ' ' + (nA === 1 ? TX("sxApp1", 'application waiting') : TX("sxAppN", 'applications waiting')) + '</a>' : '')
+      + (nV ? '<a href="#" data-tabgo="raids">' + nV + ' ' + (nV === 1 ? TX("sxVs1", 'raid race challenge') : TX("sxVsN", 'raid race challenges')) + '</a>' : '') + '</div>';
+    return h;
+  }
+  function sxGoalName(id) { return id === 'closes' ? TX("sxGoalCloses", 'Close trades together') : id === 'raid' ? TX("sxGoalRaid", 'Clear a raid') : TX("sxGoalCi", 'Days everyone checked in'); }
+  function sqxWeekTab() { var n = (sqx().goals || []).filter(function (g) { return g.done && !g.claimed; }).length; return TX("sxWeek", 'This week') + (n ? ' <span class="tabn">' + n + '</span>' : ''); }
+  function weekSection(s) {
+    var X = sqx(), wk = X.week || {}, st = X.streak || {}, rv = X.rival;
+    var h = '<div class="sect"><h2>' + TX("sxWeek", 'This week') + ' <small class="cnt">' + TX("sxResets", 'resets Monday 00:00 UTC') + '</small></h2>';
+    h += '<div class="sqx-goals">' + (X.goals || []).map(function (g) {
+      var p = Math.max(0, Math.min(100, Math.round(g.have / Math.max(1, g.need) * 100)));
+      var act = g.claimed ? '<span class="sqx-ok">' + TX("sxClaimed", 'Claimed') + '</span>' : g.done ? '<button class="btn sm p" type="button" data-goal="' + esc(g.id) + '">+' + g.valor + ' Valor</button>' : '<span class="sqx-gn">' + Math.min(g.have, g.need) + '/' + g.need + '</span>';
+      return '<div class="sqx-g' + (g.done ? ' done' : '') + '"><div class="sqx-gt">' + sxGoalName(g.id) + '</div><div class="sqx-bar"><i style="width:' + p + '%"></i></div><div class="sqx-gf">' + act + '</div></div>';
+    }).join('') + '</div>';
+    h += '<div class="sqx-two">'
+      + '<div class="card sqx-sm"><div class="sqx-k">' + TX("sxStreak", 'Streak') + '</div><div class="sqx-big">' + SXI.flame + (st.days || 0) + ' <small>' + TX("sxDays", 'days') + '</small></div><p>' + TX("sxStreakHow", 'A day counts when') + ' <b>' + (st.need || 1) + '</b> ' + TX("sxStreakHow2", 'of you close a trade. Today:') + ' <b>' + (st.todayN || 0) + '/' + (st.need || 1) + '</b></p></div>'
+      + '<div class="card sqx-sm"><div class="sqx-k">' + TX("sxTogether", 'Everyone checked in') + '</div><div class="sqx-big">' + (wk.ci || 0) + ' <small>' + TX("sxDaysThisWeek", 'days this week') + '</small></div><p>' + TX("sxCiHow", 'Each day every member shows up pays the squad') + ' <b>+' + (X.ciXp || 40) + ' XP</b>.</p></div>'
+      + '</div>';
+    if (rv) {
+      var row = function (lab, a, b, fmt) { a = +a || 0; b = +b || 0; return '<div class="sqx-vr"><b class="' + (a > b ? 'w' : '') + '">' + (fmt ? fmt(a) : a) + '</b><span>' + lab + '</span><b class="' + (b > a ? 'w' : '') + '">' + (fmt ? fmt(b) : b) + '</b></div>'; };
+      var rw = rv.week || {};
+      h += '<div class="card sqx-rv"><div class="sqx-rvh"><div class="sqx-rvs">' + crest(s.crest, 30, s.tag, s.level && s.level.lv) + '<b>' + esc(s.tag) + '</b></div><span class="sqx-vsx">VS</span><div class="sqx-rvs r"><b>' + esc(rv.tag) + '</b>' + crest(rv.crest, 30, rv.tag, rv.level && rv.level.lv) + '</div></div>'
+        + row(TX("sxRowXp", 'Squad XP'), wk.xp, rw.xp, nfm) + row(TX("sxRowCloses", 'Closed trades'), wk.closes, rw.closes) + row(TX("sxRowRaids", 'Raids cleared'), wk.raids, rw.raids) + row(TX("sxRowDuels", 'Duels won'), wk.duels, rw.duels) + row(TX("sxRowStreak", 'Streak'), (X.streak || {}).days, rv.streak)
+        + (sxMay('rival') ? '<div class="sqx-rvf"><button class="btn sm" type="button" data-sqx="rival">' + TX("sxChangeRival", 'Change rival') + '</button></div>' : '') + '</div>';
+    } else h += '<div class="card sqx-rv empty-rv"><p>' + TX("sxRivalWhy", 'Name a rival squad and this week is scored side by side: XP, trades, raids, duels and streak.') + '</p>' + (sxMay('rival') ? '<button class="btn sm p" type="button" data-sqx="rival">' + TX("sxPickRival", 'Pick a rival') + '</button>' : '') + '</div>';
+    return h + '</div>';
+  }
+  function sqxSettings(s) {
+    var X = sqx(), h = '';
+    if ((X.apps || []).length) h += '<div class="card"><h3 class="sqx-h3">' + TX("sxApps", 'Applications') + ' <small class="cnt">' + X.apps.length + '</small></h3>' + X.apps.map(function (a) {
+      var c = (a.level && a.level.col) || '#9aa3ad';
+      return '<div class="sqx-app"><div class="sqx-appw"><a href="#" data-lbu="' + esc(a.name) + '">' + esc(a.name) + '</a> <span style="color:' + esc(c) + '">' + esc((a.level && a.level.name) || '') + '</span><span class="sqx-ago">' + ago(a.ts) + '</span>' + (a.msg ? '<div class="sqx-msg">' + esc(a.msg) + '</div>' : '') + '</div>'
+        + '<div class="sqx-appb"><button class="btn sm p" type="button" data-appok="' + esc(a.name) + '">' + TX("sxAccept", 'Accept') + '</button><button class="btn sm" type="button" data-appno="' + esc(a.name) + '">' + TX("sxDecline", 'Decline') + '</button></div></div>';
+    }).join('') + '<div class="msg" id="appMsg"></div></div>';
+    if (X.may && X.may.roles && (s.members || []).length > 1) h += '<div class="card"><h3 class="sqx-h3">' + TX("sxRoles", 'Roles') + '</h3><p class="sqx-p">' + TX("sxRolesSub", 'A captain starts raids and races, rallies, picks the rival and answers applications. A recruiter posts the squad to the chat and answers applications.') + '</p>'
+      + (s.members || []).filter(function (m) { return !m.leader; }).map(function (m) {
+        var r = m.role || 'member';
+        return '<div class="sqx-role"><span class="sqx-rn">' + esc(m.name) + '</span><span class="sqx-rc">' + ['member', 'captain', 'recruiter'].map(function (k) { return '<button type="button" class="chip' + (r === k ? ' on' : '') + '" data-role="' + esc(m.name) + '|' + k + '">' + (k === 'member' ? TX("sxRoleMember", 'Member') : k === 'captain' ? TX("sxRoleCaptain", 'Captain') : TX("sxRoleRecruiter", 'Recruiter')) + '</button>'; }).join('') + '</span></div>';
+      }).join('') + '<div class="msg" id="roleMsg"></div></div>';
+    return h;
+  }
+  function vsInHtml() {
+    var X = sqx(), h = '';
+    (X.vsIn || []).forEach(function (v) {
+      h += '<div class="card sqx-vsin">' + crest(v.crest, 30, v.tag) + '<div class="sqx-vsit"><b>' + esc(v.name) + '</b> ' + TX("sxChallenges", 'challenges you to a raid race on') + ' <b>' + esc(v.coin) + '</b><small>' + ago(v.ts) + '</small></div>'
+        + (sxMay('raid') ? '<div class="sqx-vsib"><button class="btn sm p" type="button" data-vsacc="' + esc(v.id) + '">' + TX("sxAcceptRace", 'Accept') + '</button><button class="btn sm" type="button" data-vsdec="' + esc(v.id) + '">' + TX("sxDecline", 'Decline') + '</button></div>' : '') + '</div>';
+    });
+    (X.vsOut || []).forEach(function (v) {
+      h += '<div class="card sqx-vsin out">' + crest(v.crest, 30, v.tag) + '<div class="sqx-vsit">' + TX("sxWaitingFor", 'Waiting for') + ' <b>' + esc(v.name) + '</b> ' + TX("sxToAnswer", 'to answer your race on') + ' <b>' + esc(v.coin) + '</b><small>' + ago(v.ts) + '</small></div>'
+        + (sxMay('raid') ? '<div class="sqx-vsib"><button class="btn sm" type="button" data-vscan="' + esc(v.id) + '">' + TX("sxCancel", 'Cancel') + '</button></div>' : '') + '</div>';
+    });
+    return h;
+  }
+  function vsOppHtml(r) {
+    var o = r.opp; if (!o) return '';
+    var pct = Math.max(0, Math.min(100, Math.round((o.total || 0) / Math.max(1, o.target || 1) * 100)));
+    return '<div class="sqx-opp"><span class="sqx-oppn">' + SXI.vs + ' ' + esc(o.tag || o.name) + '</span><div class="sqx-oppb"><i style="width:' + pct + '%"></i></div><span class="sqx-oppv">' + pct + '%' + (o.status !== 'active' ? ' &middot; ' + esc(o.status) : '') + '</span></div>';
+  }
+  /* the sheets: everything below opens on a click, inside the one sheet the page already has */
+  function sxSheet(html) { openSquadSheet('', true); var b = SH.querySelector('.sqsh-b'); SH.style.setProperty('--sq', sqAccent(S.me && S.me.squad && S.me.squad.crest)); b.innerHTML = html; reveal(b); return b; }
+  function openHistory(sid) {
+    var b = sxSheet('<h3 class="sqsh-h">' + TX("sxHistory", 'History') + '</h3><div class="skel" style="width:60%"></div>');
+    api('history?sid=' + encodeURIComponent(sid)).then(function (j) {
+      var ev = (j && j.events) || [];
+      b.innerHTML = '<h3 class="sqsh-h">' + TX("sxHistory", 'History') + '</h3>' + (ev.length ? '<ol class="sqx-tl">' + ev.map(function (e) { return '<li class="k-' + esc(e.kind) + '"><span>' + new Date(e.ts).toISOString().slice(0, 10) + '</span><b>' + esc(e.txt) + '</b></li>'; }).join('') + '</ol>' : '<div class="empty">' + TX("sxNoHistory", 'Nothing yet.') + '</div>');
+      reveal(b);
+    });
+  }
+  function sxSquadList(attr, onlyOthers, cb) { // the directory as a picker: a search box over every squad
+    var b = sxSheet(cb.head + '<input type="text" class="sqx-find" placeholder="' + TX("sxSearch", 'Search a squad or tag') + '" autocomplete="off" /><div class="sqx-list"><div class="skel" style="width:50%"></div></div>' + (cb.foot || ''));
+    var mine = S.me && S.me.squad && S.me.squad.sid, all = [];
+    var paint = function (q) { q = String(q || '').toLowerCase(); var l = b.querySelector('.sqx-list'); var rows = all.filter(function (x) { return (!onlyOthers || x.sid !== mine) && (!q || (x.name + ' ' + x.tag).toLowerCase().indexOf(q) >= 0); }).slice(0, 30);
+      l.innerHTML = rows.length ? rows.map(function (x) { return '<button type="button" class="sqx-li" ' + attr + '="' + esc(x.sid) + '">' + crest(x.crest, 28, x.tag, x.level && x.level.lv) + '<span class="sqx-lin"><b>' + esc(x.name) + '</b><small>' + esc(x.tag) + ' &middot; LVL ' + ((x.level && x.level.lv) || 1) + ' &middot; ' + x.n + '/' + x.max + '</small></span></button>'; }).join('') : '<div class="empty">' + TX("sxNoMatch", 'No squad matches.') + '</div>'; };
+    fetch('/api/squad/leaderboard').then(function (r) { return r.json(); }).then(function (j) { all = (j && j.squads) || []; paint(''); }).catch(function () {});
+    b.querySelector('.sqx-find').addEventListener('input', function (e) { paint(e.target.value); });
+  }
+  function openRivalPick() {
+    if (!sxMay('rival')) { var t = app.querySelector('.sqtab[data-tab="week"]'); if (t) t.click(); return; }
+    sxSquadList('data-rivalset', true, { head: '<h3 class="sqsh-h">' + TX("sxPickRival", 'Pick a rival') + '</h3><p class="sqx-p">' + TX("sxRivalWhy", 'Name a rival squad and this week is scored side by side: XP, trades, raids, duels and streak.') + '</p>', foot: sqx().rival ? '<div class="sqsh-cta"><button class="btn sm" type="button" data-rivalset="">' + TX("sxClearRival", 'No rival') + '</button></div>' : '' });
+  }
+  function openVsPick() {
+    var coins = S.me.raidCoins || ['BTC', 'ETH', 'SOL', 'XRP', 'BNB']; S._vsCoin = S._vsCoin || coins[0];
+    sxSquadList('data-vsgo', true, { head: '<h3 class="sqsh-h">' + TX("sxRace", 'Race another squad') + '</h3><p class="sqx-p">' + TX("sxRaceWhy", 'Both squads raid the same coin at the same time, each against its own target. The first to clear it wins 10% of the other side\'s Valor (up to 100). It counts as a raid of the day for both.') + '</p><div class="chips sqx-coins">' + coins.map(function (c) { return '<button type="button" class="chip' + (c === S._vsCoin ? ' on' : '') + '" data-vscoin="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>' });
+  }
+  function openApply(sid, name) {
+    var b = sxSheet('<h3 class="sqsh-h">' + TX("sxApplyTo", 'Ask to join') + ' ' + esc(name || '') + '</h3><p class="sqx-p">' + TX("sxApplyWhy", 'The leader, a captain or a recruiter answers. A short line about how you trade helps.') + '</p><textarea class="sqx-ta" maxlength="140" rows="3" placeholder="' + TX("sxApplyPh", 'Optional - 140 characters') + '"></textarea><div class="sqsh-cta"><button class="btn p" type="button" data-applygo="' + esc(sid) + '">' + TX("sxSend", 'Send') + '</button></div><div class="msg" id="applyMsg"></div>');
+    var ta = b.querySelector('.sqx-ta'); if (ta) setTimeout(function () { try { ta.focus({ preventScroll: true }); } catch (e) {} }, 60);
+  }
+  function shareSquad(sid) {
+    var url = location.origin + '/api/squad/card.svg?sid=' + encodeURIComponent(sid);
+    try { if (window.mpBuzz) window.mpBuzz(); } catch (e) {}
+    if (navigator.share) { navigator.share({ title: (S.me && S.me.squad && S.me.squad.name) || 'Squad', url: url }).catch(function () {}); return; }
+    try { navigator.clipboard.writeText(url); toast(TX("linkCopied", 'Link to the card copied.'), 'good'); } catch (e) { window.open(url, '_blank', 'noopener'); }
+  }
+  function sxClick(e) { // one delegated handler for every @SQX control
+    var t = e.target, g = function (a) { return t.closest && t.closest('[' + a + ']'); }, x;
+    if ((x = g('data-tabgo'))) { e.preventDefault(); var tb = app.querySelector('.sqtab[data-tab="' + x.getAttribute('data-tabgo') + '"]'); if (tb) { tb.click(); try { tb.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (er) {} } return true; }
+    if ((x = g('data-sqx'))) { e.preventDefault(); var k = x.getAttribute('data-sqx'); if (k === 'rival') openRivalPick(); else openRules('squad'); return true; }
+    if (g('data-sqshare')) { e.preventDefault(); shareSquad(S.me.squad.sid); return true; }
+    if (g('data-sqhist')) { e.preventDefault(); openHistory(S.me.squad.sid); return true; }
+    if ((x = g('data-sqrecruit'))) { e.preventDefault(); if (!armed(x, TX("sxTapToPost", 'Tap again to post to the chat'))) return true; x.disabled = true; api('recruit', {}).then(function (j) { if (j && j.ok) { toast(TX("sxPosted", 'Posted to the chat.'), 'good'); load(true); } else { x.disabled = false; toast(ERR[j && j.error] || TX("sxNotNow", 'Not right now.'), 'warn'); } }); return true; }
+    if ((x = g('data-rivalset'))) { e.preventDefault(); api('rival', { sid: x.getAttribute('data-rivalset') }).then(function (j) { if (j && j.ok) { closeSquadSheet(); load(true); } else toast(ERR[j && j.error] || TX("sxNotNow", 'Not right now.'), 'warn'); }); return true; }
+    if ((x = g('data-vsopen'))) { e.preventDefault(); openVsPick(); return true; }
+    if ((x = g('data-vscoin'))) { e.preventDefault(); S._vsCoin = x.getAttribute('data-vscoin'); Array.prototype.forEach.call(x.parentNode.querySelectorAll('[data-vscoin]'), function (c) { c.classList.toggle('on', c === x); }); return true; }
+    if ((x = g('data-vsgo'))) { e.preventDefault(); if (!armed(x, TX("sxTapToChallenge", 'Tap again to challenge on') + ' ' + S._vsCoin)) return true; api('vs', { op: 'challenge', sid: x.getAttribute('data-vsgo'), coin: S._vsCoin }).then(function (j) { if (j && j.ok) { closeSquadSheet(); toast(TX("sxChallengeSent", 'Challenge sent. They have 24 hours to answer.'), 'good'); load(true); } else toast(ERR[j && j.error] || TX("sxNotNow", 'Not right now.'), 'warn'); }); return true; }
+    if ((x = g('data-vsacc'))) { e.preventDefault(); if (!armed(x, TX("sxTapToRace", 'Tap again to start the race'))) return true; api('vs', { op: 'accept', id: x.getAttribute('data-vsacc') }).then(function (j) { if (j && j.ok) { toast(TX("sxRaceOn", 'The race is on.'), 'good'); load(true); } else toast(j && j.error === 'they_cannot' ? TX("sxTheyCannot", 'They cannot start a raid right now.') : (ERR[j && j.error] || TX("sxNotNow", 'Not right now.')), 'warn'); }); return true; }
+    if ((x = g('data-vsdec'))) { e.preventDefault(); api('vs', { op: 'decline', id: x.getAttribute('data-vsdec') }).then(function () { load(true); }); return true; }
+    if ((x = g('data-vscan'))) { e.preventDefault(); api('vs', { op: 'cancel', id: x.getAttribute('data-vscan') }).then(function () { load(true); }); return true; }
+    if ((x = g('data-goal'))) { e.preventDefault(); x.disabled = true; api('goalclaim', { gid: x.getAttribute('data-goal') }).then(function (j) { if (j && j.ok) { toast('+' + j.valor + ' Valor', 'good'); load(true); } else { x.disabled = false; toast(ERR[j && j.error] || TX("sxNotNow", 'Not right now.'), 'warn'); } }); return true; }
+    if ((x = g('data-role'))) { e.preventDefault(); var p = x.getAttribute('data-role').split('|'); api('role', { name: p[0], role: p[1] }).then(function (j) { say($('#roleMsg'), j, TX("sxRoleSaved", 'Saved.')); if (j && j.ok) load(true); }); return true; }
+    if ((x = g('data-appok')) || (x = g('data-appno'))) { e.preventDefault(); var ok = x.hasAttribute('data-appok'); x.disabled = true; api('appdecide', { name: x.getAttribute(ok ? 'data-appok' : 'data-appno'), ok: ok }).then(function (j) { say($('#appMsg'), j, ok ? TX("sxJoinedNow", 'They are in.') : TX("sxDeclined", 'Declined.')); if (j && j.ok) load(true); else x.disabled = false; }); return true; }
+    if ((x = g('data-apply'))) { e.preventDefault(); openApply(x.getAttribute('data-apply'), x.getAttribute('data-applyn')); return true; }
+    if ((x = g('data-applygo'))) { e.preventDefault(); var ta = SH.querySelector('.sqx-ta'); x.disabled = true; api('apply', { sid: x.getAttribute('data-applygo'), msg: ta ? ta.value : '' }).then(function (j) { x.disabled = false; say($('#applyMsg'), j, TX("sxApplied", 'Sent. You will get a notification when they answer.')); if (j && j.ok) setTimeout(closeSquadSheet, 1400); }); return true; }
+    return false;
+  }
+  document.addEventListener('click', function (e) { try { if (sxClick(e)) e.stopPropagation(); } catch (er) {} }, true);
   function squadView() {
     var s = S.me.squad, isL = S.me.isLeader;
-    try { document.documentElement.style.setProperty('--sq', (s.crest && s.crest.bg) || '#c2f64a'); } catch (e) {}
+    try { document.documentElement.style.setProperty('--sq', sqAccent(s.crest)); } catch (e) {}
     // the shop previews wear the squad's OWN colours (2026-10-01); a hidden squad (MP-One) keeps the designed look
     try { var ds = document.documentElement.style; if (s.crest && !s.hidden) { var _bg = s.crest.bg || '#0a0b0d', _fg = s.crest.fg || '#c2f64a'; var _lum = function (h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return 0.299 * (parseInt(h.slice(0, 2), 16) || 0) + 0.587 * (parseInt(h.slice(2, 4), 16) || 0) + 0.114 * (parseInt(h.slice(4, 6), 16) || 0); }; var _a = _lum(_fg) >= _lum(_bg) ? _fg : _bg; ds.setProperty('--sqc', _a); ds.setProperty('--sqc2', _a === _fg ? _bg : _fg); } else { ds.removeProperty('--sqc'); ds.removeProperty('--sqc2'); } } catch (e) {}
     var duels = S.me.duels || [], live = duels.filter(function (d) { return d.status === 'active' || d.status === 'pending' || d.status === 'open'; });
@@ -933,11 +1158,11 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       + '<div class="mt"><span class="stamp">' + esc(s.tag) + '</span>' + lvlMark(s.level && s.level.lv) + seatDots(s.n, s.max, s.cap) + (s.max < (s.cap || 5) ? '<span class="seatx">' + __esT_squadsindex("seatAtLevel", 'next seat at level ') + (s.max < 4 ? 3 : 8) + '</span>' : '') + '</div>'
       + (s.motto ? '<div class="motto">' + esc(s.motto) + '</div>' : '') + (S.me.squad && S.me.squad.mvp ? '<div class="mvpline">' + MVPSVG + ' ' + __esT_squadsindex("mvpOfTheWeek", 'MVP of the week') + ' &middot; @' + esc(S.me.squad.mvp.name) + '</div>' : '') + '</div>'
       + '<div class="rec3"><div class="w"><b>' + s.wins + '</b><span>' + __esT_squadsindex("wonSp", 'Won') + '</span></div><div><b>' + s.draws + '</b><span>' + __esT_squadsindex("drawnSp", 'Drawn') + '</span></div><div class="l"><b>' + s.losses + '</b><span>' + __esT_squadsindex("lostSp", 'Lost') + '</span></div></div>'
-      + '</div>' + lvlRow(s) + '</div>';
+      + '</div>' + lvlRow(s) + sqxHero(s) + '</div>';
 
     var empties = ''; for (var q = (s.members || []).length; q < s.max; q++) empties += '<div class="mem empty"><div class="av">+</div><div class="who">' + __esT_squadsindex("emptySeat", 'Empty seat') + '</div></div>';
     h += '<div class="card"><h2 style="font-size:16px;font-weight:800;margin-bottom:8px">' + __esT_squadsindex("membersSp", 'Members') + ' <small class="cnt">' + (s.members || []).length + '/' + s.max + '</small> ' + seatDots((s.members || []).length, s.max, s.cap) + '</h2>' + (s.members || []).map(memberRow).join('') + empties
-      + '<div class="row" style="margin-top:13px">'
+      + '<div class="row sqx-mrow" style="margin-top:13px">'
       + '<button class="btn" type="button" id="roomGo" data-room="' + esc(s.sid) + '">' + __esT_squadsindex("openSquadRoom2", 'Open squad room') + '</button>'
       + '<button class="btn" type="button" data-rules="raid">' + __esT_squadsindex("rulesSp", 'Rules') + '</button>'
       + (isL && s.n < s.max ? '<button class="btn" id="invBtn" type="button">Invite someone</button>' : '')
@@ -948,17 +1173,18 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     // ── The activity lives in TABS, not stacked (owner 2026-10-01: "da se neki elementi kao raids otvaraju na klik,
     //    ne da trpamo sve na stranicu"). Hero + members stay; Raids / Shop / Duels / Settings are one tap apart and
     //    the choice is remembered. Panels are rendered once and shown/hidden on tab click, so no tab switch refetches.
-    var TABL = ['raids', 'foundry', 'shop', 'duels', 'settings'];
+    var TABL = ['raids', 'week', 'foundry', 'shop', 'duels', 'settings'];
     if (!S._hashDone && location.hash === '#raidBox') S._tab = 'raids';
     var tab = S._tab; if (TABL.indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (TABL.indexOf(tab) < 0) tab = 'raids'; }
     S._tab = tab;
     var liveN = live.length, nBadge = function (n) { return n ? ' <span class="tabn">' + n + '</span>' : ''; };
-    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['foundry', __esT_squadsindex("foundryH", 'Foundry') + ((S.me.foundry && S.me.foundry.coin) ? ' <span class="tabn">' + esc(S.me.foundry.coin.sym) + '</span>' : '')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
+    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['week', sqxWeekTab()], ['foundry', __esT_squadsindex("foundryH", 'Foundry') + ((S.me.foundry && S.me.foundry.coin) ? ' <span class="tabn">' + esc(S.me.foundry.coin.sym) + '</span>' : '')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
     var pan = function (id, body) { return '<div class="sqpanel" data-panel="' + id + '"' + (id === tab ? '' : ' hidden') + '>' + body + '</div>'; };
     h += '<div class="sqtabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" class="sqtab' + (t[0] === tab ? ' on' : '') + '" data-tab="' + t[0] + '" role="tab">' + t[1] + '</button>'; }).join('') + '</div>';
 
     // RAIDS
     h += pan('raids', raidSection(s, isL));
+    h += pan('week', weekSection(s));
     // THE FOUNDRY (2026-11-12)
     h += pan('foundry', foundrySection(s, isL));
 
@@ -987,7 +1213,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     } else {
       setH += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the logo or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
     }
-    h += pan('settings', '<div class="sect">' + setH + '</div>');
+    h += pan('settings', '<div class="sect">' + sqxSettings(s) + setH + '</div>');
     return h;
   }
 
@@ -1028,7 +1254,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         var act = s.joinable
           ? (signedIn() ? '<button class="btn sm" data-join="' + esc(s.sid) + '">' + __esT_squadsindex("joinSp", 'Join') + '</button>' : __esT_squadsindex("signIn2", '<button class="btn sm" data-auth-open type="button">Sign in</button>'))
           : '';
-        return '<div class="dsq" data-sid="' + esc(s.sid) + '" style="--sq:' + esc((s.crest && s.crest.bg) || '#c2f64a') + '" role="button" tabindex="0">'
+        return '<div class="dsq" data-sid="' + esc(s.sid) + '" style="--sq:' + esc(sqAccent(s.crest)) + '" role="button" tabindex="0">'
           + '<div class="dsq-top">' + crest(s.crest, 48, s.tag, lv) + '<div class="dsq-id"><div class="n">' + esc(s.name) + '</div><div class="dsq-tg"><span class="stamp">' + esc(s.tag) + '</span>' + lvlMark(lv) + '</div></div>' + st + '</div>'
           + '<div class="dsq-bot">' + seatDots(s.n, s.max, s.cap) + '<span class="dsq-rec"><b class="w">' + s.wins + 'W</b> <b class="l">' + s.losses + 'L</b></span>' + (s.trophies && s.trophies.total ? '<span class="dsq-rd"><b>' + s.trophies.total + '</b> ' + __esT_squadsindex("raidsLower", 'raids') + '</span>' : '') + '<span class="dsq-go">' + (act || '<span class="dsq-open">' + __esT_squadsindex("viewSp", 'View') + '</span>') + '</span></div></div>';
       }).join('');
@@ -1047,7 +1273,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         var list = (j && j.squads) || [];
         if (!list.length) { el.innerHTML = '<div class="empty">' + __esT_squadsindex("noClearsYet", 'No raid cleared this season yet.') + '</div>'; return; }
         var top = Math.max(1, list[0].cleared), mySid = (S.me && S.me.squad && S.me.squad.sid) || '';
-        el.innerHTML = list.map(function (s, i) { var col = (s.crest && s.crest.bg) || '#c2f64a', lv = (s.level && s.level.lv) || 1;
+        el.innerHTML = list.map(function (s, i) { var col = sqAccent(s.crest), lv = (s.level && s.level.lv) || 1;
           return '<div class="sqlb-row' + (s.sid === mySid ? ' me' : '') + '" data-sid="' + esc(s.sid) + '" style="--sq:' + esc(col) + '" role="button" tabindex="0"><span class="sqlb-rk">' + (i + 1) + '</span>' + crest(s.crest, 34, s.tag, lv)
             + '<div class="sqlb-id"><div class="n">' + esc(s.name) + '</div><div class="sqlb-sub"><span class="stamp">' + esc(s.tag) + '</span><span class="sqlb-mem">$' + s.pool.toLocaleString() + (s.streak > 1 ? ' &middot; ' + s.streak + ' ' + __esT_squadsindex("inARow", 'in a row') : '') + '</span></div></div>'
             + '<div class="sqlb-xp"><div class="sqlb-bar"><i style="width:' + Math.max(4, Math.round(s.cleared / top * 100)) + '%;background:' + esc(col) + '"></i></div><span class="sqlb-xn">' + s.cleared + '<small> ' + __esT_squadsindex("clearedLower", 'cleared') + '</small></span></div></div>';
@@ -1061,7 +1287,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       var mySid = (S.me && S.me.squad && S.me.squad.sid) || '';
       var top = Math.max(1, (list[0] && list[0].sxp) || 1);
       el.innerHTML = list.map(function (s) {
-        var lv = (s.level && s.level.lv) || 1, mine = s.sid === mySid, pct = Math.max(2, Math.round((s.sxp / top) * 100)), col = (s.crest && s.crest.bg) || '#c2f64a';
+        var lv = (s.level && s.level.lv) || 1, mine = s.sid === mySid, pct = Math.max(2, Math.round((s.sxp / top) * 100)), col = sqAccent(s.crest);
         return '<div class="sqlb-row' + (mine ? ' me' : '') + '" data-sid="' + esc(s.sid) + '" style="--sq:' + esc(col) + '" role="button" tabindex="0">'
           + '<span class="sqlb-rk">' + s.rank + '</span>'
           + crest(s.crest, 34, s.tag, lv)
@@ -1244,13 +1470,14 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
     if (bare) return;
     api('get?sid=' + encodeURIComponent(sid)).then(function (j) {
       if (!j || !j.squad) { body.innerHTML = '<div class="empty">' + __esT_squadsindex("notFound", 'Not found.') + '</div>'; return; }
-      var q = j.squad, lv = (q.level && q.level.lv) || 1, col = (q.crest && q.crest.bg) || '#c2f64a';
+      var q = j.squad, lv = (q.level && q.level.lv) || 1, col = sqAccent(q.crest);
       SH.style.setProperty('--sq', col);
       var mineSid = S.me && S.me.squad && S.me.squad.sid;
       var canJoin = q.open && q.n < q.max && signedIn() && !mineSid;
       var cta = canJoin ? '<button class="btn p" data-join="' + esc(q.sid) + '">' + __esT_squadsindex("joinThisSquad", 'Join this squad') + '</button>'
         : mineSid === q.sid ? '<span class="sqsh-you">' + __esT_squadsindex("thisIsYourSquad", 'This is your squad') + '</span>'
         : q.n >= q.max ? '<span class="sqsh-you">' + __esT_squadsindex("fullSp", 'Full') + ' &middot; ' + __esT_squadsindex("seatsOpenWithLevels", 'more seats open with levels') + '</span>'
+        : !q.open && signedIn() && !mineSid ? '<button class="btn p" type="button" data-apply="' + esc(q.sid) + '" data-applyn="' + esc(q.name) + '">' + TX("sxAskToJoin", 'Ask to join') + '</button>'
         : !q.open ? '<span class="sqsh-you">' + __esT_squadsindex("inviteOnly2", 'Invite only') + ' &middot; ' + __esT_squadsindex("askLeader", 'ask ') + '@' + esc(q.leaderName || '') + '</span>'
         : !signedIn() ? '<button class="btn p" data-auth-open type="button">' + __esT_squadsindex("signInToJoin", 'Sign in to join') + '</button>' : '';
       body.innerHTML = '<div class="sqsh-hero">' + crest(q.crest, 92, q.tag, lv)
@@ -1258,7 +1485,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
         + '<div class="sqsh-tg"><span class="stamp">' + esc(q.tag) + '</span>' + lvlMark(lv) + seatDots(q.n, q.max, q.cap) + '</div>'
         + (q.motto ? '<div class="sqsh-mt">' + esc(q.motto) + '</div>' : '') + '</div></div>'
         + '<div class="rec3"><div><b>' + q.wins + '</b><span>' + __esT_squadsindex("wonSp", 'Won') + '</span></div><div><b>' + q.draws + '</b><span>' + __esT_squadsindex("drawnSp", 'Drawn') + '</span></div><div><b>' + q.losses + '</b><span>' + __esT_squadsindex("lostSp", 'Lost') + '</span></div></div>'
-        + lvlRow(q) + shelfHtml(q.trophies)
+        + lvlRow(q) + '<div class="sqsh-x2"><div><span>' + TX("sxStreak", 'Streak') + '</span><b>' + (q.streak || 0) + 'd</b></div><div><span>' + TX("sxSeason", 'Season') + '</span><b>' + ((q.season && q.season.rank) ? '#' + q.season.rank : '&ndash;') + '</b></div></div>' + shelfHtml(q.trophies)
         + '<h3 class="sqsh-h">' + __esT_squadsindex("membersSp", 'Members') + ' <small>' + q.n + '/' + q.max + '</small></h3>'
         + '<div class="sqsh-m">' + (q.members || []).map(function (m) {
           var c = (m.level && m.level.col) || '#9aa3ad';
@@ -1276,10 +1503,10 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   var RULES = null;
   function openRules(tab) {
     openSquadSheet('', true);
-    var body = SH.querySelector('.sqsh-b'); SH.style.setProperty('--sq', (S.me && S.me.squad && S.me.squad.crest && S.me.squad.crest.bg) || '#c2f64a');
+    var body = SH.querySelector('.sqsh-b'); SH.style.setProperty('--sq', sqAccent(S.me && S.me.squad && S.me.squad.crest));
     var paint = function (tb) {
       var d = RULES, R = d.raid, sq = S.me && S.me.squad, money = function (v) { return '$' + Math.round(v).toLocaleString(); };
-      var TABS = [['raid', __esT_squadsindex("raidsH", 'Raids')], ['duel', __esT_squadsindex("duelsH", 'Duels')], ['levels', __esT_squadsindex("levelsH", 'Levels')], ['foundry', __esT_squadsindex("foundryH", 'Foundry')], ['rewards', __esT_squadsindex("rewardsH", 'Rewards')]];
+      var TABS = [['squad', TX("sxSquadTab", 'Squad')], ['raid', __esT_squadsindex("raidsH", 'Raids')], ['duel', __esT_squadsindex("duelsH", 'Duels')], ['levels', __esT_squadsindex("levelsH", 'Levels')], ['foundry', __esT_squadsindex("foundryH", 'Foundry')], ['rewards', __esT_squadsindex("rewardsH", 'Rewards')]];
       var L = [], extra = '';
       if (tb === 'raid') {
         L = [__esT_squadsindex("rlR1", 'The leader picks one of') + ' <b>' + R.coins.join(', ') + '</b>. ' + __esT_squadsindex("rlR1b", 'The squad has') + ' <b>' + R.hours + 'h</b> ' + __esT_squadsindex("rlR1c", 'to close enough profit on it together.'),
@@ -1297,6 +1524,17 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
           var counted = x.why === '' || x.why === 'capped';
           return '<div class="why-r"><span>' + new Date(x.ts).toISOString().slice(5, 16).replace('T', ' ') + ' &middot; ' + (x.pnl < 0 ? '-' : '+') + '$' + Math.abs(Math.round(x.pnl)).toLocaleString() + '</span><span class="' + (counted ? 'k' : 'x') + '">' + (counted ? __esT_squadsindex("countedSp", 'counted') + ' ' + (x.add < 0 ? '-' : '+') + '$' + Math.abs(Math.round(x.add)).toLocaleString() + (why ? ' (' + why + ')' : '') : __esT_squadsindex("notCountedSp", 'not counted') + ': ' + why) + '</span></div>';
         }).join('') : '<div class="why-r"><span>' + __esT_squadsindex("noTradesYet", 'No closed trade on this coin since the raid started.') + '</span></div>') + '</div>';
+      } else if (tb === 'squad') {
+        var Q = d.sqx || {};
+        L = [TX("rlQ1", 'Roles: the leader can name a captain (starts raids and races, rallies, picks the rival, answers applications) and a recruiter (posts the squad to the chat, answers applications).'),
+          TX("rlQ2", 'A streak day counts when') + ' <b>' + Math.round((Q.streakPart || 0.6) * 100) + '%</b> ' + TX("rlQ3", 'of the members close a trade that UTC day. Miss a day and it starts again.'),
+          TX("rlQ4", 'The day every member checks in, the squad gets') + ' <b>+' + (Q.ciXp || 40) + ' XP</b>.',
+          TX("rlQ5", 'Three goals every week, each worth') + ' <b>' + (Q.goalValor || 25) + ' Valor</b>: ' + (Q.goals || []).map(function (g) { return '<b>' + g.need + '</b> ' + (g.id === 'closes' ? TX("rlQg1", 'closed trades') : g.id === 'raid' ? TX("rlQg2", 'raid cleared') : TX("rlQg3", 'days everyone checked in')); }).join(', ') + '. ' + TX("rlQ6", 'Any member claims them; they reset on Monday 00:00 UTC.'),
+          TX("rlQ7", 'A raid race: two squads raid the same coin at the same time. The first to clear its own target wins') + ' <b>' + Math.round((Q.vsShare || 0.1) * 100) + '%</b> ' + TX("rlQ8", "of the other squad's Valor, up to") + ' <b>' + (Q.vsCap || 100) + '</b>. ' + TX("rlQ9", 'An abandon forfeits; if neither clears it is a draw.'),
+          TX("rlQ10", 'Invite-only squads take applications: up to') + ' <b>' + (Q.appMax || 3) + '</b> ' + TX("rlQ11", 'open at a time, each waits 7 days.'),
+          TX("rlQ12", 'Find members posts one line to the chat, once every') + ' <b>' + (Q.recruitHours || 6) + 'h</b>, ' + TX("rlQ13", 'and only while a seat is open.'),
+          TX("rlQ14", "The three squads that gain the most squad XP in a season: every member wears that season's badge on their profile card."),
+          TX("rlQ15", 'A green dot on a member means they were on the site in the last') + ' <b>' + (Q.activeMin || 15) + ' min</b>.'];
       } else if (tb === 'duel') {
         L = [__esT_squadsindex("rlD1", 'The leader challenges another squad on a metric for a stake in Ticks. Only as many members as the smaller squad has count, best first.'),
           __esT_squadsindex("rlD2", 'Every member who traded in the window earns XP') + ': <b>' + d.duel.xp.win + '</b> ' + __esT_squadsindex("winSp", 'win') + ', <b>' + d.duel.xp.draw + '</b> ' + __esT_squadsindex("drawSp", 'draw') + ', <b>' + d.duel.xp.loss + '</b> ' + __esT_squadsindex("lossSp", 'loss') + ', ' + __esT_squadsindex("rlD3", 'up to') + ' <b>' + d.duel.xp.dayCap + '</b> ' + __esT_squadsindex("rlD4", 'a day.'),
@@ -1317,7 +1555,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
       body.innerHTML = '<h3 class="sqsh-h" style="margin-top:0">' + __esT_squadsindex("squadRulesH", 'Squad rules') + '</h3><div class="rules-tabs">' + TABS.map(function (x) { return '<button type="button" data-rtab="' + x[0] + '" class="' + (x[0] === tb ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div><ul class="rules-l">' + L.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' + extra;
     };
     if (!body._rtab) { body._rtab = 1; body.addEventListener('click', function (e) { var b = e.target.closest('[data-rtab]'); if (b && RULES) paint(b.getAttribute('data-rtab')); }); }
-    if (RULES) { paint(tab || 'raid'); return; }
+    if (RULES && RULES.sqx) { paint(tab || 'raid'); return; }
     body.innerHTML = '<div class="skel" style="width:40%"></div><div class="skel" style="width:80%;margin-top:9px"></div>';
     fetch('/api/squad/rules').then(function (r) { return r.json(); }).then(function (j) { RULES = j; paint(tab || 'raid'); }).catch(function () { body.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoad2", 'Could not load.') + '</div>'; });
   }
@@ -1347,7 +1585,7 @@ function __esT_squadsindex(k, en) { try { var d = (window.__mpUI && window.__mpU
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b4a413ee"></script>
-<script defer src="/assets/mp-nav.js?v=8f5149af"></script>
+<script defer src="/assets/mp-auth.js?v=9148ad65"></script>
+<script defer src="/assets/mp-nav.js?v=1f008fdd"></script>
 </body>
 </html>

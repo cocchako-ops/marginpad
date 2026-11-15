@@ -10579,7 +10579,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8f5149af" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1f008fdd" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11096,6 +11096,29 @@ function raidCardSvg(r, sq) {
 }
 async function settleRaids(env) {
   try { if (!env.USERS) return; await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/squad/raidsettle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); } catch (e) {}
+}
+async function squadSeasonAward(env) { // @SQX the season that just ended: its top three squads' members wear a badge (once, KV flag)
+  try {
+    if (!env.USERS || !env.STATS) return;
+    const ws = lbPeriodStart(Date.now()) - LB_PERIOD, flag = 'sqsea:' + ws;
+    if (await env.STATS.get(flag)) return;
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/squad/seasonaward', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ws }) }));
+    const j = await r.json().catch(() => null);
+    if (j && j.ok) await env.STATS.put(flag, JSON.stringify({ ts: Date.now(), top: j.top || [] }), { expirationTtl: 400 * 86400 });
+  } catch (e) {}
+}
+function squadCardSvg(q) { // the squad as a share card. System fonts on purpose: a social site renders an SVG with no webfont
+  const e = (x) => String(x == null ? '' : x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const col = (q.crest && /^#[0-9a-f]{6}$/i.test(q.crest.bg || '')) ? q.crest.bg : '#c2f64a', lv = (q.level && q.level.lv) || 1, tr = q.trophies || { total: 0, streak: 0 };
+  const mem = (q.members || []).slice(0, 5).map((m, i) => '<text x="80" y="' + (402 + i * 38) + '" fill="#e9e7df" font-size="25" font-weight="600">' + e(m.name) + (m.leader ? ' <tspan fill="' + col + '" font-size="18">LEADER</tspan>' : '') + '</text>').join('');
+  const st = (lab, v, x) => '<text x="' + x + '" y="330" fill="#e9e7df" font-size="44" font-weight="800" font-family="ui-monospace,Menlo,monospace">' + e(v) + '</text><text x="' + x + '" y="362" fill="#8b94a0" font-size="20" letter-spacing="2">' + lab + '</text>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">'
+    + '<rect width="1200" height="630" fill="#0a0b0d"/><rect width="1200" height="6" fill="' + col + '"/>'
+    + '<text x="80" y="110" fill="#8b94a0" font-size="24" letter-spacing="3">MARGINPAD SQUAD</text>'
+    + '<text x="80" y="190" fill="#e9e7df" font-size="68" font-weight="800">' + e(q.name || 'Squad') + '</text>'
+    + '<text x="1120" y="190" text-anchor="end" fill="' + col + '" font-size="60" font-weight="800" font-family="ui-monospace,Menlo,monospace">' + e(q.tag || '') + '</text>'
+    + st('LEVEL', String(lv), 80) + st('MEMBERS', (q.n || 0) + '/' + (q.max || 3), 300) + st('RAIDS CLEARED', String(tr.total || 0), 560) + st('DAY STREAK', String(q.streak || 0), 880)
+    + mem + '<text x="1120" y="595" text-anchor="end" fill="#5c6570" font-size="22">marginpad.io/squads</text></svg>';
 }
 async function squadMvpWeekly(env) { // the week that ENDED at the most recent UTC Monday, settled once
   try {
@@ -16696,6 +16719,19 @@ const SQUAD_METRICS = {
 // the WHOLE squad, which every member may then wear. It can never be bought, gifted or withdrawn - the only way
 // in is playing as a squad, which is the entire point of a squad-exclusive look. No real money touches it.
 const SQUAD_VALOR = { duelWin: 40, raidClear: 60, level: 50, mvp: 30 };
+/* @SQX - the squad round of 2026-11-15 (owner: "moze sve osim broja 3"): roles, a recruiting line in the room, a rival, a
+   history, applications, weekly goals, the team streak, the all-checked-in bonus, squad-vs-squad raids, season badges.
+   ONE table of numbers; every route reads it and /api/squad/rules publishes it. */
+const SQX = {
+  roles: ['captain', 'recruiter', 'member'],
+  recruitMs: 6 * 3600000,          // one recruiting line per squad per 6 h
+  onMs: 15 * 60000,                // "active" = seen on the site in the last 15 min
+  streakPart: 0.6,                 // a streak day = 60% of the members closed a trade that UTC day
+  ciXp: 40,                        // squad XP the day every member checked in (2+ members)
+  appMax: 3, appMs: 7 * 86400000,  // open applications per account, and how long one waits
+  vsMs: 86400000, vsShare: 0.1, vsCap: 100,   // a raid challenge waits 24 h; the winner takes 10% of the loser's Valor, at most 100
+  goals: [{ id: 'closes', need: 20 }, { id: 'raid', need: 1 }, { id: 'ci', need: 2 }], goalValor: 25,
+};
 /* THE FOUNDRY (2026-11-12, owner: "treba da bude jako jako tesko da se mintuje svoj RNG coin"). A squad collects five kinds of PARTS
    out of what its members already do - every kind from a different corner of the site, on purpose, so one member cannot carry a
    squad and a squad has to trade, learn, raid, hold and show up. Parts are not Ticks, cannot be bought and live only in the squad's
@@ -23408,7 +23444,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'b4a413ee';
+const ASSET_V = '9148ad65';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -31742,7 +31778,8 @@ export default {
         const lv = SQUAD_LEVELS.map(x => ({ lv: x.lv, min: x.min, seats: squadSlots(x.min), ticks: x.ticks || 0, xp: x.xp || 0, note: x.note || '', raidsDay: raidDayMax(x.lv), target4: raidTarget(0, x.min, 4) }));
         const body = JSON.stringify({ v: 2, max: SQUAD_MAX, create: { level: SQUAD_CREATE_LEVEL, ticks: SQUAD_CREATE_TICKS, cents: squadCreateCents() }, levels: lv, share: SQUAD_XP_SHARE,
           raid: raidRulesPub(), duel: { xp: SQUAD_XP }, mvp: { ticks: MVP_TICKS, squadXp: MVP_SQUAD_XP, days: MVP_WEAR_MS / 86400000 }, valor: SQUAD_VALOR,
-          foundry: { minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, from: FOUNDRY.from } });
+          foundry: { minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, from: FOUNDRY.from },
+          sqx: { recruitHours: SQX.recruitMs / 3600000, streakPart: SQX.streakPart, ciXp: SQX.ciXp, appMax: SQX.appMax, vsShare: SQX.vsShare, vsCap: SQX.vsCap, goals: SQX.goals, goalValor: SQX.goalValor, activeMin: SQX.onMs / 60000 } });
         return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
       }
       if (sub === 'raidcard.svg') { // a settled raid as a share card (1200x630), names and figures only
@@ -31759,6 +31796,12 @@ export default {
         return resp;
       }
       if (sub === 'get') return call('/squad/get', { sid: url.searchParams.get('sid') || '' });
+      if (sub === 'history') return call('/squad/history', { sid: url.searchParams.get('sid') || '' });
+      if (sub === 'card.svg') { // @SQX the squad as a share card (1200x630)
+        let d = null; try { const r = await stub.fetch(new Request('https://do/squad/get', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sid: url.searchParams.get('sid') || '' }) })); d = await r.json(); } catch (e) {}
+        if (!d || !d.squad) return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#0a0b0d"/><text x="600" y="320" fill="#8b94a0" font-size="34" text-anchor="middle" font-family="sans-serif">Squad not found</text></svg>', { status: 404, headers: { 'content-type': 'image/svg+xml' } });
+        return new Response(squadCardSvg(d.squad), { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+      }
       // ── everything below is the member's own squad
       const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
       if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook, same pattern as /api/duel/
@@ -31807,7 +31850,12 @@ export default {
       }
       if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
       let bd = {}; try { bd = await request.json(); } catch (e) {}
-      const OPS = { create: 1, edit: 1, invite: 1, join: 1, declineinv: 1, leave: 1, kick: 1, disband: 1, challenge: 1, accept: 1, decline: 1, shopbuy: 1, shopequip: 1 };
+      const OPS = { create: 1, edit: 1, invite: 1, join: 1, declineinv: 1, leave: 1, kick: 1, disband: 1, challenge: 1, accept: 1, decline: 1, shopbuy: 1, shopequip: 1, role: 1, rival: 1, apply: 1, appdecide: 1, goalclaim: 1, vs: 1 };
+      if (sub === 'recruit') { // @SQX the squad's one line in the global room - the chat turns it into a card
+        const rr = await usersDO(env, '/squad/recruit', { uid: su.id });
+        if (rr && rr.ok && rr.squad && !rr.test) { const q = rr.squad, free = Math.max(0, q.max - q.n); try { ctx.waitUntil(houseLine(env, 'global2', '[' + q.tag + '] ' + q.name + ' is looking for members - ' + free + ' seat' + (free === 1 ? '' : 's') + ' open. squadad:' + q.sid)); } catch (e) {} try { ctx.waitUntil(evPush(env, request, 'squad', q.name + ' posted a recruiting line', '/squads/', {}, su.id)); } catch (e) {} }
+        return new Response(JSON.stringify(rr || { error: 'unavailable' }), { status: rr && rr.ok ? 200 : (rr && rr.error === 'recruit_wait' ? 429 : rr && rr.error ? 409 : 503), headers: jh });
+      }
       if (!OPS[sub]) return new Response('{"error":"not_found"}', { status: 404, headers: jh });
       // FOUNDING A SQUAD COSTS: Ticks (taken inside the store) or the rewards balance (taken HERE, because the
       // ledger is another DO). A cash payment is debited first and REFUNDED if the store refuses, so a taken
@@ -32434,6 +32482,7 @@ export default {
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
     bg(checkPremiumExpiry, 'premexpiry'); // and tell a PREMIUM member the same, which nobody had ever done (2026-10-11)
     bg(squadMvpWeekly, 'squadmvp'); // every squad's MVP for the week that just ended, once per UTC week (KV flag)
+    bg(squadSeasonAward, 'squadseason'); // @SQX the season's top three squads, once per season (KV flag)
     bg(leverageReportSnap, 'levrep'); // the monthly leverage report: current month rolling, previous month sealed once (2026-09-26)
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
@@ -35377,6 +35426,16 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS raids(id TEXT PRIMARY KEY, sid TEXT, coin TEXT, start_ts INTEGER, end_ts INTEGER, target REAL, status TEXT, progress REAL, settled INTEGER DEFAULT 0, detail TEXT, created INTEGER)'); // squad raids (2026-10-01): status active / cleared / failed / abandoned
     ['members INTEGER', 'rally INTEGER'].forEach(c => { try { s.exec('ALTER TABLE raids ADD COLUMN ' + c); } catch (e) {} }); // the team raid (2026-11-15): members at the start, the leader's one rally
     s.exec('CREATE TABLE IF NOT EXISTS squadwk(uid TEXT, wk INTEGER, base INTEGER, PRIMARY KEY(uid, wk))'); // xp_life at a member's FIRST grant of a UTC week -> weekly gain = xp_life - base (trim-proof, same idea as xpseason)
+    ['rival TEXT', 'recruit_ts INTEGER'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} }); // @SQX
+    ['vs TEXT', 'vsid TEXT', 'vswin TEXT'].forEach(c => { try { s.exec('ALTER TABLE raids ADD COLUMN ' + c); } catch (e) {} });
+    s.exec('CREATE TABLE IF NOT EXISTS sqlog(id INTEGER PRIMARY KEY AUTOINCREMENT, sid TEXT, ts INTEGER, kind TEXT, txt TEXT)');
+    s.exec('CREATE TABLE IF NOT EXISTS sqapp(sid TEXT, uid TEXT, msg TEXT, ts INTEGER, PRIMARY KEY(sid, uid))');
+    s.exec('CREATE TABLE IF NOT EXISTS sqgoal(sid TEXT, wk INTEGER, gid TEXT, ts INTEGER, PRIMARY KEY(sid, wk, gid))');
+    s.exec('CREATE TABLE IF NOT EXISTS sqci(sid TEXT, day TEXT, ts INTEGER, PRIMARY KEY(sid, day))');
+    s.exec('CREATE TABLE IF NOT EXISTS sqseason(sid TEXT, season INTEGER, base INTEGER, PRIMARY KEY(sid, season))');
+    s.exec('CREATE TABLE IF NOT EXISTS sqbadge(uid TEXT, season INTEGER, rank INTEGER, sid TEXT, tag TEXT, name TEXT, PRIMARY KEY(uid, season))');
+    s.exec('CREATE TABLE IF NOT EXISTS rvs(id TEXT PRIMARY KEY, a_sid TEXT, b_sid TEXT, coin TEXT, created INTEGER, status TEXT, a_raid TEXT, b_raid TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS sqlog_sid ON sqlog(sid, ts)'); } catch (e) {}
     ['mvp TEXT', 'mvp_name TEXT', 'mvp_until INTEGER', 'valor INTEGER DEFAULT 0', 'shop TEXT', 'hidden INTEGER DEFAULT 0'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} }); // valor = squad shop currency, shop = JSON of unlocked ids, hidden = MP-One style squad (2026-10-01)
     try { s.exec('CREATE INDEX IF NOT EXISTS raids_sid ON raids(sid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS squadm_sid ON squadm(sid)'); } catch (e) {}
@@ -35704,7 +35763,9 @@ export class UserStore {
     amt = Math.round(+amt || 0); if (!sid || amt <= 0) return;
     const row = this.rows('SELECT sxp, name FROM squads WHERE id=?', sid)[0]; if (!row) return;
     const before = squadLevel(+row.sxp || 0).lv, after = squadLevel((+row.sxp || 0) + amt).lv;
+    try { this.state.storage.sql.exec('INSERT OR IGNORE INTO sqseason(sid, season, base) VALUES(?,?,?)', sid, lbPeriodStart(Date.now()), +row.sxp || 0); } catch (e) {} // @SQX the season board: squad XP gained since the season's first grant
     try { this.state.storage.sql.exec('UPDATE squads SET sxp=COALESCE(sxp,0)+? WHERE id=?', amt, sid); } catch (e) {}
+    if (after > before) { try { this._sqLog(sid, 'level', 'Reached level ' + after); } catch (e) {} }
     if (after <= before) return;
     // LEVEL UP. Pay every member, tell every member, and say what it opened - a level that hands over
     // something invisible is not a level.
@@ -35725,7 +35786,7 @@ export class UserStore {
     this._sqBusy = false;
   }
   // ── Raids (2026-10-01) ──
-  _raidPub(r) { let det = null; try { det = r.detail ? JSON.parse(r.detail) : null; } catch (e) {} const mem = +r.members || this._squadN(r.sid) || 1; return { id: r.id, sid: r.sid, coin: r.coin, start: +r.start_ts || 0, end: +r.end_ts || 0, target: +r.target || 0, status: r.status, progress: r.progress == null ? 0 : +r.progress, settled: +r.settled || 0, detail: det, members: mem, need: raidNeed(mem), minAt: (+r.start_ts || 0) + RAID.minMs, rallied: !!r.rally, marginMax: RAID_MARGIN_MAX, oneShare: RAID.tradeMax, levMax: RAID.levMax, memberMax: RAID.memberMax, inShare: RAID.inShare }; }
+  _raidPub(r) { let det = null; try { det = r.detail ? JSON.parse(r.detail) : null; } catch (e) {} const mem = +r.members || this._squadN(r.sid) || 1; return { id: r.id, sid: r.sid, coin: r.coin, start: +r.start_ts || 0, end: +r.end_ts || 0, target: +r.target || 0, status: r.status, progress: r.progress == null ? 0 : +r.progress, settled: +r.settled || 0, detail: det, members: mem, need: raidNeed(mem), minAt: (+r.start_ts || 0) + RAID.minMs, rallied: !!r.rally, marginMax: RAID_MARGIN_MAX, oneShare: RAID.tradeMax, levMax: RAID.levMax, memberMax: RAID.memberMax, inShare: RAID.inShare, vs: r.vs || '', vsid: r.vsid || '', vswin: r.vswin || '' }; }
   _raidActive(sid) { return this.rows("SELECT * FROM raids WHERE sid=? AND status='active' AND settled=0 ORDER BY created DESC LIMIT 1", sid)[0] || null; }
   /* Every close on the coin by a member inside the window, judged once: counted (and how much, after the caps) or skipped (and why).
      The same judgement feeds the pool, who took part, the room's raid lines and the "why didn't my trade count" check. */
@@ -35783,10 +35844,115 @@ export class UserStore {
     if (cleared) this._sqAddValor(r.sid, SQUAD_VALOR.raidClear, 'raid cleared'); // Valor for clearing a raid (2026-10-01)
     try { this._fdAddSquad(r.sid, 'ore', cleared ? FOUNDRY.rate.raidClear : FOUNDRY.rate.raidFail, this._squadLeader(r.sid) || '', 'raid ' + r.coin + (cleared ? ' cleared' : ' failed')); } catch (e) {} // the Foundry: Ore per raid, to the squad
     try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target) + ', ' + pr.inN + '/' + pr.need + ' took part', '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
+    try { this._vsSettle(r, status); } catch (e) {}
+    try { this._sqLog(r.sid, 'raid', (cleared ? 'Cleared the ' : 'Failed the ') + r.coin + ' raid: $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target)); } catch (e) {}
     return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
   }
   /* One reading of the active raid for every surface: met and past 24 h -> settled now (cleared); else the live view. */
-  _raidView(sid) { const ra = this._raidActive(sid); if (!ra) return null; const pr = this._raidProgress(ra); if (this._raidMet(ra, pr)) return this._raidSettle(ra, false); return Object.assign(this._raidPub(ra), { live: pr }); }
+  _raidView(sid) { const ra = this._raidActive(sid); if (!ra) return null; const pr = this._raidProgress(ra); if (this._raidMet(ra, pr)) return this._raidSettle(ra, false); const o = Object.assign(this._raidPub(ra), { live: pr }); try { o.opp = this._vsOpp(ra); } catch (e) {} return o; }
+  /* ── @SQX helpers ─────────────────────────────────────────────────────────────────────────── */
+  _sqMay(uid, sq, what) { // the leader may do anything; a captain runs raids and answers applications; a recruiter recruits and answers applications
+    uid = String(uid); if (!sq) return false; if (String(sq.leader) === uid) return true;
+    const m = this.rows('SELECT role FROM squadm WHERE uid=? AND sid=?', uid, sq.id)[0]; const r = (m && m.role) || 'member';
+    if (r === 'captain') return what === 'raid' || what === 'apps' || what === 'rival';
+    if (r === 'recruiter') return what === 'recruit' || what === 'apps';
+    return false;
+  }
+  _sqLog(sid, kind, txt) { try { this.state.storage.sql.exec('INSERT INTO sqlog(sid, ts, kind, txt) VALUES(?,?,?,?)', sid, Date.now(), kind, String(txt || '').slice(0, 160)); } catch (e) {} }
+  _raidCheck(sq, coin, now) { // every refusal a raid start can meet - the plain start and a squad-vs-squad accept both ask it
+    if (RAID_COINS.indexOf(coin) < 0) return { error: 'bad_coin', coins: RAID_COINS, _s: 400 };
+    if (this._raidActive(sq.id)) return { error: 'raid_running', _s: 409 };
+    // A DAY IS dayMax RAIDS FOR THE WHOLE SQUAD, any coin, abandoned ones included (2026-11-15); an abandoned coin waits lockMs
+    const lv = squadLevel(+sq.sxp || 0).lv, cap = raidDayMax(lv);
+    const dayMs = (function () { const d = new Date(now); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
+    const used = (this.rows('SELECT COUNT(*) c FROM raids WHERE sid=? AND created>=?', sq.id, dayMs)[0] || { c: 0 }).c;
+    if (used >= cap) return { error: 'daily_limit', cap, lv, _s: 429 };
+    const lock = this.rows("SELECT MAX(end_ts) t FROM raids WHERE sid=? AND coin=? AND status='abandoned' AND end_ts>?", sq.id, coin, now - RAID.lockMs)[0];
+    if (lock && lock.t) return { error: 'coin_locked', coin, until: +lock.t + RAID.lockMs, _s: 429 };
+    return null;
+  }
+  _raidCreate(sq, coin, now, uid, vs) { // vs = {id, sid, name} when this raid races another squad's
+    const mem = this._squadN(sq.id), target = raidTarget(0, +sq.sxp || 0, mem), need = raidNeed(mem);
+    const id = (vs && vs.self) || ('rd' + now.toString(36) + Math.random().toString(36).slice(2, 6));
+    this.state.storage.sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created,members,vs,vsid) VALUES(?,?,?,?,?,?,?,0,0,?,?,?,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now, mem, vs ? vs.id : null, vs ? vs.sid : null);
+    const head = vs ? ('Raid race vs ' + (vs.name || 'another squad') + ' on ' + coin + ' is live: ') : ('Raid on ' + coin + ' is live: ');
+    for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', head + '$' + target.toLocaleString() + ' of realized profit in 48 hours, and ' + need + ' of you must each take part. ' + coin + ' trades at ' + RAID.levMax + 'x or under count; losses count against it.' + (vs ? ' The first squad to clear it wins.' : ''), '/squads/');
+    this._opsEv(uid, 'raid', sq.name + ' started a ' + (vs ? 'raid race vs ' + vs.name + ' ' : 'raid ') + 'on ' + coin + ' - target $' + target, '/squads/', { sid: sq.id, coin: coin, target: target, act: vs ? 'vs' : 'start' });
+    this._sqLog(sq.id, 'raid', (vs ? 'Started a raid race vs ' + vs.name + ' on ' : 'Started a raid on ') + coin);
+    return this.rows('SELECT * FROM raids WHERE id=?', id)[0];
+  }
+  _vsOpp(r) { // the other side of a raid race, as the card draws it
+    if (!r || !r.vs) return null;
+    const o = this.rows('SELECT * FROM raids WHERE id=?', r.vs)[0]; if (!o) return null;
+    const sq = this.rows('SELECT name, tag, crest FROM squads WHERE id=?', o.sid)[0] || {};
+    const pr = o.status === 'active' ? this._raidProgress(o) : null;
+    return { sid: o.sid, name: sq.name || '', tag: sq.tag || '', crest: crestNorm(sq.crest), status: o.status, total: pr ? pr.total : +o.progress || 0, target: +o.target || 0, inN: pr ? pr.inN : null, need: pr ? pr.need : raidNeed(+o.members || 1), win: r.vswin || '' };
+  }
+  _vsSettle(r, status) { // first to CLEAR wins; an abandon forfeits; both failing is a draw. The winner takes a share of the loser's Valor.
+    if (!r || !r.vs) return;
+    const me = this.rows('SELECT * FROM raids WHERE id=?', r.id)[0], o = this.rows('SELECT * FROM raids WHERE id=?', r.vs)[0];
+    if (!me || !o || me.vswin || o.vswin) return;
+    let win = '';
+    if (status === 'cleared') win = r.sid;
+    else if (status === 'abandoned') win = o.sid;
+    else if (+o.settled && o.status !== 'cleared') win = 'draw';
+    if (!win) return;
+    const sql = this.state.storage.sql;
+    sql.exec('UPDATE raids SET vswin=? WHERE id IN (?, ?)', win, me.id, o.id);
+    const nA = (this.rows('SELECT name FROM squads WHERE id=?', me.sid)[0] || {}).name || 'A squad', nB = (this.rows('SELECT name FROM squads WHERE id=?', o.sid)[0] || {}).name || 'a squad';
+    if (win === 'draw') { for (const sid of [me.sid, o.sid]) { this._sqLog(sid, 'vs', 'Raid race on ' + r.coin + ': nobody cleared it, a draw'); for (const u of this._squadUids(sid)) this._pushNotif(u, 'squad', 'Raid race on ' + r.coin + ' ended in a draw - neither squad cleared it.', '/squads/'); } return; }
+    const lose = win === me.sid ? o.sid : me.sid, wName = win === me.sid ? nA : nB, lName = win === me.sid ? nB : nA;
+    const lv = +((this.rows('SELECT valor FROM squads WHERE id=?', lose)[0] || {}).valor) || 0, amt = Math.min(SQX.vsCap, Math.floor(lv * SQX.vsShare));
+    if (amt > 0) { sql.exec('UPDATE squads SET valor=MAX(0, COALESCE(valor,0)-?) WHERE id=?', amt, lose); this._sqAddValor(win, amt, 'raid race won'); }
+    this._sqLog(win, 'vs', 'Won the raid race vs ' + lName + ' on ' + r.coin + (amt ? ' (+' + amt + ' Valor)' : ''));
+    this._sqLog(lose, 'vs', 'Lost the raid race vs ' + wName + ' on ' + r.coin + (amt ? ' (-' + amt + ' Valor)' : ''));
+    for (const u of this._squadUids(win)) this._pushNotif(u, 'squad', 'You won the raid race vs ' + lName + ' on ' + r.coin + (amt ? ': +' + amt + ' Valor taken from them.' : '.'), '/squads/');
+    for (const u of this._squadUids(lose)) this._pushNotif(u, 'squad', wName + ' won the raid race on ' + r.coin + (amt ? ' and took ' + amt + ' of your Valor.' : '.'), '/squads/');
+  }
+  _sqStreak(sid) { // consecutive UTC days on which 60% of the members closed a trade; today counts once it is met
+    const uids = this._squadUids(sid), n = uids.length; if (!n) return { days: 0, today: false, todayN: 0, need: 1 };
+    const need = Math.max(1, Math.ceil(n * SQX.streakPart)), D = 86400000, d0 = Math.floor(Date.now() / D);
+    const per = {};
+    inChunks(uids, (part, ph) => this.rows("SELECT user_id u, CAST(ts/86400000 AS INTEGER) d FROM tradeev WHERE user_id IN (" + ph + ") AND kind='close' AND ts>=? AND COALESCE(cp,0)=0 GROUP BY user_id, d", ...part, (d0 - 90) * D)).forEach(r => { per[+r.d] = (per[+r.d] || 0) + 1; });
+    const met = d => (per[d] || 0) >= need;
+    let d = met(d0) ? d0 : d0 - 1, days = 0; while (met(d) && days < 90) { days++; d--; }
+    return { days, today: met(d0), todayN: per[d0] || 0, need };
+  }
+  _sqWeek(sid, wk) { // this UTC week in numbers: XP gained, closes, raids cleared, duels won, all-checked-in days
+    wk = wk || wkStartOf(Date.now());
+    const uids = this._squadUids(sid); let xp = 0, closes = 0;
+    if (uids.length) {
+      inChunks(uids, (part, ph) => this.rows('SELECT u.xp_life l, w.base b FROM users u JOIN squadwk w ON w.uid=u.id AND w.wk=? WHERE u.id IN (' + ph + ')', wk, ...part)).forEach(r => { xp += Math.max(0, (+r.l || 0) - (+r.b || 0)); });
+      inChunks(uids, (part, ph) => this.rows("SELECT COUNT(*) c FROM tradeev WHERE user_id IN (" + ph + ") AND kind='close' AND ts>=? AND COALESCE(cp,0)=0", ...part, wk)).forEach(r => { closes += +r.c || 0; });
+    }
+    const raids = (this.rows("SELECT COUNT(*) c FROM raids WHERE sid=? AND status='cleared' AND created>=?", sid, wk)[0] || { c: 0 }).c;
+    const duels = (this.rows("SELECT COUNT(*) c FROM sduels WHERE winner=? AND settled=1 AND end_ts>=?", sid, wk)[0] || { c: 0 }).c;
+    const ci = (this.rows('SELECT COUNT(*) c FROM sqci WHERE sid=? AND ts>=?', sid, wk)[0] || { c: 0 }).c;
+    return { wk, xp, closes, raids: +raids || 0, duels: +duels || 0, ci: +ci || 0 };
+  }
+  _sqGoals(sid, week) {
+    const wk = week.wk, got = {}; for (const r of this.rows('SELECT gid FROM sqgoal WHERE sid=? AND wk=?', sid, wk)) got[r.gid] = 1;
+    const have = { closes: week.closes, raid: week.raids, ci: week.ci };
+    return SQX.goals.map(g => ({ id: g.id, need: g.need, have: have[g.id] || 0, done: (have[g.id] || 0) >= g.need, claimed: !!got[g.id], valor: SQX.goalValor }));
+  }
+  _sqCheckinAll(uid, day) {
+    const m = this.rows('SELECT sid FROM squadm WHERE uid=?', String(uid))[0]; if (!m) return;
+    const n = this._squadN(m.sid); if (n < 2) return;
+    const inN = (this.rows('SELECT COUNT(*) c FROM users u JOIN squadm q ON q.uid=u.id WHERE q.sid=? AND u.streak_day=?', m.sid, day)[0] || { c: 0 }).c;
+    if (inN < n) return;
+    const cur = this.state.storage.sql.exec('INSERT OR IGNORE INTO sqci(sid, day, ts) VALUES(?,?,?)', m.sid, day, Date.now());
+    if (!cur.rowsWritten) return;
+    this._sqAddXp(m.sid, SQX.ciXp);
+    this._sqLog(m.sid, 'ci', 'Every member checked in (+' + SQX.ciXp + ' squad XP)');
+    for (const u of this._squadUids(m.sid)) this._pushNotif(u, 'squad', 'Everyone in your squad checked in today: +' + SQX.ciXp + ' squad XP.', '/squads/');
+  }
+  _sqSeasonRank(sid, ws) { // squad XP gained this season, and the place among the squads that gained any
+    ws = ws || lbPeriodStart(Date.now());
+    const rows = this.rows("SELECT s.id, COALESCE(s.sxp,0) - q.base g FROM squads s JOIN sqseason q ON q.sid=s.id AND q.season=? WHERE COALESCE(s.hidden,0)=0 AND COALESCE(s.leader,'') NOT LIKE 'e2e%' ORDER BY g DESC", ws);
+    let rank = 0, g = 0; for (let i = 0; i < rows.length; i++) { if (rows[i].id === sid) { g = +rows[i].g || 0; rank = g > 0 ? i + 1 : 0; break; } }
+    return { rank, gained: g, of: rows.filter(r => +r.g > 0).length };
+  }
+  _sqBadges(uid) { return this.rows('SELECT season, rank, tag, name FROM sqbadge WHERE uid=? ORDER BY season DESC LIMIT 6', String(uid)).map(r => ({ s: Math.round((+r.season - LB_ANCHOR) / LB_PERIOD) + 1, rank: +r.rank, tag: r.tag || '', name: r.name || '' })); }
   /* The shelf: clears per coin, the total, and the run of clears from the newest settled raid back (abandoned and failed break it). */
   _raidTrophies(sid) {
     const out = { coins: {}, total: 0, streak: 0 };
@@ -35809,6 +35975,7 @@ export class UserStore {
       sql.exec('UPDATE squads SET mvp=?, mvp_name=?, mvp_until=? WHERE id=?', best.uid, best.name, now + MVP_WEAR_MS, sq.id);
       try { this._giveTicks(best.uid, MVP_TICKS, 'MVP of the week - ' + (sq.name || 'squad')); } catch (e) {}
       try { this._sqAddXp(sq.id, MVP_SQUAD_XP); } catch (e) {}
+      try { this._sqLog(sq.id, 'mvp', 'MVP of the week: ' + (best && best.name ? best.name : 'a member')); } catch (e) {}
       for (const uid of this._squadUids(sq.id)) this._pushNotif(uid, 'squad', (uid === best.uid ? 'You are ' : '@' + best.name + ' is ') + (sq.name || 'the squad') + "'s MVP of the week with " + best.gain.toLocaleString() + ' XP. The mark stays on the card for seven days.', '/squads/');
       this._sqAddValor(sq.id, SQUAD_VALOR.mvp, 'weekly MVP'); // Valor to the squad when it crowns an MVP (2026-10-01)
       try { this._opsEv(best.uid, 'mvp', best.name + ' is ' + (sq.name || 'the squad') + "'s MVP of the week (" + best.gain.toLocaleString() + ' XP)', '/squads/', { sid: sq.id, gain: best.gain, act: 'mvp' }); } catch (e) {}
@@ -37687,6 +37854,7 @@ export class UserStore {
               sql.exec('UPDATE users SET streak_day=?, streak=?, freezes=? WHERE id=?', today9, st, newFz, uid);
               if (st === 7 || st === 30 || st === 100) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, 'streak' + st, now, 'streak'); this._grantXp(uid, 'streak', 50, { note: st + '-day streak frame unlocked' }); } catch (eS) {} } // THE VAULT: milestone frames - earn-only, never buyable
               this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' });
+              try { this._sqCheckinAll(uid, today9); } catch (eC) {} // @SQX the squad bonus the day every member shows up
               this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
               try { this._fdAdd(uid, 'spark', FOUNDRY.rate.spark + (st >= 7 ? FOUNDRY.rate.sparkStreak7 : 0), st + '-day check-in'); } catch (eF) {} // the Foundry: Spark from showing up
               // Ticks: the check-in is the single biggest source, and it scales with the streak. Retention is
@@ -39570,7 +39738,7 @@ export class UserStore {
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
         const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
-        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq', 'totdc', 'totdv']; // totdc/totdv since 2026-11-13: a test nomination sat on the owner's public ballot
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq', 'totdc', 'totdv', 'sqapp', 'sqbadge']; // totdc/totdv since 2026-11-13: a test nomination sat on the owner's public ballot
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -39979,7 +40147,7 @@ export class UserStore {
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
-        curve, sqbadge: u.sqbadge || '', followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
+        curve, sqbadge: u.sqbadge || '', followers, seasonBadges: (function () { try { return this._sqBadges(u.id); } catch (e) { return []; } }).call(this), squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
       const rows = this.rows('SELECT id, username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
@@ -40502,7 +40670,7 @@ export class UserStore {
         levelOk: lv.idx >= needIdx, ticks: this._tickBal(uid), needTicks: SQUAD_CREATE_TICKS, ticksOk: this._tickBal(uid) >= SQUAD_CREATE_TICKS, cents: squadCreateCents() };
       can.opts = squadCrestOpts(0); // the founding logo maker must offer only what a level-1 squad can wear - without this the page offered every piece and the create refused with locked_piece (esPX, 2026-10-01)
             can.ok = can.levelOk && can.ticksOk; // cash is the other route; the worker adds the balance and re-decides
-      if (!m) return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can });
+      if (!m) { const myApps = this.rows('SELECT p.sid, p.ts, s.name, s.tag FROM sqapp p JOIN squads s ON s.id=p.sid WHERE p.uid=? AND p.ts>?', uid, Date.now() - SQX.appMs).map(r => ({ sid: r.sid, name: r.name || '', tag: r.tag || '', ts: +r.ts })); return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, myApps }); }
       const sq = this._squadPub(m.sid, true);
       if (!sq) { try { this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', uid); } catch (e) {} return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can }); }
       // A raid clears the MOMENT the target is hit, on this read too - not only when the room polls or the cron runs
@@ -40514,9 +40682,23 @@ export class UserStore {
       const _rToday = {}; let _rUsed = 0; try { for (const row of this.rows('SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND created>=? GROUP BY coin', m.sid, _rday)) { _rToday[String(row.coin).toUpperCase()] = +row.c || 0; _rUsed += +row.c || 0; } } catch (e) {}
       const _rLock = {}; try { for (const row of this.rows("SELECT coin, MAX(end_ts) t FROM raids WHERE sid=? AND status='abandoned' AND end_ts>? GROUP BY coin", m.sid, Date.now() - RAID.lockMs)) _rLock[String(row.coin).toUpperCase()] = (+row.t || 0) + RAID.lockMs; } catch (e) {}
       let foundry = null; try { foundry = this._fdState(m.sid); } catch (e) {}
+      const sqx = {}; try { // @SQX: everything the new squad features draw, in the same round trip
+        const now9 = Date.now(), srow = this.rows('SELECT rival, recruit_ts FROM squads WHERE id=?', m.sid)[0] || {};
+        const on = {}; for (const r of this.rows('SELECT u.username, u.last_seen FROM squadm q JOIN users u ON u.id=q.uid WHERE q.sid=?', m.sid)) on[r.username || ''] = (+r.last_seen || 0) > now9 - SQX.onMs;
+        (sq.members || []).forEach(x => { x.on = !!on[x.name]; });
+        const sqR = { id: m.sid, leader: sq.leader }; sqx.may = { raid: this._sqMay(uid, sqR, 'raid'), recruit: this._sqMay(uid, sqR, 'recruit'), apps: this._sqMay(uid, sqR, 'apps'), rival: this._sqMay(uid, sqR, 'rival'), roles: String(sq.leader) === uid };
+        sqx.streak = this._sqStreak(m.sid); sqx.week = this._sqWeek(m.sid); sqx.goals = this._sqGoals(m.sid, sqx.week);
+        sqx.season = this._sqSeasonRank(m.sid); sqx.recruitNext = (+srow.recruit_ts || 0) + SQX.recruitMs;
+        if (srow.rival) { const rp = this._squadPub(srow.rival, false); if (rp) sqx.rival = { sid: rp.sid, name: rp.name, tag: rp.tag, crest: rp.crest, level: rp.level, week: this._sqWeek(rp.sid, sqx.week.wk), streak: this._sqStreak(rp.sid).days }; }
+        if (sqx.may.apps) sqx.apps = this.rows('SELECT p.msg, p.ts, u.username, u.xp FROM sqapp p JOIN users u ON u.id=p.uid WHERE p.sid=? AND p.ts>? ORDER BY p.ts DESC LIMIT 20', m.sid, now9 - SQX.appMs).map(r => { const L = xpLevelOf(+r.xp || 0); return { name: r.username || '', msg: r.msg || '', ts: +r.ts, level: { k: L.k, name: L.name, col: L.col } }; });
+        const vsRow = r => { const o = this.rows('SELECT name, tag, crest FROM squads WHERE id=?', r.a_sid === m.sid ? r.b_sid : r.a_sid)[0] || {}; return { id: r.id, coin: r.coin, ts: +r.created, name: o.name || '', tag: o.tag || '', crest: crestNorm(o.crest) }; };
+        sqx.vsIn = this.rows("SELECT * FROM rvs WHERE b_sid=? AND status='pending' AND created>?", m.sid, now9 - SQX.vsMs).map(vsRow);
+        sqx.vsOut = this.rows("SELECT * FROM rvs WHERE a_sid=? AND status='pending' AND created>?", m.sid, now9 - SQX.vsMs).map(vsRow);
+        sqx.goalValor = SQX.goalValor; sqx.ciXp = SQX.ciXp;
+      } catch (e) { sqx.err = String(e && e.message || e).slice(0, 80); }
       const forge = { drivers: RNG_PICK.map(k => ({ k, label: RNG_DRIVERS[k].label })), mixN: FOUNDRY.mixN, randMin: FOUNDRY.randMin, wMin: FOUNDRY.wMin, startMin: FOUNDRY.startMin, startMax: FOUNDRY.startMax, minLevel: FOUNDRY.minLevel, minMembers: FOUNDRY.minMembers, cost: FOUNDRY.cost, level: squadLevel(+sq.sxp || 0).lv, members: sq.n };
       return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday, raidUsed: _rUsed, raidLocks: _rLock, raidNeed: raidNeed(sq.n), raidRules: raidRulesPub(), trophies: this._raidTrophies(m.sid), foundry, forge,
-        duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
+        duels: this._sduelList(m.sid), sqx, pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
     if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
       const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
@@ -40588,6 +40770,7 @@ export class UserStore {
       const sq = sid ? this._squadPub(sid, true) : null;
       if (sq && sq.hidden) return this.j({ error: 'not_found' }, 404); // a hidden squad (MP-One) cannot be opened by anyone - only its own members see it, via /squad/mine
       if (sq) { try { sq.coin = this._fdCoin(sid); } catch (e) {} } // the Foundry: the squad's coin on the public sheet
+      if (sq) { try { sq.streak = this._sqStreak(sid).days; sq.season = this._sqSeasonRank(sid); } catch (e) {} } // @SQX
       return sq ? this.j({ squad: sq }) : this.j({ error: 'not_found' }, 404);
     }
     if (path === '/squad/browse') { // EVERY squad, with the state of each - the only public view there is
@@ -40709,10 +40892,141 @@ export class UserStore {
       // A squad in the middle of a duel cannot grow: the opponent accepted a fight against a squad of a size
       sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, sid, 'member', now);
       this._opsEv(uid, 'squad', 'joined ' + (s.name || sid) + ' [' + (s.tag || '') + ']', '/squads/', { sid: sid, act: 'join' });
+      this._sqLog(sid, 'join', '@' + me.username + ' joined'); try { sql.exec('DELETE FROM sqapp WHERE uid=?', uid); } catch (e) {}
       this._sqBust();
       sql.exec('DELETE FROM squadinv WHERE uid=?', uid); // joining answers every other invite too
       this._pushNotif(s.leader, 'squad', '@' + me.username + ' joined ' + s.name + '.', 'squads');
       return this.j({ ok: true, squad: this._squadPub(sid, true) });
+    }
+    /* ── @SQX routes ─────────────────────────────────────────────────────────────────────────── */
+    if (path === '/squad/role') { // {uid, name, role} the leader names a captain or a recruiter
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const role = String((b && b.role) || ''); if (SQX.roles.indexOf(role) < 0) return this.j({ error: 'bad_role', roles: SQX.roles }, 400);
+      const t = this.rows('SELECT m.uid, u.username FROM squadm m JOIN users u ON u.id=m.uid WHERE m.sid=? AND LOWER(u.username)=LOWER(?)', sq.id, String((b && b.name) || ''))[0];
+      if (!t) return this.j({ error: 'not_member' }, 404); if (String(t.uid) === uid) return this.j({ error: 'is_leader' }, 409);
+      this.state.storage.sql.exec('UPDATE squadm SET role=? WHERE uid=?', role, t.uid);
+      if (role !== 'member') { this._pushNotif(t.uid, 'squad', 'You are now the ' + role + ' of ' + (sq.name || 'your squad') + '.' + (role === 'captain' ? ' You can start raids, rally and answer applications.' : ' You can post the squad to the chat and answer applications.'), '/squads/'); this._sqLog(sq.id, 'role', '@' + t.username + ' became ' + role); }
+      return this.j({ ok: true, name: t.username, role });
+    }
+    if (path === '/squad/recruit') { // {uid} the squad asks for members in the room: once per 6 h, only with a seat open
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (!this._sqMay(uid, sq, 'recruit')) return this.j({ error: 'not_allowed' }, 403);
+      if (sq.hidden) return this.j({ error: 'hidden' }, 409);
+      const n = this._squadN(sq.id), max = squadSlots(+sq.sxp || 0), now = Date.now();
+      if (n >= max) return this.j({ error: 'squad_full', max }, 409);
+      if (now - (+sq.recruit_ts || 0) < SQX.recruitMs) return this.j({ error: 'recruit_wait', next: (+sq.recruit_ts || 0) + SQX.recruitMs }, 429);
+      this.state.storage.sql.exec('UPDATE squads SET recruit_ts=? WHERE id=?', now, sq.id);
+      this._sqLog(sq.id, 'recruit', 'Posted the squad to the chat');
+      return this.j({ ok: true, next: now + SQX.recruitMs, test: /^e2e/i.test(String(sq.leader || '')), squad: { sid: sq.id, name: sq.name || '', tag: sq.tag || '', n, max, lv: squadLevel(+sq.sxp || 0).lv, open: !!sq.openj } });
+    }
+    if (path === '/squad/rival') { // {uid, sid|''} mark a rival squad (or clear it)
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (!this._sqMay(uid, sq, 'rival')) return this.j({ error: 'not_leader' }, 403);
+      const rid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      if (rid) { if (rid === sq.id) return this.j({ error: 'self' }, 409); const o = this.rows('SELECT name, hidden FROM squads WHERE id=?', rid)[0]; if (!o || o.hidden) return this.j({ error: 'not_found' }, 404); this._sqLog(sq.id, 'rival', 'Named ' + (o.name || 'a squad') + ' as the rival'); }
+      this.state.storage.sql.exec('UPDATE squads SET rival=? WHERE id=?', rid || null, sq.id);
+      return this.j({ ok: true, rival: rid || '' });
+    }
+    if (path === '/squad/history') { // {sid} one line per event, newest first: founded, joins, levels, raids, races, duels, MVPs
+      const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const sq = this.rows('SELECT id, name, created, hidden FROM squads WHERE id=?', sid)[0]; if (!sq) return this.j({ error: 'not_found' }, 404);
+      const ev = [{ ts: +sq.created || 0, kind: 'found', txt: 'Founded' }];
+      for (const r of this.rows('SELECT ts, kind, txt FROM sqlog WHERE sid=? ORDER BY ts DESC LIMIT 60', sid)) ev.push({ ts: +r.ts, kind: r.kind, txt: r.txt });
+      const logged = new Set(ev.filter(e => e.kind === 'raid').map(e => Math.round(e.ts / 60000)));
+      for (const r of this.rows("SELECT coin, status, progress, target, end_ts, detail FROM raids WHERE sid=? AND settled=1 ORDER BY created DESC LIMIT 30", sid)) {
+        let at = +r.end_ts || 0; try { const d = JSON.parse(r.detail || '{}'); if (d.at) at = +d.at; } catch (e) {}
+        if (logged.has(Math.round(at / 60000))) continue;
+        ev.push({ ts: at, kind: 'raid', txt: (r.status === 'cleared' ? 'Cleared the ' : r.status === 'abandoned' ? 'Abandoned the ' : 'Failed the ') + r.coin + ' raid' + (r.status === 'abandoned' ? '' : ': $' + Math.round(+r.progress || 0) + ' of $' + Math.round(+r.target || 0)) });
+      }
+      for (const d of this.rows("SELECT a_sid, b_sid, a_name, b_name, winner, end_ts, metric FROM sduels WHERE (a_sid=? OR b_sid=?) AND settled=1 ORDER BY end_ts DESC LIMIT 20", sid, sid)) {
+        const other = d.a_sid === sid ? d.b_name : d.a_name;
+        ev.push({ ts: +d.end_ts || 0, kind: 'duel', txt: (!d.winner ? 'Drew the duel with ' : d.winner === sid ? 'Won the duel vs ' : 'Lost the duel to ') + (other || 'a squad') });
+      }
+      ev.sort((a, c) => c.ts - a.ts);
+      return this.j({ sid, events: ev.slice(0, 40) });
+    }
+    if (path === '/squad/apply') { // {uid, sid, msg} ask to join an invite-only squad
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' }, 400);
+      const me = this.rows('SELECT id, username, status, xp FROM users WHERE id=?', uid)[0];
+      if (!me || !me.username) return this.j({ error: 'no_account' }, 403);
+      if (me.status && me.status !== 'active') return this.j({ error: 'suspended' }, 403);
+      if (this.rows('SELECT 1 FROM squadm WHERE uid=?', uid)[0]) return this.j({ error: 'already_in_squad' }, 409);
+      const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const q = this.rows('SELECT * FROM squads WHERE id=?', sid)[0]; if (!q || q.hidden) return this.j({ error: 'not_found' }, 404);
+      if (q.openj) return this.j({ error: 'open_join' }, 409);
+      if (this._squadN(sid) >= squadSlots(+q.sxp || 0)) return this.j({ error: 'squad_full' }, 409);
+      const now = Date.now(), sql = this.state.storage.sql;
+      if (this.rows('SELECT 1 FROM sqapp WHERE sid=? AND uid=? AND ts>?', sid, uid, now - SQX.appMs)[0]) return this.j({ error: 'already_applied' }, 409);
+      if ((this.rows('SELECT COUNT(*) c FROM sqapp WHERE uid=? AND ts>?', uid, now - SQX.appMs)[0] || { c: 0 }).c >= SQX.appMax) return this.j({ error: 'too_many_apps', max: SQX.appMax }, 429);
+      const msg = String((b && b.msg) || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 140);
+      sql.exec('INSERT OR REPLACE INTO sqapp(sid, uid, msg, ts) VALUES(?,?,?,?)', sid, uid, msg, now);
+      for (const r of this.rows("SELECT uid FROM squadm WHERE sid=? AND role IN ('leader','captain','recruiter')", sid).concat([{ uid: q.leader }])) { try { this._pushNotif(r.uid, 'squad', '@' + me.username + ' asked to join ' + (q.name || 'your squad') + (msg ? ': "' + msg.slice(0, 60) + '"' : '.'), '/squads/?apps=1'); } catch (e) {} }
+      return this.j({ ok: true });
+    }
+    if (path === '/squad/appdecide') { // {uid, name, ok} the leader, a captain or a recruiter answers an application
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (!this._sqMay(uid, sq, 'apps')) return this.j({ error: 'not_allowed' }, 403);
+      const a = this.rows('SELECT p.uid, u.username, u.status FROM sqapp p JOIN users u ON u.id=p.uid WHERE p.sid=? AND LOWER(u.username)=LOWER(?)', sq.id, String((b && b.name) || ''))[0];
+      if (!a) return this.j({ error: 'no_application' }, 404);
+      const sql = this.state.storage.sql; sql.exec('DELETE FROM sqapp WHERE sid=? AND uid=?', sq.id, a.uid);
+      if (!(b && b.ok)) { this._pushNotif(a.uid, 'squad', (sq.name || 'The squad') + ' did not take your application this time.', '/squads/'); return this.j({ ok: true, declined: a.username }); }
+      if (a.status && a.status !== 'active') return this.j({ error: 'suspended' }, 409);
+      if (this.rows('SELECT 1 FROM squadm WHERE uid=?', a.uid)[0]) return this.j({ error: 'already_in_squad' }, 409);
+      if (this._squadN(sq.id) >= squadSlots(+sq.sxp || 0)) return this.j({ error: 'squad_full' }, 409);
+      sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', a.uid, sq.id, 'member', Date.now());
+      sql.exec('DELETE FROM squadinv WHERE uid=?', a.uid); sql.exec('DELETE FROM sqapp WHERE uid=?', a.uid);
+      this._sqBust(); this._sqLog(sq.id, 'join', '@' + a.username + ' joined');
+      this._pushNotif(a.uid, 'squad', 'You are in: ' + (sq.name || 'the squad') + ' took your application.', '/squads/');
+      return this.j({ ok: true, joined: a.username });
+    }
+    if (path === '/squad/goalclaim') { // {uid, gid} a member claims a finished weekly goal for the squad's Valor
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      const gid = String((b && b.gid) || ''); const g = this._sqGoals(sq.id, this._sqWeek(sq.id)).find(x => x.id === gid);
+      if (!g) return this.j({ error: 'bad_goal' }, 400); if (g.claimed) return this.j({ error: 'claimed' }, 409); if (!g.done) return this.j({ error: 'not_done', have: g.have, need: g.need }, 409);
+      const cur = this.state.storage.sql.exec('INSERT OR IGNORE INTO sqgoal(sid, wk, gid, ts) VALUES(?,?,?,?)', sq.id, wkStartOf(Date.now()), gid, Date.now());
+      if (!cur.rowsWritten) return this.j({ error: 'claimed' }, 409);
+      this._sqAddValor(sq.id, SQX.goalValor, 'weekly goal ' + gid); this._sqLog(sq.id, 'goal', 'Weekly goal done: ' + gid + ' (+' + SQX.goalValor + ' Valor)');
+      return this.j({ ok: true, valor: SQX.goalValor });
+    }
+    if (path === '/squad/vs') { // {uid, op: challenge|accept|decline|cancel, sid?, coin?, id?} the squad-vs-squad raid race
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (!this._sqMay(uid, sq, 'raid')) return this.j({ error: 'not_leader' }, 403);
+      const op = String((b && b.op) || ''), now = Date.now(), sql = this.state.storage.sql;
+      try { sql.exec("UPDATE rvs SET status='expired' WHERE status='pending' AND created<?", now - SQX.vsMs); } catch (e) {}
+      if (op === 'challenge') {
+        const bs = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8), coin = String((b && b.coin) || '').toUpperCase();
+        if (bs === sq.id) return this.j({ error: 'self' }, 409);
+        const o = this.rows('SELECT * FROM squads WHERE id=?', bs)[0]; if (!o || o.hidden) return this.j({ error: 'not_found' }, 404);
+        const bad = this._raidCheck(sq, coin, now); if (bad) { const st = bad._s; delete bad._s; return this.j(bad, st); }
+        if (this.rows("SELECT 1 FROM rvs WHERE a_sid=? AND status='pending'", sq.id)[0]) return this.j({ error: 'challenge_pending' }, 409);
+        const id = 'vs' + now.toString(36) + Math.random().toString(36).slice(2, 5);
+        sql.exec('INSERT INTO rvs(id, a_sid, b_sid, coin, created, status) VALUES(?,?,?,?,?,?)', id, sq.id, bs, coin, now, 'pending');
+        for (const r of this.rows("SELECT uid FROM squadm WHERE sid=? AND role IN ('leader','captain')", bs).concat([{ uid: o.leader }])) { try { this._pushNotif(r.uid, 'squad', (sq.name || 'A squad') + ' challenges you to a raid race on ' + coin + ': the first squad to clear it wins a share of the other side\'s Valor. Answer within 24 hours.', '/squads/'); } catch (e) {} }
+        return this.j({ ok: true, id });
+      }
+      const id = String((b && b.id) || '').slice(0, 24); const c = this.rows('SELECT * FROM rvs WHERE id=?', id)[0];
+      if (!c || c.status !== 'pending') return this.j({ error: 'not_pending' }, 409);
+      if (op === 'cancel') { if (c.a_sid !== sq.id) return this.j({ error: 'not_yours' }, 403); sql.exec("UPDATE rvs SET status='cancelled' WHERE id=?", id); return this.j({ ok: true }); }
+      if (c.b_sid !== sq.id) return this.j({ error: 'not_yours' }, 403);
+      if (op === 'decline') { sql.exec("UPDATE rvs SET status='declined' WHERE id=?", id); for (const u of this._squadUids(c.a_sid)) this._pushNotif(u, 'squad', (sq.name || 'The squad') + ' declined your raid race on ' + c.coin + '.', '/squads/'); return this.j({ ok: true }); }
+      if (op !== 'accept') return this.j({ error: 'bad_op' }, 400);
+      const A = this.rows('SELECT * FROM squads WHERE id=?', c.a_sid)[0]; if (!A) return this.j({ error: 'not_found' }, 404);
+      const bA = this._raidCheck(A, c.coin, now); if (bA) { return this.j({ error: 'they_cannot', why: bA.error }, 409); }
+      const bB = this._raidCheck(sq, c.coin, now); if (bB) { const st = bB._s; delete bB._s; return this.j(bB, st); }
+      const ra = 'rd' + now.toString(36) + 'a' + Math.random().toString(36).slice(2, 5), rb = 'rd' + now.toString(36) + 'b' + Math.random().toString(36).slice(2, 5);
+      this._raidCreate(A, c.coin, now, A.leader, { self: ra, id: rb, sid: sq.id, name: sq.name || '' });
+      const row = this._raidCreate(sq, c.coin, now, uid, { self: rb, id: ra, sid: A.id, name: A.name || '' });
+      sql.exec("UPDATE rvs SET status='live', a_raid=?, b_raid=? WHERE id=?", ra, rb, id);
+      return this.j({ ok: true, raid: this._raidPub(row) });
+    }
+    if (path === '/squad/seasonaward') { // {ws} the season's top three squads by squad XP gained: every member wears a badge (once)
+      const ws = +((b && b.ws)) || (lbPeriodStart(Date.now()) - LB_PERIOD), nx = ws + LB_PERIOD, sql = this.state.storage.sql;
+      if (this.rows('SELECT 1 FROM sqbadge WHERE season=? LIMIT 1', ws)[0]) return this.j({ ok: true, dup: true });
+      const rows = this.rows("SELECT s.id, s.name, s.tag, COALESCE(n.base, s.sxp, 0) - q.base g FROM squads s JOIN sqseason q ON q.sid=s.id AND q.season=? LEFT JOIN sqseason n ON n.sid=s.id AND n.season=? WHERE COALESCE(s.hidden,0)=0 AND COALESCE(s.leader,'') NOT LIKE 'e2e%' ORDER BY g DESC LIMIT 3", ws, nx).filter(r => +r.g > 0);
+      const out = [];
+      rows.forEach((r, i) => { for (const u of this._squadUids(r.id)) { sql.exec('INSERT OR IGNORE INTO sqbadge(uid, season, rank, sid, tag, name) VALUES(?,?,?,?,?,?)', u, ws, i + 1, r.id, r.tag || '', r.name || ''); this._pushNotif(u, 'squad', (r.name || 'Your squad') + ' finished #' + (i + 1) + ' of the season. Every member wears the season badge on their profile.', '/squads/'); } this._sqLog(r.id, 'season', 'Finished #' + (i + 1) + ' of the season'); out.push({ rank: i + 1, sid: r.id, name: r.name, gained: +r.g }); });
+      return this.j({ ok: true, ws, top: out });
     }
     if (path === '/squad/declineinv') {
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
@@ -40893,7 +41207,7 @@ export class UserStore {
     if (path === '/squad/raid') { // {uid, op:'start'|'abandon', coin, targetBase}
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
       const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
-      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      if (!this._sqMay(uid, sq, 'raid')) return this.j({ error: 'not_leader' }, 403); // the leader or a captain (@SQX)
       const op = String((b && b.op) || 'start'), now = Date.now(), sql = this.state.storage.sql;
       if (op === 'rally') { // the leader's one call per raid to the members who have not taken part yet
         const r1 = this._raidActive(sq.id); if (!r1) return this.j({ error: 'no_raid' }, 404);
@@ -40904,24 +41218,11 @@ export class UserStore {
         sql.exec('UPDATE raids SET rally=? WHERE id=?', now, r1.id);
         return this.j({ ok: true, sent, need });
       }
-      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=?, end_ts=? WHERE id=?", this._raidProgress(r0).total, now, r0.id); /* end_ts = the moment it was abandoned: that coin is locked for RAID.lockMs from here */ this._opsEv(uid, 'raid', sq.name + ' abandoned the ' + r0.coin + ' raid', '/squads/', { coin: r0.coin, act: 'abandon' }); return this.j({ ok: true, abandoned: r0.coin }); }
+      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=?, end_ts=? WHERE id=?", this._raidProgress(r0).total, now, r0.id); try { this._vsSettle(r0, 'abandoned'); } catch (eV) {} try { this._sqLog(sq.id, 'raid', 'Abandoned the ' + r0.coin + ' raid'); } catch (eL) {} /* end_ts = the moment it was abandoned: that coin is locked for RAID.lockMs from here */ this._opsEv(uid, 'raid', sq.name + ' abandoned the ' + r0.coin + ' raid', '/squads/', { coin: r0.coin, act: 'abandon' }); return this.j({ ok: true, abandoned: r0.coin }); }
       const coin = String((b && b.coin) || '').toUpperCase();
-      if (RAID_COINS.indexOf(coin) < 0) return this.j({ error: 'bad_coin', coins: RAID_COINS }, 400);
-      if (this._raidActive(sq.id)) return this.j({ error: 'raid_running' }, 409);
-      // Per-coin DAILY cap, growing with the level and reaching 5 only at level 10 (2026-10-01).
-      // A DAY IS dayMax RAIDS FOR THE WHOLE SQUAD, any coin, abandoned ones included (2026-11-15); an abandoned coin waits lockMs
-      const _lv = squadLevel(+sq.sxp || 0).lv, _cap = raidDayMax(_lv);
-      const _dayMs = (function () { const d = new Date(now); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
-      const _usedToday = (this.rows('SELECT COUNT(*) c FROM raids WHERE sid=? AND created>=?', sq.id, _dayMs)[0] || { c: 0 }).c;
-      if (_usedToday >= _cap) return this.j({ error: 'daily_limit', cap: _cap, lv: _lv }, 429);
-      const _lock = this.rows("SELECT MAX(end_ts) t FROM raids WHERE sid=? AND coin=? AND status='abandoned' AND end_ts>?", sq.id, coin, now - RAID.lockMs)[0];
-      if (_lock && _lock.t) return this.j({ error: 'coin_locked', coin, until: +_lock.t + RAID.lockMs }, 429);
-      const _mem = this._squadN(sq.id), target = raidTarget(0, +sq.sxp || 0, _mem), _need = raidNeed(_mem);
-      const id = 'rd' + now.toString(36) + Math.random().toString(36).slice(2, 6);
-      sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created,members) VALUES(?,?,?,?,?,?,?,0,0,?,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now, _mem);
-      for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target.toLocaleString() + ' of realized profit in 48 hours, and ' + _need + ' of you must each take part. ' + coin + ' trades at ' + RAID.levMax + 'x or under count; losses count against it.', '/squads/');
-      this._opsEv(uid, 'raid', sq.name + ' started a raid on ' + coin + ' - target $' + target, '/squads/', { sid: sq.id, coin: coin, target: target, act: 'start' });
-      return this.j({ ok: true, raid: this._raidPub(this.rows('SELECT * FROM raids WHERE id=?', id)[0]) });
+      const _bad = this._raidCheck(sq, coin, now); if (_bad) { const st = _bad._s; delete _bad._s; return this.j(_bad, st); }
+      const _row = this._raidCreate(sq, coin, now, uid, null);
+      return this.j({ ok: true, raid: this._raidPub(_row) });
     }
     if (path === '/squad/raidsettle') { // the cron, and {id} for one raid on demand (support + E2E)
       const now = +((b && b.now)) || Date.now(); const out = [];

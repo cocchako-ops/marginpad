@@ -430,6 +430,7 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
             // a hidden squad (MP-One) shows on the card but is NOT a link - it opens for no one
             ? ('<div class="lbm-sq"><span>' + window.mpSquadCrest(d.squad.crest, 30, d.squad.tag) + '</span><div style="min-width:0"><div class="lbm-sqn">' + esc(d.squad.name || '') + '</div><div class="lbm-sqr">' + (d.squad.leader ? __esT_mpprofile("squadLeader", 'Squad leader') : __esT_mpprofile("squadIn", 'Squad')) + ' &middot; ' + esc(String(d.squad.tag || '').toUpperCase()) + '</div></div>' + sqbHtml + '</div>')
             : ('<div class="lbm-sq"><a href="/squads/?sid=' + encodeURIComponent(d.squad.sid) + '">' + window.mpSquadCrest(d.squad.crest, 30, d.squad.tag) + '</a><div style="min-width:0"><div class="lbm-sqn"><a href="/squads/?sid=' + encodeURIComponent(d.squad.sid) + '">' + esc(d.squad.name || '') + '</a></div><div class="lbm-sqr">' + (d.squad.leader ? __esT_mpprofile("squadLeader", 'Squad leader') : __esT_mpprofile("squadIn", 'Squad')) + ' &middot; ' + esc(String(d.squad.tag || '').toUpperCase()) + '</div></div>' + sqbHtml + '</div>')) : '')
+        + ((d.seasonBadges && d.seasonBadges.length) ? '<div class="lbm-ssb">' + d.seasonBadges.slice(0, 4).map(function (x) { return '<span class="r' + x.rank + '" title="' + esc((x.name || '') + ' - #' + x.rank + ', season ' + x.s) + '"><b>S' + x.s + ' #' + x.rank + '</b> ' + esc(x.tag || '') + '</span>'; }).join('') + '</div>' : '') // @SQX season badges: a top-3 squad finish stays on the card
         + '<div class="lbm-bar"><i style="width:' + (L.pct || 0) + '%;background-color:' + lc + ';color:' + lc + '"></i></div>'
         + '<div class="lbm-grid">'
           + stat((s2.trades || 0), s2.season ? __esT_mpprofile("tradesSeason",'Trades · season') : 'Trades')
@@ -618,3 +619,5 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     arm(); setInterval(arm, 1000);
   })();
 })();
+
+;(function () { try { var st = document.createElement('style'); st.textContent = '.lbm-ssb{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;margin:7px 0 0}.lbm-ssb span{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font:600 10.5px/1.2 "Space Mono",ui-monospace,monospace;color:#c9d1da;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03)}.lbm-ssb b{font-weight:800}.lbm-ssb .r1{color:#ffd75a;border-color:rgba(255,215,90,.45);background:rgba(255,215,90,.08)}.lbm-ssb .r2{color:#d6dde6;border-color:rgba(214,221,230,.4)}.lbm-ssb .r3{color:#e3a36b;border-color:rgba(227,163,107,.45)}'; (document.head || document.documentElement).appendChild(st); } catch (e) {} })();

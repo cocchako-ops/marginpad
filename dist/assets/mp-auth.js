@@ -4261,8 +4261,43 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   }
   (function () { if (tpChip()) return; var mo = null; try { mo = new MutationObserver(function () { if (document.getElementById('chatBox') && tpChip()) { try { mo.disconnect(); } catch (e) {} } }); mo.observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {} var t = 0; (function look() { if (tpChip()) { try { mo && mo.disconnect(); } catch (e) {} return; } if (++t > 240) return; setTimeout(look, 500); })(); })();
   if (/[?&]totd=1(&|$)/.test(location.search)) setTimeout(tpOpen, 400);
+  /* @SQAD (2026-11-15, owner: "squad moze da posalje na chat da trazi clanove i da bude clickable i da vodi na squad, ali da bude
+     minimalisticno"). The house line carries "squadad:<SID>"; here it becomes one 44px row - logo, tag, name, level, open seats and
+     one word - that opens the squad. The seats are read when the row is drawn, so a squad that has filled says Full. */
+  var SQAD = {};
+  function sqadLoad(sid) { var c = SQAD[sid]; if (c && Date.now() - c.at < 60000) return c.p; var p = fetch('/api/squad/get?sid=' + encodeURIComponent(sid)).then(function (r) { return r.json(); }).then(function (j) { return j && j.squad; }); SQAD[sid] = { at: Date.now(), p: p }; return p; }
+  function sqadHydrate(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('.ct-body:not([data-sqad])'), function (b) {
+      var m = /\bsquadad:([A-Z0-9]{4,8})\b/.exec(b.textContent || ''); if (!m) return;
+      var sid = m[1]; b.setAttribute('data-sqad', sid);
+      sqadLoad(sid).then(function (q) {
+        if (!q || !b.isConnected) return;
+        var free = Math.max(0, (q.max || 0) - (q.n || 0)), lv = (q.level && q.level.lv) || 1;
+        var word = free <= 0 ? __esT_mpauth('sqadFull', 'Full') : q.open ? __esT_mpauth('sqadJoin', 'Join') : __esT_mpauth('sqadApply', 'Apply');
+        b.innerHTML = '<a class="ct-sqad' + (free <= 0 ? ' full' : '') + '" href="/squads/?sid=' + encodeURIComponent(q.sid) + '" style="--sq:' + sqadAcc(q.crest) + '">'
+          + (window.mpSquadCrest ? window.mpSquadCrest(q.crest, 28, q.tag) : '')
+          + '<span class="ct-sqad-t"><b>' + escH(q.tag) + '</b> ' + escH(q.name) + '<small>' + __esT_mpauth('sqadLooking', 'looking for members') + ' &middot; LVL ' + lv + ' &middot; ' + (free > 0 ? free + ' ' + (free === 1 ? __esT_mpauth('sqadSeat', 'seat open') : __esT_mpauth('sqadSeats', 'seats open')) : __esT_mpauth('sqadNoSeat', 'no seat left')) + '</small></span>'
+          + '<span class="ct-sqad-go">' + word + '</span></a>';
+        try { b.firstChild.animate([{ opacity: 0, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'ease-out' }); } catch (e) {}
+      }).catch(function () {});
+    });
+  }
+  function sqadLum(h) { h = String(h || '').replace('#', ''); if (!/^[0-9a-f]{6}$/i.test(h)) return 0; return 0.299 * parseInt(h.slice(0, 2), 16) + 0.587 * parseInt(h.slice(2, 4), 16) + 0.114 * parseInt(h.slice(4, 6), 16); }
+  function sqadAcc(c) { c = c || {}; return sqadLum(c.bg) >= 80 ? c.bg : sqadLum(c.fg) >= 80 ? c.fg : '#c2f64a'; } // a near-black logo still gets a colour that reads (MP1, 2026-11-15)
+  function escH(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+  try {
+    var sqst = document.createElement('style');
+    sqst.textContent = '.ct-sqad{display:flex;align-items:center;gap:9px;margin:2px 0;padding:7px 10px;max-width:340px;border-radius:12px;border:1px solid color-mix(in srgb,var(--sq) 35%,rgba(255,255,255,.1));background:color-mix(in srgb,var(--sq) 7%,rgba(255,255,255,.02));color:#e9e7df;text-decoration:none;transition:border-color .15s,background .15s}'
+      + '.ct-sqad:hover{border-color:color-mix(in srgb,var(--sq) 70%,transparent);background:color-mix(in srgb,var(--sq) 12%,rgba(255,255,255,.02))}'
+      + '.ct-sqad-t{flex:1;min-width:0;font:600 13px/1.25 "Familjen Grotesk",system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ct-sqad-t b{font-family:"Space Mono",ui-monospace,monospace;color:var(--sq)}'
+      + '.ct-sqad-t small{display:block;font:500 11px/1.3 "Familjen Grotesk",system-ui,sans-serif;color:#8b9099;overflow:hidden;text-overflow:ellipsis}'
+      + '.ct-sqad-go{flex:0 0 auto;padding:5px 11px;border-radius:999px;background:var(--sq);color:#0a0b0d;font:700 11.5px/1 "Familjen Grotesk",system-ui,sans-serif}'
+      + '.ct-sqad.full .ct-sqad-go{background:rgba(255,255,255,.08);color:#8b9099}';
+    (document.head || document.documentElement).appendChild(sqst);
+  } catch (e) {}
   function hydrate(root) {
     root = root || document; if (!root.querySelectorAll) return;
+    try { sqadHydrate(root); } catch (e) {}
     try { if (window.mpChatPrefs && window.mpChatPrefs.get().trades === 'link') return; } catch (e) {}   // the reader asked for the plain link (chat settings)
     var links = root.querySelectorAll('a.ct-trade[data-trade]:not([data-tk])');
     Array.prototype.forEach.call(links, function (a) {
