@@ -300,7 +300,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   setInterval(() => { const c = Date.now() - 600000; for (const [k, v] of latamCache) if (v.t < c) latamCache.delete(k); }, 120000).unref?.();
   // Exchange campaign feeds the worker cannot read itself (2026-11-15): OKX answers the Cloudflare egress 400 and MEXC 403, both answer here.
   // FIXED urls only - the caller names a source, never a path - cached 10 minutes.
-  const PROMO_URL = { okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20' };
+  const PROMO_URL = { kraken: 'https://blog.kraken.com/feed', okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20' };
   const promoCache = new Map();
   app.get('/api/v1/promo', async (req, res) => {
     if (String(req.query.src) === 'og') { // a campaign page's og:image, for the two venues that refuse the worker - their own hosts only
@@ -312,7 +312,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     }
     if (String(req.query.src) === 'img') { // a campaign's own picture; the worker's egress is refused by these hosts, the droplet is not
       const v = String(req.query.v || ''), pu = String(req.query.u || '');
-      const HOST = { bybit: /^https:\/\/announcements\.bybit\.com\//, kucoin: /^https:\/\/www\.kucoin\.com\//, binance: /^https:\/\/www\.binance\.com\//, okx: /^https:\/\/www\.okx\.com\//, mexc: /^https:\/\/www\.mexc\.com\// };
+      const HOST = { bybit: /^https:\/\/announcements\.bybit\.com\//, kucoin: /^https:\/\/www\.kucoin\.com\//, binance: /^https:\/\/www\.binance\.com\//, okx: /^https:\/\/www\.okx\.com\//, bingx: /^https:\/\/bingx\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?activity\//, mexc: /^https:\/\/www\.mexc\.com\// };
       if (!HOST[v] || !HOST[v].test(pu) || pu.length > 400) return res.status(400).json({ error: 'host_not_allowed' });
       const ck = 'img:' + pu, hi = promoCache.get(ck); if (hi && Date.now() - hi.t < 86400000) return res.json({ img: hi.img });
       try {
@@ -321,6 +321,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         if (!r.ok) return res.status(502).json({ error: 'http_' + r.status });
         const h = await r.text(); let img = '';
         if (v === 'binance') img = (h.match(/https:\/\/public\.bnbstatic\.com\/image\/cms\/content\/body\/[^"'\s\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
+        else if (v === 'bingx') img = (h.match(/https:\/\/static-app\.bb-os\.com\/social_feed_pictures\/[^"'\s\\<]+\.(?:png|jpe?g|webp|gif)/i) || [''])[0];
         else if (v === 'kucoin') img = (h.match(/https:\/\/assets\.staticimg\.com\/cms\/media\/[^"'\s)\\]+\.(?:png|jpe?g|webp)/i) || [''])[0];
         else { const m = h.match(/property=["']og:image["'][^>]*content=["']([^"']+)/i) || h.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i); img = m ? m[1].replace(/&amp;/g, '&') : ''; }
         promoCache.set(ck, { t: Date.now(), img }); return res.json({ img });
