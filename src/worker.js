@@ -10702,6 +10702,9 @@ function doExport(self, url, TABS, opt) {
     return new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'x-rows': String(nRows) } });
   }
   if (TABS.indexOf(t) < 0) return self.j({ error: 'no_such_table', tables: TABS }, 400);
+  // a table created lazily (by the first call of its route) may not exist on this instance yet: that is an EMPTY table, never an
+  // error - one missing table must not fail the whole night's backup (2026-11-15, when the lists grew from 16 to 60+)
+  try { const ex = self.rows("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t); if (!ex || !ex.length) return new Response('{"t":' + JSON.stringify(t) + ',"mode":"absent","n":0,"next":null,"rows":[]}', { headers: { 'content-type': 'application/json', 'x-rows': '0', 'x-next': '' } }); } catch (e) {}
   const cap = Math.min(8000000, +url.searchParams.get('cap') || EXPORT_PAGE_BYTES), after = url.searchParams.get('after') || '';
   const parts = []; let bytes = 0, n = 0, more = false, mode = /^o/.test(after) ? 'offset' : 'rowid', last = +String(after).replace(/^o/, '') || 0;
   const walk = (byOffset) => { // fills parts from `last`; returns true when a further page exists
@@ -10806,8 +10809,10 @@ async function nightlyBackup(env) {
       ['rewards', env.REWARDS.get(env.REWARDS.idFromName('ledger'))],
     ];
     if (env.SPOT) jobs.push(['spot', env.SPOT.get(env.SPOT.idFromName('main'))]); // Demo Spot wallets (user "money")
+    if (env.COMM) jobs.push(['community', env.COMM.get(env.COMM.idFromName('main'))]); // 2026-11-15: posts/comments/likes/follows had no backup
+    if (env.OPSLOG) jobs.push(['opslog', env.OPSLOG.get(env.OPSLOG.idFromName('main'))]); // 2026-11-15: squad coin series + status history had no backup
     const sizes = [];
-    for (const [name, stub] of jobs) sizes.push((await backupStore(env, name, stub, dow, { whole: name !== 'users' })).line); // users is paged, always - never ask that store for its whole dump
+    for (const [name, stub] of jobs) sizes.push((await backupStore(env, name, stub, dow, { whole: name === 'rewards' || name === 'spot' })).line); // the two newest stores are paged from day one: a whole dump reads at most 200k rows a table and cuts the rest SILENTLY, and the MPAD series alone grows 1,440 rows a day // users is paged, always - never ask that store for its whole dump
     try { await evPush(env, null, 'backup', sizes.join(' · '), ''); } catch (e) {}
     try { await env.STATS.put('bkp:last', JSON.stringify({ ts: Date.now(), sizes }), { expirationTtl: 14 * 86400 }); } catch (e) {}
     return { ok: true, sizes };
@@ -30815,13 +30820,13 @@ export default {
     }
     if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E1: prove the backup is restorable - load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const which = url.searchParams.get('which') === 'rewards' ? 'rewards' : (url.searchParams.get('which') === 'spot' && env.SPOT ? 'spot' : 'users');
+      const _w = url.searchParams.get('which'); const which = _w === 'rewards' ? 'rewards' : (_w === 'spot' && env.SPOT) ? 'spot' : (_w === 'community' && env.COMM) ? 'community' : (_w === 'opslog' && env.OPSLOG) ? 'opslog' : 'users';
       let txt = null;
       try { if (env.BACKUP) { const o = await env.BACKUP.get('backup/' + which + '-latest.json'); txt = o ? await o.text() : null; } } catch (e) {}
       if (!txt) { try { txt = await env.STATS.get('bkp:' + which + ':latest'); } catch (e) {} }
       if (!txt) return new Response('{"error":"no_backup"}', { status: 404, headers: jh });
       let dump = null; try { dump = JSON.parse(txt); } catch (e) { return new Response('{"error":"bad_dump"}', { status: 500, headers: jh }); }
-      const stub = which === 'rewards' ? env.REWARDS.get(env.REWARDS.idFromName('bkp-restore-test')) : which === 'spot' ? env.SPOT.get(env.SPOT.idFromName('bkp-restore-test')) : env.USERS.get(env.USERS.idFromName('bkp-restore-test'));
+      const stub = which === 'rewards' ? env.REWARDS.get(env.REWARDS.idFromName('bkp-restore-test')) : which === 'spot' ? env.SPOT.get(env.SPOT.idFromName('bkp-restore-test')) : which === 'community' ? env.COMM.get(env.COMM.idFromName('bkp-restore-test')) : which === 'opslog' ? env.OPSLOG.get(env.OPSLOG.idFromName('bkp-restore-test')) : env.USERS.get(env.USERS.idFromName('bkp-restore-test'));
       if (dump && dump.paged && dump.tables && env.BACKUP) { // a PAGED dump (2026-10-27): the manifest names each table's pages; every page is read and imported on its own, so the sandbox restore never holds a whole table either
         const tables = {}; let allOk = true;
         for (const tn of Object.keys(dump.tables)) {
@@ -31523,13 +31528,15 @@ export default {
       if (url.searchParams.get('probe') === '1') { // MEASURE exactly what the nightly does, writing nothing (backupStore dry run): pages, rows, bytes, ms per table. ?store=users|rewards|spot narrows it
         const jobs = [['users', env.USERS.get(env.USERS.idFromName('main'))], ['rewards', env.REWARDS.get(env.REWARDS.idFromName('ledger'))]];
         if (env.SPOT) jobs.push(['spot', env.SPOT.get(env.SPOT.idFromName('main'))]);
+        if (env.COMM) jobs.push(['community', env.COMM.get(env.COMM.idFromName('main'))]);
+        if (env.OPSLOG) jobs.push(['opslog', env.OPSLOG.get(env.OPSLOG.idFromName('main'))]);
         const onlyS = url.searchParams.get('store') || '';
         const out = {}; let last = null, lastErr = null; try { last = JSON.parse(await env.STATS.get('bkp:last') || 'null'); lastErr = JSON.parse(await env.STATS.get('bkp:lasterr') || 'null'); } catch (e) {}
         if (onlyS === 'none') return new Response(JSON.stringify({ ok: true, last, lastErr }, null, 1), { headers: jh }); // the stamps alone, no export at all
         for (const [name, stub] of jobs) {
           if (onlyS && name !== onlyS) continue;
           const t0 = Date.now();
-          try { const r = await backupStore(env, name, stub, 'probe', { dry: true, whole: name !== 'users' }); out[name] = Object.assign({ ms: Date.now() - t0 }, r); }
+          try { const r = await backupStore(env, name, stub, 'probe', { dry: true, whole: name === 'rewards' || name === 'spot' }); out[name] = Object.assign({ ms: Date.now() - t0 }, r); }
           catch (e) { out[name] = { error: String(e && e.message || e).slice(0, 200), ms: Date.now() - t0 }; }
         }
         return new Response(JSON.stringify({ ok: true, last, lastErr, stores: out }, null, 1), { headers: jh });
@@ -33124,6 +33131,14 @@ export class OpsLog {
   }
   async fetch(request) {
     const url = new URL(request.url); const path = url.pathname;
+    // 2026-11-15: this store had NO backup - rngpx (squad coin series, the only copy) and upday (status history) live here
+    if (path === '/export') return doExport(this, url, ['mpadpx', 'rngpx', 'upday', 'lsnap', 'meta']);
+    if (path === '/import') { // restore-test sandbox only - same marker + refuse-if-populated guard as the other stores (2026-11-15)
+      let bi = {}; try { bi = await request.json(); } catch (e) {}
+      const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
+      if (!marked) { let realN = 0; try { realN = (this.rows('SELECT COUNT(*) n FROM mpadpx')[0] || {}).n || 0; } catch (e) {} if (realN > 0) return this.j({ error: 'refused_real_instance', rows: realN }); try { this.state.storage.sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {} }
+      const im = doImportRows(this, this.state.storage.sql, bi); return this.j({ ok: true, counts: im.counts, errs: im.errs, added: im.added });
+    }
     await this.seed();
     /* LONG/SHORT WAS MEASURED AND THROWN AWAY (2026-11-14, owner: "zaustavimo curenje ... ako negde ne cuvamo lepo te podatke").
        The account long/short ratio of 20 coins across Binance, OKX and Bybit is read on every /long-short visit and nothing kept
@@ -33601,7 +33616,7 @@ export class SpotStore {
       return this.j({ ok: true });
     }
     if (path === '/export') { // nightly backup dump · whole (2.6 MB measured 2026-10-27), ?list=1 with counts, ?t=<table>&after= one page (doExport)
-      return doExport(this, url, ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap', 'spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']);
+      return doExport(this, url, ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap', 'spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer', 'spotorder']);
     }
     if (path === '/import') { // restore-test sandbox only (same guard as the other DOs: refuses on an instance with real accounts)
       const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
@@ -34238,7 +34253,7 @@ export class RewardLedger {
       const im = doImportRows(this, this.state.storage.sql, body); return this.j({ ok: true, counts: im.counts, errs: im.errs });
     }
     if (path === '/export') { // nightly backup dump - every balance-bearing table (accounts = user money!) · whole (1 MB measured 2026-10-27, the 6h set reads it), ?list=1 with counts, ?t=<table>&after= one page (doExport)
-      return doExport(this, url, ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply', 'prempay', 'shoplog']);
+      return doExport(this, url, ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply', 'prempay', 'shoplog', 'acctlog', 'apipay', 'lbpay']); // + acctlog (every money move), apipay (the API book), lbpay (season payouts - also what stops a season being paid twice) - 2026-11-15
     }
     if (path === '/kinds') { // WHERE THE MONEY GOES (2026-09-27, owner: "which maths halves rewards without touching the boards"): credits by type over a window
       const from = +body.from || (Date.now() - 7 * 86400000), to = +body.to || Date.now();
@@ -39228,7 +39243,16 @@ export class UserStore {
     }
     if (path === '/export') { // nightly backup dump - identity, money-adjacent progress and social state. Ephemeral/analytics tables (sessions, otp, uevents, uclicks, udwell) are deliberately excluded.
       // PAGED ONLY (doExport, whole:false): the whole dump of this store exceeded the DO's memory and RESET the live store on every nightly retry (2026-10-27) - ?list=1 with counts, then ?t=<table>&after=<cursor>
-      return doExport(this, url, ['users', 'utrades', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts'], { whole: false });
+      /* EVERY TABLE THAT HOLDS SOMETHING A MEMBER OWNS OR EARNED (2026-11-15, owner: 'da li lepo cuvamo istorijske podatke'): the list
+         stopped at sixteen of 81 tables, so a lost store would have taken every bought cosmetic, Ticks purchase, season pass, code,
+         API key, Bybit UID, squad and the boards' own season bases with it - while the restore test, which checks only what is
+         listed, kept reporting a perfect match. Deliberately left out: sessions + OTP (a restore must never bring a token back),
+         rate/usage counters, send queues, the per-event logs (uevents, mev, udwell, uclicks, refhit, xpboost_ev) and derived
+         caches (livepos, active_srv). A NEW TABLE that holds member state goes in this list. */
+      return doExport(this, url, ['users', 'utrades', 'academy', 'acadexam', 'acadrev', 'acadrevday', 'acadprac', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts',
+        'cosmetics', 'tickbuy', 'ticklog', 'tickday', 'xplog', 'xpday', 'xpseason', 'lbbest', 'uprefs', 'unotifs', 'dm', 'psubs', 'followreq', 'bandev',
+        'botkeys2', 'botmig', 'botwh', 'porders', 'utrades_archive', 'totdc', 'totdv', 'btask', 'upb', 'upass', 'pcode', 'pcode_use', 'pgift', 'ugoal', 'upred', 'copies', 'achievements', 'rvs',
+        'squads', 'squadm', 'squadinv', 'sduels', 'raids', 'squadwk', 'sqlog', 'sqapp', 'sqgoal', 'sqci', 'sqseason', 'sqbadge', 'sqparts', 'sqpartlog', 'sqpartday', 'sqcoin'], { whole: false });
     }
     if (path === '/briefstats') { // morning-brief cron: signups + actives over the last 24h/48h
       const d24 = now - 86400000, d48 = now - 2 * 86400000;
@@ -41921,6 +41945,14 @@ export class Community {
   pub(p) { return { id: p.id, uid: p.uid, author: p.author, ts: p.ts, cat: p.cat, title: p.title, body: p.body, syms: p.syms || '', likes: p.likes || 0, ncom: p.ncom || 0, views: p.views || 0, pinned: !!p.pinned }; }
   async fetch(request) {
     const url = new URL(request.url); const path = url.pathname; const sql = this.state.storage.sql; const now = Date.now();
+    // 2026-11-15: every member post, comment, like and follow had NO backup of any kind
+    if (path === '/export') return doExport(this, url, ['posts', 'comments', 'likes', 'marks', 'follows', 'notifs']);
+    if (path === '/import') { // restore-test sandbox only - same marker + refuse-if-populated guard as the other stores (2026-11-15)
+      let bi = {}; try { bi = await request.json(); } catch (e) {}
+      const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
+      if (!marked) { let realN = 0; try { realN = (this.rows('SELECT COUNT(*) n FROM posts')[0] || {}).n || 0; } catch (e) {} if (realN > 0) return this.j({ error: 'refused_real_instance', rows: realN }); try { this.state.storage.sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {} }
+      const im = doImportRows(this, this.state.storage.sql, bi); return this.j({ ok: true, counts: im.counts, errs: im.errs, added: im.added });
+    }
     let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
     const uid = String(request.headers.get('x-uid') || ''), author = String(request.headers.get('x-author') || '');
     const isAdmin = request.headers.get('x-admin') === '1';
