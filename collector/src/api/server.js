@@ -645,7 +645,10 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         const rows = await storage.async.catalystRange(q.since, until, q.sym, q.min, q.kind, q.limit);
         const str = JSON.stringify({ ts: hNow, n: rows.length, hist: true, items: rows, upcoming: [] });
         catHistMemo.set(hk, { ts: hNow, str });
-        if (catHistMemo.size > 40) { const oldest = catHistMemo.keys().next().value; catHistMemo.delete(oldest); }
+        /* an entry is worth nothing after its 60 s, so it leaves then - holding 40 of them (2-3 MB each) until the 41st pushed one out kept ~100 MB of
+           dead strings and was the largest live allocation in a 45-minute heap sample (2026-11-17; the process died at the 360 MB V8 limit about every 9 h) */
+        for (const [mk, mv] of catHistMemo) if (hNow - mv.ts >= 60000) catHistMemo.delete(mk);
+        if (catHistMemo.size > 12) { const oldest = catHistMemo.keys().next().value; catHistMemo.delete(oldest); }
         res.set('Cache-Control', 'public, max-age=120');
         return res.type('application/json').send(str);
       }
