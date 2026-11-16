@@ -287,9 +287,48 @@
         var laC = vs.length ? card('Live audience', '<div class="grid g3"><div><div class="sec-h" style="margin-top:0">pages</div>' + bars(pg, 'l', 'n') + '</div><div><div class="sec-h" style="margin-top:0">countries</div>' + bars(cc, 'html', 'n') + '</div><div><div class="sec-h" style="margin-top:0">sources</div>' + bars(src, 'l', 'n') + '<div class="line" style="margin-top:8px;font-size:12px"><b>' + Math.round(mob / Math.max(1, vs.length) * 100) + '%</b> on a phone</div></div></div>', N(vs.length) + ' pageviews in the last ~3 hours') : '';
         // season: leaders per board + who would be paid if it ended now
         var ssC = '';
-        if (lb.weekEnd) { var bp = lb.boardPrizes || {}; var lead = [['Highest ROE', (lb.top || [])[0], function (x) { return '+' + N(Math.round(+x.roe)) + '% on ' + esc(x.symbol); }], ['Best win rate', (lb.topWr || [])[0], function (x) { return x.wr + '% (' + x.w + '-' + x.l + ')'; }], ['Season XP', (lb.topXp || [])[0], function (x) { return N(x.xp) + ' XP'; }], ['Green days', (lb.topGreen || [])[0], function (x) { return x.days + ' green day' + (x.days === 1 ? '' : 's'); }]];
-          var pay = {}; [['roe', lb.top], ['wr', lb.topWr], ['xp', lb.topXp], ['green', lb.topGreen]].forEach(function (x) { (x[1] || []).slice(0, 5).forEach(function (e, i) { var pz = +((bp[x[0]] || [])[i]) || 0; if (!pz) return; pay[e.who] = (pay[e.who] || 0) + pz; }); }); var pk = Object.keys(pay).sort(function (a2, b2) { return pay[b2] - pay[a2]; }); var payTot = pk.reduce(function (t, k) { return t + pay[k]; }, 0);
-          ssC = card('Season', '<div class="grid g4">' + lead.map(function (x) { return '<div class="tile dim"><div class="v" style="font-size:16px">' + (x[1] ? '@' + esc(x[1].who) : '<span class="meta">nobody yet</span>') + '</div><div class="l">' + x[0] + (x[1] ? ' · ' + x[2](x[1]) : '') + '</div></div>'; }).join('') + '</div><div class="line" style="margin-top:10px">If it ended now: <b>' + N(pk.length) + '</b> traders share <b>' + USD(payTot, 0) + '</b>' + (pk.length ? ' · ' + pk.slice(0, 6).map(function (k) { return userLink(k) + ' ' + USD(pay[k], 0); }).join(' · ') + (pk.length > 6 ? ' · +' + (pk.length - 6) + ' more' : '') : '') + '</div>', 'ends ' + dt(lb.weekEnd) + ' · top 5 per board paid automatically · WR board needs 20 counted trades', '<a href="#money/faucet">boards</a>'); }
+        // 2026-11-16 (owner: "prosiris sa informacijama za svaki leaderboard"): every board the payer pays, one row each - pool, entrants,
+        // the leader and by how much, and who the prize places would pay if the season ended now. A board whose paidFrom is after this
+        // season's start pays nothing this season and says so; Moon pays at its own contest end. The totals count only paying boards.
+        if (lb.weekEnd) { var bp = lb.boardPrizes || {}, ent = lb.entrants || {}, wsT = +new Date(lb.weekStart) || 0;
+          var fx = function (v) { return (+v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); };
+          var pfrom = function (k) { var f = lb[k]; return f ? (+new Date(f) || +f || 0) : 0; };
+          var BD = [
+            { k: 'roe', n: 'Highest ROE', rows: lb.top, ek: 'top', v: function (x) { return '+' + N(Math.round(+x.roe)) + '% on ' + esc(x.symbol) + ' ' + esc(x.side || ''); }, d: function (a, b) { return '+' + N(Math.round(a.roe - b.roe)) + ' pts ROE'; } },
+            { k: 'wr', n: 'Best win rate', rows: lb.topWr, ek: 'wr', v: function (x) { return x.wr + '% (' + x.w + '-' + x.l + ')' + (x.open ? ' · ' + x.open + ' open' : ''); }, d: function (a, b) { return '+' + (a.score - b.score).toFixed(1) + ' score'; }, note: 'needs ' + (lb.wrMin || 20) + ' counted trades' },
+            { k: 'xp', n: 'Season XP', rows: lb.topXp, ek: 'xp', v: function (x) { return N(x.xp) + ' XP'; }, d: function (a, b) { return '+' + N(a.xp - b.xp) + ' XP'; } },
+            { k: 'green', n: 'Green days', rows: lb.topGreen, ek: 'green', v: function (x) { return x.days + ' green, ' + (x.red || 0) + ' red · ' + N(x.trades) + ' trades'; }, d: function (a, b) { return a.days > b.days ? '+' + (a.days - b.days) + ' days' : 'tie on days, P&L'; } },
+            { k: 'gold', n: 'Gold Room', rows: lb.topGold, ek: 'gold', v: function (x) { return x.pts + ' pts (' + x.w + '-' + x.l + ')'; }, d: function (a, b) { return '+' + (a.pts - b.pts) + ' pts'; }, from: 'goldPaidFrom', note: 'Gold level only' },
+            { k: 'call', n: 'Daily BTC call', rows: lb.topCall, ek: 'call', v: function (x) { return x.pts + ' pts · ' + x.n + ' calls'; }, d: function (a, b) { return '+' + (a.pts - b.pts) + ' pts'; }, from: 'callPaidFrom' },
+            { k: 'meme', n: 'Meme Spot', rows: lb.topMeme, ek: 'meme', v: function (x) { return (x.pnlUsd >= 0 ? '+$' : '-$') + fx(Math.abs(x.pnlUsd)) + ' · ' + N(x.trades) + ' trades'; }, d: function (a, b) { return '+$' + fx(a.pnlUsd - b.pnlUsd); }, from: 'memePaidFrom' },
+            { k: 'bybit', n: 'Bybit volume', rows: lb.topBybit, ek: 'bybit', v: function (x) { return '$' + fx(x.vol); }, d: function (a, b) { return '+$' + fx(a.vol - b.vol); }, from: 'bybitPaidFrom', note: 'real money · min $' + fx((lb.volBoardMin || {}).usd || 3000) },
+            { k: 'bingx', n: 'BingX volume', rows: lb.topBingx, ek: 'bingx', v: function (x) { return '$' + fx(x.vol); }, d: function (a, b) { return '+$' + fx(a.vol - b.vol); }, from: 'bingxPaidFrom', contest: 'bingxContest', note: 'real money · 28-day contest' },
+            { k: 'moon', n: 'King of the Moon', rows: lb.topMoon, ek: 'moon', v: function (x) { return '$' + fx(x.vol) + ' wagered'; }, d: function (a, b) { return '+$' + fx(a.vol - b.vol); }, contest: 'moonContest', note: 'real money · 28-day contest' }
+          ];
+          var pay = {}, poolTot = 0, payTot = 0, boardsPaying = 0;
+          var rowsH = BD.map(function (b) {
+            var r = (b.rows || []).filter(function (x) { return x && x.rank; }), pz = (bp[b.k] || []).map(Number), pool = pz.reduce(function (t, v) { return t + (v || 0); }, 0);
+            var pf = b.from ? pfrom(b.from) : 0, notYet = pf && wsT && pf > wsT, mc = b.contest ? (lb[b.contest] || {}) : null, weT = +new Date(lb.weekEnd) || 0;
+            var later = mc && (!mc.end || +mc.end > weT + 36e5);
+            var paysNow = !notYet && !later;
+            if (paysNow && pool) { poolTot += pool; boardsPaying++; }
+            var places = r.slice(0, pz.length).map(function (e, i) { var p = pz[i] || 0; if (paysNow && p) { pay[e.who] = (pay[e.who] || 0) + p; payTot += p; } return p ? '<span style="white-space:nowrap">' + (i + 1) + '. ' + userLink(e.who) + ' <b>' + USD(p, p % 1 ? 2 : 0) + '</b></span>' : ''; }).filter(Boolean);
+            var empty = pz.length - Math.min(r.length, pz.filter(function (v) { return v > 0; }).length);
+            var lead = r[0] ? userLink(r[0].who) + '<div class="meta" style="font-size:11.5px">' + b.v(r[0]) + '</div>' : '<span class="meta">nobody yet</span>';
+            var gap = r[0] && r[1] ? b.d(r[0], r[1]) + ' over ' + userLink(r[1].who) : (r[0] ? '<span class="meta">alone on the board</span>' : '');
+            var when = notYet ? '<span class="badge amber">pays from ' + dt(pf) + '</span>' : later ? (mc.end ? 'pays ' + dt(mc.end) + ' (own contest)' + (mc.final ? ' · final' : '') : '<span class="meta">no contest</span>') : 'pays ' + dt(lb.weekEnd);
+            return '<tr><td><b>' + b.n + '</b>' + (b.note ? '<div class="meta" style="font-size:11px">' + b.note + '</div>' : '') + '</td><td>' + USD(pool, pool % 1 ? 2 : 0) + '<div class="meta" style="font-size:11px">' + when + '</div></td><td>' + N(ent[b.ek] || r.length) + '</td><td>' + lead + '</td><td style="font-size:12px">' + gap + '</td><td style="white-space:normal;font-size:12px;line-height:1.7">' + (places.join(' · ') || '<span class="meta">-</span>') + (empty > 0 && r.length < pz.filter(function (v) { return v > 0; }).length ? ' <span class="meta">· ' + empty + ' paid place' + (empty === 1 ? '' : 's') + ' still open</span>' : '') + '</td></tr>';
+          }).join('');
+          var pk = Object.keys(pay).sort(function (a2, b2) { return pay[b2] - pay[a2]; });
+          var left = Math.max(0, (+new Date(lb.weekEnd) || 0) - Date.now()), ssDl = Math.floor(left / 864e5), ssHl = Math.floor(left % 864e5 / 36e5);
+          ssC = card('Season', '<div class="grid g4">'
+            + '<div class="tile dim"><div class="v">' + ssDl + 'd ' + ssHl + 'h</div><div class="l">left · ends ' + dt(lb.weekEnd) + '</div></div>'
+            + '<div class="tile dim"><div class="v">' + USD(poolTot, 0) + '</div><div class="l">paid out this season · ' + boardsPaying + ' boards</div></div>'
+            + '<div class="tile dim"><div class="v">' + N(pk.length) + '</div><div class="l">traders in a paid place now</div></div>'
+            + '<div class="tile dim"><div class="v">' + N(lb.people || 0) + '</div><div class="l">people on any board</div></div></div>'
+            + '<div class="tblwrap" style="margin-top:12px"><table class="tbl"><thead><tr><th>Board</th><th>Pool</th><th>Entrants</th><th>Leader</th><th>Lead over #2</th><th>Paid places if it ended now</th></tr></thead><tbody>' + rowsH + '</tbody></table></div>'
+            + '<div class="line" style="margin-top:10px">If it ended now: <b>' + N(pk.length) + '</b> traders share <b>' + USD(payTot, 0) + '</b>' + (pk.length ? ' · ' + pk.slice(0, 8).map(function (k) { return userLink(k) + ' ' + USD(pay[k], pay[k] % 1 ? 2 : 0); }).join(' · ') + (pk.length > 8 ? ' · +' + (pk.length - 8) + ' more' : '') : '') + (payTot < poolTot ? ' <span class="meta">(' + USD(poolTot - payTot, 0) + ' of prize places have nobody in them yet)</span>' : '') + '</div>',
+            'every board the payer settles · BingX and Moon run 28-day contests on their own clock, not counted in this season total', '<a href="https://marginpad.io/leaderboards/" target="_blank" rel="noopener">leaderboards</a>'); }
         // sign-ups today with whether they already traded (the only quality signal on day one)
         var suRows = suToday.slice(0, 30);
         var suC = suToday.length ? card('Sign-ups today', tbl([
