@@ -10937,6 +10937,7 @@ async function handleLiqRecap(url, env) {
       + '<h1>Daily Crypto Liquidation Recaps</h1>'
       + '<p class="lead">A permanent, dated archive of how much leveraged crypto was force-closed each UTC day - measured from MarginPad&#39;s own multi-exchange liquidation feed, not estimated. ' + (idx.length ? (idx.length + ' days archived, ' + _rcU(tot) + ' in recorded liquidations so far.') : '') + '</p>'
       + '<table><thead><tr><th>Day (UTC)</th><th class="r">Total liquidated</th><th class="r">Events</th></tr></thead><tbody>' + (rows || '<tr><td colspan="3">First recap arrives after the next UTC day closes.</td></tr>') + '</tbody></table>'
+      + '<p>Month by month, with charts: <a href="/liquidations/report/">monthly liquidation reports</a> · all-time: <a href="/liquidations/records/">liquidation records</a></p>'
       + '<p>Live view: <a href="/rekt/">real-time liquidation feed</a> · <a href="/liquidations/">24h totals by coin</a> · <a href="/btc-liquidation-map/">BTC liquidation map</a></p>'
       + '<div class="foot">Data: MarginPad liquidation collector (Binance, Bybit, OKX and more, aggregated). Each day covers 00:00-24:00 UTC and is immutable once written. Not financial advice.</div>';
     return new Response(_rcShell('Daily Crypto Liquidation Recaps - Dated Archive | MarginPad', 'How much crypto was liquidated each day - a permanent dated archive measured from a live multi-exchange liquidation feed. Totals, long/short split, biggest single liquidation.', 'https://marginpad.io/liquidations/recap/', body), { headers: jh });

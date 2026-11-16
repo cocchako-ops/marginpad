@@ -1,6 +1,6 @@
 # MarginPad SDK
 
-Free crypto-futures **paper trading for bots** and free market data. One key, no KYC, no deposit.
+Free **paper trading for bots** across 157 markets (crypto perpetuals, US stocks, forex, indices, metals) and free market data. One key, no KYC, no deposit.
 Test a strategy or an AI agent against live prices with real fee schedules, funding, liquidations, limit and stop orders, trailing stops, webhooks and a WebSocket stream, then take the same code to a real exchange.
 
 - Guide: https://marginpad.io/trading-api/
@@ -14,7 +14,7 @@ Test a strategy or an AI agent against live prices with real fee schedules, fund
 
 The market data these clients read is measured by MarginPad itself and published free, with no key, as pages and JSON:
 
-- Liquidations across nine exchanges, from our own collector: https://marginpad.io/liquidations/ · live feed https://marginpad.io/rekt/ · per-coin maps such as https://marginpad.io/btc-liquidation-map/ · live heatmap https://marginpad.io/heatmap
+- Liquidations across twelve exchanges, from our own collector: https://marginpad.io/liquidations/ · live feed https://marginpad.io/rekt/ · per-coin maps such as https://marginpad.io/btc-liquidation-map/ · live heatmap https://marginpad.io/heatmap
 - Hyperliquid whale positions read from the chain, with exact liquidation prices: https://marginpad.io/hyperliquid-whales/
 - Funding, open interest and long/short: https://marginpad.io/funding/ · https://marginpad.io/open-interest/ · https://marginpad.io/long-short/
 - One question, one measured answer: https://marginpad.io/how-many-traders-liquidated-today/ · https://marginpad.io/biggest-liquidation-today/ · https://marginpad.io/what-leverage-should-a-beginner-use/ · https://marginpad.io/where-can-i-test-a-trading-bot/
@@ -99,11 +99,9 @@ Every field with its range: https://marginpad.io/trading-api/#sim
 | Plan | Requests/min | Keys | Open positions | Books | Webhooks |
 |---|---|---|---|---|---|
 | Free $0 | 120 | 3 | 50 | 1 | - |
-| Pro $27 | 600 | 10 | 200 | 5 | 3 |
-| Max $69 | 2000 | 30 | 500 | 20 | 15 |
-| Business $139 | 5000 | 100 | 1000 | 50 | 50 |
+| API Premium $11.99 | 2000 | 30 | 500 | 20 | 15 |
 
-An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless, with no account and no trial. The paper-trading engine, the simulation, books, replay and the WebSocket stream are free for 7 days from the day the first key is minted (since 2026-10-13); after that they need a paid plan, and only webhooks and the AI read are gated by tier within it. Trade history is 30 days on the trial and 90 on a paid plan.
+An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless. The paper-trading engine, the simulation, replay and the WebSocket stream are free with no time limit (since 2026-11-14 - the 7-day trial is gone). API Premium ($11.99 a month) adds the market archive over `/v1/history` (every liquidation since 2026-07-24, funding, open interest, whale trades - one verified gzip CSV per day), the raw order-book ladder, more keys and books, webhooks and 90 days of trade history (30 on Free).
 
 Measured in production: the busiest bot peaks at 66 requests a minute against the Free ceiling of 120, and no key has ever been rate-limited on any plan. Choose on keys and history, not on throughput.
 

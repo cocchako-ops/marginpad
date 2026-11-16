@@ -44,12 +44,13 @@ function planTable() {
     const g = (k) => { const r = new RegExp(k + ':\\s*(-?\\d+)').exec(o); return r ? +r[1] : null; };
     const lbl = (/label:\s*'([^']+)'/.exec(o) || [])[1];
     rows.push({
-      id: m[1], label: lbl, usd: Math.round(promoC(g('cents') || 0) / 100),
+      id: m[1], label: lbl, usd: ((c) => c % 100 ? (c / 100).toFixed(2) : String(c / 100))(promoC(g('cents') || 0)),
       wasUsd: promoC(g('cents') || 0) !== (g('cents') || 0) ? Math.round((g('cents') || 0) / 100) : 0,
       rpm: g('rpm'), keys: g('maxKeys'), open: g('maxOpen'), books: g('maxBooks'), hooks: g('hooks'),
     });
   }
-  if (rows.length !== 4) throw new Error('expected 4 plans in API_PLANS, parsed ' + rows.length);
+  // 2026-11-14: two plans (Free + API Premium); it was four. Fewer than two means the parse broke, not the catalogue.
+  if (rows.length < 2) throw new Error('expected at least 2 plans in API_PLANS, parsed ' + rows.length);
   for (const r of rows) {
     if (!r.label || r.rpm === null || r.keys === null || r.open === null || r.books === null) {
       throw new Error('plan ' + r.id + ' is missing a field this table prints: ' + JSON.stringify(r));
@@ -89,7 +90,7 @@ function limitsBlock() {
   L.push('');
   // An API plan is its own product. Saying so here is what stops a reader assuming the site subscription
   // covers the API - which is exactly what this paragraph used to tell them.
-  L.push('An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless, with no account and no trial. The paper-trading engine, the simulation, books, replay and the WebSocket stream are free for 7 days from the day the first key is minted (since 2026-10-13); after that they need a paid plan, and only webhooks and the AI read are gated by tier within it. Trade history is 30 days on the trial and 90 on a paid plan.');
+  L.push('An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless. The paper-trading engine, the simulation, replay and the WebSocket stream are free with no time limit (since 2026-11-14 - the 7-day trial is gone). ' + PLANS[1].label + ' ($' + PLANS[1].usd + ' a month) adds the market archive over `/v1/history` (every liquidation since 2026-07-24, funding, open interest, whale trades - one verified gzip CSV per day), the raw order-book ladder, more keys and books, webhooks and 90 days of trade history (30 on Free).');
   L.push('');
   // Measured, and it is the honest thing to put next to a throughput table: nobody is short of throughput.
   L.push('Measured in production: the busiest bot peaks at 66 requests a minute against the Free ceiling of '
@@ -176,6 +177,10 @@ for (const rel of FILES) {
   const OLDNOTE = 'This is a simulator. Fees, funding and liquidation math mirror real exchanges; there is no order book, so slippage is modelled, not measured on depth. A bot that passes here still needs a small live test. Educational use, not financial advice.';
   const NEWNOTE = 'This is a simulator. Fees, funding and liquidation maths mirror real exchanges and every fill condition above is yours to set - but there is no order book behind `impact_bps_per_100k`, so market impact is modelled rather than measured on depth, and a stop, target or liquidation fills at its own level without paying the crossing cost. A bot that passes here still needs a small live test. Educational use, not financial advice.';
   if (h.indexOf(OLDNOTE) >= 0) h = h.split(OLDNOTE).join(NEWNOTE);
+
+  // 4. facts in the hand-written intro that drift: the venue count and what the engine trades
+  h = h.split('Liquidations across nine exchanges').join('Liquidations across twelve exchanges');
+  h = h.split('Free crypto-futures **paper trading for bots** and free market data.').join('Free **paper trading for bots** across 157 markets (crypto perpetuals, US stocks, forex, indices, metals) and free market data.');
 
   if (h !== before) { did.push(rel); if (!DRY) fs.writeFileSync(p, h); }
 
