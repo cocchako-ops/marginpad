@@ -23,13 +23,20 @@ const EX = {
   // Numbers verified from Hyperliquid's own docs: taker 0.045% / maker 0.015% at the base tier, and maintenance
   // margin is HALF the maximum initial margin fraction - so 1.25% at the 40x BTC tier, which is exactly the rate
   // our own engine already charges a paper position opened on the Hyperliquid fee venue.
-  hyperliquid: { name: 'Hyperliquid', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', lev: 40, mmr: 1.25, maker: 0.015, taker: 0.045, accent: '#50d2c1', fg: '#05221e', known: 'an on-chain order book with perp liquidity that rivals the big centralised venues', founded: 2023, us: false, safety: 'runs entirely on-chain on its own L1, so positions and the order book are publicly auditable and you keep custody of your funds in your own wallet - there is no exchange balance to withdraw from and no proof-of-reserves needed, but equally no support desk and no recourse if you lose your keys; its terms exclude US persons' }
+  hyperliquid: { name: 'Hyperliquid', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', lev: 40, mmr: 1.25, maker: 0.015, taker: 0.045, accent: '#50d2c1', fg: '#05221e', known: 'an on-chain order book with perp liquidity that rivals the big centralised venues', founded: 2023, us: false, safety: 'runs entirely on-chain on its own L1, so positions and the order book are publicly auditable and you keep custody of your funds in your own wallet - there is no exchange balance to withdraw from and no proof-of-reserves needed, but equally no support desk and no recourse if you lose your keys; its terms exclude US persons' },
+  // 2026-11-16: both are partners and both are searched against every venue above ("mexc vs bybit", "bingx vs
+  // bitget"). MEXC figures read from its own contract API for BTC_USDT (maxLeverage 500, maker 0, taker 0.0002,
+  // maintenanceMarginRate 0.001). BingX fees from its contract API (maker 0.0002, taker 0.0005); its API carries no
+  // leverage cap, so 150x is the BTC-USDT figure from BingX's own support article, and its maintenance margin is
+  // tiered and unpublished as one number - the table says so rather than inventing one.
+  mexc:    { name: 'MEXC',    ref: 'https://promote.mexc.com/a/ZBQaEXe8', lev: 500, mmr: 0.1, maker: 0, taker: 0.02, accent: '#0057ff', fg: '#ffffff', known: 'the lowest base futures fees and very fast new-token listings', founded: 2018, us: false, safety: 'publishes proof-of-reserves and lists new tokens faster than almost any large venue, which also means more thinly traded, riskier markets sit beside the majors; it does not serve US residents' },
+  bingx:   { name: 'BingX',   ref: 'https://bingx.com/partner/Marginpad', lev: 150, mmr: null, maker: 0.02, taker: 0.05, accent: '#2b54fc', fg: '#ffffff', known: 'copy trading and a beginner-friendly app', founded: 2018, us: false, safety: 'was hit by a hot-wallet breach in September 2024 and said it covered the losses from its own funds; it is built around copy trading and a simple mobile app, and it does not serve US residents' }
 };
 
 // Exchanges our collector actually subscribes to. KuCoin, Kraken and Bitget publish no public liquidation
 // websocket, so a pair of two of them has nothing to measure - those pages skip the measured section
 // entirely rather than shipping a "loading…" box that never resolves.
-const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1, hyperliquid: 1 };
+const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1, hyperliquid: 1, bitget: 1, kraken: 1 }; // Bitget (UTA channel) and Kraken Futures joined the collector on 2026-11-14
 
 const PAIRS = [
   ['bybit', 'binance'], ['binance', 'okx'], ['bybit', 'okx'],
@@ -44,6 +51,10 @@ const PAIRS = [
   // no large publisher ranks for it, only small crypto blogs. Hyperliquid first in the slug because that is
   // the order people type it in.
   ['hyperliquid', 'bybit'], ['hyperliquid', 'binance'], ['hyperliquid', 'okx'], ['hyperliquid', 'bitget'],
+  // 2026-11-16: MEXC and BingX against every major they are compared with in search
+  ['mexc', 'bybit'], ['mexc', 'binance'], ['mexc', 'bitget'], ['mexc', 'okx'], ['mexc', 'kucoin'], ['mexc', 'gate'],
+  ['bingx', 'bybit'], ['bingx', 'binance'], ['bingx', 'bitget'], ['bingx', 'mexc'], ['bingx', 'okx'],
+  ['hyperliquid', 'mexc'],
 ];
 
 // 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
@@ -191,7 +202,7 @@ function comparePage(ak, bk, lang) {
   const higherLev = a.lev > b.lev ? a.name : (b.lev > a.lev ? b.name : L.both);
   const map = {
     A: a.name, B: b.name, AT: pct(a.taker), BT: pct(b.taker), AL: a.lev, BL: b.lev,
-    MAX: Math.max(a.lev, b.lev), AMR: pct(a.mmr), BMR: pct(b.mmr),
+    MAX: Math.max(a.lev, b.lev), AMR: a.mmr == null ? 'tiered' : pct(a.mmr), BMR: b.mmr == null ? 'tiered' : pct(b.mmr),
     LT: lowerTaker, HL: higherLev, AK: ak, BK: bk, AKNOWN: KN[ak] || EN_KNOWN[ak], BKNOWN: KN[bk] || EN_KNOWN[bk],
   };
   const F = s => fill(s, map);
@@ -246,13 +257,19 @@ ${COVERED[ak] || COVERED[bk] ? `    <h2>Which venue is actually blowing traders 
     <div id="vstat" data-a="${ak}" data-b="${bk}" data-an="${a.name}" data-bn="${b.name}">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
     </div>
-    <p>A venue carrying a bigger share of the day's liquidations is not automatically the riskier place to trade - it usually means more leveraged size is open there. What the long/short split tells you is which way the crowd was leaning when it got taken out. The full nine-venue breakdown, updated continuously, sits on the <a href="/liquidations/">liquidation feed</a>, and the same numbers are free as JSON at <a href="/trading-api/"><code>/api/v1/venues</code></a>.</p>
+    <p>A venue carrying a bigger share of the day's liquidations is not automatically the riskier place to trade - it usually means more leveraged size is open there. What the long/short split tells you is which way the crowd was leaning when it got taken out. The full twelve-venue breakdown, updated continuously, sits on the <a href="/liquidations/">liquidation feed</a>, and the same numbers are free as JSON at <a href="/trading-api/"><code>/api/v1/venues</code></a>.</p>
 ` : ''}
     <h2>Safety, regulation &amp; track record</h2>
     <p>${ageLine}</p>
     <p><strong>${a.name}</strong> ${a.safety}. <strong>${b.name}</strong> ${b.safety}.</p>
     <p>${a.us || b.us ? `On US access: ${a.us && b.us ? 'both serve US traders (subject to state rules)' : (a.us ? a.name : b.name) + ' is the US-friendly option here, while ' + (a.us ? b.name : a.name) + ' does not serve US residents'}.` : 'Neither is available to US residents - a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> fits that case better.'} Whichever you choose, never keep more on any exchange than you are actively trading, enable withdrawal whitelists and two-factor authentication, and confirm current fees, leverage caps and regional availability on the exchange itself before funding.</p>`;
-  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}]}</script>`;
+  // 2026-11-16: the US is where these comparisons are searched most (GSC, 28 days: kucoin-vs-kraken 142 US impressions
+  // at position 17), and the first thing a US reader needs is whether either venue will open an account for them.
+  const usAns = a.us && b.us ? `Both ${a.name} and ${b.name} serve US residents, subject to state rules and product availability.`
+    : (a.us || b.us) ? `${a.us ? a.name : b.name} serves US residents (subject to state rules); ${a.us ? b.name : a.name} does not accept US residents.`
+    : `Neither ${a.name} nor ${b.name} accepts US residents. A US trader needs a US-regulated venue such as Kraken or Coinbase, and can practise the same strategies risk-free on MarginPad's paper trading first.`;
+  const q4 = lang ? '' : `,{"@type":"Question","name":${JSON.stringify(`Can US residents use ${a.name} or ${b.name}?`)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(usAns)}}}`;
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}${q4}]}</script>`;
   return head({
     lang: code, dir: RTL[lang] ? 1 : 0, title, desc: F(L.desc), url, homeHref, hreflang: hreflang(ak, bk),
     crumb: `${a.name} vs ${b.name}`, bcName: `${a.name} vs ${b.name}`, crumbHome: L.crumbHome, ld,
@@ -268,8 +285,10 @@ ${verdict}
       <tr><td>${L.thLev}</td><td>${a.lev}×</td><td>${b.lev}×</td></tr>
       <tr><td>${L.thMaker}</td><td>${pct(a.maker)}</td><td>${pct(b.maker)}</td></tr>
       <tr><td>${L.thTaker}</td><td>${pct(a.taker)}</td><td>${pct(b.taker)}</td></tr>
-      <tr><td>${L.thMmr}</td><td>~${pct(a.mmr)}</td><td>~${pct(b.mmr)}</td></tr>
-      <tr><td>${L.thKnown}</td><td>${KN[ak]}</td><td>${KN[bk]}</td></tr>
+      <tr><td>${L.thMmr}</td><td>${a.mmr == null ? 'tiered' : '~' + pct(a.mmr)}</td><td>${b.mmr == null ? 'tiered' : '~' + pct(b.mmr)}</td></tr>
+      <tr><td>${L.thKnown}</td><td>${KN[ak] || EN_KNOWN[ak]}</td><td>${KN[bk] || EN_KNOWN[bk]}</td></tr>
+${lang ? '' : `      <tr><td>US residents</td><td>${a.us ? 'Yes' : 'No'}</td><td>${b.us ? 'Yes' : 'No'}</td></tr>
+      <tr><td>Founded</td><td>${a.founded}</td><td>${b.founded}</td></tr>`}
     </table>
 
     <div class="cmpbtns">
@@ -290,8 +309,7 @@ ${lang ? `    <h2>${L.h2fees}</h2>
 ${deep}
     <div class="related">
       <a href="${homeHref}">${L.relAll}</a>
-      <a href="/${ak}-liquidation-calculator/">${fill(L.relLiq, { X: a.name })}</a>
-      <a href="/${bk}-liquidation-calculator/">${fill(L.relLiq, { X: b.name })}</a>
+${[[ak, a], [bk, b]].filter(([k]) => fs.existsSync(path.join(OUT, k + '-liquidation-calculator'))).map(([k, x]) => `      <a href="/${k}-liquidation-calculator/">${fill(L.relLiq, { X: x.name })}</a>`).join('\n')}
       <a href="/funding-fee-calculator/">${L.relFunding}</a>
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">${L.disc}</p>
