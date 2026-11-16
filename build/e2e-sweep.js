@@ -44,9 +44,11 @@ const PROBE = /\bprobe\b/i;
   // ── the accounts, and every table row keyed to them ───────────────────────────────────────────────────────────
   const listAll = async () => {
     let all = [];
-    for (let off = 0; off < 4000; off += 200) {
-      const d = await (await fetch(O + '/api/auth/admin?limit=200&offset=' + off, { headers: CK })).json();
-      const u = d.users || []; all = all.concat(u); if (u.length < 200) break;
+    // ?e2e=1 or the desk hides test rows, and a page can come back short of 200 because of that filter - so page by the
+    // store's own `count`, never stop at the first short page (2026-11-16: the sweep saw 192 of 2,027 accounts and 0 of 47 test ones)
+    for (let off = 0, cnt = Infinity; off < Math.min(cnt, 20000); off += 200) {
+      const d = await (await fetch(O + '/api/auth/admin?limit=200&e2e=1&offset=' + off, { headers: CK })).json();
+      const u = d.users || []; all = all.concat(u); if (d.count != null) cnt = +d.count; if (!u.length) break;
     }
     return all;
   };

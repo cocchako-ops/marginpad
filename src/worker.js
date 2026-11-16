@@ -40339,6 +40339,30 @@ export class UserStore {
           for (const r of this.rows('SELECT id, leader FROM squads')) { if (this.rows('SELECT 1 FROM users WHERE id=?', r.leader)[0]) continue; out.checked++; if (!dry) { const nx = this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC LIMIT 1', r.id)[0]; if (nx) { try { sql.exec('UPDATE squads SET leader=? WHERE id=?', nx.uid, r.id); sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", nx.uid); } catch (e) {} } else { try { this._squadDisband(r.id, 'its last member left'); } catch (e) {} } }
             out.tables.squads = (out.tables.squads || 0) + 1; out.removed++; }
         } catch (e) {}
+        // EVERY OTHER TABLE, found from the schema rather than a hand-kept list (2026-11-16, owner: "izbrisi sve e2e naloge ... ili neke
+        // njihove tragove"): a hand list is how tickbuy rows from deleted test accounts stayed on the owner's money desk. Any table with a
+        // user_id or uid column; only a TEST-prefixed owner whose users row is gone; never `users` itself.
+        try {
+          const done = new Set(['users', 'botwh', 'botwhq', 'botkeys2', 'botkeys', 'botpos', 'botuse', 'botidem', 'porders', 'totdc', 'totdv', 'squadm', 'squads', 'botuse2']);
+          for (const tr of this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'")) {
+            const t = String(tr.name); if (done.has(t) || !/^[A-Za-z0-9_]+$/.test(t)) continue;
+            let cols = []; try { cols = this.rows('PRAGMA table_info(' + t + ')').map(c => c.name); } catch (e) { continue; }
+            for (const c of ['user_id', 'uid']) {
+              if (cols.indexOf(c) < 0) continue;
+              let owners = []; try { owners = this.rows('SELECT DISTINCT ' + c + ' o FROM ' + t + " WHERE " + c + " LIKE 'e2e%' OR " + c + " LIKE 'spotctr%' OR " + c + " LIKE 'spotdbg%' OR " + c + " LIKE 'spoterr%' OR " + c + " LIKE 'mktest%' OR " + c + " LIKE 'test-%'"); } catch (e) { continue; }
+              for (const r of owners) {
+                const u = String(r.o || ''), own = u.split(':')[0]; if (!own) continue;
+                out.checked++;
+                if (this.rows('SELECT 1 FROM users WHERE id=?', own)[0]) continue;
+                let n = 0; try { n = (this.rows('SELECT COUNT(*) n FROM ' + t + ' WHERE ' + c + '=?', u)[0] || {}).n || 0; } catch (e) {}
+                if (!n) continue;
+                if (!dry) { try { sql.exec('DELETE FROM ' + t + ' WHERE ' + c + '=?', u); } catch (e) {} }
+                out.tables[t] = (out.tables[t] || 0) + n; out.removed += n;
+                if (!seen.has(own) && seen.size < 40) { seen.add(own); out.uids.push(own); }
+              }
+            }
+          }
+        } catch (e) { out.schemaErr = String((e && e.message) || e).slice(0, 140); }
         if (!dry) { try { this._whUids = null; } catch (e) {} }
         return this.j({ ok: true, dry: !!dry, ...out });
       } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
