@@ -3165,7 +3165,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
         // The squad rides on this poll (2026-09-29) so no page needs its own request to know which room to
         // offer or which crest to draw. A change fires mp-squad-change: both chat copies rebuild their room list.
         try { var sqB = JSON.stringify(d.squad || null), sqA = JSON.stringify(window.mpSquad || null); if (sqB !== sqA) { window.mpSquad = d.squad || null; window.dispatchEvent(new CustomEvent('mp-squad-change', { detail: window.mpSquad })); } } catch (e) {}
-        if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
+        if (typeof d.premium === 'boolean') { if (d.premium || window._mpPrem !== true || (window._mpPremNo = (window._mpPremNo || 0) + 1) >= 2) { window._mpPrem = d.premium; } if (d.premium) window._mpPremNo = 0; } /* a member is downgraded only on two polls in a row - one bad answer must never make the Premium lounge vanish */ if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         try { window.mpBronzeBar(d); } catch (e) {}
         try { if (d.pbNew && d.pbNew.ts && (d.pbNew.items || []).length) { var pk9 = 'mp_pb_seen_' + ((ME && ME.id) || ''), ps9 = +(localStorage.getItem(pk9) || 0);
           if (!ps9) localStorage.setItem(pk9, String(d.pbNew.ts)); // first sight on this device: seed, never replay history
