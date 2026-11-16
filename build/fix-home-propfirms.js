@@ -30,7 +30,12 @@ r = between(h, '<script>/*@PROPFIRMS:js', '})();</script>');
 if (r) h = h.slice(0, r[0]) + js.trim() + h.slice(r[1]);
 else { const i = h.lastIndexOf('</body>'); h = h.slice(0, i) + js.trim() + N + h.slice(i); }
 
-for (const m of ['<!--@PROPFIRMS:start-->', '@PROPFIRMS:css', '@PROPFIRMS:js']) if (h.split(m).length !== 2) throw new Error('marker count wrong: ' + m);
+// the US link swap (shared with /promotions/, /crypto-prop-firms/, /prop-firm-challenge/)
+const us = rd('us-swap.js.txt').trim();
+r = between(h, '<script>/*@USSWAP', '})();</script>');
+if (r) h = h.slice(0, r[0]) + us + h.slice(r[1]);
+else { const i = h.lastIndexOf('</body>'); h = h.slice(0, i) + us + N + h.slice(i); }
+for (const m of ['<!--@PROPFIRMS:start-->', '@PROPFIRMS:css', '@PROPFIRMS:js', '@USSWAP']) if (h.split(m).length !== 2) throw new Error('marker count wrong: ' + m);
 if (h.indexOf('@IQDET@') >= 0) throw new Error('IQ details not filled');
 if (dry) { console.log('dry ok', h.length); process.exit(0); }
 fs.writeFileSync(F, h);

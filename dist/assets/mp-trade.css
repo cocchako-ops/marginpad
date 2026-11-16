@@ -489,3 +489,5 @@ undefined
 .mpss-dynw.off .mpss-dyn{opacity:.45}
 .mpss-dynn{min-height:14px;font:10.5px 'Space Mono',monospace;color:#9aa3ad;margin:6px 0 0 2px}
 @media(max-width:380px){.mpss-row .r{flex-basis:76px;font-size:14px}.mpss-row .pc{flex-basis:52px}}
+.pp-chal svg{color:#ffb347;}
+.pp-chal b{cursor:default;color:#ffcf8a;font-weight:600;}

@@ -4520,3 +4520,40 @@ html.pt-sheet{overflow:hidden!important;touch-action:none}
 .chp-last{display:flex;flex-direction:column;gap:2px;margin-bottom:12px;padding:10px 12px;border:1px solid #2b333d;border-radius:12px;background:#11151b;font-size:12.5px}
 .chp-last b{color:#e3e8ee}.chp-last span{font-family:'Space Mono',monospace;font-size:11px;color:#7f8996}.chp-last a{margin-top:4px;color:#c2f64a;text-decoration:none;font-size:12px}
 .chp-last.won{border-color:rgba(194,246,74,.45);background:rgba(194,246,74,.06)}
+/* challenge panel, 2026-11-16 evening: pause, per-trade / best-day / time rows, firm presets, custom link, partner line */
+.chp-pz{flex:0 0 auto;height:38px;padding:0 12px;border:1px solid rgba(255,179,71,.45);border-radius:11px;background:rgba(255,179,71,.08);color:#ffcf8a;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer}
+.chp-pz:hover{background:rgba(255,179,71,.16)}
+.chp-pause{display:flex;flex-direction:column;gap:3px;margin:0 0 12px;padding:10px 12px;border-radius:11px;border:1px dashed rgba(255,179,71,.5);background:rgba(255,179,71,.07)}
+.chp-pause b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffb347}
+.chp-pause span{font-size:12px;line-height:1.45;color:#c9bfa8}
+.chp-row{display:flex;justify-content:space-between;gap:10px;margin-top:9px;font-size:12px;color:#8b95a1}
+.chp-row b{font-family:'Space Mono',monospace;font-size:11.5px;color:#e9e7df}
+.chp-row b.warnx{color:#ffb347}
+.chp-cust{display:inline-flex;align-items:center;height:30px;padding:0 11px;border:1px dashed rgba(194,246,74,.45);border-radius:9px;color:#c2f64a;font-family:'Space Mono',monospace;font-size:11.5px;text-decoration:none}
+.chp-ad{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(59,139,255,.32);background:linear-gradient(110deg,rgba(59,139,255,.12),rgba(47,224,160,.07));text-decoration:none}
+.chp-ad span{font-size:11.5px;color:#9aa3ad}
+.chp-ad b{font-family:'Bricolage Grotesque',sans-serif;font-size:13.5px;color:#fff}
+.chp-ad i{margin-left:auto;font-style:normal;font-family:'Space Mono',monospace;font-size:11px;color:#7cb8ff}
+.pp-chal svg{color:#ffb347;}
+.pp-chal b{cursor:default;color:#ffcf8a;font-weight:600;}
+/* challenge panel actions v2: three icon tiles, a confirm card, a lock note, a flash */
+.chp-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.chp-ab{--c:#c2f64a;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:62px;border-radius:13px;border:1px solid color-mix(in srgb,var(--c) 34%,#232a33);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 10%,#11151b),#0d1015);color:var(--c);font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:transform .14s,border-color .14s,box-shadow .2s,background .2s}
+.chp-ab svg{width:17px;height:17px}
+.chp-ab:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 10px 24px -14px var(--c)}
+.chp-ab:active{transform:scale(.97)}
+.chp-ab.pz{--c:#ffb347}.chp-ab.pz.res{--c:#2ebd85}.chp-ab.end{--c:#ff7a6e}
+.chp-ab.locked{--c:#6f7a86;cursor:not-allowed;opacity:.75}.chp-ab.locked:hover{transform:none;box-shadow:none}
+.chp-lock{display:flex;align-items:center;gap:6px;margin:9px 0 0;font-size:11.5px;color:#8b95a1}.chp-lock svg{flex:none;color:#ffb347}
+.chp-cf{margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(255,179,71,.45);background:linear-gradient(180deg,rgba(255,179,71,.09),rgba(255,179,71,.02))}
+.chp-cf.quit{border-color:rgba(255,122,110,.5);background:linear-gradient(180deg,rgba(255,122,110,.10),rgba(255,122,110,.02))}
+.chp-cf b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;color:#fff}
+.chp-cf p{margin:6px 0 12px;font-size:12.5px;line-height:1.5;color:#b8c0ca}
+.chp-cfb{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chp-cfn,.chp-cfy{height:40px;border-radius:11px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;cursor:pointer}
+.chp-cfn{border:1px solid #2b333d;background:transparent;color:#c9d1da}
+.chp-cfy{border:0;background:#ffb347;color:#0a0b0d}.chp-cf.quit .chp-cfy{background:#ff7a6e}
+.chp-flash{margin:0 0 12px;padding:9px 12px;border-radius:11px;font-size:12.5px;line-height:1.45;border:1px solid rgba(46,189,133,.4);background:rgba(46,189,133,.08);color:#9fe7c6}
+.chp-flash.pause{border-color:rgba(255,179,71,.45);background:rgba(255,179,71,.08);color:#ffcf8a}.chp-flash.end{border-color:#2b333d;background:#11151b;color:#c9d1da}
+/* the pill reads "Funded Account Challenge" at rest (owner, 2026-11-16 evening) - a little longer and taller */
+@media(min-width:561px){.ptc-chal{height:26px;padding:0 13px 0 10px;gap:7px;font-size:10px;letter-spacing:.08em}}

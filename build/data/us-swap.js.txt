@@ -1,0 +1,11 @@
+<script>/*@USSWAP: a reader in the US gets the partner link that is open to them (FTMO's standard challenge is not; FTMO Futures is). Any link with data-us-href is swapped, and data-us-txt replaces its [data-us-label] text. Country from mp-auth (mpEx.ccNow) or one /api/geo read. */
+(function(){
+  function apply(cc){if(String(cc||'').toUpperCase()!=='US')return;document.querySelectorAll('[data-us-href]').forEach(function(a){a.setAttribute('href',a.getAttribute('data-us-href'));var tx=a.getAttribute('data-us-txt');if(tx){var l=a.querySelector('[data-us-label]')||a;l.textContent=tx;}a.setAttribute('data-us','1');});window.__mpUsSwap=true;}
+  window.__mpUsSwapApply=apply;
+  var n=0,t=setInterval(function(){var cc='';try{cc=window.mpEx&&window.mpEx.ccNow&&window.mpEx.ccNow();}catch(e){}
+    if(cc){clearInterval(t);apply(cc);return;}
+    if(++n<25)return;clearInterval(t);
+    try{var j=JSON.parse(localStorage.getItem('mp_cc')||'null');if(j&&j.cc&&Date.now()-(+j.ts||0)<864e5){apply(j.cc);return;}}catch(e){}
+    fetch('/api/geo',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.cc){try{localStorage.setItem('mp_cc',JSON.stringify({cc:d.cc,ts:Date.now()}));}catch(e){}apply(d.cc);}}).catch(function(){});
+  },120);
+})();</script>

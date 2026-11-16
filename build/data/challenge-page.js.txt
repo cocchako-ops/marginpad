@@ -1,0 +1,201 @@
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var app=$('cxApp'), pickEl=$('cxPick'), S=null, pick={kind:'one',book:10000}, armed=0, busy=false, poll=0, ask='', flash=null;
+  var qs=new URLSearchParams(location.search), certId=(qs.get('c')||'').replace(/[^a-z0-9]/g,'');
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function money(v){v=+v||0;return (v<0?'-$':'$')+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:Math.abs(v)<100?2:0});}
+  function pct(v){v=+v||0;return (v>=0?'+':'')+v.toFixed(2)+'%';}
+  function day(ts){return ts?new Date(+ts).toISOString().slice(0,10):'';}
+  function cls(room,full){var f=room/Math.max(1,full);return f>0.55?'ok':f>0.25?'warn':'bad';}
+  function bar(label,val,frac,c,sub){frac=Math.max(0,Math.min(1,+frac||0));return '<div class="cx-m"><div class="cx-mh"><span>'+label+'</span><b class="'+(c||'')+'">'+val+'</b></div><div class="cx-bar"><i class="'+(c||'')+'" style="width:'+(frac*100).toFixed(1)+'%"></i></div>'+(sub?'<div class="cx-ms">'+sub+'</div>':'')+'</div>';}
+  function reasonTxt(r){return r==='fail_daily'?'the daily loss limit':r==='fail_position'?'the max loss per trade':r==='fail_time'?'the time limit':'the maximum drawdown';}
+  function track(e){try{if(window.__mpTrack)window.__mpTrack('challenge',e);}catch(x){}}
+  // ---- the custom rule builder (the worker validates the same ranges - chalRulesNorm) ----
+  var R={steps:'1',t1:10,t2:5,daily:5,dd:10,ddtype:'static',mindays:0,maxlev:30,maxpos:0,strikes:'1',best:0,tlimit:0};
+  var RNG={t1:[1,30],t2:[1,30],daily:[0,20],dd:[2,30],mindays:[0,30],maxlev:[1,125],maxpos:[0,10],best:[0,90],tlimit:[0,120]};
+  try{var sv=JSON.parse(localStorage.getItem('mp_chal_rules')||'null');if(sv&&typeof sv==='object')for(var k in sv)if(k in R)R[k]=sv[k];}catch(e){}
+  function rulesOut(){return {targets:R.steps==='2'?[+R.t1,+R.t2]:[+R.t1],daily:+R.daily,dd:+R.dd,ddtype:R.ddtype,mindays:+R.mindays,maxlev:+R.maxlev,maxpos:+R.maxpos,strikes:+R.maxpos?+R.strikes:0,best:+R.best,tlimit:+R.tlimit};}
+  function rulesErr(){
+    for(var k in RNG){if(k==='t2'&&R.steps!=='2')continue;var v=+R[k];if(!isFinite(v)||v<RNG[k][0]||v>RNG[k][1])return k;}
+    if(+R.daily>0&&+R.daily<1)return 'daily'; if(+R.maxpos>0&&+R.maxpos<0.25)return 'maxpos'; if(+R.best>0&&+R.best<20)return 'best'; if(+R.tlimit>0&&+R.tlimit<7)return 'tlimit';
+    if(+R.daily>0&&+R.daily>=+R.dd&&R.ddtype==='static')return 'daily';
+    return '';
+  }
+  var LBL={t1:'profit target',t2:'phase 2 target',daily:'daily loss limit (0 or 1-20%)',dd:'max drawdown (2-30%)',mindays:'minimum days (0-30)',maxlev:'max leverage (1-125x)',maxpos:'max loss per trade (0 or 0.25-10%)',best:'best day rule (0 or 20-90%)',tlimit:'time limit (0 or 7-120 days)'};
+  function blurb(t){var p=t.targets.map(function(v){return v+'%';}).join(' then ');
+    return p+' target, '+(t.daily?t.daily+'% daily loss, ':'no daily limit, ')+t.dd+'% '+(t.ddtype==='eod'?'end-of-day trailing':t.ddtype==='trail'?'trailing':'static')+' drawdown'+(t.mindays?', '+t.mindays+' trading days':'')+(t.maxpos?', '+t.maxpos+'% max loss per trade'+(t.strikes>1?' ('+t.strikes+'rd breach ends it)'.replace('2rd','2nd'):''):'')+(t.best?', best day under '+t.best+'% of profit':'')+(t.tlimit?', '+t.tlimit+'-day limit':'')+', '+t.maxlev+'x max';}
+  function paintBuild(){
+    var b=$('cxBuild'); if(!b)return;
+    b.querySelectorAll('[data-f]').forEach(function(c){c.classList.toggle('on',String(+R[c.getAttribute('data-f')]||R[c.getAttribute('data-f')])===String(+c.getAttribute('data-v')||c.getAttribute('data-v')));c.setAttribute('aria-checked',c.classList.contains('on')?'true':'false');});
+    b.querySelectorAll('[data-fi]').forEach(function(i){var k=i.getAttribute('data-fi');if(document.activeElement!==i)i.value=+R[k]||(OFF[k]?MEM[k]:R[k]);});
+    b.querySelectorAll('[data-tog]').forEach(function(t){t.setAttribute('aria-checked',+R[t.getAttribute('data-tog')]>0?'true':'false');});
+    var hide=function(k,h){var r=b.querySelector('[data-row="'+k+'"]');if(r)r.classList.toggle('hide',!!h);};
+    hide('t2',R.steps!=='2'); hide('daily',!(+R.daily>0)); hide('tlimit',!(+R.tlimit>0)); hide('maxpos',!(+R.maxpos>0)); hide('strikes',!(+R.maxpos>0)); hide('best',!(+R.best>0));
+    var e=rulesErr(), o=rulesOut();
+    $('cbGauge').innerHTML=gauge(o.targets[0],o.daily,o.dd,true);
+    $('cbStats').innerHTML=[[o.targets.map(function(v){return v+'%';}).join(' + '),'Profit target'],[o.daily?o.daily+'%':'None','Daily loss'],[o.dd+'% '+(o.ddtype==='eod'?'EOD':o.ddtype==='trail'?'trail':'static'),'Max drawdown'],[o.maxlev+'x','Max leverage'],[o.mindays?o.mindays+' days':'None','Min days'],[o.tlimit?o.tlimit+' days':'None','Time limit']].map(function(x){return '<span><b>'+esc(x[0])+'</b><small>'+x[1]+'</small></span>';}).join('');
+    var room=o.dd/o.targets[0];
+    $('cbRatio').innerHTML='You may lose <b>'+o.dd+'%</b> to make <b>'+o.targets[0]+'%</b> - <b>'+room.toFixed(2)+'</b> of room for every 1 of target'+(o.daily?', and no more than <b>'+o.daily+'%</b> in a day':'')+'.';
+    $('cbSum').innerHTML=e?'<span class="cb-err">Check the '+LBL[e]+'.</span>':esc(blurb(o))+'.';
+    try{localStorage.setItem('mp_chal_rules',JSON.stringify(R));}catch(x){}
+  }
+  // an optional rule is a switch: off = 0 (what the server reads as "no rule"), on = the last value it had
+  var OFF={daily:1,tlimit:1,maxpos:1,best:1}, MEM={daily:5,tlimit:30,maxpos:1,best:50};
+  for(var mk in OFF)if(+R[mk]>0)MEM[mk]=+R[mk];
+  var STEP={t1:0.5,t2:0.5,dd:0.5,daily:0.5,mindays:1,maxlev:1,tlimit:1,maxpos:0.25,best:5};
+  function clampK(k,v){var lo={t1:1,t2:1,dd:2,daily:1,mindays:0,maxlev:1,tlimit:7,maxpos:0.25,best:20}[k],hi={t1:30,t2:30,dd:30,daily:20,mindays:30,maxlev:125,tlimit:120,maxpos:10,best:90}[k];return Math.max(lo,Math.min(hi,Math.round(v/STEP[k])*STEP[k]));}
+  function wireBuild(){
+    var b=$('cxBuild'); if(!b)return;
+    b.addEventListener('click',function(ev){
+      var tg=ev.target.closest('[data-tog]'); if(tg){var k=tg.getAttribute('data-tog'); if(+R[k]>0){MEM[k]=+R[k];R[k]=0;}else R[k]=MEM[k]; paintBuild(); return;}
+      var st=ev.target.closest('[data-st]'); if(st){var kv=st.getAttribute('data-st').split(':'),k2=kv[0];R[k2]=clampK(k2,(+R[k2]||MEM[k2]||0)+(+kv[1])*STEP[k2]);if(OFF[k2])MEM[k2]=R[k2];paintBuild();return;}
+      var c=ev.target.closest('[data-f]'); if(!c)return; var f=c.getAttribute('data-f'),v=c.getAttribute('data-v'); R[f]=/^(steps|ddtype|strikes)$/.test(f)?v:+v; if(OFF[f])MEM[f]=+v; paintBuild();});
+    b.addEventListener('input',function(ev){var i=ev.target.closest('[data-fi]');if(!i)return;var k=i.getAttribute('data-fi');R[k]=i.value===''?0:+i.value;if(OFF[k]&&+R[k]>0)MEM[k]=+R[k];paintBuild();});
+    b.addEventListener('change',function(ev){var i=ev.target.closest('[data-fi]');if(!i)return;var k=i.getAttribute('data-fi');if(+R[k]>0||!OFF[k])R[k]=clampK(k,+R[k]);paintBuild();});
+    paintBuild();
+  }
+  // the ruler - the JS twin of gauge() in build/data/challenge-ui.js; keep the two identical
+  function gauge(t,daily,dd,big){var L=dd/(dd+t)*100,G=100-L,D=daily>0?Math.min(100,daily/dd*100):0;
+    return '<span class="rg'+(big?' big':'')+'"><span class="rg-bar"><span class="rg-loss" style="width:'+L.toFixed(1)+'%">'+(D?'<span class="rg-daily" style="width:'+D.toFixed(1)+'%"></span>':'')+'</span><span class="rg-gain" style="width:'+G.toFixed(1)+'%"></span><span class="rg-0" style="left:'+L.toFixed(1)+'%"></span></span><span class="rg-lbl"><em class="l">-'+dd+'%</em>'+(D?'<em class="d" style="left:'+(L-L*D/100).toFixed(1)+'%">-'+daily+'% day</em>':'')+'<em class="z" style="left:'+L.toFixed(1)+'%">start</em><em class="r">+'+t+'%</em></span></span>';}
+  function setKind(k){pick.kind=k;pickEl.querySelectorAll('[data-kind]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-kind')===k);});var b=$('cxBuild');if(b)b.hidden=k!=='custom';}
+  function wireChoice(){
+    pickEl.addEventListener('click',function(ev){var t=ev.target.closest('[data-kind]');if(!t)return;setKind(t.getAttribute('data-kind'));if(pick.kind==='custom')try{$('cxBuild').scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}});
+  }
+  function choiceHtml(signed){
+    var h=S&&S.history&&S.history[0], last='';
+    if(h&&h.status==='failed'&&Date.now()-(+h.ended||0)<7*864e5)last='<p class="cx-fine" style="margin:0 0 14px">Your last run ('+esc(h.name)+' '+money(h.book)+') ended on '+reasonTxt(h.reason)+' at '+pct(h.result&&h.result.returnPct)+'. Every run is practice - pick the rules and go again.</p>';
+    return last+'<div id="cxPickSlot"></div><div class="cx-row"><span class="cx-lbl">Account size</span>'+((S&&S.books)||[5000,10000,25000,50000,100000]).map(function(b){return '<button type="button" class="cx-chip'+(b===pick.book?' on':'')+'" data-book="'+b+'">$'+(b/1000)+'k</button>';}).join('')+'</div>'
+      +'<div class="cx-start">'+(signed?'<button type="button" class="cx-go" id="cxGo">Start the challenge</button>':'<button type="button" class="cx-go" id="cxGo" data-auth-open>Sign in to start - free</button>')+'<span class="cx-fine">No fee, no card, no deposit. Retry as often as you like.</span></div>'
+      +'<p class="cx-only">While a challenge runs, the trades you open count for the challenge only - not for the leaderboards, XP or missions. Pause it any time you have no open position.</p>';
+  }
+  function adsHtml(){
+    return '<div class="cx-ads"><div class="cx-adk">Pass it here, then take the real one</div>'
+      +'<a class="cx-ad" style="--pc:#3b8bff" href="https://join.ftmo.com/tsdRCnEjEATqghNGrzVM" data-us-href="https://join.ftmo.com/futures/tsdRCnEjEATqghNGrzVM" data-us-txt="Start FTMO Futures (US) →" target="_blank" rel="noopener sponsored" data-ex="FTMO"><span class="t"><img src="/assets/prop/ftmo-logo.svg" alt="FTMO" width="74" height="19"><span class="k">Partner</span></span><b>Up to $200,000 of FTMO\'s capital</b><p>1-Step from &euro;79 &middot; 90% profit share &middot; no time limit. Code tsdRCnEjEATqghNGrzVM.</p><span class="g" data-us-label>Start the FTMO Challenge &rarr;</span></a>'
+      +'<a class="cx-ad" style="--pc:#2fe0a0" href="https://checkout.iqcapital.io/products?aff=marginpad" target="_blank" rel="noopener sponsored" data-ex="IQ Capital"><span class="t"><b class="iqwm">IQ Capital<b>.</b></b><span class="k">Partner</span></span><b>Your first $50k challenge for $9</b><p>Crypto perps &middot; no daily loss limit &middot; 90% profit share. Code MARGINPAD at checkout.</p><span class="g">Get the challenge &rarr;</span></a></div>';
+  }
+  function dashHtml(){
+    var a=S.active,e=S.eval,book=+e.book, noDaily=!(+a.daily>0);
+    var dRoom=noDaily?0:Math.max(0,e.equity-e.dailyFloor),dFull=book*a.daily/100,ddRoom=Math.max(0,e.equity-e.ddFloor),ddFull=book*a.dd/100,tFull=book*e.target/100,tDone=Math.max(0,Math.min(tFull,e.balance-book));
+    var ddName=a.ddtype==='static'?'static':a.ddtype==='eod'?'end-of-day trailing':'trailing';
+    return '<div class="cx-dash"><div>'
+      +(a.paused?'<span class="cx-badge paused"><i></i>Challenge paused</span>':'<span class="cx-badge"><i></i>Challenge running</span>')
+      +'<div class="cx-eqk" style="margin-top:14px">'+esc(a.name)+' &middot; '+money(book)+(e.phases>1?' &middot; phase '+e.phase+' of '+e.phases:'')+' &middot; equity</div>'
+      +'<div class="cx-eq">'+money(e.equity)+'</div><div class="cx-ret '+(e.equity>=book?'up':'dn')+'">'+pct((e.equity-book)/book*100)+(e.open?' &middot; '+e.open+' open ('+(e.unreal>=0?'+':'')+money(e.unreal)+')':'')+'</div>'
+      +(a.paused?'<div class="cx-pause"><b>Paused</b><span>Trades you open now are ordinary trades and count for the leaderboards again. The run keeps everything it had'+(a.tlimit?' and its clock is stopped':'')+'. Resume to trade the challenge.</span></div>':'')
+      +'<div class="cx-grid"><div class="cx-cell"><b>'+money(e.balance)+'</b><span>Closed balance</span></div><div class="cx-cell"><b>'+e.days+' / '+e.minDays+'</b><span>Trading days</span></div><div class="cx-cell"><b>'+e.closes+'</b><span>Closed trades</span></div>'
+      +'<div class="cx-cell"><b>'+money(e.freeMargin)+'</b><span>Free margin</span></div><div class="cx-cell"><b>'+a.maxlev+'x</b><span>Max leverage</span></div><div class="cx-cell"><b>'+(a.tlimit?(+e.daysLeft).toFixed(1)+' d':day(a.started))+'</b><span>'+(a.tlimit?'Time left':'Started')+'</span></div></div>'
+      +actsHtml(a,e)
+      +'<p class="cx-only">Trades opened during the run count for the challenge only - not for the leaderboards, XP or missions.</p>'
+      +'</div><div>'
+      +(noDaily?'<p class="cx-fine" style="margin:0 0 15px">No daily loss limit on this rule set.</p>':bar('Daily loss room',money(dRoom)+' of '+money(dFull),dRoom/Math.max(1,dFull),cls(dRoom,dFull),'Floor today '+money(e.dailyFloor)+' &middot; resets 00:00 UTC'))
+      +bar('Drawdown room ('+ddName+')',money(ddRoom)+' of '+money(ddFull),ddRoom/Math.max(1,ddFull),cls(ddRoom,ddFull),'Floor '+money(e.ddFloor)+' &middot; highest closed balance '+money(e.peak))
+      +bar('Profit target '+e.target+'%',money(tDone)+' of '+money(tFull),tDone/Math.max(1,tFull),'tgt',e.toGo>0?money(e.toGo)+' to go on closed trades':(e.bestOk===false?'Target reached - your best day is over '+e.best+'% of the profit, keep trading':'Target reached - keep going until you have '+e.minDays+' trading days'))
+      +(e.maxpos?bar('Max loss per trade '+e.maxpos+'%',e.strikes+' of '+e.strikesMax+' breaches',e.strikes/Math.max(1,e.strikesMax),e.strikes?'bad':'ok','One trade may lose up to '+money(e.posLimit)):'')
+      +(e.best?'<p class="cx-fine">Best day: '+(e.bestDayPct==null?'no profit yet':e.bestDayPct.toFixed(0)+'% of the profit')+' &middot; the rule asks for under '+e.best+'%.</p>':'')
+      +'<p class="cx-fine">'+esc(a.blurb||'')+'. Closes are checked the moment they land; open losses every ten minutes and whenever you look. Worst day so far '+(+e.worstDayPct||0).toFixed(2)+'% &middot; max drawdown '+(+e.maxDdPct||0).toFixed(2)+'%.</p>'
+      +(a.phase1?'<p class="cx-fine">Phase 1 passed '+day(a.phase1.passed)+' at '+pct(a.phase1.returnPct)+'.</p>':'')
+      +'</div></div>'+adsHtml();
+  }
+  function actsHtml(a,e){
+    if(ask)return '<div class="cx-cf '+ask+'"><b>'+(ask==='pause'?'Pause the challenge?':'End this challenge?')+'</b><p>'+(ask==='pause'?'Until you resume, the trades you open are ordinary trades and count for the leaderboards. The run keeps its balance, days and floors'+(a.tlimit?', and its clock stops':'')+'.':'The run stops here and goes into your history as ended. This cannot be undone - you can start a new one any time.')+'</p><div class="cx-cfb"><button type="button" class="cx-ghost" data-cx="cancel">Keep going</button><button type="button" class="cx-cfy" data-cx="do-'+ask+'">'+(ask==='pause'?'Yes, pause it':'Yes, end it')+'</button></div></div>';
+    var lock=!a.paused&&+e.open>0;
+    return '<div class="cx-acts">'+(a.paused?'<button type="button" class="cx-go" data-cx="resume">Resume the challenge</button>':'<a class="cx-go" href="/paper-trade">Trade it in the terminal</a><button type="button" class="cx-amber'+(lock?' locked':'')+'" data-cx="pause"'+(lock?' aria-disabled="true"':'')+'>Pause</button>')+'<button type="button" class="cx-ghost cx-end" data-cx="quit">End challenge</button></div>'
+      +(lock?'<p class="cx-lock">Close your '+e.open+' challenge position'+(e.open===1?'':'s')+' to pause - a run can only rest with nothing open.</p>':'');
+  }
+  function histHtml(){
+    var h=(S&&S.history)||[]; if(!h.length)return '';
+    var rs={fail_daily:'Daily loss',fail_drawdown:'Drawdown',fail_position:'Loss per trade',fail_time:'Time limit'};
+    return '<div class="cx-hist"><h3>Your challenges</h3><div class="tblw"><table class="cx-t cx-ht"><colgroup><col style="width:24%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:9%"><col style="width:14%"><col style="width:13%"></colgroup><thead><tr><th>Rule set</th><th>Account</th><th>Result</th><th>Return</th><th>Days</th><th>Started</th><th>&nbsp;</th></tr></thead><tbody>'
+      +h.map(function(x){var r=x.result||{};var live=x.status==='active'&&S.active&&S.active.id===x.id&&S.eval;var res=x.status==='failed'?(rs[x.reason]||'Drawdown'):(x.status==='active'?(x.paused?'Paused':'Running'):x.status==='passed'?'Passed':x.status==='abandoned'?'Ended':x.status);var ret=live?(S.eval.equity-S.eval.book)/S.eval.book*100:r.returnPct;return '<tr><td class="nm">'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td><span class="cx-st '+esc(x.status)+(x.paused?' paused':'')+'">'+esc(res)+'</span></td><td class="n '+((+ret||0)>=0?'up':'dn')+'">'+(x.status==='active'&&!live?'-':pct(ret))+'</td><td class="n">'+(live?S.eval.days:(x.status==='active'?'-':(r.days||0)))+'</td><td class="n">'+day(x.started)+'</td><td class="go">'+(x.status==='passed'?'<a href="?c='+esc(x.id)+'">Certificate &rarr;</a>':x.status==='active'?'<span class="cx-livetag">live</span>':'')+'</td></tr>';}).join('')
+      +'</tbody></table></div></div>';
+  }
+  function render(){
+    if(!S){return;}
+    app.setAttribute('data-state',S.active?'active':'choose');
+    if(pickEl.parentNode)pickEl.parentNode.removeChild(pickEl);
+    app.innerHTML=(S.active&&S.eval?dashHtml():choiceHtml(S.signedIn))+(S.signedIn?histHtml():'')+(S.active?'':adsHtml());
+    try{if(window.__mpUsSwap&&window.__mpUsSwapApply)window.__mpUsSwapApply('US');}catch(_u){}
+    var slot=$('cxPickSlot'); if(slot)slot.parentNode.replaceChild(pickEl,slot);
+    app.querySelectorAll('[data-book]').forEach(function(b){b.addEventListener('click',function(){pick.book=+b.getAttribute('data-book');app.querySelectorAll('[data-book]').forEach(function(x){x.classList.toggle('on',x===b);});});});
+    var go=$('cxGo'); if(go&&S.signedIn)go.addEventListener('click',start);
+    app.querySelectorAll('[data-cx]').forEach(function(b){b.addEventListener('click',function(){var op=b.getAttribute('data-cx');
+      if(op==='cancel'){ask='';render();return;}
+      if(op==='pause'){if(b.classList.contains('locked')){try{b.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:220});}catch(e){}return;}ask='pause';render();return;}
+      if(op==='quit'){ask='quit';render();return;}
+      if(op==='do-pause'){ask='';pause('pause');return;}
+      if(op==='resume'){pause('resume');return;}
+      if(op==='do-quit'){ask='';quit();return;}});});
+    if(flash&&Date.now()-flash.at<6000){var fl=document.createElement('div');fl.className='cx-flash '+flash.k;fl.textContent=flash.t;app.insertBefore(fl,app.firstChild);}
+  }
+  function load(){
+    fetch('/api/challenge',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      S=d||{signedIn:false}; render();
+      if(d&&d.ended&&window.mpToast)window.mpToast({kind:d.ended==='passed'?'good':'warn',key:'chal-end',msg:d.ended==='passed'?'You passed - your certificate is below.':'Your challenge ended on a rule.'});
+      clearTimeout(poll); if(S.active&&!S.active.paused)poll=setTimeout(function(){if(!document.hidden)load();},20000);
+    }).catch(function(){S={signedIn:false};render();});
+  }
+  function start(){
+    if(busy)return;
+    var body={op:'start',kind:pick.kind,book:pick.book};
+    if(pick.kind==='custom'){var er=rulesErr();if(er){if(window.mpToast)window.mpToast({kind:'warn',msg:'Check the '+LBL[er]+' in your custom rules.'});return;}body.rules=rulesOut();}
+    busy=true; var g=$('cxGo'); if(g){g.disabled=true;g.textContent='Starting...';}
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){
+      busy=false; if(d&&d.ok){track('start:'+pick.kind+':'+pick.book); if(window.mpToast)window.mpToast({kind:'good',msg:'Challenge started. Trades you open now count for the challenge only.'}); load(); try{app.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){} }
+      else { if(window.mpToast)window.mpToast({kind:'warn',msg:d&&d.error==='already_active'?'You already have a challenge running.':d&&d.error==='bad_rule'?'One of your custom rules is outside what we can score ('+esc(d.field||'')+').':'Could not start the challenge - try again.'}); load(); }
+    }).catch(function(){busy=false;load();});
+  }
+  function pause(op){
+    if(busy)return; busy=true;
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:op})}).then(function(r){return r.json();}).then(function(d){
+      busy=false; if(d&&d.ok){track(op); flash={k:op,t:op==='pause'?'Paused. Your trades count as ordinary trades until you resume.':'Resumed. New trades count for the challenge again.',at:Date.now()}; if(window.mpToast)window.mpToast({kind:'info',msg:op==='pause'?'Challenge paused.':'Challenge resumed.'});}
+      else if(window.mpToast)window.mpToast({kind:'warn',msg:d&&d.error==='positions_open'?'Close your '+(d.open||'')+' challenge position'+(d.open===1?'':'s')+' before pausing.':'Could not change the challenge - try again.'});
+      load();
+    }).catch(function(){busy=false;load();});
+  }
+  function quit(){
+    if(busy)return; busy=true;
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:'abandon'})}).then(function(r){return r.json();}).then(function(d){busy=false; if(d&&d.ok){track('abandon'); flash={k:'end',t:'Challenge ended. It is in your history below - start a new one whenever you are ready.',at:Date.now()}; if(window.mpToast)window.mpToast({kind:'info',msg:'Challenge ended.'});} load();}).catch(function(){busy=false;load();});
+  }
+  function board(){
+    fetch('/api/challenge/board').then(function(r){return r.json();}).then(function(d){
+      var c=(d&&d.counts)||{}; $('sPass').textContent=(c.passed||0).toLocaleString('en-US'); $('sDaily').textContent=(c.fail_daily||0).toLocaleString('en-US'); $('sDd').textContent=((c.fail_drawdown||0)+(c.fail_position||0)+(c.fail_time||0)).toLocaleString('en-US');
+      var p=(d&&d.passed)||[];
+      $('cxBoard').innerHTML=p.length?p.map(function(x){return '<tr><td><a href="?c='+esc(x.id)+'" style="color:var(--ink)">@'+esc(x.who)+'</a></td><td'+(x.custom?' title="'+esc(x.blurb)+'"':'')+'>'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td class="n" style="color:var(--lime)">'+pct(x.returnPct)+'</td><td class="n">'+(+x.maxDdPct||0).toFixed(2)+'%</td><td class="n">'+(x.days||0)+'</td><td class="n">'+day(x.passed)+'</td></tr>';}).join(''):'<tr><td colspan="7" class="cx-empty">Nobody has passed yet - the first certificate on this board could be yours.</td></tr>';
+    }).catch(function(){$('cxBoard').innerHTML='<tr><td colspan="7" class="cx-empty">The board could not be loaded - refresh in a moment.</td></tr>';});
+  }
+  function shareCert(id,who){
+    var url=location.origin+'/prop-firm-challenge/?c='+id, img=new Image(); img.crossOrigin='anonymous';
+    img.onload=function(){try{var cv=document.createElement('canvas');cv.width=1200;cv.height=630;cv.getContext('2d').drawImage(img,0,0);cv.toBlob(function(bl){var f=bl&&new File([bl],'marginpad-challenge-'+id+'.png',{type:'image/png'});
+      if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Prop firm challenge passed',text:'I passed a prop firm challenge on MarginPad: '+url}).catch(function(){});}
+      else{var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='marginpad-challenge-'+id+'.png';document.body.appendChild(a);a.click();a.remove();}},'image/png');}catch(e){}};
+    img.src='/api/challenge/cert.svg?id='+encodeURIComponent(id);
+  }
+  function cert(){
+    fetch('/api/challenge/cert?id='+encodeURIComponent(certId)).then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.ok){app.innerHTML='<p class="cx-fine">That certificate does not exist, or the challenge did not pass.</p>';load();return;}
+      var c=d.cert,r=c.result||{};
+      if(pickEl.parentNode)pickEl.parentNode.removeChild(pickEl);
+      app.setAttribute('data-state','cert');
+      app.innerHTML='<div class="cx-cert"><img src="/api/challenge/cert.svg?id='+encodeURIComponent(c.id)+'" alt="Prop firm challenge certificate for @'+esc(c.who)+'" width="1200" height="630">'
+        +'<div><span class="cx-badge"><i></i>Verified pass</span><h2 style="margin:12px 0 6px">@'+esc(c.who)+' passed the '+esc(c.name)+' challenge</h2>'
+        +'<p class="cx-fine">'+money(c.book)+' account &middot; '+pct(r.returnPct)+' &middot; max drawdown '+(+r.maxDdPct||0).toFixed(2)+'% &middot; '+(r.days||0)+' trading days &middot; passed '+day(c.ended)+'. '+esc(c.blurb||'')+'. Scored server-side on live prices; every rule was enforced from the first trade.</p>'
+        +'<div class="cx-acts"><button type="button" class="cx-go" id="cxShare">Share the certificate</button><button type="button" class="cx-ghost" id="cxCopy">Copy link</button></div></div></div>'
+        +adsHtml()
+        +'<p style="margin:18px 0 0"><a href="/prop-firm-challenge/" style="color:var(--lime)">Start your own challenge &rarr;</a></p>';
+      $('cxShare').addEventListener('click',function(){shareCert(c.id,c.who);});
+      $('cxCopy').addEventListener('click',function(){var u=location.origin+'/prop-firm-challenge/?c='+c.id;try{navigator.clipboard.writeText(u);if(window.mpToast)window.mpToast({kind:'good',msg:'Link copied.'});}catch(e){}});
+    }).catch(function(){load();});
+  }
+  // partner clicks are money clicks: same beacon as the homepage
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-ex]');if(!a)return;try{navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname));}catch(x){}},true);
+  wireChoice(); wireBuild();
+  if(location.hash==='#custom')setKind('custom');
+  else if(/^#(ftmo1|ftmo2|iq|one|two|eod)$/.test(location.hash))setKind(location.hash.slice(1));
+  if(certId)cert(); else load();
+  board();
+  window.addEventListener('mp-auth-change',function(){if(!certId)load();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&S&&S.active)load();});
+  window.__cxState=function(){return S;}; window.__cxRules=function(){return {R:R,err:rulesErr(),out:rulesOut()};};
+})();
+</script>

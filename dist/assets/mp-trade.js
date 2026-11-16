@@ -72,6 +72,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function eligOpenTs(e){var m=/^(?:srv|bot)([0-9a-z]{8})/.exec(String(e.id||''));if(m){var t=parseInt(m[1],36);if(isFinite(t)&&t>1.6e12)return t;}return +e.ts||0;}
   function tradeElig(e,all){all=all||_eligData||load();var rows=[],ok=true;
     function add(met,text,info){rows.push({met:met,text:text,info:!!info});if(!met&&!info)ok=false;}
+    if(e&&e.chal)add(false,MT('eligChal',__esT_mptrade("eligChalTxt",'A prop firm challenge trade - it counts for the challenge only, never on a leaderboard')));
     var srv=e.src==='srv'||e.src==='bot'||/^(srv|bot)/.test(String(e.id||''));
     var closed=e.status==='win'||e.status==='loss',ss=window.mpSsnStart?window.mpSsnStart():0,openTs=eligOpenTs(e),inSeason=!ss||openTs>=ss;
     var margin=+e.margin||0,lev=(+e.lev>0)?+e.lev:1,sym=String(e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),pnl=(e.pnl!=null&&isFinite(+e.pnl))?+e.pnl:null;
@@ -124,7 +125,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,margin:margin,stale:_st9};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live'+(m.stale?' stale':'')+'">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_mptrade("priceStale",'stale'):'')+'</span></div>'+(e.copy?'<div class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg><span>'+MT('jCopyFrom','Copied from')+(e.copyName?' <b data-lbu="'+esc(e.copyName)+'" role="button" tabindex="0">@'+esc(e.copyName)+'</b>':'')+'</span></div>':'')
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live'+(m.stale?' stale':'')+'">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+(m.stale?' · '+__esT_mptrade("priceStale",'stale'):'')+'</span></div>'+(e.copy?'<div class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg><span>'+MT('jCopyFrom','Copied from')+(e.copyName?' <b data-lbu="'+esc(e.copyName)+'" role="button" tabindex="0">@'+esc(e.copyName)+'</b>':'')+'</span></div>':'')+(e.chal?'<div class="pp-copy pp-chal" title="'+MT('jChalT','A prop firm challenge trade - it counts for the challenge only, never on a leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>'+MT('jChalRow','Challenge trade')+' <b>'+MT('jChalOnly','counts for the challenge only')+'</b></span></div>':'')
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -253,7 +254,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   var _glIdx=-1; // index (within the visible list) of the newest winning close - set by render(), read by closedCard
   function closedCard(e,_i){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'+(e.copy?'<div class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg><span>'+MT('jCopyFrom','Copied from')+(e.copyName?' <b data-lbu="'+esc(e.copyName)+'" role="button" tabindex="0">@'+esc(e.copyName)+'</b>':'')+'</span></div>':'')
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'+(e.copy?'<div class="pp-copy" title="'+MT('jCopyT','Mirrored from a trader you copy - counts on no leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg><span>'+MT('jCopyFrom','Copied from')+(e.copyName?' <b data-lbu="'+esc(e.copyName)+'" role="button" tabindex="0">@'+esc(e.copyName)+'</b>':'')+'</span></div>':'')+(e.chal?'<div class="pp-copy pp-chal" title="'+MT('jChalT','A prop firm challenge trade - it counts for the challenge only, never on a leaderboard')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>'+MT('jChalRow','Challenge trade')+' <b>'+MT('jChalOnly','counts for the challenge only')+'</b></span></div>':'')
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -373,11 +374,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
      applied AFTER the season scope and BEFORE the render window - the tab counts stay the unfiltered truth and the bar
      says "N of M". A result filter that belongs to the other tab (Wins on Open, In profit on Closed) is ignored there
      rather than hiding everything. MIRROR of the same block in the other journal bundle. */
-  var jrF=(function(){var d={side:'',res:'',when:'',lev:'',sort:'new',q:'',open:false};try{var s=JSON.parse(localStorage.getItem('mp_jr_f')||'{}');for(var k in d)if(s[k]!=null)d[k]=s[k];}catch(e){}return d;})();
+  var jrF=(function(){var d={side:'',res:'',when:'',lev:'',sort:'new',q:'',acct:'',open:false};try{var s=JSON.parse(localStorage.getItem('mp_jr_f')||'{}');for(var k in d)if(s[k]!=null)d[k]=s[k];}catch(e){}return d;})();
   var jrFFocus=false,jrFT=null;
   function jrFSave(){try{localStorage.setItem('mp_jr_f',JSON.stringify(jrF));}catch(e){}}
   function jrRes(){var r=jrF.res||'';if(jrTab==='open'&&/^(win|loss|liq)$/.test(r))return '';if(jrTab!=='open'&&/^(green|red)$/.test(r))return '';return r;}
-  function jrFN(){return (jrF.side?1:0)+(jrRes()?1:0)+(jrF.when?1:0)+(jrF.lev?1:0)+(jrF.q?1:0)+((jrF.sort&&jrF.sort!=='new')?1:0);}
+  function jrFN(){return (jrF.side?1:0)+(jrRes()?1:0)+(jrF.when?1:0)+(jrF.lev?1:0)+(jrF.q?1:0)+(jrF.acct?1:0)+((jrF.sort&&jrF.sort!=='new')?1:0);}
   function jrPnl(e){if(e.status==='open'){var m=metrics(e);return m.pnl!=null?+m.pnl:0;}return +e.pnl||0;}
   function jrRoe(e){if(e.status==='open'){var m=metrics(e);return m.roe!=null?+m.roe:0;}return (+e.margin>0&&e.pnl!=null)?(+e.pnl)/(+e.margin):0;}
   function jrApply(rows){
@@ -390,6 +391,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       if(f.when){var t=+(e.closeTs||e.ts)||0,d=now-t;if(f.when==='today'){if(t<m0)return false;}else if(f.when==='7d'){if(d>7*864e5)return false;}else if(f.when==='30d'){if(d>30*864e5)return false;}}
       if(f.lev){var l=+e.lev||1;if(f.lev==='lo'&&l>10)return false;if(f.lev==='mid'&&(l<=10||l>50))return false;if(f.lev==='hi'&&l<=50)return false;}
       if(q&&String(e.sym||'').toUpperCase().indexOf(q)<0)return false;
+      if(f.acct==='chal'&&!e.chal)return false;if(f.acct==='reg'&&e.chal)return false;
       return true;});}
   function jrOrder(rows){
     var s=jrF.sort||'new',a=rows.slice();
@@ -407,13 +409,16 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     if(jrF.when)sum.push({today:MT('jFToday','Today'),'7d':MT('jF7d','7 days'),'30d':MT('jF30d','30 days')}[jrF.when]);
     if(jrF.lev)sum.push({lo:MT('jFLevLo','up to 10x'),mid:MT('jFLevMid','11-50x'),hi:MT('jFLevHi','over 50x')}[jrF.lev]);
     if(jrF.q)sum.push(String(jrF.q).toUpperCase());
+    if(jrF.acct)sum.push(jrF.acct==='chal'?MT('jFChal','Challenge'):MT('jFReg','Regular'));
     if(jrF.sort&&jrF.sort!=='new')sum.push({old:MT('jFOld',__esT_mptrade("oldestFirst",'oldest first')),pnl:MT('jFPnl','biggest P&L'),pnlw:MT('jFPnlW','worst P&L'),roe:MT('jFRoe','best ROE'),roew:MT('jFRoeW','worst ROE'),size:MT('jFSize','biggest size'),held:MT('jFHeld','held longest')}[jrF.sort]);
     var head='<div class="jr-fh"><button type="button" class="jr-ft'+(jrF.open?' on':'')+(n2?' has':'')+'" data-jft="1" aria-expanded="'+(jrF.open?'true':'false')+'">'
       +'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>'+MT('jFilters','Filters')+(n2?'<i>'+n2+'</i>':'')+'</button>'
       +'<span class="jr-fsum">'+(n2?'<b>'+n+'</b> '+MT('jFOf','of')+' '+all+' · '+sum.filter(Boolean).join(' · '):all+' '+(closedTab?MT('jFClosedN','closed'):MT('jFOpenN','open')))+'</span>'
       +(n2?'<button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button>':'')+'</div>';
     if(!jrF.open)return '<div class="jr-fb">'+head+'</div>';
+    var hasCh=!!jrF.acct;try{if(!hasCh)hasCh=(load()||[]).some(function(x){return x&&x.chal;});}catch(_h){}
     var body='<div class="jr-fp">'
+      +(hasCh?grp(MT('jFAcct','Account'),chip('acct','',MT('jFAll','All'))+chip('acct','chal',MT('jFChal','Challenge'))+chip('acct','reg',MT('jFReg','Regular'))):'')
       +grp(MT('jFSide','Side'),chip('side','',MT('jFAll','All'))+chip('side','long',MT('jFLong','Long'))+chip('side','short',MT('jFShort','Short')))
       +grp(MT('jFResult','Result'),chip('res','',MT('jFAll','All'),res)+(closedTab?chip('res','win',MT('jFWins','Wins'),res)+chip('res','loss',MT('jFLosses','Losses'),res)+chip('res','liq',MT('jFLiq','Liquidated'),res):chip('res','green',MT('jFGreen',__esT_mptrade("inProfit",'In profit')),res)+chip('res','red',MT('jFRed',__esT_mptrade("inLoss",'In loss')),res)))
       +grp(MT('jFWhen','When'),chip('when','',MT('jFAll','All'))+chip('when','today',MT('jFToday','Today'))+chip('when','7d',MT('jF7d','7 days'))+chip('when','30d',MT('jF30d','30 days')))
@@ -548,7 +553,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more], #jrList [data-jf], #jrList [data-jfx], #jrList [data-jft]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
     if(b.hasAttribute('data-jft')){jrF.open=!jrF.open;jrFSave();render();return;}
-    if(b.hasAttribute('data-jfx')){jrF={side:'',res:'',when:'',lev:'',sort:'new',q:'',open:jrF.open};jrFSave();jrShow=50;render();return;}
+    if(b.hasAttribute('data-jfx')){jrF={side:'',res:'',when:'',lev:'',sort:'new',q:'',acct:'',open:jrF.open};jrFSave();jrShow=50;render();return;}
     if(b.hasAttribute('data-jf')){var _kv=b.getAttribute('data-jf').split(':');jrF[_kv[0]]=_kv[1]||'';jrFSave();jrShow=50;render();return;}
     if(b.hasAttribute('data-jt')){jrTab=b.getAttribute('data-jt');jrShow=50;render();return;}
     var oid=b.getAttribute('data-oid'); // an order id is not a journal id - handle it before the journal lookup bails out

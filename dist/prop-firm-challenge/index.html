@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -15,6 +14,7 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<script>/* cookie notice room at frame 0 - see build/add-ckbar-boot.js */try{var _ck=/(?:^|;\s*)mp_ck_ok=1(?:;|$)/.test(document.cookie)||!!localStorage.getItem("mp_ck_ok");if(!_ck)document.documentElement.className+=" mp-ckbar";}catch(e){}</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
@@ -114,13 +114,169 @@
   .faq .a{padding:14px 18px 17px;color:var(--ink2);font-size:14px;line-height:1.7}
   .cta{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 4px}
   .cta a{flex:1;min-width:200px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;padding:13px 14px;border-radius:11px;border:1px solid var(--line);color:var(--ink);background:var(--panel)}
+  .cx-gl{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:18px 0 9px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+  .cx-gl:first-child{margin-top:0}.cx-gl a{color:var(--lime);text-decoration:none;letter-spacing:.06em}
+  .cx-type.firm.ftmo.on{border-color:#3b8bff;background:rgba(59,139,255,.07)}.cx-type.firm.ftmo.on .tick{background:#3b8bff;border-color:#3b8bff}
+  .cx-type.firm.iq.on{border-color:#2fe0a0;background:rgba(47,224,160,.07)}.cx-type.firm.iq.on .tick{background:#2fe0a0;border-color:#2fe0a0}
+  .cx-type h3 img{height:15px;width:auto;vertical-align:-1px;margin-right:2px}
+  .iqwm{font-weight:800;letter-spacing:-.03em}.iqwm b{color:#2fe0a0}
+  .cx-type.cust{border-style:dashed;display:flex;flex-direction:column;justify-content:center;gap:6px}
+  .cx-type.cust p{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink3)}
+  .cb{margin-top:16px;padding:16px;border:1px solid rgba(194,246,74,.3);border-radius:15px;background:rgba(194,246,74,.03)}
+  .cb[hidden]{display:none}
+  .cb-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}.cb-h b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;color:var(--ink)}.cb-h span{font-size:12px;color:var(--ink3)}
+  .cb-f{display:grid;grid-template-columns:170px minmax(0,1fr);gap:10px;align-items:center;padding:9px 0;border-top:1px solid rgba(255,255,255,.05)}
+  .cb-f.hide{display:none}
+  .cb-l{font-size:13px;color:var(--ink2)}.cb-l small{display:block;font-size:11px;color:var(--ink3)}
+  .cb-v{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .cb-c{height:30px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--ink2);font-family:'Space Mono',monospace;font-size:11.5px;cursor:pointer}
+  .cb-c.on{border-color:var(--lime);color:var(--lime);background:rgba(194,246,74,.07)}
+  .cb-in{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 9px;border:1px solid var(--line);border-radius:9px;background:#0b0e12}
+  .cb-in input{width:62px;border:0;background:transparent;color:var(--ink);font-family:'Space Mono',monospace;font-size:13px;outline:none}
+  .cb-in span{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink3)}
+  .cb-sum{margin-top:12px;padding:11px 13px;border-radius:11px;background:#0b0e12;font-size:13px;line-height:1.55;color:var(--ink2)}.cb-sum b{color:var(--ink)}
+  .cb-err{color:#ff8a7d}
+  .cx-pause{display:flex;flex-direction:column;gap:3px;margin:12px 0 0;padding:11px 13px;border-radius:12px;border:1px dashed rgba(255,179,71,.5);background:rgba(255,179,71,.07)}
+  .cx-pause b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffb347}.cx-pause span{font-size:13px;color:#c9bfa8;line-height:1.5}
+  .cx-badge.paused{border-color:rgba(255,179,71,.5);color:#ffb347}.cx-badge.paused i{background:#ffb347;box-shadow:0 0 8px #ffb347}
+  .cx-amber{display:inline-flex;align-items:center;height:46px;padding:0 18px;border:1px solid rgba(255,179,71,.5);border-radius:13px;background:rgba(255,179,71,.08);color:#ffcf8a;font-family:'Space Mono',monospace;font-size:12.5px;cursor:pointer}
+  .cx-only{margin:12px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink3)}
+  .cx-ads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+  .cx-ad{position:relative;display:flex;flex-direction:column;gap:8px;padding:15px 16px;border-radius:15px;overflow:hidden;text-decoration:none;color:var(--ink);border:1px solid color-mix(in srgb,var(--pc) 40%,transparent);background:radial-gradient(120% 140% at 100% 0,color-mix(in srgb,var(--pc) 18%,transparent),transparent 60%),#0d1016;transition:transform .15s,border-color .15s}
+  .cx-ad:hover{transform:translateY(-2px);border-color:var(--pc)}
+  .cx-ad .t{display:flex;align-items:center;justify-content:space-between;gap:8px}.cx-ad img{height:19px;width:auto}
+  .cx-ad .k{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--pc)}
+  .cx-ad b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;line-height:1.2}
+  .cx-ad p{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink3)}
+  .cx-ad .g{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--pc)}
+  .cx-adk{grid-column:1/-1;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+  .cx-amber.locked{border-color:#2b333d;background:transparent;color:#6f7a86;cursor:not-allowed}
+  .cx-end{border-color:rgba(255,122,110,.4);color:#ff9a90}
+  .cx-lock{margin:10px 0 0;font-size:12.5px;color:var(--ink3)}
+  .cx-cf{margin-top:18px;padding:16px;border-radius:15px;border:1px solid rgba(255,179,71,.45);background:linear-gradient(180deg,rgba(255,179,71,.09),rgba(255,179,71,.02))}
+  .cx-cf.quit{border-color:rgba(255,122,110,.5);background:linear-gradient(180deg,rgba(255,122,110,.10),rgba(255,122,110,.02))}
+  .cx-cf b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;color:var(--ink)}
+  .cx-cf p{margin:6px 0 14px;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+  .cx-cfb{display:flex;flex-wrap:wrap;gap:10px}
+  .cx-cfy{height:46px;padding:0 20px;border:0;border-radius:13px;background:#ffb347;color:#0a0b0d;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;cursor:pointer}.cx-cf.quit .cx-cfy{background:#ff7a6e}
+  .cx-flash{margin:0 0 16px;padding:11px 14px;border-radius:12px;font-size:13.5px;border:1px solid rgba(46,189,133,.4);background:rgba(46,189,133,.08);color:#9fe7c6}
+  .cx-flash.pause{border-color:rgba(255,179,71,.45);background:rgba(255,179,71,.08);color:#ffcf8a}.cx-flash.end{border-color:var(--line);background:var(--bg2);color:var(--ink2)}
+  table.cx-ht{table-layout:fixed}
+  .cx-ht th,.cx-ht td{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cx-ht th:first-child,.cx-ht td.nm{text-align:left}
+  .cx-ht td.n.up{color:var(--green,#2ebd85)}.cx-ht td.n.dn{color:var(--red)}
+  .cx-ht td.go a{color:var(--lime);text-decoration:none;font-family:'Space Mono',monospace;font-size:11.5px}
+  .cx-ht .cx-st{display:inline-block;padding:4px 9px;border-radius:99px;border:1px solid currentColor;line-height:1}
+  .cx-st.paused{color:#ffb347}
+  .cx-livetag{font-family:'Space Mono',monospace;font-size:10.5px;color:#46e0e6;text-transform:uppercase;letter-spacing:.1em}
+  @media(max-width:760px){.cb-f{grid-template-columns:1fr;gap:6px}.cx-ads{grid-template-columns:1fr}}
   @media(max-width:760px){.cx-types,.cx-steps{grid-template-columns:1fr}.cx-dash,.cx-cert{grid-template-columns:1fr}.cx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-eq{font-size:38px}.cx-app{padding:15px}.cx-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.cx-stat b{font-size:21px}}
+
+  .cx-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 6px}
+  .cx-stat{--c:#c2f64a;position:relative;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;overflow:hidden;border:1px solid color-mix(in srgb,var(--c) 26%,var(--line));background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--c) 12%,transparent),transparent 60%),var(--panel)}
+  .cx-stat.am{--c:#ffb347}.cx-stat.rd{--c:#ff7a6e}
+  .cx-stat>i{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 12%,#0d1015);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent),0 0 22px -10px var(--c)}
+  .cx-stat>i svg{width:19px;height:19px}
+  .cx-sv{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .cx-sv b{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--ink);line-height:1}
+  .cx-sv span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+  .cx-gl{display:flex;align-items:baseline;gap:12px;margin:24px 0 11px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+  .cx-gl:first-child{margin-top:2px}.cx-gl em{font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none;font-family:'Familjen Grotesk',sans-serif;font-size:12.5px;color:var(--ink3)}
+  .cx-gl a{margin-left:auto;color:var(--lime);text-decoration:none;letter-spacing:.06em}
+  .cx-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .rc{--ac:#c2f64a;position:relative;display:flex;flex-direction:column;gap:13px;text-align:left;padding:16px 16px 14px;border-radius:17px;border:1px solid var(--line);background:linear-gradient(180deg,#12161d,#0c0f14);color:var(--ink2);cursor:pointer;font:inherit;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .22s}
+  .rc::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 70% at 100% 0,color-mix(in srgb,var(--ac) 14%,transparent),transparent 60%);opacity:0;transition:opacity .2s;pointer-events:none}
+  .rc:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--ac) 45%,var(--line))}
+  .rc:hover::before,.rc.on::before{opacity:1}
+  .rc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac),0 18px 40px -26px var(--ac)}
+  .rc.ftmo{--ac:#3b8bff}.rc.iq{--ac:#2fe0a0}
+  .rc>*{position:relative}
+  .rc-top{display:flex;align-items:center;gap:9px;min-height:22px}
+  .rc-name{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .rc-name.sm{font-size:17px}.rc-logo{height:17px;width:auto}
+  .rc-iq{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}.rc-iq b{color:#2fe0a0}
+  .rc-tag{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);padding:4px 8px;border-radius:99px;border:1px solid color-mix(in srgb,var(--ac) 35%,transparent)}
+  .rc .tick,.rc-cust .tick{flex:none;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:background .15s,border-color .15s}
+  .rc.on .tick,.rc-cust.on .tick{background:var(--ac);border-color:var(--ac)}
+  .rc.on .tick::after,.rc-cust.on .tick::after{content:'';width:5px;height:9px;border:solid #0a0b0d;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+  .rc-stats{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:6px}
+  .rc-stats>span{display:flex;flex-direction:column;gap:3px;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);min-width:0}
+  .rc-stats b{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap}
+  .rc-stats span:first-child b{color:#c2f64a}
+  .rc-stats small{font-size:10.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rc-chips{display:flex;flex-wrap:wrap;gap:5px}
+  .rc-chips i{font-style:normal;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink2);padding:4px 8px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+  .rg{display:block;position:relative;padding-bottom:16px}
+  .rg-bar{position:relative;display:flex;height:9px;border-radius:99px;overflow:hidden;background:#161b22}
+  .rg-loss{position:relative;height:100%;background:linear-gradient(90deg,#ff5a4d,rgba(255,90,77,.35))}
+  .rg-daily{position:absolute;right:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(255,179,71,.55),#ffb347)}
+  .rg-gain{height:100%;background:linear-gradient(90deg,rgba(194,246,74,.3),#c2f64a)}
+  .rg-0{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:#fff;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.6)}
+  .rg-lbl em{position:absolute;bottom:0;font-style:normal;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink3);white-space:nowrap}
+  .rg-lbl .l{left:0;color:#ff8a7d}.rg-lbl .r{right:0;color:#c2f64a}
+  .rg-lbl .z{transform:translateX(-50%);color:#c9d1da}.rg-lbl .d{transform:translateX(-50%);color:#ffb347;display:none}
+  .rg.big{padding-bottom:20px}.rg.big .rg-bar{height:14px}.rg.big .rg-lbl em{font-size:11px}.rg.big .rg-lbl .d{display:block;bottom:auto;top:-18px}
+  .rc-cust{--ac:#c2f64a;position:relative;display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 18px;border-radius:17px;border:1px dashed rgba(194,246,74,.4);background:radial-gradient(70% 140% at 0 50%,rgba(194,246,74,.08),transparent 70%),#0c0f14;color:var(--ink2);cursor:pointer;font:inherit;transition:border-color .16s,box-shadow .2s}
+  .rc-cust:hover{border-color:var(--lime)}.rc-cust.on{border-style:solid;border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 18px 40px -26px var(--lime)}
+  .rc-cust-i{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#0a0b0d;background:linear-gradient(135deg,#d6ff6e,#9fd82c);box-shadow:0 0 26px -6px rgba(194,246,74,.7)}
+  .rc-cust-i svg{width:22px;height:22px}
+  .rc-cust-t{flex:1;display:flex;flex-direction:column;gap:4px}.rc-cust-t b{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;color:var(--ink)}.rc-cust-t span{font-size:13px;line-height:1.5;color:var(--ink3)}
+  .cb{margin-top:14px;padding:18px;border-radius:20px;border:1px solid rgba(194,246,74,.28);background:radial-gradient(80% 60% at 100% 0,rgba(194,246,74,.06),transparent 60%),#0b0e12}
+  .cb[hidden]{display:none}
+  .cb-head{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
+  .cb-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lime)}
+  .cb-head b{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;letter-spacing:-.02em;color:var(--ink)}.cb-head>span:last-child{font-size:13px;color:var(--ink3)}
+  .cb-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+  .cb-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .sc{padding:14px;border-radius:15px;background:#10141a;border:1px solid rgba(255,255,255,.06)}
+  .sc h4{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .sc h4 i{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:var(--lime);background:rgba(194,246,74,.08)}
+  .sr{display:flex;flex-direction:column;gap:7px;padding:10px 0;border-top:1px solid rgba(255,255,255,.05)}
+  .sr:first-of-type{border-top:0}.sr.hide{display:none}
+  .sr-l{font-size:12.5px;color:var(--ink2)}.sr-l:empty{display:none}.sr-l small{display:block;color:var(--ink3);font-size:11px}
+  .sr-c{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .st{display:inline-flex;align-items:center;height:34px;border-radius:10px;border:1px solid var(--line);background:#0a0d11;overflow:hidden}
+  .st-b{width:32px;height:100%;border:0;background:transparent;color:var(--ink2);font-size:16px;cursor:pointer}.st-b:hover{background:rgba(194,246,74,.08);color:var(--lime)}
+  .st-v{display:inline-flex;align-items:baseline;gap:3px;padding:0 4px;border-left:1px solid var(--line);border-right:1px solid var(--line);height:100%;align-items:center}
+  .st-v input{width:44px;border:0;background:transparent;color:var(--ink);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;text-align:right;outline:none;-moz-appearance:textfield}
+  .st-v input::-webkit-outer-spin-button,.st-v input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .st-v span{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink3);padding-right:4px}
+  .sch{display:inline-flex;gap:4px}
+  .sch button{height:28px;padding:0 9px;border:1px solid rgba(255,255,255,.07);border-radius:8px;background:transparent;color:var(--ink3);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer}
+  .sch button:hover{color:var(--ink)}.sch button.on{color:var(--lime);border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.07)}
+  .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;width:100%;padding:3px;border-radius:11px;background:#0a0d11;border:1px solid var(--line)}
+  .seg button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:var(--ink3);cursor:pointer;transition:background .15s,color .15s}
+  .seg b{font-family:'Space Mono',monospace;font-size:11.5px}.seg small{font-size:10px;opacity:.8}
+  .seg button.on{background:linear-gradient(180deg,rgba(194,246,74,.18),rgba(194,246,74,.07));color:var(--lime);box-shadow:inset 0 0 0 1px rgba(194,246,74,.45)}
+  .tg{display:flex;align-items:center;gap:11px;width:100%;padding:0;border:0;background:transparent;text-align:left;cursor:pointer;font:inherit}
+  .tg-k{flex:none;position:relative;width:38px;height:22px;border-radius:99px;background:#232a33;transition:background .18s}
+  .tg-k i{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#8b95a1;transition:transform .18s,background .18s}
+  .tg[aria-checked="true"] .tg-k{background:rgba(194,246,74,.3)}.tg[aria-checked="true"] .tg-k i{transform:translateX(16px);background:var(--lime)}
+  .tg-t{display:flex;flex-direction:column;gap:1px}.tg-t b{font-size:13px;color:#e9e7df}.tg-t small{font-size:11px;color:#8b95a1}
+  .cb-prev{position:sticky;top:76px;padding:16px;border-radius:16px;background:linear-gradient(180deg,#141922,#0d1015);border:1px solid rgba(194,246,74,.25);box-shadow:0 20px 50px -30px rgba(194,246,74,.5)}
+  .cb-pk{display:block;margin-bottom:26px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lime)}
+  .cb-pstats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
+  .cb-pstats>span{display:flex;flex-direction:column;gap:2px;padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+  .cb-pstats b{font-family:'Space Mono',monospace;font-size:14px;color:var(--ink)}.cb-pstats small{font-size:10.5px;color:var(--ink3)}
+  .cb-ratio{margin-top:12px;padding:10px 12px;border-radius:11px;font-size:12.5px;line-height:1.45;color:var(--ink2);background:rgba(255,255,255,.03)}.cb-ratio b{font-family:'Space Mono',monospace;color:var(--ink)}
+  .cb-sum{margin:12px 0 0;font-size:12px;line-height:1.55;color:var(--ink3)}
+  .cb-err{color:#ff8a7d}
+  @media(max-width:1100px){.cb-grid{grid-template-columns:1fr}.cb-prev{position:static;order:-1}}
+  @media(max-width:760px){
+    .cx-stats{gap:8px}.cx-stat{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}.cx-stat>i{width:32px;height:32px}.cx-sv b{font-size:22px}.cx-sv span{font-size:9px}
+    .cx-types{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -15px;padding:2px 15px 6px;scrollbar-width:none}
+    .cx-types::-webkit-scrollbar{display:none}
+    .rc{flex:0 0 84%;scroll-snap-align:start}
+    .cx-gl em{display:none}
+    .cb{padding:13px}.cb-cols{grid-template-columns:1fr}.cb-pstats{display:none}.cb-pk{margin-bottom:24px}
+    .rc-cust{align-items:flex-start;gap:12px;padding:14px}.rc-cust-i{width:38px;height:38px;border-radius:11px}.rc-cust-t b{font-size:17px}.rc-cust-t span{font-size:12.5px}
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Prop Firm Challenge Simulator","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/prop-firm-challenge/","description":"Take a crypto prop firm challenge for free: one-step, two-step or end-of-day rules on a $5k-$100k account, scored by our server on live prices. Daily loss and drawdown are enforced like a real firm, and a pass earns a shareable certificate.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the MarginPad prop firm challenge free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no fee, no deposit and no card. You start a challenge on your free MarginPad account, trade it on live crypto prices in the paper-trading terminal, and the server scores it against the rules. You can retry as often as you like."}},{"@type":"Question","name":"Do I get funded if I pass?","acceptedAnswer":{"@type":"Answer","text":"No - MarginPad does not fund traders and sells no challenges. A pass earns a certificate you can share and proves to yourself that you can hit a target without breaking the limits. Take that to a real prop firm only once you can do it repeatedly."}},{"@type":"Question","name":"How is the daily loss limit measured?","acceptedAnswer":{"@type":"Answer","text":"From your closed balance at 00:00 UTC. Your equity - balance plus the open profit and loss of your challenge positions - may not fall more than the daily limit, as a percentage of the account size, below it. Closed trades are checked the moment they close; open losses are checked every ten minutes and whenever you open the challenge."}},{"@type":"Question","name":"What counts as a challenge trade?","acceptedAnswer":{"@type":"Answer","text":"Every position you open in the MarginPad terminal (or through the Bot API) after the challenge starts. Positions you held before starting are ignored. Leverage above the rule set and margin above your free challenge balance are refused, as a real firm would refuse them."}},{"@type":"Question","name":"What is the difference between the three rule sets?","acceptedAnswer":{"@type":"Answer","text":"One-step asks for 10% with a 4% daily limit and a 6% drawdown that trails your highest closed balance. Two-step splits the target into 8% and then 5% with a looser, static 10% drawdown. One-step EOD trails the drawdown from the highest end-of-day balance and caps leverage at 50x. Most real crypto prop firms use one of these shapes."}},{"@type":"Question","name":"Which rule fails the most challenges?","acceptedAnswer":{"@type":"Answer","text":"The daily loss limit. Measured on our own traders, it ends far more runs than the overall drawdown, because it resets every day and ignores how far ahead you were. Size every trade so two full stops in a row still leave you trading tomorrow."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the MarginPad prop firm challenge free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no fee, no deposit and no card. You start a challenge on your free MarginPad account, trade it on live crypto prices in the paper-trading terminal, and the server scores it against the rules. You can retry as often as you like."}},{"@type":"Question","name":"Do I get funded if I pass?","acceptedAnswer":{"@type":"Answer","text":"No - MarginPad does not fund traders and sells no challenges. A pass earns a certificate you can share and proves to yourself that you can hit a target without breaking the limits. Take that to a real prop firm only once you can do it repeatedly."}},{"@type":"Question","name":"How is the daily loss limit measured?","acceptedAnswer":{"@type":"Answer","text":"From your closed balance at 00:00 UTC. Your equity - balance plus the open profit and loss of your challenge positions - may not fall more than the daily limit, as a percentage of the account size, below it. Closed trades are checked the moment they close; open losses are checked every ten minutes and whenever you open the challenge."}},{"@type":"Question","name":"What counts as a challenge trade?","acceptedAnswer":{"@type":"Answer","text":"Every position you open in the MarginPad terminal (or through the Bot API) while the challenge runs and is not paused. Those trades count for the challenge only - not for the leaderboards, XP, Ticks or missions. Positions you held before starting are ignored. Leverage above the rule set and margin above your free challenge balance are refused, as a real firm would refuse them."}},{"@type":"Question","name":"Can I pause a challenge?","acceptedAnswer":{"@type":"Answer","text":"Yes, whenever you have no open challenge position. While it is paused your trades are ordinary trades again (they count for the leaderboards), the time limit stops, and nothing about the run changes. Resume and your new trades count for the challenge again. You can also end it at any time."}},{"@type":"Question","name":"Can I set my own rules?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pick Custom rules and set the target, one or two steps, the daily loss limit (or none), the drawdown and whether it is static, trailing or end-of-day, minimum trading days, max leverage, a max loss per trade with how many breaches end the run, a best-day consistency rule and a time limit. The server scores your rules exactly like a preset. A custom pass gets a certificate that prints its rules, but no XP."}},{"@type":"Question","name":"Which rule sets can I choose?","acceptedAnswer":{"@type":"Answer","text":"Our three shapes (one-step, two-step, one-step end-of-day), the shapes of FTMO's 1-Step and 2-Step challenges and IQ Capital's Core challenge, or your own. The firm presets copy each firm's published rule shape so you can practise the evaluation before you buy it. FTMO and IQ Capital are MarginPad partners, but a pass here is not a pass with them - it tells you whether you are ready to take theirs."}},{"@type":"Question","name":"Which rule fails the most challenges?","acceptedAnswer":{"@type":"Answer","text":"The daily loss limit. Measured on our own traders, it ends far more runs than the overall drawdown, because it resets every day and ignores how far ahead you were. Size every trade so two full stops in a row still leave you trading tomorrow."}}]}
 </script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -128,10 +284,7 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og/prop-firm-challenge.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
-<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}html.mp-ckbar:not(.mp-ckon) body{border-top:calc(47.4px + env(safe-area-inset-top)) solid transparent;box-sizing:border-box;}#mpCkBar{min-height:calc(47.4px + env(safe-area-inset-top));box-sizing:border-box;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}html.mp-ckbar:not(.mp-ckon) body{border-top:41px solid transparent;box-sizing:border-box;}#mpCkBar{min-height:41px;box-sizing:border-box;}#mpCkBar>span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Crypto Prop Firm Challenge Simulator - Practice a Funded Account Free","url":"https://marginpad.io/prop-firm-challenge/","dateModified":"2026-11-16T15:05:51.530Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/tools/">All tools</a><a href="/prop-firm-challenge/" class="on">Challenge</a><a href="/prop-firm-drawdown-calculator/">Drawdown</a><a href="/crypto-prop-firms/">Prop firms</a><a href="/practice-for-a-funded-account/">Pass rate</a></nav><a class="home" href="/">&larr; marginpad.io</a></header>
 
@@ -139,20 +292,63 @@
   <section class="hero">
     <span class="eyebrow">Free prop firm challenge</span>
     <h1>Crypto Prop Firm Challenge Simulator</h1>
-    <p class="sub">Take a funded-account evaluation for free before you pay for one. Pick a rule set and an account size, trade it in the MarginPad terminal on live crypto prices, and our server enforces the daily loss limit, the drawdown and the target exactly as a prop firm would. Pass it and you get a certificate you can share.</p>
+    <p class="sub">Take a funded-account evaluation for free before you pay for one. Pick our rules, FTMO's or IQ Capital's - or set your own - and an account size, trade it in the MarginPad terminal on live crypto prices, and our server enforces the daily loss limit, the drawdown and the target exactly as a prop firm would. Pass it and you get a certificate you can share.</p>
   </section>
 
   <div class="cx-stats" id="cxStats">
-    <div class="cx-stat"><b id="sPass">-</b><span>Challenges passed</span></div>
-    <div class="cx-stat"><b id="sDaily">-</b><span>Ended on daily loss</span></div>
-    <div class="cx-stat"><b id="sDd">-</b><span>Ended on drawdown</span></div>
+    <div class="cx-stat ok"><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></i><span class="cx-sv"><b id="sPass">-</b><span>Challenges passed</span></span></div>
+    <div class="cx-stat am"><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i><span class="cx-sv"><b id="sDaily">-</b><span>Ended on daily loss</span></span></div>
+    <div class="cx-stat rd"><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/></svg></i><span class="cx-sv"><b id="sDd">-</b><span>Ended on drawdown</span></span></div>
   </div>
 
   <section class="cx-app" id="cxApp" data-state="loading" aria-live="polite">
-    <div class="cx-types" id="cxTypes">
-      <button type="button" class="cx-type on" data-kind="one"><span class="tick"></span><h3>One-step</h3><dl><dt>Profit target</dt><dd>10%</dd><dt>Daily loss limit</dt><dd>4% of the account</dd><dt>Max drawdown</dt><dd>6%, trailing your highest closed balance</dd><dt>Minimum trading days</dt><dd>5</dd><dt>Max leverage</dt><dd>100x</dd></dl></button>
-      <button type="button" class="cx-type" data-kind="two"><span class="tick"></span><h3>Two-step</h3><dl><dt>Profit target</dt><dd>8% in phase 1, then 5% in phase 2</dd><dt>Daily loss limit</dt><dd>5% of the account</dd><dt>Max drawdown</dt><dd>10%, static from the start</dd><dt>Minimum trading days</dt><dd>4 per phase</dd><dt>Max leverage</dt><dd>100x</dd></dl></button>
-      <button type="button" class="cx-type" data-kind="eod"><span class="tick"></span><h3>One-step EOD</h3><dl><dt>Profit target</dt><dd>10%</dd><dt>Daily loss limit</dt><dd>5% of the account</dd><dt>Max drawdown</dt><dd>6%, trailing the highest end-of-day balance</dd><dt>Minimum trading days</dt><dd>5</dd><dt>Max leverage</dt><dd>50x</dd></dl></button>
+    <div id="cxPick">
+    <div class="cx-gl"><span>Our rule sets</span><em>the three shapes most crypto prop firms sell</em></div>
+    <div class="cx-types">
+      <button type="button" class="rc on" data-kind="one"><span class="rc-top"><span class="rc-name">One-step</span><span class="rc-tag">1 step</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:37.5%"><span class="rg-daily" style="width:66.7%"></span></span><span class="rg-gain" style="width:62.5%"></span><span class="rg-0" style="left:37.5%"></span></span><span class="rg-lbl"><em class="l">-6%</em><em class="d" style="left:12.5%">-4% day</em><em class="z" style="left:37.5%">start</em><em class="r">+10%</em></span></span><span class="rc-stats"><span><b>10%</b><small>Profit target</small></span><span><b>4%</b><small>Daily loss</small></span><span><b>6%</b><small>trailing DD</small></span></span><span class="rc-chips"><i>5 days min</i><i>100x max</i></span></button>
+      <button type="button" class="rc" data-kind="two"><span class="rc-top"><span class="rc-name">Two-step</span><span class="rc-tag">2 steps</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:55.6%"><span class="rg-daily" style="width:50.0%"></span></span><span class="rg-gain" style="width:44.4%"></span><span class="rg-0" style="left:55.6%"></span></span><span class="rg-lbl"><em class="l">-10%</em><em class="d" style="left:27.8%">-5% day</em><em class="z" style="left:55.6%">start</em><em class="r">+8%</em></span></span><span class="rc-stats"><span><b>8% + 5%</b><small>Profit target</small></span><span><b>5%</b><small>Daily loss</small></span><span><b>10%</b><small>static DD</small></span></span><span class="rc-chips"><i>4 days min / phase</i><i>100x max</i></span></button>
+      <button type="button" class="rc" data-kind="eod"><span class="rc-top"><span class="rc-name">One-step EOD</span><span class="rc-tag">1 step</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:37.5%"><span class="rg-daily" style="width:83.3%"></span></span><span class="rg-gain" style="width:62.5%"></span><span class="rg-0" style="left:37.5%"></span></span><span class="rg-lbl"><em class="l">-6%</em><em class="d" style="left:6.2%">-5% day</em><em class="z" style="left:37.5%">start</em><em class="r">+10%</em></span></span><span class="rc-stats"><span><b>10%</b><small>Profit target</small></span><span><b>5%</b><small>Daily loss</small></span><span><b>6%</b><small>end-of-day DD</small></span></span><span class="rc-chips"><i>5 days min</i><i>50x max</i></span></button>
+    </div>
+    <div class="cx-gl"><span>A real firm's rules</span><a href="/#propfirms">FTMO and IQ Capital &rarr;</a></div>
+    <div class="cx-types">
+      <button type="button" class="rc firm ftmo" data-kind="ftmo1"><span class="rc-top"><img class="rc-logo" src="/assets/prop/ftmo-logo.svg" alt="FTMO" width="70" height="18"><span class="rc-name sm">1-Step</span><span class="rc-tag">1 step</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:50.0%"><span class="rg-daily" style="width:30.0%"></span></span><span class="rg-gain" style="width:50.0%"></span><span class="rg-0" style="left:50.0%"></span></span><span class="rg-lbl"><em class="l">-10%</em><em class="d" style="left:35.0%">-3% day</em><em class="z" style="left:50.0%">start</em><em class="r">+10%</em></span></span><span class="rc-stats"><span><b>10%</b><small>Profit target</small></span><span><b>3%</b><small>Daily loss</small></span><span><b>10%</b><small>end-of-day DD</small></span></span><span class="rc-chips"><i>No minimum days</i><i>30x max</i><i>Best day under 50% of profit</i></span></button>
+      <button type="button" class="rc firm ftmo" data-kind="ftmo2"><span class="rc-top"><img class="rc-logo" src="/assets/prop/ftmo-logo.svg" alt="FTMO" width="70" height="18"><span class="rc-name sm">2-Step</span><span class="rc-tag">2 steps</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:50.0%"><span class="rg-daily" style="width:50.0%"></span></span><span class="rg-gain" style="width:50.0%"></span><span class="rg-0" style="left:50.0%"></span></span><span class="rg-lbl"><em class="l">-10%</em><em class="d" style="left:25.0%">-5% day</em><em class="z" style="left:50.0%">start</em><em class="r">+10%</em></span></span><span class="rc-stats"><span><b>10% + 5%</b><small>Profit target</small></span><span><b>5%</b><small>Daily loss</small></span><span><b>10%</b><small>static DD</small></span></span><span class="rc-chips"><i>4 days min / phase</i><i>30x max</i></span></button>
+      <button type="button" class="rc firm iq" data-kind="iq"><span class="rc-top"><span class="rc-iq">IQ Capital<b>.</b></span><span class="rc-name sm">Core</span><span class="rc-tag">1 step</span><span class="tick" aria-hidden="true"></span></span><span class="rg"><span class="rg-bar"><span class="rg-loss" style="width:42.9%"></span><span class="rg-gain" style="width:57.1%"></span><span class="rg-0" style="left:42.9%"></span></span><span class="rg-lbl"><em class="l">-6%</em><em class="z" style="left:42.9%">start</em><em class="r">+8%</em></span></span><span class="rc-stats"><span><b>8%</b><small>Profit target</small></span><span><b>None</b><small>Daily loss</small></span><span><b>6%</b><small>end-of-day DD</small></span></span><span class="rc-chips"><i>No minimum days</i><i>5x max</i><i>1% max loss per trade</i><i>3rd breach ends it</i></span></button>
+    </div>
+    <div class="cx-gl"><span>Your own</span></div>
+    <button type="button" class="rc-cust" data-kind="custom" id="custom"><span class="rc-cust-i"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="rc-cust-t"><b>Custom rules</b><span>Set every rule yourself - target, steps, daily loss, drawdown type, days, leverage, loss per trade, consistency and time limit.</span></span><span class="tick" aria-hidden="true"></span></button>
+    <div class="cb" id="cxBuild" hidden>
+      <div class="cb-head"><span class="cb-k">Rule studio</span><b>Build your own evaluation</b><span>Scored by the server exactly like a preset. A custom pass gets a certificate that prints these rules - no XP.</span></div>
+      <div class="cb-grid">
+        <div class="cb-cols">
+          <section class="sc"><h4><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></i>Target</h4>
+            <div class="sr" data-row="steps"><div class="sr-l">Steps</div><div class="sr-c"><span class="seg" role="radiogroup"><button type="button" role="radio" data-f="steps" data-v="1"><b>1 step</b><small>one target</small></button><button type="button" role="radio" data-f="steps" data-v="2"><b>2 steps</b><small>two phases</small></button></span></div></div>
+            <div class="sr" data-row="t1"><div class="sr-l">Profit target</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="t1:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="t1" min="1" max="30" step="0.5"><span>%</span></label><button type="button" class="st-b" data-st="t1:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="t1" data-v="6">6%</button><button type="button" data-f="t1" data-v="8">8%</button><button type="button" data-f="t1" data-v="10">10%</button><button type="button" data-f="t1" data-v="12">12%</button></span></div></div>
+            <div class="sr" data-row="t2"><div class="sr-l">Phase 2 target</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="t2:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="t2" min="1" max="30" step="0.5"><span>%</span></label><button type="button" class="st-b" data-st="t2:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="t2" data-v="4">4%</button><button type="button" data-f="t2" data-v="5">5%</button><button type="button" data-f="t2" data-v="6">6%</button></span></div></div>
+          </section>
+          <section class="sc"><h4><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/></svg></i>Loss limits</h4>
+            <div class="sr" data-row="dd"><div class="sr-l">Max drawdown</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="dd:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="dd" min="2" max="30" step="0.5"><span>%</span></label><button type="button" class="st-b" data-st="dd:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="dd" data-v="5">5%</button><button type="button" data-f="dd" data-v="6">6%</button><button type="button" data-f="dd" data-v="8">8%</button><button type="button" data-f="dd" data-v="10">10%</button></span></div></div>
+            <div class="sr" data-row="ddtype"><div class="sr-l">Drawdown type</div><div class="sr-c"><span class="seg" role="radiogroup"><button type="button" role="radio" data-f="ddtype" data-v="static"><b>Static</b><small>never moves</small></button><button type="button" role="radio" data-f="ddtype" data-v="trail"><b>Trailing</b><small>follows your peak</small></button><button type="button" role="radio" data-f="ddtype" data-v="eod"><b>End of day</b><small>follows daily closes</small></button></span></div></div>
+            <div class="sr" data-row="dailyT"><div class="sr-l"></div><div class="sr-c"><button type="button" class="tg" data-tog="daily" role="switch" aria-checked="false"><span class="tg-k"><i></i></span><span class="tg-t"><b>Daily loss limit</b><small>resets 00:00 UTC</small></span></button></div></div>
+            <div class="sr" data-row="daily"><div class="sr-l">Daily limit</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="daily:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="daily" min="1" max="20" step="0.5"><span>%</span></label><button type="button" class="st-b" data-st="daily:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="daily" data-v="3">3%</button><button type="button" data-f="daily" data-v="4">4%</button><button type="button" data-f="daily" data-v="5">5%</button></span></div></div>
+          </section>
+          <section class="sc"><h4><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Trading</h4>
+            <div class="sr" data-row="mindays"><div class="sr-l">Min trading days</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="mindays:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="mindays" min="0" max="30" step="1"><span>days</span></label><button type="button" class="st-b" data-st="mindays:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="mindays" data-v="0">None</button><button type="button" data-f="mindays" data-v="3">3</button><button type="button" data-f="mindays" data-v="5">5</button></span></div></div>
+            <div class="sr" data-row="maxlev"><div class="sr-l">Max leverage</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="maxlev:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="maxlev" min="1" max="125" step="1"><span>x</span></label><button type="button" class="st-b" data-st="maxlev:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="maxlev" data-v="5">5x</button><button type="button" data-f="maxlev" data-v="30">30x</button><button type="button" data-f="maxlev" data-v="100">100x</button></span></div></div>
+            <div class="sr" data-row="tlimitT"><div class="sr-l"></div><div class="sr-c"><button type="button" class="tg" data-tog="tlimit" role="switch" aria-checked="false"><span class="tg-k"><i></i></span><span class="tg-t"><b>Time limit</b><small>paused days do not count</small></span></button></div></div>
+            <div class="sr" data-row="tlimit"><div class="sr-l">Days to pass</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="tlimit:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="tlimit" min="7" max="120" step="1"><span>days</span></label><button type="button" class="st-b" data-st="tlimit:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="tlimit" data-v="14">14</button><button type="button" data-f="tlimit" data-v="30">30</button><button type="button" data-f="tlimit" data-v="60">60</button></span></div></div>
+          </section>
+          <section class="sc"><h4><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i>Extra rules</h4>
+            <div class="sr" data-row="maxposT"><div class="sr-l"></div><div class="sr-c"><button type="button" class="tg" data-tog="maxpos" role="switch" aria-checked="false"><span class="tg-k"><i></i></span><span class="tg-t"><b>Max loss per trade</b><small>one trade may not lose more</small></span></button></div></div>
+            <div class="sr" data-row="maxpos"><div class="sr-l">Per trade</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="maxpos:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="maxpos" min="0.25" max="10" step="0.25"><span>%</span></label><button type="button" class="st-b" data-st="maxpos:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="maxpos" data-v="0.5">0.5%</button><button type="button" data-f="maxpos" data-v="1">1%</button><button type="button" data-f="maxpos" data-v="2">2%</button></span></div></div>
+            <div class="sr" data-row="strikes"><div class="sr-l">Breaches</div><div class="sr-c"><span class="seg" role="radiogroup"><button type="button" role="radio" data-f="strikes" data-v="1"><b>1st</b><small>ends it</small></button><button type="button" role="radio" data-f="strikes" data-v="2"><b>2nd</b><small>ends it</small></button><button type="button" role="radio" data-f="strikes" data-v="3"><b>3rd</b><small>ends it</small></button></span></div></div>
+            <div class="sr" data-row="bestT"><div class="sr-l"></div><div class="sr-c"><button type="button" class="tg" data-tog="best" role="switch" aria-checked="false"><span class="tg-k"><i></i></span><span class="tg-t"><b>Consistency rule</b><small>best day vs total profit</small></span></button></div></div>
+            <div class="sr" data-row="best"><div class="sr-l">Best day under</div><div class="sr-c"><span class="st"><button type="button" class="st-b" data-st="best:-1" aria-label="Less">&minus;</button><label class="st-v"><input type="number" inputmode="decimal" data-fi="best" min="20" max="90" step="5"><span>% of profit</span></label><button type="button" class="st-b" data-st="best:1" aria-label="More">+</button></span><span class="sch"><button type="button" data-f="best" data-v="30">30%</button><button type="button" data-f="best" data-v="40">40%</button><button type="button" data-f="best" data-v="50">50%</button></span></div></div>
+          </section>
+        </div>
+        <aside class="cb-prev" id="cbPrev"><span class="cb-pk">Your challenge</span><div id="cbGauge"></div><div class="cb-pstats" id="cbStats"></div><div class="cb-ratio" id="cbRatio"></div><p class="cb-sum" id="cbSum"></p></aside>
+      </div>
+    </div>
     </div>
     <div class="cx-row"><span class="cx-lbl">Account size</span><button type="button" class="cx-chip" data-book="5000">$5k</button><button type="button" class="cx-chip on" data-book="10000">$10k</button><button type="button" class="cx-chip" data-book="25000">$25k</button><button type="button" class="cx-chip" data-book="50000">$50k</button><button type="button" class="cx-chip" data-book="100000">$100k</button></div>
     <div class="cx-start"><button type="button" class="cx-go" id="cxGo" data-auth-open>Sign in to start - free</button><span class="cx-fine">No fee, no card, no deposit. Retry as often as you like.</span></div>
@@ -167,16 +363,18 @@
   <section class="content">
     <h2>How it works</h2>
     <div class="cx-steps">
-      <div class="cx-step"><b>01 / Pick the rules</b><p>One-step, two-step or end-of-day trailing, on a $5,000 to $100,000 account - the three shapes most crypto prop firms sell.</p></div>
-      <div class="cx-step"><b>02 / Trade the terminal</b><p>Every position you open in the <a href="/paper-trade">paper trading terminal</a> from now on counts, with real fees and funding. Leverage above the rule and margin above your free balance are refused.</p></div>
+      <div class="cx-step"><b>01 / Pick the rules</b><p>Our one-step, two-step or end-of-day shapes, FTMO's 1-Step or 2-Step, IQ Capital's Core - or your own rules - on a $5,000 to $100,000 account.</p></div>
+      <div class="cx-step"><b>02 / Trade the terminal</b><p>Every position you open in the <a href="/paper-trade">paper trading terminal</a> while it runs counts for the challenge - and only for the challenge, never the leaderboards. Pause it whenever you have no open position.</p></div>
       <div class="cx-step"><b>03 / Pass or learn</b><p>Hit the target on closed trades with the minimum trading days and no rule broken, and the run is certified. Break a rule and the run ends at that moment - start another one.</p></div>
     </div>
     <h2>The rules, exactly as we score them</h2>
-    <p><strong>What counts.</strong> Every server-filled position you open after the challenge starts. Positions you already held are ignored, so a challenge always starts clean. Partial closes count when they close.</p>
+    <p><strong>What counts.</strong> Every server-filled position you open while the challenge runs and is not paused. Those trades count for the challenge only - not for the leaderboards, XP, Ticks or missions. Positions you already held are ignored, so a challenge always starts clean. Partial closes count when they close.</p>
+    <p><strong>Pausing.</strong> Pause whenever no challenge position is open. While paused your trades are ordinary trades again, the time limit stops, and the run keeps its balance, days and floors. Resume and new trades count for the challenge again.</p>
+    <p><strong>Optional rules.</strong> Max loss per trade: a trade that loses more than that share of the account is a breach, and the set number of breaches ends the run (IQ Capital's shape ends it on the third). Best day: a pass needs your best day to be under that share of the total profit - going over is not a breach, you keep trading (FTMO's shape). Time limit: the run ends if the target is not reached in that many active days.</p>
     <p><strong>Daily loss.</strong> Measured from your closed balance at 00:00 UTC: your equity - closed balance plus the open profit and loss of your challenge positions - may not fall further below it than the daily limit, taken as a percentage of the account size. It resets every day and does not care how far ahead you were.</p>
     <p><strong>Maximum drawdown.</strong> Static sits at the account size minus the limit and never moves. Trailing rises with your highest closed balance. End-of-day trailing rises with your highest balance at the close of a UTC day. None of them ever move down.</p>
     <p><strong>When it is checked.</strong> Every close is checked the moment it lands. Open losses are checked every ten minutes and whenever you open the challenge in the terminal or here. A breach ends the run on the spot - a later recovery does not undo it, exactly as at a firm.</p>
-    <p><strong>Passing.</strong> Your closed balance reaches the target and you have traded on at least the minimum number of days (a day with a challenge trade opened or closed). Two-step runs phase 2 from a fresh balance. A pass earns a certificate and 100 XP.</p>
+    <p><strong>Passing.</strong> Your closed balance reaches the target and you have traded on at least the minimum number of days (a day with a challenge trade opened or closed). Two-step runs phase 2 from a fresh balance. A pass earns a certificate, and a preset pass also earns 100 XP (a custom pass does not - its rules can be made easy).</p>
     <div class="cta">
       <a href="/prop-firm-drawdown-calculator/">Prop firm drawdown calculator</a>
       <a href="/crypto-prop-firms/">Compare crypto prop firms</a>
@@ -200,11 +398,19 @@
     </details>
     <details>
       <summary>What counts as a challenge trade?</summary>
-      <div class="a">Every position you open in the MarginPad terminal (or through the Bot API) after the challenge starts. Positions you held before starting are ignored. Leverage above the rule set and margin above your free challenge balance are refused, as a real firm would refuse them.</div>
+      <div class="a">Every position you open in the MarginPad terminal (or through the Bot API) while the challenge runs and is not paused. Those trades count for the challenge only - not for the leaderboards, XP, Ticks or missions. Positions you held before starting are ignored. Leverage above the rule set and margin above your free challenge balance are refused, as a real firm would refuse them.</div>
     </details>
     <details>
-      <summary>What is the difference between the three rule sets?</summary>
-      <div class="a">One-step asks for 10% with a 4% daily limit and a 6% drawdown that trails your highest closed balance. Two-step splits the target into 8% and then 5% with a looser, static 10% drawdown. One-step EOD trails the drawdown from the highest end-of-day balance and caps leverage at 50x. Most real crypto prop firms use one of these shapes.</div>
+      <summary>Can I pause a challenge?</summary>
+      <div class="a">Yes, whenever you have no open challenge position. While it is paused your trades are ordinary trades again (they count for the leaderboards), the time limit stops, and nothing about the run changes. Resume and your new trades count for the challenge again. You can also end it at any time.</div>
+    </details>
+    <details>
+      <summary>Can I set my own rules?</summary>
+      <div class="a">Yes. Pick Custom rules and set the target, one or two steps, the daily loss limit (or none), the drawdown and whether it is static, trailing or end-of-day, minimum trading days, max leverage, a max loss per trade with how many breaches end the run, a best-day consistency rule and a time limit. The server scores your rules exactly like a preset. A custom pass gets a certificate that prints its rules, but no XP.</div>
+    </details>
+    <details>
+      <summary>Which rule sets can I choose?</summary>
+      <div class="a">Our three shapes (one-step, two-step, one-step end-of-day), the shapes of FTMO's 1-Step and 2-Step challenges and IQ Capital's Core challenge, or your own. The firm presets copy each firm's published rule shape so you can practise the evaluation before you buy it. FTMO and IQ Capital are MarginPad partners, but a pass here is not a pass with them - it tells you whether you are ready to take theirs.</div>
     </details>
     <details>
       <summary>Which rule fails the most challenges?</summary>
@@ -220,7 +426,7 @@
 <script>
 (function(){
   var $=function(id){return document.getElementById(id);};
-  var app=$('cxApp'), S=null, pick={kind:'one',book:10000}, armed=0, busy=false, poll=0;
+  var app=$('cxApp'), pickEl=$('cxPick'), S=null, pick={kind:'one',book:10000}, armed=0, busy=false, poll=0, ask='', flash=null;
   var qs=new URLSearchParams(location.search), certId=(qs.get('c')||'').replace(/[^a-z0-9]/g,'');
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function money(v){v=+v||0;return (v<0?'-$':'$')+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:Math.abs(v)<100?2:0});}
@@ -228,75 +434,159 @@
   function day(ts){return ts?new Date(+ts).toISOString().slice(0,10):'';}
   function cls(room,full){var f=room/Math.max(1,full);return f>0.55?'ok':f>0.25?'warn':'bad';}
   function bar(label,val,frac,c,sub){frac=Math.max(0,Math.min(1,+frac||0));return '<div class="cx-m"><div class="cx-mh"><span>'+label+'</span><b class="'+(c||'')+'">'+val+'</b></div><div class="cx-bar"><i class="'+(c||'')+'" style="width:'+(frac*100).toFixed(1)+'%"></i></div>'+(sub?'<div class="cx-ms">'+sub+'</div>':'')+'</div>';}
+  function reasonTxt(r){return r==='fail_daily'?'the daily loss limit':r==='fail_position'?'the max loss per trade':r==='fail_time'?'the time limit':'the maximum drawdown';}
+  function track(e){try{if(window.__mpTrack)window.__mpTrack('challenge',e);}catch(x){}}
+  // ---- the custom rule builder (the worker validates the same ranges - chalRulesNorm) ----
+  var R={steps:'1',t1:10,t2:5,daily:5,dd:10,ddtype:'static',mindays:0,maxlev:30,maxpos:0,strikes:'1',best:0,tlimit:0};
+  var RNG={t1:[1,30],t2:[1,30],daily:[0,20],dd:[2,30],mindays:[0,30],maxlev:[1,125],maxpos:[0,10],best:[0,90],tlimit:[0,120]};
+  try{var sv=JSON.parse(localStorage.getItem('mp_chal_rules')||'null');if(sv&&typeof sv==='object')for(var k in sv)if(k in R)R[k]=sv[k];}catch(e){}
+  function rulesOut(){return {targets:R.steps==='2'?[+R.t1,+R.t2]:[+R.t1],daily:+R.daily,dd:+R.dd,ddtype:R.ddtype,mindays:+R.mindays,maxlev:+R.maxlev,maxpos:+R.maxpos,strikes:+R.maxpos?+R.strikes:0,best:+R.best,tlimit:+R.tlimit};}
+  function rulesErr(){
+    for(var k in RNG){if(k==='t2'&&R.steps!=='2')continue;var v=+R[k];if(!isFinite(v)||v<RNG[k][0]||v>RNG[k][1])return k;}
+    if(+R.daily>0&&+R.daily<1)return 'daily'; if(+R.maxpos>0&&+R.maxpos<0.25)return 'maxpos'; if(+R.best>0&&+R.best<20)return 'best'; if(+R.tlimit>0&&+R.tlimit<7)return 'tlimit';
+    if(+R.daily>0&&+R.daily>=+R.dd&&R.ddtype==='static')return 'daily';
+    return '';
+  }
+  var LBL={t1:'profit target',t2:'phase 2 target',daily:'daily loss limit (0 or 1-20%)',dd:'max drawdown (2-30%)',mindays:'minimum days (0-30)',maxlev:'max leverage (1-125x)',maxpos:'max loss per trade (0 or 0.25-10%)',best:'best day rule (0 or 20-90%)',tlimit:'time limit (0 or 7-120 days)'};
+  function blurb(t){var p=t.targets.map(function(v){return v+'%';}).join(' then ');
+    return p+' target, '+(t.daily?t.daily+'% daily loss, ':'no daily limit, ')+t.dd+'% '+(t.ddtype==='eod'?'end-of-day trailing':t.ddtype==='trail'?'trailing':'static')+' drawdown'+(t.mindays?', '+t.mindays+' trading days':'')+(t.maxpos?', '+t.maxpos+'% max loss per trade'+(t.strikes>1?' ('+t.strikes+'rd breach ends it)'.replace('2rd','2nd'):''):'')+(t.best?', best day under '+t.best+'% of profit':'')+(t.tlimit?', '+t.tlimit+'-day limit':'')+', '+t.maxlev+'x max';}
+  function paintBuild(){
+    var b=$('cxBuild'); if(!b)return;
+    b.querySelectorAll('[data-f]').forEach(function(c){c.classList.toggle('on',String(+R[c.getAttribute('data-f')]||R[c.getAttribute('data-f')])===String(+c.getAttribute('data-v')||c.getAttribute('data-v')));c.setAttribute('aria-checked',c.classList.contains('on')?'true':'false');});
+    b.querySelectorAll('[data-fi]').forEach(function(i){var k=i.getAttribute('data-fi');if(document.activeElement!==i)i.value=+R[k]||(OFF[k]?MEM[k]:R[k]);});
+    b.querySelectorAll('[data-tog]').forEach(function(t){t.setAttribute('aria-checked',+R[t.getAttribute('data-tog')]>0?'true':'false');});
+    var hide=function(k,h){var r=b.querySelector('[data-row="'+k+'"]');if(r)r.classList.toggle('hide',!!h);};
+    hide('t2',R.steps!=='2'); hide('daily',!(+R.daily>0)); hide('tlimit',!(+R.tlimit>0)); hide('maxpos',!(+R.maxpos>0)); hide('strikes',!(+R.maxpos>0)); hide('best',!(+R.best>0));
+    var e=rulesErr(), o=rulesOut();
+    $('cbGauge').innerHTML=gauge(o.targets[0],o.daily,o.dd,true);
+    $('cbStats').innerHTML=[[o.targets.map(function(v){return v+'%';}).join(' + '),'Profit target'],[o.daily?o.daily+'%':'None','Daily loss'],[o.dd+'% '+(o.ddtype==='eod'?'EOD':o.ddtype==='trail'?'trail':'static'),'Max drawdown'],[o.maxlev+'x','Max leverage'],[o.mindays?o.mindays+' days':'None','Min days'],[o.tlimit?o.tlimit+' days':'None','Time limit']].map(function(x){return '<span><b>'+esc(x[0])+'</b><small>'+x[1]+'</small></span>';}).join('');
+    var room=o.dd/o.targets[0];
+    $('cbRatio').innerHTML='You may lose <b>'+o.dd+'%</b> to make <b>'+o.targets[0]+'%</b> - <b>'+room.toFixed(2)+'</b> of room for every 1 of target'+(o.daily?', and no more than <b>'+o.daily+'%</b> in a day':'')+'.';
+    $('cbSum').innerHTML=e?'<span class="cb-err">Check the '+LBL[e]+'.</span>':esc(blurb(o))+'.';
+    try{localStorage.setItem('mp_chal_rules',JSON.stringify(R));}catch(x){}
+  }
+  // an optional rule is a switch: off = 0 (what the server reads as "no rule"), on = the last value it had
+  var OFF={daily:1,tlimit:1,maxpos:1,best:1}, MEM={daily:5,tlimit:30,maxpos:1,best:50};
+  for(var mk in OFF)if(+R[mk]>0)MEM[mk]=+R[mk];
+  var STEP={t1:0.5,t2:0.5,dd:0.5,daily:0.5,mindays:1,maxlev:1,tlimit:1,maxpos:0.25,best:5};
+  function clampK(k,v){var lo={t1:1,t2:1,dd:2,daily:1,mindays:0,maxlev:1,tlimit:7,maxpos:0.25,best:20}[k],hi={t1:30,t2:30,dd:30,daily:20,mindays:30,maxlev:125,tlimit:120,maxpos:10,best:90}[k];return Math.max(lo,Math.min(hi,Math.round(v/STEP[k])*STEP[k]));}
+  function wireBuild(){
+    var b=$('cxBuild'); if(!b)return;
+    b.addEventListener('click',function(ev){
+      var tg=ev.target.closest('[data-tog]'); if(tg){var k=tg.getAttribute('data-tog'); if(+R[k]>0){MEM[k]=+R[k];R[k]=0;}else R[k]=MEM[k]; paintBuild(); return;}
+      var st=ev.target.closest('[data-st]'); if(st){var kv=st.getAttribute('data-st').split(':'),k2=kv[0];R[k2]=clampK(k2,(+R[k2]||MEM[k2]||0)+(+kv[1])*STEP[k2]);if(OFF[k2])MEM[k2]=R[k2];paintBuild();return;}
+      var c=ev.target.closest('[data-f]'); if(!c)return; var f=c.getAttribute('data-f'),v=c.getAttribute('data-v'); R[f]=/^(steps|ddtype|strikes)$/.test(f)?v:+v; if(OFF[f])MEM[f]=+v; paintBuild();});
+    b.addEventListener('input',function(ev){var i=ev.target.closest('[data-fi]');if(!i)return;var k=i.getAttribute('data-fi');R[k]=i.value===''?0:+i.value;if(OFF[k]&&+R[k]>0)MEM[k]=+R[k];paintBuild();});
+    b.addEventListener('change',function(ev){var i=ev.target.closest('[data-fi]');if(!i)return;var k=i.getAttribute('data-fi');if(+R[k]>0||!OFF[k])R[k]=clampK(k,+R[k]);paintBuild();});
+    paintBuild();
+  }
+  // the ruler - the JS twin of gauge() in build/data/challenge-ui.js; keep the two identical
+  function gauge(t,daily,dd,big){var L=dd/(dd+t)*100,G=100-L,D=daily>0?Math.min(100,daily/dd*100):0;
+    return '<span class="rg'+(big?' big':'')+'"><span class="rg-bar"><span class="rg-loss" style="width:'+L.toFixed(1)+'%">'+(D?'<span class="rg-daily" style="width:'+D.toFixed(1)+'%"></span>':'')+'</span><span class="rg-gain" style="width:'+G.toFixed(1)+'%"></span><span class="rg-0" style="left:'+L.toFixed(1)+'%"></span></span><span class="rg-lbl"><em class="l">-'+dd+'%</em>'+(D?'<em class="d" style="left:'+(L-L*D/100).toFixed(1)+'%">-'+daily+'% day</em>':'')+'<em class="z" style="left:'+L.toFixed(1)+'%">start</em><em class="r">+'+t+'%</em></span></span>';}
+  function setKind(k){pick.kind=k;pickEl.querySelectorAll('[data-kind]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-kind')===k);});var b=$('cxBuild');if(b)b.hidden=k!=='custom';}
   function wireChoice(){
-    app.querySelectorAll('[data-kind]').forEach(function(b){b.addEventListener('click',function(){pick.kind=b.getAttribute('data-kind');app.querySelectorAll('[data-kind]').forEach(function(x){x.classList.toggle('on',x===b);});});});
-    app.querySelectorAll('[data-book]').forEach(function(b){b.addEventListener('click',function(){pick.book=+b.getAttribute('data-book');app.querySelectorAll('[data-book]').forEach(function(x){x.classList.toggle('on',x===b);});});});
+    pickEl.addEventListener('click',function(ev){var t=ev.target.closest('[data-kind]');if(!t)return;setKind(t.getAttribute('data-kind'));if(pick.kind==='custom')try{$('cxBuild').scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}});
   }
   function choiceHtml(signed){
-    var t=(S&&S.types)||[], h=S&&S.history&&S.history[0], last='';
-    if(h&&h.status==='failed'&&Date.now()-(+h.ended||0)<7*864e5)last='<p class="cx-fine" style="margin:0 0 14px">Your last run ('+esc(h.name)+' '+money(h.book)+') ended on '+(h.reason==='fail_daily'?'the daily loss limit':'the maximum drawdown')+' at '+pct(h.result&&h.result.returnPct)+'. Every run is practice - pick the rules and go again.</p>';
-    var tp=document.getElementById('cxTypes');
-    return last+(tp?tp.outerHTML:'')+'<div class="cx-row"><span class="cx-lbl">Account size</span>'+((S&&S.books)||[5000,10000,25000,50000,100000]).map(function(b){return '<button type="button" class="cx-chip'+(b===pick.book?' on':'')+'" data-book="'+b+'">$'+(b/1000)+'k</button>';}).join('')+'</div>'
-      +'<div class="cx-start">'+(signed?'<button type="button" class="cx-go" id="cxGo">Start the challenge</button>':'<button type="button" class="cx-go" id="cxGo" data-auth-open>Sign in to start - free</button>')+'<span class="cx-fine">No fee, no card, no deposit. Retry as often as you like.</span></div>';
+    var h=S&&S.history&&S.history[0], last='';
+    if(h&&h.status==='failed'&&Date.now()-(+h.ended||0)<7*864e5)last='<p class="cx-fine" style="margin:0 0 14px">Your last run ('+esc(h.name)+' '+money(h.book)+') ended on '+reasonTxt(h.reason)+' at '+pct(h.result&&h.result.returnPct)+'. Every run is practice - pick the rules and go again.</p>';
+    return last+'<div id="cxPickSlot"></div><div class="cx-row"><span class="cx-lbl">Account size</span>'+((S&&S.books)||[5000,10000,25000,50000,100000]).map(function(b){return '<button type="button" class="cx-chip'+(b===pick.book?' on':'')+'" data-book="'+b+'">$'+(b/1000)+'k</button>';}).join('')+'</div>'
+      +'<div class="cx-start">'+(signed?'<button type="button" class="cx-go" id="cxGo">Start the challenge</button>':'<button type="button" class="cx-go" id="cxGo" data-auth-open>Sign in to start - free</button>')+'<span class="cx-fine">No fee, no card, no deposit. Retry as often as you like.</span></div>'
+      +'<p class="cx-only">While a challenge runs, the trades you open count for the challenge only - not for the leaderboards, XP or missions. Pause it any time you have no open position.</p>';
+  }
+  function adsHtml(){
+    return '<div class="cx-ads"><div class="cx-adk">Pass it here, then take the real one</div>'
+      +'<a class="cx-ad" style="--pc:#3b8bff" href="https://join.ftmo.com/tsdRCnEjEATqghNGrzVM" data-us-href="https://join.ftmo.com/futures/tsdRCnEjEATqghNGrzVM" data-us-txt="Start FTMO Futures (US) →" target="_blank" rel="noopener sponsored" data-ex="FTMO"><span class="t"><img src="/assets/prop/ftmo-logo.svg" alt="FTMO" width="74" height="19"><span class="k">Partner</span></span><b>Up to $200,000 of FTMO\'s capital</b><p>1-Step from &euro;79 &middot; 90% profit share &middot; no time limit. Code tsdRCnEjEATqghNGrzVM.</p><span class="g" data-us-label>Start the FTMO Challenge &rarr;</span></a>'
+      +'<a class="cx-ad" style="--pc:#2fe0a0" href="https://checkout.iqcapital.io/products?aff=marginpad" target="_blank" rel="noopener sponsored" data-ex="IQ Capital"><span class="t"><b class="iqwm">IQ Capital<b>.</b></b><span class="k">Partner</span></span><b>Your first $50k challenge for $9</b><p>Crypto perps &middot; no daily loss limit &middot; 90% profit share. Code MARGINPAD at checkout.</p><span class="g">Get the challenge &rarr;</span></a></div>';
   }
   function dashHtml(){
-    var a=S.active,e=S.eval,book=+e.book;
-    var dRoom=Math.max(0,e.equity-e.dailyFloor),dFull=book*a.daily/100,ddRoom=Math.max(0,e.equity-e.ddFloor),ddFull=book*a.dd/100,tFull=book*e.target/100,tDone=Math.max(0,Math.min(tFull,e.balance-book));
+    var a=S.active,e=S.eval,book=+e.book, noDaily=!(+a.daily>0);
+    var dRoom=noDaily?0:Math.max(0,e.equity-e.dailyFloor),dFull=book*a.daily/100,ddRoom=Math.max(0,e.equity-e.ddFloor),ddFull=book*a.dd/100,tFull=book*e.target/100,tDone=Math.max(0,Math.min(tFull,e.balance-book));
     var ddName=a.ddtype==='static'?'static':a.ddtype==='eod'?'end-of-day trailing':'trailing';
     return '<div class="cx-dash"><div>'
-      +'<span class="cx-badge"><i></i>Challenge running</span>'
+      +(a.paused?'<span class="cx-badge paused"><i></i>Challenge paused</span>':'<span class="cx-badge"><i></i>Challenge running</span>')
       +'<div class="cx-eqk" style="margin-top:14px">'+esc(a.name)+' &middot; '+money(book)+(e.phases>1?' &middot; phase '+e.phase+' of '+e.phases:'')+' &middot; equity</div>'
       +'<div class="cx-eq">'+money(e.equity)+'</div><div class="cx-ret '+(e.equity>=book?'up':'dn')+'">'+pct((e.equity-book)/book*100)+(e.open?' &middot; '+e.open+' open ('+(e.unreal>=0?'+':'')+money(e.unreal)+')':'')+'</div>'
+      +(a.paused?'<div class="cx-pause"><b>Paused</b><span>Trades you open now are ordinary trades and count for the leaderboards again. The run keeps everything it had'+(a.tlimit?' and its clock is stopped':'')+'. Resume to trade the challenge.</span></div>':'')
       +'<div class="cx-grid"><div class="cx-cell"><b>'+money(e.balance)+'</b><span>Closed balance</span></div><div class="cx-cell"><b>'+e.days+' / '+e.minDays+'</b><span>Trading days</span></div><div class="cx-cell"><b>'+e.closes+'</b><span>Closed trades</span></div>'
-      +'<div class="cx-cell"><b>'+money(e.freeMargin)+'</b><span>Free margin</span></div><div class="cx-cell"><b>'+a.maxlev+'x</b><span>Max leverage</span></div><div class="cx-cell"><b>'+day(a.started)+'</b><span>Started</span></div></div>'
-      +'<div class="cx-acts"><a class="cx-go" href="/paper-trade">Trade it in the terminal</a><button type="button" class="cx-ghost" id="cxQuit">'+(armed&&Date.now()-armed<5000?'Tap again to end it':'End challenge')+'</button></div>'
+      +'<div class="cx-cell"><b>'+money(e.freeMargin)+'</b><span>Free margin</span></div><div class="cx-cell"><b>'+a.maxlev+'x</b><span>Max leverage</span></div><div class="cx-cell"><b>'+(a.tlimit?(+e.daysLeft).toFixed(1)+' d':day(a.started))+'</b><span>'+(a.tlimit?'Time left':'Started')+'</span></div></div>'
+      +actsHtml(a,e)
+      +'<p class="cx-only">Trades opened during the run count for the challenge only - not for the leaderboards, XP or missions.</p>'
       +'</div><div>'
-      +bar('Daily loss room',money(dRoom)+' of '+money(dFull),dRoom/Math.max(1,dFull),cls(dRoom,dFull),'Floor today '+money(e.dailyFloor)+' &middot; resets 00:00 UTC')
+      +(noDaily?'<p class="cx-fine" style="margin:0 0 15px">No daily loss limit on this rule set.</p>':bar('Daily loss room',money(dRoom)+' of '+money(dFull),dRoom/Math.max(1,dFull),cls(dRoom,dFull),'Floor today '+money(e.dailyFloor)+' &middot; resets 00:00 UTC'))
       +bar('Drawdown room ('+ddName+')',money(ddRoom)+' of '+money(ddFull),ddRoom/Math.max(1,ddFull),cls(ddRoom,ddFull),'Floor '+money(e.ddFloor)+' &middot; highest closed balance '+money(e.peak))
-      +bar('Profit target '+e.target+'%',money(tDone)+' of '+money(tFull),tDone/Math.max(1,tFull),'tgt',e.toGo>0?money(e.toGo)+' to go on closed trades':'Target reached - keep going until you have '+e.minDays+' trading days')
-      +'<p class="cx-fine">Closes are checked the moment they land; open losses every ten minutes and whenever you look. Worst day so far '+(+e.worstDayPct||0).toFixed(2)+'% &middot; max drawdown '+(+e.maxDdPct||0).toFixed(2)+'%.</p>'
+      +bar('Profit target '+e.target+'%',money(tDone)+' of '+money(tFull),tDone/Math.max(1,tFull),'tgt',e.toGo>0?money(e.toGo)+' to go on closed trades':(e.bestOk===false?'Target reached - your best day is over '+e.best+'% of the profit, keep trading':'Target reached - keep going until you have '+e.minDays+' trading days'))
+      +(e.maxpos?bar('Max loss per trade '+e.maxpos+'%',e.strikes+' of '+e.strikesMax+' breaches',e.strikes/Math.max(1,e.strikesMax),e.strikes?'bad':'ok','One trade may lose up to '+money(e.posLimit)):'')
+      +(e.best?'<p class="cx-fine">Best day: '+(e.bestDayPct==null?'no profit yet':e.bestDayPct.toFixed(0)+'% of the profit')+' &middot; the rule asks for under '+e.best+'%.</p>':'')
+      +'<p class="cx-fine">'+esc(a.blurb||'')+'. Closes are checked the moment they land; open losses every ten minutes and whenever you look. Worst day so far '+(+e.worstDayPct||0).toFixed(2)+'% &middot; max drawdown '+(+e.maxDdPct||0).toFixed(2)+'%.</p>'
       +(a.phase1?'<p class="cx-fine">Phase 1 passed '+day(a.phase1.passed)+' at '+pct(a.phase1.returnPct)+'.</p>':'')
-      +'</div></div>';
+      +'</div></div>'+adsHtml();
+  }
+  function actsHtml(a,e){
+    if(ask)return '<div class="cx-cf '+ask+'"><b>'+(ask==='pause'?'Pause the challenge?':'End this challenge?')+'</b><p>'+(ask==='pause'?'Until you resume, the trades you open are ordinary trades and count for the leaderboards. The run keeps its balance, days and floors'+(a.tlimit?', and its clock stops':'')+'.':'The run stops here and goes into your history as ended. This cannot be undone - you can start a new one any time.')+'</p><div class="cx-cfb"><button type="button" class="cx-ghost" data-cx="cancel">Keep going</button><button type="button" class="cx-cfy" data-cx="do-'+ask+'">'+(ask==='pause'?'Yes, pause it':'Yes, end it')+'</button></div></div>';
+    var lock=!a.paused&&+e.open>0;
+    return '<div class="cx-acts">'+(a.paused?'<button type="button" class="cx-go" data-cx="resume">Resume the challenge</button>':'<a class="cx-go" href="/paper-trade">Trade it in the terminal</a><button type="button" class="cx-amber'+(lock?' locked':'')+'" data-cx="pause"'+(lock?' aria-disabled="true"':'')+'>Pause</button>')+'<button type="button" class="cx-ghost cx-end" data-cx="quit">End challenge</button></div>'
+      +(lock?'<p class="cx-lock">Close your '+e.open+' challenge position'+(e.open===1?'':'s')+' to pause - a run can only rest with nothing open.</p>':'');
   }
   function histHtml(){
     var h=(S&&S.history)||[]; if(!h.length)return '';
-    return '<div class="cx-hist"><h3>Your challenges</h3><div class="tblw"><table class="cx-t"><thead><tr><th>Rule set</th><th>Account</th><th>Result</th><th>Return</th><th>Days</th><th>Started</th><th></th></tr></thead><tbody>'
-      +h.map(function(x){var r=x.result||{};var res=x.status==='failed'?(x.reason==='fail_daily'?'Daily loss':'Drawdown'):x.status;return '<tr><td>'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td><span class="cx-st '+esc(x.status)+'">'+esc(res)+'</span></td><td class="n">'+(x.status==='active'?'-':pct(r.returnPct))+'</td><td class="n">'+(x.status==='active'?'-':(r.days||0))+'</td><td class="n">'+day(x.started)+'</td><td>'+(x.status==='passed'?'<a href="?c='+esc(x.id)+'" style="color:var(--lime)">Certificate</a>':'')+'</td></tr>';}).join('')
+    var rs={fail_daily:'Daily loss',fail_drawdown:'Drawdown',fail_position:'Loss per trade',fail_time:'Time limit'};
+    return '<div class="cx-hist"><h3>Your challenges</h3><div class="tblw"><table class="cx-t cx-ht"><colgroup><col style="width:24%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:9%"><col style="width:14%"><col style="width:13%"></colgroup><thead><tr><th>Rule set</th><th>Account</th><th>Result</th><th>Return</th><th>Days</th><th>Started</th><th>&nbsp;</th></tr></thead><tbody>'
+      +h.map(function(x){var r=x.result||{};var live=x.status==='active'&&S.active&&S.active.id===x.id&&S.eval;var res=x.status==='failed'?(rs[x.reason]||'Drawdown'):(x.status==='active'?(x.paused?'Paused':'Running'):x.status==='passed'?'Passed':x.status==='abandoned'?'Ended':x.status);var ret=live?(S.eval.equity-S.eval.book)/S.eval.book*100:r.returnPct;return '<tr><td class="nm">'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td><span class="cx-st '+esc(x.status)+(x.paused?' paused':'')+'">'+esc(res)+'</span></td><td class="n '+((+ret||0)>=0?'up':'dn')+'">'+(x.status==='active'&&!live?'-':pct(ret))+'</td><td class="n">'+(live?S.eval.days:(x.status==='active'?'-':(r.days||0)))+'</td><td class="n">'+day(x.started)+'</td><td class="go">'+(x.status==='passed'?'<a href="?c='+esc(x.id)+'">Certificate &rarr;</a>':x.status==='active'?'<span class="cx-livetag">live</span>':'')+'</td></tr>';}).join('')
       +'</tbody></table></div></div>';
   }
   function render(){
     if(!S){return;}
     app.setAttribute('data-state',S.active?'active':'choose');
-    app.innerHTML=(S.active&&S.eval?dashHtml():choiceHtml(S.signedIn))+(S.signedIn?histHtml():'');
-    wireChoice();
+    if(pickEl.parentNode)pickEl.parentNode.removeChild(pickEl);
+    app.innerHTML=(S.active&&S.eval?dashHtml():choiceHtml(S.signedIn))+(S.signedIn?histHtml():'')+(S.active?'':adsHtml());
+    try{if(window.__mpUsSwap&&window.__mpUsSwapApply)window.__mpUsSwapApply('US');}catch(_u){}
+    var slot=$('cxPickSlot'); if(slot)slot.parentNode.replaceChild(pickEl,slot);
+    app.querySelectorAll('[data-book]').forEach(function(b){b.addEventListener('click',function(){pick.book=+b.getAttribute('data-book');app.querySelectorAll('[data-book]').forEach(function(x){x.classList.toggle('on',x===b);});});});
     var go=$('cxGo'); if(go&&S.signedIn)go.addEventListener('click',start);
-    var q=$('cxQuit'); if(q)q.addEventListener('click',quit);
-    // the static type cards are cloned into the app on every render; keep the chosen one lit
-    app.querySelectorAll('[data-kind]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-kind')===pick.kind);});
+    app.querySelectorAll('[data-cx]').forEach(function(b){b.addEventListener('click',function(){var op=b.getAttribute('data-cx');
+      if(op==='cancel'){ask='';render();return;}
+      if(op==='pause'){if(b.classList.contains('locked')){try{b.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:220});}catch(e){}return;}ask='pause';render();return;}
+      if(op==='quit'){ask='quit';render();return;}
+      if(op==='do-pause'){ask='';pause('pause');return;}
+      if(op==='resume'){pause('resume');return;}
+      if(op==='do-quit'){ask='';quit();return;}});});
+    if(flash&&Date.now()-flash.at<6000){var fl=document.createElement('div');fl.className='cx-flash '+flash.k;fl.textContent=flash.t;app.insertBefore(fl,app.firstChild);}
   }
   function load(){
     fetch('/api/challenge',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       S=d||{signedIn:false}; render();
       if(d&&d.ended&&window.mpToast)window.mpToast({kind:d.ended==='passed'?'good':'warn',key:'chal-end',msg:d.ended==='passed'?'You passed - your certificate is below.':'Your challenge ended on a rule.'});
-      clearTimeout(poll); if(S.active)poll=setTimeout(function(){if(!document.hidden)load();},20000);
+      clearTimeout(poll); if(S.active&&!S.active.paused)poll=setTimeout(function(){if(!document.hidden)load();},20000);
     }).catch(function(){S={signedIn:false};render();});
   }
   function start(){
-    if(busy)return; busy=true; var g=$('cxGo'); if(g){g.disabled=true;g.textContent='Starting...';}
-    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:'start',kind:pick.kind,book:pick.book})}).then(function(r){return r.json();}).then(function(d){
-      busy=false; if(d&&d.ok){try{if(window.__mpTrack)window.__mpTrack('challenge','start:'+pick.kind+':'+pick.book);}catch(e){} if(window.mpToast)window.mpToast({kind:'good',msg:'Challenge started. Every trade you open from now counts.'}); load(); try{app.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){} }
-      else { if(window.mpToast)window.mpToast({kind:'warn',msg:d&&d.error==='already_active'?'You already have a challenge running.':'Could not start the challenge - try again.'}); load(); }
+    if(busy)return;
+    var body={op:'start',kind:pick.kind,book:pick.book};
+    if(pick.kind==='custom'){var er=rulesErr();if(er){if(window.mpToast)window.mpToast({kind:'warn',msg:'Check the '+LBL[er]+' in your custom rules.'});return;}body.rules=rulesOut();}
+    busy=true; var g=$('cxGo'); if(g){g.disabled=true;g.textContent='Starting...';}
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){
+      busy=false; if(d&&d.ok){track('start:'+pick.kind+':'+pick.book); if(window.mpToast)window.mpToast({kind:'good',msg:'Challenge started. Trades you open now count for the challenge only.'}); load(); try{app.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){} }
+      else { if(window.mpToast)window.mpToast({kind:'warn',msg:d&&d.error==='already_active'?'You already have a challenge running.':d&&d.error==='bad_rule'?'One of your custom rules is outside what we can score ('+esc(d.field||'')+').':'Could not start the challenge - try again.'}); load(); }
+    }).catch(function(){busy=false;load();});
+  }
+  function pause(op){
+    if(busy)return; busy=true;
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:op})}).then(function(r){return r.json();}).then(function(d){
+      busy=false; if(d&&d.ok){track(op); flash={k:op,t:op==='pause'?'Paused. Your trades count as ordinary trades until you resume.':'Resumed. New trades count for the challenge again.',at:Date.now()}; if(window.mpToast)window.mpToast({kind:'info',msg:op==='pause'?'Challenge paused.':'Challenge resumed.'});}
+      else if(window.mpToast)window.mpToast({kind:'warn',msg:d&&d.error==='positions_open'?'Close your '+(d.open||'')+' challenge position'+(d.open===1?'':'s')+' before pausing.':'Could not change the challenge - try again.'});
+      load();
     }).catch(function(){busy=false;load();});
   }
   function quit(){
-    if(!(armed&&Date.now()-armed<5000)){armed=Date.now();render();setTimeout(function(){if(armed&&Date.now()-armed>=5000){armed=0;render();}},5100);return;}
-    armed=0; fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:'abandon'})}).then(function(){load();}).catch(load);
+    if(busy)return; busy=true;
+    fetch('/api/challenge',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({op:'abandon'})}).then(function(r){return r.json();}).then(function(d){busy=false; if(d&&d.ok){track('abandon'); flash={k:'end',t:'Challenge ended. It is in your history below - start a new one whenever you are ready.',at:Date.now()}; if(window.mpToast)window.mpToast({kind:'info',msg:'Challenge ended.'});} load();}).catch(function(){busy=false;load();});
   }
   function board(){
     fetch('/api/challenge/board').then(function(r){return r.json();}).then(function(d){
-      var c=(d&&d.counts)||{}; $('sPass').textContent=(c.passed||0).toLocaleString('en-US'); $('sDaily').textContent=(c.fail_daily||0).toLocaleString('en-US'); $('sDd').textContent=(c.fail_drawdown||0).toLocaleString('en-US');
+      var c=(d&&d.counts)||{}; $('sPass').textContent=(c.passed||0).toLocaleString('en-US'); $('sDaily').textContent=(c.fail_daily||0).toLocaleString('en-US'); $('sDd').textContent=((c.fail_drawdown||0)+(c.fail_position||0)+(c.fail_time||0)).toLocaleString('en-US');
       var p=(d&&d.passed)||[];
-      $('cxBoard').innerHTML=p.length?p.map(function(x){return '<tr><td><a href="?c='+esc(x.id)+'" style="color:var(--ink)">@'+esc(x.who)+'</a></td><td>'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td class="n" style="color:var(--lime)">'+pct(x.returnPct)+'</td><td class="n">'+(+x.maxDdPct||0).toFixed(2)+'%</td><td class="n">'+(x.days||0)+'</td><td class="n">'+day(x.passed)+'</td></tr>';}).join(''):'<tr><td colspan="7" class="cx-empty">Nobody has passed yet - the first certificate on this board could be yours.</td></tr>';
+      $('cxBoard').innerHTML=p.length?p.map(function(x){return '<tr><td><a href="?c='+esc(x.id)+'" style="color:var(--ink)">@'+esc(x.who)+'</a></td><td'+(x.custom?' title="'+esc(x.blurb)+'"':'')+'>'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td class="n" style="color:var(--lime)">'+pct(x.returnPct)+'</td><td class="n">'+(+x.maxDdPct||0).toFixed(2)+'%</td><td class="n">'+(x.days||0)+'</td><td class="n">'+day(x.passed)+'</td></tr>';}).join(''):'<tr><td colspan="7" class="cx-empty">Nobody has passed yet - the first certificate on this board could be yours.</td></tr>';
     }).catch(function(){$('cxBoard').innerHTML='<tr><td colspan="7" class="cx-empty">The board could not be loaded - refresh in a moment.</td></tr>';});
   }
   function shareCert(id,who){
@@ -309,27 +599,43 @@
   function cert(){
     fetch('/api/challenge/cert?id='+encodeURIComponent(certId)).then(function(r){return r.json();}).then(function(d){
       if(!d||!d.ok){app.innerHTML='<p class="cx-fine">That certificate does not exist, or the challenge did not pass.</p>';load();return;}
-      var c=d.cert,r=c.result||{},p=d.partner;
+      var c=d.cert,r=c.result||{};
+      if(pickEl.parentNode)pickEl.parentNode.removeChild(pickEl);
       app.setAttribute('data-state','cert');
       app.innerHTML='<div class="cx-cert"><img src="/api/challenge/cert.svg?id='+encodeURIComponent(c.id)+'" alt="Prop firm challenge certificate for @'+esc(c.who)+'" width="1200" height="630">'
         +'<div><span class="cx-badge"><i></i>Verified pass</span><h2 style="margin:12px 0 6px">@'+esc(c.who)+' passed the '+esc(c.name)+' challenge</h2>'
-        +'<p class="cx-fine">'+money(c.book)+' account &middot; '+pct(r.returnPct)+' &middot; max drawdown '+(+r.maxDdPct||0).toFixed(2)+'% &middot; '+(r.days||0)+' trading days &middot; passed '+day(c.ended)+'. Scored server-side on live prices; every rule was enforced from the first trade.</p>'
-        +'<div class="cx-acts"><button type="button" class="cx-go" id="cxShare">Share the certificate</button><button type="button" class="cx-ghost" id="cxCopy">Copy link</button></div>'
-        +'<div class="cx-partner">Ready to be measured for real? '+(p?'<a href="'+esc(p.url)+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+esc(p.name)+'">'+esc(p.name)+' &rarr;</a> '+esc(p.note||''):'Compare the crypto prop firms that sell this evaluation - rules, prices and payouts from their own pages: <a href="/crypto-prop-firms/">crypto prop firms compared &rarr;</a>')+'</div></div></div>'
+        +'<p class="cx-fine">'+money(c.book)+' account &middot; '+pct(r.returnPct)+' &middot; max drawdown '+(+r.maxDdPct||0).toFixed(2)+'% &middot; '+(r.days||0)+' trading days &middot; passed '+day(c.ended)+'. '+esc(c.blurb||'')+'. Scored server-side on live prices; every rule was enforced from the first trade.</p>'
+        +'<div class="cx-acts"><button type="button" class="cx-go" id="cxShare">Share the certificate</button><button type="button" class="cx-ghost" id="cxCopy">Copy link</button></div></div></div>'
+        +adsHtml()
         +'<p style="margin:18px 0 0"><a href="/prop-firm-challenge/" style="color:var(--lime)">Start your own challenge &rarr;</a></p>';
       $('cxShare').addEventListener('click',function(){shareCert(c.id,c.who);});
       $('cxCopy').addEventListener('click',function(){var u=location.origin+'/prop-firm-challenge/?c='+c.id;try{navigator.clipboard.writeText(u);if(window.mpToast)window.mpToast({kind:'good',msg:'Link copied.'});}catch(e){}});
     }).catch(function(){load();});
   }
-  wireChoice();
+  // partner clicks are money clicks: same beacon as the homepage
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-ex]');if(!a)return;try{navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname));}catch(x){}},true);
+  wireChoice(); wireBuild();
+  if(location.hash==='#custom')setKind('custom');
+  else if(/^#(ftmo1|ftmo2|iq|one|two|eod)$/.test(location.hash))setKind(location.hash.slice(1));
   if(certId)cert(); else load();
   board();
   window.addEventListener('mp-auth-change',function(){if(!certId)load();});
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&S&&S.active)load();});
-  window.__cxState=function(){return S;};
+  window.__cxState=function(){return S;}; window.__cxRules=function(){return {R:R,err:rulesErr(),out:rulesOut()};};
 })();
 </script>
+<script>/*@USSWAP: a reader in the US gets the partner link that is open to them (FTMO's standard challenge is not; FTMO Futures is). Any link with data-us-href is swapped, and data-us-txt replaces its [data-us-label] text. Country from mp-auth (mpEx.ccNow) or one /api/geo read. */
+(function(){
+  function apply(cc){if(String(cc||'').toUpperCase()!=='US')return;document.querySelectorAll('[data-us-href]').forEach(function(a){a.setAttribute('href',a.getAttribute('data-us-href'));var tx=a.getAttribute('data-us-txt');if(tx){var l=a.querySelector('[data-us-label]')||a;l.textContent=tx;}a.setAttribute('data-us','1');});window.__mpUsSwap=true;}
+  window.__mpUsSwapApply=apply;
+  var n=0,t=setInterval(function(){var cc='';try{cc=window.mpEx&&window.mpEx.ccNow&&window.mpEx.ccNow();}catch(e){}
+    if(cc){clearInterval(t);apply(cc);return;}
+    if(++n<25)return;clearInterval(t);
+    try{var j=JSON.parse(localStorage.getItem('mp_cc')||'null');if(j&&j.cc&&Date.now()-(+j.ts||0)<864e5){apply(j.cc);return;}}catch(e){}
+    fetch('/api/geo',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.cc){try{localStorage.setItem('mp_cc',JSON.stringify({cc:d.cc,ts:Date.now()}));}catch(e){}apply(d.cc);}}).catch(function(){});
+  },120);
+})();</script>
 <script defer src="/assets/mp-auth.js?v=7d39c8b0"></script>
-<script defer src="/assets/mp-nav.js?v=0c3779ad"></script>
+<script defer src="/assets/mp-nav.js?v=64130e8a"></script>
 </body>
 </html>

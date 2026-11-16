@@ -9650,7 +9650,7 @@ async function chalSweep(env) {
   const marks = await chalMarks(env, r0.syms || []);
   const r = await usersDO(env, '/chal/sweep', { marks });
   try { await env.STATS.put('chal:sweep:last', JSON.stringify({ ts: Date.now(), active: r0.active, syms: (r0.syms || []).length, priced: Object.keys(marks).length, r }), { expirationTtl: 7 * 86400 }); } catch (e) {}
-  if (r && r.ended) { try { await caches.default.delete(new Request('https://marginpad.io/__chal_board_v1')); } catch (e) {} }
+  if (r && r.ended) { try { await caches.default.delete(new Request('https://marginpad.io/__chal_board_v2')); } catch (e) {} }
   return r;
 }
 async function chalPartner(env) { try { const p = JSON.parse((await env.STATS.get('cfg:proppartner')) || 'null'); if (p && p.name && /^https:\/\//.test(String(p.url || ''))) return { name: String(p.name).slice(0, 40), url: String(p.url).slice(0, 300), note: String(p.note || '').slice(0, 160) }; } catch (e) {} return null; }
@@ -9668,17 +9668,18 @@ function chalCertSvg(c) {
     + '<text x="1120" y="104" text-anchor="end" font-size="18" fill="#8b95a1" font-family="ui-monospace,Menlo,Consolas,monospace" letter-spacing="2">CHALLENGE PASSED &#183; ' + e(d) + '</text>'
     + '<text x="80" y="200" font-size="62" font-weight="800" fill="#ffffff" font-family="system-ui,Segoe UI,Arial,sans-serif">@' + e(c.who) + '</text>'
     + '<text x="80" y="262" font-size="30" fill="#c9d1da" font-family="system-ui,Segoe UI,Arial,sans-serif">passed the ' + e(c.name) + ' prop firm challenge</text>'
-    + '<text x="80" y="306" font-size="20" fill="#8b95a1" font-family="system-ui,Segoe UI,Arial,sans-serif">' + e((CHAL_TYPES[c.kind] || {}).blurb || '') + '</text>'
+    + '<text x="80" y="306" font-size="20" fill="#8b95a1" font-family="system-ui,Segoe UI,Arial,sans-serif">' + e(String(c.blurb || (CHAL_TYPES[c.kind] || {}).blurb || '').slice(0, 120)) + '</text>'
     + cells.map((x, i) => cell(x[0], x[1], i)).join('')
     + '<text x="80" y="560" font-size="18" fill="#6f7a86" font-family="ui-monospace,Menlo,Consolas,monospace">Scored server-side on live prices &#183; marginpad.io/prop-firm-challenge/?c=' + e(c.id) + '</text></svg>';
 }
 async function handleChallenge(url, request, env, ctx) {
   const J = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
   const p = url.pathname;
-  const types = Object.keys(CHAL_TYPES).map(k => ({ kind: k, name: CHAL_TYPES[k].name, targets: CHAL_TYPES[k].phases, daily: CHAL_TYPES[k].daily, dd: CHAL_TYPES[k].dd, ddtype: CHAL_TYPES[k].ddtype, mindays: CHAL_TYPES[k].mindays, maxlev: CHAL_TYPES[k].maxlev, blurb: CHAL_TYPES[k].blurb }));
+  const types = Object.keys(CHAL_TYPES).map(k => { const t = CHAL_TYPES[k]; return { kind: k, name: t.name, firm: t.firm || null, targets: t.phases, daily: t.daily, dd: t.dd, ddtype: t.ddtype, mindays: t.mindays, maxlev: t.maxlev, maxpos: t.maxpos || 0, strikes: t.strikes || 0, best: t.best || 0, tlimit: t.tlimit || 0, blurb: t.blurb }; });
+  const ranges = CHAL_RANGE;
   if (p === '/api/challenge/board') {
     const e2e = url.searchParams.get('e2e') === '1' && isAdminKey(env, adminKeyFrom(request, url));
-    const ck = new Request('https://marginpad.io/__chal_board_v1');
+    const ck = new Request('https://marginpad.io/__chal_board_v2');
     if (!e2e && !url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
     const r = await usersDO(env, '/chal/board', { e2e }); if (!r || !r.ok) return J({ error: 'unavailable' }, 503);
     const resp = J({ ok: true, passed: r.passed, counts: Object.assign({ passed: 0, fail_daily: 0, fail_drawdown: 0, abandoned: 0, active: 0 }, r.counts || {}), types }, 200, e2e ? 'no-store' : 'public, max-age=120');
@@ -9716,17 +9717,18 @@ async function handleChallenge(url, request, env, ctx) {
   if (request.method === 'POST') {
     if (!uid) return J({ error: 'login_required' }, 401);
     let b = {}; try { b = await request.json(); } catch (e) {}
-    if (b.op === 'start') { if (su && su.status && su.status !== 'active') return J({ error: 'restricted' }, 403); const r = await usersDO(env, '/chal/start', { uid, kind: String(b.kind || ''), book: +b.book || 0 }); return J(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error === 'already_active' ? 409 : 400)); }
+    if (b.op === 'start') { if (su && su.status && su.status !== 'active') return J({ error: 'restricted' }, 403); const r = await usersDO(env, '/chal/start', { uid, kind: String(b.kind || ''), book: +b.book || 0, rules: b.rules && typeof b.rules === 'object' ? b.rules : null }); return J(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error === 'already_active' ? 409 : 400)); }
+    if (b.op === 'pause' || b.op === 'resume') { const r = await usersDO(env, '/chal/pause', { uid, on: b.op === 'pause' }); return J(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error === 'positions_open' ? 409 : 400)); }
     if (b.op === 'abandon') { const s0 = await usersDO(env, '/chal/state', { uid, marks: {} }); const marks = await chalMarks(env, (s0 && s0.needSyms) || []); const r = await usersDO(env, '/chal/abandon', { uid, marks }); return J(r || { error: 'unavailable' }, r && r.ok ? 200 : 400); }
     return J({ error: 'bad_op' }, 400);
   }
   const partner = await chalPartner(env);
-  if (!uid) return J({ ok: true, signedIn: false, types, books: CHAL_BOOKS, partner });
+  if (!uid) return J({ ok: true, signedIn: false, types, ranges, books: CHAL_BOOKS, partner });
   let s = await usersDO(env, '/chal/state', { uid, marks: {} });
   if (s && s.ok && s.needSyms && s.needSyms.length) { const marks = await chalMarks(env, s.needSyms); s = await usersDO(env, '/chal/state', { uid, marks }) || s; s.marks = marks; }
   if (!s || !s.ok) return J({ error: 'unavailable' }, 503);
-  if (s.ended) { try { ctx.waitUntil(caches.default.delete(new Request('https://marginpad.io/__chal_board_v1'))); } catch (e) {} }
-  return J(Object.assign({ signedIn: true, types, books: CHAL_BOOKS, partner, now: Date.now() }, s));
+  if (s.ended) { try { ctx.waitUntil(caches.default.delete(new Request('https://marginpad.io/__chal_board_v2'))); } catch (e) {} }
+  return J(Object.assign({ signedIn: true, types, ranges, books: CHAL_BOOKS, partner, now: Date.now() }, s));
 }
 async function handleTotd(url, request, env, ctx) {
   const jt = (o, st, cc) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
@@ -11035,7 +11037,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0c3779ad" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=64130e8a" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15986,55 +15988,112 @@ function tradeOpenTs(id) { id = String(id || ''); let m = /^(?:srv|bot)([0-9a-z]
    or closed). Two-step runs a second phase from a fresh balance. The open gate refuses leverage above the rule and a position whose
    margin is more than the free balance - a $10,000 account cannot open $50,000 of margin, here or at a firm.
    CHAL_TYPES is the ONE table: the page, the terminal, the API and the certificate all read it. */
+/* 2026-11-16 evening (owner: "trejdovi tokom challenge-a ne treba da se racunaju za leaderboards ... pauziraju pa nastave ... dosta opcija
+   sa pravilima, jer tako rade prop kuce ... korisnik treba da podesi pravila koja zeli"):
+   - A trade OPENED while a run is active and not paused carries `chal` (= the run id) and lands in tradeev with cp=2; every board,
+     duel, raid, report and mission already reads COALESCE(cp,0)=0, and every grant / record / counter asks chalNoCredit(e) - so a
+     challenge trade counts for the challenge and nothing else. CHAL_TAG_FROM: trades opened before tagging existed still count for the
+     run they belong to (by time).
+   - Pause: allowed only with no open challenge position; paused time is taken off a time limit; trades opened while paused are
+     ordinary trades.
+   - Rules: every preset below is a row of the same shape as a custom run (kind 'custom' + its own validated rules). maxpos = the
+     largest loss one trade may take (% of the account), strikes = how many such trades end the run (0 = the first), best = the best
+     day's share of the profit a pass may carry (0 = no rule), tlimit = days (0 = none), daily 0 = no daily loss limit.
+     A custom run earns no XP (its rules can be made easy); it still gets a certificate that prints its rules. */
 const CHAL_TYPES = {
   one: { name: 'One-step', phases: [10], daily: 4, dd: 6, ddtype: 'trail', mindays: 5, maxlev: 100, blurb: '10% target, 4% daily loss, 6% trailing drawdown, 5 trading days' },
   two: { name: 'Two-step', phases: [8, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, maxlev: 100, blurb: '8% then 5% target, 5% daily loss, 10% static drawdown, 4 trading days a phase' },
   eod: { name: 'One-step EOD', phases: [10], daily: 5, dd: 6, ddtype: 'eod', mindays: 5, maxlev: 50, blurb: '10% target, 5% daily loss, 6% end-of-day trailing drawdown, 50x max' },
+  ftmo1: { name: 'FTMO 1-Step rules', firm: 'FTMO', phases: [10], daily: 3, dd: 10, ddtype: 'eod', mindays: 0, maxlev: 30, best: 50, blurb: 'FTMO 1-Step shape: 10% target, 3% daily loss, 10% end-of-day trailing max loss, best day under 50% of profit' },
+  ftmo2: { name: 'FTMO 2-Step rules', firm: 'FTMO', phases: [10, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, maxlev: 30, blurb: 'FTMO 2-Step shape: 10% then 5% target, 5% daily loss, 10% static max loss, 4 trading days a phase' },
+  iq: { name: 'IQ Capital Core rules', firm: 'IQ Capital', phases: [8], daily: 0, dd: 6, ddtype: 'eod', mindays: 0, maxlev: 5, maxpos: 1, strikes: 3, blurb: 'IQ Capital Core shape: 8% target, no daily limit, 6% end-of-day trailing drawdown, 1% max loss per trade (3rd breach ends it), 5x' },
 };
 const CHAL_BOOKS = [5000, 10000, 25000, 50000, 100000];
-const CHAL_XP = 100; // once per passed challenge - a pass needs at least four trading days of rule-abiding trading, so it cannot be farmed
+const CHAL_XP = 100; // once per passed PRESET challenge - a custom run earns none (its rules can be made trivial)
+const CHAL_TAG_FROM = Date.UTC(2026, 10, 16, 19, 45); // the store began tagging here (deploy 19:37 UTC + the DO cycle); older untagged trades still count for their run by time
+const chalNoCredit = e => !!(e && (e.copy || e.chal)); // a paper copy or a challenge trade earns no board place, XP, Ticks or record
+// custom rules, validated: refuse rather than clamp, so what the member set is exactly what is scored
+const CHAL_RANGE = { target: [1, 30], daily: [1, 20], dd: [2, 30], mindays: [0, 30], maxlev: [1, 125], maxpos: [0.25, 10], strikes: [0, 5], best: [20, 90], tlimit: [7, 120] };
+function chalRulesNorm(r) {
+  r = r || {}; const n = v => Number(v), inR = (k, v) => isFinite(v) && v >= CHAL_RANGE[k][0] && v <= CHAL_RANGE[k][1];
+  const tg = (Array.isArray(r.targets) ? r.targets : [r.targets]).map(n).filter(v => v > 0);
+  if (!tg.length || tg.length > 2 || !tg.every(v => inR('target', v))) return { error: 'bad_rule', field: 'targets', range: CHAL_RANGE.target };
+  const out = { phases: tg.map(v => Math.round(v * 100) / 100) };
+  const daily = n(r.daily || 0); if (daily !== 0 && !inR('daily', daily)) return { error: 'bad_rule', field: 'daily', range: CHAL_RANGE.daily }; out.daily = daily;
+  const dd = n(r.dd); if (!inR('dd', dd)) return { error: 'bad_rule', field: 'dd', range: CHAL_RANGE.dd }; out.dd = dd;
+  const ddtype = String(r.ddtype || 'static'); if (['static', 'trail', 'eod'].indexOf(ddtype) < 0) return { error: 'bad_rule', field: 'ddtype' }; out.ddtype = ddtype;
+  const md = Math.round(n(r.mindays || 0)); if (!inR('mindays', md)) return { error: 'bad_rule', field: 'mindays', range: CHAL_RANGE.mindays }; out.mindays = md;
+  const ml = Math.round(n(r.maxlev || 0)); if (!inR('maxlev', ml)) return { error: 'bad_rule', field: 'maxlev', range: CHAL_RANGE.maxlev }; out.maxlev = ml;
+  const mp = n(r.maxpos || 0); if (mp !== 0 && !inR('maxpos', mp)) return { error: 'bad_rule', field: 'maxpos', range: CHAL_RANGE.maxpos }; out.maxpos = mp;
+  const sk = Math.round(n(r.strikes || 0)); if (!inR('strikes', sk)) return { error: 'bad_rule', field: 'strikes', range: CHAL_RANGE.strikes }; out.strikes = mp ? sk : 0;
+  const best = n(r.best || 0); if (best !== 0 && !inR('best', best)) return { error: 'bad_rule', field: 'best', range: CHAL_RANGE.best }; out.best = best;
+  const tl = Math.round(n(r.tlimit || 0)); if (tl !== 0 && !inR('tlimit', tl)) return { error: 'bad_rule', field: 'tlimit', range: CHAL_RANGE.tlimit }; out.tlimit = tl;
+  if (out.daily && out.daily >= out.dd && out.ddtype === 'static') return { error: 'bad_rule', field: 'daily', hint: 'the daily limit must be smaller than the max drawdown' };
+  return { ok: true, rules: out };
+}
+// one sentence for any rule set (custom runs print it on the certificate and the board)
+function chalBlurb(t) {
+  const p = (t.phases || []).map(v => v + '%').join(' then ');
+  return p + ' target, ' + (+t.daily ? t.daily + '% daily loss, ' : 'no daily limit, ') + t.dd + '% ' + (t.ddtype === 'eod' ? 'end-of-day trailing' : t.ddtype === 'trail' ? 'trailing' : 'static') + ' drawdown'
+    + (+t.mindays ? ', ' + t.mindays + ' trading days' : '') + (+t.maxpos ? ', ' + t.maxpos + '% max loss per trade' : '') + (+t.best ? ', best day under ' + t.best + '% of profit' : '')
+    + (+t.tlimit ? ', ' + t.tlimit + '-day limit' : '') + ', ' + t.maxlev + 'x max';
+}
 const _chDay = ts => new Date(ts).toISOString().slice(0, 10);
 // PURE: the whole verdict from the rows. ch = the stored row; closes = [{ts, pnl, ots}] for this phase, oldest first; open = the open
 // challenge positions [{sym, side, entry, qty, margin, lev, fund, ts}]; marks = {SYM: price}; now. The stored terminal state wins.
 function chalCompute(ch, closes, open, marks, now) {
   const book = +ch.book || 10000, phaseIdx = Math.max(1, +ch.phase || 1), tgts = String(ch.targets || '10').split(',').map(Number);
-  const target = tgts[phaseIdx - 1] || tgts[0] || 10, daily = +ch.daily || 4, dd = +ch.dd || 6, ddtype = ch.ddtype || 'trail', minDays = Math.max(0, +ch.mindays || 0);
-  const days = new Set(); let B = book, peak = book, eodPeak = book, dayKey = '', dayStart = book, maxDd = 0, worstDay = 0, verdict = '', vTs = 0, vB = null;
+  const target = tgts[phaseIdx - 1] || tgts[0] || 10, daily = ch.daily == null ? 4 : +ch.daily, dd = +ch.dd || 6, ddtype = ch.ddtype || 'trail', minDays = Math.max(0, +ch.mindays || 0);
+  const maxpos = +ch.maxpos || 0, strikesMax = Math.max(1, +ch.strikes || 0), best = +ch.best || 0, tlimit = +ch.tlimit || 0;
+  const posLim = maxpos > 0 ? book * maxpos / 100 : Infinity; let strikes = 0;
+  const days = new Set(), dayPnl = {}; let B = book, peak = book, eodPeak = book, dayKey = '', dayStart = book, maxDd = 0, worstDay = 0, verdict = '', vTs = 0, vB = null;
   const ddFloorOf = () => ddtype === 'static' ? book - book * dd / 100 : (ddtype === 'eod' ? eodPeak : peak) - book * dd / 100;
+  const dailyOf = () => daily > 0 ? dayStart - book * daily / 100 : -Infinity;
+  const bestOk = () => { if (!(best > 0)) return true; const tot = B - book; if (!(tot > 0)) return true; let bd = 0; for (const k in dayPnl) if (dayPnl[k] > bd) bd = dayPnl[k]; return bd <= tot * best / 100 + 1e-9; };
   for (const o of open) if (+o.ts > 0) days.add(_chDay(+o.ts));
   for (const c of closes) {
     const d = _chDay(c.ts);
     if (d !== dayKey) { if (dayKey) eodPeak = Math.max(eodPeak, B); dayKey = d; dayStart = B; }
     days.add(d); if (c.ots) days.add(_chDay(c.ots));
-    B += +c.pnl || 0; if (B > peak) peak = B;
+    const pv = +c.pnl || 0; B += pv; if (B > peak) peak = B; dayPnl[d] = (dayPnl[d] || 0) + pv;
+    if (-pv > posLim + 1e-9) strikes++;
     const dl = (dayStart - B) / book * 100; if (dl > worstDay) worstDay = dl;
     const ddp = (peak - B) / book * 100; if (ddp > maxDd) maxDd = ddp;
     if (!verdict) {
-      if (B < dayStart - book * daily / 100 - 1e-9) verdict = 'fail_daily';
+      if (B < dailyOf() - 1e-9) verdict = 'fail_daily';
       else if (B < ddFloorOf() - 1e-9) verdict = 'fail_drawdown';
-      else if (B >= book * (1 + target / 100) && days.size >= minDays) verdict = 'pass';
+      else if (strikes >= strikesMax) verdict = 'fail_position';
+      else if (B >= book * (1 + target / 100) && days.size >= minDays && bestOk()) verdict = 'pass';
       if (verdict) { vTs = c.ts; vB = B; }
     }
   }
   // today, from the clock: a day with no close yet starts at the current balance
   const today = _chDay(now); if (today !== dayKey) { if (dayKey) eodPeak = Math.max(eodPeak, B); dayStart = B; }
-  let unreal = 0, openMargin = 0, priced = 0;
+  let unreal = 0, openMargin = 0, priced = 0, openOver = 0;
   for (const o of open) { const px = +(marks || {})[String(o.sym || '').toUpperCase()] || 0; openMargin += +o.margin || 0;
-    if (px > 0 && +o.entry > 0) { unreal += (+o.qty || 0) * (px - +o.entry) * (o.side === 'short' ? -1 : 1) - (+o.fund || 0); priced++; } }
-  const E = B + unreal, dailyFloor = dayStart - book * daily / 100, ddFloor = ddFloorOf(), floor = Math.max(dailyFloor, ddFloor);
+    if (px > 0 && +o.entry > 0) { const u = (+o.qty || 0) * (px - +o.entry) * (o.side === 'short' ? -1 : 1) - (+o.fund || 0); unreal += u; priced++; if (-u > posLim + 1e-9) openOver++; } }
+  const E = B + unreal, dailyFloor = dailyOf(), ddFloor = ddFloorOf(), floor = Math.max(dailyFloor, ddFloor);
   const binds = dailyFloor >= ddFloor ? 'daily' : 'drawdown';
   if (!verdict && open.length && priced === open.length) { // open losses, checked at this moment against today's floors
     if (E < dailyFloor - 1e-9) { verdict = 'fail_daily'; vTs = now; vB = E; }
     else if (E < ddFloor - 1e-9) { verdict = 'fail_drawdown'; vTs = now; vB = E; }
+    else if (openOver && strikes + openOver >= strikesMax) { verdict = 'fail_position'; vTs = now; vB = E; }
   }
-  if (!verdict && B >= book * (1 + target / 100) && days.size >= minDays) { verdict = 'pass'; vTs = now; vB = B; }
+  // time limit: the clock runs only while the run is not paused
+  const activeMs = Math.max(0, now - (+ch.started || now) - (+ch.paused_ms || 0) - (+ch.paused && +ch.paused_at ? now - +ch.paused_at : 0));
+  const bOk = bestOk();
+  if (!verdict && B >= book * (1 + target / 100) && days.size >= minDays && bOk) { verdict = 'pass'; vTs = now; vB = B; }
+  if (!verdict && tlimit > 0 && activeMs > tlimit * 864e5) { verdict = 'fail_time'; vTs = now; vB = E; }
   const eDdp = (peak - E) / book * 100; if (eDdp > maxDd && open.length) maxDd = eDdp;
   const eDl = (dayStart - E) / book * 100; if (eDl > worstDay && open.length) worstDay = eDl;
-  const r2 = v => Math.round(v * 100) / 100;
+  let bestDay = 0; for (const k in dayPnl) if (dayPnl[k] > bestDay) bestDay = dayPnl[k];
+  const r2 = v => Math.round(v * 100) / 100, fin = v => isFinite(v) ? r2(v) : null;
   return { verdict: verdict || 'active', at: vTs || null, atValue: vB == null ? null : r2(vB),
     book, phase: phaseIdx, phases: tgts.length, target, balance: r2(B), equity: r2(E), unreal: r2(unreal), priced, open: open.length, openMargin: r2(openMargin),
-    dayStart: r2(dayStart), dailyFloor: r2(dailyFloor), ddFloor: r2(ddFloor), floor: r2(floor), binds, room: r2(E - floor), targetAt: r2(book * (1 + target / 100)), toGo: r2(book * (1 + target / 100) - B),
-    days: days.size, minDays, closes: closes.length, peak: r2(peak), returnPct: r2((B - book) / book * 100), maxDdPct: r2(maxDd), worstDayPct: r2(worstDay), freeMargin: r2(B - openMargin) };
+    dayStart: r2(dayStart), dailyFloor: fin(dailyFloor), ddFloor: r2(ddFloor), floor: r2(floor), binds, room: r2(E - floor), targetAt: r2(book * (1 + target / 100)), toGo: r2(book * (1 + target / 100) - B),
+    days: days.size, minDays, closes: closes.length, peak: r2(peak), returnPct: r2((B - book) / book * 100), maxDdPct: r2(maxDd), worstDayPct: r2(worstDay), freeMargin: r2(B - openMargin),
+    maxpos, posLimit: fin(posLim), strikes, strikesMax: maxpos > 0 ? strikesMax : 0, best, bestDayPct: B > book ? r2(bestDay / (B - book) * 100) : null, bestOk: bOk,
+    tlimit, activeDays: r2(activeMs / 864e5), daysLeft: tlimit > 0 ? r2(Math.max(0, tlimit - activeMs / 864e5)) : null };
 }
 // GOLD ROOM (owner 2026-09-05): the Gold-only "most winning trades" board ships mid-season and pays NOTHING for the
 // season it landed in - the owner's call. The first payable season is the one starting here; payWeeklyPrizes refuses
@@ -36213,6 +36272,7 @@ export class UserStore {
     // PROP FIRM CHALLENGE MODE (2026-11-16): one row per attempt; status active|passed|failed|abandoned. The verdict fields are written the
     // moment the run ends and never again - a passed run is a certificate, a failed one a record of which rule ended it.
     try { s.exec('CREATE TABLE IF NOT EXISTS chal(id TEXT PRIMARY KEY, uid TEXT, kind TEXT, book REAL, targets TEXT, phase INTEGER DEFAULT 1, daily REAL, dd REAL, ddtype TEXT, mindays INTEGER, maxlev REAL, started INTEGER, phase_started INTEGER, status TEXT, reason TEXT, ended INTEGER, ret REAL, maxdd REAL, worstday REAL, days INTEGER, closes INTEGER, last_eq REAL, last_eval INTEGER, phase1 TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS chal_uid ON chal(uid)'); s.exec('CREATE INDEX IF NOT EXISTS chal_status ON chal(status)'); } catch (e) {}
+    for (const c9 of ['maxpos REAL', 'strikes INTEGER', 'best REAL', 'tlimit INTEGER', 'paused INTEGER DEFAULT 0', 'paused_at INTEGER', 'paused_ms INTEGER DEFAULT 0', 'blurb TEXT']) { try { s.exec('ALTER TABLE chal ADD COLUMN ' + c9); } catch (e) {} } // 2026-11-16 evening: per-trade loss, consistency, time limit, pause, custom rules
     // THE FOUNDRY (2026-11-12): the squad treasury of parts, its log, the per-member daily caps, and the coin a squad cast
     try { s.exec('CREATE TABLE IF NOT EXISTS sqparts(sid TEXT PRIMARY KEY, alloy REAL DEFAULT 0, signal REAL DEFAULT 0, ore REAL DEFAULT 0, flux REAL DEFAULT 0, spark REAL DEFAULT 0, upd INTEGER)');
       s.exec('CREATE TABLE IF NOT EXISTS sqpartlog(sid TEXT, ts INTEGER, uid TEXT, kind TEXT, amt REAL, why TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS sqpartlog_sid ON sqpartlog(sid, ts)');
@@ -36961,20 +37021,25 @@ export class UserStore {
      one P&L formula; a PARTIAL trims them by the same fraction. Caps: the copier's own open count (PT_MAX_OPEN), COPY_MAX_PER_LEADER open
      copies of one leader, a leader open over COPY_LEADER_MAX_MARGIN is not mirrored. A copier whose account is not active gets nothing. */
   // ===== PROP FIRM CHALLENGE MODE (2026-11-16) - see CHAL_TYPES / chalCompute at the top of the file =====
-  _chalSet() { if (this._chSet) return this._chSet; const s = new Set(); try { for (const r of this.rows("SELECT uid FROM chal WHERE status='active'")) s.add(String(r.uid)); } catch (e) {} this._chSet = s; return s; }
+  _chalSet() { if (this._chSet) return this._chSet; const s = new Set(); try { for (const r of this.rows("SELECT uid FROM chal WHERE status='active' AND COALESCE(paused,0)=0")) s.add(String(r.uid)); } catch (e) {} this._chSet = s; return s; } // a PAUSED run is out of the set: no gate, no tag, no sweep
   _chalActive(uid) { try { return this.rows("SELECT * FROM chal WHERE uid=? AND status='active' ORDER BY started DESC LIMIT 1", uid)[0] || null; } catch (e) { return null; } }
-  _chalInputs(ch) { // this phase's closes and open positions - only server-filled, never a copy, never opened before the phase began
+  _chalLive(uid) { const ch = this._chalActive(uid); return ch && !+ch.paused ? ch : null; } // the run a new trade belongs to, if any
+  _chalInputs(ch) { // this phase's closes and open positions - challenge-tagged (cp=2 / t.chal), server-filled, never a copy, never opened before the phase began
     const since = +ch.phase_started || +ch.started || 0, uid = String(ch.uid);
-    let rows = []; try { rows = this.rows("SELECT ts, pnl, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND pnl IS NOT NULL AND COALESCE(cp,0)=0 AND COALESCE(via,'') NOT IN ('client','replay','copy') ORDER BY ts LIMIT 5000", uid, since); } catch (e) {}
-    const closes = []; for (const r of rows) { const ots = tradeOpenTs(r.tid); if (ots == null || ots < since) continue; closes.push({ ts: +r.ts, pnl: +r.pnl, ots }); }
+    let rows = []; try { rows = this.rows("SELECT ts, pnl, tid, COALESCE(cp,0) cp FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND pnl IS NOT NULL AND COALESCE(cp,0) IN (0,2) AND COALESCE(via,'') NOT IN ('client','replay','copy') ORDER BY ts LIMIT 5000", uid, since); } catch (e) {}
+    const closes = []; for (const r of rows) { const ots = tradeOpenTs(r.tid); if (ots == null || ots < since) continue; if (+r.cp !== 2 && ots >= CHAL_TAG_FROM) continue; closes.push({ ts: +r.ts, pnl: +r.pnl, ots }); }
     let open = []; try { open = this._loadJournal(uid).filter(t => t && t.status !== 'win' && t.status !== 'loss' && (t.src === 'srv' || t.src === 'bot') && !t.copy && +t.entry > 0)
-      .filter(t => { const o = tradeOpenTs(t.id) || +t.ts || 0; return o >= since; })
+      .filter(t => { const o = tradeOpenTs(t.id) || +t.ts || 0; return o >= since && (t.chal ? String(t.chal) === String(ch.id) : o < CHAL_TAG_FROM); })
       .map(t => ({ sym: String(t.sym || '').toUpperCase(), side: t.side === 'short' ? 'short' : 'long', entry: +t.entry, qty: +t.qty || 0, margin: +t.margin || 0, lev: +t.lev || 1, fund: +t.fund || 0, ts: tradeOpenTs(t.id) || +t.ts || 0 })); } catch (e) {}
     return { closes, open };
   }
   _chalPub(ch) { if (!ch) return null; const ty = CHAL_TYPES[ch.kind] || {};
     let p1 = null; try { p1 = ch.phase1 ? JSON.parse(ch.phase1) : null; } catch (e) {}
-    return { id: ch.id, kind: ch.kind, name: ty.name || ch.kind, book: +ch.book, targets: String(ch.targets || '').split(',').map(Number), phase: +ch.phase || 1, daily: +ch.daily, dd: +ch.dd, ddtype: ch.ddtype, mindays: +ch.mindays, maxlev: +ch.maxlev,
+    const tg = String(ch.targets || '').split(',').map(Number);
+    return { id: ch.id, kind: ch.kind, name: ch.kind === 'custom' ? 'Custom rules' : (ty.name || ch.kind), custom: ch.kind === 'custom', firm: ty.firm || null, book: +ch.book, targets: tg, phase: +ch.phase || 1, daily: +ch.daily, dd: +ch.dd, ddtype: ch.ddtype, mindays: +ch.mindays, maxlev: +ch.maxlev,
+      maxpos: +ch.maxpos || 0, strikes: +ch.strikes || 0, best: +ch.best || 0, tlimit: +ch.tlimit || 0,
+      blurb: ch.blurb || ty.blurb || chalBlurb({ phases: tg, daily: +ch.daily, dd: +ch.dd, ddtype: ch.ddtype, mindays: +ch.mindays, maxlev: +ch.maxlev, maxpos: +ch.maxpos, best: +ch.best, tlimit: +ch.tlimit }),
+      paused: !!+ch.paused, pausedAt: +ch.paused_at || null, pausedMs: +ch.paused_ms || 0,
       started: +ch.started, phaseStarted: +ch.phase_started || +ch.started, status: ch.status, reason: ch.reason || null, ended: +ch.ended || null,
       result: ch.status === 'active' ? null : { returnPct: ch.ret, maxDdPct: ch.maxdd, worstDayPct: ch.worstday, days: ch.days, closes: ch.closes, equity: ch.last_eq }, phase1: p1 };
   }
@@ -36985,7 +37050,7 @@ export class UserStore {
     const sql = this.state.storage.sql;
     try { sql.exec('UPDATE chal SET last_eq=?, last_eval=?, ret=?, maxdd=?, worstday=?, days=?, closes=? WHERE id=?', ev.equity, now, ev.returnPct, ev.maxDdPct, ev.worstDayPct, ev.days, ev.closes, ch.id); } catch (e) {}
     if (ev.verdict === 'active') return { ch: this._chalPub(Object.assign({}, ch, { last_eq: ev.equity })), ev, needSyms: Array.from(new Set(inp.open.map(o => o.sym))) };
-    const ty = CHAL_TYPES[ch.kind] || {}, nm = (ty.name || 'Challenge') + ' $' + Math.round(+ch.book).toLocaleString('en-US');
+    const ty = CHAL_TYPES[ch.kind] || {}, nm = (ch.kind === 'custom' ? 'Custom rules' : (ty.name || 'Challenge')) + ' $' + Math.round(+ch.book).toLocaleString('en-US');
     if (ev.verdict === 'pass' && (+ch.phase || 1) < String(ch.targets || '').split(',').length) {
       const p1 = JSON.stringify({ passed: ev.at || now, returnPct: ev.returnPct, maxDdPct: ev.maxDdPct, days: ev.days, closes: ev.closes });
       sql.exec('UPDATE chal SET phase=phase+1, phase_started=?, phase1=? WHERE id=?', now, p1, ch.id);
@@ -36998,10 +37063,10 @@ export class UserStore {
     sql.exec('UPDATE chal SET status=?, reason=?, ended=? WHERE id=?', status, ev.verdict, ev.at || now, ch.id);
     this._chSet = null;
     if (status === 'passed') {
-      try { this._grantXp(uid, 'challenge', CHAL_XP, { note: 'Passed ' + nm }); } catch (e) {}
+      if (ch.kind !== 'custom') { try { this._grantXp(uid, 'challenge', CHAL_XP, { note: 'Passed ' + nm }); } catch (e) {} }
       try { this._pushNotif(uid, 'system', 'You passed the ' + nm + ' challenge: +' + ev.returnPct.toFixed(2) + '% in ' + ev.days + ' trading days. Your certificate is ready.', '/prop-firm-challenge/?c=' + ch.id, { push: true, title: 'Challenge passed' }); } catch (e) {}
     } else {
-      const why = ev.verdict === 'fail_daily' ? 'the daily loss limit' : 'the maximum drawdown';
+      const why = ev.verdict === 'fail_daily' ? 'the daily loss limit' : ev.verdict === 'fail_position' ? 'the max loss per trade' : ev.verdict === 'fail_time' ? 'the time limit' : 'the maximum drawdown';
       try { this._pushNotif(uid, 'system', 'Your ' + nm + ' challenge ended on ' + why + '. Every run is practice - start another when you are ready.', '/prop-firm-challenge/', { push: true, title: 'Challenge ended' }); } catch (e) {}
     }
     try { this._opsEv(uid, 'challenge', status + ' ' + nm + ' (' + ev.verdict + ', ' + ev.returnPct.toFixed(2) + '%)', '/prop-firm-challenge/', {}); } catch (e) {}
@@ -37009,7 +37074,7 @@ export class UserStore {
   }
   // the open gate: a challenge account cannot use more leverage than its rule or more margin than its free balance
   _chalGate(uid, lev, margin, now) {
-    const ch = this._chalActive(uid); if (!ch) return null;
+    const ch = this._chalLive(uid); if (!ch) return null;
     if (+lev > +ch.maxlev + 1e-9) return { error: 'challenge_rule', why: 'leverage', max: +ch.maxlev, message: 'Your prop firm challenge allows up to ' + (+ch.maxlev) + 'x leverage. Lower the leverage to open this trade.' };
     const inp = this._chalInputs(ch), ev = chalCompute(ch, inp.closes, inp.open, {}, now);
     const free = Math.floor(ev.freeMargin * 100) / 100;
@@ -37353,7 +37418,7 @@ export class UserStore {
         const cur = curById.get(String(t.id));
         if (!cur) return false;                                          // fabrication - server never issued this id
         if (cur.sc) return false;                                        // server-closed is FINAL
-        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose', 'feeRate', 'feeOpen', 'rz', 'feeVenue']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose + the per-market feeRate the server charges) a client sync can't touch
+        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose', 'feeRate', 'feeOpen', 'rz', 'feeVenue', 'chal']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose + the per-market feeRate the server charges) a client sync can't touch
         if ((t.status === 'win' || t.status === 'loss') && cur.status !== 'win' && cur.status !== 'loss') return false; // P0.6 - srv closes are SERVER-AUTHORITATIVE: manual close routes through /botclose (sets sc); auto-close (liq/SL/TP) is settled by the sweep/nudge candle-check at the server's OWN level. A client sync can NEVER close an srv trade (its exit price can't be trusted, and the position must stay OPEN in active_srv so the sweep settles it). The client's local close still shows instantly (pullTrades keeps a locally-closed trade over a stale server 'open'); the server reconciles with sc within one sweep/nudge.
         return true;
       });
@@ -37469,7 +37534,7 @@ export class UserStore {
       const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try - see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
         if (kind === 'close') try { this._lbBest(uid, e, ts9); } catch (e8) {} // season-best BEFORE the per-sync cap/age skips - a qualifying close must never miss the board store
-        if (kind === 'close' && !e.copy) { const lp9 = +e.pnl; if (isFinite(lp9)) { const _win9 = e.status === 'win'; /* classify by the row's own status so these counters always agree with the win rate the UI renders; pnl>0 disagrees on legacy rows where the label predates the fee */ _lfC++; if (_win9) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (_win9) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
+        if (kind === 'close' && !chalNoCredit(e)) { const lp9 = +e.pnl; if (isFinite(lp9)) { const _win9 = e.status === 'win'; /* classify by the row's own status so these counters always agree with the win rate the UI renders; pnl>0 disagrees on legacy rows where the label predates the fee */ _lfC++; if (_win9) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (_win9) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
         if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
@@ -37480,11 +37545,11 @@ export class UserStore {
         // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
         // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
-        try { if (kind === 'close' && srvAuth && !lbExcluded(e.sym) && !e.copy && (e.status === 'win' || e.status === 'loss')) this._fdAdd(uid, 'alloy', ((+e.notional > 0) ? +e.notional : (+e.qty || 0) * (+e.entry || 0)) * FOUNDRY.rate.alloyPerUsd, 'closed ' + String(e.sym || '').toUpperCase()); } catch (eA) {} // the Foundry: Alloy from a server-settled close
-        try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
-        try { if (kind === 'close' && !lbExcluded(e.sym) && !e.copy) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
-        try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null && !e.copy) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
-          if (roe != null && !e.copy) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
+        try { if (kind === 'close' && srvAuth && !lbExcluded(e.sym) && !chalNoCredit(e) && (e.status === 'win' || e.status === 'loss')) this._fdAdd(uid, 'alloy', ((+e.notional > 0) ? +e.notional : (+e.qty || 0) * (+e.entry || 0)) * FOUNDRY.rate.alloyPerUsd, 'closed ' + String(e.sym || '').toUpperCase()); } catch (eA) {} // the Foundry: Alloy from a server-settled close
+        try { if (kind === 'close' && !lbExcluded(e.sym) && !chalNoCredit(e)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
+        try { if (kind === 'close' && !lbExcluded(e.sym) && !chalNoCredit(e)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
+        try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null && !chalNoCredit(e)) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
+          if (roe != null && !chalNoCredit(e)) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once - a DO-reset re-sync must not double-grant */
             if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
@@ -37500,7 +37565,7 @@ export class UserStore {
           if (_q9 > 0 && _en9 > 0 && _ex9 > 0 && _fr9 > 0) _fee9 = Math.round(_q9 * (_en9 + _ex9) * _fr9 * 1e4) / 1e4;
           if (isFinite(+e.fund)) _fnd9 = Math.round(+e.fund * 1e4) / 1e4;
         }
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit,slpx,cp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null, (+e.sl > 0) ? +e.sl : ((+e.stop > 0) ? +e.stop : null), e.copy ? 1 : 0); // the client journal says `sl`, a server-filled position says `stop`; cp = a mirrored (paper copy) trade
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit,slpx,cp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null, (+e.sl > 0) ? +e.sl : ((+e.stop > 0) ? +e.stop : null), e.copy ? 1 : (e.chal ? 2 : 0)); // the client journal says `sl`, a server-filled position says `stop`; cp = a mirrored (paper copy) trade
         nIns++;
       }
       if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
@@ -37535,7 +37600,7 @@ export class UserStore {
   }
   _lbBest(uid, e, closeTs) { // trim-proof season-best upsert (keep-max), written the moment a qualifying close enters the system - the board reads MAX(blob scan, lbbest) so blob trims can never lower a shown value again
     try {
-      if (!(e && e.src === 'srv' && e.sc) || e.copy) return;         // the paid board counts only server-filled + server-closed trades (same rule as the board scan); a paper copy never (feature #2)
+      if (!(e && e.src === 'srv' && e.sc) || chalNoCredit(e)) return;         // the paid board counts only server-filled + server-closed trades (same rule as the board scan); a paper copy never (feature #2)
       const season = lbPeriodStart(+closeTs || Date.now());
       if (!(+e.ts >= season)) return;                                  // must be OPENED this season (no farming an old position into a new board)
       if (lbExcluded(e.sym)) return;                                   // forex/metals/indices/stables never rank
@@ -38584,6 +38649,7 @@ export class UserStore {
         sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', 'failed', Date.now(), 'not filled: ' + PT_MAX_PAIR + ' open ' + SYM + ' positions is the max', id);
         return this.j({ error: 'too_many_pair' });
       }
+      if (uid.indexOf(':') < 0 && this._chalSet().has(uid)) { const chL = this._chalLive(uid); if (chL) t.chal = chL.id; } // a fill while a run is live is a challenge trade
       this._syncJournal(uid, [t], b.promos, true, 'limit'); // server-authoritative write, same as /botopen
       sql.exec('UPDATE porders SET status=?, doneTs=?, tid=?, note=? WHERE id=?', 'filled', Date.now(), String(t.id || ''), String(b.note || '').slice(0, 120), id);
       try { this._whEnqueue(uid, 'order.filled', Object.assign(this._ordApi(this.rows('SELECT * FROM porders WHERE id=?', id)[0]), { position: this._j2bot(t, null) })); } catch (e7) {}
@@ -38596,18 +38662,34 @@ export class UserStore {
       const hist = this.rows('SELECT * FROM chal WHERE uid=? ORDER BY started DESC LIMIT 12', uid).map(x => this._chalPub(x));
       return this.j({ ok: true, active: r && r.ch && r.ch.status === 'active' ? r.ch : null, eval: r ? r.ev : null, needSyms: r ? (r.needSyms || []) : [], ended: r ? (r.ended || null) : null, phaseUp: !!(r && r.phaseUp), history: hist });
     }
-    if (path === '/chal/start') { // {uid, kind, book}
-      const uid = String(b.uid || ''), kind = String(b.kind || ''), book = +b.book || 0, ty = CHAL_TYPES[kind];
+    if (path === '/chal/start') { // {uid, kind, book, rules?} - kind 'custom' carries its own rules, validated by chalRulesNorm
+      const uid = String(b.uid || ''), kind = String(b.kind || ''), book = +b.book || 0;
       if (!uid || uid.indexOf(':') >= 0) return this.j({ error: 'bad_uid' });
-      if (!ty) return this.j({ error: 'bad_kind', kinds: Object.keys(CHAL_TYPES) });
+      let ty = CHAL_TYPES[kind];
+      if (kind === 'custom') { const nr = chalRulesNorm(b.rules); if (!nr.ok) return this.j(nr); ty = Object.assign({ name: 'Custom rules' }, nr.rules); ty.blurb = chalBlurb(ty); }
+      if (!ty) return this.j({ error: 'bad_kind', kinds: Object.keys(CHAL_TYPES).concat('custom') });
       if (CHAL_BOOKS.indexOf(book) < 0) return this.j({ error: 'bad_book', books: CHAL_BOOKS });
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_account' });
       if (this._chalActive(uid)) return this.j({ error: 'already_active' });
       const id = 'ch' + now.toString(36) + Math.floor(Math.random() * 46656).toString(36).padStart(3, '0');
-      sql.exec("INSERT INTO chal(id,uid,kind,book,targets,phase,daily,dd,ddtype,mindays,maxlev,started,phase_started,status) VALUES(?,?,?,?,?,1,?,?,?,?,?,?,?,'active')", id, uid, kind, book, ty.phases.join(','), ty.daily, ty.dd, ty.ddtype, ty.mindays, ty.maxlev, now, now);
+      sql.exec("INSERT INTO chal(id,uid,kind,book,targets,phase,daily,dd,ddtype,mindays,maxlev,started,phase_started,status,maxpos,strikes,best,tlimit,paused,paused_ms,blurb) VALUES(?,?,?,?,?,1,?,?,?,?,?,?,?,'active',?,?,?,?,0,0,?)",
+        id, uid, kind, book, ty.phases.join(','), +ty.daily || 0, ty.dd, ty.ddtype, ty.mindays || 0, ty.maxlev, now, now, +ty.maxpos || 0, +ty.strikes || 0, +ty.best || 0, +ty.tlimit || 0, kind === 'custom' ? ty.blurb : null);
       this._chSet = null;
       try { this._opsEv(uid, 'challenge', 'started ' + ty.name + ' $' + book.toLocaleString('en-US'), '/prop-firm-challenge/', {}); } catch (e) {}
       return this.j({ ok: true, id, active: this._chalPub(this._chalActive(uid)) });
+    }
+    if (path === '/chal/pause') { // {uid, on} - only with no open challenge position (an open one would keep moving the run while it "rests")
+      const uid = String(b.uid || ''); const ch = this._chalActive(uid); if (!ch) return this.j({ error: 'none_active' });
+      const on = !!b.on;
+      if (on === !!+ch.paused) return this.j({ ok: true, active: this._chalPub(ch), same: true });
+      if (on) {
+        const openN = this._chalInputs(ch).open.length;
+        if (openN) return this.j({ error: 'positions_open', open: openN, message: 'Close your ' + openN + ' challenge position' + (openN === 1 ? '' : 's') + ' before pausing.' });
+        sql.exec('UPDATE chal SET paused=1, paused_at=? WHERE id=?', now, ch.id);
+      } else sql.exec('UPDATE chal SET paused=0, paused_ms=COALESCE(paused_ms,0)+?, paused_at=NULL WHERE id=?', Math.max(0, now - (+ch.paused_at || now)), ch.id);
+      this._chSet = null;
+      try { this._opsEv(uid, 'challenge', (on ? 'paused ' : 'resumed ') + 'challenge ' + ch.id, '/prop-firm-challenge/', {}); } catch (e) {}
+      return this.j({ ok: true, active: this._chalPub(this._chalActive(uid)) });
     }
     if (path === '/chal/abandon') {
       const uid = String(b.uid || ''); const ch = this._chalActive(uid); if (!ch) return this.j({ error: 'none_active' });
@@ -38632,7 +38714,7 @@ export class UserStore {
       const ids = Array.from(new Set(rowsP.map(r => String(r.uid))));
       for (let i = 0; i < ids.length; i += 60) { const part = ids.slice(i, i + 60); try { this.rows('SELECT id, username FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { nm[u.id] = u.username || ''; }); } catch (e) {} }
       const testU = u => /^e2e/i.test(String(u)) || /^e2e_/i.test(String(nm[u] || ''));
-      const passed = rowsP.filter(r => nm[r.uid] && (e2e || !testU(r.uid))).map(r => ({ id: r.id, who: nm[r.uid], kind: r.kind, name: (CHAL_TYPES[r.kind] || {}).name || r.kind, book: +r.book, returnPct: r.ret, maxDdPct: r.maxdd, days: r.days, closes: r.closes, started: +r.started, passed: +r.ended, hours: Math.round((+r.ended - +r.started) / 3600000) }));
+      const passed = rowsP.filter(r => nm[r.uid] && (e2e || !testU(r.uid))).map(r => ({ id: r.id, who: nm[r.uid], kind: r.kind, name: r.kind === 'custom' ? 'Custom rules' : ((CHAL_TYPES[r.kind] || {}).name || r.kind), custom: r.kind === 'custom', blurb: r.blurb || (CHAL_TYPES[r.kind] || {}).blurb || '', book: +r.book, returnPct: r.ret, maxDdPct: r.maxdd, days: r.days, closes: r.closes, started: +r.started, passed: +r.ended, hours: Math.round((+r.ended - +r.started) / 3600000) }));
       const cnt = {}; try { for (const r of this.rows("SELECT status, reason, COUNT(*) n FROM chal WHERE uid NOT LIKE 'e2e%' GROUP BY status, reason")) { const k = r.status === 'failed' ? r.reason : r.status; cnt[k] = (cnt[k] || 0) + (+r.n || 0); } } catch (e) {}
       return this.j({ ok: true, passed: passed.slice(0, 100), counts: cnt });
     }
@@ -38670,7 +38752,7 @@ export class UserStore {
       // path never has to read uprefs on an open it is about to serve anyway; a site open sends none and is
       // unaffected, which is deliberate - the terminal is for learning and has never had a funding constraint.
       if (b.sim && b.sim.margin_enforced) { const g9 = this._marginGate(uid, jn, b.sim, +t.margin || 0); if (g9) return this.j(g9); }
-      if (uid.indexOf(':') < 0 && b.via !== 'copy' && this._chalSet().has(uid)) { const gc = this._chalGate(uid, +t.lev || 1, +t.margin || 0, now); if (gc) return this.j(gc); } // prop firm challenge rules (2026-11-16)
+      if (uid.indexOf(':') < 0 && b.via !== 'copy' && this._chalSet().has(uid)) { const gc = this._chalGate(uid, +t.lev || 1, +t.margin || 0, now); if (gc) return this.j(gc); const chL = this._chalLive(uid); if (chL) t.chal = chL.id; } // prop firm challenge rules (2026-11-16) + the tag that keeps this trade off every board
       this._syncJournal(uid, [t], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
       if (coid) {
         sql.exec('INSERT OR IGNORE INTO botidem(uid,coid,tid,ts) VALUES(?,?,?,?)', uid, coid, String(t.id || ''), now);
@@ -39030,11 +39112,11 @@ export class UserStore {
                send it; the phone chart engine never did, and a tracker-blocking extension drops /api/track outright), so a member's own
                server-filled opens went uncounted. The journal is the fact: every row opened today that is the member's own (never a mirrored
                copy) counts, and the larger of the two readings stands. */
-            if (String(d.va) === 'paper') { try { const jo = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart).length; if (jo > c) c = jo; } catch (e9) {} }
+            if (String(d.va) === 'paper') { try { const jo = this._loadJournal(uid).filter(x => x && !chalNoCredit(x) && +x.ts >= dayStart).length; if (jo > c) c = jo; } catch (e9) {} }
             /* A STOP OR TARGET SET AT THE OPEN IS A STOP OR TARGET SET (2026-11-14): the `sltp` beacon is sent by the edit sheet
                alone, so a member who typed the stop into the order form - the better habit - never completed the mission. The
                journal (own rows opened today carrying a stop or a target) and the server's own sltp edits count too. */
-            if (String(d.va) === 'sltp') { try { const js = this._loadJournal(uid).filter(x => x && !x.copy && +x.ts >= dayStart && ((+x.sl > 0) || (+x.stop > 0) || (+x.tp > 0))).length; const te = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND ts>=? AND kind='sltp'", uid, dayStart)[0] || {}).n || 0; if (js + te > c) c = js + te; } catch (e9) {} }
+            if (String(d.va) === 'sltp') { try { const js = this._loadJournal(uid).filter(x => x && !chalNoCredit(x) && +x.ts >= dayStart && ((+x.sl > 0) || (+x.stop > 0) || (+x.tp > 0))).length; const te = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND ts>=? AND kind='sltp'", uid, dayStart)[0] || {}).n || 0; if (js + te > c) c = js + te; } catch (e9) {} }
             /* A PROFILE MISSION COUNTS PROFILES (2026-11-14): the card also sends `profile` for a medal, Copy and Portfolio click,
                so one card opened and clicked twice read as "3 traders' profiles". Distinct names, the actions excluded. */
             if (String(d.va) === 'profile') { try { const pc = (this.rows("SELECT COUNT(DISTINCT label) n FROM uevents WHERE user_id=? AND ts>=? AND type='profile' AND label NOT LIKE 'medal:%' AND label NOT IN ('copy','portfolio')", uid, dayStart)[0] || {}).n; if (pc) c = pc; } catch (e9) {} } /* 0 keeps the mev fallback: the ring may have evicted the rows */ if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
@@ -40491,14 +40573,14 @@ export class UserStore {
              or the count beside the rate would be measuring a different book than the rate. */
           if (e && e.status !== 'win' && e.status !== 'loss') {
             const ot9 = +e.ts;
-            if (isFinite(ot9) && ot9 >= ws && ot9 < we && !lbExcluded(e.sym) && !(ws >= SRV_LB_START && e.src !== 'srv') && !e.copy && +e.qty > 0 && +e.entry > 0) {
+            if (isFinite(ot9) && ot9 >= ws && ot9 < we && !lbExcluded(e.sym) && !(ws >= SRV_LB_START && e.src !== 'srv') && !chalNoCredit(e) && +e.qty > 0 && +e.entry > 0) {
               const ob9 = openBook[r.uid] = openBook[r.uid] || [];
               if (ob9.length < 80) ob9.push({ sym: String(e.sym || '').toUpperCase(), side: e.side === 'short' ? 'short' : 'long', entry: +e.entry, qty: +e.qty, margin: +e.margin || 0 });
             }
             continue;
           }
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
-          if (e.copy) continue; // a paper copy never ranks (feature #2)
+          if (chalNoCredit(e)) continue; // a paper copy or a challenge trade never ranks (feature #2)
           const ct = +e.closeTs; if (!isFinite(ct) || ct < ws || ct >= we) continue; // only trades CLOSED this week count
           if (v2 && !(+e.ts >= ws)) continue; // v2: the trade must ALSO be OPENED this week - no farming an old position by (partial-)closing it into this week's board (partial closes keep the original open ts)
           if (lbExcluded(e.sym)) continue; // forex/metals/indices/stablecoins never count toward any board (low-vol → farmable at high leverage)
@@ -41045,7 +41127,7 @@ export class UserStore {
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
       let sbRoe = null, sbPnl = null, sbC = 0, sbW = 0, sbSum = 0, sbO = 0; // this-season floor derived from the display blob (backstop under the s_* counters); sbO = positions OPENED this season and still open
       try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
-        if (!e || e.copy) continue; // a paper copy is not this member's record (feature #2)
+        if (!e || chalNoCredit(e)) continue; // a paper copy (or a challenge trade) is not this member's record (feature #2)
         if (e.status !== 'win' && e.status !== 'loss') { if ((!e.status || e.status === 'open') && (+e.ts || 0) >= weekStart) sbO++; continue; }
         const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
         const roe = Math.max(-100, Math.min(p / m * 100, 1000000));
@@ -41411,7 +41493,7 @@ export class UserStore {
         const L = xpLevelOf((u && u.xp) || 0);
         let weekPnl = 0, weekN = 0, bestRoe = null;
         try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
-          if (!e || e.copy || (e.status !== 'win' && e.status !== 'loss')) continue; const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
+          if (!e || chalNoCredit(e) || (e.status !== 'win' && e.status !== 'loss')) continue; const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
           const roe = p / m * 100; if (bestRoe == null || roe > bestRoe) bestRoe = roe;
           const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekN++; weekPnl += p; }
         } } catch (e) {}
