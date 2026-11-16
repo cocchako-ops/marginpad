@@ -11037,7 +11037,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0651a9dc" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=02c218ec" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -24124,7 +24124,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '7d39c8b0';
+const ASSET_V = 'd348dfcd';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -29357,6 +29357,11 @@ export default {
     if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/progressdump', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/chalbackfill' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // DRY RUN unless {apply:true}: tag pre-CHAL_TAG_FROM challenge trades
+      let bb = {}; try { if (request.method === 'POST') bb = await request.json(); } catch (e) {}
+      const r = await usersDO(env, '/chal/backfill', { dry: bb.apply !== true, uid: bb.uid || url.searchParams.get('uid') || undefined });
+      return new Response(JSON.stringify(r || { error: 'unavailable' }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/lssnap' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: today's long/short snapshots (?tick=1 runs the hourly pass now)
       if (url.searchParams.get('tick') === '1') { try { await lsSnapTick(env); } catch (e) { return new Response(JSON.stringify({ error: String(e && e.message || e) }), { status: 500 }); } }
@@ -38692,6 +38697,25 @@ export class UserStore {
       this._chSet = null;
       try { this._opsEv(uid, 'challenge', (on ? 'paused ' : 'resumed ') + 'challenge ' + ch.id, '/prop-firm-challenge/', {}); } catch (e) {}
       return this.j({ ok: true, active: this._chalPub(this._chalActive(uid)) });
+    }
+    if (path === '/chal/backfill') { // {dry, uid?} - trades opened inside a run before CHAL_TAG_FROM get the run's tag (journal chal + tradeev cp=2), same rule the run already scored them by
+      const runs = this.rows('SELECT id, uid, started, ended FROM chal WHERE started < ?' + (b.uid ? ' AND uid=?' : '') + ' ORDER BY started ASC', ...(b.uid ? [CHAL_TAG_FROM, String(b.uid)] : [CHAL_TAG_FROM]));
+      const out = []; let tagged = 0, evN = 0;
+      const byUid = {}; for (const r of runs) (byUid[r.uid] = byUid[r.uid] || []).push(r);
+      for (const uid of Object.keys(byUid)) {
+        const jn = this._loadJournal(uid); const hit = [];
+        for (const t of jn) {
+          if (!t || t.chal || t.copy || !t.id) continue; const o = tradeOpenTs(t.id) || +t.ts || 0; if (!o || o >= CHAL_TAG_FROM) continue;
+          const run = byUid[uid].find(r => o >= +r.started && o <= (+r.ended || now)); if (!run) continue;
+          hit.push({ id: String(t.id), run: run.id, sym: t.sym, open: o }); if (!b.dry) t.chal = run.id;
+        }
+        if (hit.length && !b.dry) {
+          sql.exec('UPDATE utrades SET json=? WHERE user_id=?', JSON.stringify(jn), uid);
+          for (const h of hit) { try { const r = sql.exec("UPDATE tradeev SET cp=2 WHERE user_id=? AND tid=? AND COALESCE(cp,0)=0", uid, h.id); evN += (r && r.rowsWritten) || 0; } catch (e) {} }
+        }
+        tagged += hit.length; if (hit.length) out.push({ uid, trades: hit });
+      }
+      return this.j({ ok: true, dry: !!b.dry, runs: runs.length, tagged, tradeevRows: evN, users: out });
     }
     if (path === '/chal/abandon') {
       const uid = String(b.uid || ''); const ch = this._chalActive(uid); if (!ch) return this.j({ error: 'none_active' });

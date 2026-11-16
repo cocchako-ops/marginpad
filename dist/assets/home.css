@@ -4562,3 +4562,6 @@ html.pt-sheet{overflow:hidden!important;touch-action:none}
 .jr-fch{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:99px;border:1px solid rgba(255,179,71,.35);background:rgba(255,179,71,.06);color:#ffb347;font:600 11.5px/1 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;flex:none}
 .jr-fch:hover{border-color:#ffb347}
 .jr-fch.on{background:#ffb347;color:#0a0b0d;border-color:#ffb347}
+
+/* the Spanish chat room mark (2026-11-16) */
+.ct-ric-es{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(180deg,#c60b1e 0 25%,#ffc400 25% 75%,#c60b1e 75%);color:#0a0b0d;font:800 9px/1 'Space Mono',monospace;letter-spacing:0}
