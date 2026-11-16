@@ -1,7 +1,8 @@
 /* /crypto-prop-firms/ (2026-11-16): the crypto prop firms that sell an evaluation, compared on the rules that decide a pass. Owner rule for
    this page: every number comes from the firm's own site, with the day it was read. Read on 2026-11-16 by a research pass over each
    firm's rules, FAQ and pricing pages; where a firm's own pages disagree or the figure came from somewhere weaker, the cell says so instead
-   of picking one. No affiliate links (none of these is a partner yet) - links are plain nofollow to the firm's own page.
+   of picking one. 2026-11-16 evening: FTMO and IQ Capital became partners - a firm with `aff` carries our link + code in a marked
+   partner row (rel sponsored); every other link stays plain nofollow, and the figures are read the same way for all of them.
    Run: node build/gen-prop-firms-page.js  then the post-processor chain. Re-check every figure before changing CHECKED. */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -49,7 +50,15 @@ const FIRMS = [
     rules: [['One-Step Pro', '1', '10%', '3%', '6% static', 'none', '$89 ($5k)', '80-90%'], ['One-Step Lite', '1', '8%', '3%', '4% static', 'none', '$49 ($5k)', '80-90%'], ['Two-Step Pro', '2', '10% then 5%', '5%', '8-10% static', 'none', '$65 ($5k)', '80-90%']],
     note: 'A "Funded Score" limits your best day (under 20-40% of profit depending on the plan). News, overnight and weekend holding allowed.',
     src: ['https://mubite.com/en/challengeRules', 'https://mubite.com/en/challenge-prices'] },
-  { name: 'FTMO (crypto CFDs only)', site: 'https://ftmo.com/', trade: 'CFDs on MetaTrader, cTrader and TradingView. Crypto is a minor asset class there, not perpetual futures.',
+  { name: 'IQ Capital', site: 'https://iqcapital.io/', aff: { url: 'https://checkout.iqcapital.io/products?aff=marginpad', ex: 'IQ Capital', code: 'MARGINPAD', label: 'Get an IQ Capital challenge' },
+    trade: 'About 120 USDT perpetuals on Volumetrica, or crypto, forex, index and commodity CFDs on IQ MT5. Simulated. They also run separate futures programs.',
+    daily: 'No daily loss limit on the Core challenge. Instead no single position may lose more than 1% of the starting balance (0.5% once funded): the position is closed and the account stays, and the third time ends it.',
+    lev: '5x on BTC, ETH and SOL, 3x on other coins; CFDs up to 50x on forex and 25x on indices and commodities.',
+    payout: '90% from the first dollar. First request after 10 active trading days, then each needs 50% new profit since the last; up to half the profit per request, capped by account size ($1,500 on a 50k for the first two).',
+    rules: [['Core (Crypto / CFD)', '1', '8%', 'none', '6% EOD trailing (5% on 200k)', 'none', '$9 (first 50k), then $195', '90%']],
+    note: 'Funded accounts add a 30% best-day consistency rule. The $9 welcome challenge is once per person and cannot be reset; the $9 price and the $129 activation fee after passing are from their checkout, not the help centre. At least one trade every 8 days. Copy trading and black-box bots are banned.',
+    src: ['https://support.iqcapital.io/en/articles/15002141-core-crypto-challenge', 'https://support.iqcapital.io/en/articles/15001850-max-drawdown-end-of-day', 'https://support.iqcapital.io/en/articles/15015211-max-position-loss', 'https://support.iqcapital.io/en/articles/15005697-performance-reward-core-core-dll', 'https://checkout.iqcapital.io/products'] },
+  { name: 'FTMO (crypto CFDs only)', site: 'https://ftmo.com/', aff: { url: 'https://join.ftmo.com/tsdRCnEjEATqghNGrzVM', ex: 'FTMO', code: 'tsdRCnEjEATqghNGrzVM', label: 'Open FTMO with our link' }, trade: 'CFDs on MetaTrader, cTrader and TradingView. Crypto is a minor asset class there, not perpetual futures.',
     daily: 'Equity, open profit and loss included, against the balance at midnight Central European time.',
     lev: 'About 1:3.3 on crypto on the Standard account (an FTMO answer, not their live symbol table).',
     payout: 'Not confirmed on the pages read.',
@@ -58,9 +67,9 @@ const FIRMS = [
     src: ['https://ftmo.com/en/trading-objectives/', 'https://ftmo.com/en/2-step-challenge/', 'https://ftmo.com/en/1-step-challenge/'] },
 ];
 const TITLE = 'Crypto Prop Firms Compared (Nov 2026): Rules, Drawdown, Prices';
-const DESC = 'HyroTrader, Breakout, Crypto Fund Trader, Bitfunded, Mubite and FTMO compared on what decides a pass: profit target, daily loss, maximum drawdown, minimum days, leverage and entry price - every figure from the firm\'s own site, checked ' + CHECKED + '.';
+const DESC = 'HyroTrader, Breakout, Crypto Fund Trader, Bitfunded, Mubite, IQ Capital and FTMO compared on what decides a pass: profit target, daily loss, maximum drawdown, minimum days, leverage and entry price - every figure from the firm\'s own site, checked ' + CHECKED + '.';
 const FAQ = [
-  ['Which crypto prop firm has the easiest rules?', 'None is easy in the way that matters: the daily loss limit (3-5% on every plan here) fails far more challenges than the target. Looser drawdown usually costs a lower target elsewhere or a two-step evaluation. Compare the daily loss limit and how it is measured first - equity or balance, and at which hour - then the drawdown type.'],
+  ['Which crypto prop firm has the easiest rules?', 'None is easy in the way that matters: the daily loss limit (3-5% on every plan here except IQ Capital\'s Core, which has none and caps each position at 1% instead) fails far more challenges than the target. Looser drawdown usually costs a lower target elsewhere or a two-step evaluation. Compare the daily loss limit and how it is measured first - equity or balance, and at which hour - then the drawdown type.'],
   ['What is the difference between static and trailing drawdown?', 'A static floor sits a fixed distance below the starting balance and never moves. A trailing floor rises with your highest balance (or highest end-of-day balance), so profit you give back counts against you. A 6% trailing drawdown is much tighter than a 6% static one once you are in profit.'],
   ['Can I practise a crypto prop firm challenge for free?', 'Yes - MarginPad runs the same three rule shapes (one-step, two-step and end-of-day trailing) on a free paper account with live prices, and our server enforces the daily loss and drawdown the way a firm does. It funds nobody, but a pass tells you whether you can do it before you pay for an evaluation.'],
   ['Do these prices include a refund?', 'Some firms refund the evaluation fee with the first payout (HyroTrader on its One-Step and Two-Step, Mubite on its Two-Step, Bitfunded on the third payout); others never refund it. Prices change and discount banners at checkout change them again - always read the firm\'s own checkout.'],
@@ -75,7 +84,7 @@ const firmHtml = f => `
 ${f.rules.map(r => `      <tr>${r.map((c, i) => `<td${i ? ' class="n"' : ''}>${esc(c)}</td>`).join('')}</tr>`).join('\n')}
     </tbody></table></div>
     <dl class="pf-dl"><dt>Daily loss measured</dt><dd>${esc(f.daily)}</dd><dt>Leverage</dt><dd>${esc(f.lev)}</dd><dt>Payouts</dt><dd>${esc(f.payout)}</dd><dt>Worth knowing</dt><dd>${esc(f.note)}</dd></dl>
-    <p class="pf-src">Sources, read ${CHECKED}: ${f.src.map(u => `<a href="${esc(u)}" target="_blank" rel="nofollow noopener noreferrer">${esc(u.replace(/^https:\/\/(www\.)?/, ''))}</a>`).join(' &middot; ')}</p>
+${f.aff ? `    <div class="pf-aff"><span class="pf-ptag">Our partner</span><span class="pf-cl">Code</span><code>${esc(f.aff.code)}</code><button type="button" class="pf-copy" data-copy="${esc(f.aff.code)}">Copy</button><a class="pf-go" href="${esc(f.aff.url)}" target="_blank" rel="noopener sponsored" data-ex="${esc(f.aff.ex)}">${esc(f.aff.label)} &rarr;</a></div>\n` : ''}    <p class="pf-src">Sources, read ${CHECKED}: ${f.src.map(u => `<a href="${esc(u)}" target="_blank" rel="nofollow noopener noreferrer">${esc(u.replace(/^https:\/\/(www\.)?/, ''))}</a>`).join(' &middot; ')}</p>
   </section>`;
 
 const html = `<!DOCTYPE html>
@@ -123,6 +132,14 @@ const html = `<!DOCTYPE html>
   .pf-cta h2{margin:0 0 8px}.pf-cta p{margin:0 0 14px;color:var(--ink2);font-size:14.5px;line-height:1.65}
   .pf-go{display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:12px;background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;text-decoration:none;margin-right:10px}
   .pf-ghost{display:inline-flex;align-items:center;height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);color:var(--ink2);font-family:'Space Mono',monospace;font-size:12.5px;text-decoration:none}
+  .pf-aff{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 0;padding:12px 14px;border-radius:13px;border:1px dashed rgba(194,246,74,.45);background:rgba(194,246,74,.05)}
+  .pf-ptag{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0a0b0d;background:var(--lime);padding:4px 8px;border-radius:6px}
+  .pf-cl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+  .pf-aff code{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+  .pf-copy{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--ink2);cursor:pointer}
+  .pf-copy.ok{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  .pf-aff .pf-go{margin:0 0 0 auto;height:40px}
+  @media(max-width:640px){.pf-aff .pf-go{margin:0;width:100%;justify-content:center}}
   .content p{color:var(--ink2);font-size:14.5px;line-height:1.7;margin:0 0 14px}
   .faq details{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:10px;overflow:hidden}
   .faq summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -146,7 +163,7 @@ ${JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEnt
   <section class="hero">
     <span class="eyebrow">Checked ${CHECKED}</span>
     <h1>Crypto Prop Firms Compared</h1>
-    <p class="sub">Six firms that sell a crypto evaluation, compared on the rules that decide whether you pass: the profit target, the daily loss limit and how it is measured, the maximum drawdown and its type, the minimum trading days, leverage and the entry price. Every figure is read off the firm's own pages, and where those pages disagree with each other we say so instead of choosing. None of these firms pays us.</p>
+    <p class="sub">Seven firms that sell a crypto evaluation, compared on the rules that decide whether you pass: the profit target, the daily loss limit and how it is measured, the maximum drawdown and its type, the minimum trading days, leverage and the entry price. Every figure is read off the firm's own pages, and where those pages disagree with each other we say so instead of choosing. IQ Capital and FTMO are our partners - their rows carry our link and code, marked as such; the figures are read the same way for every firm.</p>
   </section>
 
   <section class="pf-quick">
@@ -156,6 +173,7 @@ ${JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEnt
       <tr><td><a href="#crypto-fund-trader">Crypto Fund Trader</a></td><td>Bybit, MT5, Match-Trader</td><td class="n">3-5%</td><td class="n">3-10% static</td><td class="n">up to 1:100</td><td class="n">$25</td></tr>
       <tr><td><a href="#bitfunded">Bitfunded</a></td><td>Own platform</td><td class="n">3-5%</td><td class="n">3-10% static</td><td class="n">5x</td><td class="n">$39</td></tr>
       <tr><td><a href="#mubite">Mubite</a></td><td>Bybit, Cleo</td><td class="n">3-5%</td><td class="n">4-10% static</td><td class="n">up to 1:100</td><td class="n">$49</td></tr>
+      <tr><td><a href="#iq-capital">IQ Capital</a></td><td>Volumetrica perps, MT5 CFDs</td><td class="n">none (1% per position)</td><td class="n">6% EOD trailing</td><td class="n">5x</td><td class="n">$9 (first 50k)</td></tr>
       <tr><td><a href="#ftmo-crypto-cfds-only">FTMO</a></td><td>Crypto CFDs</td><td class="n">3-5%</td><td class="n">10% static / EOD trailing</td><td class="n">about 1:3.3</td><td class="n">EUR 79</td></tr>
     </tbody></table></div>
     <p class="pf-src">Entry price = the smallest account on the cheapest plan, as published. A discount at checkout can change it.</p>
@@ -170,8 +188,8 @@ ${FIRMS.map(firmHtml).join('\n')}
 
   <section class="content" style="margin-top:30px">
     <h2>How to read these rules</h2>
-    <p><strong>Daily loss is not one rule.</strong> HyroTrader and Mubite measure from your equity at 00:00 UTC, Crypto Fund Trader from the balance at 00:05 UTC, Bitfunded from the starting balance on a UTC+8 day, FTMO at midnight Central European time, and Breakout (by its own page as quoted) from the 00:30 UTC balance with open positions excluded. An open position losing money at the reset can therefore count against you at one firm and not at another.</p>
-    <p><strong>Static beats trailing of the same size.</strong> Every crypto plan above uses a static maximum drawdown except FTMO's 1-Step, which trails the highest end-of-day balance. A trailing floor follows your profit up, so it is tighter than its number suggests once you are ahead.</p>
+    <p><strong>Daily loss is not one rule.</strong> HyroTrader and Mubite measure from your equity at 00:00 UTC, Crypto Fund Trader from the balance at 00:05 UTC, Bitfunded from the starting balance on a UTC+8 day, FTMO at midnight Central European time, IQ Capital has none on its Core challenge (it caps each position at 1% instead), and Breakout (by its own page as quoted) from the 00:30 UTC balance with open positions excluded. An open position losing money at the reset can therefore count against you at one firm and not at another.</p>
+    <p><strong>Static beats trailing of the same size.</strong> Every crypto plan above uses a static maximum drawdown except FTMO's 1-Step and IQ Capital's Core, which trail the highest end-of-day balance or equity. A trailing floor follows your profit up, so it is tighter than its number suggests once you are ahead.</p>
     <p><strong>Leverage is not comparable as one figure.</strong> HyroTrader allows up to 150x in the test and then caps total exposure at twice the balance once funded; Breakout and Bitfunded stop at 5x; the CFD firms sit near 1:1 to 1:3.3. Train at the leverage you will be allowed once funded, not the one the test allows.</p>
   </section>
 
@@ -183,6 +201,7 @@ ${FAQ.map(q => `    <details>\n      <summary>${esc(q[0])}</summary>\n      <div
 <div class="wrap" style="padding-bottom:0">
 <footer class="toolfoot"><div class="cols"><div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools - calculators, a live charts workspace, a paper-trading terminal and a real-time liquidation feed. No signup.</p></div><div><h4>Funded practice</h4><a href="/prop-firm-challenge/">Prop Firm Challenge</a><a href="/prop-firm-drawdown-calculator/">Drawdown Calculator</a><a href="/${SLUG}/">Crypto Prop Firms</a><a href="/practice-for-a-funded-account/">Our Pass Rate</a></div><div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/rekt/">Liquidations</a></div></div><div class="bottom">&copy; 2026 MarginPad &middot; Figures read from each firm's own site on ${CHECKED} &middot; Not financial advice</div></footer>
 </div>
+<script>(function(){document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('[data-copy]');if(c){var v=c.getAttribute('data-copy');try{navigator.clipboard.writeText(v).then(function(){c.classList.add('ok');c.textContent='Copied';setTimeout(function(){c.classList.remove('ok');c.textContent='Copy';},1800);});}catch(x){}return;}var a=e.target.closest&&e.target.closest('a[data-ex]');if(a)try{navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname));}catch(x){}},true);})();</script>
 <script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>

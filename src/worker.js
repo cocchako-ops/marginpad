@@ -8987,6 +8987,7 @@ const PARTNERS = {
   bybit: 'Bybit', binance: 'Binance', okx: 'OKX', bitget: 'Bitget', kraken: 'Kraken', coinbase: 'Coinbase',
   kucoin: 'KuCoin', mexc: 'MEXC', moon: 'Moon', gate: 'Gate', gateio: 'Gate', 'gate.io': 'Gate',
   'crypto.com': 'Crypto.com', cryptocom: 'Crypto.com', bingx: 'BingX', phemex: 'Phemex', hyperliquid: 'Hyperliquid', fomo: 'Fomo', aster: 'Aster', asterdex: 'Aster',
+  ftmo: 'FTMO', iqcapital: 'IQ Capital', iq: 'IQ Capital', // prop firms (2026-11-16): the homepage "Get funded" cards
   tradingview: 'TradingView', koinly: 'Koinly', '3commas': '3Commas', ledger: 'Ledger', trezor: 'Trezor',
 };
 function partnerOf(label) { // '' when the label is not a partner we actually work with
