@@ -25328,14 +25328,49 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
   // portfolio valuation, the board cron pricing 200 accounts) was spending that budget before a chart ever got a turn. MEASURED 2026-10-22: 37 of 40
   // trending charts came back empty while DexScreener answered the SAME 40 pools 40 of 40 with price, liquidity and the pair's own base token.
   // DS allows 300 pair reads a minute and returns the base token, so the 'a trade must prove the pool belongs to the token it names' rule holds.
-  try { const d = await dsPool(env, net, pool); if (d && d.price > 0) return d; } catch (e) {}
+  try { const d = await dsPool(env, net, pool); if (d && d.price > 0) { d.src = 'ds'; return d; } } catch (e) {}
+  const g = await spotGtPool(env, net, pool); if (g) return g;
+  // still nothing -> fall back to the AGGREGATE meme list price, but ONLY a row read within the last SPOT_FALLBACK_MAX_AGE (carried-over rows used to have no age at all)
+  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_FALLBACK_MAX_AGE)) return { price: m.price, liqUsd: m.liqUsd || 0, mint: m.mint || '', stale: true, src: 'list' }; } catch (e) {}
+  return null;
+}
+// GeckoTerminal's own reading of ONE pool (30 s cache, droplet fallback inside gtFetch). mint = the pool's OWN base token.
+async function spotGtPool(env, net, pool) {
   const j = await gtFetch(env, '/networks/' + gtNet(net) + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
   const a = j && j.data && j.data.attributes;
   const price = a ? +a.base_token_price_usd || 0 : 0;
-  if (price > 0) { let mint = ''; try { mint = String(j.data.relationships.base_token.data.id || '').replace(/^[a-z0-9-]+_/, ''); } catch (e) {} return { price, liqUsd: +a.reserve_in_usd || 0, mint }; } // mint = the pool's OWN base token; a trade must prove the pool belongs to the token it names
-  // still nothing -> fall back to the AGGREGATE meme list price, but ONLY a row read within the last SPOT_FALLBACK_MAX_AGE (carried-over rows used to have no age at all)
-  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_FALLBACK_MAX_AGE)) return { price: m.price, liqUsd: m.liqUsd || 0, mint: m.mint || '', stale: true }; } catch (e) {}
+  if (!(price > 0)) return null;
+  let mint = ''; try { mint = String(j.data.relationships.base_token.data.id || '').replace(/^[a-z0-9-]+_/, ''); } catch (e) {}
+  return { price, liqUsd: +a.reserve_in_usd || 0, mint, src: 'gt' };
+}
+/* A PRICE ONE SOURCE MADE UP IS NOT A PRICE (2026-11-16, owner: "Ispravi ovaj bug, potrudi se da vise ne moze da se ponovi").
+   Coin "Monkey" (BSC) traded flat around 6e-26 all week on GeckoTerminal's candles, while DexScreener priced the SAME pool at
+   3.78e-24 (60x) and at other moments far higher - the pair is quoted in XAUt and the coin has dozens of dust pools, so the USD
+   conversion on one side was simply wrong. spotMemePrice reads DexScreener first and GeckoTerminal when it does not answer, so
+   a member's fill jumped between the two: $827 -> $413,462 in two hours (x500) on a coin that never moved. Every guard we had
+   compared the fill with OUR OWN earlier quotes, which came from the same broken source, so none of them could see it.
+   The rule now: a fill needs a SECOND, independent reading of the same pool (GeckoTerminal, else a fresh list row, which is
+   GeckoTerminal-derived) within SPOT_SRC_AGREE of the first. Two readings that disagree mean the price is unknown and nothing
+   fills. With no second reading a trade may still go through, but only one that stays within SPOT_SOLO_X of the position's own
+   cost basis - a big move needs two witnesses. Pure, so the suite drives the exact rule the money path runs. */
+const SPOT_SRC_AGREE = 1.5;
+const SPOT_SOLO_X = 3;
+function spotQuoteCheck(o) {
+  const p1 = +(o && o.p1) || 0, p2 = +(o && o.p2) || 0, ref = +(o && o.ref) || 0;
+  if (!(p1 > 0)) return { ok: false, why: 'no_price' };
+  if (p2 > 0) { const r = Math.max(p1, p2) / Math.min(p1, p2); return r > SPOT_SRC_AGREE ? { ok: false, why: 'price_disagree', ratio: r } : { ok: true, ratio: r, confirmed: true }; }
+  if (ref > 0) { const x = Math.max(p1, ref) / Math.min(p1, ref); if (x > SPOT_SOLO_X) return { ok: false, why: 'price_unconfirmed', x }; }
+  return { ok: true, confirmed: false };
+}
+// the second reading of a pool, from a source independent of the one that gave `first`
+async function spotSecondPrice(env, net, pool, first) {
+  if (first && first.src !== 'gt') { try { const g = await spotGtPool(env, net, pool); if (g && g.price > 0) return g; } catch (e) {} }
+  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_LIST_FRESH_MS)) return { price: m.price, src: 'list' }; } catch (e) {}
   return null;
+}
+async function spotQuoteAlarm(env, net, pool, sym, why, p1, p2) {
+  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['spotquote'], blobs: ['spotquote', String(why), net + ':' + pool, String(sym || '')], doubles: [p1 || 0, p2 || 0] }); } catch (e) {}
+  try { const k = 'alrt:spotquote:' + net + ':' + String(pool).slice(0, 70); if (!(await env.STATS.get(k))) { await env.STATS.put(k, '1', { expirationTtl: 6 * 3600 }); await tgAdmin(env, '<b>Demo Spot: cena odbijena</b> ' + (sym || '') + ' (' + net + ') - ' + why + ': ' + p1 + (p2 ? ' vs ' + p2 : '') + '. Trejd nije izvrsen.', { kind: 'spot quote', sev: 'warn' }); } } catch (e) {}
 }
 // CoinGecko ONCHAIN = GeckoTerminal's own data behind the CoinGecko DEMO key (30 calls/min, 10k/month) - a budget nobody else shares, unlike the
 // anonymous per-IP one GT applies to Cloudflare's egress. CoinGecko WAF-blocks the Worker egress (2026-09-30), so it goes through the droplet's
@@ -25576,6 +25611,12 @@ async function handleSpot(url, request, env) {
          $100 -> $500 -> $1,000 for $13,145. The moment the two agreed again every round trip booked exactly
          $0. Two prices for one pool is the bug; letting only the SELL side use the weaker one closes it. */
       if (side === 'buy' && priceStale) return jr({ error: 'no_price' }, 503);
+      { // two witnesses for one price (2026-11-16, the Monkey bug - see spotQuoteCheck). ref = this member's own cost basis on the coin.
+        let ref = 0; try { const hd0 = await sdo('/s2/hold?uid=' + encodeURIComponent(uid) + '&key=' + encodeURIComponent(key)); if (hd0 && +hd0.qty > 0) ref = (+hd0.costUsd || 0) / hd0.qty; } catch (e) {}
+        const sec = await spotSecondPrice(env, net, pool, mp);
+        const qc = spotQuoteCheck({ p1: price, p2: sec ? sec.price : 0, ref });
+        if (!qc.ok) { const sym0 = (info && info.sym) || (holdMeta && holdMeta.sym) || ''; await spotQuoteAlarm(env, net, pool, sym0, qc.why, price, sec ? sec.price : 0); return jr({ error: 'no_price', why: qc.why }, 503); }
+      }
       meta = { k: 'meme', mint, pool, net, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
     } else {
       const sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
@@ -25645,7 +25686,12 @@ async function spotPriceHolds(env, holds, opt) {
       if (x.meta && x.meta.k === 'meme') {
         const row = byPool && x.meta.pool ? byPool[String(x.meta.pool).toLowerCase()] : null;
         if (row && (+row.ts > 0) && (now - (+row.ts) < SPOT_LIST_FRESH_MS) && (!x.meta.mint || !row.mint || String(row.mint).toLowerCase() === String(x.meta.mint).toLowerCase())) { px = +row.price; liq = +row.liqUsd || 0; }
-        else { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); if (mp && !mp.stale) { px = +mp.price || 0; liq = +mp.liqUsd || 0; } }
+        else { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); if (mp && !mp.stale) { px = +mp.price || 0; liq = +mp.liqUsd || 0;
+          /* the board pays real money on UNREALISED value too, so a bag the one-source price says has gained more than
+             SPOT_SOLO_X over its cost is checked against GeckoTerminal, and two readings that disagree value it at the LOWER
+             (2026-11-16, Monkey: one source priced a bag 60x what the market did). Only big gainers pay the extra read. */
+          const cpx = x.qty > 0 ? (+x.costUsd || 0) / x.qty : 0;
+          if (mp.src === 'ds' && px > 0 && cpx > 0 && px / cpx > SPOT_SOLO_X) { try { const g = await spotGtPool(env, x.meta.net || 'solana', x.meta.pool); if (g && g.price > 0 && Math.max(px, g.price) / Math.min(px, g.price) > SPOT_SRC_AGREE) { px = Math.min(px, g.price); x.disputed = true; } } catch (e) {} } } }
         if (liq != null) { x.liqUsd = Math.round(liq); x.rugged = x.liqUsd < SPOT_THIN_LIQ; }
       }
       else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
@@ -28212,6 +28258,40 @@ export default {
          other dead field in this file. One definition, and the correction is not finished until it is live. */
       if (bd.apply) { try { await spotBoardCron(env); board = await memeSnapshot(env, lbPeriodStart(Date.now())); } catch (e) {}
         try { await caches.default.delete(new Request('https://marginpad.io/__adm_spot_v3')); } catch (e) {} }
+      return new Response(JSON.stringify({ ok: true, dryRun: !bd.apply, rows: out, board: board ? { n: board.n, checked: board.checked, corrected: board.corrected, top: (board.rows || []).slice(0, 6) } : null }, null, 1), { headers: jh2 });
+    }
+    /* VOID ONE COIN FOR A MEMBER (2026-11-16, the Monkey bug). POST {apply?, rows:[{uid, username, key, ref, why, note?}]}: DRY RUN unless
+       apply. The worker prices the member's other bags (the store cannot fetch), passes their value and the floor (what they deposited),
+       the store undoes every trade on `key`, the public board is rebuilt, and `note` goes to the member as a 'note' notification - the
+       centre-screen MarginPad message - so nobody finds a smaller balance with no sentence beside it. */
+    if (url.pathname === '/api/admin/spotvoid' && env.SPOT && adminKeyFrom(request, url) === adminKeyOf(env)) {
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let bd = {}; if (request.method === 'POST') { try { bd = await request.json(); } catch (e) {} }
+      const list = Array.isArray(bd.rows) ? bd.rows.slice(0, 20) : [];
+      if (!list.length) return new Response(JSON.stringify({ error: 'no_rows', how: 'POST {apply?:true, rows:[{uid, username, key, ref, why, note?}]}' }), { status: 400, headers: jh2 });
+      const out = [];
+      for (const r of list) {
+        const uid = String(r.uid || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 64), key = String(r.key || '').slice(0, 120), ref = String(r.ref || '');
+        const row = { uid, username: String(r.username || ''), key, ref };
+        if (!uid || !key || !ref) { row.error = 'bad_row'; out.push(row); continue; }
+        let pf = null; try { pf = await (await spotStub(env).fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(uid) + '&ro=1'))).json(); } catch (e) {}
+        if (!pf || pf.none) { row.error = 'no_account'; out.push(row); continue; }
+        const holds = (pf.holds || []).map(h => Object.assign({}, h));
+        try { await spotPriceHolds(env, holds, {}); } catch (e) {}
+        let holdValC = 0, othersC = 0;
+        for (const h of holds) { const v = Math.round((+h.valueUsd || (h.qty * (+h.price || 0))) * 100) || 0; if (h.key === key) holdValC += v; else othersC += v; }
+        const floorC = Math.round((+pf.depositedUsd || 0) * 100);
+        let res = null; try { res = await (await spotStub(env).fetch(new Request('https://do/s2/voidcoin', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, key, ref, why: String(r.why || ''), holdValC, othersC, floorC, apply: !!bd.apply }) }))).json(); } catch (e) { row.error = 'store_failed'; }
+        row.result = res;
+        if (bd.apply && res && res.ok && !res.dup && r.note) {
+          try { const n = await usersDO(env, '/notify', { uid, kind: 'note', body: String(r.note).slice(0, 700), link: '/spot/' }); row.noted = !!(n && !n.error); } catch (e) { row.noted = false; }
+        }
+        out.push(row);
+      }
+      let board = null;
+      if (bd.apply) { try { await spotBoardCron(env); board = await memeSnapshot(env, lbPeriodStart(Date.now())); } catch (e) {}
+        try { await caches.default.delete(new Request('https://marginpad.io/__adm_spot_v3')); } catch (e) {}
+        try { await tgAdmin(env, '<b>Demo Spot: coin ponisten</b> ' + out.map(o => '@' + o.username + ' ' + (o.result && o.result.changeUsd != null ? (o.result.changeUsd >= 0 ? '+' : '') + o.result.changeUsd.toFixed(2) : '?')).join(', '), { kind: 'spot void', sev: 'info' }); } catch (e) {} }
       return new Response(JSON.stringify({ ok: true, dryRun: !bd.apply, rows: out, board: board ? { n: board.n, checked: board.checked, corrected: board.corrected, top: (board.rows || []).slice(0, 6) } : null }, null, 1), { headers: jh2 });
     }
     if (url.pathname === '/api/admin/spot' && env.SPOT && (await adminCookieOk(request, env))) { // Demo Spot (v3, 2026-10-16): every account with its live worth, season P&L, claims and holdings. Roster edge-cached 60s.
@@ -33700,6 +33780,36 @@ export class SpotStore {
        `usdt`, which is what the board reads, and writes its own sp2tx row with the reason, so the history
        explains the change instead of a balance silently shrinking. `ref` makes it idempotent - a repeated call
        answers `dup` and moves nothing, because a correction applied twice is a second bug. */
+    /* VOID EVERY TRADE ON ONE COIN (2026-11-16, the Monkey bug: the coin never moved, our quote did). Undoes the coin as if it had
+       never been traded: what the member paid in comes back, what they took out goes, the bag is removed - the NET of the whole
+       mispriced window, the 2026-10-25 rule, so a member the bug also hurt is made whole rather than charged twice. The balance never
+       goes negative: a shortfall comes out of the other bags (scaled down, `othersC` = their value priced by the worker), and the
+       account never ends below `floorC` (what the member deposited) - losses taken with money that never existed are not theirs.
+       Idempotent on `ref`; a `fix` row carries the reason into the member's own history; dry unless `apply`. */
+    if (path === '/s2/voidcoin' && request.method === 'POST') {
+      const ref = String(b.ref || '').replace(/[^a-zA-Z0-9_.:-]/g, '').slice(0, 64), why = String(b.why || '').slice(0, 160), key = String(b.key || '').slice(0, 120);
+      if (!uid || !ref || !key) return this.j({ error: 'bad' }, 400);
+      const a = this._acct2(uid, now, false); if (!a) return this.j({ error: 'no_account' }, 404);
+      if (this.rows("SELECT id FROM sp2tx WHERE user_id=? AND side='fix' AND meta LIKE ?", uid, '%"ref":"' + ref + '"%')[0]) return this.j({ ok: true, dup: true });
+      const s = this.rows("SELECT SUM(CASE WHEN side='buy' THEN usd ELSE 0 END) b, SUM(CASE WHEN side='sell' THEN usd ELSE 0 END) s, SUM(CASE WHEN side='sell' THEN pnl ELSE 0 END) p, COUNT(*) n FROM sp2tx WHERE user_id=? AND key=?", uid, key)[0] || {};
+      const buysC = +s.b || 0, sellsC = +s.s || 0, pnlC = +s.p || 0, n = +s.n || 0;
+      const hold = this.rows('SELECT qty,cost FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0] || null;
+      const holdValC = Math.max(0, Math.round(+b.holdValC || 0)), othersC = Math.max(0, Math.round(+b.othersC || 0)), floorC = Math.max(0, Math.round(+b.floorC || 0));
+      const cash0 = +a.usdt || 0, adjust = buysC - sellsC;
+      const before = cash0 + othersC + holdValC;
+      let cash = cash0 + adjust, scale = 1;
+      if (cash < 0) { const short = -cash; cash = 0; scale = othersC > 0 ? Math.max(0, (othersC - short) / othersC) : 0; }
+      let after = cash + Math.round(othersC * scale);
+      if (after < floorC && before > floorC) { const add = Math.min(floorC, before) - after; cash += add; after += add; } // never below what they deposited - but never ABOVE where they stood
+      const out = { ok: true, key, n, buysUsd: buysC / 100, sellsUsd: sellsC / 100, realizedOnCoinUsd: pnlC / 100, holdQty: hold ? hold.qty : 0, holdValueUsd: holdValC / 100, othersUsd: othersC / 100,
+        cashBeforeUsd: cash0 / 100, cashAfterUsd: cash / 100, otherBagsScale: scale, equityBeforeUsd: before / 100, equityAfterUsd: after / 100, changeUsd: (after - before) / 100, dry: !b.apply };
+      if (!b.apply) return this.j(out);
+      sql.exec('UPDATE sp2acct SET usdt=?, realized=COALESCE(realized,0)-? WHERE user_id=?', cash, pnlC, uid);
+      sql.exec('DELETE FROM sp2hold WHERE user_id=? AND key=?', uid, key);
+      if (scale < 1) sql.exec('UPDATE sp2hold SET qty=qty*?, cost=CAST(cost*? AS INTEGER) WHERE user_id=? AND key<>?', scale, scale, uid, key);
+      sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'fix','USD',0,0,?,?,?)", uid, now, after - before, after - before, JSON.stringify({ ref, why, void: key }));
+      return this.j(out);
+    }
     if (path === '/s2/correct' && request.method === 'POST') {
       const ref = String(b.ref || '').replace(/[^a-zA-Z0-9_.:-]/g, '').slice(0, 64);
       const cents = Math.round(+b.cents || 0), why = String(b.why || '').slice(0, 120);
