@@ -469,6 +469,7 @@ function __esT_mpnav(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpna
     + sub('/calculators?c=dca', 'subDca', __esT_mpnav("dcaAverageDownAverage",'dca average down average entry add to position martingale'))
     + sub('/calculators?c=tp', 'subTp', __esT_mpnav("takeProfitTargetTp",'take profit target tp exit price where to sell'))
     + sub('/calculators?c=rr', 'subRr', __esT_mpnav("riskRewardRatioRr",'risk reward ratio rr stop loss target expectancy'))
+    + sub('/prop-firm-drawdown-calculator/', 'Prop firm drawdown calculator', 'prop firm funded account challenge evaluation ftmo drawdown daily loss limit trailing static pass the challenge funded trader')
     + sub('/crypto-tax-calculator/', 'Crypto tax calculator', 'tax taxes capital gains hmrc irs report income')
     + sub('/crypto-cost-basis-calculator/', 'Cost basis calculator (FIFO/LIFO)', 'cost basis fifo lifo hifo average cost accounting')
     + sub('/hyperliquid-liquidation-calculator/', 'Hyperliquid liquidation calculator', 'hyperliquid hl liquidation calculator')

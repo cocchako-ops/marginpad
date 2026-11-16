@@ -188,6 +188,7 @@ function plan(rel, html) {
       'crypto-break-even-calculator': [['Entry', 'Fees', 'Funding'], ['60,000', '0.11%', '$4'], 'Break even', '60,106'],
       'crypto-drawdown-calculator': [['Peak', 'Trough', ''], ['$10,000', '$6,500', ''], 'To recover', '+53.8%'],
       'crypto-win-rate-calculator': [['Wins', 'Losses', 'R:R'], ['28', '22', '1.8'], 'Expectancy', '+0.41R'],
+      'prop-firm-drawdown-calculator': [['Account', 'Daily loss', 'Max DD'], ['$10,000', '4%', '6% trailing'], 'Room today', '$400'],
       'risk-of-ruin-calculator': [['Win rate', 'Risk', 'R:R'], ['45%', '2%', '2.0'], 'Risk of ruin', '3.1%'],
       'crypto-slippage-calculator': [['Size', 'Depth', 'Spread'], ['$50,000', '$2M', '0.02%'], 'Slippage', '0.07%'],
       'crypto-margin-calculator': [['Position', 'Leverage', ''], ['$10,000', '20x', ''], 'Margin', '$500'],
