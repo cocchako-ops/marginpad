@@ -407,7 +407,7 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
          journal at a fixed margin per trade. Lit while the viewer copies them (payload `iCopy` = the margin), never on your own card.
          A copied trade never ranks anywhere - the panel says so. */
       var COPY_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg>';
-      var copyTtl = (+d.iCopy > 0) ? __esT_mpprofile("copyOnTitle", 'Copying this trader - $' + '{m} a trade').split('{m}').join(String(+d.iCopy)) : __esT_mpprofile("copyTitle", 'Copy their trades on paper');
+      var copyTtl = (+d.iCopy > 0) ? __esT_mpprofile("copyOnTitle2", 'Copying this trader - ${m} a trade').split('{m}').join(String(+d.iCopy)) : __esT_mpprofile("copyTitle", 'Copy their trades on paper');
       var copyBtn = (folSt === 'self') ? '' : ('<button type="button" class="lbm-copyb' + (+d.iCopy > 0 ? ' on' : '') + '" data-lbcopy="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '"' + (folSt === 'guest' ? ' data-auth-open' : '') + ' title="' + esc(copyTtl) + '" aria-label="' + esc(copyTtl) + '">' + COPY_SVG + '</button>');
       var mBtn = '<div class="lbm-acts">' + (isSelf ? __esT_mpprofile("thisIsYou",'<div class="lbm-self">This is you</div>') : '')
         + '<button type="button" class="lbm-port" data-lbport="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '" title="' + esc(portTtl) + '" aria-label="' + esc(portTtl) + '">' + PORT_SVG + '</button>'
