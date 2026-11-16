@@ -30147,6 +30147,14 @@ export default {
     // of each shape to the admin chat. This exists because these five are rare by design - a withdrawal or an
     // API key can be days apart - so there was no way to see what they look like, or to prove they still send
     // after a refactor, short of waiting.
+    if (url.pathname === '/api/admin/notify' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one bell row to ONE member, written by the owner (support): {uid|username, body, link?, kind?}
+      let nb = {}; try { nb = await request.json(); } catch (e) {}
+      let nuid = String(nb.uid || ''); if (!nuid && nb.username) { try { const u = await usersDO(env, '/user', { username: String(nb.username) }); nuid = (u && (u.id || (u.user && u.user.id))) || ''; } catch (e) {} }
+      if (nb.delNid && nuid) { const rd = await usersDO(env, '/notifdel', { uid: nuid, nid: +nb.delNid }); return new Response(JSON.stringify(rd || { error: 'unavailable' }), { headers: { 'content-type': 'application/json' } }); }
+      const body = String(nb.body || '').slice(0, 200); /* the store keeps 200 chars - longer is refused rather than cut mid-word */ if (String(nb.body || '').length > 200) return new Response(JSON.stringify({ error: 'too_long', max: 200 }), { status: 400, headers: { 'content-type': 'application/json' } }); if (!nuid || !body) return new Response(JSON.stringify({ error: 'uid_and_body_required' }), { status: 400, headers: { 'content-type': 'application/json' } });
+      const r = await usersDO(env, '/notify', { uid: nuid, kind: String(nb.kind || 'reward').slice(0, 20), body, link: String(nb.link || '').slice(0, 200) || undefined });
+      return new Response(JSON.stringify({ ok: !!(r && !r.error), uid: nuid, r }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/notiftest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const only = String(url.searchParams.get('kind') || '').toLowerCase();
       const want = k => !only || only === k;
@@ -41430,6 +41438,7 @@ export class UserStore {
       sql.exec('UPDATE users SET role=? WHERE id=?', role9, String(u9.id));
       return this.j({ ok: true, uid: String(u9.id), role: role9 });
     }
+    if (path === '/notifdel') { const uid = String(b.uid || ''), nid = +b.nid || 0; if (!uid || !nid) return this.j({ error: 'bad' }, 400); let n = 0; try { const r = sql.exec('DELETE FROM unotifs WHERE uid=? AND nid=?', uid, nid); n = (r && r.rowsWritten) || 0; } catch (e) {} return this.j({ ok: true, deleted: n }); } // support: take back one bell row the owner sent by mistake
     if (path === '/notify') { // worker-internal: push a notification to a user (money gifts from chat fire the same 'gift' kind → the full-screen celebration triggers)
       const uid9 = String(b.uid || ''); if (!uid9) return this.j({ ok: false });
       try { this._pushNotif(uid9, String(b.kind || 'bell').slice(0, 24), String(b.body || '').slice(0, b.kind === 'note' ? 700 : 200), String(b.link || '/')); } catch (e) {}
