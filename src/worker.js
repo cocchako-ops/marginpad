@@ -25348,7 +25348,7 @@ async function gtViaVps(env, path, ttl, ckey) {
 async function gtLast(env, path, ttl, ckey) {
   const v = await gtViaVps(env, path, ttl, ckey);
   if (v && v.data) return v;
-  try { const c = await cgOnchain(env, path, ttl); if (c && c.data) return c; } catch (e) {}
+  try { const c = await cgOnchain(env, path, ttl, 'val'); if (c && c.data) return c; } catch (e) {}
   return v;
 }
 async function gtFetch(env, path, ttl, ckey) {
@@ -25568,7 +25568,7 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
 // the pool's newest hourly candle through CoinGecko onchain (our key, the droplet proxy allows exactly the OHLCV path); null when it has none
 async function spotCgPrice(env, net, pool) {
   if (!pool) return null;
-  const j = await cgOnchain(env, '/networks/' + gtNet(net) + '/pools/' + pool + '/ohlcv/hour?aggregate=1&limit=1', 300);
+  const j = await cgOnchain(env, '/networks/' + gtNet(net) + '/pools/' + pool + '/ohlcv/hour?aggregate=1&limit=1', 300, 'val');
   const c = j && j.data && j.data.attributes && (j.data.attributes.ohlcv_list || [])[0];
   return c && +c[4] > 0 ? { price: +c[4], ts: +c[0] * 1000, src: 'cg' } : null;
 }
@@ -25623,15 +25623,17 @@ async function spotQuoteAlarm(env, net, pool, sym, why, p1, p2) {
 // /api/v1/cg proxy with the key forwarded; the proxy allowlists only this OHLCV path. Soft daily cap (KV cannot count exactly - this is a
 // ceiling against a runaway afternoon, not a ledger) so charts can never eat the screener's icon budget on the same key. Own fetch + own
 // ceiling: an optional chart layer must never trip the collector breaker the money paths share (the 2026-10-12 rule), and it honours an open one.
-const CG_ONCHAIN_DAY_CAP = 180; // the screener's icon refresh spends ~150/day on the same 10k/month key; 180 + 150 stays under 333/day. Measured the day this shipped: 39 of 50 probe charts came through here while GT was limiting both egresses
-async function cgOnchain(env, gpath, ttl) {
+const CG_ONCHAIN_DAY_CAP = 130; // charts lane
+const CG_ONCHAIN_VAL_CAP = 50; // the Demo Spot valuation lane (spotCgPrice, gtLast); 130 + 50 + ~150 icons stays near the 10k/month key // the screener's icon refresh spends ~150/day on the same 10k/month key; 180 + 150 stays under 333/day. Measured the day this shipped: 39 of 50 probe charts came through here while GT was limiting both egresses
+async function cgOnchain(env, gpath, ttl, lane) {
   if (!env.COINGECKO_API_KEY || !env.COLLECTOR_URL) return null;
   if (Date.now() < COL_DOWN_UNTIL) return null;
   const ck = new Request('https://marginpad.io/__cgon_' + gpath.replace(/[^A-Za-z0-9]/g, '_').slice(-140));
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
-  const dk = 'cg:onchain:' + new Date().toISOString().slice(0, 10);
+  if (lane === 'val') ttl = Math.max(ttl || 0, 3600); // a valuation fallback is held an hour: a board rebuilt every 10 min must not spend the lane in an afternoon
+  const val = lane === 'val', dk = 'cg:onchain:' + (val ? 'val:' : '') + new Date().toISOString().slice(0, 10); // the Demo Spot valuation has its OWN lane: charts spent the shared cap by evening and a dead coin stayed at its cost (2026-11-17)
   let used = 0; try { used = +(await env.STATS.get(dk)) || 0; } catch (e) {}
-  if (used >= CG_ONCHAIN_DAY_CAP) return null;
+  if (used >= (val ? CG_ONCHAIN_VAL_CAP : CG_ONCHAIN_DAY_CAP)) return null;
   try { await env.STATS.put(dk, String(used + 1), { expirationTtl: 2 * 86400 }); } catch (e) {}
   try {
     const r = await __realFetch(String(env.COLLECTOR_URL).replace(/\/$/, '') + '/api/v1/cg?path=' + encodeURIComponent('/onchain' + gpath), { headers: { accept: 'application/json', 'x-cg-demo-api-key': env.COINGECKO_API_KEY }, signal: AbortSignal.timeout(6000) });
@@ -30188,13 +30190,12 @@ export default {
     // of each shape to the admin chat. This exists because these five are rare by design - a withdrawal or an
     // API key can be days apart - so there was no way to see what they look like, or to prove they still send
     // after a refactor, short of waiting.
-    if (url.pathname === '/api/admin/notify' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one bell row to ONE member, written by the owner (support): {uid|username, body, link?, kind?}
-      let nb = {}; try { nb = await request.json(); } catch (e) {}
-      let nuid = String(nb.uid || ''); if (!nuid && nb.username) { try { const u = await usersDO(env, '/user', { username: String(nb.username) }); nuid = (u && (u.id || (u.user && u.user.id))) || ''; } catch (e) {} }
-      if (nb.delNid && nuid) { const rd = await usersDO(env, '/notifdel', { uid: nuid, nid: +nb.delNid }); return new Response(JSON.stringify(rd || { error: 'unavailable' }), { headers: { 'content-type': 'application/json' } }); }
-      const body = String(nb.body || '').slice(0, 200); /* the store keeps 200 chars - longer is refused rather than cut mid-word */ if (String(nb.body || '').length > 200) return new Response(JSON.stringify({ error: 'too_long', max: 200 }), { status: 400, headers: { 'content-type': 'application/json' } }); if (!nuid || !body) return new Response(JSON.stringify({ error: 'uid_and_body_required' }), { status: 400, headers: { 'content-type': 'application/json' } });
-      const r = await usersDO(env, '/notify', { uid: nuid, kind: String(nb.kind || 'reward').slice(0, 20), body, link: String(nb.link || '').slice(0, 200) || undefined });
-      return new Response(JSON.stringify({ ok: !!(r && !r.error), uid: nuid, r }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    if (url.pathname === '/api/admin/spotprice' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // what every Demo Spot price source says for one pool - read-only
+      const net = url.searchParams.get('net') || 'solana', pool = url.searchParams.get('pool') || '', mint = url.searchParams.get('mint') || '', o = {};
+      const t = async (k, f) => { const t0 = Date.now(); let v = null; try { v = await f(); } catch (e) { v = { error: String(e && e.message || e) }; } o[k] = (v && typeof v === 'object') ? Object.assign({}, v, { ms: Date.now() - t0 }) : { none: true, ms: Date.now() - t0 }; };
+      await t('memePrice', () => spotMemePrice(env, net, pool)); await t('gtPool', () => spotGtPool(env, net, pool)); await t('gtToken', () => spotGtToken(env, net, mint)); await t('cgCandle', () => spotCgPrice(env, net, pool));
+      let used = null; try { used = await env.STATS.get('cg:onchain:' + new Date().toISOString().slice(0, 10)); } catch (e) {} o.cgUsedToday = used; o.cgCap = CG_ONCHAIN_DAY_CAP; try { o.cgValUsedToday = await env.STATS.get('cg:onchain:val:' + new Date().toISOString().slice(0, 10)); } catch (e) {} o.cgValCap = CG_ONCHAIN_VAL_CAP; o.hasCgKey = !!env.COINGECKO_API_KEY;
+      return new Response(JSON.stringify(o, null, 1), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/notiftest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const only = String(url.searchParams.get('kind') || '').toLowerCase();
@@ -31023,6 +31024,7 @@ export default {
     // acts and this one moves nothing: no ledger call, no cents, no XP.
     if (url.pathname === '/api/admin/notify' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let b = {}; try { b = await request.json(); } catch (e) {}
+      if (b.delNid && b.uid) { const rd = await usersDO(env, '/notifdel', { uid: String(b.uid), nid: +b.delNid }); return J(rd || { error: 'unavailable' }); } // support: take back one bell row (2026-11-17)
       const body = String(b.body || '').trim().slice(0, String(b.kind || '') === 'note' ? 700 : 200);   // a 'note' is the owner's own message and may run to a paragraph
       if (!body) return J({ error: 'no_body', hint: 'body is the sentence the member reads' }, 400);
       const who = await usersDO(env, '/xpdiag', { uid: String(b.uid || ''), username: String(b.username || '').replace(/^@/, ''), email: String(b.email || '') });
