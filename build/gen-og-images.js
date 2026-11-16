@@ -161,6 +161,8 @@ function plan(rel, html) {
     '/about/': ['product', { title: 'What MarginPad is, and who builds it', sub: 'A free crypto futures toolkit, paid for by exchange referrals.', accent: ACCENT.lime, path: '/about/' }],
     '/free-crypto-api/': ['product', { title: 'A free crypto futures API', sub: 'Liquidations, funding, open interest and prices. No key needed.', accent: ACCENT.cyan, path: '/free-crypto-api/', tag: 'KEYLESS' }],
     '/status/': ['live', { title: 'Is MarginPad up?', eyebrow: 'Live status', accent: ACCENT.green, path: '/status/' }],
+    '/prop-firm-challenge/': ['product', { title: 'Pass a prop firm challenge - free', sub: 'One-step, two-step or EOD rules on a $5k-$100k account. Our server enforces daily loss and drawdown like a firm.', accent: ACCENT.lime, path: '/prop-firm-challenge/', eyebrow: 'Challenge mode', tag: 'FREE' }],
+    '/crypto-prop-firms/': ['article', { title: 'Crypto prop firms compared', kind: 'CHECKED 16 NOV 2026', accent: ACCENT.blue, path: '/crypto-prop-firms/' }],
     '/support/': ['product', { title: 'Need a hand?', sub: 'One address, read by a person - and what to include so the first reply answers you.', accent: ACCENT.lime, path: '/support/', eyebrow: 'Support', tag: 'ONE ADDRESS' }],
   };
   const key = rel.endsWith('/') ? rel : rel + '/';

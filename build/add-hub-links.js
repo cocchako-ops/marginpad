@@ -133,7 +133,9 @@ const PRACTICE_LINKS = [
   // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
   ['/practice-for-a-funded-account/', 'Practise a crypto prop firm challenge free - with our measured pass rate'],
   // 2026-11-16: the funded-account tool travels with the practice page (owner: market MarginPad as the place to practise for a funded account)
+  ['/prop-firm-challenge/', 'Free prop firm challenge - daily loss and drawdown enforced by our server'],
   ['/prop-firm-drawdown-calculator/', 'Prop firm drawdown calculator - your daily floor, room and position size'],
+  ['/crypto-prop-firms/', 'Crypto prop firms compared - rules and prices from their own sites'],
   // 2026-11-05 (GSC 28 d): /forex-trading-simulator/ had 1.173 impressions for 2 clicks at position 23 and
   // /stock-trading-simulator/ 216 at 24, with 19-20 inbound links each and none from the pages that carry the
   // crawl budget. Same subject (practise the move you just read about), two more markets.

@@ -39,6 +39,8 @@ const EXTRAS = [
   ['/where-can-i-test-a-trading-bot/', '1.0', D],
   ['/mcp-server-for-crypto-trading/', '1.0', D],
   ['/practice-for-a-funded-account/', '1.0', D],
+  ['/prop-firm-challenge/', '1.0', D], // 2026-11-16: challenge mode - the board and the counts move every day
+  ['/crypto-prop-firms/', '0.9', W],
   ['/prop-firm-drawdown-calculator/', '0.9', W], // 2026-11-16: the funded-account tool; the page's measured line refreshes per season
   ['/what-leverage-should-a-beginner-use/', '1.0', D],
   ['/why-is-bitcoin-down-today/', '1.0', D],

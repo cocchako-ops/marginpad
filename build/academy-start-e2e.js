@@ -30,6 +30,7 @@ const COURSE = require('./data/academy-mpstart.js');
 let pass = 0, fail = 0;
 const ok = (c, m, extra) => { if (c) { pass++; console.log('  ok   ' + m); } else { fail++; console.log('  FAIL ' + m + (extra ? '  -> ' + extra : '')); } };
 // the lesson total is DERIVED from the worker's course table (2026-10-30: a literal 147 went red the day mm8 was added)
+const NCOURSES = (function () { const w = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8'); const mm = w.match(/const ACAD_COURSES = (\{[^\n]*\});/); return Object.keys(new Function('return ' + mm[1])()).length; })(); // 2026-11-16: derived, the propfirm course made it 18
 const EXPECT = (function () { const w = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8'); const mm = w.match(/const ACAD_COURSES = (\{[^\n]*\});/); const t = new Function('return ' + mm[1])(); return Object.values(t).reduce((n, a) => n + a.length, 0); })();
 const jget = (u, h) => fetch(u, { headers: h || {} }).then(r => r.json());
 const jpost = (u, b, h) => fetch(u, { method: 'POST', headers: { 'content-type': 'application/json', ...(h || {}) }, body: JSON.stringify(b) }).then(r => r.json());
@@ -62,9 +63,9 @@ function staticChecks() {
    ['progress counter', /id="pgN">0\/(\d+)</]].forEach(([what, re]) => {
     const m = html.match(re);
     ok(m && +m[1] === EXPECT, what + ' says ' + EXPECT + ' lessons', m ? m[1] : 'no match');
-    if (m && m[2]) ok(+m[2] === 17, what + ' says 17 courses', m[2]);
+    if (m && m[2]) ok(+m[2] === NCOURSES, what + ' says ' + NCOURSES + ' courses', m[2]);
   });
-  ok(html.indexOf(EXPECT + ' lessons across 17 courses') > 0, 'the crawlable syllabus block was rebuilt');
+  ok(html.indexOf(EXPECT + ' lessons across ' + NCOURSES + ' courses') > 0, 'the crawlable syllabus block was rebuilt');
 
   console.log('\n-- the worker is the grader and must agree');
   const w = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8');
@@ -192,7 +193,7 @@ async function browserChecks() {
     ok(v.firstEnabled, 'lesson 1 is clickable with no account');
     ok(v.hit, 'lesson 1 is REACHABLE - it is the element at its own centre, nothing covers it');
     ok(v.top < 844 * 1.2, 'the course starts within about one screen of the top on a phone', v.top + 'px');
-    ok(new RegExp(EXPECT + ' LESSONS', 'i').test(v.hero) && /17 COURSES/i.test(v.hero), 'the hero counts are right', v.hero.replace(/\n/g, ' '));
+    ok(new RegExp(EXPECT + ' LESSONS', 'i').test(v.hero) && new RegExp(NCOURSES + ' COURSES', 'i').test(v.hero), 'the hero counts are right', v.hero.replace(/\n/g, ' '));
     ok(v.wide === 0, 'nothing overflows a 390px screen', v.wide + ' element(s)');
     ok(errs.length === 0, 'no page errors', errs.join(' | '));
     const shotDir = path.join(ROOT, 'build', 'academy-shots'); if (!fs.existsSync(shotDir)) fs.mkdirSync(shotDir, { recursive: true });

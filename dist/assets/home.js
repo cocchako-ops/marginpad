@@ -4376,6 +4376,9 @@ window.mpSrvOpen=function(payload,ok,fail){
         else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open - that let the 20/min and open-cap rules through the back door */
           var _lm=d.error==='rate_limited'?__esT_home("slowDown",'Slow down - ')+(d.max||20)+__esT_home("opensPerMinuteIs",' opens per minute is the limit. Try again in a moment.'):__esT_home("youAlreadyHoldThe",'You already hold the maximum number of open positions')+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
           try{if(window.mpLimitToast)window.mpLimitToast(_lm);}catch(e){}fail({blocked:true,message:_lm,error:d.error});}
+        else if(d&&d.error==='challenge_rule'){ /* 2026-11-16: a prop firm challenge rule is a refusal, never a local open - that would be a trade the challenge cannot see */
+          var _cm=d.why==='leverage'?__esT_home("chalLevMax",'Your prop firm challenge allows up to ')+(d.max||'')+__esT_home("chalLevMax2",'x leverage. Lower the leverage to open this trade.'):__esT_home("chalMarginMax",'Your challenge account has $')+(+d.max||0).toFixed(2)+__esT_home("chalMarginMax2",' of free margin. Lower the margin to open this trade.');
+          try{if(window.mpLimitToast)window.mpLimitToast(_cm);}catch(e){}try{if(window.__mpTrack)window.__mpTrack('openfail','challenge:'+d.why);}catch(_t){}fail({blocked:true,message:_cm,error:d.error});}
         else if(d&&d.error){try{if(window.__mpTrack)window.__mpTrack('openfail','refused:'+d.error);}catch(_t){}fail({cid:payload.cid,error:d.error});} // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
         else retry();})
       .catch(function(){clearTimeout(to);retry();});
@@ -5974,4 +5977,119 @@ window.mpSrvOpen=function(payload,ok,fail){
   window.addEventListener('mp-squad-change', start);
   var tries = 0, iv = setInterval(function () { start(); if (off || ++tries > 40) clearInterval(iv); }, 1500);
   try { var st = document.createElement('style'); st.textContent = '.pt-raidchip{display:flex;align-items:center;gap:6px;margin:6px 0 0;font:700 10px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#ffb547}.pt-raidchip i{width:6px;height:6px;border-radius:50%;background:#ffb547;flex:0 0 auto}.pt-raidchip.no{color:#7a838f}.pt-raidchip.no i{background:#5c656f}.pt-raidchip[hidden]{display:none}'; document.head.appendChild(st); } catch (e) {}
+})();
+
+/* ===== PROP FIRM CHALLENGE in the terminal (2026-11-16, owner: "na paper trade terminalu treba da nadjes negde da smestis
+   dugme za pokretanje izazova ali ne sme da bude previse napadno ali opet treba da se vidi ... sa stilom"). One quiet pill at
+   the right end of the chart head (static markup, #ptChal, so nothing moves when it fills): at rest it says CHALLENGE; while a
+   challenge runs it says how much room the rules leave, coloured by how close the floor is. The panel holds the meters, the
+   start choices and the way out. The server scores everything - this only reads /api/challenge and asks it to start or stop. */
+(function () {
+  var btn = document.getElementById('ptChal'); if (!btn) return;
+  // the rule sets as the worker states them (CHAL_TYPES) - only shown until /api/challenge answers, so a slow or failed read never offers an empty picker
+  var CHAL_FALLBACK = [{ kind: 'one', name: 'One-step', maxlev: 100, blurb: '10% target, 4% daily loss, 6% trailing drawdown, 5 trading days' }, { kind: 'two', name: 'Two-step', maxlev: 100, blurb: '8% then 5% target, 5% daily loss, 10% static drawdown, 4 trading days a phase' }, { kind: 'eod', name: 'One-step EOD', maxlev: 50, blurb: '10% target, 5% daily loss, 6% end-of-day trailing drawdown, 50x max' }];
+  var S = null, pane = null, bd = null, poll = 0, pick = { kind: 'one', book: 10000 }, armedAt = 0, busy = false;
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var money = function (v) { v = +v || 0; return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits: Math.abs(v) < 100 ? 2 : 0 }); };
+  var pct = function (v) { return ((+v || 0) >= 0 ? '+' : '') + (+v || 0).toFixed(2) + '%'; };
+  var signedIn = function () { try { if (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) return true; } catch (e) {} try { return !!(window.mpSignedInCookie && window.mpSignedInCookie()); } catch (e) { return false; } };
+  function lvl(ev) { if (!ev) return ''; var span = (+ev.equity || 0) - Math.min(+ev.dailyFloor || 0, +ev.ddFloor || 0); var full = (+ev.book || 1) * ((S && S.active && +S.active.daily) || 4) / 100; var f = (+ev.room || 0) / Math.max(1, Math.min(full, span || full)); return f > 0.55 ? 'ok' : f > 0.25 ? 'warn' : 'bad'; }
+  function paintPill() {
+    var t = btn.querySelector('.ptc-chal-t'); btn.classList.remove('on', 'ok', 'warn', 'bad', 'won');
+    if (S && S.active && S.eval) { btn.classList.add('on', lvl(S.eval)); t.textContent = money(S.eval.room) + ' ' + __esT_home("chalRoom",'room'); btn.setAttribute('aria-label', __esT_home("chalOpenAria",'Your prop firm challenge')); return; }
+    var h = S && S.history && S.history[0];
+    if (h && h.status === 'passed' && Date.now() - (+h.ended || 0) < 3 * 86400000) { btn.classList.add('won'); t.textContent = __esT_home("chalPassed",'Passed'); return; }
+    t.textContent = __esT_home("chalPill",'Challenge'); btn.setAttribute('aria-label', __esT_home("chalStartAria",'Start a prop firm challenge'));
+  }
+  function load(open) {
+    fetch('/api/challenge', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      var was = S && S.active && S.active.id; S = d || null; paintPill(); if (pane && !pane.hidden) render();
+      if (d && d.ended && window.mpToast) window.mpToast({ kind: d.ended === 'passed' ? 'good' : 'warn', key: 'chal-end', msg: d.ended === 'passed' ? __esT_home("chalToastPass",'You passed your prop firm challenge. Your certificate is ready.') : __esT_home("chalToastFail",'Your challenge ended on a rule. Open the panel to see which one.') });
+      if (d && d.phaseUp && window.mpToast) window.mpToast({ kind: 'good', key: 'chal-phase', msg: __esT_home("chalToastPhase",'Phase 1 passed - phase 2 starts now from a fresh balance.') });
+      schedule(); if (!was && d && d.active && open !== false) {}
+    }).catch(function () {});
+  }
+  function schedule() { clearTimeout(poll); if (S && S.active) poll = setTimeout(function () { if (!document.hidden) load(); else schedule(); }, 20000); }
+  function bar(label, val, frac, cls, sub) {
+    frac = Math.max(0, Math.min(1, +frac || 0));
+    return '<div class="chp-m"><div class="chp-mh"><span>' + esc(label) + '</span><b class="' + (cls || '') + '">' + esc(val) + '</b></div><div class="chp-bar"><i class="' + (cls || '') + '" style="width:' + (frac * 100).toFixed(1) + '%"></i></div>' + (sub ? '<div class="chp-ms">' + esc(sub) + '</div>' : '') + '</div>';
+  }
+  function activeHtml() {
+    var a = S.active, e = S.eval, book = +e.book;
+    var dailyRoom = Math.max(0, e.equity - e.dailyFloor), dailyFull = book * a.daily / 100;
+    var ddRoom = Math.max(0, e.equity - e.ddFloor), ddFull = book * a.dd / 100;
+    var tgtFull = book * e.target / 100, tgtDone = Math.max(0, Math.min(tgtFull, e.balance - book));
+    var c = function (room, full) { var f = room / Math.max(1, full); return f > 0.55 ? 'ok' : f > 0.25 ? 'warn' : 'bad'; };
+    var ddName = a.ddtype === 'static' ? __esT_home("chalDdStatic",'static') : a.ddtype === 'eod' ? __esT_home("chalDdEod",'end-of-day trailing') : __esT_home("chalDdTrail",'trailing');
+    return '<div class="chp-sum"><div><span class="chp-k">' + esc(a.name) + ' &middot; ' + money(book) + (e.phases > 1 ? ' &middot; ' + __esT_home("chalPhase",'phase') + ' ' + e.phase + '/' + e.phases : '') + '</span>'
+      + '<b class="chp-eq">' + money(e.equity) + '</b><span class="chp-ret ' + (e.equity >= book ? 'up' : 'dn') + '">' + pct((e.equity - book) / book * 100) + (e.open ? ' &middot; ' + e.open + ' ' + __esT_home("chalOpen",'open') : '') + '</span></div>'
+      + '<div class="chp-days"><b>' + e.days + '</b><span>/ ' + e.minDays + ' ' + __esT_home("chalDays",'days') + '</span></div></div>'
+      + bar(__esT_home("chalDaily",'Daily loss room'), money(dailyRoom) + ' / ' + money(dailyFull), dailyRoom / Math.max(1, dailyFull), c(dailyRoom, dailyFull), __esT_home("chalDailySub",'Floor today ') + money(e.dailyFloor) + ' &middot; ' + __esT_home("chalResets",'resets 00:00 UTC'))
+      + bar(__esT_home("chalDd",'Drawdown room') + ' (' + ddName + ')', money(ddRoom) + ' / ' + money(ddFull), ddRoom / Math.max(1, ddFull), c(ddRoom, ddFull), __esT_home("chalDdSub",'Floor ') + money(e.ddFloor))
+      + bar(__esT_home("chalTgt",'Profit target') + ' ' + e.target + '%', money(tgtDone) + ' / ' + money(tgtFull), tgtDone / Math.max(1, tgtFull), 'tgt', e.toGo > 0 ? money(e.toGo) + ' ' + __esT_home("chalToGo",'to go on closed trades') : __esT_home("chalTgtHit",'Target reached - keep the trading days going'))
+      + '<p class="chp-note">' + __esT_home("chalRules",'Max leverage ') + a.maxlev + 'x &middot; ' + __esT_home("chalFree",'free margin ') + money(e.freeMargin) + '. ' + __esT_home("chalNote",'Closes are checked at once; open losses every ten minutes and whenever you look.') + '</p>'
+      + '<div class="chp-act"><a class="chp-go" href="/prop-firm-challenge/">' + __esT_home("chalDash",'Full dashboard') + '</a><button type="button" class="chp-quit" data-chal="quit">' + (armedAt && Date.now() - armedAt < 5000 ? __esT_home("chalQuitSure",'Tap again to end it') : __esT_home("chalQuit",'End challenge')) + '</button></div>';
+  }
+  function pickHtml() {
+    var types = (S && S.types && S.types.length) ? S.types : CHAL_FALLBACK, books = (S && S.books) || [5000, 10000, 25000, 50000, 100000];
+    var ty = types.filter(function (x) { return x.kind === pick.kind; })[0] || types[0] || {};
+    var h = S && S.history && S.history[0], last = '';
+    if (h && h.status !== 'active' && Date.now() - (+h.ended || 0) < 7 * 86400000) {
+      if (h.status === 'passed') last = '<div class="chp-last won"><b>' + __esT_home("chalLastPass",'Passed') + ' ' + esc(h.name) + ' ' + money(h.book) + '</b><span>' + pct(h.result && h.result.returnPct) + ' &middot; ' + (h.result && h.result.days) + ' ' + __esT_home("chalDays",'days') + '</span><a href="/prop-firm-challenge/?c=' + esc(h.id) + '">' + __esT_home("chalCert",'Certificate') + ' &rarr;</a></div>';
+      else if (h.status === 'failed') last = '<div class="chp-last"><b>' + __esT_home("chalLastFail",'Last run ended on ') + (h.reason === 'fail_daily' ? __esT_home("chalRuleDaily",'the daily loss limit') : __esT_home("chalRuleDd",'the maximum drawdown')) + '</b><span>' + pct(h.result && h.result.returnPct) + ' &middot; ' + __esT_home("chalTryAgain",'every run is practice') + '</span></div>';
+    }
+    return last + '<p class="chp-lead">' + __esT_home("chalLead",'Trade a prop firm evaluation on live prices, free. The server enforces the rules exactly as a firm would.') + '</p>'
+      + '<div class="chp-lbl">' + __esT_home("chalRuleset",'Rule set') + '</div><div class="chp-chips">' + types.map(function (x) { return '<button type="button" data-kind="' + esc(x.kind) + '" class="' + (x.kind === pick.kind ? 'on' : '') + '">' + esc(x.name) + '</button>'; }).join('') + '</div>'
+      + '<div class="chp-blurb">' + esc(ty.blurb || '') + ' &middot; ' + __esT_home("chalMaxLev",'max ') + (ty.maxlev || '') + 'x</div>'
+      + '<div class="chp-lbl">' + __esT_home("chalSize",'Account size') + '</div><div class="chp-chips">' + books.map(function (b) { return '<button type="button" data-book="' + b + '" class="' + (b === pick.book ? 'on' : '') + '">' + (b >= 1000 ? '$' + (b / 1000) + 'k' : '$' + b) + '</button>'; }).join('') + '</div>'
+      + (S && S.signedIn ? '<button type="button" class="chp-start" data-chal="start">' + __esT_home("chalStart",'Start the challenge') + '</button>' : '<button type="button" class="chp-start" data-auth-open>' + __esT_home("chalSignIn",'Sign in to start - free') + '</button>')
+      + '<div class="chp-links"><a href="/prop-firm-challenge/">' + __esT_home("chalHow",'How it works') + '</a><a href="/prop-firm-drawdown-calculator/">' + __esT_home("chalCalc",'Drawdown calculator') + '</a></div>';
+  }
+  function render() {
+    if (!pane) return;
+    var body = !S ? '<div class="chp-wait">&middot;&middot;&middot;</div>' : (S.active && S.eval ? activeHtml() : pickHtml());
+    pane.innerHTML = '<div class="chp-h"><span class="chp-t"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>' + __esT_home("chalTitle",'Prop firm challenge') + '</span><button type="button" class="chp-x" data-chal="close" aria-label="Close"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="chp-b">' + body + '</div>';
+  }
+  function place() {
+    if (!pane || pane.hidden) return;
+    if (window.innerWidth <= 560) { pane.classList.add('sheet'); pane.style.left = pane.style.top = ''; return; }
+    pane.classList.remove('sheet');
+    var r = btn.getBoundingClientRect(), w = pane.offsetWidth || 330;
+    pane.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w)) + 'px';
+    pane.style.top = (r.bottom + 8) + 'px';
+  }
+  function open() {
+    if (!pane) { pane = document.createElement('div'); pane.className = 'chp'; pane.setAttribute('role', 'dialog'); pane.hidden = true; document.body.appendChild(pane);
+      bd = document.createElement('div'); bd.className = 'chp-bd'; bd.hidden = true; document.body.appendChild(bd); bd.addEventListener('click', close);
+      pane.addEventListener('click', onPane); }
+    render(); pane.hidden = false; bd.hidden = window.innerWidth > 560; btn.setAttribute('aria-expanded', 'true'); place();
+    try { pane.animate([{ opacity: 0, transform: 'translateY(-6px) scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: 170, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {}
+    load(true); try { if (window.__mpTrack) window.__mpTrack('challenge', 'open'); } catch (e) {}
+  }
+  function close() { if (!pane) return; pane.hidden = true; if (bd) bd.hidden = true; btn.setAttribute('aria-expanded', 'false'); armedAt = 0; }
+  function onPane(ev) {
+    var t = ev.target.closest('[data-kind],[data-book],[data-chal]'); if (!t) return;
+    if (t.hasAttribute('data-kind')) { pick.kind = t.getAttribute('data-kind'); render(); return; }
+    if (t.hasAttribute('data-book')) { pick.book = +t.getAttribute('data-book'); render(); return; }
+    var a = t.getAttribute('data-chal');
+    if (a === 'close') { close(); return; }
+    if (a === 'start' && !busy) { busy = true; t.disabled = true; t.textContent = __esT_home("chalStarting",'Starting...');
+      fetch('/api/challenge', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ op: 'start', kind: pick.kind, book: pick.book }) }).then(function (r) { return r.json(); }).then(function (d) {
+        busy = false; if (d && d.ok) { if (window.mpToast) window.mpToast({ kind: 'good', key: 'chal-start', msg: __esT_home("chalStarted",'Challenge started. Every trade you open from now counts - good luck.') }); try { if (window.__mpTrack) window.__mpTrack('challenge', 'start:' + pick.kind + ':' + pick.book); } catch (e) {} load(); }
+        else { if (window.mpToast) window.mpToast({ kind: 'warn', msg: d && d.error === 'already_active' ? __esT_home("chalAlready",'You already have a challenge running.') : __esT_home("chalStartFail",'Could not start the challenge - try again.') }); render(); } }).catch(function () { busy = false; render(); });
+      return; }
+    if (a === 'quit') {
+      if (!(armedAt && Date.now() - armedAt < 5000)) { armedAt = Date.now(); render(); setTimeout(function () { if (armedAt && Date.now() - armedAt >= 5000) { armedAt = 0; render(); } }, 5100); return; }
+      armedAt = 0; t.disabled = true;
+      fetch('/api/challenge', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ op: 'abandon' }) }).then(function (r) { return r.json(); }).then(function () { try { if (window.__mpTrack) window.__mpTrack('challenge', 'abandon'); } catch (e) {} load(); }).catch(function () { render(); });
+    }
+  }
+  btn.addEventListener('click', function () { if (pane && !pane.hidden) close(); else open(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pane && !pane.hidden) close(); });
+  document.addEventListener('click', function (e) { if (e.isTrusted === false || !pane || pane.hidden) return; if (pane.contains(e.target) || btn.contains(e.target)) return; if (window.innerWidth > 560) close(); }, true);
+  window.addEventListener('resize', place); window.addEventListener('scroll', place, { passive: true });
+  window.addEventListener('mp-auth-change', function () { load(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && S && S.active) load(); });
+  window.__mpChal = { state: function () { return S; }, open: open, close: close, load: load };
+  setTimeout(function () { load(false); }, 1200);
 })();

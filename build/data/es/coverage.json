@@ -2,37 +2,37 @@
  {
   "rel": "100x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
   "rel": "10x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
   "rel": "20x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
   "rel": "25x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
   "rel": "50x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
   "rel": "5x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 70,
   "missing": 0
  },
  {
@@ -55,9 +55,9 @@
  },
  {
   "rel": "academy/index.html",
-  "cover": 1,
-  "hit": 232,
-  "missing": 0
+  "cover": 0.9458333333333333,
+  "hit": 227,
+  "missing": 13
  },
  {
   "rel": "ada-liquidation-calculator/index.html",
@@ -272,7 +272,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 57,
   "missing": 0
  },
  {
@@ -295,21 +295,61 @@
  },
  {
   "rel": "binance-vs-gate/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.935064935064935,
+  "hit": 72,
+  "missing": 5
  },
  {
   "rel": "binance-vs-kucoin/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "binance-vs-okx/index.html",
-  "cover": 1,
-  "hit": 69,
-  "missing": 0
+  "cover": 0.9333333333333333,
+  "hit": 70,
+  "missing": 5
+ },
+ {
+  "rel": "bingx-vs-binance/index.html",
+  "cover": 0.5897435897435898,
+  "hit": 46,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "bingx-vs-bitget/index.html",
+  "cover": 0.5641025641025641,
+  "hit": 44,
+  "missing": 34,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "bingx-vs-bybit/index.html",
+  "cover": 0.5641025641025641,
+  "hit": 44,
+  "missing": 34,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "bingx-vs-mexc/index.html",
+  "cover": 0.5277777777777778,
+  "hit": 38,
+  "missing": 34,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "bingx-vs-okx/index.html",
+  "cover": 0.5789473684210527,
+  "hit": 44,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
  },
  {
   "rel": "bitcoin-cycle/index.html",
@@ -331,33 +371,33 @@
  },
  {
   "rel": "bitget-vs-binance/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "bitget-vs-gate/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "bitget-vs-kraken/index.html",
-  "cover": 1,
-  "hit": 67,
-  "missing": 0
+  "cover": 0.922077922077922,
+  "hit": 71,
+  "missing": 6
  },
  {
   "rel": "bitget-vs-kucoin/index.html",
-  "cover": 1,
-  "hit": 67,
-  "missing": 0
+  "cover": 0.9090909090909091,
+  "hit": 70,
+  "missing": 7
  },
  {
   "rel": "bitget-vs-okx/index.html",
-  "cover": 1,
+  "cover": 0.92,
   "hit": 69,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "blog/ai-crypto-trading-strategies-2026/index.html",
@@ -770,7 +810,7 @@
  {
   "rel": "blog/index.html",
   "cover": 1,
-  "hit": 425,
+  "hit": 421,
   "missing": 0
  },
  {
@@ -783,12 +823,6 @@
   "rel": "blog/is-binance-bybit-okx-legal-us/index.html",
   "cover": 1,
   "hit": 54,
-  "missing": 0
- },
- {
-  "rel": "blog/is-kucoin-safe-2026/index.html",
-  "cover": 1,
-  "hit": 56,
   "missing": 0
  },
  {
@@ -1057,39 +1091,39 @@
  },
  {
   "rel": "bybit-vs-binance/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.935064935064935,
+  "hit": 72,
+  "missing": 5
  },
  {
   "rel": "bybit-vs-bitget/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "bybit-vs-gate/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.935064935064935,
+  "hit": 72,
+  "missing": 5
  },
  {
   "rel": "bybit-vs-kraken/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "bybit-vs-kucoin/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "bybit-vs-okx/index.html",
-  "cover": 1,
-  "hit": 69,
-  "missing": 0
+  "cover": 0.9333333333333333,
+  "hit": 70,
+  "missing": 5
  },
  {
   "rel": "calendar/index.html",
@@ -1100,44 +1134,44 @@
  {
   "rel": "catalysts/index.html",
   "cover": 1,
-  "hit": 89,
+  "hit": 93,
   "missing": 0
  },
  {
   "rel": "coin/bnb/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/btc/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/doge/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/eth/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/sol/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coin/xrp/index.html",
-  "cover": 1,
-  "hit": 68,
-  "missing": 0
+  "cover": 0.9852941176470589,
+  "hit": 67,
+  "missing": 1
  },
  {
   "rel": "coinglass-alternative/index.html",
@@ -1240,6 +1274,14 @@
   "cover": 1,
   "hit": 45,
   "missing": 0
+ },
+ {
+  "rel": "crypto-prop-firms/index.html",
+  "cover": 0.18359375,
+  "hit": 47,
+  "missing": 209,
+  "skipped": true,
+  "allowed": true
  },
  {
   "rel": "crypto-roi-calculator/index.html",
@@ -1363,9 +1405,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 0.949238578680203,
-  "hit": 374,
-  "missing": 20
+  "cover": 0.9015544041450777,
+  "hit": 348,
+  "missing": 38
  },
  {
   "rel": "fear-greed/index.html",
@@ -1411,14 +1453,14 @@
  },
  {
   "rel": "free-crypto-api/index.html",
-  "cover": 1,
-  "hit": 234,
-  "missing": 0
+  "cover": 0.9871794871794872,
+  "hit": 231,
+  "missing": 3
  },
  {
   "rel": "funding-fee-calculator/index.html",
   "cover": 1,
-  "hit": 45,
+  "hit": 48,
   "missing": 0
  },
  {
@@ -1447,26 +1489,26 @@
  },
  {
   "rel": "gate-vs-kraken/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "gate-vs-kucoin/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "gate-vs-okx/index.html",
-  "cover": 1,
-  "hit": 69,
-  "missing": 0
+  "cover": 0.9333333333333333,
+  "hit": 70,
+  "missing": 5
  },
  {
   "rel": "glossary/index.html",
   "cover": 1,
-  "hit": 718,
+  "hit": 721,
   "missing": 0
  },
  {
@@ -1574,7 +1616,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 57,
   "missing": 0
  },
  {
@@ -1603,32 +1645,40 @@
  },
  {
   "rel": "hyperliquid-vs-binance/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.935064935064935,
+  "hit": 72,
+  "missing": 5
  },
  {
   "rel": "hyperliquid-vs-bitget/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "hyperliquid-vs-bybit/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.935064935064935,
+  "hit": 72,
+  "missing": 5
+ },
+ {
+  "rel": "hyperliquid-vs-mexc/index.html",
+  "cover": 0.56,
+  "hit": 42,
+  "missing": 33,
+  "skipped": true,
+  "allowed": true
  },
  {
   "rel": "hyperliquid-vs-okx/index.html",
-  "cover": 1,
-  "hit": 69,
-  "missing": 0
+  "cover": 0.9333333333333333,
+  "hit": 70,
+  "missing": 5
  },
  {
   "rel": "hyperliquid-whales/index.html",
   "cover": 1,
-  "hit": 32,
+  "hit": 36,
   "missing": 0
  },
  {
@@ -1670,7 +1720,7 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 59,
   "missing": 0
  },
  {
@@ -1693,9 +1743,9 @@
  },
  {
   "rel": "kraken-liquidation-calculator/index.html",
-  "cover": 1,
-  "hit": 86,
-  "missing": 0
+  "cover": 0.9883720930232558,
+  "hit": 85,
+  "missing": 1
  },
  {
   "rel": "kraken-pnl-calculator/index.html",
@@ -1705,27 +1755,27 @@
  },
  {
   "rel": "kraken-vs-binance/index.html",
-  "cover": 1,
+  "cover": 0.922077922077922,
   "hit": 71,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "kucoin-liquidation-calculator/index.html",
-  "cover": 1,
-  "hit": 86,
-  "missing": 0
+  "cover": 0.9651162790697675,
+  "hit": 83,
+  "missing": 3
  },
  {
   "rel": "kucoin-pnl-calculator/index.html",
-  "cover": 1,
-  "hit": 62,
-  "missing": 0
+  "cover": 0.967741935483871,
+  "hit": 60,
+  "missing": 2
  },
  {
   "rel": "kucoin-vs-kraken/index.html",
-  "cover": 1,
-  "hit": 67,
-  "missing": 0
+  "cover": 0.9090909090909091,
+  "hit": 70,
+  "missing": 7
  },
  {
   "rel": "leaderboards/index.html",
@@ -1748,7 +1798,7 @@
  {
   "rel": "leverage-report/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 58,
   "missing": 0
  },
  {
@@ -1771,33 +1821,33 @@
  },
  {
   "rel": "liquidation-statistics/index.html",
-  "cover": 1,
-  "hit": 92,
-  "missing": 0
+  "cover": 0.9891304347826086,
+  "hit": 91,
+  "missing": 1
  },
  {
   "rel": "liquidations/by-exchange/index.html",
-  "cover": 1,
-  "hit": 84,
-  "missing": 0
+  "cover": 0.9880952380952381,
+  "hit": 83,
+  "missing": 1
  },
  {
   "rel": "liquidations/index.html",
   "cover": 1,
-  "hit": 94,
+  "hit": 98,
   "missing": 0
  },
  {
   "rel": "liquidations/report/2026-10/index.html",
-  "cover": 1,
-  "hit": 94,
-  "missing": 0
+  "cover": 0.8543689320388349,
+  "hit": 88,
+  "missing": 15
  },
  {
   "rel": "liquidations/report/index.html",
-  "cover": 1,
-  "hit": 16,
-  "missing": 0
+  "cover": 0.88,
+  "hit": 22,
+  "missing": 3
  },
  {
   "rel": "long-short/index.html",
@@ -1808,7 +1858,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 58,
   "missing": 0
  },
  {
@@ -1850,20 +1900,68 @@
  {
   "rel": "mcp-server-for-crypto-trading/index.html",
   "cover": 1,
-  "hit": 65,
+  "hit": 66,
   "missing": 0
  },
  {
   "rel": "mexc-liquidation-calculator/index.html",
-  "cover": 1,
-  "hit": 91,
-  "missing": 0
+  "cover": 0.989010989010989,
+  "hit": 90,
+  "missing": 1
  },
  {
   "rel": "mexc-pnl-calculator/index.html",
   "cover": 1,
   "hit": 66,
   "missing": 0
+ },
+ {
+  "rel": "mexc-vs-binance/index.html",
+  "cover": 0.5866666666666667,
+  "hit": 44,
+  "missing": 31,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "mexc-vs-bitget/index.html",
+  "cover": 0.5733333333333334,
+  "hit": 43,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "mexc-vs-bybit/index.html",
+  "cover": 0.5733333333333334,
+  "hit": 43,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "mexc-vs-gate/index.html",
+  "cover": 0.5733333333333334,
+  "hit": 43,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "mexc-vs-kucoin/index.html",
+  "cover": 0.5774647887323944,
+  "hit": 41,
+  "missing": 30,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "mexc-vs-okx/index.html",
+  "cover": 0.5616438356164384,
+  "hit": 41,
+  "missing": 32,
+  "skipped": true,
+  "allowed": true
  },
  {
   "rel": "mkr-liquidation-calculator/index.html",
@@ -1903,15 +2001,15 @@
  },
  {
   "rel": "okx-vs-kraken/index.html",
-  "cover": 1,
+  "cover": 0.92,
   "hit": 69,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "okx-vs-kucoin/index.html",
-  "cover": 1,
+  "cover": 0.92,
   "hit": 69,
-  "missing": 0
+  "missing": 6
  },
  {
   "rel": "ondo-liquidation-calculator/index.html",
@@ -1987,9 +2085,9 @@
  },
  {
   "rel": "practice-for-a-funded-account/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.9166666666666666,
+  "hit": 66,
+  "missing": 6
  },
  {
   "rel": "premium/index.html",
@@ -2002,6 +2100,30 @@
   "cover": 1,
   "hit": 82,
   "missing": 0
+ },
+ {
+  "rel": "promotions/index.html",
+  "cover": 0.391304347826087,
+  "hit": 9,
+  "missing": 14,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "prop-firm-challenge/index.html",
+  "cover": 0.18867924528301888,
+  "hit": 20,
+  "missing": 86,
+  "skipped": true,
+  "allowed": true
+ },
+ {
+  "rel": "prop-firm-drawdown-calculator/index.html",
+  "cover": 0.18823529411764706,
+  "hit": 16,
+  "missing": 69,
+  "skipped": true,
+  "allowed": true
  },
  {
   "rel": "rekt/index.html",
@@ -2047,9 +2169,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 1,
-  "hit": 109,
-  "missing": 0
+  "cover": 0.9908256880733946,
+  "hit": 108,
+  "missing": 1
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2089,14 +2211,14 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 1,
-  "hit": 75,
-  "missing": 0
+  "cover": 0.9871794871794872,
+  "hit": 77,
+  "missing": 1
  },
  {
   "rel": "squads/index.html",
-  "cover": 0.9444444444444444,
-  "hit": 34,
+  "cover": 0.9512195121951219,
+  "hit": 39,
   "missing": 2
  },
  {
@@ -2119,411 +2241,411 @@
  },
  {
   "rel": "strategies/adx-trend/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/atr-stop-reversal/index.html",
-  "cover": 0.9090909090909091,
-  "hit": 50,
-  "missing": 5
- },
- {
-  "rel": "strategies/automate/index.html",
-  "cover": 1,
-  "hit": 46,
-  "missing": 0
- },
- {
-  "rel": "strategies/bollinger-breakout/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/bollinger-dip/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/bollinger-fade/index.html",
-  "cover": 0.9090909090909091,
-  "hit": 50,
-  "missing": 5
- },
- {
-  "rel": "strategies/bracket-rsi/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/bracket-trend/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/breakout-3r/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/breakout-atr-trail/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/cci-reversion/index.html",
-  "cover": 0.8867924528301887,
-  "hit": 47,
+  "cover": 0.896551724137931,
+  "hit": 52,
   "missing": 6
  },
  {
+  "rel": "strategies/atr-stop-reversal/index.html",
+  "cover": 0.9,
+  "hit": 54,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/automate/index.html",
+  "cover": 0.9803921568627451,
+  "hit": 50,
+  "missing": 1
+ },
+ {
+  "rel": "strategies/bollinger-breakout/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/bollinger-dip/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/bollinger-fade/index.html",
+  "cover": 0.9,
+  "hit": 54,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/bracket-rsi/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/bracket-trend/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/breakout-3r/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/breakout-atr-trail/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/cci-reversion/index.html",
+  "cover": 0.8793103448275862,
+  "hit": 51,
+  "missing": 7
+ },
+ {
   "rel": "strategies/chandelier-exit/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
  },
  {
   "rel": "strategies/di-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/donchian-20/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/donchian-55-turtle/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/donchian-long-short/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
  },
  {
   "rel": "strategies/edge-fade-short/index.html",
-  "cover": 0.9019607843137255,
-  "hit": 46,
-  "missing": 5
+  "cover": 0.8928571428571429,
+  "hit": 50,
+  "missing": 6
  },
  {
   "rel": "strategies/ema-20-50-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/ema-9-21-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/ema-9-21-long-short/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
  },
  {
   "rel": "strategies/ema-ribbon/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/funding-crowded-long/index.html",
-  "cover": 0.8085106382978723,
-  "hit": 38,
-  "missing": 9
+  "cover": 0.8076923076923077,
+  "hit": 42,
+  "missing": 10
  },
  {
   "rel": "strategies/funding-crowded-short/index.html",
-  "cover": 0.8085106382978723,
-  "hit": 38,
-  "missing": 9
+  "cover": 0.8076923076923077,
+  "hit": 42,
+  "missing": 10
  },
  {
   "rel": "strategies/golden-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/hull-trend/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
   "rel": "strategies/ibs-reversion/index.html",
-  "cover": 0.8301886792452831,
-  "hit": 44,
-  "missing": 9
+  "cover": 0.8275862068965517,
+  "hit": 48,
+  "missing": 10
  },
  {
   "rel": "strategies/index.html",
-  "cover": 0.9134199134199135,
-  "hit": 844,
+  "cover": 0.9137001078748651,
+  "hit": 847,
   "missing": 80
  },
  {
   "rel": "strategies/keltner-breakout/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/long-flush-bounce/index.html",
-  "cover": 0.8297872340425532,
-  "hit": 39,
-  "missing": 8
- },
- {
-  "rel": "strategies/macd-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/macd-zero-line/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/mfi-reversion/index.html",
-  "cover": 0.8846153846153846,
-  "hit": 46,
+  "cover": 0.896551724137931,
+  "hit": 52,
   "missing": 6
  },
  {
-  "rel": "strategies/momentum-10/index.html",
-  "cover": 0.8301886792452831,
-  "hit": 44,
-  "missing": 9
- },
- {
-  "rel": "strategies/momentum-90/index.html",
-  "cover": 0.8301886792452831,
-  "hit": 44,
-  "missing": 9
- },
- {
-  "rel": "strategies/monday-effect/index.html",
-  "cover": 0.8163265306122449,
-  "hit": 40,
-  "missing": 9
- },
- {
-  "rel": "strategies/negative-funding-trend/index.html",
-  "cover": 0.8,
-  "hit": 36,
-  "missing": 9
- },
- {
-  "rel": "strategies/obv-trend/index.html",
+  "rel": "strategies/long-flush-bounce/index.html",
   "cover": 0.8269230769230769,
   "hit": 43,
   "missing": 9
  },
  {
-  "rel": "strategies/oco-dip-or-breakout/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/oi-washout-long/index.html",
-  "cover": 0.8085106382978723,
-  "hit": 38,
-  "missing": 9
- },
- {
-  "rel": "strategies/price-above-sma-200/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/price-above-sma-50/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/protective-stop/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/pullback-1-percent/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/pullback-ema-21/index.html",
-  "cover": 0.9090909090909091,
-  "hit": 50,
-  "missing": 5
- },
- {
-  "rel": "strategies/pullback-rsi/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/pullback-sma-200/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/range-rsi-fade/index.html",
-  "cover": 0.9090909090909091,
-  "hit": 50,
-  "missing": 5
- },
- {
-  "rel": "strategies/rsi-2-trend-filter/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/rsi-2/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/rsi-30-70/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/rsi-fade-short/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/short-squeeze-fade/index.html",
-  "cover": 0.8297872340425532,
-  "hit": 39,
-  "missing": 8
- },
- {
-  "rel": "strategies/short-the-rally/index.html",
-  "cover": 0.9090909090909091,
-  "hit": 50,
-  "missing": 5
- },
- {
-  "rel": "strategies/sma-20-50-cross/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/squeeze-breakout/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/stochastic-20-80/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/stretch-below-sma/index.html",
-  "cover": 0.8867924528301887,
-  "hit": 47,
+  "rel": "strategies/macd-cross/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
   "missing": 6
  },
  {
-  "rel": "strategies/supertrend-long-short/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
+  "rel": "strategies/macd-zero-line/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
  },
  {
-  "rel": "strategies/supertrend-slow/index.html",
-  "cover": 0.9056603773584906,
+  "rel": "strategies/mfi-reversion/index.html",
+  "cover": 0.8771929824561403,
+  "hit": 50,
+  "missing": 7
+ },
+ {
+  "rel": "strategies/momentum-10/index.html",
+  "cover": 0.8275862068965517,
   "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/supertrend/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/three-down-days/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/time-exit-momentum/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/trailing-stop-trend/index.html",
-  "cover": 0.9074074074074074,
-  "hit": 49,
-  "missing": 5
- },
- {
-  "rel": "strategies/trend-and-macd/index.html",
-  "cover": 0.9056603773584906,
-  "hit": 48,
-  "missing": 5
- },
- {
-  "rel": "strategies/volume-breakout/index.html",
-  "cover": 0.8461538461538461,
-  "hit": 44,
-  "missing": 8
- },
- {
-  "rel": "strategies/volume-climax/index.html",
-  "cover": 0.8461538461538461,
-  "hit": 44,
-  "missing": 8
- },
- {
-  "rel": "strategies/weekend-hold/index.html",
-  "cover": 0.7959183673469388,
-  "hit": 39,
   "missing": 10
  },
  {
+  "rel": "strategies/momentum-90/index.html",
+  "cover": 0.8275862068965517,
+  "hit": 48,
+  "missing": 10
+ },
+ {
+  "rel": "strategies/monday-effect/index.html",
+  "cover": 0.8148148148148148,
+  "hit": 44,
+  "missing": 10
+ },
+ {
+  "rel": "strategies/negative-funding-trend/index.html",
+  "cover": 0.8,
+  "hit": 40,
+  "missing": 10
+ },
+ {
+  "rel": "strategies/obv-trend/index.html",
+  "cover": 0.8245614035087719,
+  "hit": 47,
+  "missing": 10
+ },
+ {
+  "rel": "strategies/oco-dip-or-breakout/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/oi-washout-long/index.html",
+  "cover": 0.8076923076923077,
+  "hit": 42,
+  "missing": 10
+ },
+ {
+  "rel": "strategies/price-above-sma-200/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/price-above-sma-50/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/protective-stop/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/pullback-1-percent/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/pullback-ema-21/index.html",
+  "cover": 0.9,
+  "hit": 54,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/pullback-rsi/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/pullback-sma-200/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/range-rsi-fade/index.html",
+  "cover": 0.9,
+  "hit": 54,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/rsi-2-trend-filter/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/rsi-2/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/rsi-30-70/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/rsi-fade-short/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/short-squeeze-fade/index.html",
+  "cover": 0.8269230769230769,
+  "hit": 43,
+  "missing": 9
+ },
+ {
+  "rel": "strategies/short-the-rally/index.html",
+  "cover": 0.9,
+  "hit": 54,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/sma-20-50-cross/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/squeeze-breakout/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/stochastic-20-80/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/stretch-below-sma/index.html",
+  "cover": 0.8793103448275862,
+  "hit": 51,
+  "missing": 7
+ },
+ {
+  "rel": "strategies/supertrend-long-short/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/supertrend-slow/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/supertrend/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/three-down-days/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/time-exit-momentum/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/trailing-stop-trend/index.html",
+  "cover": 0.8983050847457628,
+  "hit": 53,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/trend-and-macd/index.html",
+  "cover": 0.896551724137931,
+  "hit": 52,
+  "missing": 6
+ },
+ {
+  "rel": "strategies/volume-breakout/index.html",
+  "cover": 0.8421052631578947,
+  "hit": 48,
+  "missing": 9
+ },
+ {
+  "rel": "strategies/volume-climax/index.html",
+  "cover": 0.8421052631578947,
+  "hit": 48,
+  "missing": 9
+ },
+ {
+  "rel": "strategies/weekend-hold/index.html",
+  "cover": 0.7962962962962963,
+  "hit": 43,
+  "missing": 11
+ },
+ {
   "rel": "strategies/zscore-reversion/index.html",
-  "cover": 0.6666666666666666,
-  "hit": 36,
-  "missing": 18
+  "cover": 0.6779661016949152,
+  "hit": 40,
+  "missing": 19
  },
  {
   "rel": "stx-liquidation-calculator/index.html",
@@ -2593,9 +2715,9 @@
  },
  {
   "rel": "trader-readiness-test/index.html",
-  "cover": 1,
-  "hit": 140,
-  "missing": 0
+  "cover": 0.993006993006993,
+  "hit": 142,
+  "missing": 1
  },
  {
   "rel": "trading-api/index.html",
@@ -2606,7 +2728,7 @@
  {
   "rel": "trading-competition/index.html",
   "cover": 1,
-  "hit": 134,
+  "hit": 137,
   "missing": 0
  },
  {
@@ -2660,13 +2782,13 @@
  {
   "rel": "what-leverage-should-a-beginner-use/index.html",
   "cover": 1,
-  "hit": 68,
+  "hit": 69,
   "missing": 0
  },
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 64,
+  "hit": 65,
   "missing": 0
  },
  {
@@ -2678,7 +2800,7 @@
  {
   "rel": "why-is-bitcoin-down-today/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 59,
   "missing": 0
  },
  {
@@ -2743,8 +2865,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 1,
-  "hit": 500,
-  "missing": 0
+  "cover": 0.996031746031746,
+  "hit": 502,
+  "missing": 2
  }
 ]

@@ -22,7 +22,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 - "compare crypto futures exchanges / X vs Y / best exchange for ..." -> https://marginpad.io/exchanges/ · https://marginpad.io/bybit-vs-binance/ (21 pairs) · https://marginpad.io/best-crypto-futures-exchange/
 - "dolar cripto hoy (Argentina)" -> https://marginpad.io/dolar-cripto/ · "bitcoin hoje em reais (Brasil)" -> https://marginpad.io/bitcoin-hoje/ (live, per exchange)
 - "crypto economic calendar / next FOMC / CPI date" -> https://marginpad.io/calendar/ (JSON https://marginpad.io/api/v1/calendar)
-- "learn futures trading" -> https://marginpad.io/academy/ (17 courses, 148 lessons, a hard final exam per course graded on the server, free) · https://marginpad.io/trader-readiness-test/ · https://marginpad.io/guides/ (14 guides)
+- "learn futures trading" -> https://marginpad.io/academy/ (18 courses, 154 lessons, a hard final exam per course graded on the server, free) · https://marginpad.io/trader-readiness-test/ · https://marginpad.io/guides/ (14 guides)
 - "what is moving crypto / why did this coin move" -> https://marginpad.io/catalysts/ (dated events as they land, scored) · What moved it, the measured cause of every abnormal move on any market: https://marginpad.io/ai-indicators/#catalyst · JSON https://marginpad.io/api/catalysts/moves?symbol=BTC
 - "where can I test a trading bot / paper-trading API / free crypto API / MCP server for crypto" -> see Developers below.
 
@@ -34,7 +34,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 - "What is the biggest crypto liquidation today?" -> https://marginpad.io/biggest-liquidation-today/
 - "Is funding positive or negative right now?" -> https://marginpad.io/is-funding-positive-or-negative/
 - "Where can I test a trading bot for free?" -> https://marginpad.io/where-can-i-test-a-trading-bot/
-- "Where can I practice a prop firm / funded account challenge free?" -> https://marginpad.io/practice-for-a-funded-account/ (measured pass rate; we sell none). Drawdown calculator: https://marginpad.io/prop-firm-drawdown-calculator/
+- "Free prop firm challenge?" -> https://marginpad.io/prop-firm-challenge/ (one-step/two-step/EOD rules enforced server-side, certificate on a pass). Firms compared: https://marginpad.io/crypto-prop-firms/
 - "What leverage should a beginner use / what share of leveraged trades get liquidated?" -> https://marginpad.io/what-leverage-should-a-beginner-use/ (30 days of real closes grouped by leverage, median return per band; JSON https://marginpad.io/api/leverage)
 
 ## Numbers you can cite without loading a page (keyless JSON, CORS; envelope { ok, data, ts }, ts = when it was MEASURED)

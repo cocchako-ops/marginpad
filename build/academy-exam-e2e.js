@@ -10,17 +10,18 @@ let ok = 0, bad = 0; const c = (n, v, x) => { if (v) { ok++; console.log('ok  ',
 const html = fs.readFileSync(path.join(R, 'dist/academy/index.html'), 'utf8');
 const D = JSON.parse(html.match(/id="acadData">([\s\S]*?)<\/script>/)[1]);
 const bank = {}; for (const co of D.courses) for (const x of JSON.parse(fs.readFileSync(path.join(R, 'drafts/academy-exams', co.id + '.json'), 'utf8'))) bank[x.id] = x;
+const NQ = D.courses.length * 15; // 15 a course - derived (it was a literal 255 until the propfirm course made 18)
 const LANGS = ['en', 'sr', 'es', 'de', 'fr', 'pt', 'nl', 'ru', 'tr', 'id', 'zh', 'ja', 'ko', 'ar', 'hi'];
 const H = { 'content-type': 'application/json', 'x-admin-key': K };
 const adm = (p, b) => fetch(B + p, { method: b ? 'POST' : 'GET', headers: H, body: b ? JSON.stringify(b) : undefined }).then((r) => r.json());
 
 (async () => {
   // the page and the packs
-  c('255 questions in the bank', Object.keys(bank).length === 255, Object.keys(bank).length);
+  c(NQ + ' questions in the bank', Object.keys(bank).length === NQ, Object.keys(bank).length);
   for (const l of LANGS) {
     const p = JSON.parse(fs.readFileSync(path.join(R, 'dist/academy/i18n/exam-' + l + '.json'), 'utf8'));
     const q = p.q || {}, ids = Object.keys(q), noAns = ids.every((i) => !('a' in q[i]) && !('l' in q[i]));
-    c(l + ': every question, no answer in the pack', ids.length === 255 && noAns, ids.length);
+    c(l + ': every question, no answer in the pack', ids.length === NQ && noAns, ids.length);
     if (l !== 'en') { const same = ids.filter((i) => q[i].q === bank[i].q).length; c(l + ': really translated', same === 0, same); }
   }
   c('the page carries no answer key', !/"a":\d[^}]*"l":"/.test(html.slice(html.indexOf('exam:start'), html.indexOf('exam:end'))));
@@ -72,7 +73,7 @@ const adm = (p, b) => fetch(B + p, { method: b ? 'POST' : 'GET', headers: H, bod
     await page.setCookie({ name: 'mp_sess', value: sess, domain: 'marginpad.io', path: '/', httpOnly: true, secure: true });
     const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
     await page.goto(B + '/academy/?cb=' + Date.now(), { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => document.querySelectorAll('.node.exam[data-exam]').length === 17, { timeout: 30000 });
+    await page.waitForFunction((n) => document.querySelectorAll('.node.exam[data-exam]').length === n, { timeout: 30000 }, D.courses.length);
     c('every course shows its exam', true);
     await page.evaluate(() => { const b = document.querySelector('[data-ctoggle="going"]'); if (!document.querySelector('[data-exam="going"]').offsetParent) b.click(); });
     await new Promise((r) => setTimeout(r, 900));

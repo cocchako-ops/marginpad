@@ -26,6 +26,7 @@ Allow: /api/cg/
 Allow: /api/glossary/
 # the trade of the day (2026-11-12): the homepage prints the winner from this keyless read and the changelog names it
 Allow: /api/totd
+Allow: /api/challenge/
 # /promotions/ links its own feed (2026-11-15): the partner campaigns as JSON
 Allow: /api/promotions
 Allow: /api/price
