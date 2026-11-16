@@ -300,7 +300,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   setInterval(() => { const c = Date.now() - 600000; for (const [k, v] of latamCache) if (v.t < c) latamCache.delete(k); }, 120000).unref?.();
   // Exchange campaign feeds the worker cannot read itself (2026-11-15): OKX answers the Cloudflare egress 400 and MEXC 403, both answer here.
   // FIXED urls only - the caller names a source, never a path - cached 10 minutes.
-  const PROMO_URL = { kraken: 'https://blog.kraken.com/feed', okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20' };
+  const PROMO_URL = { kraken: 'https://blog.kraken.com/feed', okx: 'https://www.okx.com/api/v5/support/announcements?annType=latest-events', mexc: 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20', bitget: 'https://www.bitget.com/support/categories/4413083952537' };
   const promoCache = new Map();
   app.get('/api/v1/promo', async (req, res) => {
     if (String(req.query.src) === 'og') { // a campaign page's og:image, for the two venues that refuse the worker - their own hosts only
@@ -329,7 +329,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     }
     const u = PROMO_URL[String(req.query.src || '')]; if (!u) return res.status(400).json({ error: 'src_not_allowed' });
     const hit = promoCache.get(u); if (hit && Date.now() - hit.t < 600000) return res.type('application/json').send(hit.body);
-    try { const r = await fetch(u, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)' } }); const body = await r.text(); if (r.status === 200) promoCache.set(u, { t: Date.now(), body }); else if (hit) return res.type('application/json').send(hit.body); return res.status(r.status).type('application/json').send(body); }
+    try { const r = await fetch(u, { signal: AbortSignal.timeout(9000), headers: req.query.src === 'bitget' ? { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36' } : { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; MarginPad/1.0)' } }); const body = await r.text(); if (r.status === 200) promoCache.set(u, { t: Date.now(), body }); else if (hit) return res.type('application/json').send(hit.body); return res.status(r.status).type('application/json').send(body); }
     catch (e) { if (hit) return res.type('application/json').send(hit.body); return res.status(502).json({ error: 'promo_unreachable' }); }
   });
   app.get('/api/v1/latam', async (req, res) => {

@@ -8733,7 +8733,7 @@ function botPresence(env, ctx, request, key, auth, ep) {
 // Without a published end date an item is shown for PROMO_FRESH_DAYS after it was posted, and the card says "posted", never "ends".
 const PROMO_VENUES = [
   { k: 'bybit', n: 'Bybit' }, { k: 'bingx', n: 'BingX' }, { k: 'moon', n: 'Moon' }, { k: 'mexc', n: 'MEXC' }, { k: 'okx', n: 'OKX' },
-  { k: 'binance', n: 'Binance' }, { k: 'kucoin', n: 'KuCoin' }, { k: 'bitget', n: 'Bitget' }, { k: 'hyperliquid', n: 'Hyperliquid' },
+  { k: 'bitget', n: 'Bitget' }, { k: 'binance', n: 'Binance' }, { k: 'kucoin', n: 'KuCoin' }, { k: 'hyperliquid', n: 'Hyperliquid' },
   { k: 'fomo', n: 'Fomo' }, { k: 'aster', n: 'Aster' }, { k: 'gate', n: 'Gate' }, { k: 'kraken', n: 'Kraken' }, { k: 'coinbase', n: 'Coinbase' },
   { k: 'cryptocom', n: 'Crypto.com' },
 ];
@@ -8793,6 +8793,23 @@ const PROMO_SRC = {
       const img = (it.match(/https:\/\/[^"'\s<]+\.(?:png|jpe?g|webp)/i) || [''])[0];
       return { t, d: promoTxt(g(/<description>([\s\S]*?)<\/description>/).replace(/<!\[CDATA\[|\]\]>/g, '').replace(/&lt;[\s\S]*?&gt;/g, ' ').replace(/&#[0-9]+;/g, ' '), 260), u: g(/<link>([^<]+)<\/link>/).trim(), ts: Date.parse(g(/<pubDate>([^<]+)<\/pubDate>/)) || 0, img };
     }).filter(r => PROMO_OFFER_RE.test(r.t));
+  },
+  // Bitget's API has no campaign type (40020), but its support centre has a "Competitions and promotions" category whose page is
+  // server-rendered: each row is the article link + title + a printed time; the embedded JSON carries the same post time as `showTime`
+  // in ms, which wins. Read 2026-11-16: 20 rows (CandyBomb, CFD championships, trading challenges). No campaign picture: every article
+  // shares one site og:image, so the page draws the branded panel.
+  async bitget(env) {
+    const h = await promoTextVia(env, 'bitget', 'https://www.bitget.com/support/categories/4413083952537');
+    const st = {}; (h.match(/"contentId":"\d+"[^{}]{0,400}?"showTime":"\d+"/g) || []).forEach(s => { const m = s.match(/"contentId":"(\d+)"[\s\S]*"showTime":"(\d+)"/); if (m) st[m[1]] = +m[2]; });
+    const out = [], seen = {};
+    const re = /href="\/support\/articles\/(\d+)"[^>]*>([^<]{5,200})<\/a>(?:[\s\S]{0,300}?>(\d{4}-\d{2}-\d{2} \d{2}:\d{2})<)?/g; let m;
+    while ((m = re.exec(h))) {
+      if (seen[m[1]]) continue; seen[m[1]] = 1;
+      const ts = st[m[1]] || (m[3] ? Date.parse(m[3].replace(' ', 'T') + ':00Z') : 0);
+      out.push({ t: promoTxt(m[2], 160), d: '', u: 'https://www.bitget.com/support/articles/' + m[1], ts });
+    }
+    if (!out.length) throw new Error('no rows');
+    return out;
   },
   async mexc(env) {
     const j = await promoGetVia(env, 'mexc', 'https://www.mexc.com/help/announce/api/en-US/section/15425930840825/articles?page=1&perPage=20');
