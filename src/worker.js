@@ -27058,6 +27058,8 @@ export default {
     // below therefore reads the Spanish file) while `url.pathname` becomes the English path, so the SSR routes (liquidation
     // calculators and maps, hubs, the six coin pages, blog live boxes, compare pages) inject the same live data into the twin.
     // No twin on disk → 302 to the English page, never a 404 on a language prefix. The six tool routes serve dist/app-es.html.
+    // The KuCoin "is it safe" post is retired (owner 2026-11-16: nothing negative about KuCoin anywhere); every language's URL lands on /exchanges/.
+    if (/^\/(?:[a-z]{2}\/)?blog\/is-kucoin-safe-2026\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/exchanges/', 301);
     let esSite = false, twinLang = ''; // twinLang = 'es' | 'pt' | 'de' (Portuguese and German twins since 2026-10-29, build/data/<lang>)
     const _twm = url.pathname.match(TWIN_SUB_RE);
     if (_twm) {
