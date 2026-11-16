@@ -446,6 +446,8 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 #signupHub .rw-panels>.card:not(.rw-on){display:none!important}
 #signupHub .rw-panels>.card>.lbl{display:none!important}
 #signupHub .rw-panels>.card .note{text-align:left}
+#hubTabs button.rw-na{opacity:.45;filter:saturate(.3);cursor:not-allowed;position:relative}
+#hubTabs button.rw-na::after{content:attr(data-na);display:block;font:700 8.5px/1.2 "Space Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:#8b97a5;margin-top:3px}
 /* the season boards card: four tiles stay, the long paragraph tightens */
 #lbCompCard .lbc-title{font-size:21px}#lbCompCard .lbc-p{font-size:13.5px}
 /* owner 2026-10-23: no "which level you are" on this page - the card keeps only the signed-in line (sign out, contact) */
@@ -1602,17 +1604,25 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 </script>
 <script>
 /* the sign-up hub (2026-10-23): switches the four venue panels, disables a venue ops paused, mirrors each panel's status onto its tab, sums the header */
-(function(){var hub=document.getElementById('signupHub'),tabs=document.getElementById('hubTabs');if(!hub||!tabs)return;var V=['moon','mexc','bingx','bybit'];
+(function(){var hub=document.getElementById('signupHub'),tabs=document.getElementById('hubTabs');if(!hub||!tabs)return;var V=['moon','mexc','bingx','bybit'],NA=null,NAT='',NAS='';
   function card(v){return document.getElementById(v+'Card');}
   function show(v){V.forEach(function(k){var c=card(k);if(c)c.classList.toggle('rw-on',k===v);});Array.prototype.forEach.call(tabs.querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});try{localStorage.setItem('mp_rw_hub',v);}catch(e){}}
   function sync(){var any=false,first=null,tot=0;
-    V.forEach(function(k){var c=card(k),b=tabs.querySelector('[data-v="'+k+'"]'),off=!c||c.hidden;if(b)b.disabled=off;if(!off){any=true;if(!first)first=k;var a=document.getElementById(k+'Amt');tot+=parseFloat(a&&a.textContent)||0;}
+    V.forEach(function(k){var c=card(k),b=tabs.querySelector('[data-v="'+k+'"]'),na=!!(NA&&NA[k]),off=!c||c.hidden||na;if(b){b.disabled=off;b.classList.toggle('rw-na',na);if(na){b.title=NAT;b.setAttribute('data-na',NAS);}}if(!off){any=true;if(!first)first=k;var a=document.getElementById(k+'Amt');tot+=parseFloat(a&&a.textContent)||0;}
       var st=document.getElementById(k+'Status'),t=st?st.textContent:'';if(b){b.classList.toggle('done',/PAID/.test(t));b.classList.toggle('wait',/REVIEW/.test(t));b.classList.toggle('bad',/REJECTED/.test(t));}});
     hub.hidden=!any;var te=document.getElementById('hubTotal');if(te)te.textContent=(tot%1?tot.toFixed(2):String(tot));
     var cur=tabs.querySelector('button.on');if(any&&(!cur||cur.disabled)){var want=null;try{want=localStorage.getItem('mp_rw_hub');}catch(e){}var w=want&&tabs.querySelector('[data-v="'+want+'"]');show(w&&!w.disabled?want:first);}}
   tabs.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-v]');if(!b||b.disabled)return;show(b.getAttribute('data-v'));});
   var mo=new MutationObserver(sync);V.forEach(function(k){var c=card(k);if(c)mo.observe(c,{attributes:true,attributeFilter:['hidden']});var st=document.getElementById(k+'Status');if(st)mo.observe(st,{childList:true,subtree:true});});
   sync();window.__mpRwHub={show:show,sync:sync};
+  /* 2026-11-16: a US reader was offered the MEXC, BingX and Bybit bonuses - none of them opens an account for a US
+     resident, and 21 of the 79 US money clicks in 30 days came from this page. Where mpEx (the one partner table)
+     says a venue does not onboard the reader's country, its tab is switched off and says so, and Moon - which does -
+     is the one left open. */
+  var NAMES={moon:'Moon',mexc:'MEXC',bingx:'BingX',bybit:'Bybit'};
+  (function waitEx(n){if(!window.mpEx){if(n<60)setTimeout(function(){waitEx(n+1);},150);return;}
+    window.mpEx.cc(function(c){if(!c)return;var na={},hit=false;V.forEach(function(k){if(window.mpEx.blocked(NAMES[k],c)){na[k]=1;hit=true;}});if(!hit)return;
+      NA=na;NAS=__esT_rewardsindex("rwNotIn",'Not in ')+c;NAT=__esT_rewardsindex("rwNotInRegion",'Not available in ')+(window.mpEx.region(c)||c);sync();});})(0);
 })();
 </script>
 </body>
