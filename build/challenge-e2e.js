@@ -112,6 +112,7 @@ chk('the three rule sets are the ones the pages describe', CHAL_TYPES.one.phases
   const pg = fs.readFileSync(path.join(__dirname, '..', 'dist', 'prop-firm-challenge', 'index.html'), 'utf8');
   chk('the page states the one-step rules the engine uses', /data-kind="one".*?-6%.*?\+10%.*?<b>10%<\/b><small>Profit target.*?<b>4%<\/b>.*?<b>6%<\/b><small>trailing DD.*?5 days min.*?100x max/s.test(pg));
   chk('the page states the two-step rules', /data-kind="two".*?<b>8% \+ 5%<\/b>.*?<b>5%<\/b>.*?<b>10%<\/b><small>static DD/s.test(pg));
+  chk('the FTMO presets never allow more leverage than FTMO gives crypto (1:3.3, the comparison page says so)', CHAL_TYPES.ftmo1.maxlev <= 3.3 && CHAL_TYPES.ftmo2.maxlev <= 3.3 && /1:3.3 on crypto/.test(fs.readFileSync(path.join(__dirname, 'gen-prop-firms-page.js'), 'utf8')));
   chk('the page offers the firm presets and custom rules', /data-kind="ftmo1"/.test(pg) && /data-kind="iq"/.test(pg) && /data-kind="custom"/.test(pg) && /id="cxBuild"/.test(pg));
   chk('the iq preset on the page matches the engine (8%, none, 6%, 1%, 5x)', CHAL_TYPES.iq.phases[0] === 8 && CHAL_TYPES.iq.daily === 0 && CHAL_TYPES.iq.dd === 6 && CHAL_TYPES.iq.maxpos === 1 && CHAL_TYPES.iq.maxlev === 5 && /data-kind="iq".*?<b>8%<\/b>.*?<b>None<\/b>.*?<b>6%<\/b><small>end-of-day DD.*?5x max.*?1% max loss per trade.*?3rd breach ends it/s.test(pg));
   chk('the page FAQ ships in the static HTML (crawler)', (pg.match(/<details>/g) || []).length >= 6 && /FAQPage/.test(pg));
@@ -145,6 +146,7 @@ chk('the three rule sets are the ones the pages describe', CHAL_TYPES.one.phases
     const op = await post('/api/trade/open?uid=' + uid, { sym: 'BTC', side: 'long', margin: 100, lev: 10 });
     const pid = op.body.position && op.body.position.id;
     chk('an allowed position opens', op.status === 200 && !!pid, op.body);
+    chk('the open answer carries the challenge tag (My Trades marks it at once)', !!(op.body.position && op.body.position.chal), op.body.position);
     const s1 = await get('/api/challenge?uid=' + uid);
     chk('the open position is priced and counted', s1.body.eval && s1.body.eval.open === 1 && s1.body.eval.priced === 1 && s1.body.eval.openMargin === 100, s1.body.eval);
     if (pid) { const c = await post('/api/trade/close?uid=' + uid, { id: pid }); chk('it closes', c.status === 200 && c.body.ok, c.body); }
@@ -164,6 +166,7 @@ chk('the three rule sets are the ones the pages describe', CHAL_TYPES.one.phases
     chk('pause works with nothing open', pz2.status === 200 && pz2.body.active && pz2.body.active.paused === true, pz2.body);
     const free = await post('/api/trade/open?uid=' + uid, { sym: 'BTC', side: 'long', margin: 50, lev: 75 });
     chk('while paused the gate is off (75x opens) - an ordinary trade', free.status === 200 && free.body.ok, free.body);
+    chk('a trade opened while paused carries no challenge tag', !!free.body.position && !free.body.position.chal, free.body.position);
     const fid = free.body.position && free.body.position.id;
     const rs = await post('/api/challenge?uid=' + uid, { op: 'resume' });
     chk('resume works', rs.status === 200 && rs.body.active && rs.body.active.paused === false, rs.body);

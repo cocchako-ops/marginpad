@@ -159,7 +159,7 @@
   }
   function board(){
     fetch('/api/challenge/board').then(function(r){return r.json();}).then(function(d){
-      var c=(d&&d.counts)||{}; $('sPass').textContent=(c.passed||0).toLocaleString('en-US'); $('sDaily').textContent=(c.fail_daily||0).toLocaleString('en-US'); $('sDd').textContent=((c.fail_drawdown||0)+(c.fail_position||0)+(c.fail_time||0)).toLocaleString('en-US');
+      var c=(d&&d.counts)||{}; $('sPass').textContent=(c.passed||0).toLocaleString('en-US'); $('sDaily').textContent=(c.fail_daily||0).toLocaleString('en-US'); $('sDd').textContent=((c.fail_drawdown||0)).toLocaleString('en-US');
       var p=(d&&d.passed)||[];
       $('cxBoard').innerHTML=p.length?p.map(function(x){return '<tr><td><a href="?c='+esc(x.id)+'" style="color:var(--ink)">@'+esc(x.who)+'</a></td><td'+(x.custom?' title="'+esc(x.blurb)+'"':'')+'>'+esc(x.name)+'</td><td class="n">'+money(x.book)+'</td><td class="n" style="color:var(--lime)">'+pct(x.returnPct)+'</td><td class="n">'+(+x.maxDdPct||0).toFixed(2)+'%</td><td class="n">'+(x.days||0)+'</td><td class="n">'+day(x.passed)+'</td></tr>';}).join(''):'<tr><td colspan="7" class="cx-empty">Nobody has passed yet - the first certificate on this board could be yours.</td></tr>';
     }).catch(function(){$('cxBoard').innerHTML='<tr><td colspan="7" class="cx-empty">The board could not be loaded - refresh in a moment.</td></tr>';});

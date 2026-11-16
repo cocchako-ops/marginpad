@@ -11037,7 +11037,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=64130e8a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0651a9dc" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -16004,8 +16004,8 @@ const CHAL_TYPES = {
   one: { name: 'One-step', phases: [10], daily: 4, dd: 6, ddtype: 'trail', mindays: 5, maxlev: 100, blurb: '10% target, 4% daily loss, 6% trailing drawdown, 5 trading days' },
   two: { name: 'Two-step', phases: [8, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, maxlev: 100, blurb: '8% then 5% target, 5% daily loss, 10% static drawdown, 4 trading days a phase' },
   eod: { name: 'One-step EOD', phases: [10], daily: 5, dd: 6, ddtype: 'eod', mindays: 5, maxlev: 50, blurb: '10% target, 5% daily loss, 6% end-of-day trailing drawdown, 50x max' },
-  ftmo1: { name: 'FTMO 1-Step rules', firm: 'FTMO', phases: [10], daily: 3, dd: 10, ddtype: 'eod', mindays: 0, maxlev: 30, best: 50, blurb: 'FTMO 1-Step shape: 10% target, 3% daily loss, 10% end-of-day trailing max loss, best day under 50% of profit' },
-  ftmo2: { name: 'FTMO 2-Step rules', firm: 'FTMO', phases: [10, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, maxlev: 30, blurb: 'FTMO 2-Step shape: 10% then 5% target, 5% daily loss, 10% static max loss, 4 trading days a phase' },
+  ftmo1: { name: 'FTMO 1-Step rules', firm: 'FTMO', phases: [10], daily: 3, dd: 10, ddtype: 'eod', mindays: 0, maxlev: 3, best: 50, blurb: 'FTMO 1-Step shape: 10% target, 3% daily loss, 10% end-of-day trailing max loss, best day under 50% of profit, 3x crypto leverage' },
+  ftmo2: { name: 'FTMO 2-Step rules', firm: 'FTMO', phases: [10, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, maxlev: 3, blurb: 'FTMO 2-Step shape: 10% then 5% target, 5% daily loss, 10% static max loss, 4 trading days a phase, 3x crypto leverage' },
   iq: { name: 'IQ Capital Core rules', firm: 'IQ Capital', phases: [8], daily: 0, dd: 6, ddtype: 'eod', mindays: 0, maxlev: 5, maxpos: 1, strikes: 3, blurb: 'IQ Capital Core shape: 8% target, no daily limit, 6% end-of-day trailing drawdown, 1% max loss per trade (3rd breach ends it), 5x' },
 };
 const CHAL_BOOKS = [5000, 10000, 25000, 50000, 100000];
@@ -22381,6 +22381,7 @@ async function handleTrade(url, request, env, ctx) {
     mk('do_fill', tD);
     if (r && r.error) return jt(r, r.error === 'rate_limited' ? 429 : 400);
     if (r && r.idempotent) return jt({ ok: true, position: r.raw || t, idempotent: true }); // the retry of a click that already filled: the SAME position, in the site's shape
+    if (r && r.chal) t.chal = r.chal; // a challenge trade: the terminal marks it in My Trades without waiting for the next pull
     return jt({ ok: true, position: t });
   }
   if (path === '/close' && request.method === 'POST') {
@@ -36273,6 +36274,7 @@ export class UserStore {
     // moment the run ends and never again - a passed run is a certificate, a failed one a record of which rule ended it.
     try { s.exec('CREATE TABLE IF NOT EXISTS chal(id TEXT PRIMARY KEY, uid TEXT, kind TEXT, book REAL, targets TEXT, phase INTEGER DEFAULT 1, daily REAL, dd REAL, ddtype TEXT, mindays INTEGER, maxlev REAL, started INTEGER, phase_started INTEGER, status TEXT, reason TEXT, ended INTEGER, ret REAL, maxdd REAL, worstday REAL, days INTEGER, closes INTEGER, last_eq REAL, last_eval INTEGER, phase1 TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS chal_uid ON chal(uid)'); s.exec('CREATE INDEX IF NOT EXISTS chal_status ON chal(status)'); } catch (e) {}
     for (const c9 of ['maxpos REAL', 'strikes INTEGER', 'best REAL', 'tlimit INTEGER', 'paused INTEGER DEFAULT 0', 'paused_at INTEGER', 'paused_ms INTEGER DEFAULT 0', 'blurb TEXT']) { try { s.exec('ALTER TABLE chal ADD COLUMN ' + c9); } catch (e) {} } // 2026-11-16 evening: per-trade loss, consistency, time limit, pause, custom rules
+    try { s.exec("UPDATE chal SET maxlev=3, blurb=COALESCE(blurb,'') WHERE kind IN ('ftmo1','ftmo2') AND maxlev>3"); } catch (e) {} // 2026-11-16: the FTMO presets shipped at 30x for a few hours; FTMO gives crypto about 1:3.3 - correct the runs (new opens only; an open position keeps its fill)
     // THE FOUNDRY (2026-11-12): the squad treasury of parts, its log, the per-member daily caps, and the coin a squad cast
     try { s.exec('CREATE TABLE IF NOT EXISTS sqparts(sid TEXT PRIMARY KEY, alloy REAL DEFAULT 0, signal REAL DEFAULT 0, ore REAL DEFAULT 0, flux REAL DEFAULT 0, spark REAL DEFAULT 0, upd INTEGER)');
       s.exec('CREATE TABLE IF NOT EXISTS sqpartlog(sid TEXT, ts INTEGER, uid TEXT, kind TEXT, amt REAL, why TEXT)'); s.exec('CREATE INDEX IF NOT EXISTS sqpartlog_sid ON sqpartlog(sid, ts)');
@@ -37317,8 +37319,8 @@ export class UserStore {
   _goalProgress(uid, k, from, to, sk) {
     if (!uid) return 0;
     try {
-      if (k === 'closes') return +(this.rows("SELECT COUNT(*) c FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<?", uid, from, to)[0] || {}).c || 0;
-      if (k === 'green') { const byDay = {}; this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<?", uid, from, to).forEach(r => { const d = new Date(+r.ts).toISOString().slice(0, 10); byDay[d] = (byDay[d] || 0) + (+r.pnl || 0); }); return Object.values(byDay).filter(v => v > 0).length; }
+      if (k === 'closes') return +(this.rows("SELECT COUNT(*) c FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0", uid, from, to)[0] || {}).c || 0;
+      if (k === 'green') { const byDay = {}; this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0", uid, from, to).forEach(r => { const d = new Date(+r.ts).toISOString().slice(0, 10); byDay[d] = (byDay[d] || 0) + (+r.pnl || 0); }); return Object.values(byDay).filter(v => v > 0).length; }
       if (k === 'lessons') return +(this.rows("SELECT COUNT(*) c FROM academy WHERE user_id=? AND ts>=? AND ts<? AND lesson NOT LIKE '%:%'", uid, from, to)[0] || {}).c || 0;
       if (k === 'calls') return +(this.rows('SELECT COUNT(*) c FROM upred WHERE user_id=? AND day>=? AND day<?', uid, sk.from, sk.to)[0] || {}).c || 0;
       // CHECK-IN DAYS MUST NOT SHRINK (2026-10-08, Sami_Sings1 in the owner's DMs: "today's supposed to be 7 but it's back to 5").
@@ -37336,7 +37338,7 @@ export class UserStore {
   _pbSeason(uid) {
     try {
       const sk = predSeason(Date.now()), from = Date.parse(sk.from + 'T00:00:00Z'), to = sk.endMs;
-      const rows = this.rows("SELECT ts, pnl, roe, sym FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<? ORDER BY ts ASC", uid, from, to).filter(r => !lbExcluded(r.sym));
+      const rows = this.rows("SELECT ts, pnl, roe, sym FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0 ORDER BY ts ASC", uid, from, to).filter(r => !lbExcluded(r.sym));
       if (!rows.length) return { scope: 'season', from: sk.from, to: sk.to, roe: null, pnl: null, streak: 0, day: 0, closes: 0 };
       let bestRoe = null, bestRoeTs = 0, bestPnl = null, bestPnlTs = 0, streak = 0, streakBest = 0, streakTs = 0, dayBest = 0, dayTs = 0; const byDay = {};
       for (const r of rows) {
@@ -38396,7 +38398,7 @@ export class UserStore {
       // that takes every winner and leaves every loser open reads 100%. So the board carries what is still OPEN
       // beside what was closed, and the realism each close was actually FILLED with (2026-09-16) - a bot trading
       // without slippage and on a flat maintenance margin is on easy mode, and the reader is entitled to know.
-      let rowsA = []; try { rowsA = this.rows("SELECT user_id, COUNT(*) n, SUM(pnl) pnl, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) wins, SUM(liq) liq, AVG(roe) roe, SUM(margin) margin, MAX(ts) last, SUM(CASE WHEN rz LIKE '%S%' THEN 1 ELSE 0 END) slipN, SUM(CASE WHEN rz LIKE '%T%' THEN 1 ELSE 0 END) tierN FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND (src='bot' OR via='bot') GROUP BY user_id HAVING COUNT(*)>=5 ORDER BY pnl DESC LIMIT 200", from, to); } catch (e) { return this.j({ rows: [] }); }
+      let rowsA = []; try { rowsA = this.rows("SELECT user_id, COUNT(*) n, SUM(pnl) pnl, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) wins, SUM(liq) liq, AVG(roe) roe, SUM(margin) margin, MAX(ts) last, SUM(CASE WHEN rz LIKE '%S%' THEN 1 ELSE 0 END) slipN, SUM(CASE WHEN rz LIKE '%T%' THEN 1 ELSE 0 END) tierN FROM tradeev WHERE COALESCE(cp,0)=0 AND kind='close' AND ts>=? AND ts<? AND (src='bot' OR via='bot') GROUP BY user_id HAVING COUNT(*)>=5 ORDER BY pnl DESC LIMIT 200", from, to); } catch (e) { return this.j({ rows: [] }); }
       const owners = Array.from(new Set(rowsA.map(r => String(r.user_id).split(':')[0]))); const nameOf = {};
       for (let i = 0; i < owners.length; i += 60) { const part = owners.slice(i, i + 60); try { this.rows('SELECT id, username FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { nameOf[u.id] = u.username || ''; }); } catch (e) {} }
       const out = rowsA.map(r => { const [own, bk] = String(r.user_id).split(':'); const un = nameOf[own] || ''; if (!un || /^e2e_/i.test(un)) return null;
@@ -38758,7 +38760,7 @@ export class UserStore {
         sql.exec('INSERT OR IGNORE INTO botidem(uid,coid,tid,ts) VALUES(?,?,?,?)', uid, coid, String(t.id || ''), now);
         try { sql.exec('DELETE FROM botidem WHERE ts < ?', now - 7 * 86400000); } catch (e) {} // 7d window - long past any retry
       }
-      return this.j({ ok: true, position: this._j2bot(t, null) });
+      return this.j({ ok: true, position: this._j2bot(t, null), chal: t.chal || null }); // chal: the site row learns at once that this is a challenge trade
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
       // INLINE AUTH: when the caller sends `key` instead of `uid`, resolve+meter here so the whole operation is
@@ -39132,7 +39134,7 @@ export class UserStore {
             // so a user who signs in on a second device and pushes a big journal at once can close a winner and
             // watch the mission refuse it. The journal itself is unbiased; take whichever source saw more.
             const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
-            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (!t || t.status !== 'win') continue; if ((+t.closeTs || 0) < dayStart) continue; if (!((+t.pnl || 0) > 0)) continue; _jw++; } } catch (e2) {}
+            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (!t || t.status !== 'win' || chalNoCredit(t)) continue; if ((+t.closeTs || 0) < dayStart) continue; if (!((+t.pnl || 0) > 0)) continue; _jw++; } } catch (e2) {}
             c = Math.max(_tv, _jw);
           }
           else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND ts>=? AND lesson NOT LIKE 'course:%'", uid, dayStart)[0] || {}).n || 0;
@@ -39214,7 +39216,7 @@ export class UserStore {
       // path or the blob scan, both of which see the real origin.
       // Rows written before src existed carry none. Rather than lose their recovery entirely, prove them the only
       // other way available: the user's own journal still records src and sc per trade id. Unprovable stays skipped.
-      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, lev, margin, pnl, tid, src FROM tradeev WHERE kind='close' AND ts>=? AND pnl IS NOT NULL", season9);
+      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, lev, margin, pnl, tid, src FROM tradeev WHERE kind='close' AND ts>=? AND pnl IS NOT NULL AND COALESCE(cp,0)=0", season9); // never a copy or a challenge trade (cp 1/2) - the close-time path refuses both
       const _srvIds = {}; // uid -> Set of trade ids the journal confirms as srv AND server-closed
       for (const _u of Array.from(new Set(rows9.filter(r => !r.src).map(r => r.uid)))) {
         const set = new Set();
@@ -39477,7 +39479,7 @@ export class UserStore {
           else if (d.vt === 'win') { // same both-sources rule as the daily win mission: tradeev's per-sync insert
             // cap keeps logging losses after it stops logging wins, so never under-credit a real win.
             const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND COALESCE(cp,0)=0", uid)[0] || {}).n || 0;
-            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (t && t.status === 'win' && (+t.pnl || 0) > 0) _jw++; } } catch (e2) {}
+            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (t && t.status === 'win' && !chalNoCredit(t) && (+t.pnl || 0) > 0) _jw++; } } catch (e2) {}
             c = Math.max(_tv, _jw);
           }
           // "came back" is DISTINCT DAYS, never the streak. A streak RESETS, so a task you lose by returning on

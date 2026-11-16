@@ -4557,3 +4557,8 @@ html.pt-sheet{overflow:hidden!important;touch-action:none}
 .chp-flash.pause{border-color:rgba(255,179,71,.45);background:rgba(255,179,71,.08);color:#ffcf8a}.chp-flash.end{border-color:#2b333d;background:#11151b;color:#c9d1da}
 /* the pill reads "Funded Account Challenge" at rest (owner, 2026-11-16 evening) - a little longer and taller */
 @media(min-width:561px){.ptc-chal{height:26px;padding:0 13px 0 10px;gap:7px;font-size:10px;letter-spacing:.08em}}
+
+/* My Trades: one-tap Challenge toggle beside Filters (2026-11-16) */
+.jr-fch{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:99px;border:1px solid rgba(255,179,71,.35);background:rgba(255,179,71,.06);color:#ffb347;font:600 11.5px/1 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+.jr-fch:hover{border-color:#ffb347}
+.jr-fch.on{background:#ffb347;color:#0a0b0d;border-color:#ffb347}

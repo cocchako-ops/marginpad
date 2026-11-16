@@ -8,8 +8,8 @@ const TYPES = [
   { kind: 'one', name: 'One-step', tag: '1 step', t: [10], daily: 4, dd: 6, ddtype: 'trail', mindays: 5, lev: 100, extra: [] },
   { kind: 'two', name: 'Two-step', tag: '2 steps', t: [8, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, lev: 100, extra: [] },
   { kind: 'eod', name: 'One-step EOD', tag: '1 step', t: [10], daily: 5, dd: 6, ddtype: 'eod', mindays: 5, lev: 50, extra: [] },
-  { kind: 'ftmo1', firm: 'ftmo', name: 'FTMO 1-Step', tag: '1 step', t: [10], daily: 3, dd: 10, ddtype: 'eod', mindays: 0, lev: 30, extra: ['Best day under 50% of profit'] },
-  { kind: 'ftmo2', firm: 'ftmo', name: 'FTMO 2-Step', tag: '2 steps', t: [10, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, lev: 30, extra: [] },
+  { kind: 'ftmo1', firm: 'ftmo', name: 'FTMO 1-Step', tag: '1 step', t: [10], daily: 3, dd: 10, ddtype: 'eod', mindays: 0, lev: 3, extra: ['Best day under 50% of profit'] },
+  { kind: 'ftmo2', firm: 'ftmo', name: 'FTMO 2-Step', tag: '2 steps', t: [10, 5], daily: 5, dd: 10, ddtype: 'static', mindays: 4, lev: 3, extra: [] },
   { kind: 'iq', firm: 'iq', name: 'IQ Capital Core', tag: '1 step', t: [8], daily: 0, dd: 6, ddtype: 'eod', mindays: 0, lev: 5, extra: ['1% max loss per trade', '3rd breach ends it'] },
 ];
 const DDN = { static: 'static', trail: 'trailing', eod: 'end-of-day' };
