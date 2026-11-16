@@ -33,12 +33,17 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
   try {
     const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
     const grab = (name) => { const i = src.indexOf('async function ' + name + '('); if (i < 0) throw new Error('no ' + name); let d = 0, j = src.indexOf('{', i); for (let k = j; k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } } throw new Error('unbalanced ' + name); };
-    const consts = (src.match(/^const SPOT_LIST_FRESH_MS = [^\n]+/m) || [''])[0] + '\n' + (src.match(/^const SPOT_LIQ_CAP = [^\n]+/m) || [''])[0] + '\nconst SPOT_THIN_LIQ = 1000;';
+    const consts = (src.match(/^const SPOT_LIST_FRESH_MS = [^\n]+/m) || [''])[0] + '\n' + (src.match(/^const SPOT_LIQ_CAP = [^\n]+/m) || [''])[0] + '\nconst SPOT_THIN_LIQ = 1000;' + '\n' + (src.match(/^const SPOT_SRC_AGREE = [^\n]+/m) || [''])[0] + '\n' + (src.match(/^const SPOT_SOLO_X = [^\n]+/m) || [''])[0] + '\n' + (src.match(/^const SPOT_STALE_MAX_MS = [^\n]+/m) || [''])[0];
+    const second = {}, token = {}, cgp = {};
     const calls = [];
-    const F = new Function('spotMemePrice', 'fetchPriceCached', consts + '\n' + grab('spotPriceHolds') + '\nreturn spotPriceHolds;')(
-      async (env, net, pool) => { calls.push(pool); return pool === 'POOL-OK' ? { price: 2, liqUsd: 50000 } : pool === 'POOL-THIN' ? { price: 100, liqUsd: 400 } : null; },
-      async () => ({ price: 100 }));
-    const now = 1000000000000, mk = (pool, extra) => Object.assign({ key: 'eth:0xmint', qty: 1000, costUsd: 10, meta: { k: 'meme', net: 'eth', pool, mint: '0xmint', lastPx: 0.01 } }, extra || {});
+    const F = new Function('spotMemePrice', 'fetchPriceCached', 'spotSecondPrice', 'spotGtToken', 'spotCgPrice', consts + '\n' + grab('spotPriceHolds') + '\nreturn spotPriceHolds;')(
+      async (env, net, pool) => { calls.push(pool); return pool === 'POOL-OK' ? { price: 2, liqUsd: 50000, src: 'ds' } : pool === 'POOL-THIN' ? { price: 100, liqUsd: 400, src: 'ds' } : pool === 'POOL-MK' ? { price: 4.126e-24, liqUsd: 40270, src: 'ds' } : null; },
+      async () => ({ price: 100 }),
+      async (env, net, pool) => (second[pool] != null ? { price: second[pool], src: 'gt' } : null),
+      async (env, net, mint) => (token[mint] != null ? { price: token[mint], liqUsd: 2070, src: 'gt-token' } : null),
+      async (env, net, pool) => (cgp[pool] != null ? { price: cgp[pool], src: 'cg' } : null));
+    second['POOL-OK'] = 2; // the deep live pool's second reading agrees
+    const now = 1000000000000, mk = (pool, extra) => Object.assign({ key: 'eth:0xmint', qty: 1000, costUsd: 1500, meta: { k: 'meme', net: 'eth', pool, mint: '0xmint', lastPx: 0.01 } }, extra || {});
     const fresh = { pool: 'POOL-OK', mint: '0xmint', price: 3, liqUsd: 50000, ts: now - 60000 }, stale = { pool: 'POOL-OK', mint: '0xmint', price: 3, liqUsd: 50000, ts: now - 19 * 3600000 }, other = { pool: 'POOL-OTHER', mint: '0xmint', price: 3000, liqUsd: 50000, ts: now - 60000 };
     let h = await F(null, [mk('POOL-OK')], { byPool: { 'pool-ok': fresh }, now });
     chk('pure: a FRESH row for the position\'s own pool prices it, no pool call', h[0].price === 3 && h[0].valueUsd === 3000 && !calls.length, { price: h[0].price, calls: calls.length });
@@ -56,6 +61,29 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     /* the CAP still applies where there is a pool deep enough to have one: $50,000 of liquidity, a bag that
        claims $2,000,000, and what a sale could realistically fetch is half the pool */
     chk('pure: a bag in a LIVE pool is still capped at half of it (1,000,000 x $2 against $50,000 = $25,000)', h[0].valueUsd === 25000 && h[0].capped === true && h[0].rugged === false, { value: h[0].valueUsd, capped: h[0].capped, rugged: h[0].rugged });
+    /* MONKEY (2026-11-17): bought for $5,000 at 6.2e-26 a coin, the deepest pool quotes 4.1e-24 on DexScreener while GeckoTerminal (the price every
+       fill used) says 6.1e-26 - one source cannot make a bag worth 4x its cost on a paid board */
+    const mkMonkey = (extra) => Object.assign({ key: 'bsc:0xmonkey', qty: 5000 / 6.219e-26, costUsd: 5000, meta: { k: 'meme', net: 'bsc', pool: 'POOL-MK', mint: '0xmonkey', lastPx: 6.219e-26 } }, extra || {});
+    second['POOL-MK'] = 6.0997e-26; h = await F(null, [mkMonkey()], { byPool: {}, now });
+    chk('pure: Monkey - two sources 68x apart value the bag at the LOWER (about its $5,000 cost, never the $20,135 half-pool cap)', h[0].valueUsd < 5100 && h[0].valueUsd > 4800 && h[0].disputed === true, { value: h[0].valueUsd, disputed: h[0].disputed });
+    delete second['POOL-MK']; h = await F(null, [mkMonkey()], { byPool: {}, now });
+    chk('pure: Monkey - with no second reading the unconfirmed gain is not counted (valued at cost)', h[0].valueUsd === 5000 && h[0].unconfirmed === true, { value: h[0].valueUsd, unconfirmed: h[0].unconfirmed });
+    h = await F(null, [mkMonkey()], { byPool: { 'pool-mk': { pool: 'POOL-MK', mint: '0xmonkey', price: 4.126e-24, liqUsd: 40270, ts: now - 60000 } }, now });
+    chk('pure: Monkey - a fresh LIST row is held to the same rule (it skipped the check before)', h[0].valueUsd === 5000 && h[0].unconfirmed === true, { value: h[0].valueUsd });
+    second['POOL-MK'] = 5e-24; h = await F(null, [mkMonkey()], { byPool: {}, now });
+    chk('pure: a big gain two sources AGREE on still counts (capped at half the pool)', h[0].valueUsd === 20135 && h[0].capped === true, { value: h[0].valueUsd });
+    /* NOBODY (2026-11-17): $45,405 of GTA6 (eth) bought at 0.01244; the position's pool answers nothing, the coin's deepest live pool quotes
+       0.0000022 - the bag is worth about $8, not its frozen cost */
+    const mkNob = (extra) => Object.assign({ key: 'eth:0xgta6', qty: 45405 / 0.01244, costUsd: 45405, meta: { k: 'meme', net: 'eth', pool: 'POOL-GONE', mint: '0xgta6', lastPx: 0.01244, lastPxTs: now - 3600000 } }, extra || {});
+    token['0xgta6'] = 0.0000022; h = await F(null, [mkNob()], { byPool: {}, now });
+    chk('pure: Nobody - a pool that answers nothing falls to the coin\'s deepest live pool (about $8), not its frozen cost', h[0].valueUsd < 10 && h[0].viaToken === true && !h[0].stale, { value: h[0].valueUsd });
+    delete token['0xgta6']; cgp['POOL-GONE'] = 0.0000021; h = await F(null, [mkNob()], { byPool: {}, now });
+    chk('pure: with GeckoTerminal silent too, our own CoinGecko key prices it', h[0].valueUsd < 10 && h[0].viaCg === true, { value: h[0].valueUsd });
+    delete cgp['POOL-GONE']; h = await F(null, [mkNob()], { byPool: {}, now });
+    chk('pure: every source silent for an hour keeps the last mark (a rate limit must not wipe a real bag)', h[0].valueUsd === 45405 && h[0].stale === true && !h[0].unpriced, { value: h[0].valueUsd });
+    h = await F(null, [mkNob({ meta: { k: 'meme', net: 'eth', pool: 'POOL-GONE', mint: '0xgta6', lastPx: 0.01244, lastPxTs: now - 4 * 86400000 } })], { byPool: {}, now });
+    chk('pure: a mark nobody could confirm for 3+ days is worth $0 on the board, flagged unpriced', h[0].valueUsd === 0 && h[0].unpriced === true, { value: h[0].valueUsd });
+    chk('pure: the daily snapshot takes a FALL of any size into the last mark (only a 20x rise waits)', /if \(old > 0 && px > old \* 20\) continue; m\.lastPx = px; m\.lastPxTs = now;/.test(src) && !/px < old \/ 20\)\) continue; m\.lastPx/.test(src));
   } catch (e) { chk('pure: the valuation function could be lifted from the worker and run', false, String(e.message || e)); }
 
   let sess = null;

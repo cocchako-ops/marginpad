@@ -25338,10 +25338,18 @@ async function gtViaVps(env, path, ttl, ckey) {
     const r = await fetch(base + '/api/v1/dex?path=' + encodeURIComponent(path), { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
     if (!r.ok) return null;
     const j = await r.json();
-    if (!j || j.error) return null;
+    if (!j || j.error || !j.data) return null; // the droplet hands GeckoTerminal's own 429 body back as data - never cache that as an answer
     try { await caches.default.put(new Request('https://marginpad.io/__gt_' + ckey), new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
     return j;
   } catch (e) { return null; }
+}
+// GeckoTerminal 429s the Worker egress AND the droplet for hours at a time (measured 2026-11-17, while a dead coin sat at its cost on the meme board):
+// the last witness is the same data behind OUR CoinGecko key, a budget nobody else shares (cgOnchain, soft day cap). Used only after both failed.
+async function gtLast(env, path, ttl, ckey) {
+  const v = await gtViaVps(env, path, ttl, ckey);
+  if (v && v.data) return v;
+  try { const c = await cgOnchain(env, path, ttl); if (c && c.data) return c; } catch (e) {}
+  return v;
 }
 async function gtFetch(env, path, ttl, ckey) {
   const ck = new Request('https://marginpad.io/__gt_' + ckey);
@@ -25356,11 +25364,11 @@ async function gtFetch(env, path, ttl, ckey) {
         try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
         return j;
       }
-      if (r.status !== 429 && r.status < 500) return await gtViaVps(env, path, ttl, ckey); // a hard error from OUR egress is not the truth: ask the droplet (measured 2026-09-10 - POPCAT's pool gave 300 candles from a normal IP and through the droplet, while this path returned nothing and the chart was empty)
+      if (r.status !== 429 && r.status < 500) return await gtLast(env, path, ttl, ckey); // a hard error from OUR egress is not the truth: ask the droplet (measured 2026-09-10 - POPCAT's pool gave 300 candles from a normal IP and through the droplet, while this path returned nothing and the chart was empty)
     } catch (e) {}
     if (att === 0) await new Promise(rs => setTimeout(rs, 700));
   }
-  return await gtViaVps(env, path, ttl, ckey); // refused by GT from here - ask the droplet
+  return await gtLast(env, path, ttl, ckey); // refused by GT from here - ask the droplet
 }
 // Same as gtFetch but the caller learns WHY it failed (GT 429 vs a real 404) - the contract lookup must not call a rate-limit "no such token". 3 attempts, 700/1500ms.
 async function gtFetchX(env, path, ttl, ckey) {
@@ -25554,6 +25562,23 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
   return null;
 }
 // GeckoTerminal's own reading of ONE pool (30 s cache, droplet fallback inside gtFetch). mint = the pool's OWN base token.
+// THE COIN'S OWN MARKET WHEN ITS POOL IS GONE (2026-11-17, owner: "proveri sve"): @Nobody held $45,405 of GTA6 (eth) bought at 0.01244; the pool he
+// bought from no longer answers, so the bag sat at its last mark (= cost) and ranked third, while the coin's deepest live pool quoted 0.0000022 -
+// about $8. Before a stale bag falls back to its last mark, the deepest pool GeckoTerminal lists for the SAME mint is asked.
+// the pool's newest hourly candle through CoinGecko onchain (our key, the droplet proxy allows exactly the OHLCV path); null when it has none
+async function spotCgPrice(env, net, pool) {
+  if (!pool) return null;
+  const j = await cgOnchain(env, '/networks/' + gtNet(net) + '/pools/' + pool + '/ohlcv/hour?aggregate=1&limit=1', 300);
+  const c = j && j.data && j.data.attributes && (j.data.attributes.ohlcv_list || [])[0];
+  return c && +c[4] > 0 ? { price: +c[4], ts: +c[0] * 1000, src: 'cg' } : null;
+}
+async function spotGtToken(env, net, mint) {
+  if (!mint) return null;
+  const j = await gtFetch(env, '/networks/' + gtNet(net) + '/tokens/' + mint + '?include=top_pools', 120, 'tok_' + net + '_' + mint); // the droplet proxy allows exactly this shape
+  const price = +(j && j.data && j.data.attributes && j.data.attributes.price_usd) || 0; if (!(price > 0)) return null;
+  const pools = ((j && j.included) || []).filter(p => p.type === 'pool').map(p => p.attributes || {}).sort((a, b) => (+b.reserve_in_usd || 0) - (+a.reserve_in_usd || 0));
+  return { price, liqUsd: pools[0] ? +pools[0].reserve_in_usd || 0 : 0, pool: pools[0] ? pools[0].address : '', src: 'gt-token' };
+}
 async function spotGtPool(env, net, pool) {
   const j = await gtFetch(env, '/networks/' + gtNet(net) + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
   const a = j && j.data && j.data.attributes;
@@ -25573,6 +25598,7 @@ async function spotGtPool(env, net, pool) {
    fills. With no second reading a trade may still go through, but only one that stays within SPOT_SOLO_X of the position's own
    cost basis - a big move needs two witnesses. Pure, so the suite drives the exact rule the money path runs. */
 const SPOT_SRC_AGREE = 1.5;
+const SPOT_STALE_MAX_MS = 3 * 86400000; // a meme bag no source could price for this long is worth $0 (spotPriceHolds)
 const SPOT_SOLO_X = 3;
 function spotQuoteCheck(o) {
   const p1 = +(o && o.p1) || 0, p2 = +(o && o.p2) || 0, ref = +(o && o.ref) || 0;
@@ -25585,6 +25611,7 @@ function spotQuoteCheck(o) {
 async function spotSecondPrice(env, net, pool, first) {
   if (first && first.src !== 'gt') { try { const g = await spotGtPool(env, net, pool); if (g && g.price > 0) return g; } catch (e) {} }
   try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_LIST_FRESH_MS)) return { price: m.price, src: 'list' }; } catch (e) {}
+  try { const c = await spotCgPrice(env, net, pool); if (c) return c; } catch (e) {} // third witness: our own CoinGecko key
   return null;
 }
 async function spotQuoteAlarm(env, net, pool, sym, why, p1, p2) {
@@ -25900,22 +25927,36 @@ async function spotListByPool(env) { const m = {}; try { for (const r of await s
 async function spotPriceHolds(env, holds, opt) {
   const byPool = (opt && opt.byPool) || null, now = (opt && opt.now) || Date.now();
   for (const x of holds) {
-    let px = 0, liq = null;
+    let px = 0, liq = null, psrc = '';
     try {
       if (x.meta && x.meta.k === 'meme') {
         const row = byPool && x.meta.pool ? byPool[String(x.meta.pool).toLowerCase()] : null;
-        if (row && (+row.ts > 0) && (now - (+row.ts) < SPOT_LIST_FRESH_MS) && (!x.meta.mint || !row.mint || String(row.mint).toLowerCase() === String(x.meta.mint).toLowerCase())) { px = +row.price; liq = +row.liqUsd || 0; }
-        else { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); if (mp && !mp.stale) { px = +mp.price || 0; liq = +mp.liqUsd || 0;
-          /* the board pays real money on UNREALISED value too, so a bag the one-source price says has gained more than
-             SPOT_SOLO_X over its cost is checked against GeckoTerminal, and two readings that disagree value it at the LOWER
-             (2026-11-16, Monkey: one source priced a bag 60x what the market did). Only big gainers pay the extra read. */
-          const cpx = x.qty > 0 ? (+x.costUsd || 0) / x.qty : 0;
-          if (mp.src === 'ds' && px > 0 && cpx > 0 && px / cpx > SPOT_SOLO_X) { try { const g = await spotGtPool(env, x.meta.net || 'solana', x.meta.pool); if (g && g.price > 0 && Math.max(px, g.price) / Math.min(px, g.price) > SPOT_SRC_AGREE) { px = Math.min(px, g.price); x.disputed = true; } } catch (e) {} } } }
+        if (row && (+row.ts > 0) && (now - (+row.ts) < SPOT_LIST_FRESH_MS) && (!x.meta.mint || !row.mint || String(row.mint).toLowerCase() === String(x.meta.mint).toLowerCase())) { px = +row.price; liq = +row.liqUsd || 0; psrc = 'list'; }
+        else { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); if (mp && !mp.stale) { px = +mp.price || 0; liq = +mp.liqUsd || 0; psrc = mp.src || ''; }
+          else { try { const tk = await spotGtToken(env, x.meta.net || 'solana', x.meta.mint); if (tk) { px = tk.price; liq = tk.liqUsd; psrc = 'gt'; x.viaToken = true; } } catch (e) {}
+            if (!(px > 0)) { try { const cg = await spotCgPrice(env, x.meta.net || 'solana', x.meta.pool); if (cg) { px = cg.price; psrc = 'cg'; x.viaCg = true; } } catch (e) {} } } }
+        /* AN UNREALISED GAIN NEEDS TWO WITNESSES, WHICHEVER PATH PRICED IT (2026-11-17, owner: "Rani se opet vratio na 3. mesto"). The first cut checked
+           only a DexScreener pool read and believed a silent GeckoTerminal (it 429s our egress for hours): Monkey's deepest pool quotes 4.1e-24 on
+           DexScreener and 6.1e-26 on GeckoTerminal - the price every one of his fills used - so a $5,000 bag read $20,135 (the half-pool cap) and put
+           him third on a paid board. Same rule as a fill (spotQuoteCheck): over SPOT_SOLO_X of its own cost a bag needs a second, independent reading
+           within SPOT_SRC_AGREE; two that disagree value it at the LOWER, and no second reading at all values it at COST - a gain nobody can confirm
+           is not counted. Only bags that claim a big gain pay the extra read. */
+        const cpx = x.qty > 0 ? (+x.costUsd || 0) / x.qty : 0;
+        if (px > 0 && cpx > 0 && px / cpx > SPOT_SOLO_X) {
+          let g = null; try { g = await spotSecondPrice(env, x.meta.net || 'solana', x.meta.pool, { src: psrc || 'ds' }); } catch (e) {}
+          if (g && g.price > 0) { if (Math.max(px, g.price) / Math.min(px, g.price) > SPOT_SRC_AGREE) { px = Math.min(px, g.price); x.disputed = true; } }
+          else { px = cpx; x.unconfirmed = true; }
+        }
         if (liq != null) { x.liqUsd = Math.round(liq); x.rugged = x.liqUsd < SPOT_THIN_LIQ; }
       }
       else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
     } catch (e) {}
-    if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed -> last known mark + a stale flag for the UI
+    if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; // dead feed -> last known mark + a stale flag for the UI
+      /* ...but only for SPOT_STALE_MAX_MS. Three sources (DexScreener, GeckoTerminal direct and through the droplet, CoinGecko on our own key) all
+         silent for three days is a dead coin, not a rate limit: the board stops counting it (a stale bag's mark is its old price, often its cost).
+         A bag bought before lastPxTs existed is judged by its purchase time. */
+      const seen = +((x.meta && x.meta.lastPxTs)) || +x.ts || 0;
+      if (x.meta && x.meta.k === 'meme' && seen > 0 && now - seen > SPOT_STALE_MAX_MS) { px = 0; x.unpriced = true; } }
     x.price = px; let val = x.qty * px;
     if (x.meta && x.meta.k === 'meme' && liq > 0 && val > liq * SPOT_LIQ_CAP) { val = liq * SPOT_LIQ_CAP; x.capped = true; } // the pool could not pay more than this
     /* A RUGGED BAG IS WORTH NOTHING, BECAUSE THAT IS WHAT IT WOULD FETCH (2026-10-25, owner: "demo spot treba da
@@ -33979,7 +34020,12 @@ export class SpotStore {
       // lastPx is the fallback every valuation falls to when a pool is unreadable, so it must never absorb a freak quote: a mark
       // more than 20x away from the previous one is skipped (the sell guard's own ratio) - a real 20x day leaves lastPx a day stale,
       // a bad quote would have poisoned the floor under a position for good (2026-10-17).
-      for (const x of holds) { const px = +prices[x.key]; if (px > 0) { try { const m = JSON.parse(x.meta || '{}'); const old = +m.lastPx || 0; if (old > 0 && (px > old * 20 || px < old / 20)) continue; m.lastPx = px; sql.exec('UPDATE sp2hold SET meta=? WHERE user_id=? AND key=?', JSON.stringify(m), x.user_id, x.key); } catch (e) {} } }
+      /* A FALL IS NEVER A FREAK QUOTE WORTH REFUSING (2026-11-17): the 20x rule froze @Nobody's GTA6 (eth) at its $45,405 cost while the coin fell
+         5,600x - every later day was still more than 20x from the frozen mark, so the 'one day stale' this comment promised was for ever, and the
+         board ranked a dead $8 bag third. A low quote can only make a bag worth LESS, never pay anybody, so a fall is always taken; a RISE over
+         20x still waits for the next day to confirm it. lastPxTs says when the mark was really read - a bag no source has priced for days is
+         judged by it (spotPriceHolds). */
+      for (const x of holds) { const px = +prices[x.key]; if (px > 0) { try { const m = JSON.parse(x.meta || '{}'); const old = +m.lastPx || 0; if (old > 0 && px > old * 20) continue; m.lastPx = px; m.lastPxTs = now; sql.exec('UPDATE sp2hold SET meta=? WHERE user_id=? AND key=?', JSON.stringify(m), x.user_id, x.key); } catch (e) {} } }
       return this.j({ ok: true, accounts: n });
     }
     if (path === '/s2/board') { // THE SEASON BOARD: season P&L = (worth now - put in now) - (worth at the season start - put in then). A claim raises both sides, so only trading moves it. {ws, prices:{key:px}, limit}

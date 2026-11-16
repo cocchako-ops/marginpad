@@ -375,7 +375,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // not on a blocked range. Tight allowlist, its own cache, and a stale copy served when upstream is unhappy.
   // + ONCHAIN candles (2026-10-22): GeckoTerminal's own OHLCV behind the CoinGecko demo key - the worker forwards its key in x-cg-demo-api-key because this box holds none;
   // the Demo Spot chart falls back to it when GT rate-limits both the Worker egress and this droplet. Only the OHLCV path, nothing else from /onchain.
-  const CG_ALLOW = /^\/(coins\/markets\?[A-Za-z0-9_=&,%.-]{0,240}|global|search\/trending|onchain\/networks\/[a-z0-9_-]+\/pools\/[A-Za-z0-9]{20,70}\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})$/;
+  const CG_ALLOW = /^\/(coins\/markets\?[A-Za-z0-9_=&,%.-]{0,240}|global|search\/trending|onchain\/networks\/[a-z0-9_-]+\/pools\/[A-Za-z0-9]{20,70}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?|onchain\/networks\/[a-z0-9_-]+\/tokens\/[A-Za-z0-9]{20,70}(\?include=top_pools)?)$/; // 2026-11-17: + a pool and a token read - the Demo Spot valuation's last witness when GeckoTerminal 429s the Worker AND this droplet
   const cgCache = new Map();
   setInterval(() => { const c9 = Date.now() - 3600000; for (const [k, v] of cgCache) if (v.t < c9) cgCache.delete(k); }, 300000).unref?.();
   app.get('/api/v1/cg', async (req, res) => {
