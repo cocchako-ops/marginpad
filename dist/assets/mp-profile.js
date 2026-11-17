@@ -359,7 +359,11 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
      chip per board the member is ranked on, best place first; the win-rate board admits nobody under 20 counted results, so a
      member below that bar gets a dashed chip saying how far (6/20) instead of silence. Memoised a minute per page. */
   var RK_B = [['top', 'roe', 'ROE', 'Highest ROE'], ['topWr', 'winrate', 'Win rate', 'Best win rate'], ['topGreen', 'green', 'Green days', 'Green days'], ['topXp', 'xp', 'XP', 'Season XP'], ['topGold', 'gold', 'Gold', 'The Gold Room'], ['topCall', 'call', 'BTC call', 'Daily BTC call'], ['topMeme', 'meme', 'Meme', 'Meme Spot'], ['topMoon', 'moon', 'Moon', 'King of the Moon'], ['topBybit', 'bybit', 'Bybit', 'Bybit volume'], ['topBingx', 'bingx', 'BingX', 'BingX volume']];
-  function lbFull() { var m = window.__mpLbFull; if (m && Date.now() - m.t < 60000) return m.p; var p = fetch('/api/reward/lb?full=1').then(function (r) { return r.json(); }).catch(function () { return null; }); window.__mpLbFull = { t: Date.now(), p: p }; return p; }
+  function lbFull() { var m = window.__mpLbFull; if (m && Date.now() - m.t < 60000) return m.p; var o = { t: Date.now(), v: m && m.v }; o.p = fetch('/api/reward/lb?full=1').then(function (r) { return r.json(); }).then(function (j) { if (j && !j.busy) o.v = j; return j; }).catch(function () { return null; }); window.__mpLbFull = o; return o.p; }
+  /* THE ROW IS PART OF THE CARD, NOT SOMETHING THAT ARRIVES AFTER IT (2026-11-17, owner: "pojavi se pa nestane ... iskoci posle 0.1 0.2 sekunde"): the standings are
+     fetched when this bundle loads, and their last value is kept, so the card is drawn with the row already in it; only a first-ever open waits for them. */
+  try { lbFull(); } catch (e) {}
+  function lbFullNow() { var m = window.__mpLbFull; return m && m.v ? m.v : null; }
   function rankHtml(lb, name) {
     if (!lb || !name) return ''; var me = String(name).toLowerCase(), out = [];
     RK_B.forEach(function (b) { var L = lb[b[0]] || []; for (var i = 0; i < L.length; i++) { var x = L[i]; if (String(x.who || x.name || '').toLowerCase() !== me) continue; var rk = +x.rank || 0; if (rk > 0) out.push({ b: b, rk: rk, n: L.length }); return; } });
@@ -369,6 +373,7 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
     return h;
   }
   window.mpOpenProfile = function (name) {
+    var _k = String(name || '').toLowerCase(), _l = window.__mpProfLast; if (_k && _l && _l.k === _k && Date.now() - _l.t < 900 && modal && modal.classList.contains('on')) return; window.__mpProfLast = { k: _k, t: Date.now() }; // one click, one card (2026-11-17)
     if (!name) return;
     try { window.__mpTrack && window.__mpTrack('profile', String(name).slice(0, 24)); } catch (e) {}
     if (!modal) { modal = document.createElement('div'); modal.className = 'lbm'; modal.innerHTML = '<div class="lbm-card"><button type="button" class="lbm-x" aria-label="Close">✕</button><div class="lbm-body"></div></div>'; document.body.appendChild(modal); modal.addEventListener('click', function (e) { if (e.target === modal || e.target.closest('.lbm-x')) closeModal(); }); }
@@ -456,14 +461,14 @@ function __esT_mpprofile(k, en) { try { var d = (window.__mpUI && window.__mpUI.
           + stat(moneyC(s2.realized || 0), 'Realized P&L', (s2.realized >= 0 ? '#34d99a' : '#ff6c5c'))
           + stat(moneyC(s2.weekPnl || 0), (s2.weekTrades || 0) + __esT_mpprofile("tradesWk",' trades · wk'), (s2.weekPnl >= 0 ? '#34d99a' : '#ff6c5c'))
         + '</div>'
-        + '<div class="lbm-rk" id="lbmRk" hidden></div>' + curveHtml(d.curve)
+        + (function () { var v = lbFullNow(), hh = v ? rankHtml(v, d.name) : ''; return hh ? '<div class="lbm-rk" id="lbmRk">' + hh + '</div>' : '<div class="lbm-rk" id="lbmRk" hidden></div>'; })() + curveHtml(d.curve)
         // The "Records" card was removed from the profile card on 2026-10-01 (owner). The server still sends d.records; it is simply not rendered.
         + ''
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + (+d.copiers > 0 ? ' <i class="lbm-cpn2">· <b>' + (+d.copiers) + '</b> ' + __esT_mpprofile("copying", 'copying') + '</i>' : '') + '</span>' + mBtn + '</div>'
         + '<div class="lbm-portp" id="lbmPortP" hidden></div>'
         + '<div class="lbm-copyp" id="lbmCopyP" hidden data-copying="' + (+d.iCopy || 0) + '" data-copiers="' + (+d.copiers || 0) + '" data-uid="' + esc(d.uid) + '" data-name="' + esc(d.name) + '"></div>';
       try { folPaint(body.querySelector('.lbm-folb'), folSt, folFm); } catch (e) {}
-      rkP.then(function (lb) { if (rkTok !== window.__mpRkTok) return; var el = body.querySelector('#lbmRk'); if (!el) return; var h = rankHtml(lb, d.name); if (!h) return; el.innerHTML = h; el.hidden = false; try { var H = el.offsetHeight; el.animate([{ height: '0px', opacity: 0, marginBottom: '0px' }, { height: H + 'px', opacity: 1, marginBottom: '12px' }], { duration: 220, easing: 'ease-out' }); } catch (e) {} });
+      rkP.then(function (lb) { if (rkTok !== window.__mpRkTok) return; var el = body.querySelector('#lbmRk'); if (!el) return; var h = rankHtml(lb, d.name); if (!h) return; if (el.innerHTML === h) return; var was = !el.hidden; el.innerHTML = h; el.hidden = false; if (!was) { try { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' }); } catch (e) {} } });
       fitName(body); // own card has no follow button, so folPaint returns early and never fits it
       try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitName(body); }); } catch (e) {}
     }).catch(function () { body.innerHTML = __esT_mpprofile("couldNotLoadThis",'<div class="lbm-load">Could not load this trader.</div>'); });
