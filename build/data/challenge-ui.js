@@ -82,11 +82,11 @@ const pickHtml = `<div id="cxPick">
     <div class="cx-types">
 ${TYPES.filter(t => !t.firm).map((t, i) => '      ' + typeCard(t, i === 0)).join('\n')}
     </div>
-    <div class="cx-gl"><span>A real firm's rules</span><a href="/#propfirms">FTMO and IQ Capital &rarr;</a></div>
+    <div class="cx-gl firms"><span>A real firm's rules</span><a href="/#propfirms">FTMO and IQ Capital &rarr;</a></div>
     <div class="cx-types">
 ${TYPES.filter(t => t.firm).map(t => '      ' + typeCard(t, false)).join('\n')}
     </div>
-    <div class="cx-gl"><span>Your own</span></div>
+    <div class="cx-gl own"><span>Your own</span></div>
     <button type="button" class="rc-cust" data-kind="custom" id="custom"><span class="rc-cust-i">${ICO.plus}</span><span class="rc-cust-t"><b>Custom rules</b><span>Set every rule yourself - target, steps, daily loss, drawdown type, days, leverage, loss per trade, consistency and time limit.</span></span><span class="tick" aria-hidden="true"></span></button>
     ${studio}
     </div>`;
@@ -110,7 +110,7 @@ const CSS = `
   .rc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac),0 18px 40px -26px var(--ac)}
   .rc.ftmo{--ac:#3b8bff}.rc.iq{--ac:#2fe0a0}
   .rc>*{position:relative}
-  .rc-top{display:flex;align-items:center;gap:9px;min-height:22px}
+  .rc-top{display:flex;width:100%;align-items:center;gap:9px;min-height:22px}
   .rc-name{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
   .rc-name.sm{font-size:17px}.rc-logo{height:17px;width:auto}
   .rc-iq{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}.rc-iq b{color:#2fe0a0}
@@ -118,15 +118,15 @@ const CSS = `
   .rc .tick,.rc-cust .tick{flex:none;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:background .15s,border-color .15s}
   .rc.on .tick,.rc-cust.on .tick{background:var(--ac);border-color:var(--ac)}
   .rc.on .tick::after,.rc-cust.on .tick::after{content:'';width:5px;height:9px;border:solid #0a0b0d;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
-  .rc-stats{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:6px}
+  .rc-stats{display:grid;width:100%;grid-template-columns:1.15fr 1fr 1fr;gap:6px}
   .rc-stats>span{display:flex;flex-direction:column;gap:3px;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);min-width:0}
   .rc-stats b{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap}
   .rc-stats span:first-child b{color:#c2f64a}
   .rc-stats small{font-size:10.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rc-chips{display:flex;flex-wrap:wrap;gap:5px}
+  .rc-chips{display:flex;width:100%;flex-wrap:wrap;gap:5px}
   .rc-chips i{font-style:normal;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink2);padding:4px 8px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
-  .rg{display:block;position:relative;padding-bottom:16px}
-  .rg-bar{position:relative;display:flex;height:9px;border-radius:99px;overflow:hidden;background:#161b22}
+  .rg{display:block;position:relative;width:100%;align-self:stretch;padding-bottom:16px} /* a button child on iOS Safari is shrink-to-fit: without the width the ruler was 0 wide, the bar vanished and the labels piled on the left (owner screenshot 2026-11-17) */
+  .rg-bar{position:relative;display:flex;width:100%;height:9px;border-radius:99px;overflow:hidden;background:#161b22}
   .rg-loss{position:relative;height:100%;background:linear-gradient(90deg,#ff5a4d,rgba(255,90,77,.35))}
   .rg-daily{position:absolute;right:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(255,179,71,.55),#ffb347)}
   .rg-gain{height:100%;background:linear-gradient(90deg,rgba(194,246,74,.3),#c2f64a)}
@@ -190,5 +190,19 @@ const CSS = `
     .cb{padding:13px}.cb-cols{grid-template-columns:1fr}.cb-pstats{display:none}.cb-pk{margin-bottom:24px}
     .rc-cust{align-items:flex-start;gap:12px;padding:14px}.rc-cust-i{width:38px;height:38px;border-radius:11px}.rc-cust-t b{font-size:17px}.rc-cust-t span{font-size:12.5px}
   }
+
+  /* EACH RULE SET WEARS ITS OWN COLOUR (2026-11-17, owner: "svi ovi prozori izgledaju isto"): a colour per set, a band on top, a tint behind, the target in that colour */
+  .rc[data-kind="one"]{--ac:#c2f64a}.rc[data-kind="two"]{--ac:#38d6ff}.rc[data-kind="eod"]{--ac:#b48cff}.rc.ftmo{--ac:#3b8bff}.rc.iq{--ac:#2fe0a0}
+  .rc{background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--ac) 15%,transparent),transparent 58%),linear-gradient(180deg,#12161d,#0b0e13);border-color:color-mix(in srgb,var(--ac) 22%,var(--line))}
+  .rc::after{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--ac),color-mix(in srgb,var(--ac) 10%,transparent));pointer-events:none}
+  .rc .rc-stats span:first-child b{color:var(--ac)}
+  .rc .rc-stats>span:first-child{background:color-mix(in srgb,var(--ac) 9%,transparent);border-color:color-mix(in srgb,var(--ac) 25%,transparent)}
+  .rc .rc-chips i{border-color:color-mix(in srgb,var(--ac) 18%,rgba(255,255,255,.06))}
+  .rc .rg-gain{background:linear-gradient(90deg,color-mix(in srgb,var(--ac) 30%,transparent),var(--ac))}
+  .rc .rg-lbl .r{color:var(--ac)}
+  .rc:not(.on):hover{box-shadow:0 14px 36px -24px var(--ac)}
+  .cx-gl>span{display:inline-flex;align-items:center;gap:8px}
+  .cx-gl>span::before{content:'';width:14px;height:3px;border-radius:2px;background:var(--glc,#c2f64a)}
+  .cx-gl.firms{--glc:#3b8bff}.cx-gl.own{--glc:#e9e7df}
 `;
 module.exports = { TYPES, typeCard, gauge, statsHtml, pickHtml, CSS };

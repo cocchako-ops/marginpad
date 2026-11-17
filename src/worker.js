@@ -19731,6 +19731,7 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await env.STATS.delete('lb:pubcache:full'); await env.STATS.delete('lb:pubcache:short'); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
@@ -20371,6 +20372,7 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await env.STATS.delete('lb:pubcache:full'); await env.STATS.delete('lb:pubcache:short'); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
@@ -20588,6 +20590,7 @@ async function bingxSnapshotRebuild(env, ws) {
   try { await env.STATS.put('lb:bingx:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v15')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v15')); } catch (e) {}
+  try { await env.STATS.delete('lb:pubcache:full'); await env.STATS.delete('lb:pubcache:short'); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v10')); } catch (e) {}
   return snap;
 }
@@ -26762,8 +26765,14 @@ async function handleReward(url, request, env) {
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
     const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v15' : 'v15')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
-    let bodyText = null;
-    try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
+    let bodyText = null; const lbRebuild = url.searchParams.get('rebuild') === '1' && isAdminKey(env, adminKeyFrom(request, url));
+    if (!lbRebuild) { try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {} }
+    /* THE BOARD IS BUILT BY THE CRON, NOT BY THE READER (2026-11-17, owner: "leaderboards se tako sporo ucitava"). Measured: a cold edge copy cost
+       the reader 8.0 s (/api/reward/lb?full=1 recomputing every board) and a warm one 20-40 ms; the copy lives 20 s per COLO, so a quiet colo (the
+       owner's, in Serbia) paid the 8 s on most visits. The every-minute cron rebuilds both variants into KV (global); a reader on an edge miss takes
+       that copy while it is under 3 minutes old and only computes when it is not. */
+    const lbKv = 'lb:pubcache:' + (lbFull ? 'full' : 'short');
+    if (bodyText == null && !lbRebuild) { try { const kc = JSON.parse((await env.STATS.get(lbKv)) || 'null'); if (kc && kc.body && Date.now() - (+kc.ts || 0) < 180000) { bodyText = kc.body; try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} } } catch (e) {} }
     if (bodyText == null) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
@@ -26829,6 +26838,7 @@ async function handleReward(url, request, env) {
           topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || bingxPoolCalc(0, 0, full), bingxStarts: bxWs < BINGX_LB_START ? BINGX_LB_START : 0, bingxContest: { start: bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs, end: (bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs) + BINGX_PERIOD, days: Math.round(BINGX_PERIOD / 86400000) }, volBoardMin: { usd: VOL_BOARD_MIN_USD, from: VOL_BOARD_MIN_FROM, bybit: volBoardMin(weekStart), bingx: volBoardMin(bxWs) },
           volRewards: { tiers: VOL_REWARD_TIERS, split: full.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1] },
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
+        try { if (bodyText.indexOf('"busy":true') < 0) await env.STATS.put(lbKv, JSON.stringify({ ts: Date.now(), body: bodyText }), { expirationTtl: 3600 }); } catch (e) {} // the global copy every colo reads
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       // fail soft, never a 500 - but SAY WHY (2026-10-12). This catch wraps the UserStore board, the ledger bans,
       // the Moon snapshot and the Bybit pool, and for an hour it answered a bare `busy:true` while I rolled two
@@ -33235,6 +33245,7 @@ export default {
       return;
     }
     if (event.cron === '* * * * *') {
+      ctx.waitUntil((async () => { const k = adminKeyOf(env); if (!k) return; for (const q of ['?full=1&rebuild=1', '?rebuild=1']) { try { const u = new URL('https://marginpad.io/api/reward/lb' + q); await handleReward(u, new Request(u, { headers: { 'x-admin-key': k } }), env); } catch (e) {} } })()); // the public boards, prebuilt for every colo (lb:pubcache:*)
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
       ctx.waitUntil(mpadTick(env).catch(() => {}));
