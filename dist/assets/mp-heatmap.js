@@ -665,7 +665,7 @@ function bkSelect(cls, opts, cur) {
       for (i = 0; i < rpFl.length; i++) { var ff = rpFl[i], fa = ff.a * ff.a;
         ctx.strokeStyle = 'rgba(255,255,255,' + (0.9 * fa).toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.strokeRect(Math.max(0, ff.x - 26 - 40 * (1 - ff.a)) + 0.5, ff.y - 3, Math.min(ff.x, 26 + 40 * (1 - ff.a)) - 1, ff.h + 6);
         ctx.fillStyle = 'rgba(' + ff.col + ',' + (0.35 * fa).toFixed(3) + ')'; ctx.fillRect(Math.max(0, ff.x - 90), ff.y - 1, Math.min(ff.x, 90), ff.h + 2);
-        if (i < 3 && ff.a > 0.15) { var su = sweptUsd(ff.s, ff.cx), lab = __esT_mpheatmap('rpSwept', 'SWEPT') + (su && su.usd ? ' ' + usdShort(su.usd) : '') + ' ' + (ff.s.long ? __esT_mpheatmap('rpLongs', 'longs') : __esT_mpheatmap('rpShorts', 'shorts'));
+        if (i < 3 && ff.a > 0.15) { var zo = +ff.s.obs || 0, lab = __esT_mpheatmap('rpSwept', 'SWEPT') + (zo > 0 ? ' ' + usdShort(zo) : '') + ' ' + (ff.s.long ? __esT_mpheatmap('rpLongs', 'longs') : __esT_mpheatmap('rpShorts', 'shorts'));
           ctx.font = '700 10px "Space Mono",monospace'; var lw = ctx.measureText(lab).width, lx = ff.x + 8 + lw + 8 < W ? ff.x + 8 : ff.x - lw - 16, ly = Math.max(10, Math.min(PH - 10, ff.y + ff.h / 2));
           ctx.fillStyle = 'rgba(7,9,12,' + (0.9 * ff.a).toFixed(3) + ')'; ctx.fillRect(lx - 4, ly - 8, lw + 8, 16); ctx.fillStyle = 'rgba(255,255,255,' + ff.a.toFixed(3) + ')'; ctx.textAlign = 'left'; ctx.fillText(lab, lx, ly + 4); }
       }
@@ -1040,28 +1040,6 @@ function bkSelect(cls, opts, cur) {
   // AND WHAT WAS REALLY LIQUIDATED THERE. This is the one number on this map that is MEASURED - our own
   // collector's records from twelve exchanges - and it only exists for a zone the price has actually gone
   // through. A zone still standing has no dollar figure and must never be given one: it is a projection.
-  function sweptUsd(z, cx) {
-    if (!cx || !S || !S.events) return null;
-    var sig = cx + ':' + S.events.length;
-    if (z._suSig === sig) return z._su;
-    var half = (S.pools && S.pools.binH ? S.pools.binH : z.price * 0.001) / 2;
-    var from = cx * 1000 - 30 * 60000, to = cx * 1000 + 30 * 60000;
-    var usd = 0, n = 0, ven = {};
-    for (var i = 0; i < S.events.length; i++) {
-      var e = S.events[i];
-      if (e.ts < from || e.ts > to) continue;
-      if (Math.abs(e.price - z.price) > half) continue;
-      usd += (+e.notional || 0); n++;
-      var vn = String(e.exchange || e.ex || '').toLowerCase(); if (vn) ven[vn] = (ven[vn] || 0) + (+e.notional || 0);
-    }
-    var lo2 = null, hi2 = null, floor = null;
-    for (var q = 0; q < S.events.length; q++) { var eq = S.events[q], tq = eq.ts, nq = +eq.notional || 0;
-      if (lo2 === null || tq < lo2) lo2 = tq; if (hi2 === null || tq > hi2) hi2 = tq;
-      if (tq >= from && tq <= to && nq > 0 && (floor === null || nq < floor)) floor = nq; }
-    var covered = lo2 !== null && cx * 1000 >= lo2 - 30 * 60000 && cx * 1000 <= hi2 + 30 * 60000;
-    z._suSig = sig; z._su = n ? { usd: usd, n: n, ven: ven, floor: floor } : (covered ? null : { unloaded: true });
-    return z._su;
-  }
 
   // ONE ZONE, ONE FIGURE (2026-11-01, owner: hover said $5.3M, the box said $543K for the same line). The two were different measurements printed as the same claim:
   // the hover read the collector's complete aggregate at this price over the window, the box read only the orders this browser downloaded around the crossing, which on
@@ -1069,10 +1047,12 @@ function bkSelect(cls, opts, cur) {
   // figure stands in only when it is the larger, i.e. the crossing is older than the window on screen.
   function zoneDead(z) { return !!(z.dead || z._gone || poolGone(z) || crossAt(z)); } // + a band the loaded candles went through (2026-11-12): the targets row, the frame and the readouts agree with the map's own cut from the first frame
   function zoneUsd(z) {
-    var obs = +z.obs || 0, cx = zoneDead(z) ? (z.tsw || crossAt(z)) : 0, su = cx ? sweptUsd(z, cx) : null, named = su && su.usd ? su.usd : 0;
-    if (obs > 0 && obs >= named) return { usd: obs, win: obsWinTxt(), su: su, cx: cx };
-    if (named > 0) return { usd: named, win: '', su: su, cx: cx };
-    return { usd: 0, win: obsWinTxt(), su: su, cx: cx };
+    var obs = +z.obs || 0, cx = zoneDead(z) ? (z.tsw || crossAt(z)) : 0;
+    /* ONE FIGURE PER ZONE (2026-11-17, owner: "ne zelim da stoji taj mali broj ... ovo i jesu zone, a ne tacna cena"): the band's total from the
+       collector's price buckets over the window. The orders this browser downloaded around the crossing are a narrower, size-floored sample and
+       are never printed beside it or instead of it. `old` = the crossing is older than the window, so the reader is told to widen it. */
+    var wm = (+S.obsWin || 1440) * 60000, old = !!(cx && cx * 1000 < Date.now() - wm);
+    return { usd: obs > 0 ? obs : 0, win: obsWinTxt(), su: null, cx: cx, old: old };
   }
   function zoneHead(z, cx, agoFn) {
     return '<b>' + fpx(z.price) + '</b> - ' + __esT_mpheatmap('sweptWhere', 'where') + ' <span class="' + (z.long ? 'l' : 's') + '">' + (z.long ? 'longs' : 'shorts') + '</span> '
@@ -1633,13 +1613,11 @@ function bkSelect(cls, opts, cur) {
         // candles went through, and what our own collector actually recorded there. The model said a
         // crowd would be closed out at this price; the measurement says what really was. Where we
         // measured nothing, it says that too rather than borrowing the model's confidence.
-        var zg = S.sel.ref, ug = zoneUsd(zg), cxg = ug.cx, sug = ug.su;
-        var vg = sug && sug.ven ? Object.keys(sug.ven).sort(function (a, b) { return sug.ven[b] - sug.ven[a]; }).slice(0, 3) : [];
+        var zg = S.sel.ref, ug = zoneUsd(zg), cxg = ug.cx;
         h = __esT_mpheatmap('sweptK', '<span class="k">SWEPT</span>') + zoneHead(zg, cxg, ago2) + '.<br>'
           + (ug.usd > 0
             ? zoneUsdLine(ug) + '.<br>'
-              + (sug && sug.usd ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptNamed', 'The orders we can name around the crossing') + ': ' + usdShort(sug.usd) + ', ' + sug.n + ' ' + (sug.n === 1 ? __esT_mpheatmap('sweptOrder', 'order') : __esT_mpheatmap('sweptOrders', 'orders')) + (vg.length ? ' · ' + vg.map(function (x) { return x.toUpperCase(); }).join(' + ') : '') + (sug.floor > 5000 ? ' (' + __esT_mpheatmap('sweptOver', 'only orders over') + ' ' + usdShort(sug.floor) + ' ' + __esT_mpheatmap('sweptLoaded', 'are loaded on this view') + ')' : '') + '.</span><br>' : '')
-            : sug && sug.unloaded
+            : ug.old
             ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptUnloaded', __esT_mpheatmap("thisSweepIsOlder",'This sweep is older than the liquidations loaded for the window you are on - pick a longer one and the real figure appears.')) + '</span><br>'
             : '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptNone', __esT_mpheatmap("ourCollectorRecordedNo",'Our collector recorded no liquidation at this price when the candles went through - the crowd our model put here was smaller than it looked, or it had already left.')) + '</span><br>')
           + '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptTail', __esT_mpheatmap("theLineStopsWhere",'The line stops where the candles crossed it: that leverage is gone. What is left of it is the record.')) + '</span>';
