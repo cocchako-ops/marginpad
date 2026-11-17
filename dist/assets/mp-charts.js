@@ -3955,6 +3955,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var _cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4); // this click's id: filed on the server position and on a local fallback, so the two can never coexist (2026-09-08)
       if(doOpenPos._busy)return; /* a second click while the server open was in flight opened a SECOND real position (2026-09-12) */
       doOpenPos._busy=true;var _qd=function(){doOpenPos._busy=false;};setTimeout(_qd,12000);
+      var _clb=window.mpChalLevBlock&&window.mpChalLevBlock(lev);if(_clb){try{if(window.mpLimitToast)window.mpLimitToast(_clb);}catch(_e){}_qd();return;} // a challenge's leverage cap, before anything is drawn (2026-11-17)
       if(window.mpSrvOpen){
         /* OPTIMISTIC (2026-10-03, Stake-feel): render the position instantly, then reconcile it in place to the srv row
            on success, or remove it on failure. SAFE because pullTrades re-adds a timeout that actually filled. */

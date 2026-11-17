@@ -2104,6 +2104,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       /* 2026-09-08 (Papis + igbekwu: "open one trade, it duplicates"): the server open is PATIENT and IDEMPOTENT now. mpSrvOpen sends the
          local id as cid, waits up to 5 s, retries once with the same cid, and only then opens locally (carrying the cid, so the sync drops
          the local copy if the server had filled it after all). The old 1.4 s abort + blind local open made ~9% of site opens double. */
+      var _clb=window.mpChalLevBlock&&window.mpChalLevBlock(L);if(_clb){try{if(window.mpLimitToast)window.mpLimitToast(_clb);}catch(_e){}add._busy=false;return;} // refused before the optimistic row (2026-11-17)
       _tLocal.cid=_tLocal.id; add._busy=true; add._wait=true; window._mpOpenWait=true; // window-scoped: setBtn() in the plan IIFE repaints the label every tick and must keep "Opening…"
       /* OPTIMISTIC OPEN (2026-10-03, owner: the Stake/Moon instant feel). Show the position the INSTANT it is clicked,
          then the (patient, idempotent) server call reconciles it: on success the optimistic row is swapped for the real
@@ -3960,7 +3961,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=639558bb'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=a4f5fdb5'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -4358,6 +4359,10 @@ if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
    (1.4s abort) -> ok(serverPosition) ; anon/timeout/error -> fail() = the caller's classic local open. */
 window.mpSignedInCookie=function(){try{return /(?:^|; )mp_li=1/.test(document.cookie);}catch(e){return false;}};
+/* A CHALLENGE RULE THE TERMINAL CAN SEE IS REFUSED BEFORE ANYTHING IS DRAWN (2026-11-17, owner: "na sekundu vidim trejd da se otvorio"): the three
+   openers draw the position optimistically and the server's challenge_rule refusal then took it away again - a flash of a trade that never existed.
+   The server still decides (a stale or unknown state passes through to it); this only spares the flash. Returns the sentence, or ''. */
+window.mpChalLevBlock=function(L){try{var s=window.__mpChal&&window.__mpChal.state&&window.__mpChal.state(),a=s&&s.active;if(!a||a.paused||a.status&&a.status!=='active')return '';var m=+a.maxlev||0;if(m>0&&(+L||0)>m)return __esT_home("chalLevMax",'Your prop firm challenge allows up to ')+m+__esT_home("chalLevMax2",'x leverage. Lower the leverage to open this trade.');}catch(e){}return '';};
 window.mpSrvOpen=function(payload,ok,fail){
   /* THE SERVER AUTHENTICATES FROM THE COOKIE, NOT FROM mpAuth (2026-09-29). This used to bail when mpAuth.me() was
      empty, which is every click made before the deferred mp-auth.js has parsed - and a bail here is a position the
@@ -4518,7 +4523,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=8d23692c'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=de8be19c'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
@@ -5879,7 +5884,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function () {
   try {
     if (window.__mpPrefetch) return; window.__mpPrefetch = 1;
-    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=8d23692c' : '/assets/mp-charts.js?v=639558bb', heatmap: '/assets/mp-heatmap.js?v=3f06dfaf', screener: '/assets/mp-screener.js?v=eae6f018' };
+    var MAP = { charts: innerWidth < 721 ? '/assets/mp-mcharts.js?v=de8be19c' : '/assets/mp-charts.js?v=a4f5fdb5', heatmap: '/assets/mp-heatmap.js?v=3f06dfaf', screener: '/assets/mp-screener.js?v=eae6f018' };
     var done = {};
     function slow() { try { var c = navigator.connection; return !!(c && (c.saveData || /(^|\b)(2g|3g)\b/.test(c.effectiveType || ''))); } catch (e) { return false; } }
     function have(u) { var p = u.split('?')[0]; return !!document.querySelector('script[src^="' + p + '"], link[rel="prefetch"][href^="' + p + '"]'); }

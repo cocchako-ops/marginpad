@@ -915,6 +915,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
+        var _clb=window.mpChalLevBlock&&window.mpChalLevBlock(lev);if(_clb){msg.style.color='#ffb347';msg.textContent=_clb;try{if(window.mpLimitToast)window.mpLimitToast(_clb);}catch(_e){}return;} // a challenge's leverage cap, before anything is drawn (2026-11-17)
         if(window.mpSrvOpen){
           /* OPTIMISTIC (2026-10-03, Stake-feel): render the position instantly, reconcile it in place to the srv row on
              success, remove it on failure. SAFE because pullTrades re-adds a timeout that actually filled. */
