@@ -11416,7 +11416,11 @@ async function archiveMarket(env) {
     }
     run.ms = Date.now() - run.ts;
     await env.STATS.put('mkt:run', JSON.stringify(run));
-    if (run.errs.length) throw new Error('market archive: ' + run.errs.slice(0, 4).join('; '));
+    /* A FAILED PULL IS RETRIED EVERY TEN MINUTES, SO ONE IS NOT AN ALARM (2026-11-17: agg5m missed 01:10 on an open collector breaker and wrote at the next
+       pass). Three passes in a row with errors (~30 min) still page; a clean pass resets the count. */
+    let errN = 0; try { errN = +(await env.STATS.get('mkt:errn')) || 0; } catch (e) {}
+    if (run.errs.length) { errN++; try { await env.STATS.put('mkt:errn', String(errN), { expirationTtl: 86400 }); } catch (e) {} if (errN >= 3) throw new Error('market archive (' + errN + ' passes in a row): ' + run.errs.slice(0, 4).join('; ')); await env.STATS.delete('mkt:ran:' + today); return run; }
+    if (errN) { try { await env.STATS.delete('mkt:errn'); } catch (e) {} }
     if (run.missing > 0) await env.STATS.delete('mkt:ran:' + today); // not finished - the next */10 pass continues
     return run;
   } catch (e) {
