@@ -691,6 +691,7 @@ export async function handleJournal(url, request, env, ctx, H) {
       if (!chk.ok) return J({ error: 'exchange_unreachable', detail: chk.why }, 502);
       conn.addr = a.toLowerCase(); conn.kid = a.slice(0, 6) + '…' + a.slice(-4);
     } else {
+      if (!env.JOURNAL_KEK) return J({ error: 'not_ready' }, 503); // no sealing key in this environment: refuse before a secret is even read
       const k = String(b.key || '').trim(), s = String(b.secret || '').trim(), ps = String(b.passphrase || '');
       if (!/^[A-Za-z0-9-]{10,100}$/.test(k) || !/^[A-Za-z0-9-]{10,200}$/.test(s)) return J({ error: 'bad_key_format' }, 400);
       if (JR_EXCH[ex].pass && (!ps || ps.length > 64)) return J({ error: 'passphrase_required' }, 400);
