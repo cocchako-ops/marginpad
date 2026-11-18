@@ -521,7 +521,7 @@ export function jrStats(positions, fills, funding, fromTs) {
     profitFactor: gl > 0 ? +(gw / gl).toFixed(2) : (gw > 0 ? null : null), avgWin: wins.length ? +(gw / wins.length).toFixed(2) : null, avgLoss: losses.length ? +(-gl / losses.length).toFixed(2) : null,
     expectancy: P.length ? +(sum(P, p => p.net) / P.length).toFixed(2) : null, maxDD: +dd.toFixed(2),
     best: P.length ? P.reduce((a, b) => b.net > a.net ? b : a) : null, worst: P.length ? P.reduce((a, b) => b.net < a.net ? b : a) : null,
-    vol: +vol.toFixed(2), fills: Fx.length, fees: +fees.toFixed(2), feesTaker: +feesT.toFixed(2), feesMaker: +feesM.toFixed(2), takerShare: vol ? +(volT / vol * 100).toFixed(1) : null,
+    vol: +vol.toFixed(2), fills: Fx.length, orders: new Set(Fx.map(f => f.ex + '|' + (f.oid || f.k))).size, // an exchange history lists ORDERS; one order fills in several parts fees: +fees.toFixed(2), feesTaker: +feesT.toFixed(2), feesMaker: +feesM.toFixed(2), takerShare: vol ? +(volT / vol * 100).toFixed(1) : null,
     effRate: vol ? +(fees / vol * 100).toFixed(4) : null, funding: +fundNet.toFixed(2),
     volTaker: +volT.toFixed(2), volMaker: +volM.toFixed(2), rateTaker: volT ? feesT / volT * 100 : null, rateMaker: volM ? feesM / volM * 100 : null,
     entTakerFee: +sum(P, p => p.entTF || 0).toFixed(2), entTakerVol: +sum(P, p => p.entTV || 0).toFixed(2),

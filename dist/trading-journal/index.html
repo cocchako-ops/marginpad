@@ -361,7 +361,7 @@ function tiles(st){
     ['Win rate',st.winRate==null?'-':st.winRate+'%','',st.wins+' won, '+st.losses+' lost'],
     ['Profit factor',st.profitFactor==null?'-':st.profitFactor,'','won $ per lost $'],
     ['Fees and funding',money(-(st.fees)+st.funding),cls(-(st.fees)+st.funding),'fees '+money(st.fees)+', funding '+money(st.funding,1)],
-    ['Volume',money(st.vol),'',st.fills+' fills'+(st.takerShare!=null?', '+st.takerShare+'% taker':'')]];
+    ['Volume',money(st.vol),'',(st.orders||st.fills)+' orders'+(st.takerShare!=null?', '+st.takerShare+'% taker':'')]];
   $('#jrTiles').innerHTML=t.map(function(x){return '<div class="jr-tile"><i>'+x[0]+'</i><b class="num '+x[2]+'">'+x[1]+'</b><small>'+esc(x[3])+'</small></div>'}).join('');
 }
 function curve(st){
