@@ -279,6 +279,11 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     'api.binance.com': { GET: /^\/sapi\/v1\/account\/apiRestrictions$/ },
     'fapi.binance.com': { GET: /^\/fapi\/(v1\/userTrades|v1\/income|v2\/positionRisk|v3\/account|v1\/commissionRate|v2\/account)$/ },
     'api.hyperliquid.xyz': { POST: /^\/info$/ },
+    'www.okx.com': { GET: /^\/api\/v5\/(account\/config|trade\/fills-history|trade\/fills|account\/bills-archive|account\/bills|public\/instruments)$/ },
+    'eea.okx.com': { GET: /^\/api\/v5\/(account\/config|trade\/fills-history|trade\/fills|account\/bills-archive|account\/bills|public\/instruments)$/ },
+    'us.okx.com': { GET: /^\/api\/v5\/(account\/config|trade\/fills-history|trade\/fills|account\/bills-archive|account\/bills|public\/instruments)$/ },
+    'api.bitget.com': { GET: /^\/api\/v2\/(spot\/account\/info|mix\/order\/fill-history|mix\/account\/bill)$/ },
+    'open-api.bingx.com': { GET: /^\/openApi\/(v1\/account\/apiPermissions|swap\/v2\/trade\/fillHistory|swap\/v2\/user\/income)$/ },
   };
   const XF_HL_TYPES = new Set(['userFillsByTime', 'userFunding', 'clearinghouseState', 'userFees', 'portfolio', 'userRole']);
   const xfStat = { n: 0, refused: 0, last: 0 };
