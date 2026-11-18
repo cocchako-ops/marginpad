@@ -26,7 +26,9 @@ const SHOTS = path.join(__dirname, 'ap-shots'); fs.mkdirSync(SHOTS, { recursive:
     ok('a new account starts in shadow mode at 2% risk', st.cfg && st.cfg.mode === 'shadow' && st.cfg.risk === 2, st.cfg);
     const cross = await fetch(BASE + '/api/ap/cfg', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + tok, origin: 'https://evil.example' }, body: '{"patch":{"risk":3}}' });
     ok('a request from another site is refused', cross.status === 403, cross.status);
-    const lv = await as('/api/ap/mode', { method: 'POST', body: JSON.stringify({ mode: 'live', code: '123456' }) }).then(x => x.json());
+    const la = await as('/api/ap/mode', { method: 'POST', body: JSON.stringify({ mode: 'live', code: '123456' }) }).then(x => x.json());
+    ok('Live without ticking the risk statement is refused', la.error === 'ack_required', la);
+    const lv = await as('/api/ap/mode', { method: 'POST', body: JSON.stringify({ mode: 'live', code: '123456', ack: true }) }).then(x => x.json());
     ok('Live without a valid email code is refused', lv.error === 'code_expired' || lv.error === 'code_wrong', lv);
     const tl = await as('/api/ap/tg').then(x => x.json());
     ok('Connect Telegram hands out a one-time bot link', /^https:\/\/t\.me\/MarginPadBot\?start=ap[0-9a-f]{16}$/.test(tl.url || ''), tl);

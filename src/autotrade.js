@@ -199,7 +199,7 @@ async function condPlace(X, p, log) {
   const a = await X('POST', '/fapi/v1/algoOrder', Object.assign({ algoType: 'CONDITIONAL', workingType: 'MARK_PRICE', priceProtect: 'true' }, p));
   log('algo', p.symbol, (a.ok ? 'placed ' : 'refused ') + p.type + ' ' + p.side + ' @' + p.triggerPrice + (p.closePosition ? ' (close all)' : ' qty ' + p.quantity) + (a.ok ? '' : ' - ' + (a.msg || a.why)), a.ok, a.ms, { cid: p.clientAlgoId });
   if (a.ok) return { ok: true, via: 'algo' };
-  if (!/^binance_-(5000|1121|4120|1104)$|path_not_allowed|404/.test(String(a.why))) return { ok: false, why: a.why, msg: a.msg };
+  if (!/^binance_-(5000|1121|4120|1104)$|path_not_allowed|404/.test(String(a.why))) return { ok: false, why: a.why, msg: a.msg, code: a.code };
   if (a.code === -4120) return { ok: false, why: a.why, msg: a.msg }; // the venue WANTS the algo path - nothing older to fall back to
   const q = { symbol: p.symbol, side: p.side, type: p.type, stopPrice: p.triggerPrice, workingType: 'MARK_PRICE', priceProtect: 'TRUE', newClientOrderId: p.clientAlgoId };
   if (p.closePosition) q.closePosition = 'true'; else { q.quantity = p.quantity; if (p.reduceOnly) q.reduceOnly = 'true'; }
@@ -214,11 +214,11 @@ async function condCancel(X, sym, cid, via, log) {
   log('cancel', sym, (gone ? 'cancelled ' : 'cancel failed ') + cid + (r.ok || gone ? '' : ' - ' + (r.msg || r.why)), gone, r.ms, { cid });
   return gone;
 }
-async function condOpen(X, sym) { // our open conditional orders on this symbol, both paths
+async function condOpen(X, sym) { // our open conditional orders on this symbol, both paths - each path says whether IT was readable
   const out = [];
-  const a = await X('GET', '/fapi/v1/openAlgoOrders', { symbol: sym }); if (a.ok) for (const x of (Array.isArray(a.res) ? a.res : (a.res && a.res.orders) || [])) out.push(x.clientAlgoId || '');
+  const a = await X('GET', '/fapi/v1/openAlgoOrders', { symbol: sym }); if (a.ok) for (const x of (Array.isArray(a.res) ? a.res : (a.res && (a.res.orders || a.res.rows)) || [])) out.push(x.clientAlgoId || x.clientOrderId || '');
   const o = await X('GET', '/fapi/v1/openOrders', { symbol: sym }); if (o.ok && Array.isArray(o.res)) for (const x of o.res) out.push(x.clientOrderId || '');
-  return { ok: a.ok || o.ok, cids: out };
+  return { ok: a.ok || o.ok, algoOk: !!a.ok, legacyOk: !!o.ok, cids: out };
 }
 const sideOf = (long, closing) => (long ? (closing ? 'SELL' : 'BUY') : (closing ? 'BUY' : 'SELL'));
 
@@ -288,10 +288,11 @@ export async function apEnter(X, book, sig, f, tid) {
     const t1 = { symbol, side: sideOf(long, true), type: 'TAKE_PROFIT_MARKET', triggerPrice: trade.tp1, quantity: half, clientAlgoId: trade.cids.t1 };
     if (ps) t1.positionSide = ps; else t1.reduceOnly = 'true';
     const r1 = await condPlace(X, t1, log); trade.via.t1 = r1.via; trade.half = half; if (!r1.ok) trade.warn = 'tp1_missing';
-    const t2 = { symbol, side: sideOf(long, true), type: 'TAKE_PROFIT_MARKET', triggerPrice: trade.tp2, closePosition: 'true', clientAlgoId: trade.cids.t2 }; if (ps) t2.positionSide = ps;
+    const rest = floorStep(fq - half + f.step * 1e-6, f.step);
+    const t2 = { symbol, side: sideOf(long, true), type: 'TAKE_PROFIT_MARKET', triggerPrice: trade.tp2, quantity: rest, clientAlgoId: trade.cids.t2 }; if (ps) t2.positionSide = ps; else t2.reduceOnly = 'true';
     const r2 = await condPlace(X, t2, log); trade.via.t2 = r2.via; if (!r2.ok) trade.warn = (trade.warn ? trade.warn + ',' : '') + 'tp2_missing';
   } else { // too small to split: the whole position takes profit at TP1 and the runner rule does not apply
-    const t1 = { symbol, side: sideOf(long, true), type: 'TAKE_PROFIT_MARKET', triggerPrice: trade.tp1, closePosition: 'true', clientAlgoId: trade.cids.t1 }; if (ps) t1.positionSide = ps;
+    const t1 = { symbol, side: sideOf(long, true), type: 'TAKE_PROFIT_MARKET', triggerPrice: trade.tp1, quantity: fq, clientAlgoId: trade.cids.t1 }; if (ps) t1.positionSide = ps; else t1.reduceOnly = 'true';
     const r1 = await condPlace(X, t1, log); trade.via.t1 = r1.via; trade.noSplit = true; if (!r1.ok) trade.warn = 'tp1_missing';
   }
   return { ok: true, trade, plan };
@@ -339,11 +340,13 @@ export async function apManage(X, book, t, flip) {
     t._chk = Date.now();
     const oc = await condOpen(X, t.symbol);
     const stopCid = t.phase === 1 ? t.cids.b : t.cids.s;
-    if (oc.ok && !oc.cids.includes(stopCid)) {
+    const stopVia = t.phase === 1 ? t.via.b : t.via.s, readable = stopVia === 'legacy' ? oc.legacyOk : oc.algoOk;
+    if (readable && !oc.cids.includes(stopCid)) {
       log('warn', t.sym, 'the stop is missing on the exchange - placing it again', false);
       const p = { symbol: t.symbol, side: sideOf(t.long, true), type: 'STOP_MARKET', triggerPrice: t.phase === 1 ? t.entry : t.sl, closePosition: 'true', clientAlgoId: stopCid + 'r' + (Date.now() % 1000) }; if (t.ps) p.positionSide = t.ps;
       const r = await condPlace(X, p, log);
       if (r.ok) { if (t.phase === 1) { t.cids.b = p.clientAlgoId; t.via.b = r.via; } else { t.cids.s = p.clientAlgoId; t.via.s = r.via; } }
+      else if (/-4130$/.test(String(r.why)) || /existing/i.test(String(r.msg || ''))) { log('info', t.sym, 'Binance says a close-all stop is already on this position - keeping it', true); }
       else { t.closing = 'stop_lost'; await cancelOurs(X, t, log); await marketClose(X, t, log, 'stop could not be restored'); return apSettle(X, book, t); }
     }
   }
@@ -497,7 +500,8 @@ export class AutoStore {
       if (cur.mode === 'live' && m !== 'live' && !b.admin) return this.j({ error: 'locked' }, 423);
       if (m !== 'shadow') { const c = this.g('conn', null); if (!c || c.net !== m) return this.j({ error: 'no_key_for_mode' }, 400); }
       if (this.openTrades(cur.mode).length && m !== cur.mode) return this.j({ error: 'close_positions_first', open: this.openTrades(cur.mode).length }, 409);
-      cur.mode = m; this.p('cfg', cur); this.logger(m)('info', '', 'mode -> ' + m + (b.admin ? ' (by MarginPad)' : ''), true, 0);
+      if (m === 'live' && !b.admin) this.p('consent', { ts: Date.now(), v: 1, text: b.ackText || '' });
+      cur.mode = m; this.p('cfg', cur); this.logger(m)('info', '', 'mode -> ' + m + (b.admin ? ' (by MarginPad)' : '') + (m === 'live' && !b.admin ? ' - risk acknowledged by the member' : ''), true, 0);
       if (m === 'live') await this.tg('<b>Autopilot is LIVE</b>\nFrom the next Premium signal it places real orders on your Binance account at ' + cur.risk + '% risk per trade. Settings are now locked - to change anything, email support@marginpad.io.');
       return this.j({ ok: true, cfg: cur });
     }
@@ -584,7 +588,7 @@ export class AutoStore {
       const cfg = apCfgNorm(this.g('cfg', null)), conn = this.g('conn', null);
       const all = this.sql.exec("SELECT data FROM trades WHERE status='closed'").toArray().map(r => JSON.parse(r.data));
       const live = all.filter(t => t.mode === cfg.mode);
-      return this.j({ ok: true, mode: cfg.mode, paused: cfg.paused, risk: cfg.risk, conn: conn ? { net: conn.net, kid: conn.kid, created: conn.created } : null, open: this.openTrades(cfg.mode).length, closed: live.length, pnl: live.reduce((a, t) => a + (+t.pnl || 0), 0), wins: live.filter(t => t.pnl > 0).length, disabled: !!this.g('disabled', false), tg: !!(this.g('tg', null) || {}).chat, cfg, acct: this.g('acct:' + cfg.mode, null), lastLog: (this.sql.exec('SELECT ts,msg FROM log ORDER BY id DESC LIMIT 1').toArray()[0]) || null });
+      return this.j({ ok: true, mode: cfg.mode, paused: cfg.paused, risk: cfg.risk, conn: conn ? { net: conn.net, kid: conn.kid, created: conn.created } : null, open: this.openTrades(cfg.mode).length, closed: live.length, pnl: live.reduce((a, t) => a + (+t.pnl || 0), 0), wins: live.filter(t => t.pnl > 0).length, disabled: !!this.g('disabled', false), tg: !!(this.g('tg', null) || {}).chat, consent: this.g('consent', null), cfg, acct: this.g('acct:' + cfg.mode, null), lastLog: (this.sql.exec('SELECT ts,msg FROM log ORDER BY id DESC LIMIT 1').toArray()[0]) || null });
     }
     return this.j({ error: 'not_found' }, 404);
   }

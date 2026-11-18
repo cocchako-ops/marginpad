@@ -216,7 +216,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
   }
   var ERR = { code_expired: 'The code expired - ask for a new one.', code_wrong: 'That code is not right.', code_locked: 'Too many wrong tries - ask for a new code.', too_many_codes: 'Too many codes this hour - try again later.',
     key_invalid: 'Binance does not recognise this key.', key_permissions: 'This key has the wrong permissions:', futures_ip: 'Futures refused the key - is the IP restriction set to exactly the address above?', bad_key_format: 'That does not look like a Binance key.',
-    close_positions_first: 'Close the open positions first.', locked: 'Live settings are locked - email support@marginpad.io to change them.', no_key_for_mode: 'Connect a key for that mode first.', not_ready: 'Autopilot is being set up - try again in a few minutes.', mail_failed: 'The email could not be sent.' };
+    close_positions_first: 'Close the open positions first.', ack_required: 'Tick the box to confirm you understand the risk.', locked: 'Live settings are locked - email support@marginpad.io to change them.', no_key_for_mode: 'Connect a key for that mode first.', not_ready: 'Autopilot is being set up - try again in a few minutes.', mail_failed: 'The email could not be sent.' };
   var errTxt = function (j) { return (ERR[j.error] || ('Error: ' + (j.msg || j.error || 'unknown'))) + (j.bad ? ' ' + j.bad.join(' · ') : ''); };
 
   // ---------- data ----------
@@ -359,7 +359,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
     if ($('tgTest')) $('tgTest').onclick = function () { api('/tg', { op: 'test' }).then(function (j) { toast(j.ok ? 'Sent - check Telegram.' : 'Not delivered. Connect Telegram again.', !j.ok); }); };
     if ($('tgOff')) $('tgOff').onclick = function () { api('/tg', { op: 'off' }).then(function () { load().then(paneSet); }); };
     $('pauseBtn').onclick = function () { api('/cfg', { patch: { paused: !c.paused } }).then(function (j) { if (j.ok) { toast(j.cfg.paused ? 'Paused - open positions keep their stops and targets.' : 'Resumed.'); load(); } }); };
-    Array.prototype.forEach.call(document.querySelectorAll('#modeSeg button'), function (b) { b.onclick = function () { var m = b.getAttribute('data-m'); if (m === c.mode) return; if (m === 'live') return codeFlow('live', 'Switch to LIVE trading', 'From the next signal Autopilot places real orders on your Binance account, and the settings lock: after this, any change is made by email to support@marginpad.io. Check the risk and the coins now. We sent a code to your email.', function (code) { return api('/mode', { mode: 'live', code: code }); }); api('/mode', { mode: m }).then(function (j) { if (j.ok) { toast('Mode: ' + m); load(); } else toast(errTxt(j), 1); }); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#modeSeg button'), function (b) { b.onclick = function () { var m = b.getAttribute('data-m'); if (m === c.mode) return; if (m === 'live') return codeFlow('live', 'Switch to LIVE trading', 'From the next signal Autopilot places real orders on your Binance account, and the settings lock: after this, any change is made by email to support@marginpad.io. Check the risk and the coins now. We sent a code to your email.', function (code) { if (!$('ackChk') || !$('ackChk').checked) return Promise.resolve({ error: 'ack_required' }); return api('/mode', { mode: 'live', code: code, ack: true }); }, S.meta.ack); api('/mode', { mode: m }).then(function (j) { if (j.ok) { toast('Mode: ' + m); load(); } else toast(errTxt(j), 1); }); }; });
   }
   function paneKey() {
     var conn = S.conn, ip = S.meta.ip, p = conn && conn.perms || {};
@@ -399,8 +399,8 @@ input[type=range]{width:100%;accent-color:var(--lime)}
     modal('<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p><div class="row"><button class="btn danger" id="cfY">' + esc(label) + '</button><button class="btn ghost" id="cfN">Cancel</button></div>');
     $('cfN').onclick = closeModal; $('cfY').onclick = function () { this.disabled = true; Promise.resolve(fn()).then(closeModal); };
   }
-  function codeFlow(purpose, title, text, submit) {
-    modal('<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p><input class="inp code" id="cdIn" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"><div class="row" style="margin-top:12px"><button class="btn" id="cdGo">Confirm</button><button class="btn ghost" id="cdRe">Send again</button><button class="btn ghost" id="cdX">Cancel</button></div><div class="msg" id="cdMsg">Sending the code…</div>');
+  function codeFlow(purpose, title, text, submit, ack) {
+    modal('<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p>' + (ack ? '<label style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;font-size:13px;color:#d6dbe1;cursor:pointer"><input type="checkbox" id="ackChk" style="margin-top:3px;accent-color:#c2f64a"><span>' + esc(ack) + '</span></label>' : '') + '<input class="inp code" id="cdIn" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"><div class="row" style="margin-top:12px"><button class="btn" id="cdGo">Confirm</button><button class="btn ghost" id="cdRe">Send again</button><button class="btn ghost" id="cdX">Cancel</button></div><div class="msg" id="cdMsg">Sending the code…</div>');
     var send = function () { $('cdMsg').className = 'msg'; $('cdMsg').textContent = 'Sending the code…'; api('/code', { purpose: purpose }).then(function (j) { $('cdMsg').className = 'msg ' + (j.ok ? 'ok' : 'err'); $('cdMsg').textContent = j.ok ? 'Code sent to ' + j.sent + '.' : errTxt(j); }); };
     send(); setTimeout(function () { try { $('cdIn').focus(); } catch (e) {} }, 60);
     $('cdRe').onclick = send; $('cdX').onclick = closeModal;

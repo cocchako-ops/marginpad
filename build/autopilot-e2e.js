@@ -34,7 +34,8 @@ let pass = 0, fail = 0; const ok = (c, m, d) => { if (c) { pass++; console.log('
   const algos = () => E.vx.algos.filter(a => a.algoStatus === 'NEW');
   ok(algos().some(a => a.orderType === 'STOP_MARKET' && a.triggerPrice === 99000 && a.closePosition), 'the stop is on the exchange at the signal stop');
   ok(algos().some(a => a.orderType === 'TAKE_PROFIT_MARKET' && a.triggerPrice === 101500 && a.quantity === 0.1), 'TP1 takes half');
-  ok(algos().some(a => a.orderType === 'TAKE_PROFIT_MARKET' && a.triggerPrice === 103000 && a.closePosition), 'TP2 closes the rest');
+  ok(algos().some(a => a.orderType === 'TAKE_PROFIT_MARKET' && a.triggerPrice === 103000 && a.quantity === 0.1 && a.reduceOnly && !a.closePosition), 'TP2 closes the rest as a reduce-only order (only the stop is close-all - Binance allows one per side)');
+  ok(algos().filter(a => a.closePosition).length === 1, 'exactly one close-all order on the position (the stop)');
   ok(E.logs.findIndex(l => /STOP_MARKET/.test(l.m)) < E.logs.findIndex(l => /TAKE_PROFIT/.test(l.m)), 'the stop goes on BEFORE the targets');
   let t = r.trade; E.book.open = [t];
   E.mark.BTCUSDT = 101600; await A.apManage(E.X, E.book, t, null);
@@ -68,6 +69,17 @@ let pass = 0, fail = 0; const ok = (c, m, d) => { if (c) { pass++; console.log('
   E.vx.algos.find(a => a.orderType === 'STOP_MARKET').algoStatus = 'CANCELED';
   t._chk = 0; await A.apManage(E.X, E.book, t, null);
   ok(t.status === 'open' && algos().some(a => a.orderType === 'STOP_MARKET' && a.triggerPrice === 99000), 'a stop cancelled on the exchange is placed again within the check');
+  // the stop check cannot read the order list: it must NOT conclude the stop is gone (that would stack stops or close a healthy trade)
+  E = mk(10000); r = await A.apEnter(E.X, E.book, sigL, F, 'ffg'); t = r.trade; E.book.open = [t];
+  const nStops = () => E.vx.algos.filter(a => a.algoStatus === 'NEW' && a.orderType === 'STOP_MARKET').length;
+  const X4 = async (m, pth, q, o) => pth === '/fapi/v1/openAlgoOrders' ? { ok: false, why: 'binance_-1003', msg: 'Too many requests' } : E.X(m, pth, q, o); X4.tick = E.X.tick;
+  t._chk = 0; await A.apManage(X4, E.book, t, null);
+  ok(t.status === 'open' && nStops() === 1, 'an unreadable order list never counts as a missing stop (no second stop, no close)', { s: t.status, stops: nStops() });
+  // Binance answers -4130 (a close-all stop already exists) to the restore: the trade is kept, not closed
+  E.vx.algos.find(a => a.orderType === 'STOP_MARKET' && a.algoStatus === 'NEW').clientAlgoId = 'someone-elses';
+  const X5 = async (m, pth, q, o) => (m === 'POST' && q.type === 'STOP_MARKET') ? { ok: false, why: 'binance_-4130', code: -4130, msg: 'An open stop or take profit order with GTE and closePosition in the direction is existing.' } : E.X(m, pth, q, o); X5.tick = E.X.tick;
+  t._chk = 0; await A.apManage(X5, E.book, t, null);
+  ok(t.status === 'open', 'a -4130 "close-all stop already exists" on the restore keeps the trade open', t.status);
   // the breakeven stop refused -> the rest is closed, never left without protection
   E = mk(10000); r = await A.apEnter(E.X, E.book, sigL, F, 'ggg'); t = r.trade; E.book.open = [t];
   E.mark.BTCUSDT = 101600;

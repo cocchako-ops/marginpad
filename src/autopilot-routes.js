@@ -10,6 +10,7 @@ async function apCall(env, uid, path, body) {
 async function apMembers(env) { try { return (await env.STATS.get('ap:members', 'json')) || []; } catch (e) { return []; } }
 async function apAllowed(env, uid) { try { return !!(await env.STATS.get('ap:allow:' + uid)); } catch (e) { return false; } }
 const maskMail = (e) => String(e || '').replace(/^(.{2}).*(@.*)$/, '$1***$2');
+export const AP_ACK = 'I understand Autopilot places real orders with real money on my Binance account, that I can lose money, that past results do not promise future ones, that MarginPad gives no financial advice and is not responsible for my losses, and that my Live settings are changed only by email.';
 export const AP_WHY = {
   paused: 'Paused', coin_off: 'Coin switched off', longs_off: 'Longs switched off', shorts_off: 'Shorts switched off', already_in: 'Already in this coin', max_open: 'Max open positions reached',
   manual_position: 'You hold this coin by hand - left alone', day_loss_limit: 'Daily loss limit reached', risk_budget: 'Open-risk budget full', price_ran: 'Price already ran - no chasing',
@@ -71,7 +72,7 @@ export async function handleAutopilot(url, request, env, ctx, H) {
   const act = (label) => { try { H.evPush(env, request, 'autopilot', label, '/autopilot/'); } catch (e) {} };
   if (r === '/state' && request.method === 'GET') {
     const s = await apCall(env, uid, '/state', {});
-    return J(Object.assign(s, { me: { username: su.username || '', email: maskMail(su.email) }, meta: { ip: AP_IP, coins: AP_COINS, lim: AP_LIM, def: AP_DEF, why: AP_WHY }, kill: (await env.STATS.get('ap:kill')) === '1', hb: +(await env.STATS.get('ap:hb')) || 0, lastsig: await env.STATS.get('ap:lastsig', 'json') }));
+    return J(Object.assign(s, { me: { username: su.username || '', email: maskMail(su.email) }, meta: { ip: AP_IP, coins: AP_COINS, lim: AP_LIM, def: AP_DEF, why: AP_WHY, ack: AP_ACK }, kill: (await env.STATS.get('ap:kill')) === '1', hb: +(await env.STATS.get('ap:hb')) || 0, lastsig: await env.STATS.get('ap:lastsig', 'json') }));
   }
   if (r === '/balance' && request.method === 'GET') return J(await apCall(env, uid, '/balance', {}));
   if (r === '/code' && request.method === 'POST') { // a 6-digit code to the member's own email: needed to connect a key and to go Live
@@ -115,8 +116,9 @@ export async function handleAutopilot(url, request, env, ctx, H) {
     return J(res.ok ? { ok: true, usdt: chk.usdt, perms: chk.perms } : res, res.ok ? 200 : 409);
   }
   if (r === '/mode' && request.method === 'POST') {
+    if (b.mode === 'live' && b.ack !== true) return J({ error: 'ack_required' }, 400); // the member confirms, in words, that this is real money and theirs to lose
     if (b.mode === 'live') { const ce = await useCode('live'); if (ce) return J({ error: ce }, 403); }
-    const res = await apCall(env, uid, '/mode', { mode: b.mode }); act('mode ' + b.mode);
+    const res = await apCall(env, uid, '/mode', { mode: b.mode, ackText: b.mode === 'live' ? AP_ACK : '' }); act('mode ' + b.mode);
     if (res.ok && b.mode === 'live' && H.tgAdmin) { try { await H.tgAdmin(env, '<b>Autopilot</b> - @' + (su.username || uid) + ' switched to LIVE (risk ' + res.cfg.risk + '%). Their settings are now locked.', { kind: 'autopilot live', sev: 'info' }); } catch (e) {} }
     return J(res, res.ok ? 200 : 400);
   }
