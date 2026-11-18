@@ -718,6 +718,16 @@ export async function handleJournal(url, request, env, ctx, H) {
   if (!env.JOURNAL) return J({ error: 'unavailable' }, 503);
   const path = url.pathname.slice('/api/journal'.length) || '/';
   if (path === '/meta') return J({ ip: JR_IP, exchanges: JR_EXCH, daysMax: JR_DAYS_MAX });
+  /* A SHARED REAL TRADE (2026-11-18, owner: share a real trade into the chat, a link that opens an exchange-styled card). The snapshot is
+     built HERE from the fills the exchange gave us - never from anything the page sends - so the card can say "verified". Public read,
+     immutable, edge-cached; `ids=` reads a whole room in one request (the tshare lesson: one request per card was 81 per chat open). */
+  if (path === '/rshare' && request.method === 'GET') {
+    const clean = (x) => String(x || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+    const ids = [...new Set(String(url.searchParams.get('ids') || url.searchParams.get('id') || '').split(',').map(clean).filter(Boolean))].slice(0, 40);
+    if (!ids.length) return J({ error: 'id_required' }, 400);
+    const out = {}; await Promise.all(ids.map(async (id) => { try { const s = await env.STATS.get('jrsh:' + id, 'json'); if (s) out[id] = s; } catch (e) {} }));
+    return new Response(JSON.stringify({ ok: true, shares: out }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...H.CORS } });
+  }
   const su = await H.sessionUser(env, H.getCookie(request, H.SESS_COOKIE));
   let uid = su && su.id ? String(su.id) : '';
   const _adm = H.isAdminKey(env, H.adminKeyFrom(request, url)), _qu = url.searchParams.get('uid') || '';
@@ -790,6 +800,39 @@ export async function handleJournal(url, request, env, ctx, H) {
     const t = await env.STATS.get('jrn:sy:' + uid); if (t && Date.now() - +t < 20000) return J({ error: 'slow_down', wait: 20 }, 429);
     try { await env.STATS.put('jrn:sy:' + uid, String(Date.now()), { expirationTtl: 60 }); } catch (e) {}
     return J({ ok: true, res: await journalSyncUser(env, H, uid, b.id ? String(b.id) : null, JR_REQ_BUDGET) });
+  }
+  if (path === '/share' && request.method === 'POST') {
+    const pid = String(b.pid || '').slice(0, 120), amounts = b.amounts !== false;
+    const un = String((su && su.username) || '').slice(0, 24);
+    if (!un && !_adm) return J({ error: 'username_required' }, 400); // the chat names every poster
+    try { const rk = 'jrsh:rl:' + uid + ':' + new Date().toISOString().slice(0, 10); const n = +(await env.STATS.get(rk)) || 0; if (n >= 30) return J({ error: 'rate_limited' }, 429); await env.STATS.put(rk, String(n + 1), { expirationTtl: 90000 }); } catch (e) {}
+    const d = await jCall(env, uid, '/data?from=' + (Date.now() - (JR_DAYS_MAX + 30) * DAY));
+    const p = (jrBuild(d.fills || [], d.funding || []).positions || []).find(x => x.id === pid);
+    if (!p) return J({ error: 'not_found' }, 404);
+    if (p.status !== 'closed' || !(+p.entry > 0) || !(+p.exit > 0)) return J({ error: 'not_closed' }, 400);
+    const r2 = (v) => v == null || !isFinite(v) ? null : +(+v).toFixed(2);
+    const snap = {
+      v: 1, ex: p.ex, sym: String(p.sym).slice(0, 24), coin: jrCoin(p.sym), dir: p.dir > 0 ? 1 : -1,
+      entry: +(+p.entry).toPrecision(8), exit: +(+p.exit).toPrecision(8), openTs: p.partial ? null : p.openTs, closeTs: p.closeTs,
+      move: +(((p.exit / p.entry) - 1) * p.dir * 100).toFixed(3), ret: p.maxNotional > 0 ? +(p.net / p.maxNotional * 100).toFixed(3) : null,
+      liq: p.liq ? 1 : 0, fills: p.n || 0, maker: p.nMaker || 0, verified: p.diff != null && Math.abs(p.diff) <= 0.01 ? 1 : 0,
+      amounts: amounts ? 1 : 0, by: un || 'trader', at: Date.now()
+    };
+    if (amounts) Object.assign(snap, { size: r2(p.maxNotional), gross: r2(p.gross), fees: r2(p.fees), funding: r2(p.funding), net: r2(p.net) });
+    // the price path, baked once at share time (a closed candle never changes; readers never fetch klines per card)
+    try {
+      const a0 = p.partial ? p.closeTs - 3600000 : p.openTs, span = Math.max(60000, p.closeTs - a0), IV = [1, 5, 15, 60, 240, 1440];
+      let iv = 1440; for (const m of IV) if (span / (m * 60000) <= 36) { iv = m; break; }
+      const bars = await H.klines(env, snap.coin, iv, p.closeTs + iv * 60000 * 3);
+      if (Array.isArray(bars)) {
+        let pts = bars.filter(k => +k.time * 1000 >= a0 - span * 0.25 && +k.time * 1000 <= p.closeTs + iv * 60000 * 2).map(k => [+k.time * 1000, +k.close]).filter(x => x[1] > 0);
+        if (pts.length > 60) { const st = pts.length / 60, o = []; for (let i = 0; i < 60; i++) o.push(pts[Math.floor(i * st)]); o.push(pts[pts.length - 1]); pts = o; }
+        if (pts.length >= 4) { snap.spark = pts.map(x => [Math.round(x[0] / 1000), +x[1].toPrecision(7)]); snap.iv = iv; }
+      }
+    } catch (e) {}
+    const id = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+    await env.STATS.put('jrsh:' + id, JSON.stringify(snap), { expirationTtl: 180 * 86400 });
+    return J({ ok: true, id });
   }
   if (path === '/stats' || path === '/trades' || path === '/savings' || path === '/all') {
     const days = Math.max(1, Math.min(JR_DAYS_MAX, +url.searchParams.get('days') || 30)), conn = url.searchParams.get('conn') || '';

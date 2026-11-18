@@ -4300,6 +4300,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   function hydrate(root) {
     root = root || document; if (!root.querySelectorAll) return;
     try { sqadHydrate(root); } catch (e) {}
+    try { if (window.mpRealTrade) window.mpRealTrade.hydrate(root); } catch (e) {}
     try { if (window.mpChatPrefs && window.mpChatPrefs.get().trades === 'link') return; } catch (e) {}   // the reader asked for the plain link (chat settings)
     var links = root.querySelectorAll('a.ct-trade[data-trade]:not([data-tk])');
     Array.prototype.forEach.call(links, function (a) {
@@ -5379,4 +5380,138 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
   function dl(png, name) { return new Promise(function (res) { var u = URL.createObjectURL(png), a = document.createElement('a'); a.href = u; a.download = 'marginpad-report-' + name + '.png'; a.rel = 'noopener'; a.setAttribute('data-mp-dl', '1'); document.body.appendChild(a); a.click(); setTimeout(function () { try { a.remove(); URL.revokeObjectURL(u); } catch (e) {} res(); }, 300); }); }
   window.mpReportShare = share;
   document.addEventListener('click', function (ev) { var b = ev.target && ev.target.closest && ev.target.closest('#jrShare, [data-jrshare]'); if (!b) return; ev.preventDefault(); share({ btn: b }); });
+})();
+
+;/* ══════════ A SHARED REAL TRADE (2026-11-18, owner: "sa liste uvezenih trejdova opcija da se seruje pravi trejd ... u chat-u ne treba da zauzima
+   previse prostora ali mora da izgleda cool ... hyperlink pa na klik se otvara vise, kartice u stilu te menjacnice ... nek nose nas referral link
+   ka toj menjacnici i tom paru"). The chat carries `real:<id>`; the snapshot was built by the SERVER from the fills the exchange returned
+   (/api/journal/share), so the card can say verified. In the room it is one compact gold chip (paper trades are the blue link); a tap opens a
+   card dressed in that exchange's own colours with a partner link to the same pair. No vote, no rail - it is only shared. ══════════ */
+(function () {
+  if (window.mpRealTrade) return;
+  var EXT = {
+    bybit: { n: 'Bybit', p: 'Bybit', bg: '#0b0c0f', bg2: '#1a1c22', ac: '#f7a600', ink: '#ffffff' },
+    hyperliquid: { n: 'Hyperliquid', p: 'Hyperliquid', bg: '#03201b', bg2: '#0a3a31', ac: '#97fce4', ink: '#e9fffa' },
+    binance: { n: 'Binance', p: 'Binance', bg: '#0b0e11', bg2: '#1e2329', ac: '#f0b90b', ink: '#eaecef' },
+    okx: { n: 'OKX', p: 'OKX', bg: '#000000', bg2: '#141414', ac: '#ffffff', ink: '#ffffff' },
+    bitget: { n: 'Bitget', p: 'Bitget', bg: '#03161c', bg2: '#0b2b35', ac: '#00e7d8', ink: '#e8fbff' },
+    bingx: { n: 'BingX', p: 'BingX', bg: '#060c22', bg2: '#11204d', ac: '#3b6cff', ink: '#eef2ff' }
+  };
+  var cache = {}, wait = {}, q = [], qt = 0;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function usd(v, sign) { v = +v; if (!isFinite(v)) return '-'; var a = Math.abs(v), s = a >= 1000 ? a.toLocaleString('en-US', { maximumFractionDigits: 0 }) : a.toFixed(2); return (v < 0 ? '-' : (sign && v > 0 ? '+' : '')) + '$' + s; }
+  function pct(v) { v = +v; if (!isFinite(v)) return '-'; return (v > 0 ? '+' : '') + v.toFixed(Math.abs(v) < 10 ? 2 : 1) + '%'; }
+  function px(v) { v = +v; if (!isFinite(v) || !v) return '-'; return v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v >= 1 ? String(+v.toFixed(4)) : String(+v.toPrecision(4)); }
+  function held(ms) { if (!(ms > 0)) return ''; var m = ms / 6e4; return m < 1 ? Math.round(ms / 1000) + 's' : m < 60 ? Math.round(m) + 'm' : m < 1440 ? Math.floor(m / 60) + 'h ' + Math.round(m % 60) + 'm' : (m / 1440).toFixed(1) + 'd'; }
+  function res(s) { return s.amounts && s.net != null ? +s.net : (s.ret != null ? +s.ret : +s.move); }
+  function css() {
+    if (document.getElementById('mprt-css')) return;
+    var st = document.createElement('style'); st.id = 'mprt-css';
+    st.textContent =
+      '.ct-real{display:inline-flex;align-items:center;gap:6px;max-width:100%;vertical-align:middle;margin:1px 0;padding:2px 9px 2px 3px;border-radius:999px;border:1px solid rgba(227,201,143,.42);background:linear-gradient(100deg,rgba(227,201,143,.16),rgba(227,201,143,.03) 70%);color:#ecd7a4;font:600 12.5px/1.5 "Familjen Grotesk",system-ui,sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap;overflow:hidden;transition:border-color .15s,background .15s}'
+      + '.ct-real:hover,.ct-real:focus-visible{border-color:rgba(227,201,143,.85);background:linear-gradient(100deg,rgba(227,201,143,.24),rgba(227,201,143,.05) 70%);outline:none}'
+      + '.ct-real img{flex:0 0 auto;width:17px;height:17px;border-radius:50%;box-shadow:0 0 0 1.5px var(--rx,#e3c98f)}'
+      + '.ct-real b{font-weight:800;color:#fff4dc}.ct-real i{font-style:normal;font-size:11px;letter-spacing:.02em;opacity:.85}.ct-real i.l{color:#7ee2a8}.ct-real i.s{color:#ff8a80}'
+      + '.ct-real em{font:700 12px "Space Mono",ui-monospace,monospace;font-style:normal}.ct-real em.p{color:#c2f64a}.ct-real em.n{color:#ff6b5e}'
+      + '.ct-real svg{flex:0 0 auto;width:12px;height:12px;color:#e3c98f}'
+      + '.ct-real.ld{min-width:110px;color:#b8a57a}'
+      + '.mprt-ov{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(3,4,6,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}'
+      + '.mprt{position:relative;width:min(400px,100%);max-height:calc(100dvh - 32px);overflow:auto;border-radius:22px;color:var(--ink);background:radial-gradient(120% 70% at 100% 0,var(--bg2),var(--bg) 62%);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);box-shadow:0 30px 80px -20px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03) inset;font-family:"Familjen Grotesk",system-ui,sans-serif}'
+      + '.mprt::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.9}'
+      + '.mprt-h{display:flex;align-items:center;gap:10px;padding:16px 18px 0}.mprt-h img{width:30px;height:30px;border-radius:9px}.mprt-h b{font:800 17px "Bricolage Grotesque",system-ui,sans-serif;color:var(--ac);letter-spacing:-.01em}'
+      + '.mprt-v{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font:700 10.5px "Space Mono",monospace;letter-spacing:.04em;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 40%,transparent);background:color-mix(in srgb,var(--ac) 10%,transparent)}.mprt-v svg{width:12px;height:12px}'
+      + '.mprt-x{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.07);color:var(--ink);cursor:pointer;display:none}'
+      + '.mprt-t{display:flex;align-items:center;gap:9px;padding:14px 18px 0}.mprt-t h3{margin:0;font:800 30px/1 "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em}'
+      + '.mprt-sd{padding:4px 10px;border-radius:8px;font:800 12px "Space Mono",monospace;letter-spacing:.05em}.mprt-sd.l{background:rgba(46,189,133,.16);color:#3ddc97}.mprt-sd.s{background:rgba(255,90,77,.16);color:#ff6b5e}'
+      + '.mprt-lq{padding:4px 9px;border-radius:8px;font:700 11px "Space Mono",monospace;background:rgba(255,90,77,.12);color:#ff8a80}'
+      + '.mprt-r{padding:12px 18px 0}.mprt-r .big{font:700 40px/1.05 "Space Mono",monospace;letter-spacing:-.03em}.mprt-r .big.p{color:#3ddc97}.mprt-r .big.n{color:#ff6b5e}.mprt-r .sub{margin-top:6px;font-size:13.5px;opacity:.75}'
+      + '.mprt-c{margin:14px 12px 0;border-radius:14px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);padding:8px 6px 4px}.mprt-c svg{display:block;width:100%;height:120px}'
+      + '.mprt-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:12px 12px 0;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.07)}'
+      + '.mprt-g div{padding:9px 11px;background:color-mix(in srgb,var(--bg) 88%,#000)}.mprt-g i{display:block;font-style:normal;font-size:11px;opacity:.6}.mprt-g b{font:700 13.5px "Space Mono",monospace}'
+      + '.mprt-by{padding:12px 18px 0;font-size:12.5px;opacity:.7}.mprt-by b{opacity:1;color:var(--ink)}'
+      + '.mprt-cta{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 12px 0;padding:13px 16px;border-radius:14px;background:var(--ac);color:var(--bg);font:800 15px "Familjen Grotesk",system-ui,sans-serif;text-decoration:none;transition:filter .15s,transform .15s}.mprt-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}'
+      + '.mprt-cta.off{background:rgba(255,255,255,.08);color:var(--ink);opacity:.7;pointer-events:none}'
+      + '.mprt-ft{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 18px 16px;font-size:12px;opacity:.6}.mprt-ft a{color:inherit;white-space:nowrap}'
+      + '@media (max-width:520px){.mprt-x{display:block}.mprt-v{margin-right:36px}.mprt-r .big{font-size:34px}}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+  var SEAL = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.7 1.2 2.1-.1.6 2 1.7 1.3-.7 2 .7 2-1.7 1.3-.6 2-2.1-.1L8 14.5l-1.7-1.2-2.1.1-.6-2-1.7-1.3.7-2-.7-2 1.7-1.3.6-2 2.1.1z"/><path d="M5.6 8.1l1.6 1.6 3.2-3.3"/></svg>';
+  function load(ids) {
+    var need = ids.filter(function (i) { return !cache[i] && !wait[i]; });
+    if (need.length) {
+      var p = fetch('/api/journal/rshare?ids=' + need.join(',')).then(function (r) { return r.json(); }).then(function (j) { var s = (j && j.shares) || {}; need.forEach(function (i) { cache[i] = s[i] || { gone: 1 }; delete wait[i]; }); }).catch(function () { need.forEach(function (i) { delete wait[i]; }); });
+      need.forEach(function (i) { wait[i] = p; });
+    }
+    return Promise.all(ids.map(function (i) { return wait[i] || Promise.resolve(); })).then(function () { return ids.map(function (i) { return cache[i]; }); });
+  }
+  function chip(a, s) {
+    var ex = EXT[s.ex] || { n: s.ex, ac: '#e3c98f' }, r = res(s), dirW = s.dir > 0 ? 'long' : 'short';
+    a.style.setProperty('--rx', ex.ac);
+    a.setAttribute('title', 'Real trade on ' + ex.n + ', verified from the exchange - open the card');
+    a.innerHTML = '<img src="/assets/ex/' + esc(s.ex) + '.png" alt="">' + '<b>' + esc(s.coin) + '</b><i class="' + (s.dir > 0 ? 'l' : 's') + '">' + dirW + '</i><em class="' + (r >= 0 ? 'p' : 'n') + '">' + (s.amounts && s.net != null ? usd(s.net, 1) : pct(s.ret != null ? s.ret : s.move)) + '</em>' + (s.verified ? SEAL : '');
+    a.classList.remove('ld');
+  }
+  function hydrate(root) {
+    root = root || document; if (!root.querySelectorAll) return; css();
+    var L = Array.prototype.slice.call(root.querySelectorAll('a.ct-real[data-real]:not([data-rh])')); if (!L.length) return;
+    L.forEach(function (a) { a.setAttribute('data-rh', '1'); a.classList.add('ld'); });
+    load(L.map(function (a) { return String(a.getAttribute('data-real')); })).then(function (S) {
+      L.forEach(function (a, i) { var s = S[i]; if (s && !s.gone) chip(a, s); else { a.classList.remove('ld'); a.textContent = 'shared trade (expired)'; } });
+    });
+  }
+  function spark(s, ex) {
+    var P = s.spark; if (!P || P.length < 4) return '';
+    var W = 360, H = 120, pad = 8, t0 = P[0][0], t1 = P[P.length - 1][0], lo = Infinity, hi = -Infinity;
+    P.forEach(function (p) { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); }); lo = Math.min(lo, s.entry, s.exit); hi = Math.max(hi, s.entry, s.exit);
+    var X = function (t) { return pad + (t - t0) / Math.max(1, t1 - t0) * (W - 2 * pad); }, Y = function (v) { return H - pad - (v - lo) / Math.max(1e-12, hi - lo) * (H - 2 * pad); };
+    var d = P.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
+    var g = 'mprtg' + Math.random().toString(36).slice(2, 7), o = s.openTs ? s.openTs / 1000 : null, c = s.closeTs / 1000;
+    var h = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + ex.ac + '" stop-opacity=".28"/><stop offset="1" stop-color="' + ex.ac + '" stop-opacity="0"/></linearGradient></defs>';
+    if (o && c > o) h += '<rect x="' + X(o).toFixed(1) + '" y="0" width="' + Math.max(1, X(c) - X(o)).toFixed(1) + '" height="' + H + '" fill="' + ex.ac + '" opacity=".07"/>';
+    h += '<path d="' + d + ' L' + X(t1).toFixed(1) + ' ' + H + ' L' + X(t0).toFixed(1) + ' ' + H + 'Z" fill="url(#' + g + ')"/>';
+    h += '<line x1="0" x2="' + W + '" y1="' + Y(s.entry).toFixed(1) + '" y2="' + Y(s.entry).toFixed(1) + '" stroke="' + ex.ink + '" stroke-opacity=".35" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>';
+    h += '<path d="' + d + '" fill="none" stroke="' + ex.ac + '" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+    if (o) h += '<circle cx="' + X(o).toFixed(1) + '" cy="' + Y(s.entry).toFixed(1) + '" r="4.5" fill="' + ex.bg + '" stroke="' + ex.ink + '" stroke-width="2"/>';
+    h += '<circle cx="' + X(c).toFixed(1) + '" cy="' + Y(s.exit).toFixed(1) + '" r="5" fill="' + (res(s) >= 0 ? '#3ddc97' : '#ff6b5e') + '" stroke="' + ex.bg + '" stroke-width="2"/>';
+    return '<div class="mprt-c">' + h + '</svg></div>';
+  }
+  var ov = null;
+  function close() { if (!ov) return; var o = ov; ov = null; try { o.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140 }).onfinish = function () { o.remove(); }; } catch (e) { o.remove(); } document.removeEventListener('keydown', onKey); }
+  function onKey(e) { if (e.key === 'Escape') close(); }
+  function open(id) {
+    css();
+    load([id]).then(function (S) {
+      var s = S[0]; if (!s || s.gone) { if (window.mpToast) window.mpToast({ msg: 'This shared trade has expired.', kind: 'warn' }); return; }
+      close();
+      var ex = EXT[s.ex] || { n: s.ex, p: '', bg: '#0b0e13', bg2: '#151a22', ac: '#e3c98f', ink: '#fff' }, r = res(s), coin = s.coin;
+      var cc = '', url = '', blocked = false;
+      try { if (window.mpEx && ex.p) { cc = window.mpEx.ccNow(); blocked = window.mpEx.blocked(ex.p, cc); url = window.mpEx.url(ex.p, coin); } } catch (e) {}
+      var big = s.amounts && s.net != null ? usd(s.net, 1) : pct(s.ret != null ? s.ret : s.move);
+      var sub = 'Price ' + pct(s.move) + (s.openTs ? ' in ' + held(s.closeTs - s.openTs) : '') + (s.amounts && s.ret != null ? ' &middot; ' + pct(s.ret) + ' on size' : '');
+      var cells = [['Entry', px(s.entry)], ['Exit', px(s.exit)]];
+      if (s.amounts) cells.push(['Size', usd(s.size)], ['Fees', usd(-(s.fees || 0))], ['Funding', usd(s.funding || 0, 1)], ['Fills', String(s.fills || '-')]);
+      else cells.push(['Fills', String(s.fills || '-')]);
+      ov = document.createElement('div'); ov.className = 'mprt-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+      ov.innerHTML = '<div class="mprt" style="--bg:' + ex.bg + ';--bg2:' + ex.bg2 + ';--ac:' + ex.ac + ';--ink:' + ex.ink + '">'
+        + '<button class="mprt-x" aria-label="Close">&times;</button>'
+        + '<div class="mprt-h"><img src="/assets/ex/' + esc(s.ex) + '.png" alt=""><b>' + esc(ex.n) + '</b>' + (s.verified ? '<span class="mprt-v" title="Read-only from the exchange; the P&amp;L matches the exchange to the cent">' + SEAL + 'VERIFIED</span>' : '<span class="mprt-v">REAL TRADE</span>') + '</div>'
+        + '<div class="mprt-t"><h3>' + esc(coin) + '</h3><span class="mprt-sd ' + (s.dir > 0 ? 'l' : 's') + '">' + (s.dir > 0 ? 'LONG' : 'SHORT') + '</span>' + (s.liq ? '<span class="mprt-lq">LIQUIDATED</span>' : '') + '</div>'
+        + '<div class="mprt-r"><div class="big ' + (r >= 0 ? 'p' : 'n') + '">' + big + '</div><div class="sub">' + sub + '</div></div>'
+        + spark(s, ex)
+        + '<div class="mprt-g">' + cells.map(function (c) { return '<div><i>' + c[0] + '</i><b>' + c[1] + '</b></div>'; }).join('') + '</div>'
+        + '<div class="mprt-by">Shared by <b>@' + esc(s.by) + '</b> &middot; closed ' + new Date(s.closeTs).toISOString().slice(0, 16).replace('T', ' ') + ' UTC</div>'
+        + (url ? (blocked ? '<span class="mprt-cta off">' + esc(ex.n) + ' is not available in your country</span>' : '<a class="mprt-cta" href="' + esc(url) + '" target="_blank" rel="noopener sponsored" data-mpex="' + esc(ex.p) + '">Trade ' + esc(coin) + ' on ' + esc(ex.n) + '</a>') : '')
+        + '<div class="mprt-ft"><span>Read-only import, not financial advice</span><a href="/trading-journal/">Journal your own trades</a></div>'
+        + '</div>';
+      document.body.appendChild(ov);
+      ov.addEventListener('click', function (e) { if (e.target === ov || e.target.closest('.mprt-x')) close(); });
+      document.addEventListener('keydown', onKey);
+      try { ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 }); ov.firstChild.animate([{ transform: 'translateY(14px) scale(.97)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {}
+      try { if (window.__mpTrack) window.__mpTrack('realshare', 'open:' + s.ex); } catch (e) {}
+    });
+  }
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a.ct-real[data-real]'); if (!a) return; e.preventDefault(); e.stopPropagation(); open(String(a.getAttribute('data-real'))); }, true);
+  document.addEventListener('keydown', function (e) { if (e.key !== 'Enter') return; var a = e.target.closest && e.target.closest('a.ct-real[data-real]'); if (a) { e.preventDefault(); open(String(a.getAttribute('data-real'))); } });
+  window.mpRealTrade = { hydrate: hydrate, open: open };
+  try { hydrate(document); } catch (e) {}
 })();

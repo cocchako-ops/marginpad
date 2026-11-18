@@ -182,6 +182,14 @@ a{color:var(--brass)}
 .jl-tl .s.r{text-align:right}
 .jl-badge.tag{border-color:rgba(216,191,142,.45);color:var(--brass)}
 .jl-more{margin-top:12px}
+.jl-shc{width:34px;padding-left:0!important;padding-right:6px!important}
+.jl-shr{appearance:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;border:1px solid transparent;background:none;color:var(--mute);opacity:.38;cursor:pointer;transition:opacity .15s,color .15s,border-color .15s;vertical-align:middle}
+.jl-row:hover .jl-shr,.jl-shr:focus-visible{opacity:.9}.jl-shr:hover{opacity:1;color:#e3c98f;border-color:rgba(227,201,143,.4)}
+.jl-tl .jl-shr{width:22px;height:22px;margin-left:6px;opacity:.55}
+.jl-dshr{margin-left:8px;display:inline-flex;gap:6px;align-items:center;position:absolute;top:24px;right:96px}
+.jl-shrm{position:fixed;z-index:2147483646;display:grid;gap:6px;min-width:210px;padding:12px;border-radius:14px;border:1px solid rgba(227,201,143,.35);background:linear-gradient(180deg,#171a20,#0e1015);box-shadow:0 18px 40px -12px rgba(0,0,0,.7)}
+.jl-shrm b{font:600 13px 'Familjen Grotesk',sans-serif;color:#e3c98f}.jl-shrm small{color:var(--mute);font-size:11.5px}
+.jl-shrm button{appearance:none;text-align:left;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--ink);font:500 14px 'Familjen Grotesk',sans-serif;padding:8px 10px;border-radius:10px;cursor:pointer}.jl-shrm button:hover{border-color:#e3c98f}
 .jl-drawer{position:fixed;inset:0;z-index:2147483000;display:none;justify-content:flex-end;background:rgba(5,6,8,.6)}
 .jl-drawer.on{display:flex}
 .jl-dw{width:min(640px,100%);height:100%;overflow:auto;background:linear-gradient(180deg,#12161d,#0b0e13);border-left:1px solid var(--line);padding:24px 24px 90px;position:relative}
@@ -208,7 +216,7 @@ body.jl-adding .jl-hero{padding-top:20px}
   .jl-mcal{gap:3px}.jl-mcal .dd{min-height:48px;padding:3px 4px}.jl-mcal .dd b{font-size:10px}.jl-mcal .dd small{display:none}
   .jl-heat{grid-template-columns:30px repeat(24,minmax(0,1fr));gap:2px}.jl-heat em{font-size:8px}
   .jl-fr>span{width:100%}.jl-acc{grid-template-columns:auto minmax(0,1fr)}.jl-acb{grid-column:1/-1}
-  .jl-dw{padding:18px 16px 90px}
+  .jl-dw{padding:18px 16px 90px}.jl-dshr{position:static;margin:0 0 10px}
 }
 @media (max-width:900px){
   .jl-hero{grid-template-columns:1fr;gap:26px;padding-top:34px}
@@ -555,17 +563,39 @@ function paneTr(){
    +(F.day?'<div class="jl-fr"><span>Day</span><button class="jl-fc on" data-f="day" data-v="">'+F.day+' (clear)</button></div>':'')
    +'<p class="jl-fsum"><b>'+tr.length+'</b> of '+all.length+' trades &middot; net <b class="num '+cls(net)+'">'+money(net,1)+'</b> &middot; win rate <b>'+(cl.length?(w/cl.length*100).toFixed(1)+'%':'-')+'</b></p></div>';
   if(!tr.length)return h+'<p class="jl-empty">No trades match these filters.</p>';
-  var cards='<div class="jl-tl">'+shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<button class="it" data-pid="'+esc(t.id)+'"><span class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jl-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jl-badge">open</span>':'')+(nt?'<span class="jl-badge tag">'+esc((nt.tags[0]||'note'))+'</span>':'')+'</span><span class="n '+cls(t.net)+'">'+money(t.net,1)+'</span><span class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before history':'held '+holdTxt(t.hold))+', '+money(t.maxNotional)+'</span><span class="s r">'+(ACC?'':esc(accName(connOf(t.conn))||t.ex))+'</span></button>'}).join('')+'</div>';
-  var tbl='<div class="jl-tw jl-trtbl"><table class="jl-tbl"><tr><th>Closed (UTC)</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th>'+(ACC?'':'<th>Account</th>')+'</tr>'
-   +shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<tr class="jl-row" data-pid="'+esc(t.id)+'"><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jl-badge">open</span>')+'</td><td>'+esc(t.sym)+(t.liq?'<span class="jl-badge liq">liq</span>':'')+(t.partial?'<span class="jl-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+(nt?'<span class="jl-badge tag">'+esc(nt.tags[0]||'note')+'</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td>'+(ACC?'':'<td class="mute">'+esc(accName(connOf(t.conn))||t.ex)+'</td>')+'</tr>'}).join('')+'</table></div>';
+  var cards='<div class="jl-tl">'+shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<button class="it" data-pid="'+esc(t.id)+'"><span class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jl-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jl-badge">open</span>':'')+(nt?'<span class="jl-badge tag">'+esc((nt.tags[0]||'note'))+'</span>':'')+'</span><span class="n '+cls(t.net)+'">'+money(t.net,1)+'</span><span class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before history':'held '+holdTxt(t.hold))+', '+money(t.maxNotional)+'</span><span class="s r">'+(ACC?'':esc(accName(connOf(t.conn))||t.ex))+shrBtn(t,'span')+'</span></button>'}).join('')+'</div>';
+  var tbl='<div class="jl-tw jl-trtbl"><table class="jl-tbl"><tr><th>Closed (UTC)</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th>'+(ACC?'':'<th>Account</th>')+'<th class="jl-shc"></th></tr>'
+   +shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<tr class="jl-row" data-pid="'+esc(t.id)+'"><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jl-badge">open</span>')+'</td><td>'+esc(t.sym)+(t.liq?'<span class="jl-badge liq">liq</span>':'')+(t.partial?'<span class="jl-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+(nt?'<span class="jl-badge tag">'+esc(nt.tags[0]||'note')+'</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td>'+(ACC?'':'<td class="mute">'+esc(accName(connOf(t.conn))||t.ex)+'</td>')+'<td class="jl-shc">'+shrBtn(t)+'</td></tr>'}).join('')+'</table></div>';
   return h+'<div class="jl-card">'+cards+tbl+(tr.length>SHOWN?'<button class="jl-btn ghost sm jl-more" id="jrMore">Show '+Math.min(100,tr.length-SHOWN)+' more of '+(tr.length-SHOWN)+'</button>':'')+'<p class="note">Click a trade for its fills, a chart, and your notes.</p></div>';
+}
+
+/* ---- SHARE A REAL TRADE TO THE CHAT (2026-11-18): the server builds the card from the exchange's own fills; the page only asks ---- */
+var SHR_IC='<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3.5A1.5 1.5 0 002 4.5v8A1.5 1.5 0 003.5 14h8a1.5 1.5 0 001.5-1.5V10"/><path d="M9.5 2H14v4.5M14 2L7.5 8.5"/></svg>';
+function canShare(t){return t&&t.status==='closed'&&t.ex!=='paper'&&t.entry&&t.exit}
+function shrBtn(t,tag){return canShare(t)?'<'+(tag||'button')+' class="jl-shr" data-shr="'+esc(t.id)+'" title="Share to chat" aria-label="Share this trade to the chat"'+(tag==='span'?' role="button" tabindex="0"':'')+'>'+SHR_IC+'</'+(tag||'button')+'>':''}
+function shrMenu(btn,pid){
+  var old=$('#jrShrM'); if(old){old.remove(); if(old.getAttribute('data-for')===pid)return;}
+  var m=document.createElement('div'); m.id='jrShrM'; m.className='jl-shrm'; m.setAttribute('data-for',pid);
+  m.innerHTML='<b>Share to chat</b><button data-shrgo="1">With dollar amounts</button><button data-shrgo="0">Percent only</button><small>Read from the exchange, marked verified.</small>';
+  document.body.appendChild(m); var r=btn.getBoundingClientRect(), w=m.offsetWidth, h=m.offsetHeight;
+  var left=Math.max(10,Math.min(innerWidth-w-10,r.right-w)), top=r.bottom+6+h>innerHeight-10?r.top-h-6:r.bottom+6;
+  m.style.left=left+'px'; m.style.top=top+'px';
+  try{m.animate([{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],{duration:150,easing:'ease-out'})}catch(e){}
+}
+function shareGo(pid,amounts,btn){
+  var m=$('#jrShrM'); if(m)m.remove();
+  if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()&&window.mpAuth.me().username)){ if(window.mpToast)window.mpToast({msg:'Pick a username first - the chat names every poster.',kind:'warn'}); try{window.mpAuth.open()}catch(e){} return; }
+  api('/share',{pid:pid,amounts:amounts}).then(function(j){
+    if(j&&j.id){ var say=function(){ if(window.mpChatSay&&window.mpChatSay('real:'+j.id)){ if(window.mpToast)window.mpToast({msg:'Shared to chat',kind:'good'}); } }; if(window.mpChatSay)say(); else if(window.mpEnsureChat)window.mpEnsureChat(say); track('share:'+(amounts?'usd':'pct')); }
+    else { var w=j&&j.error; if(window.mpToast)window.mpToast({msg:w==='rate_limited'?'That is 30 shares today - try again tomorrow.':w==='not_closed'?'Only a closed trade can be shared.':'Could not share this trade.',kind:'warn'}); }
+  });
 }
 
 /* ---- the trade drawer ---- */
 function openTrade(pid){
   var t=(D.trades||[]).filter(function(x){return x.id===pid})[0]; if(!t)return; track('trade:open');
   var nt=(D.notes&&D.notes[pid])||{note:'',tags:[]}, dr=$('#jrDrawer');
-  dr.innerHTML='<div class="jl-dw"><button class="jl-btn sm ghost jl-x" id="jrDwX">Close</button><h3>'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span> <b class="num '+cls(t.net)+'">'+money(t.net,1)+'</b></h3>'
+  dr.innerHTML='<div class="jl-dw"><button class="jl-btn sm ghost jl-x" id="jrDwX">Close</button>'+(canShare(t)?'<button class="jl-btn sm jl-dshr" data-shr="'+esc(t.id)+'">'+SHR_IC+' Share to chat</button>':'')+'<h3>'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span> <b class="num '+cls(t.net)+'">'+money(t.net,1)+'</b></h3>'
    +'<p class="mute" style="margin:0 0 12px">'+esc(accName(connOf(t.conn))||t.ex)+(t.closeTs?' &middot; closed '+new Date(t.closeTs).toISOString().slice(0,16).replace('T',' ')+' UTC':' &middot; open')+(t.partial?' &middot; opened before the imported history':'')+'</p>'
    +'<div class="jl-facts">'+[['Entry',px(t.entry)],['Exit',px(t.exit)],['Largest size',money(t.maxNotional)],['Held',t.partial?'-':holdTxt(t.hold)],['Price P&amp;L',money(t.gross,1)],['Fees',money(-t.fees)],['Funding',money(t.funding,1)],['Net',money(t.net,1)],['Maker / taker fills',t.nMaker+' / '+t.nTaker],['Exchange P&amp;L check',t.diff==null?'-':(Math.abs(t.diff)<=0.01?'matches':money(t.diff,1)+' apart')]].map(function(f){return '<div><i>'+f[0]+'</i><b class="num">'+f[1]+'</b></div>'}).join('')+'</div>'
    +'<div class="jl-chart" id="jrChart"><p class="jl-empty">Loading the chart...</p></div>'
@@ -755,6 +785,9 @@ document.addEventListener('click',function(ev){
   if(ev.target.closest('#jrShare')){share();return}
   var dd=ev.target.closest('[data-day]'); if(dd){F.day=dd.getAttribute('data-day');goTab('tr');return}
   var mn=ev.target.closest('[data-mon]'); if(mn){var y=+MONTH.slice(0,4),m=+MONTH.slice(5,7)-1+(+mn.getAttribute('data-mon'));var d2=new Date(Date.UTC(y,m,1));MONTH=d2.toISOString().slice(0,7);paint();return}
+  var sg=ev.target.closest('[data-shrgo]'); if(sg){var mm=$('#jrShrM');shareGo(mm.getAttribute('data-for'),sg.getAttribute('data-shrgo')==='1');return}
+  var sb=ev.target.closest('[data-shr]'); if(sb){ev.preventDefault();ev.stopPropagation();shrMenu(sb,sb.getAttribute('data-shr'));return}
+  if($('#jrShrM')&&!ev.target.closest('#jrShrM'))$('#jrShrM').remove();
   var row=ev.target.closest('[data-pid]'); if(row&&!ev.target.closest('#jrNoteSave')){openTrade(row.getAttribute('data-pid'));return}
   if(ev.target.closest('#jrDwX')||ev.target.id==='jrDrawer'){closeDrawer();return}
   var tg=ev.target.closest('[data-tag]'); if(tg){tg.classList.toggle('on');return}
