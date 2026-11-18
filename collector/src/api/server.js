@@ -313,6 +313,36 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   });
   app.get('/api/v1/xfwd/stat', (req, res) => res.json(xfStat));
 
+  // AUTOPILOT ORDER FORWARDER (2026-11-18). The ONE road an order takes to a member's Binance account: the worker signs
+  // (the secret never leaves it), this box sends it from its one fixed address - the IP the member binds the key to.
+  // Its OWN key (TRADE_FWD_KEY), never the read forwarder's, and an allowlist of USD-M futures paths only: no withdrawal,
+  // transfer, spot or margin path exists here, so a leaked worker or a bug cannot move money off an account.
+  const XT_FUT = {
+    GET: /^\/fapi\/(v1\/positionSide\/dual|v2\/balance|v2\/positionRisk|v1\/openAlgoOrders|v1\/algoOrder|v1\/openOrders|v1\/order|v1\/userTrades|v1\/exchangeInfo|v1\/premiumIndex|v1\/leverageBracket)$/,
+    POST: /^\/fapi\/v1\/(order|algoOrder|leverage|marginType)$/,
+    DELETE: /^\/fapi\/v1\/(order|algoOrder)$/,
+  };
+  const XT_ALLOW = { 'fapi.binance.com': XT_FUT, 'testnet.binancefuture.com': XT_FUT, 'api.binance.com': { GET: /^\/sapi\/v1\/account\/apiRestrictions$/ } };
+  const xtStat = { n: 0, refused: 0, last: 0, byPath: {} };
+  app.post('/api/v1/xtrade', express.json({ limit: '16kb' }), async (req, res) => {
+    const key = req.headers['x-api-key'];
+    if (!process.env.TRADE_FWD_KEY || key !== process.env.TRADE_FWD_KEY) return res.status(403).json({ error: 'forbidden' });
+    const b = req.body || {}, method = String(b.method || 'GET').toUpperCase();
+    let u; try { u = new URL(String(b.url || '')); } catch (e) { return res.status(400).json({ error: 'bad_url' }); }
+    const rule = u.protocol === 'https:' && XT_ALLOW[u.hostname] && XT_ALLOW[u.hostname][method];
+    if (!rule || !rule.test(u.pathname)) { xtStat.refused++; return res.status(400).json({ error: 'path_not_allowed', host: u.hostname, path: u.pathname, method }); }
+    const hdr = {}; const hin = b.headers || {};
+    if (hin['X-MBX-APIKEY']) hdr['X-MBX-APIKEY'] = String(hin['X-MBX-APIKEY']).slice(0, 128);
+    try {
+      xtStat.n++; xtStat.last = Date.now(); xtStat.byPath[method + ' ' + u.pathname] = (xtStat.byPath[method + ' ' + u.pathname] || 0) + 1;
+      const r = await fetch(u.toString(), { method, headers: hdr, signal: AbortSignal.timeout(10000) });
+      const txt = await r.text();
+      res.set('Cache-Control', 'no-store');
+      return res.status(r.status).type('application/json').send(txt);
+    } catch (e) { return res.status(502).json({ error: 'upstream_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+  app.get('/api/v1/xtrade/stat', (req, res) => { const k = req.headers['x-api-key']; if (!process.env.TRADE_FWD_KEY || k !== process.env.TRADE_FWD_KEY) return res.status(403).json({ error: 'forbidden' }); res.json(xtStat); });
+
   // OKX proxy (2026-08-22): the rubik stats endpoints reject Cloudflare-Worker IPs (market-data
   // endpoints do not), so the worker reaches them through this box. Strict allowlist, same
   // short-cache pattern as /api/v1/bnc.
