@@ -162,6 +162,9 @@ a{color:var(--brass)}
 .jl-acc-c img{width:20px;height:20px;border-radius:6px}.jl-acc-c .k{color:var(--mute);font:400 12px 'Space Mono',monospace}.jl-acc-c .n{color:var(--mute);font-weight:500}
 .jl-acc-c.on{border-color:var(--brass);background:linear-gradient(180deg,rgba(216,191,142,.14),rgba(216,191,142,.04))}
 .jl-acc-c.add{border-style:dashed;color:var(--brass)}
+.jl-acc-sep{flex:0 0 1px;align-self:stretch;margin:4px 4px;background:var(--line)}
+.jl-acc-c.paper{color:#c9c6bd;border-style:dotted}.jl-acc-c.paper.on{color:var(--ink);border-color:var(--gain);border-style:solid;background:linear-gradient(180deg,rgba(194,246,74,.12),rgba(194,246,74,.03))}
+.jl-poffer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 16px;border:1px dashed var(--line);border-radius:14px;color:#c9c6bd;font-size:14px}
 .jl-goals{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:center;border:1px solid var(--line2);border-radius:16px;background:var(--panel);padding:14px 18px;margin-bottom:14px}
 .jl-goal .gh{display:flex;gap:10px;align-items:baseline}.jl-goal .gh span{color:var(--mute);font-size:13px}.jl-goal .gh b{font-size:18px}.jl-goal .gh em{color:var(--mute);font-style:normal;font-size:13px}
 .jl-goal .gx{color:var(--mute);font-size:13px;margin-top:4px}.jl-goal.hit{outline:1px solid rgba(255,90,77,.5);border-radius:10px;padding:4px 8px}
@@ -291,6 +294,7 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 <div class="jl-rail" id="jrRail">${KEYS.filter(k => !k.soon).map(keyHtml).join('')}</div>
 <p class="jl-next">Next: ${KEYS.filter(k => k.soon).map(k => '<span><img src="/assets/ex/' + k.id + '.png" alt="" width="18" height="18" loading="lazy">' + k.name + '</span>').join('')}</p>
 <div class="jl-open" id="jrOpen" role="region" aria-live="polite"></div>
+<div class="jl-poffer" id="jrPaperOffer" hidden><span>You have <b id="jrPaperN">0</b> closed Paper Trade positions. Their journal is here too, kept apart from real accounts.</span><button type="button" class="jl-btn sm ghost" id="jrPaperGo">Open my Paper Trade journal</button></div>
 
 <section class="jl-sec">
   <h2>What the key can and cannot do</h2>
@@ -453,12 +457,37 @@ function dkey(ts){return new Date(ts).toISOString().slice(0,10)}
 function connOf(id){var c=(D&&D.conns||[]).filter(function(x){return x.id===id})[0];return c||null}
 function accName(c){return c?(c.label||EX[c.ex]&&EX[c.ex].name||c.ex):''}
 
+/* ---- PAPER TRADE: its own source, read from the terminal's own journal on this device (mp-auth keeps a member's in sync).
+   It is never added to All accounts - practice and real money are never one number. ---- */
+function paperRows(){ try{ return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[] }catch(e){ return [] } }
+function paperTrades(){
+  return paperRows().filter(function(e){return e&&e.sym&&+e.entry>0}).map(function(e){
+    var dir=e.side==='short'?-1:1, closed=!!(e.closeTs&&e.status!=='open'), qty=+e.qty||((+e.margin||0)*(+e.lev||1)/(+e.entry||1)), fr=+e.feeRate||0;
+    var fees=closed&&e.exit?qty*((+e.entry)+(+e.exit))*fr:qty*(+e.entry)*fr, fund=-(+e.fund||0), net=closed?(+e.pnl||0):0;
+    var ts=+e.ts||+e.openTs||Date.now();
+    return {id:'paper:'+(e.id||ts), conn:'paper', ex:'paper', sym:String(e.sym).toUpperCase(), dir:dir, status:closed?'closed':'open', openTs:ts, closeTs:closed?+e.closeTs:0, entry:+e.entry, exit:closed?+e.exit:null, maxNotional:qty*(+e.entry), gross:net+fees-fund, fees:fees, funding:fund, net:net, hold:(closed?+e.closeTs:Date.now())-ts, liq:/liq/.test(String(e.status||e.closeReason||''))?1:0, partial:false, nMaker:0, nTaker:2, diff:null, lev:+e.lev||0, chal:!!e.chal};
+  }).sort(function(a,b){return (b.closeTs||b.openTs)-(a.closeTs||a.openTs)});
+}
+function calcStats(all){
+  var from=Date.now()-DAYS*864e5, P=all.filter(function(t){return t.status==='closed'&&t.closeTs>=from}).sort(function(a,b){return a.closeTs-b.closeTs});
+  var W=P.filter(function(t){return t.net>0}),L=P.filter(function(t){return t.net<0}),sum=function(a,f){return a.reduce(function(s,x){return s+f(x)},0)};
+  var gw=sum(W,function(t){return t.net}),gl=-sum(L,function(t){return t.net}),e=0,pk=0,dd=0;P.forEach(function(t){e+=t.net;pk=Math.max(pk,e);dd=Math.max(dd,pk-e)});
+  var grp=function(f){var g={};P.forEach(function(t){var k=f(t);var o=g[k]||(g[k]={k:k,n:0,net:0,w:0});o.n++;o.net+=t.net;if(t.net>0)o.w++});return Object.keys(g).map(function(k){var o=g[k];return {k:o.k,n:o.n,net:+o.net.toFixed(2),wr:+(o.w/o.n*100).toFixed(1)}}).filter(function(o){return o.n>=8}).sort(function(a,b){return a.net-b.net})};
+  var hb=function(h){return h<3e5?'< 5 min':h<36e5?'5-60 min':h<144e5?'1-4 h':h<864e5?'4-24 h':'> 1 day'}, sb=function(n){return n<1e3?'< $1k':n<1e4?'$1k-10k':n<1e5?'$10k-100k':'> $100k'};
+  var vol=sum(P,function(t){return t.maxNotional*2}), fees=sum(P,function(t){return t.fees}), fund=sum(P,function(t){return t.funding});
+  return {n:P.length,net:+sum(P,function(t){return t.net}).toFixed(2),wins:W.length,losses:L.length,winRate:P.length?+(W.length/P.length*100).toFixed(1):null,profitFactor:gl>0?+(gw/gl).toFixed(2):null,avgWin:W.length?gw/W.length:null,avgLoss:L.length?-gl/L.length:null,expectancy:P.length?sum(P,function(t){return t.net})/P.length:null,maxDD:+dd.toFixed(2),best:P.length?P.reduce(function(a,b){return b.net>a.net?b:a}):null,worst:P.length?P.reduce(function(a,b){return b.net<a.net?b:a}):null,vol:vol,fees:fees,funding:fund,orders:P.length*2,takerShare:null,liqN:P.filter(function(t){return t.liq}).length,liqLoss:-sum(P.filter(function(t){return t.liq}),function(t){return Math.min(0,t.net)}),by:{sym:grp(function(t){return t.sym}),side:grp(function(t){return t.dir>0?'Long':'Short'}),hold:grp(function(t){return hb(t.hold)}),size:grp(function(t){return sb(t.maxNotional)})},recon:{n:0}};
+}
+function paperNotes(){ try{ return JSON.parse(localStorage.getItem('mp_jl_pnotes')||'{}')||{} }catch(e){ return {} } }
+function paperBundle(){ var tr=paperTrades(), from=Date.now()-DAYS*864e5; return {paper:1, stats:calcStats(tr), trades:tr.filter(function(t){return (t.closeTs||t.openTs)>=from}), conns:(D&&D.conns)||REAL||[], notes:paperNotes(), prefs:(D&&D.prefs)||{}}; }
+var REAL=[];
+
 /* ---- the accounts bar: every account on its own, or all of them together ---- */
 function accBar(){
-  var cs=(D&&D.conns)||[];
-  var h='<button class="jl-acc-c'+(ACC===''?' on':'')+'" data-acc="">All accounts<span class="n">'+cs.length+'</span></button>';
+  var cs=REAL||[];
+  var h=cs.length?'<button class="jl-acc-c'+(ACC===''?' on':'')+'" data-acc="">All real accounts<span class="n">'+cs.length+'</span></button>':'';
   h+=cs.map(function(c){return '<button class="jl-acc-c'+(ACC===c.id?' on':'')+'" data-acc="'+esc(c.id)+'"><img src="/assets/ex/'+esc(c.ex)+'.png" alt="">'+esc(accName(c))+'<span class="k">'+esc(c.kid||'')+'</span></button>'}).join('');
   h+='<button class="jl-acc-c add" id="jrAddAcc">+ Add account</button>';
+  var pn=paperTrades().length; h+='<span class="jl-acc-sep" aria-hidden="true"></span><button class="jl-acc-c paper'+(ACC==='paper'?' on':'')+'" data-acc="paper" title="Your Paper Trade history - never mixed with real accounts">Paper Trade<span class="n">'+pn+'</span></button>';
   $('#jrAccts').innerHTML=h;
 }
 
@@ -545,6 +574,7 @@ function openTrade(pid){
   dr.classList.add('on'); document.body.classList.add('jl-noscroll');
   try{dr.firstChild.animate([{transform:'translateX(40px)',opacity:0},{transform:'none',opacity:1}],{duration:240,easing:'ease-out'})}catch(e){}
   var a=t.openTs-6e4, z=(t.closeTs||Date.now())+6e4;
+  if(t.ex==='paper'){ var pf=[{ts:t.openTs,side:t.dir,px:t.entry,qty:t.maxNotional/(t.entry||1),fee:0,maker:0}]; if(t.closeTs)pf.push({ts:t.closeTs,side:-t.dir,px:t.exit,qty:t.maxNotional/(t.entry||1),fee:0,maker:0}); $('#jrFills').innerHTML='<p class="jl-empty">Paper Trade keeps the entry and exit of a position, not each fill.'+(t.lev?' Leverage '+t.lev+'x.':'')+'</p>'; chart(t,pf); return; }
   api('/fills?sym='+encodeURIComponent(t.sym)+'&a='+a+'&z='+z+(t.conn?'&conn='+encodeURIComponent(t.conn):'')).then(function(j){
     var L=(j&&j.fills)||[]; $('#jrFills').innerHTML=L.length?'<table class="jl-tbl"><tr><th>Time (UTC)</th><th>Side</th><th class="r">Price</th><th class="r">Size</th><th class="r">Fee</th><th>Type</th></tr>'+L.map(function(f){return '<tr><td>'+new Date(f.ts).toISOString().slice(11,19)+'</td><td class="'+(f.side>0?'pos':'neg')+'">'+(f.side>0?'Buy':'Sell')+'</td><td class="r num">'+px(f.px)+'</td><td class="r num">'+(+f.qty).toLocaleString('en-US',{maximumFractionDigits:6})+'</td><td class="r num">'+money(-f.fee)+'</td><td class="mute">'+(f.maker?'maker':'taker')+(f.liq?', liquidation':'')+'</td></tr>'}).join('')+'</table>':'<p class="jl-empty">No fills in range.</p>';
     chart(t,L);
@@ -670,7 +700,7 @@ var TAB='ov';
 function render(j){
   D=j; var st=j.stats||{};
   var cov=st.covFrom&&st.covDays<DAYS-0.5?' History here starts '+new Date(st.covFrom).toISOString().slice(0,10)+'.':'';
-  $('#jrAcc').textContent=(ACC?accName(connOf(ACC)):'All accounts')+', read-only.'+cov;
+  $('#jrAcc').textContent=ACC==='paper'?'Paper Trade - practice, kept apart from your real accounts.':(ACC?accName(connOf(ACC)):'All real accounts')+', read-only.'+cov;
   accBar(); tiles(st); paint();
 }
 function paint(){
@@ -678,11 +708,12 @@ function paint(){
   if(TAB==='ov')$('#p-ov').innerHTML=paneOv(st);
   if(TAB==='tr')$('#p-tr').innerHTML=paneTr();
   if(TAB==='ca')$('#p-ca').innerHTML=paneCal();
+  if(TAB==='sv'&&D.paper){$('#p-sv').innerHTML='<div class="jl-card"><h3>Savings</h3><p class="ln">Savings are measured on real fees and funding, so they appear for your exchange accounts only. Paper Trade charges a modelled fee - see it on each ticket in My Trades.</p></div>';return}
   if(TAB==='sv')$('#p-sv').innerHTML=(!ACC&&D.savingsBy&&D.savingsBy.length>1)?paneSvAll():paneSv(D.savings||{},st);
   if(TAB==='in')$('#p-in').innerHTML=paneIn(st);
-  if(TAB==='ac')$('#p-ac').innerHTML=paneAc(D.conns||[]);
+  if(TAB==='ac')$('#p-ac').innerHTML=paneAc(REAL||[]);
 }
-function load(){ return api('/stats?days='+DAYS+(ACC?'&conn='+encodeURIComponent(ACC):'')).then(function(j){ if(j&&j.stats)render(j); return j; }); }
+function load(){ if(ACC==='paper'){ var pb=paperBundle(); render(pb); return Promise.resolve(pb); } return api('/stats?days='+DAYS+(ACC?'&conn='+encodeURIComponent(ACC):'')).then(function(j){ if(j&&j.stats){ REAL=j.conns||REAL; render(j); } return j; }); }
 function showAdd(on){
   document.body.classList.toggle('jl-adding',!!on);
   $('#jrGuest').style.display=on?'':'none'; $('#jrDash').classList.toggle('on',!on);
@@ -690,12 +721,15 @@ function showAdd(on){
   else { $('#jrOpen').classList.remove('on'); $$('.jl-key').forEach(function(x){x.style.opacity=''}); window.scrollTo({top:0}); }
 }
 var pollT=0, HAS=false;
+function paperOffer(){ var n=paperTrades().filter(function(t){return t.status==='closed'}).length, el=$('#jrPaperOffer'); if(el){el.hidden=!n; var c=$('#jrPaperN'); if(c)c.textContent=n;} }
+function openPaper(){ ACC='paper'; $('#jrGuest').style.display='none'; $('#jrDash').classList.add('on'); $('#jrBackBar').hidden=false; window.scrollTo({top:0}); load(); track('paper'); }
 function boot(sel){
-  if(!signedIn())return;
+  if(!signedIn()){ paperOffer(); return; }
   api('/state').then(function(s){
     HAS=!!(s&&s.conns&&s.conns.length);
     $('#jrBackBar').hidden=!HAS;
-    if(!HAS){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');return}
+    REAL=(s&&s.conns)||[];
+    if(!HAS&&ACC!=='paper'){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');paperOffer();return}
     if(sel)ACC=sel; if(ACC&&!s.conns.some(function(c){return c.id===ACC}))ACC='';
     showAdd(false);
     load().then(function(j){ var imp=(j.conns||[]).some(function(c){return !c.done&&c.status!=='key_invalid'}); clearTimeout(pollT); if(imp)pollT=setTimeout(function(){api('/sync',{}).then(load)},20000); });
@@ -710,7 +744,8 @@ document.addEventListener('click',function(ev){
   var vj=ev.target.closest('[data-jrv]'); if(vj)track('venue:'+vj.getAttribute('data-jrv'));
   var ac=ev.target.closest('[data-acc]'); if(ac){ACC=ac.getAttribute('data-acc');SHOWN=100;load();track('acc');return}
   if(ev.target.closest('#jrAddAcc')||ev.target.closest('[data-add]')){showAdd(true);return}
-  if(ev.target.closest('#jrBackBtn')){showAdd(false);if(!D)boot();return}
+  if(ev.target.closest('#jrPaperGo')){openPaper();return}
+  if(ev.target.closest('#jrBackBtn')){ if(!HAS&&ACC==='paper'){ACC='';$('#jrDash').classList.remove('on');$('#jrGuest').style.display='';$('#jrBackBar').hidden=true;return} showAdd(false);if(!D)boot();return}
   var fc=ev.target.closest('[data-f]'); if(fc){var k=fc.getAttribute('data-f'),v=fc.getAttribute('data-v');F[k]=(F[k]===v&&v!=='')?'':v;SHOWN=100;paint();return}
   if(ev.target.closest('#jrFclear')){F={q:'',side:'',res:'',flag:'',size:'',hold:'',day:''};paint();return}
   if(ev.target.closest('#jrMore')){SHOWN+=100;paint();return}
@@ -722,7 +757,7 @@ document.addEventListener('click',function(ev){
   var row=ev.target.closest('[data-pid]'); if(row&&!ev.target.closest('#jrNoteSave')){openTrade(row.getAttribute('data-pid'));return}
   if(ev.target.closest('#jrDwX')||ev.target.id==='jrDrawer'){closeDrawer();return}
   var tg=ev.target.closest('[data-tag]'); if(tg){tg.classList.toggle('on');return}
-  var ns=ev.target.closest('#jrNoteSave'); if(ns){var pid=ns.getAttribute('data-pid'),tags=$$('[data-tag].on').map(function(x){return x.getAttribute('data-tag')}),note=$('#jrNote').value;api('/note',{pid:pid,note:note,tags:tags}).then(function(j){if(j&&j.ok){D.notes=D.notes||{};if(note||tags.length)D.notes[pid]={note:note,tags:tags};else delete D.notes[pid];$('#jrNoteMsg').className='jl-msg okm';$('#jrNoteMsg').textContent='Saved';paint();track('note')}else{$('#jrNoteMsg').className='jl-msg err';$('#jrNoteMsg').textContent='Could not save'}});return}
+  var ns=ev.target.closest('#jrNoteSave'); if(ns){var pid=ns.getAttribute('data-pid'),tags=$$('[data-tag].on').map(function(x){return x.getAttribute('data-tag')}),note=$('#jrNote').value;(pid.indexOf('paper:')===0?Promise.resolve((function(){var pn=paperNotes();if(note||tags.length)pn[pid]={note:note,tags:tags};else delete pn[pid];try{localStorage.setItem('mp_jl_pnotes',JSON.stringify(pn))}catch(e){}return {ok:true}})()):api('/note',{pid:pid,note:note,tags:tags})).then(function(j){if(j&&j.ok){D.notes=D.notes||{};if(note||tags.length)D.notes[pid]={note:note,tags:tags};else delete D.notes[pid];$('#jrNoteMsg').className='jl-msg okm';$('#jrNoteMsg').textContent='Saved';paint();track('note')}else{$('#jrNoteMsg').className='jl-msg err';$('#jrNoteMsg').textContent='Could not save'}});return}
   if(ev.target.closest('#jrGoalEdit')){var f=$('#jrGoalF');f.hidden=!f.hidden;return}
   if(ev.target.closest('#jrGoalSave')){api('/prefs',{goal:+($('#jrGoalM').value||0),dayLimit:+($('#jrGoalD').value||0)}).then(function(){D.prefs={goal:+($('#jrGoalM').value||0),dayLimit:+($('#jrGoalD').value||0)};paint();track('goals')});return}
   var s=ev.target.closest('[data-sync]'); if(s){s.disabled=true;s.textContent='Syncing...';api('/sync',{id:s.getAttribute('data-sync')}).then(function(j){if(j&&j.error==='slow_down'){s.textContent='Wait 20 s';return}load()});return}
