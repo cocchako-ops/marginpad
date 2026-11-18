@@ -269,6 +269,45 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     } catch (e) { return res.status(502).json({ error: 'bybit_unreachable', detail: String(e).slice(0, 120) }); }
   });
 
+  // REAL-ACCOUNT JOURNAL FORWARDER (2026-11-18). The worker signs a member's READ-ONLY request itself (the secret never
+  // leaves it) and this box only forwards it, from its one fixed address - the address the member binds the key to, so a
+  // leaked key is useless from anywhere else. Bybit refuses the Cloudflare cron region and Binance refuses Cloudflare
+  // worker IPs, which is the other reason it lives here. READ-ONLY BY CONSTRUCTION: only the (host, path) pairs below
+  // pass, all of them reads; an order, transfer or withdrawal path cannot be forwarded even by mistake. Gated by EXPORT_KEY.
+  const XF_ALLOW = {
+    'api.bybit.com': { GET: /^\/v5\/(user\/query-api|execution\/list|position\/closed-pnl|position\/list|account\/transaction-log|account\/wallet-balance|account\/fee-rate|account\/info)$/ },
+    'api.binance.com': { GET: /^\/sapi\/v1\/account\/apiRestrictions$/ },
+    'fapi.binance.com': { GET: /^\/fapi\/(v1\/userTrades|v1\/income|v2\/positionRisk|v3\/account|v1\/commissionRate|v2\/account)$/ },
+    'api.hyperliquid.xyz': { POST: /^\/info$/ },
+  };
+  const XF_HL_TYPES = new Set(['userFillsByTime', 'userFunding', 'clearinghouseState', 'userFees', 'portfolio', 'userRole']);
+  const xfStat = { n: 0, refused: 0, last: 0 };
+  app.post('/api/v1/xfwd', express.json({ limit: '32kb' }), async (req, res) => {
+    const key = req.headers['x-api-key'];
+    if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) return res.status(403).json({ error: 'forbidden' });
+    const b = req.body || {}, method = String(b.method || 'GET').toUpperCase();
+    let u; try { u = new URL(String(b.url || '')); } catch (e) { return res.status(400).json({ error: 'bad_url' }); }
+    const rule = u.protocol === 'https:' && XF_ALLOW[u.hostname] && XF_ALLOW[u.hostname][method];
+    if (!rule || !rule.test(u.pathname)) { xfStat.refused++; return res.status(400).json({ error: 'path_not_allowed', host: u.hostname, path: u.pathname, method }); }
+    let body;
+    if (method === 'POST') {
+      const pb = b.body || {};
+      if (!XF_HL_TYPES.has(String(pb.type || ''))) { xfStat.refused++; return res.status(400).json({ error: 'type_not_allowed' }); }
+      body = JSON.stringify(pb);
+    }
+    const hdr = {}; const hin = b.headers || {};
+    for (const k of Object.keys(hin)) { if (/^[A-Za-z0-9-]{1,40}$/.test(k)) hdr[k] = String(hin[k]).slice(0, 600); }
+    if (method === 'POST') hdr['content-type'] = 'application/json';
+    try {
+      xfStat.n++; xfStat.last = Date.now();
+      const r = await fetch(u.toString(), { method, headers: hdr, body, signal: AbortSignal.timeout(15000) });
+      const txt = await r.text();
+      res.set('Cache-Control', 'no-store');
+      return res.status(r.status).type('application/json').send(txt);
+    } catch (e) { return res.status(502).json({ error: 'upstream_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+  app.get('/api/v1/xfwd/stat', (req, res) => res.json(xfStat));
+
   // OKX proxy (2026-08-22): the rubik stats endpoints reject Cloudflare-Worker IPs (market-data
   // endpoints do not), so the worker reaches them through this box. Strict allowlist, same
   // short-cache pattern as /api/v1/bnc.
