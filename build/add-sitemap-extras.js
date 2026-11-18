@@ -72,7 +72,11 @@ const EXTRAS = [
   ['/liquidation-statistics/', '0.7', D],
   ['/status/', '0.6', D],
   ['/support/', '0.5', M],
-  ['/promotions/', '0.7', D], // 2026-11-15: partner campaigns, re-read from the exchanges every 30 minutes
+  ['/promotions/', '0.7', D],
+  // MarginPad Journal (2026-11-18): the real-account journal and the pages a trader searches for it by
+  ['/trading-journal/', '0.9', W],
+  ...['bybit', 'binance', 'okx', 'bitget', 'bingx', 'hyperliquid'].map((e) => ['/trading-journal/' + e + '/', '0.8', W]),
+  ['/tradezella-alternative/', '0.8', W], // 2026-11-15: partner campaigns, re-read from the exchanges every 30 minutes
   // --- moves with the product ------------------------------------------------------------------------------
   // /squads/ is WEEKLY on purpose: most of the page is the explanation, and the live directory is empty on the
   // day it ships. Over-declaring is worse than under-declaring - a crawler that keeps arriving to find nothing

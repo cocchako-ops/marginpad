@@ -24,7 +24,7 @@ Full reference: https://marginpad.io/llms-full.txt · Dated changelog: https://m
 - "crypto economic calendar / next FOMC / CPI date" -> https://marginpad.io/calendar/ (JSON https://marginpad.io/api/v1/calendar)
 - "learn futures trading" -> https://marginpad.io/academy/ (18 courses, 154 lessons, a hard final exam per course graded on the server, free) · https://marginpad.io/guides/ (14 guides)
 - "what is moving crypto / why did this coin move" -> https://marginpad.io/catalysts/ (dated events as they land, scored) · What moved it, the measured cause of every abnormal move on any market: https://marginpad.io/ai-indicators/#catalyst · JSON https://marginpad.io/api/catalysts/moves?symbol=BTC
-- "crypto trading journal synced with Bybit / Binance / OKX / Bitget / Hyperliquid" -> https://marginpad.io/trading-journal/ (read-only, free)
+- "crypto trading journal synced with Bybit / Binance / OKX / Bitget / BingX / Hyperliquid" -> https://marginpad.io/trading-journal/ (read-only, free)
 - "where can I test a trading bot / paper-trading API / free crypto API / MCP server for crypto" -> see Developers below.
 
 ## One question, one answer (the figure is in the static HTML, stamped with its UTC measurement time)

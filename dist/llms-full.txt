@@ -181,11 +181,14 @@ schema.org `dateModified` stamped at measurement time, so a page fetched now and
 - Trading report - https://marginpad.io/trading-report/: 30-day report from the practice ledger (totals and a four-part skill score free; breakdowns and findings on Premium; every finding states its sample size and stays silent under 8 trades).
 
 ## MarginPad Journal - a real exchange account, read-only (https://marginpad.io/trading-journal/)
-- Connect Bybit (v5, linear) or Binance (USD-M) with a READ-ONLY API key, or Hyperliquid with a public wallet address (no key).
+- Connect Bybit (v5, linear), Binance (USD-M), OKX, Bitget or BingX with a READ-ONLY API key, or Hyperliquid with a public wallet address (no key). Setup per exchange: https://marginpad.io/trading-journal/bybit/ , /binance/ , /okx/ , /bitget/ , /bingx/ , /hyperliquid/ .
 - On connect MarginPad asks the exchange what the key may do (Bybit /v5/user/query-api, Binance /sapi/v1/account/apiRestrictions) and refuses any key that can trade, transfer or withdraw before anything is stored.
 - Every keyed request leaves from one fixed IP, 167.172.98.147, through a forwarder that only passes read endpoints; members bind the key to that IP. Secrets are sealed with AES-GCM and never returned to a browser.
 - History: Hyperliquid last 10,000 fills, Bybit up to 180 days, Binance the last three months (Binance limit). Syncs every 15 minutes.
-- Fills are rebuilt into positions (partial closes, flips, hedge legs, funding per position); where the exchange reports realized P&L per fill (Hyperliquid, Binance) the journal reconciles its own figure against it trade by trade.
+- Fills are rebuilt into positions (partial closes, flips, hedge legs, funding per position); the journal reconciles its own P&L against the exchange trade by trade (Hyperliquid and Binance per fill, Bybit against its Closed P&L per order).
+- Several accounts can be connected and viewed one at a time or together; Paper Trade history is a separate source and is never added to real accounts. Filters, a per-trade chart with fills, notes and mistake tags, a P&L calendar, an hour-by-weekday heatmap, streaks and a tilt detector, goals, CSV export.
+- A closed trade can be shared to the MarginPad chat as a card built on the server from the exchange's own fills (marked verified when the P&L matches the exchange), with dollar amounts or percent only.
+- Compared with TradeZella ($35-$99 a month, no free plan, read 2026-11-18): https://marginpad.io/tradezella-alternative/
 - Savings: fees split maker/taker priced at the member's own rates (limit entries only), funding paid, liquidation losses, the same volume priced on nine exchanges; a month is projected only from three or more days of history.
 - Free. Disconnect deletes the key and every imported trade at once.
 

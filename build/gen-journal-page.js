@@ -37,7 +37,7 @@ a{color:var(--brass)}
 .jl-rail-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:30px 0 12px}
 .jl-rail-h h2{font:600 22px/1.2 'Bricolage Grotesque',sans-serif;margin:0}
 .jl-rail-h p{margin:0;color:var(--mute);font-size:14px}
-.jl-next{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--mute);font-size:14px;margin:14px 2px 0}.jl-next span{display:inline-flex;align-items:center;gap:7px}.jl-next img{border-radius:5px;filter:saturate(.3)}
+.jl-next{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--mute);font-size:14px;margin:14px 2px 0}.jl-guides a{color:var(--mute);text-decoration:none;border-bottom:1px dotted rgba(216,191,142,.4)}.jl-guides a:hover{color:var(--brass)}.jl-next span{display:inline-flex;align-items:center;gap:7px}.jl-next img{border-radius:5px;filter:saturate(.3)}
 .jl-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;perspective:1400px}
 .jl-key{position:relative;height:184px;border-radius:18px;cursor:pointer;transform-style:preserve-3d;outline:none;border:0;padding:0;background:none;color:inherit;text-align:left;font:inherit}
 .jl-key:focus-visible .jl-face{box-shadow:0 0 0 2px var(--brass)}
@@ -300,6 +300,7 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 
 <div class="jl-rail-h"><h2>Pick your exchange</h2><p>Your key is encrypted and never shown again, even to you.</p></div>
 <div class="jl-rail" id="jrRail">${KEYS.filter(k => !k.soon).map(keyHtml).join('')}</div>
+<p class="jl-next jl-guides">Guides: ${["bybit","binance","okx","bitget","bingx","hyperliquid"].map(e => '<a href="/trading-journal/' + e + '/">' + (e === "okx" ? "OKX" : e === "bingx" ? "BingX" : e[0].toUpperCase() + e.slice(1)) + '</a>').join('')}<a href="/tradezella-alternative/">vs TradeZella</a></p>
 <p class="jl-next">Next: ${KEYS.filter(k => k.soon).map(k => '<span><img src="/assets/ex/' + k.id + '.png" alt="" width="18" height="18" loading="lazy">' + k.name + '</span>').join('')}</p>
 <div class="jl-open" id="jrOpen" role="region" aria-live="polite"></div>
 <div class="jl-poffer" id="jrPaperOffer" hidden><span>You have <b id="jrPaperN">0</b> closed Paper Trade positions. Their journal is here too, kept apart from real accounts.</span><button type="button" class="jl-btn sm ghost" id="jrPaperGo">Open my Paper Trade journal</button></div>
@@ -750,21 +751,23 @@ function load(){ if(ACC==='paper'){ var pb=paperBundle(); render(pb); return Pro
 function showAdd(on){
   document.body.classList.toggle('jl-adding',!!on);
   $('#jrGuest').style.display=on?'':'none'; $('#jrDash').classList.toggle('on',!on);
-  if(on){ window.scrollTo({top:$('#jrRail').getBoundingClientRect().top+scrollY-110,behavior:'smooth'}); track('add-account'); }
+  if(on){ window.scrollTo({top:$('#jrRail').getBoundingClientRect().top+scrollY-110,behavior:'smooth'}); track('add-account'); exFromUrl(); }
   else { $('#jrOpen').classList.remove('on'); $$('.jl-key').forEach(function(x){x.style.opacity=''}); window.scrollTo({top:0}); }
 }
 var pollT=0, HAS=false;
+function exFromUrl(){ try{ var ex=new URLSearchParams(location.search).get('ex'); if(!ex||exFromUrl._d)return; exFromUrl._d=1; var b=document.querySelector('.jl-key[data-ex="'+ex.replace(/[^a-z]/g,'')+'"]'); if(b){ b.scrollIntoView({block:'center'}); setTimeout(function(){openKey(b)},250); } }catch(e){} }
 function paperOffer(){ var n=paperTrades().filter(function(t){return t.status==='closed'}).length, el=$('#jrPaperOffer'); if(el){el.hidden=!n; var c=$('#jrPaperN'); if(c)c.textContent=n;} }
 function openPaper(){ ACC='paper'; $('#jrGuest').style.display='none'; $('#jrDash').classList.add('on'); $('#jrBackBar').hidden=false; window.scrollTo({top:0}); load(); track('paper'); }
 function boot(sel){
-  if(!signedIn()){ paperOffer(); return; }
+  if(!signedIn()){ paperOffer(); exFromUrl(); return; }
   api('/state').then(function(s){
     HAS=!!(s&&s.conns&&s.conns.length);
     $('#jrBackBar').hidden=!HAS;
     REAL=(s&&s.conns)||[];
-    if(!HAS&&ACC!=='paper'){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');paperOffer();return}
+    if(!HAS&&ACC!=='paper'){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');paperOffer();exFromUrl();return}
     if(sel)ACC=sel; if(ACC&&!s.conns.some(function(c){return c.id===ACC}))ACC='';
     showAdd(false);
+    if(!exFromUrl._d&&/[?&]ex=/.test(location.search)){ showAdd(true); }
     load().then(function(j){ var imp=(j.conns||[]).some(function(c){return !c.done&&c.status!=='key_invalid'}); clearTimeout(pollT); if(imp)pollT=setTimeout(function(){api('/sync',{}).then(load)},20000); });
   });
 }
