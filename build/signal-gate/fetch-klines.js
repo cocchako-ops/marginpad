@@ -1,7 +1,7 @@
 // Pull deep 1h / 4h / 1d / 15m history for the 9 watchlist coins through our own /api/klines (Gate primary, back-paginated with &end=)
 const fs = require('fs');
-const COINS = ['BTC', 'HBAR', 'BNB', 'ETH', 'SOL', 'HYPE', 'XRP', 'ZEC', 'TRX'];
-const SINCE = { '60': Date.UTC(2026, 0, 1), '240': Date.UTC(2025, 6, 1), '1440': Date.UTC(2024, 0, 1), '15': Date.UTC(2026, 6, 20) };
+const COINS = process.env.COINS ? process.env.COINS.split(',') : ['BTC', 'HBAR', 'BNB', 'ETH', 'SOL', 'HYPE', 'XRP', 'ZEC', 'TRX'];
+const SINCE = { '60': process.env.SINCE60 ? Date.parse(process.env.SINCE60) : Date.UTC(2026, 0, 1), '240': process.env.SINCE240 ? Date.parse(process.env.SINCE240) : Date.UTC(2025, 6, 1), '1440': process.env.SINCE1440 ? Date.parse(process.env.SINCE1440) : Date.UTC(2024, 0, 1), '15': Date.UTC(2026, 6, 20) };
 async function page(sym, iv, end) {
   const u = 'https://marginpad.io/api/klines?symbol=' + sym + '&interval=' + iv + (end ? '&end=' + end : '') + '&cb=' + Date.now();
   for (let t = 0; t < 4; t++) {
@@ -12,7 +12,7 @@ async function page(sym, iv, end) {
 }
 async function pull(sym, iv) {
   const since = SINCE[iv]; let all = []; let end = 0; let guard = 0;
-  while (guard++ < 40) {
+  while (guard++ < 80) {
     const p = await page(sym, iv, end);
     if (!p.length) break;
     p.sort((a, b) => a.time - b.time);
@@ -37,5 +37,5 @@ async function pull(sym, iv) {
       console.log(iv, s, b.length, b.length ? new Date(b[0].time * 1000).toISOString().slice(0, 10) + ' -> ' + new Date(b[b.length - 1].time * 1000).toISOString().slice(0, 16) : '-', 'vol?', b.length && b[b.length - 2].vol != null);
     }
   }
-  fs.writeFileSync(__dirname + '/klines.json', JSON.stringify(out));
+  fs.writeFileSync(__dirname + '/' + (process.env.KFILE || 'klines.json'), JSON.stringify(out));
 })();

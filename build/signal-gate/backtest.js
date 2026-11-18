@@ -7,9 +7,9 @@ const _sanitizeSigBars = eval('(' + fnSrc('_sanitizeSigBars') + ')');
 const _supertrend = eval('(' + fnSrc('_supertrend') + ')');
 const _adxLast = eval('(' + fnSrc('_adxLast') + ')');
 const _rsi = eval('(' + fnSrc('_rsi') + ')');
-const K = JSON.parse(fs.readFileSync(__dirname + '/klines.json', 'utf8'));
+const K = JSON.parse(fs.readFileSync(__dirname + '/' + (process.env.KFILE || 'klines.json'), 'utf8'));
 const COINS = Object.keys(K['60']);
-const WIN = 1000, FEE = 0.0011; // engine window; taker 0.055% x 2 legs on notional
+const WIN = 1000, FEE = process.env.FEE ? +process.env.FEE : 0.0011; // engine window; taker 0.055% x 2 legs on notional
 const LIVE_FROM = Date.UTC(2026, 6, 24) / 1000, OOS_FROM = Date.UTC(2026, 4, 15) / 1000;
 
 // ---- precompute per coin: sliding-window ST (dir, atr, line) on 1h; 4h + 1d dir at each 1h bar; ADX; RSI; volR ----
