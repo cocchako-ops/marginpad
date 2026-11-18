@@ -83,6 +83,10 @@ let pass = 0, fail = 0; const ok = (name, c, info) => { if (c) { pass++; console
   ok('no referral offer for the exchange the member already trades on', !sv.items.find(x => x.id === 'rebate' || x.id === 'hlref'));
   ok('the comparison links every OTHER venue and not their own', sv.compare.find(c => c.id === 'bybit').url === '' && sv.compare.find(c => c.id === 'bybit').mine && sv.compare.filter(c => c.id !== 'bybit').every(c => c.url !== undefined));
   ok('the same mix is priced on every venue, cheapest first', sv.compare.length === 2 && sv.compare[0].usd30 <= sv.compare[1].usd30);
+  // the owner's Bybit account, 2026-11-18: the liquidation card claimed a stop would have saved the WHOLE $69.68 lost
+  const lq = M.jrSavings(Object.assign({}, st, { liqN: 3, liqLoss: 69.68, liqNotional: 4220, covDays: 120, funding: 0 }), fills, 0, venues, 'bybit', 1.27).items.find(x => x.id === 'liq');
+  ok('a liquidation saving is the maintenance margin kept, never the whole loss', lq && lq.usd30 < 69.68 * 30 / 120 && Math.abs(lq.usd30 - 4220 * 0.005 * 30 / 120) < 0.02, JSON.stringify(lq));
+  ok('one coin is one market across exchanges', ['HYPEUSDT', 'HYPE', 'HYPE-USDT-SWAP', 'HYPEUSDT_UMCBL'].map(M.jrCoin).every(c => c === 'HYPE') && M.jrCoin('xyz:GOLD') === 'GOLD');
 
   console.log('pure: the seal');
   if (!globalThis.crypto) globalThis.crypto = require('crypto').webcrypto;

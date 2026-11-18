@@ -438,6 +438,7 @@ function eqOf(trs){var c=trs.filter(function(t){return t.status==='closed'}).sor
 function ago(t){if(!t)return 'never';var s=(Date.now()-t)/1000;return s<90?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'}
 function holdTxt(ms){var m=ms/6e4;return m<1?Math.round(ms/1000)+'s':m<60?Math.round(m)+'m':m<1440?(m/60).toFixed(1)+'h':(m/1440).toFixed(1)+'d'}
 function px(v){v=+v;if(!isFinite(v)||!v)return '-';return v>=1000?v.toLocaleString('en-US',{maximumFractionDigits:2}):v>=1?(+v.toFixed(4)).toString():v.toPrecision(4)}
+function coinOf(s){return String(s||'').toUpperCase().replace(/^[A-Z0-9]+:/,'').replace(/-SWAP$/,'').replace(/[-_/]/g,'').replace(/(USDT|USDC|USD|PERP|UMCBL)+$/,'')||String(s||'')}
 function dkey(ts){return new Date(ts).toISOString().slice(0,10)}
 function connOf(id){var c=(D&&D.conns||[]).filter(function(x){return x.id===id})[0];return c||null}
 function accName(c){return c?(c.label||EX[c.ex]&&EX[c.ex].name||c.ex):''}
@@ -621,7 +622,7 @@ function whatIf(tr){
   var c=tr.filter(function(t){return t.status==='closed'}); if(c.length<8)return '<p class="jl-empty">Needs at least 8 closed trades.</p>';
   var tot=0;c.forEach(function(t){tot+=t.net});
   var by=function(f){var g={};c.forEach(function(t){var k=f(t);(g[k]=g[k]||{n:0,net:0});g[k].n++;g[k].net+=t.net});var w=null;Object.keys(g).forEach(function(k){if(g[k].n>=3&&g[k].net<0&&(!w||g[k].net<g[w].net))w=k});return w?{k:w,o:g[w]}:null};
-  var sym=by(function(t){return t.sym}),hr=by(function(t){return new Date(t.openTs).getUTCHours()}),sd=by(function(t){return t.dir>0?'longs':'shorts'});
+  var sym=by(function(t){return coinOf(t.sym)}),hr=by(function(t){return new Date(t.openTs).getUTCHours()}),sd=by(function(t){return t.dir>0?'longs':'shorts'});
   var row=function(lab,x){return x?'<p class="ln">Without '+lab+': <b class="num '+cls(tot-x.o.net)+'">'+money(tot-x.o.net,1)+'</b> <span class="mute">instead of '+money(tot,1)+' ('+x.o.n+' trades)</span></p>':''};
   return row('your worst market, '+(sym&&esc(sym.k)),sym)+row('trades opened at '+(hr&&hr.k)+':00 UTC',hr)+row('your '+(sd&&sd.k),sd)||'<p class="ln mute">No losing group with three or more trades - nothing obvious to cut.</p>';
 }

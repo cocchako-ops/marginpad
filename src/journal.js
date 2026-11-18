@@ -18,7 +18,9 @@ export const JR_DAYS_MAX = 180;            // the deepest import we attempt (Bin
 const JR_REQ_BUDGET = 45;                  // exchange requests per sync pass per connection - a first import continues next pass
 const JR_SYNC_EVERY_MS = 15 * 60000;
 const JR_MAX_CONN = 5;
-const JR_IMPORT_V = 2; // bump to re-import every connection once (2: the millisecond page-boundary fix)
+// one coin is one market whatever the exchange calls it (HYPEUSDT on Bybit, HYPE on Hyperliquid, BTC-USDT-SWAP on OKX) - owner's account, 2026-11-18
+export function jrCoin(sym) { return String(sym || '').toUpperCase().replace(/^[A-Z0-9]+:/, '').replace(/-SWAP$/, '').replace(/[-_/]/g, '').replace(/(USDT|USDC|USD|PERP|UMCBL)+$/, '') || String(sym || ''); }
+const JR_IMPORT_V = 3; // bump to re-import every connection once (2: the millisecond page-boundary fix, 3: Bybit closed-pnl reconciliation)
 const DAY = 86400000;
 
 export const JR_EXCH = {
@@ -95,6 +97,7 @@ async function bybitSync(env, H, c, key, secret, budget) {
   while (used < budget && from < Date.now() - 5000) {
     const to = Math.min(from + 7 * DAY - 1, Date.now());
     let cursor = st.cursor || '';
+    const w0 = fills.length;
     for (let page = 0; page < 30 && used < budget; page++) {
       const q = await bybitGet(env, H, key, secret, '/v5/execution/list', { category: 'linear', startTime: from, endTime: to, limit: 100, cursor });
       used++;
@@ -109,6 +112,30 @@ async function bybitSync(env, H, c, key, secret, budget) {
       if (!cursor) break;
     }
     if (cursor) return { used, fills, fund, cur: { t: from, cursor } }; // budget ran out mid-window - continue on the same window next pass
+    // RECONCILIATION (2026-11-18): Bybit's own Closed P&L for this window, one row per closing order. Its price P&L
+    // (exit value - entry value) is spread over that order's fills by quantity, so jrBuild can check every position against
+    // the exchange the way it does on Hyperliquid. An opening fill carries 0; an order that also OPENED (a flip) carries
+    // nothing (rpnl stays null) - that position is simply not reconciled rather than reconciled wrongly.
+    if (fills.length > w0 && used < budget) {
+      const cpm = {}; let cc = '', okc = true;
+      for (let page = 0; page < 20 && used < budget; page++) {
+        const q = await bybitGet(env, H, key, secret, '/v5/position/closed-pnl', { category: 'linear', startTime: from, endTime: to, limit: 100, cursor: cc });
+        used++;
+        if (!q.ok) { okc = false; break; }
+        for (const x of (q.res.list || [])) { const g = (x.side === 'Sell' ? 1 : -1) * ((+x.cumExitValue || 0) - (+x.cumEntryValue || 0)); const o = cpm[x.orderId] || (cpm[x.orderId] = { g: 0, sz: 0 }); o.g += g; o.sz += +x.closedSize || 0; }
+        cc = q.res.nextPageCursor || ''; if (!cc) break;
+      }
+      if (okc) {
+        const W = fills.slice(w0), byO = {};
+        for (const f of W) (byO[f.oid] = byO[f.oid] || []).push(f);
+        for (const oid in byO) {
+          const L = byO[oid], qty = L.reduce((a, f) => a + f.qty, 0), o = cpm[oid];
+          if (!o) { for (const f of L) f.rpnl = 0; continue; }
+          if (Math.abs(o.sz - qty) > qty * 1e-6 + 1e-9) continue; // closed only part of the order (a flip) or the order ran over the window edge: not reconciled
+          for (const f of L) f.rpnl = o.g * f.qty / qty;
+        }
+      }
+    }
     st.cursor = '';
     from = to + 1;
   }
@@ -527,9 +554,9 @@ export function jrStats(positions, fills, funding, fromTs) {
     volTaker: +volT.toFixed(2), volMaker: +volM.toFixed(2), rateTaker: volT ? feesT / volT * 100 : null, rateMaker: volM ? feesM / volM * 100 : null,
     entTakerFee: +sum(P, p => p.entTF || 0).toFixed(2), entTakerVol: +sum(P, p => p.entTV || 0).toFixed(2),
     covFrom: cov0, covDays: +Math.max(0.04, (Date.now() - Math.max(fromTs, cov0)) / DAY).toFixed(2),
-    liqN: P.filter(p => p.liq).length, liqLoss: +(-sum(P.filter(p => p.liq), p => Math.min(0, p.net))).toFixed(2),
+    liqN: P.filter(p => p.liq).length, liqLoss: +(-sum(P.filter(p => p.liq), p => Math.min(0, p.net))).toFixed(2), liqNotional: +sum(P.filter(p => p.liq), p => p.exitNotional || p.maxNotional).toFixed(2),
     curve, days: day,
-    by: { sym: group(p => p.sym), side: group(p => p.dir > 0 ? 'Long' : 'Short'), hour: group(p => new Date(p.openTs).getUTCHours()), weekday: group(p => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(p.openTs).getUTCDay()]), hold: group(p => holdB(p.hold)), size: group(p => sizeB(p.maxNotional)), ex: group(p => p.ex, 1) },
+    by: { sym: group(p => jrCoin(p.sym)), side: group(p => p.dir > 0 ? 'Long' : 'Short'), hour: group(p => new Date(p.openTs).getUTCHours()), weekday: group(p => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(p.openTs).getUTCDay()]), hold: group(p => holdB(p.hold)), size: group(p => sizeB(p.maxNotional)), ex: group(p => p.ex, 1) },
     recon: (() => { const R = P.filter(p => p.diff != null); return { n: R.length, off: R.filter(p => Math.abs(p.diff) > 0.01).length, sumDiff: +sum(R, p => p.diff).toFixed(2) }; })(),
   };
 }
@@ -547,13 +574,16 @@ export function jrSavings(st, fills, fromTs, venues, exMain, bybitBps) {
     const rT = st.entTakerFee / st.entTakerVol * 100, rM = st.rateMaker != null && st.volMaker > st.vol * 0.02 ? st.rateMaker : (V && V.taker > 0 ? rT * V.maker / V.taker : null);
     if (rM != null && rT > rM) {
       const save = st.entTakerVol * (rT - rM) / 100;
-      if (save * m30 >= 1) out.push({ id: 'maker', usd30: +(save * m30).toFixed(2), title: 'Enter with limit orders', body: 'You entered ' + Math.min(100, Math.round(st.entTakerVol / Math.max(1, st.vol) * 200)) + '% of your positions as taker, at ' + rT.toFixed(4) + '%. A limit entry pays ' + rM.toFixed(4) + '%' + (st.rateMaker != null && st.volMaker > st.vol * 0.02 ? ' (your own maker rate)' : ' at ' + (V ? V.name : 'your exchange') + "'s ratio") + ' - the same trades would have cost about $' + (save * m30).toFixed(2) + ' less' + PER + '.' });
+      if (save * m30 >= 1) out.push({ id: 'maker', usd30: +(save * m30).toFixed(2), title: 'Enter with limit orders', body: 'You entered ' + Math.min(100, Math.round(st.entTakerVol / Math.max(1, st.vol) * 200)) + '% of your positions as taker, at ' + (+rT.toFixed(3)) + '%. A limit entry pays about ' + (+rM.toFixed(3)) + '%' + (st.rateMaker != null && st.volMaker > st.vol * 0.02 ? ' (your own maker rate)' : ' (the maker rate for your tier' + (V ? ' on ' + V.name : '') + ')') + ' - the same trades would have cost about $' + (save * m30).toFixed(2) + ' less' + PER + '.' });
     }
   }
   // 2. funding
   if (st.funding < -1) out.push({ id: 'funding', usd30: +(-st.funding * m30).toFixed(2), title: 'Funding you paid', body: 'Holding through funding cost you $' + (-st.funding * m30).toFixed(2) + PER + '. Check the rate before holding a position across the funding time, especially longs in a positive-funding market.' });
   // 3. liquidations
-  if (st.liqN) out.push({ id: 'liq', usd30: +(st.liqLoss * m30).toFixed(2), title: 'Liquidations', body: st.liqN + ' position' + (st.liqN === 1 ? ' was' : 's were') + ' liquidated, losing $' + st.liqLoss.toFixed(2) + '. A stop above the liquidation price exits with less loss and avoids the liquidation fee.' });
+  // A stop does NOT save the whole loss of a liquidated position (owner's account, 2026-11-18: the card claimed all $69.68): a stop just before the
+  // liquidation price still loses nearly as much. What it keeps is the maintenance margin the exchange takes on a liquidation - at least ~0.5%
+  // of the notional closed (the lowest tier on every venue we read), so that is the figure, stated as a floor.
+  if (st.liqN) { const keep = (st.liqNotional || 0) * 0.005; if (keep * m30 >= 0.5) out.push({ id: 'liq', usd30: +(keep * m30).toFixed(2), title: 'Liquidations', body: st.liqN + ' position' + (st.liqN === 1 ? ' was' : 's were') + ' liquidated, losing $' + st.liqLoss.toFixed(2) + ' in total. A stop placed before the liquidation price would still have lost most of that, but it keeps the maintenance margin the exchange takes on a liquidation - at least about $' + keep.toFixed(2) + ' here (0.5% of the $' + Math.round(st.liqNotional).toLocaleString('en-US') + ' closed)' + (m30 !== 1 ? ', about $' + (keep * m30).toFixed(2) + PER : '') + '.' }); }
   // 4. (2026-11-18, owner) no referral offer for the exchange the member ALREADY trades on - they have the account. The partner links
   //    live on the venue comparison below, next to the money the same volume would cost elsewhere.
   // 5. the same volume and taker mix on every venue we track
@@ -696,6 +726,18 @@ export async function handleJournal(url, request, env, ctx, H) {
   if (!uid) return J({ error: 'login_required' }, 401);
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
 
+  // SUPPORT AUDIT: the exchange's own ledgers through the member's sealed read-only key, admin key only, GET only, a fixed list of read paths.
+  // This is how a figure we print is checked against the exchange (2026-11-18, owner: "proveri moj nalog ... da li funding i ostalo lepo racunamo").
+  if (path === '/xsync' && _adm && request.method === 'GET') return J({ ok: true, r: await journalSyncUser(env, H, uid, url.searchParams.get('conn') || null, Math.min(80, +url.searchParams.get('budget') || 60)) }); // support: run a sync pass now
+  if (path === '/xprobe' && _adm && request.method === 'GET') {
+    const L = (await jCall(env, uid, '/conn/list')).conns || [], c = L.find(x => x.id === url.searchParams.get('conn'));
+    if (!c || c.ex !== 'bybit') return J({ error: 'bybit_conn_only' }, 400);
+    const p = url.searchParams.get('p') || '';
+    if (!/^\/v5\/(position\/closed-pnl|account\/transaction-log|position\/list|account\/fee-rate|execution\/list)$/.test(p)) return J({ error: 'path' }, 400);
+    const sec = JSON.parse(await jrOpen(env, uid, c.ex, c.sealed)), q = {};
+    for (const [k, v] of url.searchParams) if (!/^(uid|conn|p|key)$/.test(k)) q[k] = v;
+    return J(await bybitGet(env, H, sec.k, sec.s, p, q));
+  }
   if (path === '/state') {
     const d = await jCall(env, uid, '/data?from=' + (Date.now() + 1)); // conns only
     return J({ ip: JR_IP, conns: (d.conns || []).map(c => Object.assign(c, { perms: (() => { try { return JSON.parse(c.perms || '{}'); } catch (e) { return {}; } })() })) });
