@@ -37,6 +37,7 @@ export async function apSignal(env, sig, H) {
 // every minute: each store manages its open trades (TP1 -> stop to entry, the flip exit, the stop check)
 export async function apCron(env, H) {
   if (!env.AUTOPILOT) return;
+  try { await env.STATS.put('ap:hb', String(Date.now()), { expirationTtl: 3600 }); } catch (e) {} // the heartbeat says the minute pass RAN, members or not
   const mem = await apMembers(env); if (!mem.length) return;
   const flips = {};
   await Promise.all(AP_COINS.map(async (s) => { try { const v = await env.STATS.get('csig:flipd:' + s, 'json'); if (v) flips[s] = v; } catch (e) {} }));
