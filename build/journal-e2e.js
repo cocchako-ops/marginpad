@@ -68,7 +68,8 @@ let pass = 0, fail = 0; const ok = (name, c, info) => { if (c) { pass++; console
   const mk = sv.items.find(x => x.id === 'maker');
   ok('maker saving = taker fees x (1 - 0.02/0.055), scaled to 30 days', mk && mk.usd30 > 0, JSON.stringify(mk));
   ok('the funding item names what was paid', !!sv.items.find(x => x.id === 'funding'));
-  ok('the rebate is offered on Bybit, measured bps', !!sv.items.find(x => x.id === 'rebate'));
+  ok('no referral offer for the exchange the member already trades on', !sv.items.find(x => x.id === 'rebate' || x.id === 'hlref'));
+  ok('the comparison links every OTHER venue and not their own', sv.compare.find(c => c.id === 'bybit').url === '' && sv.compare.find(c => c.id === 'bybit').mine && sv.compare.filter(c => c.id !== 'bybit').every(c => c.url !== undefined));
   ok('the same mix is priced on every venue, cheapest first', sv.compare.length === 2 && sv.compare[0].usd30 <= sv.compare[1].usd30);
 
   console.log('pure: the seal');

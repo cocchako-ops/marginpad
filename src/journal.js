@@ -18,6 +18,7 @@ export const JR_DAYS_MAX = 180;            // the deepest import we attempt (Bin
 const JR_REQ_BUDGET = 45;                  // exchange requests per sync pass per connection - a first import continues next pass
 const JR_SYNC_EVERY_MS = 15 * 60000;
 const JR_MAX_CONN = 5;
+const JR_IMPORT_V = 2; // bump to re-import every connection once (2: the millisecond page-boundary fix)
 const DAY = 86400000;
 
 export const JR_EXCH = {
@@ -151,19 +152,24 @@ async function binanceSync(env, H, c, key, secret, budget, priceOf) {
         if (x.incomeType === 'FUNDING_FEE') fund.push({ k: 'binance|f' + x.tranId, sym: x.symbol, ts: +x.time, amt: +x.income || 0, rate: 0 });
       }
       if (L.length < 1000) break;
-      start = +L[L.length - 1].time + 1;
+      { const lt = +L[L.length - 1].time; start = lt > start ? lt : lt + 1; } // restart AT the last millisecond (rows de-duplicate by key) - +1 dropped the rest of a millisecond cut by the page
     }
     if (used + syms.size > budget && syms.size) return { used, fills, fund, cur: { t: from } }; // not enough budget for this window's symbols - redo it next pass
     // 2. the fills, per symbol (Binance requires one)
     for (const sym of syms) {
-      const q = await bnGet(env, H, 'fapi.binance.com', key, secret, '/fapi/v1/userTrades', { symbol: sym, startTime: from, endTime: to, limit: 1000 });
+     for (let s0 = from, pg = 0; pg < 20 && used < budget + 20; pg++) { // a busy symbol has more than 1,000 fills a week: page on, from the last millisecond
+      const q = await bnGet(env, H, 'fapi.binance.com', key, secret, '/fapi/v1/userTrades', { symbol: sym, startTime: s0, endTime: to, limit: 1000 });
       used++;
       if (!q.ok) return { used, fills, fund, cur: { t: from }, err: q.why + (q.detail ? ': ' + q.detail : '') };
-      for (const x of (Array.isArray(q.res) ? q.res : [])) {
+      const LT = Array.isArray(q.res) ? q.res : [];
+      for (const x of LT) {
         let fee = +x.commission || 0; const a = String(x.commissionAsset || 'USDT');
         if (!/^(USDT|USDC|BUSD|FDUSD|USD)$/.test(a)) { const p = await priceOf(a); fee = p > 0 ? fee * p : 0; }
         fills.push({ k: 'binance|' + x.symbol + '|' + x.id, sym: x.symbol, side: x.side === 'BUY' ? 1 : -1, px: +x.price, qty: +x.qty, fee, maker: x.maker ? 1 : 0, ts: +x.time, oid: String(x.orderId || ''), ps: x.positionSide === 'LONG' ? 'L' : x.positionSide === 'SHORT' ? 'S' : 'B', rpnl: +x.realizedPnl || 0, liq: 0, adl: 0 });
       }
+      if (LT.length < 1000) break;
+      const lt = +LT[LT.length - 1].time; s0 = lt > s0 ? lt : lt + 1;
+     }
     }
     from = to + 1;
   }
@@ -198,7 +204,7 @@ async function hlSync(env, H, c, addr, budget) {
       fills.push({ k: 'hyperliquid|' + x.tid + '|' + x.oid, sym: x.coin, side: x.side === 'B' ? 1 : -1, px: +x.px, qty: +x.sz, fee: +x.fee || 0, maker: x.crossed ? 0 : 1, ts: +x.time, oid: String(x.oid || ''), ps: 'B', rpnl: +x.closedPnl || 0, liq, adl: 0, start: x.startPosition != null ? +x.startPosition : null, dir: String(x.dir || '') });
     }
     if (L.length < 2000) { from = Date.now() - 2 * 3600000; break; }
-    from = +L[L.length - 1].time + 1;
+    { const lt = +L[L.length - 1].time; from = lt > from ? lt : lt + 1; } // AT the last millisecond: one order fills many times in one ms, and +1 lost the rest of it (owner's HL history 2026-11-18: closes without an open, "held 60 days")
   }
   // funding, separately cursored
   let ff = +st.f || (Date.now() - JR_DAYS_MAX * DAY);
@@ -209,7 +215,7 @@ async function hlSync(env, H, c, addr, budget) {
     const L = Array.isArray(q.j) ? q.j : [];
     for (const x of L) { const d = x.delta || {}; if (d.type !== 'funding') continue; fund.push({ k: 'hyperliquid|f' + x.hash + '|' + d.coin, sym: d.coin, ts: +x.time, amt: +d.usdc || 0, rate: +d.fundingRate || 0 }); }
     if (L.length < 500) { ff = Date.now() - 2 * 3600000; break; }
-    ff = +L[L.length - 1].time + 1;
+    { const lt = +L[L.length - 1].time; ff = lt > ff ? lt : lt + 1; }
   }
   return { used, fills, fund, cur: { t: from, f: ff } };
 }
@@ -224,7 +230,7 @@ export function jrBuild(fills, funding) {
   const F = fills.slice().sort((a, b) => a.ts - b.ts || (a.k < b.k ? -1 : 1));
   const open = new Map(), pos = [];
   let seq = 0;
-  const mk = (f, key, dir, partial) => ({ id: f.ex + ':' + f.sym + ':' + f.ts + ':' + (seq++), ex: f.ex, sym: f.sym, ps: f.ps, dir, openTs: f.ts, closeTs: 0, q: 0, avg: 0, maxQ: 0, maxNotional: 0, entryNotional: 0, exitQty: 0, exitNotional: 0, gross: 0, fees: 0, feesTaker: 0, feesMaker: 0, funding: 0, xpnl: 0, xknown: true, n: 0, nMaker: 0, nTaker: 0, liq: 0, adl: 0, partial: !!partial, key, vol: 0 });
+  const mk = (f, key, dir, partial) => ({ id: f.ex + ':' + f.sym + ':' + f.ts + ':' + (seq++), ex: f.ex, sym: f.sym, ps: f.ps, dir, openTs: f.ts, closeTs: 0, q: 0, avg: 0, maxQ: 0, maxNotional: 0, entryNotional: 0, exitQty: 0, exitNotional: 0, gross: 0, fees: 0, feesTaker: 0, feesMaker: 0, funding: 0, xpnl: 0, xknown: true, n: 0, nMaker: 0, nTaker: 0, liq: 0, adl: 0, partial: !!partial, key, vol: 0, entTF: 0, entTV: 0 });
   for (const f of F) {
     const key = f.ex + '|' + f.sym + '|' + f.ps;
     let p = open.get(key);
@@ -262,12 +268,13 @@ export function jrBuild(fills, funding) {
           p.fees -= fp; if (f.maker) p.feesMaker -= fp; else p.feesTaker -= fp;
           p.vol -= f.px * qty;
           const np = mk(f, key, s, false); np.q = s * qty; np.avg = f.px; np.maxQ = qty; np.maxNotional = np.entryNotional = qty * f.px;
-          np.fees = fp; if (f.maker) np.feesMaker = fp; else np.feesTaker = fp; np.vol = f.px * qty; np.n = 1; if (f.maker) np.nMaker = 1; else np.nTaker = 1;
+          np.fees = fp; if (f.maker) np.feesMaker = fp; else { np.feesTaker = fp; np.entTF = fp; np.entTV = f.px * qty; } np.vol = f.px * qty; np.n = 1; if (f.maker) np.nMaker = 1; else np.nTaker = 1;
           open.set(key, np); pos.push(np);
         }
       }
     } else {
       const aq = Math.abs(p.q);
+      if (!f.maker) { const sh = qty / f.qty; p.entTF += f.fee * sh; p.entTV += f.px * qty; } // an ENTRY taken as taker: the part a limit order could have changed
       p.avg = (p.avg * aq + f.px * qty) / (aq + qty);
       p.q += s * qty;
       p.entryNotional += f.px * qty;
@@ -308,7 +315,8 @@ export function jrStats(positions, fills, funding, fromTs) {
   let eq = 0, peak = 0, dd = 0; const curve = [];
   for (const p of P) { eq += p.net; peak = Math.max(peak, eq); dd = Math.max(dd, peak - eq); curve.push([p.closeTs, +eq.toFixed(2)]); }
   const vol = sum(Fx, f => f.px * f.qty), fees = sum(Fx, f => f.fee), feesT = sum(Fx.filter(f => !f.maker), f => f.fee), feesM = fees - feesT;
-  const volT = sum(Fx.filter(f => !f.maker), f => f.px * f.qty);
+  const volT = sum(Fx.filter(f => !f.maker), f => f.px * f.qty), volM = vol - volT;
+  const cov0 = Fx.length ? Math.min(...Fx.map(f => f.ts)) : Date.now();
   const fundNet = sum(Fu, f => f.amt);
   const day = {}; for (const p of P) { const d = new Date(p.closeTs).toISOString().slice(0, 10); day[d] = (day[d] || 0) + p.net; }
   const group = (keyf, minN) => { const g = {}; for (const p of P) { const k = keyf(p); if (k == null) continue; const o = g[k] || (g[k] = { k, n: 0, net: 0, w: 0 }); o.n++; o.net += p.net; if (p.net > 0) o.w++; } return Object.values(g).filter(o => o.n >= (minN || 8)).map(o => ({ k: o.k, n: o.n, net: +o.net.toFixed(2), wr: +(o.w / o.n * 100).toFixed(1), avg: +(o.net / o.n).toFixed(2) })).sort((a, b) => a.net - b.net); };
@@ -322,6 +330,9 @@ export function jrStats(positions, fills, funding, fromTs) {
     best: P.length ? P.reduce((a, b) => b.net > a.net ? b : a) : null, worst: P.length ? P.reduce((a, b) => b.net < a.net ? b : a) : null,
     vol: +vol.toFixed(2), fills: Fx.length, fees: +fees.toFixed(2), feesTaker: +feesT.toFixed(2), feesMaker: +feesM.toFixed(2), takerShare: vol ? +(volT / vol * 100).toFixed(1) : null,
     effRate: vol ? +(fees / vol * 100).toFixed(4) : null, funding: +fundNet.toFixed(2),
+    volTaker: +volT.toFixed(2), volMaker: +volM.toFixed(2), rateTaker: volT ? feesT / volT * 100 : null, rateMaker: volM ? feesM / volM * 100 : null,
+    entTakerFee: +sum(P, p => p.entTF || 0).toFixed(2), entTakerVol: +sum(P, p => p.entTV || 0).toFixed(2),
+    covFrom: cov0, covDays: +Math.max(0.04, (Date.now() - Math.max(fromTs, cov0)) / DAY).toFixed(2),
     liqN: P.filter(p => p.liq).length, liqLoss: +(-sum(P.filter(p => p.liq), p => Math.min(0, p.net))).toFixed(2),
     curve, days: day,
     by: { sym: group(p => p.sym), side: group(p => p.dir > 0 ? 'Long' : 'Short'), hour: group(p => new Date(p.openTs).getUTCHours()), weekday: group(p => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(p.openTs).getUTCDay()]), hold: group(p => holdB(p.hold)), size: group(p => sizeB(p.maxNotional)), ex: group(p => p.ex, 1) },
@@ -333,26 +344,30 @@ export function jrStats(positions, fills, funding, fromTs) {
 export function jrSavings(st, fills, fromTs, venues, exMain, bybitBps) {
   const out = [], F = fills.filter(f => f.ts >= fromTs);
   if (!st.vol) return { items: out, compare: [] };
-  const days = Math.max(1, (Date.now() - Math.max(fromTs, F.length ? Math.min(...F.map(f => f.ts)) : Date.now())) / DAY), m30 = 30 / days;
+  // a month is projected only from at least three days of history; less than that is reported as it is, for the period
+  const days = Math.max(0.04, st.covDays || 1), monthly = days >= 3, m30 = monthly ? 30 / days : 1, PER = monthly ? ' a month' : ' in this period';
   const V = venues[exMain] || null;
   // 1. taker -> maker
-  if (V && st.feesTaker > 0) {
-    const save = st.feesTaker * (1 - V.maker / V.taker);
-    if (save * m30 >= 1) out.push({ id: 'maker', usd30: +(save * m30).toFixed(2), title: 'Enter with limit orders', body: 'You paid ' + st.takerShare + '% of your volume as taker. At ' + V.name + "'s maker rate (" + V.maker + '% vs ' + V.taker + '%) the same trades would have cost about $' + (save * m30).toFixed(2) + ' less a month in fees.' });
+  // YOUR rates, not the venue's base table: a VIP whale pays a fraction of the published fee, and quoting the base rate promised savings bigger than everything they paid
+  if (st.entTakerFee > 0 && st.entTakerVol > 0) {
+    const rT = st.entTakerFee / st.entTakerVol * 100, rM = st.rateMaker != null && st.volMaker > st.vol * 0.02 ? st.rateMaker : (V && V.taker > 0 ? rT * V.maker / V.taker : null);
+    if (rM != null && rT > rM) {
+      const save = st.entTakerVol * (rT - rM) / 100;
+      if (save * m30 >= 1) out.push({ id: 'maker', usd30: +(save * m30).toFixed(2), title: 'Enter with limit orders', body: 'You entered ' + Math.min(100, Math.round(st.entTakerVol / Math.max(1, st.vol) * 200)) + '% of your positions as taker, at ' + rT.toFixed(4) + '%. A limit entry pays ' + rM.toFixed(4) + '%' + (st.rateMaker != null && st.volMaker > st.vol * 0.02 ? ' (your own maker rate)' : ' at ' + (V ? V.name : 'your exchange') + "'s ratio") + ' - the same trades would have cost about $' + (save * m30).toFixed(2) + ' less' + PER + '.' });
+    }
   }
   // 2. funding
-  if (st.funding < -1) out.push({ id: 'funding', usd30: +(-st.funding * m30).toFixed(2), title: 'Funding you paid', body: 'Holding through funding cost you $' + (-st.funding * m30).toFixed(2) + ' a month. Check the rate before holding a position across the funding time, especially longs in a positive-funding market.' });
+  if (st.funding < -1) out.push({ id: 'funding', usd30: +(-st.funding * m30).toFixed(2), title: 'Funding you paid', body: 'Holding through funding cost you $' + (-st.funding * m30).toFixed(2) + PER + '. Check the rate before holding a position across the funding time, especially longs in a positive-funding market.' });
   // 3. liquidations
   if (st.liqN) out.push({ id: 'liq', usd30: +(st.liqLoss * m30).toFixed(2), title: 'Liquidations', body: st.liqN + ' position' + (st.liqN === 1 ? ' was' : 's were') + ' liquidated, losing $' + st.liqLoss.toFixed(2) + '. A stop above the liquidation price exits with less loss and avoids the liquidation fee.' });
-  // 4. rebate through our partner link - measured, Bybit only (our affiliate commission share back to traders)
-  if (exMain === 'bybit' && bybitBps > 0) { const back = st.vol * bybitBps / 10000 * 0.85 * m30; if (back >= 1) out.push({ id: 'rebate', usd30: +back.toFixed(2), title: 'Get part of your fees back', body: 'Trading through MarginPad\'s Bybit partner link (new account or sub-account) returns about 85% of our commission as weekly bonuses and leaderboard prizes - about $' + back.toFixed(2) + ' a month at your volume.', cta: 'bybit' }); }
-  if (exMain === 'hyperliquid') out.push({ id: 'hlref', usd30: +(st.fees * 0.04 * m30).toFixed(2), title: '4% off Hyperliquid fees', body: 'Code MARGINPAD gives 4% off trading fees on Hyperliquid - about $' + (st.fees * 0.04 * m30).toFixed(2) + ' a month at your volume. It applies to a wallet that has no referral yet.', cta: 'hyperliquid' });
+  // 4. (2026-11-18, owner) no referral offer for the exchange the member ALREADY trades on - they have the account. The partner links
+  //    live on the venue comparison below, next to the money the same volume would cost elsewhere.
   // 5. the same volume and taker mix on every venue we track
   const tShare = (st.takerShare || 0) / 100, compare = [];
-  for (const id of Object.keys(venues)) { const v = venues[id]; const cost = st.vol * (tShare * v.taker + (1 - tShare) * v.maker) / 100 * m30; compare.push({ id, name: v.name, usd30: +cost.toFixed(2) }); }
+  for (const id of Object.keys(venues)) { const v = venues[id]; const cost = st.vol * (tShare * v.taker + (1 - tShare) * v.maker) / 100 * m30; compare.push({ id, name: v.name, usd30: +cost.toFixed(2), url: id === exMain ? '' : (v.url || ''), mine: id === exMain }); }
   compare.sort((a, b) => a.usd30 - b.usd30);
   out.sort((a, b) => b.usd30 - a.usd30);
-  return { items: out, compare, paid30: +(st.fees * m30).toFixed(2), months: +(days / 30).toFixed(2) };
+  return { items: out, compare, paid30: +(st.fees * m30).toFixed(2), months: +(days / 30).toFixed(2), monthly, days: +days.toFixed(2) };
 }
 
 // ---------- the store: one instance per member ----------
@@ -384,6 +399,7 @@ export class JournalStore {
       sql.exec('DELETE FROM fills WHERE conn=?', b.id); sql.exec('DELETE FROM funding WHERE conn=?', b.id); sql.exec('DELETE FROM conn WHERE id=?', b.id);
       return J({ ok: true, left: sql.exec('SELECT COUNT(*) n FROM conn').one().n });
     }
+    if (p === '/conn/reset') { sql.exec('DELETE FROM fills WHERE conn=?', b.id); sql.exec('DELETE FROM funding WHERE conn=?', b.id); sql.exec("UPDATE conn SET cur='{}', done=0, nfills=0, oldest=NULL, newest=NULL, status='importing' WHERE id=?", b.id); return J({ ok: true }); }
     if (p === '/wipe') { await this.state.storage.deleteAll(); this.init(); return J({ ok: true }); }
     if (p === '/ingest') { // a sync pass's result
       const c = b.conn; let nf = 0;
@@ -414,7 +430,8 @@ async function jCall(env, uid, path, body) {
 
 // one sync pass for one connection
 async function syncConn(env, H, uid, c, budget) {
-  const cur = (() => { try { return JSON.parse(c.cur || '{}'); } catch (e) { return {}; } })();
+  let cur = (() => { try { return JSON.parse(c.cur || '{}'); } catch (e) { return {}; } })();
+  if (cur.v !== JR_IMPORT_V) { await jCall(env, uid, '/conn/reset', { id: c.id }); cur = {}; } // imported by an older pager: start again, cleanly
   const cc = { cur };
   let r;
   try {
@@ -427,6 +444,7 @@ async function syncConn(env, H, uid, c, budget) {
     }
   } catch (e) { r = { used: 0, fills: [], fund: [], cur, err: 'sync_failed: ' + String(e && e.message || e).slice(0, 80) }; }
   for (const f of r.fills) f.ex = c.ex; for (const f of r.fund) f.ex = c.ex;
+  r.cur = Object.assign({}, r.cur || {}, { v: JR_IMPORT_V });
   const caughtUp = !r.err && r.cur && +r.cur.t >= Date.now() - 3 * 3600000;
   const res = await jCall(env, uid, '/ingest', { conn: c.id, fills: r.fills, fund: r.fund, cur: r.cur, err: r.err || '', status: r.err ? (/key_invalid|10003|10004|-2015|-2014/.test(r.err) ? 'key_invalid' : 'error') : (caughtUp ? 'ok' : 'importing'), done: caughtUp });
   return { used: r.used, got: r.fills.length, fund: r.fund.length, err: r.err || '', caughtUp, total: res.total };

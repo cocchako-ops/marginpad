@@ -1,0 +1,469 @@
+// /trading-journal/ = MarginPad Journal: a member's REAL exchange account, read-only (2026-11-18).
+// Source of truth for dist/trading-journal/index.html. After running: add-mpnav, add-sentry, add-metrica, add-preconnect,
+// add-font-preload, add-hdr-crit, add-ckbar-boot, add-og-image, fix-charset, bump-home-assets.
+// Plan: drafts/real-journal-plan-2026-11-18.md. Backend: src/journal.js.
+const fs = require('fs'), path = require('path');
+const OUT = path.join(__dirname, '..', 'dist', 'trading-journal', 'index.html');
+const IP = '167.172.98.147';
+const TITLE = 'Free Crypto Trading Journal - Auto-Sync Bybit, Binance & Hyperliquid (Read-Only) | MarginPad';
+const DESC = 'Connect your real Bybit, Binance or Hyperliquid account with a read-only key and see every trade, the fees and funding you paid, where you lose, and exactly how much you could save. Free, no card.';
+
+const FAQ = [
+  ['Can MarginPad trade or withdraw from my account?', 'No. We only accept a read-only key: when you connect, we ask the exchange what the key is allowed to do and refuse it on the spot if it can trade, transfer or withdraw - before anything is stored. Hyperliquid needs no key at all, only your public wallet address.'],
+  ['Why should I bind the key to your IP address?', 'Every request we make to your exchange comes from one fixed server, ' + IP + '. A key bound to that address does not work from anywhere else, so even a leaked key is useless to whoever has it. On Bybit an IP-bound key also does not expire after 90 days.'],
+  ['How is my key stored?', 'Encrypted with AES-GCM under a key that lives only in our server environment, bound to your account and that exchange. It is decrypted in memory only to sign a read request, and it is never sent back to any browser - not even yours.'],
+  ['How far back does it import?', 'Hyperliquid: your last 10,000 fills. Bybit: up to 180 days. Binance: the last three months, which is all Binance serves. Where history ends, the journal says so instead of guessing.'],
+  ['Does my P&L match the exchange?', 'Where the exchange reports realized P&L per fill (Hyperliquid, Binance) we compute our own from the fills and compare the two, trade by trade, and show any difference. A position that opened before the imported history uses the exchange figure and is marked.'],
+  ['What does it cost?', 'Nothing. No card, no trial that ends. The savings ideas include our partner links, and that is how this stays free - you see the numbers either way.'],
+  ['How do I disconnect?', 'One button on the Accounts tab removes the key and every trade we imported from it, at once. You can also delete the key on the exchange; the journal then stops syncing and tells you.'],
+];
+
+const css = `
+:root{--bg:#0a0b0d;--panel:#0f1216;--panel2:#131820;--line:rgba(232,214,178,.12);--line2:rgba(255,255,255,.07);--brass:#d8bf8e;--brass2:#a8915f;--ink:#ecebe6;--mute:#8d96a2;--gain:#c2f64a;--loss:#ff5a4d}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Familjen Grotesk',system-ui,sans-serif}
+a{color:var(--brass)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.num{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums}
+.jr-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:end;padding:56px 0 28px}
+.jr-hero h1{font:600 clamp(36px,5.2vw,64px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin:0 0 18px;max-width:14ch}
+.jr-hero p.lede{font-size:18px;color:#c9c6bd;max-width:52ch;margin:0}
+.jr-seals{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.jr-seals li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(216,191,142,.05),transparent)}
+.jr-seals b{display:block;font-weight:600;color:var(--ink)}
+.jr-seals span{color:var(--mute);font-size:14px;line-height:1.45}
+.jr-seal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(216,191,142,.45);color:var(--brass)}
+/* THE KEY RAIL - the one bold thing on the page */
+.jr-rail-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:30px 0 12px}
+.jr-rail-h h2{font:600 22px/1.2 'Bricolage Grotesque',sans-serif;margin:0}
+.jr-rail-h p{margin:0;color:var(--mute);font-size:14px}
+.jr-next{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--mute);font-size:14px;margin:14px 2px 0}.jr-next span{display:inline-flex;align-items:center;gap:7px}.jr-next img{border-radius:5px;filter:saturate(.3)}
+.jr-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;perspective:1400px}
+.jr-key{position:relative;height:184px;border-radius:18px;cursor:pointer;transform-style:preserve-3d;outline:none;border:0;padding:0;background:none;color:inherit;text-align:left;font:inherit}
+.jr-key:focus-visible .jr-face{box-shadow:0 0 0 2px var(--brass)}
+.jr-face{position:absolute;inset:0;border-radius:18px;overflow:hidden;padding:18px 18px 16px;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 10% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),
+    repeating-linear-gradient(100deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px),
+    linear-gradient(160deg,#1a1d22,#0d0f12 70%);
+  border:1px solid color-mix(in srgb,var(--c) 30%,rgba(232,214,178,.14));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 18px 40px -26px #000}
+.jr-face::after{content:'';position:absolute;right:16px;top:50%;width:46px;height:14px;margin-top:-7px;border-radius:7px;background:#06070a;box-shadow:inset 0 1px 2px #000,0 1px 0 rgba(255,255,255,.06)} /* the key slot */
+.jr-face .lg{display:flex;align-items:center;gap:10px}
+.jr-face .lg img{width:34px;height:34px;border-radius:9px;background:#000}
+.jr-face .lg b{font:600 20px/1 'Bricolage Grotesque',sans-serif}
+.jr-face .how{color:var(--mute);font-size:13px;line-height:1.4;max-width:70%}
+.jr-face .tag{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:color-mix(in srgb,var(--c) 80%,#fff)}
+.jr-key.soon{cursor:default}.jr-key.soon .jr-face{filter:saturate(.25) brightness(.8)}
+.jr-key.soon .tag{border-color:var(--line2);color:var(--mute)}
+.jr-key:not(.soon):hover .jr-face{border-color:color-mix(in srgb,var(--c) 60%,transparent)}
+/* the open key: the guide and the form */
+.jr-open{display:none;margin-top:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden}
+.jr-open.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.jr-steps{padding:26px 28px;border-right:1px solid var(--line2)}
+.jr-steps h3,.jr-form h3{font:600 20px/1.25 'Bricolage Grotesque',sans-serif;margin:0 0 6px}
+.jr-steps ol{margin:16px 0 0;padding:0;list-style:none;counter-reset:s;display:grid;gap:14px}
+.jr-steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:12px;color:#cfccc3;font-size:15px}
+.jr-steps li::before{content:counter(s);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 13px 'Space Mono',monospace;color:var(--brass);border:1px solid rgba(216,191,142,.4)}
+.jr-ip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 6px 6px 12px;border-radius:10px;background:#07080a;border:1px solid var(--line)}
+.jr-ip code{font:700 15px 'Space Mono',monospace;color:var(--ink)}
+.jr-btn{appearance:none;border:0;cursor:pointer;font:600 15px 'Familjen Grotesk',sans-serif;border-radius:12px;padding:12px 18px;background:var(--brass);color:#16130c}
+.jr-btn:hover{background:#e6cf9f}.jr-btn[disabled]{opacity:.5;cursor:default}
+.jr-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.jr-btn.ghost:hover{border-color:var(--brass)}
+.jr-btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.jr-btn.go{background:var(--gain);color:#0b0d06}
+.jr-form{padding:26px 28px;display:flex;flex-direction:column;gap:12px}
+.jr-form label{font-size:13px;color:var(--mute);display:grid;gap:6px}
+.jr-form input{width:100%;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:none}
+.jr-form input:focus{border-color:var(--brass)}
+.jr-perm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:4px}
+.jr-perm div{border:1px solid var(--line2);border-radius:12px;padding:10px;font-size:13px;color:var(--mute);text-align:center}
+.jr-perm div b{display:block;font-size:15px;color:var(--ink);margin-bottom:2px}
+.jr-perm .ok{border-color:rgba(194,246,74,.4)}.jr-perm .ok b{color:var(--gain)}
+.jr-perm .no b{color:var(--mute);text-decoration:line-through}
+.jr-perm .bad{border-color:rgba(255,90,77,.55)}.jr-perm .bad b{color:var(--loss);text-decoration:none}
+.jr-msg{font-size:14px;min-height:20px;color:var(--mute)}.jr-msg.err{color:#ff8a7e}.jr-msg.okm{color:var(--gain)}
+.jr-x{position:absolute;right:16px;top:14px}
+/* sections */
+.jr-sec{padding:64px 0 0}
+.jr-sec>h2{font:600 clamp(26px,3.2vw,36px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;margin:0 0 10px;max-width:22ch}
+.jr-sec>p.sub{color:#bdbab1;max-width:62ch;margin:0 0 24px}
+.jr-ledger{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.jr-ledger>div{padding:22px 24px}.jr-ledger>div+div{border-left:1px solid var(--line)}
+.jr-ledger h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jr-ledger ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;color:#cfccc3;font-size:15px}
+.jr-ledger li{display:flex;gap:10px}.jr-ledger li::before{content:'';flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--gain)}
+.jr-ledger .never li::before{background:transparent;border:1.5px solid var(--loss)}
+/* dashboard */
+.jr-dash{display:none}.jr-dash.on{display:block}
+.jr-dh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;padding:40px 0 18px}
+.jr-dh h1{font:600 clamp(28px,4vw,42px)/1.05 'Bricolage Grotesque',sans-serif;margin:0}
+.jr-dh .acc{color:var(--mute);font-size:14px;margin-top:6px}
+.jr-chips{display:flex;gap:6px;flex-wrap:wrap}
+.jr-chip{appearance:none;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 13px 'Familjen Grotesk',sans-serif;padding:7px 12px;border-radius:999px;cursor:pointer}
+.jr-chip.on{color:#16130c;background:var(--brass);border-color:var(--brass)}
+.jr-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.jr-tile{background:var(--panel);padding:16px 18px}
+.jr-tile i{display:block;font-style:normal;color:var(--mute);font-size:13px}
+.jr-tile b{display:block;font:700 24px/1.3 'Space Mono',monospace;margin-top:4px}
+.jr-tile small{color:var(--mute);font-size:12px}
+.pos{color:var(--gain)}.neg{color:var(--loss)}
+.jr-tabs{display:flex;gap:4px;margin:26px 0 16px;border-bottom:1px solid var(--line2);overflow-x:auto}
+#jrTabs .jr-tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);font:600 15px 'Familjen Grotesk',sans-serif;padding:10px 14px;cursor:pointer;white-space:nowrap}
+#jrTabs .jr-tab.on{color:var(--ink);border-bottom-color:var(--brass);background:none}
+.jr-pane{display:none}.jr-pane.on{display:block}
+.jr-card{border:1px solid var(--line2);border-radius:16px;background:var(--panel);padding:18px 20px;margin-bottom:14px}
+.jr-card h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jr-card .note{color:var(--mute);font-size:13px;margin:8px 0 0}
+.jr-curve svg{display:block;width:100%;height:220px}
+.jr-cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(26px,1fr));gap:4px}
+.jr-cal span{aspect-ratio:1;border-radius:5px;background:#151a21}
+.jr-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.jr-tbl th{text-align:left;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.jr-tbl td{padding:9px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.jr-tbl td.r,.jr-tbl th.r{text-align:right}
+.jr-tw{overflow-x:auto}
+.jr-tl{display:none}.jr-tl .it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:12px 0;border-top:1px solid var(--line2)}.jr-tl .it:first-child{border-top:0}.jr-tl .m{font-weight:600}.jr-tl .s{color:var(--mute);font-size:13px}.jr-tl .n{text-align:right;font:700 15px 'Space Mono',monospace}
+@media (max-width:700px){.jr-trtbl{display:none}.jr-tl{display:block}}
+.jr-badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mute);margin-left:6px}
+.jr-badge.liq{border-color:rgba(255,90,77,.5);color:#ff8a7e}
+.jr-save{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:start;padding:16px 0;border-top:1px solid var(--line2)}
+.jr-save:first-of-type{border-top:0;padding-top:4px}
+.jr-save h4{margin:0;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jr-save p{margin:0;color:#c9c6bd;font-size:15px;grid-column:1}
+.jr-save .amt{font:700 22px 'Space Mono',monospace;color:var(--gain);grid-row:1 / span 2;grid-column:2;text-align:right}
+.jr-save .amt small{display:block;font:500 12px 'Familjen Grotesk',sans-serif;color:var(--mute)}
+.jr-bars{display:grid;gap:8px}
+.jr-bar{display:grid;grid-template-columns:110px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:14px}
+.jr-bar .t{height:10px;border-radius:5px;background:#151a21;overflow:hidden}.jr-bar .t i{display:block;height:100%;background:var(--brass2)}
+.jr-bar.me .t i{background:var(--brass)}.jr-bar a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--brass2)}.jr-bar a:hover{color:var(--brass)}.jr-bar.me{color:var(--ink);font-weight:600}
+.jr-ins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.jr-empty{color:var(--mute);font-size:14px;padding:6px 0}
+.jr-acc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line2)}
+.jr-acc:first-child{border-top:0}
+.jr-acc img{width:36px;height:36px;border-radius:10px}
+.jr-acc .st{font-size:13px;color:var(--mute)}
+.jr-prog{height:6px;border-radius:3px;background:#151a21;overflow:hidden;margin-top:6px;max-width:260px}.jr-prog i{display:block;height:100%;background:var(--brass)}
+.jr-cmp{width:100%;border-collapse:collapse;font-size:15px}
+.jr-cmp th,.jr-cmp td{padding:12px 14px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+.jr-cmp th{color:var(--mute);font-weight:500}
+.jr-cmp td.us{color:var(--ink);background:rgba(216,191,142,.05)}
+.jr-faq details{border-top:1px solid var(--line2);padding:14px 0}
+.jr-faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.jr-faq p{color:#c9c6bd;margin:10px 0 0;max-width:70ch}
+.jr-prose{color:#bdbab1;max-width:70ch;padding-bottom:80px}
+.jr-prose h2{color:var(--ink);font:600 22px 'Bricolage Grotesque',sans-serif;margin:40px 0 8px}
+@media (max-width:900px){
+  .jr-hero{grid-template-columns:1fr;gap:26px;padding-top:34px}
+  .jr-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin:0 -24px;padding-left:24px;padding-right:24px}
+  .jr-key{scroll-snap-align:start}
+  .jr-open.on{grid-template-columns:1fr}.jr-steps{border-right:0;border-bottom:1px solid var(--line2)}
+  .jr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-tile:last-child{grid-column:1/-1}
+  .jr-ins{grid-template-columns:1fr}.jr-ledger{grid-template-columns:1fr}.jr-ledger>div+div{border-left:0;border-top:1px solid var(--line)}
+  .jr-perm{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .jr-seals{gap:6px}.jr-seals li{padding:10px 12px;grid-template-columns:26px 1fr;align-items:center}.jr-seals li div span{display:none}.jr-rail-h{display:block}.jr-rail-h p{margin-top:4px}.jr-seal{width:26px;height:26px}.jr-hero p.lede{font-size:16px}.jr-hero h1{margin-bottom:12px}
+  .jr-bar{grid-template-columns:90px minmax(0,1fr) 80px}
+  .wrap{padding:0 16px}
+}
+`;
+
+const KEYS = [
+  { id: 'hyperliquid', name: 'Hyperliquid', c: '#97fce4', how: 'Paste your wallet address. No key needed.', tag: 'Address only' },
+  { id: 'bybit', name: 'Bybit', c: '#f7a600', how: 'A read-only API key, bound to our IP.', tag: 'Read-only key' },
+  { id: 'binance', name: 'Binance', c: '#f0b90b', how: 'A read-only API key for USD-M futures.', tag: 'Read-only key' },
+  { id: 'okx', name: 'OKX', c: '#ffffff', how: 'Next in line.', tag: 'Soon', soon: true },
+  { id: 'bitget', name: 'Bitget', c: '#00f0ff', how: 'Next in line.', tag: 'Soon', soon: true },
+  { id: 'bingx', name: 'BingX', c: '#2a6aff', how: 'Next in line.', tag: 'Soon', soon: true },
+  { id: 'mexc', name: 'MEXC', c: '#2b6cff', how: 'Next in line.', tag: 'Soon', soon: true },
+];
+const keyHtml = (k) => `<button type="button" class="jr-key${k.soon ? ' soon' : ''}" data-ex="${k.id}" style="--c:${k.c}" aria-label="${k.soon ? k.name + ' - coming soon' : 'Connect ' + k.name}"${k.soon ? ' aria-disabled="true"' : ''}><span class="jr-face"><span class="lg"><img src="/assets/ex/${k.id}.png" alt="" width="34" height="34" loading="lazy"><b>${k.name}</b></span><span class="how">${k.how}</span><span class="tag">${k.tag}</span></span></button>`;
+
+const ICON = {
+  lock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  pin: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-6.1 7-11a7 7 0 0 0-14 0c0 4.9 7 11 7 11z"/></svg>',
+  bin: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+};
+
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'MarginPad Journal', applicationCategory: 'FinanceApplication', operatingSystem: 'Web', url: 'https://marginpad.io/trading-journal/', description: DESC, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, publisher: { '@type': 'Organization', name: 'MarginPad', url: 'https://marginpad.io/' } },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+  { '@context': 'https://schema.org', '@type': 'HowTo', name: 'Connect Bybit to a trading journal with a read-only API key', step: [
+    { '@type': 'HowToStep', text: 'On Bybit open API Management and create a new system-generated API key.' },
+    { '@type': 'HowToStep', text: 'Choose Read-Only permissions and bind the key to the IP address ' + IP + '.' },
+    { '@type': 'HowToStep', text: 'Paste the API key and secret into MarginPad Journal and press Verify. Keys that can trade or withdraw are refused.' } ] },
+];
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>${esc(TITLE)}</title>
+<meta name="description" content="${esc(DESC)}">
+<link rel="canonical" href="https://marginpad.io/trading-journal/">
+<meta property="og:title" content="${esc('MarginPad Journal - your real trades, read-only')}">
+<meta property="og:description" content="${esc(DESC)}">
+<meta property="og:url" content="https://marginpad.io/trading-journal/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>${css}</style>
+${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</script>').join('\n')}
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a href="/" class="brand">MARGIN<b>PAD</b></a>
+  <nav class="hnav"><a href="/paper-trade">Paper Trade</a><a href="/leaderboards/">Leaderboards</a></nav>
+</header>
+
+<main id="jrGuest">
+<section class="jr-hero">
+  <div>
+    <h1>Your real trades, read back to you.</h1>
+    <p class="lede">Connect Bybit, Binance or Hyperliquid and see every position you actually traded: what it made, what the fees and funding took, where you keep losing, and how much a few changes would save you each month. Free, with a key that can only read.</p>
+  </div>
+  <ul class="jr-seals">
+    <li><span class="jr-seal">${ICON.lock}</span><div><b>Read-only, checked</b><span>We ask the exchange what your key can do and refuse it if it can trade or withdraw.</span></div></li>
+    <li><span class="jr-seal">${ICON.pin}</span><div><b>One address: ${IP}</b><span>Bind the key to it and the key works from nowhere else.</span></div></li>
+    <li><span class="jr-seal">${ICON.bin}</span><div><b>Gone in one tap</b><span>Disconnect removes the key and every imported trade at once.</span></div></li>
+  </ul>
+</section>
+
+<div class="jr-rail-h"><h2>Pick your exchange</h2><p>Your key is encrypted and never shown again, even to you.</p></div>
+<div class="jr-rail" id="jrRail">${KEYS.filter(k => !k.soon).map(keyHtml).join('')}</div>
+<p class="jr-next">Next: ${KEYS.filter(k => k.soon).map(k => '<span><img src="/assets/ex/' + k.id + '.png" alt="" width="18" height="18" loading="lazy">' + k.name + '</span>').join('')}</p>
+<div class="jr-open" id="jrOpen" role="region" aria-live="polite"></div>
+
+<section class="jr-sec">
+  <h2>What the key can and cannot do</h2>
+  <p class="sub">A read-only key is the standard for journals. We go one step further and check it ourselves, every time you connect.</p>
+  <div class="jr-ledger">
+    <div><h3>We read</h3><ul><li>Your filled orders, with price, size and fee</li><li>Funding paid and received</li><li>Liquidations and auto-deleveraging</li><li>Fee rate and account type</li></ul></div>
+    <div class="never"><h3>We can never</h3><ul><li>Place, change or cancel an order</li><li>Transfer between accounts</li><li>Withdraw anything</li><li>Use the key from any address but ${IP}</li></ul></div>
+  </div>
+</section>
+
+<section class="jr-sec">
+  <h2>What you get once it is connected</h2>
+  <p class="sub">Every number is computed from your own fills. Breakdowns appear only once there are enough trades behind them to mean something.</p>
+  <div class="jr-ledger">
+    <div><h3>The record</h3><ul><li>Net P&amp;L after fees and funding, win rate, profit factor, drawdown</li><li>Equity curve and a calendar of your days</li><li>Every position rebuilt from its fills, partial closes included</li><li>Our P&amp;L checked against the exchange's, trade by trade</li></ul></div>
+    <div><h3>The money</h3><ul><li>Fees split into maker and taker, with what limit entries would save</li><li>Funding you paid by holding through it</li><li>What liquidations cost you</li><li>Your exact volume priced on every major exchange</li></ul></div>
+  </div>
+</section>
+
+<section class="jr-sec">
+  <h2>How it compares</h2>
+  <p class="sub">TradeZella prices read from their published plans in 2026; it covers stocks and futures first, crypto depends on the route.</p>
+  <div class="jr-tw"><table class="jr-cmp">
+    <tr><th></th><th>MarginPad Journal</th><th>TradeZella</th></tr>
+    <tr><th>Price</th><td class="us">Free</td><td>$35, $59 or $99 a month, no free plan</td></tr>
+    <tr><th>Crypto perps</th><td class="us">Built for them: funding, liquidations, maker/taker</td><td>Supported depending on the import route</td></tr>
+    <tr><th>Hyperliquid</th><td class="us">Wallet address, no key</td><td>Not listed</td></tr>
+    <tr><th>Key safety</th><td class="us">Read-only verified, IP-bound, encrypted</td><td>Read-only key recommended</td></tr>
+    <tr><th>Saving money</th><td class="us">Fees, funding and liquidations priced in dollars, with fixes</td><td>Reports</td></tr>
+    <tr><th>P&amp;L check</th><td class="us">Reconciled against the exchange per trade</td><td>Not stated</td></tr>
+  </table></div>
+</section>
+
+<section class="jr-sec jr-faq">
+  <h2>Questions</h2>
+  ${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n  ')}
+</section>
+
+<section class="jr-sec jr-prose">
+  <h2>Why a journal of your real account</h2>
+  <p>A demo account tells you whether an idea works. Your real account tells you what your habits cost. Most traders who lose do not lose on the idea: they lose on fees paid as taker, on funding held through, on a stop they moved, and on one liquidation that erased a week. Those costs are in your fills already. The journal reads them, puts a dollar figure on each, and shows which of them you can change.</p>
+  <h2>Practising first?</h2>
+  <p>Your <a href="/paper-trade">paper trades</a> have their own report on the My Trades tab, and the <a href="/prop-firm-challenge/">prop firm challenge</a> tests the same discipline under a firm's rules.</p>
+</section>
+</main>
+
+<main class="jr-dash" id="jrDash">
+  <div class="jr-dh">
+    <div><h1>Your journal</h1><div class="acc" id="jrAcc"></div></div>
+    <div class="jr-chips" id="jrRange"><button class="jr-chip" data-d="7">7 days</button><button class="jr-chip on" data-d="30">30 days</button><button class="jr-chip" data-d="90">90 days</button><button class="jr-chip" data-d="180">180 days</button></div>
+  </div>
+  <div class="jr-tiles" id="jrTiles"></div>
+  <div class="jr-tabs" role="tablist" id="jrTabs"><button class="jr-tab on" data-p="ov">Overview</button><button class="jr-tab" data-p="tr">Trades</button><button class="jr-tab" data-p="sv">Savings</button><button class="jr-tab" data-p="in">Insights</button><button class="jr-tab" data-p="ac">Accounts</button></div>
+  <section class="jr-pane on" id="p-ov"></section>
+  <section class="jr-pane" id="p-tr"></section>
+  <section class="jr-pane" id="p-sv"></section>
+  <section class="jr-pane" id="p-in"></section>
+  <section class="jr-pane" id="p-ac"></section>
+  <div style="height:80px"></div>
+</main>
+</div>
+
+<script>
+(function(){
+var IP='${IP}', $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var EX={hyperliquid:{name:'Hyperliquid',c:'#97fce4'},bybit:{name:'Bybit',c:'#f7a600',url:'https://www.bybit.com/app/user/api-management'},binance:{name:'Binance',c:'#f0b90b',url:'https://www.binance.com/en/my/settings/api-management'}};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function money(v,sign){v=+v||0;var a=Math.abs(v),s=a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e4?(a/1e3).toFixed(1)+'k':a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-':(sign&&v>0?'+':''))+'$'+s}
+function cls(v){return v>0?'pos':v<0?'neg':''}
+function signedIn(){try{return (window.mpSignedInCookie&&window.mpSignedInCookie())||/(?:^|; )mp_li=1/.test(document.cookie)}catch(e){return false}}
+function api(p,b){return fetch('/api/journal'+p,b?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b),credentials:'same-origin'}:{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json().then(function(j){j._s=r.status;return j})})}
+function track(e){try{fetch('/api/track?t=journal&e='+encodeURIComponent(e)+'&p=/trading-journal/',{keepalive:true})}catch(x){}}
+
+/* ---------- the key rail ---------- */
+var cur=null;
+function guide(ex){
+  if(ex==='hyperliquid')return '<h3>Hyperliquid</h3><p style="color:#8d96a2;margin:0">Nothing to create. Your fills and funding are public on the chain; we read them by address.</p><ol><li><span>Open Hyperliquid and copy your wallet address (starts with 0x).</span></li><li><span>Paste it on the right.</span></li><li><span>We import your last 10,000 fills and keep syncing every 15 minutes.</span></li></ol>';
+  var e=EX[ex];
+  return '<h3>'+e.name+' read-only key</h3><p style="color:#8d96a2;margin:0">Two minutes, once.</p><ol>'
+   +'<li><span>Open <a href="'+e.url+'" target="_blank" rel="noopener">'+e.name+' API management</a> and create a new '+(ex==='bybit'?'system-generated ':'')+'API key.</span></li>'
+   +'<li><span>Tick <b>Read only</b> and nothing else'+(ex==='binance'?' (leave "Enable Futures" and every trading box off)':'')+'.</span></li>'
+   +'<li><span>Restrict it to this IP address:<br><span class="jr-ip"><code>'+IP+'</code><button type="button" class="jr-btn sm ghost" data-copy="'+IP+'">Copy</button></span></span></li>'
+   +'<li><span>Paste the key and the secret on the right and press Verify.</span></li></ol>';
+}
+function form(ex){
+  var f=ex==='hyperliquid'
+   ?'<label>Wallet address<input id="jrAddr" placeholder="0x..." autocomplete="off" spellcheck="false"></label>'
+   :'<label>API key<input id="jrKey" autocomplete="off" spellcheck="false"></label><label>API secret<input id="jrSec" type="password" autocomplete="off" spellcheck="false"></label>';
+  return '<h3>'+(ex==='hyperliquid'?'Connect a wallet':'Verify and connect')+'</h3>'+f
+   +'<div class="jr-perm" id="jrPerm"><div class="ok"><b>Read</b>allowed</div><div class="no"><b>Trade</b>never</div><div class="no"><b>Transfer</b>never</div><div class="no"><b>Withdraw</b>never</div></div>'
+   +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="jr-btn" id="jrGo">'+(ex==='hyperliquid'?'Connect':'Verify and connect')+'</button><button type="button" class="jr-btn ghost" id="jrBack">Back</button></div><div class="jr-msg" id="jrMsg"></div>';
+}
+function openKey(btn){
+  var ex=btn.getAttribute('data-ex'); if(btn.classList.contains('soon'))return;
+  track('pick:'+ex);
+  if(!signedIn()){ try{ if(window.mpAuth&&window.mpAuth.open){window.mpAuth.open();return} }catch(e){} location.href='/?signin=1'; return; }
+  cur=ex; var o=$('#jrOpen');
+  o.innerHTML='<div class="jr-steps">'+guide(ex)+'</div><div class="jr-form">'+form(ex)+'</div>'; o.classList.add('on');
+  try{ btn.animate([{transform:'rotateY(0deg) translateY(0)'},{transform:'rotateY(14deg) translateY(-6px)'},{transform:'rotateY(0deg) translateY(0)'}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
+       o.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:320,easing:'ease-out'}); }catch(e){}
+  $$('.jr-key').forEach(function(k){k.style.opacity=k===btn?'1':'.45'});
+  o.scrollIntoView({behavior:'smooth',block:'nearest'});
+  setTimeout(function(){var i=$('#jrAddr')||$('#jrKey');if(i)i.focus()},350);
+}
+var ERR={not_read_only:'This key can do more than read. Make a new key with Read only ticked and nothing else - we did not store this one.',key_invalid:'The exchange does not recognise this key. Check you copied the whole key and secret.',ip_not_allowed:'The key is bound to a different IP address. Add '+IP+' to it, or create the key again with that address.',bad_key_format:'That does not look like an API key and secret.',bad_address:'That is not a wallet address - it starts with 0x and has 42 characters.',slow_down:'Too many attempts - wait a few minutes.',too_many:'You have connected the maximum number of accounts.',login_required:'Sign in first.',unsupported_exchange:'This exchange is not supported yet.',exchange_unreachable:'The exchange did not answer. Try again in a minute.',no_read:'This key has no read permission. Create a new read-only key.'};
+function connect(){
+  var b={ex:cur}, msg=$('#jrMsg'), go=$('#jrGo');
+  if(cur==='hyperliquid')b.address=($('#jrAddr').value||'').trim(); else { b.key=($('#jrKey').value||'').trim(); b.secret=($('#jrSec').value||'').trim(); }
+  go.disabled=true; msg.className='jr-msg'; msg.textContent=cur==='hyperliquid'?'Reading your fills...':'Asking '+EX[cur].name+' what this key can do...';
+  api('/connect',b).then(function(j){
+    go.disabled=false;
+    if(j&&j.ok){ msg.className='jr-msg okm'; msg.textContent='Connected. Importing your history...'; track('connected:'+cur); $('#jrPerm').firstChild.className='ok'; setTimeout(boot,700); return; }
+    var e=(j&&j.error)||'error'; msg.className='jr-msg err'; msg.textContent=ERR[e]||('Could not connect: '+e+(j&&j.detail?' ('+j.detail+')':''));
+    if(e==='not_read_only'&&j.writes){ var pm=$('#jrPerm'); pm.innerHTML='<div class="ok"><b>Read</b>allowed</div>'+j.writes.slice(0,3).map(function(w){return '<div class="bad"><b>'+esc(w.split(':')[0])+'</b>enabled</div>'}).join(''); }
+    track('refused:'+cur+':'+e);
+  }).catch(function(){go.disabled=false;msg.className='jr-msg err';msg.textContent='Network error - try again.'});
+}
+document.addEventListener('click',function(ev){
+  var k=ev.target.closest('.jr-key'); if(k){openKey(k);return}
+  if(ev.target.closest('#jrGo')){connect();return}
+  if(ev.target.closest('#jrBack')){$('#jrOpen').classList.remove('on');$$('.jr-key').forEach(function(x){x.style.opacity=''});cur=null;return}
+  var c=ev.target.closest('[data-copy]'); if(c){try{navigator.clipboard.writeText(c.getAttribute('data-copy'));c.textContent='Copied';setTimeout(function(){c.textContent='Copy'},1400)}catch(e){}return}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='jrAddr'||e.target.id==='jrSec'))connect()});
+
+/* ---------- the dashboard ---------- */
+var DAYS=30, D=null;
+function tiles(st){
+  var t=[
+    ['Net P&L',money(st.net,1),cls(st.net),st.n+' closed trades'],
+    ['Win rate',st.winRate==null?'-':st.winRate+'%','',st.wins+' won, '+st.losses+' lost'],
+    ['Profit factor',st.profitFactor==null?'-':st.profitFactor,'','won $ per lost $'],
+    ['Fees and funding',money(-(st.fees)+st.funding),cls(-(st.fees)+st.funding),'fees '+money(st.fees)+', funding '+money(st.funding,1)],
+    ['Volume',money(st.vol),'',st.fills+' fills'+(st.takerShare!=null?', '+st.takerShare+'% taker':'')]];
+  $('#jrTiles').innerHTML=t.map(function(x){return '<div class="jr-tile"><i>'+x[0]+'</i><b class="num '+x[2]+'">'+x[1]+'</b><small>'+esc(x[3])+'</small></div>'}).join('');
+}
+function curve(st){
+  var c=st.curve||[]; if(c.length<2)return '<p class="jr-empty">The curve draws from your second closed trade.</p>';
+  var W=1000,H=220,P=8,min=Math.min(0,Math.min.apply(null,c.map(function(p){return p[1]}))),max=Math.max(0,Math.max.apply(null,c.map(function(p){return p[1]})));
+  var t0=c[0][0],t1=c[c.length-1][0]||t0+1,X=function(t){return P+(t-t0)/Math.max(1,t1-t0)*(W-2*P)},Y=function(v){return H-P-(v-min)/Math.max(1e-9,max-min)*(H-2*P)};
+  var d=c.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join(' '), last=c[c.length-1][1], col=last>=0?'#c2f64a':'#ff5a4d';
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="rgba(255,255,255,.12)" stroke-dasharray="4 6"/><path d="'+d+' L'+X(t1)+' '+Y(0)+' L'+X(t0)+' '+Y(0)+'Z" fill="'+col+'" opacity=".08"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.2" vector-effect="non-scaling-stroke"/></svg>';
+}
+function cal(st){
+  var days=st.days||{}, out='', n=Math.min(DAYS,90), mx=0; Object.keys(days).forEach(function(k){mx=Math.max(mx,Math.abs(days[k]))});
+  for(var i=n-1;i>=0;i--){ var d=new Date(Date.now()-i*864e5).toISOString().slice(0,10), v=days[d]; var bg=v==null?'#151a21':v>0?'rgba(194,246,74,'+(.18+.7*Math.abs(v)/(mx||1))+')':'rgba(255,90,77,'+(.18+.7*Math.abs(v)/(mx||1))+')'; out+='<span title="'+d+(v!=null?': '+money(v,1):'')+'" style="background:'+bg+'"></span>'; }
+  return '<div class="jr-cal">'+out+'</div>';
+}
+function ago(t){if(!t)return 'never';var s=(Date.now()-t)/1000;return s<90?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'}
+function holdTxt(ms){var m=ms/6e4;return m<60?Math.round(m)+'m':m<1440?(m/60).toFixed(1)+'h':(m/1440).toFixed(1)+'d'}
+function px(v){v=+v;if(!isFinite(v)||!v)return '-';return v>=1000?v.toLocaleString('en-US',{maximumFractionDigits:2}):v>=1?v.toFixed(4).replace(/0+$/,'').replace(/\\.$/,''):v.toPrecision(4)}
+function paneOv(st){
+  var best=st.best,worst=st.worst;
+  return '<div class="jr-card jr-curve"><h3>Equity, after fees and funding</h3>'+curve(st)+'<p class="note">Max drawdown <span class="num">'+money(-st.maxDD)+'</span>. Expectancy <span class="num">'+(st.expectancy==null?'-':money(st.expectancy,1))+'</span> a trade.</p></div>'
+   +'<div class="jr-ins"><div class="jr-card"><h3>Your days</h3>'+cal(st)+'</div><div class="jr-card"><h3>Extremes</h3>'
+   +(best?'<p style="margin:0 0 8px">Best: <b class="num pos">'+money(best.net,1)+'</b> on '+esc(best.sym)+' '+(best.dir>0?'long':'short')+'</p>':'')
+   +(worst?'<p style="margin:0 0 8px">Worst: <b class="num neg">'+money(worst.net,1)+'</b> on '+esc(worst.sym)+' '+(worst.dir>0?'long':'short')+'</p>':'')
+   +'<p style="margin:0 0 8px">Average win <b class="num pos">'+(st.avgWin==null?'-':money(st.avgWin,1))+'</b>, average loss <b class="num neg">'+(st.avgLoss==null?'-':money(st.avgLoss,1))+'</b></p>'
+   +(st.liqN?'<p style="margin:0">Liquidated <b class="num neg">'+st.liqN+'</b> time'+(st.liqN>1?'s':'')+', costing <b class="num neg">'+money(st.liqLoss)+'</b></p>':'<p style="margin:0;color:#8d96a2">No liquidations in this period.</p>')
+   +(st.recon&&st.recon.n?'<p class="note">P&amp;L checked against the exchange on '+st.recon.n+' trades: '+(st.recon.off?st.recon.off+' differ by more than a cent, '+money(st.recon.sumDiff,1)+' in total.':'all match to the cent.')+'</p>':'')
+   +'</div></div>';
+}
+function paneTr(tr){
+  if(!tr.length)return '<p class="jr-empty">No positions in this period.</p>';
+  var cards='<div class="jr-tl">'+tr.map(function(t){return '<div class="it"><div class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jr-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jr-badge">open</span>':'')+'</div><div class="n '+cls(t.net)+'">'+money(t.net,1)+'</div><div class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before the imported history':'held '+holdTxt(t.hold))+', size '+money(t.maxNotional)+'</div><div class="s" style="text-align:right">fees '+money(-t.fees)+'</div></div>'}).join('')+'</div>';
+  return '<div class="jr-card">'+cards+'<div class="jr-tw jr-trtbl"><table class="jr-tbl"><tr><th>Closed</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th></tr>'
+   +tr.map(function(t){return '<tr><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jr-badge">open</span>')+'</td><td>'+esc(t.sym)+'<span class="jr-badge">'+esc(t.ex)+'</span>'+(t.liq?'<span class="jr-badge liq">liquidated</span>':'')+(t.partial?'<span class="jr-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td></tr>'}).join('')
+   +'</table></div><p class="note">Times in UTC. Size is the largest notional held. Net = price P&amp;L minus fees plus funding.</p></div>';
+}
+function paneSv(sv,st,ex){
+  var it=(sv&&sv.items)||[];
+  var h='<div class="jr-card"><h3>Where your money goes</h3><p style="margin:0 0 6px;color:#c9c6bd">'+(sv.monthly?'Projected from '+Math.round(st.covDays)+' days of your trading: you pay about':'Your history covers only '+(st.covDays<2?Math.round(st.covDays*24)+' hours':Math.round(st.covDays*10)/10+' days')+', so these are amounts for that period, not a month. You paid')+' <b class="num">'+money(sv.paid30||0)+'</b>'+(sv.monthly?' a month':'')+' in fees and <b class="num">'+money(Math.max(0,-st.funding)*(sv.monthly?30/Math.max(0.5,st.covDays||1):1))+'</b> in funding.</p>'
+   +(it.length?it.map(function(x){var cta=x.cta==='bybit'?'<a class="jr-btn sm" style="margin-top:8px;display:inline-block" href="/go?ex=bybit&amp;from=journal" target="_blank" rel="noopener">Open a Bybit account through MarginPad</a>':x.cta==='hyperliquid'?'<a class="jr-btn sm" style="margin-top:8px;display:inline-block" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="noopener" data-mpex="Hyperliquid">Use code MARGINPAD</a>':'';return '<div class="jr-save"><h4>'+esc(x.title)+'</h4><div class="amt">'+money(x.usd30)+'<small>'+(sv.monthly?'a month':'this period')+'</small></div><p>'+esc(x.body)+'<br>'+cta+'</p></div>'}).join(''):'<p class="jr-empty">Nothing to save that we can measure yet - your costs look efficient for this period.</p>')+'</div>';
+  var cmp=((sv&&sv.compare)||[]).slice(); if(cmp.length){ cmp.push({id:'_you',name:'You, actually',usd30:sv.paid30||0,me:1}); cmp.sort(function(a,c){return a.usd30-c.usd30}); var mx=Math.max.apply(null,cmp.map(function(c){return c.usd30}))||1;
+    h+='<div class="jr-card"><h3>Your volume, priced on each exchange</h3><p style="margin:0 0 12px;color:#8d96a2;font-size:14px">The same monthly volume and taker share at each exchange base rate, against what your own fee tier actually charged.</p><div class="jr-bars">'
+     +cmp.map(function(c){return '<div class="jr-bar'+(c.me?' me':'')+'"><span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener sponsored" data-mpex="'+esc(c.name)+'" data-jrv="'+esc(c.id)+'">'+esc(c.name)+'</a>':esc(c.name)+(c.mine?' <span class="jr-badge">yours</span>':''))+'</span><span class="t"><i style="width:'+(c.usd30/mx*100).toFixed(1)+'%"></i></span><span class="num" style="text-align:right">'+money(c.usd30)+'</span></div>'}).join('')+'</div></div>'; }
+  return h;
+}
+function grp(title,rows,fmt){
+  if(!rows||!rows.length)return '<div class="jr-card"><h3>'+title+'</h3><p class="jr-empty">Needs at least 8 trades in a group.</p></div>';
+  return '<div class="jr-card"><h3>'+title+'</h3><table class="jr-tbl"><tr><th></th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th></tr>'+rows.map(function(r){return '<tr><td>'+esc(fmt?fmt(r.k):r.k)+'</td><td class="r num">'+r.n+'</td><td class="r num">'+r.wr+'%</td><td class="r num '+cls(r.net)+'">'+money(r.net,1)+'</td></tr>'}).join('')+'</table></div>';
+}
+function paneIn(st){
+  var b=st.by||{}, L=function(a,f){return (a||[]).map(function(r){return Object.assign({lab:f(r.k)},r)})};
+  var worst=[].concat(L(b.sym,function(k){return 'trading '+k}),L(b.hour,function(k){return 'opening at '+k+':00 UTC'}),L(b.weekday,function(k){return 'opening on '+k}),L(b.hold,function(k){return 'holding '+k}),L(b.size,function(k){return 'positions of '+k}),L(b.side,function(k){return k.toLowerCase()+'s'})).filter(function(r){return r.net<0}).sort(function(a,c){return a.net-c.net})[0];
+  return (worst?'<div class="jr-card"><h3>Your most expensive habit</h3><p style="margin:0;color:#c9c6bd">The group losing the most: <b>'+esc(worst.lab)+'</b>, <span class="num neg">'+money(worst.net,1)+'</span> over '+worst.n+' trades. Look there first.</p></div>':'')
+   +'<div class="jr-ins">'+grp('By market',b.sym)+grp('By side',b.side)+grp('By hour opened (UTC)',b.hour,function(h){return h+':00'})+grp('By day opened',b.weekday)+grp('By time held',b.hold)+grp('By size',b.size)+'</div>';
+}
+function paneAc(conns){
+  return '<div class="jr-card">'+conns.map(function(c){
+    var pct=c.done?100:c.oldest?Math.min(99,Math.round((Date.now()-c.oldest)/(180*864e5)*100)):5;
+    return '<div class="jr-acc"><img src="/assets/ex/'+esc(c.ex)+'.png" alt=""><div><b>'+esc(c.label||c.ex)+'</b> <span class="num" style="color:#8d96a2">'+esc(c.kid||'')+'</span><div class="st">'+(c.status==='key_invalid'?'<span class="neg">The key stopped working - connect it again.</span>':c.err?'<span class="neg">'+esc(c.err)+'</span>':(c.done?'Up to date':'Importing history')+', '+(c.nfills||0)+' fills, synced '+ago(c.last_sync))+(c.ex!=='hyperliquid'?(c.ipbound?' - bound to '+IP:' - <span style="color:#ffb347">not bound to an IP</span>'):'')+'</div>'+(c.done?'':'<div class="jr-prog"><i style="width:'+pct+'%"></i></div>')+'</div><div style="display:flex;gap:6px"><button class="jr-btn sm ghost" data-sync="'+esc(c.id)+'">Sync now</button><button class="jr-btn sm ghost" data-disc="'+esc(c.id)+'">Disconnect</button></div></div>'}).join('')
+   +'</div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="jr-btn" id="jrAdd">Connect another account</button><button class="jr-btn ghost" id="jrWipe">Delete everything</button></div><div class="jr-msg" id="jrAcMsg"></div>';
+}
+function render(j){
+  D=j; var st=j.stats||{};
+  var cov=st.covFrom&&st.covDays<DAYS-0.5?' Your history here starts '+new Date(st.covFrom).toISOString().slice(0,10)+' ('+(st.covDays<2?Math.round(st.covDays*24)+' hours':Math.round(st.covDays)+' days')+' of data).':'';
+  $('#jrAcc').textContent=(j.conns||[]).map(function(c){return c.label||c.ex}).join(', ')+', read-only.'+cov;
+  tiles(st);
+  $('#p-ov').innerHTML=paneOv(st); $('#p-tr').innerHTML=paneTr(j.trades||[]); $('#p-sv').innerHTML=paneSv(j.savings||{},st,j.exMain); $('#p-in').innerHTML=paneIn(st); $('#p-ac').innerHTML=paneAc(j.conns||[]);
+}
+function load(){ return api('/stats?days='+DAYS).then(function(j){ if(j&&j.stats)render(j); return j; }); }
+var pollT=0;
+function boot(){
+  if(!signedIn())return;
+  api('/state').then(function(s){
+    if(!s||!s.conns||!s.conns.length){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');return}
+    $('#jrGuest').style.display='none'; $('#jrDash').classList.add('on'); $('#jrOpen').classList.remove('on');
+    load().then(function(j){ var imp=(j.conns||[]).some(function(c){return !c.done&&c.status!=='key_invalid'}); clearTimeout(pollT); if(imp)pollT=setTimeout(function(){api('/sync',{}).then(load)},20000); });
+  });
+}
+$('#jrRange').addEventListener('click',function(e){var b=e.target.closest('.jr-chip');if(!b)return;$$('.jr-chip',this).forEach(function(x){x.classList.toggle('on',x===b)});DAYS=+b.getAttribute('data-d');load()});
+$('#jrTabs').addEventListener('click',function(e){var b=e.target.closest('.jr-tab');if(!b)return;$$('.jr-tab').forEach(function(x){x.classList.toggle('on',x===b)});$$('.jr-pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+b.getAttribute('data-p'))});track('tab:'+b.getAttribute('data-p'))});
+document.addEventListener('click',function(ev){
+  var vj=ev.target.closest('[data-jrv]'); if(vj)track('venue:'+vj.getAttribute('data-jrv'));
+  var s=ev.target.closest('[data-sync]'); if(s){s.disabled=true;s.textContent='Syncing...';api('/sync',{id:s.getAttribute('data-sync')}).then(function(j){if(j&&j.error==='slow_down'){s.textContent='Wait 20 s';return}load()});return}
+  var d=ev.target.closest('[data-disc]'); if(d){ if(d.getAttribute('data-arm')!=='1'){d.setAttribute('data-arm','1');d.textContent='Click again to remove';setTimeout(function(){if(document.body.contains(d)){d.removeAttribute('data-arm');d.textContent='Disconnect'}},6000);return} api('/disconnect',{id:d.getAttribute('data-disc')}).then(boot);return}
+  if(ev.target.closest('#jrWipe')){var w=ev.target.closest('#jrWipe'); if(w.getAttribute('data-arm')!=='1'){w.setAttribute('data-arm','1');w.textContent='Click again: delete every key and trade';setTimeout(function(){if(document.body.contains(w)){w.removeAttribute('data-arm');w.textContent='Delete everything'}},6000);return} api('/wipe',{}).then(boot);return}
+  if(ev.target.closest('#jrAdd')){$('#jrDash').classList.remove('on');$('#jrGuest').style.display='';window.scrollTo({top:$('#jrRail').getBoundingClientRect().top+scrollY-90,behavior:'smooth'});return}
+});
+window.addEventListener('mp-auth-change',function(){boot()});
+boot();
+})();
+</script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
+`;
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
+fs.writeFileSync(OUT, html);
+console.log('wrote', OUT, Math.round(html.length / 1024) + ' KB');
