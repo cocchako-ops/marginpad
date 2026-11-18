@@ -12,6 +12,10 @@ import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes throug
 import OPS_VIZ from './ops/client/ops-viz.js.txt'; // the chart engine and history reader (2026-11-01): served as one file with ops.js, kept as a real file of its own
 import { JournalStore, handleJournal, journalCron, journalDesk } from './journal.js'; // the real-account journal (2026-11-18)
 export { JournalStore };
+import { AutoStore } from './autotrade.js'; // Autopilot (2026-11-18): the Premium signal executed on a granted member's Binance account
+import { apSignal as apSignalCore, apCron, handleAutopilot, apDesk } from './autopilot-routes.js';
+import AP_PAGE from './autopilot/page.html';
+export { AutoStore };
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
 /* ---- COLLECTOR CIRCUIT BREAKER (2026-10-06) ----
@@ -78,7 +82,7 @@ async function colGuardedFetch(u, init) {
   } catch (e) { if (timer) clearTimeout(timer); colTrip(); throw e; }
 }
 globalThis.fetch = function (input, init) {
-  try { const u = typeof input === 'string' ? input : ((input && input.url) || ''); if (COL_BASE && u.indexOf(COL_BASE) === 0) return colGuardedFetch(u, init); } catch (e) {}
+  try { const u = typeof input === 'string' ? input : ((input && input.url) || ''); if (COL_BASE && u.indexOf(COL_BASE) === 0 && u.indexOf('/api/v1/xtrade') < 0) return colGuardedFetch(u, init); } catch (e) {} // Autopilot's orders never wait on (or trip) the breaker: a market-data outage must not stop a stop-loss from being placed
   return __realFetch(input, init);
 };
 
@@ -7104,9 +7108,20 @@ async function logSigResult(env, sym, r, st, sl0) {
   try {
     let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
     const rec = { sym, r, ts: Date.now() };
-    if (st) { rec.dir = st.dir === 1 ? 'long' : 'short'; rec.entry = st.entry; rec.sl = (sl0 != null ? sl0 : st.sl); rec.tp1 = st.tp1; rec.tp2 = st.tp2; rec.sigTs = (st.bar || 0) * 1000; if (st.exitPx != null) rec.exitPx = st.exitPx; if (st.src) rec.src = st.src; if (st.sigId) rec.sigId = st.sigId; }
+    if (st) { rec.dir = st.dir === 1 ? 'long' : 'short'; rec.entry = st.entry; rec.sl = (sl0 != null ? sl0 : st.sl); rec.tp1 = st.tp1; rec.tp2 = st.tp2; rec.sigTs = (st.bar || 0) * 1000; if (st.exitPx != null) rec.exitPx = st.exitPx; if (st.src) rec.src = st.src; if (st.sigId) rec.sigId = st.sigId; if (st.tiers) rec.tiers = st.tiers; if (st.premium) rec.prem = 1; if (st.cl != null) rec.cl = st.cl; }
     a.unshift(rec); await env.STATS.put('csig:results', JSON.stringify(a.slice(0, 400)), { expirationTtl: 90 * 86400 });
+    await sigArchive(env, (arr) => { arr.unshift(rec); }); // the 400-row ring forgets; the monthly archive never does (2026-11-18, owner: keep every outcome)
   } catch (e) {}
+}
+async function sigArchive(env, fn, monthsBack) { // csig:arch:<YYYY-MM> - every signal outcome kept for good, one key a month
+  const now = new Date();
+  for (let i = 0; i <= (monthsBack || 0); i++) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)), k = 'csig:arch:' + d.toISOString().slice(0, 7);
+    let arr = []; try { arr = JSON.parse(await env.STATS.get(k) || '[]'); } catch (e) {}
+    const r = fn(arr, i); if (r === false) continue;
+    await env.STATS.put(k, JSON.stringify(arr.slice(0, 6000)));
+    if (r === 'stop') return;
+  }
 }
 // Stamp the RUNNER's fate onto the newest un-finalized win record for a symbol. A 'win' alone only says TP1 was
 // hit - the position is half open after it (stop at entry). Without the final (be/tp2/flip@price) the signal's
@@ -7121,6 +7136,7 @@ async function logSigFinal(env, sym, final, exitPx, sigId) {
     if (!rec) return;
     rec.final = final; if (exitPx != null) rec.exitPx = exitPx; rec.finalTs = Date.now();
     await env.STATS.put('csig:results', JSON.stringify(a), { expirationTtl: 90 * 86400 });
+    try { await sigArchive(env, (arr) => { const x = arr.find(y => y.sigId === rec.sigId && y.ts === rec.ts); if (!x) return false; x.final = final; x.finalTs = rec.finalTs; if (exitPx != null) x.exitPx = exitPx; return 'stop'; }, 1); } catch (e) {}
   } catch (e) {}
 }
 // Weekly signal performance report → posted to every signal channel (Mon ≥09:00 UTC, once). Builds trust + justifies the paid tiers.
@@ -7212,7 +7228,16 @@ async function checkChartSignals(env, force) {
     const token = env.TELEGRAM_TOKEN;
     const TIER_NOTE = { fast: '<i>Fast - 1h flip, confirmed ~3min (matches the chart)</i>', balanced: '<i>Balanced - 4h trend + volume confirmed</i>', premium: '<i>Premium - 4h trend + ADX + volume confirmed</i>' };
     const listRaw = (await env.STATS.get('csig:coins') || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim();
-    const coins = listRaw.split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
+    const coreCoins = listRaw.split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
+    /* PREMIUM v2 (2026-11-18, owner: "ajde da probamo sa 18 coin-a 2% po trejdu"). The 2024-2026 study (build/signal-gate/robust.js,
+       best.js, improve.js): a confirmed flip pays only when the WHOLE market moves - >=4 of the 9 channel coins flipping the same
+       way in the same hour, on a weekday, with the stop under 2%: 60% / +0.46R on the channel coins and 67% / +0.66R on nine coins
+       the study never saw (p 0.01%), against 43% / 0.00R for the old gate. The "market move" is ALWAYS counted on the core list
+       (csig:coins); the extra coins (csig:extra) are traded on it but never counted in it, and they post to Premium only. */
+    const extraRaw = ((await env.STATS.get('csig:extra')) ?? 'DOGE ADA AVAX LINK SUI LTC DOT NEAR APT').trim();
+    const coreSet = new Set(coreCoins);
+    const coins = coreCoins.concat(extraRaw.split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(s => s && !coreSet.has(s))).slice(0, 24);
+    const premMin = Math.max(2, Math.min(9, +((await env.STATS.get('csig:premcl')) ?? 4)));
     const adxMin = +(await env.STATS.get('csig:adx') || 20);
     const volMul = +(await env.STATS.get('csig:volmul') || 1.2);
     const htfOn = (await env.STATS.get('csig:htf')) !== '0';
@@ -7276,7 +7301,7 @@ async function checkChartSignals(env, force) {
         kdMap[sym] = kd;
         const stc = _supertrend(kd.closed, 10, 3); if (!stc) continue;
         const li = kd.closed.length - 1, dN = stc.dir[li], dP = stc.dir[li - 1];
-        if (dN != null && dP != null && dN !== dP) { const k = kd.closed[li].time + ':' + dN; flipCnt[k] = (flipCnt[k] || 0) + 1; }
+        if (dN != null && dP != null && dN !== dP && coreSet.has(sym)) { const k = kd.closed[li].time + ':' + dN; flipCnt[k] = (flipCnt[k] || 0) + 1; } // the market move is counted on the core coins only (see PREMIUM v2)
       } catch (e) {}
       await new Promise(r => setTimeout(r, 40));
     }
@@ -7291,7 +7316,7 @@ async function checkChartSignals(env, force) {
         // candle close). Matches the chart because: (1) sigKlines now SANITIZES phantom wicks (same as the chart) so a
         // bad tick can't flip it; (2) the flip must HOLD ≥3 cron cycles (~3min) before firing - a wick that reverts
         // never sends; (3) at most ONE Fast signal per 1h candle (no buy+sell in the same candle). Owner: "few min ok". =========
-        if (chans.fast && !force) {
+        if (chans.fast && !force && coreSet.has(sym)) { // Fast stays on the core coins - the extra coins exist for Premium v2
           const stL = _supertrend(bars, 10, 3);
           const stCL = _supertrend(closed, 10, 3); const cDir = stCL ? stCL.dir[stCL.dir.length - 1] : null; // the CLOSED-bar direction = what the chart's markers show
           const iL = bars.length - 1, lDir = stL.dir[iL], lAtr = stL.atr[iL], lPx = bars[iL].close, curBar = bars[iL].time;
@@ -7362,6 +7387,7 @@ async function checkChartSignals(env, force) {
         let flip = dNow !== dPrev;
         if (force && sym === 'BTC') { flip = true; state = null; }
         if (flip && (!state || state.bar !== bar || force)) {
+          if (!force) { try { await env.STATS.put('csig:flipd:' + sym, JSON.stringify({ dir: dNow, bar }), { expirationTtl: 7 * 86400 }); } catch (e) {} } // every closed flip, gated or not - Autopilot closes a trade the trend turned against
           // a NEW flip abandons any tracked signal on this symbol - record its exit at the flip price so the
           // stats keep the WHOLE sample (an overwritten runner/pre-TP1 signal used to vanish without an outcome)
           if (!force && state && !state.done && state.entry != null) {
@@ -7391,14 +7417,8 @@ async function checkChartSignals(env, force) {
           const pRsiOk = rsiV == null || (long ? rsiV <= 74 : rsiV >= 26); // blow-off top / capitulation low warning
           const pEmaOk = ema200 == null || (long ? entry >= ema200 * 0.995 : entry <= ema200 * 1.005);
           const hiConv = pAdxOk && pRsiOk && pEmaOk;
-          let tiers;
-          if (force) { tiers = ['premium']; }
-          else {
-            tiers = []; // Fast fires from the LIVE forming-candle path above (sanitized + 3min hold); these are the confirmed closed-candle tiers
-            if (evOk && htfOk && volOk) tiers.push('balanced', 'premium');
-          }
-          const postTiers = tiers.filter(t => chans[t]);
-          if (!postTiers.length) { if (!force) await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
+          const baseOk = evOk && htfOk && volOk;
+          if (!force && !baseOk) { await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
           // ---- quality gate: 8 measured checks, post only at >= qGate (see the qGate comment above) ----
           const bdt = new Date(bar * 1000), dow = bdt.getUTCDay(), hr = bdt.getUTCHours();
           const qc = {
@@ -7413,13 +7433,22 @@ async function checkChartSignals(env, force) {
           };
           const qScore = Object.values(qc).filter(Boolean).length;
           const qWhy = Object.keys(qc).filter(k => qc[k]).join(',');
-          if (!force && qGate > 0 && qScore < qGate) {
+          // the two confirmed tiers now decide separately: Balanced keeps the 8-check gate on the core coins, Premium is v2
+          const clN = flipCnt[bar + ':' + dNow] || 0, stopPct = risk / entry * 100;
+          const premOk = clN >= premMin && qc.weekday && stopPct < 2;
+          const balOk = coreSet.has(sym) && (qGate <= 0 || qScore >= qGate);
+          const tiers = force ? ['premium'] : [].concat(balOk ? ['balanced'] : [], premOk ? ['premium'] : []);
+          const postTiers = tiers.filter(t => chans[t]);
+          // Autopilot executes Premium v2 on the granted accounts - started now, awaited after the posts, so the order is not queued behind Telegram
+          const apRun = (!force && premOk) ? apSignal(env, { sigId, sym, long, entry, sl, tp1, tp2, bar, cl: clN }).catch(() => null) : null;
+          if (!force && !postTiers.length) {
             // QUIET: below the gate → nothing is posted, but the signal is tracked to its outcome exactly like a posted one
             // (results src:'quiet') so the gate's effect stays measurable from the same ring. tiers:[] = no follow-ups.
-            await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: [], premium: false, quiet: true, src: 'quiet', qScore, msgIds: {}, sigId, ts: Date.now(), done: false }));
+            await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: [], premium: false, quiet: true, src: 'quiet', qScore, cl: clN, msgIds: {}, sigId, ts: Date.now(), done: false }));
             dlog({ s: sym, ev:'FIRE-quiet', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), px: entry, score: qScore, gate: qGate, why: qWhy });
             try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' quiet ' + qScore + '/8', ''); } catch (e) {}
             report.sent.push(sym + ' QUIET ' + qScore + '/8');
+            if (apRun) await apRun;
             continue;
           }
           const isPrem = tiers.includes('premium');
@@ -7434,7 +7463,8 @@ async function checkChartSignals(env, force) {
           const premText = ticket(long, sym, entry, tp1, tp2, sl, '') + '<b>Confirmed 1h ' + (long ? 'LONG' : 'SHORT') + '</b> - Supertrend flip on candle close.\n'
             + (hiConv ? '<b>High-conviction</b> - trend, ADX, RSI and the 200-EMA all aligned.\n' : '')
             + '<b>Checks:</b> ' + cfl.join(' · ') + '\n'
-            + '<b>Quality:</b> ' + qScore + '/8 checks passed' + (qc.cluster ? ' · ' + (flipCnt[bar + ':' + dNow] || 0) + ' coins flipped this way this hour' : '') + '\n'
+            + '<b>Market move:</b> ' + clN + ' of ' + coreCoins.length + ' majors flipped this way this hour' + (clN >= 6 ? ' - <b>strong signal</b>' : '') + '\n'
+            + '<b>Size:</b> risk ' + (clN >= 6 ? '2-3%' : '2%') + ' of your account. $1,000 → $20 at risk → ' + fpx(Math.round(20 / (stopPct / 100))).replace(/\.00$/, '') + ' position, ~' + fpx(Math.round(20 / (stopPct / 100) / levOf(entry, sl))).replace(/\.00$/, '') + ' margin at ' + levOf(entry, sl) + '×. More leverage does not make the trade better.\n'
             + '<b>Plan:</b> enter now, take ~50% at TP1, move stop to breakeven, trail the runner to TP2.\n'
  + ' <b>Hold ~1–4h</b> (until TP1/TP2 or the 1h Supertrend flips back). If TP1 isn’t tagged within ~3h and price stalls, momentum failed - I’ll ping a time-check.\n'
             + '<code>#' + sigId + '</code>' + TG_AFF_LINE;
@@ -7443,11 +7473,12 @@ async function checkChartSignals(env, force) {
           for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; if (msgIds[t]) await bumpSentToday(env, t); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } // per-channel honest counter → the daily digest's "Signals today" line counts what THAT channel actually received
           // NOTE: the FREE channel is served by checkFreeSignals (the screener product), NOT here. The old `chans.free`
           // send lived on this line but chans never had a `free` key → it silently posted nothing for ~6 days. Removed.
-          if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, qScore, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
+          if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, qScore, cl: clN, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
           if (!force && sentOk) { try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} }
           if (!force && sentOk) { try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' ' + postTiers.join('/'), ''); } catch (e) {} }
           if (!force && sentOk) dlog({ s: sym, ev:'FIRE-confirmed', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), tiers: postTiers.join('/'), px: entry, atr: Number(atr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close), score: qScore, why: qWhy });
           report.sent.push(sym + ' ' + (long ? 'BUY' : 'SELL') + ' [' + postTiers.join('/') + ']');
+          if (apRun) { const ar = await apRun; if (ar && ar.n) report.sent.push(sym + ' autopilot ' + ar.taken + '/' + ar.n); }
           continue;
         }
         // confirmed TP/SL tracking - only price AFTER the entry candle counts (the flip candle's own pre-entry wick must NOT trigger)
@@ -7500,7 +7531,7 @@ async function postSignalDigest(env) {
     const day = now.toISOString().slice(0, 10);
     if (await env.STATS.get('csig:digest:' + day)) return;
     await env.STATS.put('csig:digest:' + day, '1', { expirationTtl: 2 * 86400 }); // stamp FIRST - never double-post
-    const coins = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim().split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
+    const coins = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim().split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14); // the core list: Fast + Balanced trade these, Premium v2 also the csig:extra coins
     const rows = [];
     for (const sym of coins) {
       try { const kd = await sigKlines(sym, 60); if (!kd || kd.closed.length < 30) continue;
@@ -19024,6 +19055,14 @@ const BYBIT_REF_URL = 'https://partner.bybit.com/b/162071';
 const BYBIT_POOL_TIERS = [{ at: 0, name: 'Warming up', paid: 10 }, { at: 100000, name: 'Heating up', paid: 10 }, { at: 250000, name: 'Hot', paid: 10 }, { at: 500000, name: 'On fire', paid: 10 }, { at: 1000000, name: 'Inferno', paid: 10 }];
 const BYBIT_BPS_DEFAULT = 2.24;
 /* What src/journal.js needs from this file, passed in rather than imported back (the module stays free of this file's state). */
+const AP_H = {
+  get SESS_COOKIE() { return SESS_COOKIE; }, get page() { return AP_PAGE; },
+  sessionUser: (env, t) => sessionUser(env, t), getCookie: (r, n) => getCookie(r, n),
+  evPush: (env, req, t, l, p) => evPush(env, req, t, l, p), tgAdmin: (env, t, o) => tgAdmin(env, t, o),
+  userByName: async (env, name) => { try { const w = await usersDO(env, '/xpdiag', { username: String(name || '') }); return (w && w.user) || null; } catch (e) { return null; } },
+  sendMail: async (env, to, subject, html) => { if (!env.RESEND_API_KEY) return false; try { const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify({ from: 'MarginPad <login@marginpad.io>', to: [to], subject, html }) }); if (!r.ok) { try { mailFail(env, 'autopilot', r.status); } catch (e) {} } return r.ok; } catch (e) { return false; } },
+};
+const apSignal = (env, sig) => apSignalCore(env, sig, AP_H);
 const JRN_H = {
   get CORS() { return CORS; }, get SESS_COOKIE() { return SESS_COOKIE; }, get feeVenues() { return FEE_VENUES; },
   sessionUser: (env, t) => sessionUser(env, t), getCookie: (r, n) => getCookie(r, n),
@@ -28405,6 +28444,8 @@ export default {
     if (url.pathname === '/blog/theses/' || url.pathname === '/blog/theses') return Response.redirect(url.origin + '/community/c/thesis', 301);
     if (url.pathname.startsWith('/api/spot/')) return handleSpot(url, request, env);
     if (url.pathname === '/api/journal' || url.pathname.startsWith('/api/journal/')) return handleJournal(url, request, env, ctx, JRN_H);
+    if (url.pathname === '/autopilot' || url.pathname === '/autopilot/' || url.pathname.startsWith('/api/ap/')) return handleAutopilot(url, request, env, ctx, AP_H); // granted members only; a 404 to everyone else
+    if (url.pathname === '/api/admin/autopilot' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) return apDesk(url, request, env, AP_H);
     if ((url.pathname === '/api/nowpayments/ipn' || url.pathname === '/api/nowpay/ipn') && request.method === 'POST') return handleNowpayIpn(request, env);
     if (url.pathname === '/api/admin/user') return handleUserPage(url, env, request);
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(url, request, env, ctx);
@@ -33279,6 +33320,7 @@ export default {
       ctx.waitUntil(checkTgWebhook(env).catch(() => {})); // Bybit's Group Bot service puts its own webhook back on our bot - measured and repaired every minute
       ctx.waitUntil((async () => { try { await cxLabelTick(env); } catch (e) {} try { await checkCatalystAlerts(env); } catch (e) {} })()); // labels first (Haiku, self-gated 50 s), then the early pass + the alerts in the SAME sequence - the model's reading must be on the item the minute it lands
       /* checkCatalystAlerts runs above, after the labels */ // a major story naming a coin a Premium member holds, within the minute // the house coin's minute: read the inputs, price one step, append it - the recorded series is the only copy
+      ctx.waitUntil(apCron(env, AP_H).catch(() => {})); // Autopilot: TP1 -> stop to entry, the flip exit, the stop check, every minute
       ctx.waitUntil(pushDrain(env).catch(() => {})); // the 1-min trigger does almost no work - drain the notification push outbox here so a DM / mention / duel / new-follower reaches the phone within a minute (follow-trade already drains on the trade path)
       return;
     }

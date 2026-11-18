@@ -82,7 +82,7 @@
     { id: 'inbox', title: 'Inbox', views: [{ id: 'queue', title: 'Waiting for you' }, { id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'campaigns', title: 'Campaigns' }, { id: 'tgbot', title: 'Telegram bot' }] },
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'premfunnel', title: 'Premium page' }, { id: 'pnl', title: 'Profit and loss' }, { id: 'members', title: 'Costliest members' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'squads', title: 'Squads' }, { id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
-    { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }, { id: 'moved', title: 'What moved it' }] },
+    { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }, { id: 'moved', title: 'What moved it' }, { id: 'autopilot', title: 'Autopilot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'promos', title: 'Promotions' }, { id: 'seo', title: 'Traffic & SEO' }, { id: 'movers', title: 'Movers' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }, { id: 'incidents', title: 'Incidents' }, { id: 'market', title: 'Market archive' }] },
     { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }, { id: 'codes', title: 'Codes' }] }
@@ -2467,6 +2467,47 @@ VIEWS['people/activity'] = { render: function (el, arg) {
   // /api/auth/opentrades = every open paper position (signed-in + active guests) with whose it is; /api/auth/tradeev?since= = 7d close events
   // for realized P&L; prices from /api/prices plus /api/price?symbol= for anything the base set misses. Margins above the $100k cap are
   // shown but excluded from every sum (an oversized legacy position would otherwise drown the totals).
+  VIEWS['trading/autopilot'] = { render: function (el) { // Autopilot (2026-11-18): the Premium signal on a member's own Binance account - access is granted HERE, nowhere else
+    var st = { msg: '' };
+    function paint() {
+      J('/api/admin/autopilot').then(function (d) {
+        if (d.error) { el.innerHTML = failHtml(d.error); return; }
+        var M = d.members || [], live = M.filter(function (m) { return m.s && m.s.mode === 'live'; }).length;
+        var hbOk = d.hb && Date.now() - d.hb < 3 * 60000;
+        var pm = function (v) { v = +v || 0; return '<span class="' + (v >= 0 ? 'up' : 'dn') + '">' + (v >= 0 ? '+' : '-') + USD(Math.abs(v)) + '</span>'; };
+        el.innerHTML = '<div class="grid g4">' + tile(N(M.filter(function (m) { return m.allowed; }).length), 'members with access', 'dim', N(live) + ' trading live')
+          + tile(d.kill ? 'ON' : 'off', 'kill switch', d.kill ? 'bad' : 'dim', d.kill ? 'no new trades for anyone' : 'signals are being executed')
+          + tile(hbOk ? 'alive' : 'stale', 'bot heartbeat', hbOk ? 'dim' : 'bad', d.hb ? agoT(d.hb) : 'never ran')
+          + tile(d.lastsig ? esc(d.lastsig.sym) + ' ' + (d.lastsig.long ? 'long' : 'short') : '-', 'last Premium signal', 'dim', d.lastsig ? agoT(d.lastsig.ts) + ' · taken by ' + d.lastsig.taken + ' of ' + d.lastsig.n : 'none yet') + '</div>'
+          + (!d.ready.kek || !d.ready.fwd ? '<div class="card"><b class="dn">Not ready:</b> ' + (!d.ready.kek ? 'AP_KEK secret missing. ' : '') + (!d.ready.fwd ? 'TRADE_FWD_KEY secret missing.' : '') + '</div>' : '')
+          + card('Give access', '<div class="bar"><input class="in" id="apName" placeholder="username"><input class="in" id="apNote" placeholder="note (optional)"><button class="btn" id="apGrant">Give access</button></div><div class="meta" id="apMsg">' + esc(st.msg) + '</div><div class="meta">The member then sees <b>marginpad.io/autopilot/</b> while signed in. Nobody else can open it - to them it is a 404. Nothing on the site links to it.</div>')
+          + card('Members', M.length ? tbl([
+            { h: 'member', f: function (m) { return m.name ? userLink(m.name) : '<span class="mono meta">' + esc(m.uid.slice(0, 10)) + '</span>'; } },
+            { h: 'access', f: function (m) { return m.allowed ? '<span class="badge up">yes</span>' : '<span class="badge dn">withdrawn</span>'; } },
+            { h: 'mode', f: function (m) { var s = m.s || {}; return s.mode ? '<span class="badge' + (s.mode === 'live' ? ' up' : '') + '">' + esc(s.mode) + '</span>' + (s.paused ? ' <span class="badge">paused</span>' : '') : '-'; } },
+            { h: 'key', f: function (m) { var c = m.s && m.s.conn; return c ? '<span class="mono">' + esc(c.kid) + '</span>' + (c.net === 'test' ? ' <span class="meta">testnet</span>' : '') : '<span class="meta">none</span>'; } },
+            { h: 'risk', r: true, mono: true, f: function (m) { return m.s ? m.s.risk + '%' : '-'; } },
+            { h: 'equity', r: true, mono: true, f: function (m) { var a = m.s && m.s.acct; return a ? USD((+a.bal || 0) + (+a.upnl || 0)) : '-'; } },
+            { h: 'open', r: true, mono: true, f: function (m) { return m.s ? N(m.s.open) : '-'; } },
+            { h: 'closed', r: true, mono: true, f: function (m) { return m.s ? N(m.s.closed) + (m.s.closed ? ' · ' + Math.round(m.s.wins / m.s.closed * 100) + '%' : '') : '-'; } },
+            { h: 'P&L', r: true, mono: true, f: function (m) { return m.s ? pm(m.s.pnl) : '-'; } },
+            { h: 'last action', f: function (m) { var l = m.s && m.s.lastLog; return l ? '<span class="meta">' + agoT(l.ts) + '</span> ' + esc(String(l.msg).slice(0, 70)) : '-'; } },
+            { h: '', f: function (m) { return (m.allowed ? '<button class="btn warn" data-rv="' + esc(m.uid) + '">Withdraw access</button> ' : '<button class="btn" data-gr="' + esc(m.name || '') + '">Restore</button> ') + ((m.s && m.s.open) ? '<button class="btn bad" data-fl="' + esc(m.uid) + '">Close positions</button>' : '') + ((m.s && m.s.mode === 'shadow') ? ' <button class="btn" data-st="' + esc(m.uid) + '" title="open a virtual BTC long on this shadow account to see the dashboard work">Test signal</button>' : ''); } },
+          ], M) : '<div class="empty">Nobody has access yet.</div>')
+          + card('Emergency', '<div class="bar"><button class="btn ' + (d.kill ? 'good' : 'bad') + '" id="apKill">' + (d.kill ? 'Turn the kill switch off' : 'Kill switch: stop all new trades') + '</button></div><div class="meta">The kill switch stops NEW entries for everyone at once. Open positions keep their stops and targets and are still managed. Withdrawing access does the same for one member; their open trade is still managed to its stop.</div>'
+          + (d.fwd && d.fwd.n != null ? '<div class="meta" style="margin-top:8px">Order forwarder: ' + N(d.fwd.n) + ' calls, ' + N(d.fwd.refused) + ' refused, last ' + (d.fwd.last ? agoT(d.fwd.last) : 'never') + '</div>' : '<div class="meta dn" style="margin-top:8px">Order forwarder not answering: ' + esc(JSON.stringify(d.fwd || {})) + '</div>'));
+        $('apGrant').onclick = function () { var n = $('apName').value.trim(); if (!n) return; post('/api/admin/autopilot', { op: 'grant', username: n, note: $('apNote').value.trim() }).then(function (j) { st.msg = j.ok ? 'Access given to @' + (j.name || n) + '.' : 'Not given: ' + (j.error || 'error'); paint(); }); };
+        el.querySelectorAll('[data-rv]').forEach(function (b) { b.onclick = function () { if (!confirmed('Withdraw Autopilot access? No new trades; an open trade is still managed to its stop.')) return; post('/api/admin/autopilot', { op: 'revoke', uid: b.getAttribute('data-rv') }).then(paint); }; });
+        el.querySelectorAll('[data-gr]').forEach(function (b) { b.onclick = function () { post('/api/admin/autopilot', { op: 'grant', username: b.getAttribute('data-gr') }).then(paint); }; });
+        el.querySelectorAll('[data-fl]').forEach(function (b) { b.onclick = function () { if (!confirmed('Close every Autopilot position of this member at market now?')) return; post('/api/admin/autopilot', { op: 'flatten', uid: b.getAttribute('data-fl') }).then(paint); }; });
+        el.querySelectorAll('[data-st]').forEach(function (b) { b.onclick = function () { post('/api/admin/autopilot', { op: 'shadowtest', uid: b.getAttribute('data-st'), sym: 'BTC', long: true }).then(function (j) { st.msg = j.taken ? 'Shadow test signal taken: ' + j.sig.sigId : 'Test signal not taken: ' + (j.why || j.error || j.skipped || '?'); paint(); }); }; });
+        $('apKill').onclick = function () { if (!confirmed(d.kill ? 'Turn the kill switch off? Signals are executed again from the next one.' : 'Stop all new Autopilot trades for everyone?')) return; post('/api/admin/autopilot', { op: 'kill', on: !d.kill }).then(paint); };
+        stamp();
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
+    }
+    paint();
+  } };
+
   VIEWS['trading/live'] = { render: function (el) {
     var S = { pos: [], traders: 0, srv: [], PR: {}, miss: {}, view: 'traders', sort: 'pnl', open: {}, q: '' }; recall('trading/live', S, ['view', 'sort']);
     var CAP = 100000;

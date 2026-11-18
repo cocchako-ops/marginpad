@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Autopilot - MarginPad</title>
+<link rel="icon" href="/assets/app-icon-192.png">
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+:root{--bg:#07080a;--panel:#0e1014;--panel2:#12151b;--line:#1d2129;--line2:#262b35;--ink:#eef1f4;--mute:#8c949f;--dim:#5b636e;--lime:#c2f64a;--green:#2ebd85;--red:#ff5a4d;--amber:#f5b53d;--blue:#6aa8ff;--glow:rgba(194,246,74,.18)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:14px/1.5 'Familjen Grotesk',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.num,.mono{font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+a{color:var(--lime);text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px 80px}
+/* top */
+.top{display:flex;align-items:center;gap:14px;padding:18px 0 14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font:700 15px 'Bricolage Grotesque',sans-serif;letter-spacing:.02em;color:var(--ink)}
+.brand img{width:26px;height:26px;border-radius:7px}
+.brand em{font-style:normal;color:var(--mute);font-weight:500}
+.top .sp{flex:1}
+.who{color:var(--mute);font-size:12.5px}
+/* annunciator: the page's one memorable element - a cockpit's status lights */
+.ann{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:22px 0 18px}
+.al{position:relative;border:1px solid var(--line2);background:#0b0d10;border-radius:6px;padding:10px 10px 9px;min-height:64px;overflow:hidden}
+.al b{display:block;font:700 11px 'Space Mono',monospace;letter-spacing:.08em;color:var(--dim)}
+.al span{display:block;margin-top:5px;font-size:12.5px;color:var(--mute)}
+.al.on{border-color:rgba(194,246,74,.45);background:linear-gradient(180deg,rgba(194,246,74,.09),rgba(194,246,74,.02))}
+.al.on b{color:var(--lime);text-shadow:0 0 14px rgba(194,246,74,.55)}
+.al.warn{border-color:rgba(245,181,61,.5);background:linear-gradient(180deg,rgba(245,181,61,.10),rgba(245,181,61,.02))}
+.al.warn b{color:var(--amber);text-shadow:0 0 14px rgba(245,181,61,.45)}
+.al.bad{border-color:rgba(255,90,77,.55);background:linear-gradient(180deg,rgba(255,90,77,.12),rgba(255,90,77,.02))}
+.al.bad b{color:var(--red);text-shadow:0 0 14px rgba(255,90,77,.5)}
+/* hero */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.eq .lab{color:var(--mute);font-size:12.5px}
+.eq .big{font:700 clamp(34px,5vw,52px)/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;margin:6px 0 4px}
+.eq .sub{display:flex;flex-wrap:wrap;gap:16px;color:var(--mute);font-size:12.5px}
+.eq .sub i{font-style:normal;color:var(--ink)}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.curve{margin-top:14px;height:120px;position:relative}
+.curve svg{width:100%;height:100%;display:block}
+.curve .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:12.5px;border:1px dashed var(--line2);border-radius:10px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.kpi{background:var(--panel);padding:14px 16px}
+.kpi .l{color:var(--mute);font-size:12px}
+.kpi .v{font:700 22px 'Space Mono',monospace;margin-top:4px}
+.kpi .s{color:var(--dim);font-size:11.5px;margin-top:2px}
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:8px 0 16px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;padding:11px 14px;color:var(--mute);font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--ink);border-bottom-color:var(--lime)}
+.tab .c{display:inline-block;margin-left:6px;font:700 10.5px 'Space Mono',monospace;color:var(--dim)}
+.pane{display:none}.pane.on{display:block}
+/* open positions: a flight path from the stop to TP2 */
+.fp{display:grid;grid-template-columns:150px 1fr 170px;gap:18px;align-items:center;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:10px}
+.fp .id b{font:700 17px 'Bricolage Grotesque',sans-serif}
+.side{display:inline-block;font:700 10.5px 'Space Mono',monospace;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}
+.side.L{color:#04140c;background:var(--green)}.side.S{color:#1a0503;background:var(--red)}
+.fp .id small{display:block;color:var(--mute);font-size:12px;margin-top:3px}
+.track{position:relative;height:46px}
+.track .rail{position:absolute;left:0;right:0;top:20px;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(255,90,77,.55),rgba(255,90,77,.15) var(--e),rgba(46,189,133,.18) var(--e),rgba(46,189,133,.6))}
+.tk{position:absolute;top:13px;width:2px;height:20px;background:var(--line2)}
+.tk i{position:absolute;top:22px;left:50%;transform:translateX(-50%);font:700 9.5px 'Space Mono',monospace;color:var(--dim);white-space:nowrap}
+.tk.e{background:var(--ink)}.tk.e i{color:var(--ink)}
+.tk.done{background:var(--lime)}.tk.done i{color:var(--lime)}
+.mk{position:absolute;top:10px;width:14px;height:26px;margin-left:-7px}
+.mk:before{content:'';position:absolute;left:6px;top:0;width:2px;height:26px;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.mk span{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font:700 10.5px 'Space Mono',monospace;color:var(--lime);white-space:nowrap}
+.fp .pl{text-align:right}
+.fp .pl .v{font:700 19px 'Space Mono',monospace}
+.fp .pl small{display:block;color:var(--mute);font-size:11.5px}
+.badge{display:inline-block;font:700 10px 'Space Mono',monospace;letter-spacing:.05em;padding:2px 6px;border-radius:4px;border:1px solid var(--line2);color:var(--mute)}
+.badge.free{border-color:rgba(194,246,74,.5);color:var(--lime)}
+.empty-st{border:1px dashed var(--line2);border-radius:12px;padding:30px;text-align:center;color:var(--mute)}
+.empty-st b{display:block;color:var(--ink);font:600 16px 'Bricolage Grotesque',sans-serif;margin-bottom:6px}
+/* tables */
+.tw{border:1px solid var(--line);border-radius:12px;overflow:auto;background:var(--panel)}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{font-weight:600;color:var(--dim);font-size:11.5px;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel2);cursor:default}
+td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.res{font:700 10.5px 'Space Mono',monospace;padding:2px 6px;border-radius:4px;letter-spacing:.03em}
+.res.w{background:rgba(46,189,133,.14);color:var(--green)}.res.l{background:rgba(255,90,77,.13);color:var(--red)}.res.n{background:rgba(255,255,255,.06);color:var(--mute)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:6px 12px;font-size:12.5px;color:var(--mute)}
+.chip.on{border-color:var(--lime);color:var(--ink);background:rgba(194,246,74,.07)}
+/* the log: a flight recorder */
+.log{background:#05060800;border:1px solid var(--line);border-radius:12px;max-height:620px;overflow:auto;font:12px/1.55 'Space Mono',monospace}
+.lr{display:grid;grid-template-columns:132px 64px 62px 1fr 60px;gap:10px;padding:7px 14px;border-bottom:1px solid #12151b}
+.lr .t{color:var(--dim)}.lr .k{color:var(--blue)}.lr .k.order{color:var(--lime)}.lr .k.error{color:var(--red)}.lr .k.warn{color:var(--amber)}.lr .k.close{color:var(--ink)}
+.lr .s{color:var(--ink)}.lr .m{color:#c8ced6;word-break:break-word}.lr.bad .m{color:#ffb3ab}.lr .ms{color:var(--dim);text-align:right}
+/* settings */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.field{margin-bottom:18px}
+.field label{display:flex;justify-content:space-between;font-weight:600;margin-bottom:8px}
+.field label .num{color:var(--lime)}
+.field .hint{color:var(--dim);font-size:12px;margin-top:6px}
+input[type=range]{width:100%;accent-color:var(--lime)}
+.coins{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.coin{border:1px solid var(--line2);background:var(--panel2);border-radius:8px;padding:8px 6px;text-align:center;font:700 12px 'Space Mono',monospace;color:var(--dim)}
+.coin.on{border-color:rgba(194,246,74,.5);color:var(--ink);background:rgba(194,246,74,.06)}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.seg button{background:none;border:0;padding:9px 14px;color:var(--mute);font-weight:600}
+.seg button.on{background:var(--lime);color:#0a0c03}
+.btn{background:var(--lime);color:#0a0c03;border:0;border-radius:10px;padding:11px 16px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(255,90,77,.45)}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* key */
+.steps{counter-reset:st;display:grid;gap:12px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.step:before{counter-increment:st;content:counter(st);width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:700 13px 'Space Mono',monospace;color:var(--lime)}
+.step b{display:block;margin-bottom:3px}
+.step p{margin:0;color:var(--mute);font-size:13px}
+.ipbox{display:inline-flex;align-items:center;gap:10px;margin-top:8px;padding:8px 12px;border:1px solid rgba(194,246,74,.4);border-radius:8px;font:700 15px 'Space Mono',monospace;color:var(--lime);background:rgba(194,246,74,.05)}
+.ipbox button{background:none;border:1px solid var(--line2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--mute)}
+.inp{width:100%;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;padding:12px;color:var(--ink);font:13px 'Space Mono',monospace}
+.inp:focus{outline:none;border-color:var(--lime)}
+.perm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.perm div{font-size:12.5px;padding:7px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.perm .y{color:var(--green)}.perm .x{color:var(--red)}
+.note{border-left:2px solid var(--amber);padding:10px 14px;background:rgba(245,181,61,.06);border-radius:0 10px 10px 0;color:#e8d9b7;font-size:13px;margin:14px 0}
+.note.lime{border-color:var(--lime);background:rgba(194,246,74,.05);color:#d9e8c2}
+.msg{min-height:20px;font-size:13px;margin-top:10px}
+.msg.err{color:var(--red)}.msg.ok{color:var(--green)}
+/* modal */
+.md{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.md.on{display:flex}
+.mdc{width:min(440px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:22px}
+.mdc h3{margin:0 0 6px;font:700 19px 'Bricolage Grotesque',sans-serif}
+.mdc p{color:var(--mute);margin:0 0 14px}
+.code{letter-spacing:.4em;text-align:center;font-size:22px}
+.foot{color:var(--dim);font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+@media (max-width:980px){.ann{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{grid-template-columns:1fr}.fp{grid-template-columns:1fr;gap:10px}.fp .pl{text-align:left}.grid2{grid-template-columns:1fr}.coins{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:560px){.wrap{padding:0 14px 60px}.ann{grid-template-columns:repeat(2,minmax(0,1fr))}.lr{grid-template-columns:1fr;gap:2px}.lr .ms{text-align:left}.coins{grid-template-columns:repeat(3,minmax(0,1fr))}.who{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="/"><img src="/assets/app-icon-192.png" alt="">MarginPad <em>Autopilot</em></a>
+    <div class="sp"></div>
+    <div class="who" id="who"></div>
+  </div>
+
+  <div class="ann" id="ann" aria-label="Status"></div>
+
+  <div class="hero">
+    <div class="card eq">
+      <div class="lab" id="eqLab">Account</div>
+      <div class="big num" id="eqBig">-</div>
+      <div class="sub" id="eqSub"></div>
+      <div class="curve" id="curve"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab on" data-p="open">Open positions<span class="c" id="cOpen"></span></button>
+    <button class="tab" data-p="closed">Closed trades<span class="c" id="cClosed"></span></button>
+    <button class="tab" data-p="sigs">Signals<span class="c" id="cSigs"></span></button>
+    <button class="tab" data-p="log">Execution log<span class="c" id="cLog"></span></button>
+    <button class="tab" data-p="set">Settings</button>
+    <button class="tab" data-p="key">Binance key</button>
+  </div>
+
+  <div class="pane on" id="p-open"></div>
+  <div class="pane" id="p-closed"></div>
+  <div class="pane" id="p-sigs"></div>
+  <div class="pane" id="p-log"></div>
+  <div class="pane" id="p-set"></div>
+  <div class="pane" id="p-key"></div>
+
+  <div class="foot">Autopilot executes the MarginPad Premium signal (four or more of nine majors turning the same way in one hour, weekdays, stop under 2%) on your own Binance USD-M futures account. It is not financial advice and past results do not promise future ones. Trading with leverage can lose more than you expect; only risk what you can afford to lose.</div>
+</div>
+
+<div class="md" id="md"><div class="mdc" id="mdc"></div></div>
+
+<script>
+(function () {
+  'use strict';
+  var S = null, BAL = null, PANE = 'open', FIL = { closed: 'all', log: 'all' };
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var fx = function (v, d) { v = +v; if (!isFinite(v)) return '-'; return v.toLocaleString('en-US', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }); };
+  var usd = function (v, sign) { v = +v || 0; return (sign && v > 0 ? '+' : v < 0 ? '-' : '') + '$' + fx(Math.abs(v)); };
+  var pxf = function (v) { v = +v; if (!isFinite(v) || !v) return '-'; return v >= 1000 ? fx(v, 1) : v >= 1 ? fx(v, 4) : fx(v, 6); };
+  var cls = function (v) { return v > 0 ? 'pos' : v < 0 ? 'neg' : ''; };
+  var ago = function (t) { if (!t) return '-'; var s = (Date.now() - t) / 1000; if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago'; if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago'; };
+  var dt = function (t) { var d = new Date(t); return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
+  var dur = function (ms) { var m = Math.round(ms / 60000); return m < 60 ? m + 'm' : m < 1440 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : Math.floor(m / 1440) + 'd ' + Math.floor((m % 1440) / 60) + 'h'; };
+  var RES = { tp2: ['TP2', 'w'], tp1_be: ['TP1 + BE', 'w'], tp1: ['TP1', 'w'], tp1_other: ['TP1 + exit', 'w'], sl: ['STOP', 'l'], flip: ['TREND FLIP', 'n'], closed_outside: ['CLOSED', 'n'], no_stop: ['NO STOP', 'l'], stop_lost: ['STOP LOST', 'l'], be_refused: ['PROTECT', 'n'] };
+  function api(path, body) {
+    return fetch('/api/ap' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' } : { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json().catch(function () { return { error: 'http_' + r.status }; }); });
+  }
+  var ERR = { code_expired: 'The code expired - ask for a new one.', code_wrong: 'That code is not right.', code_locked: 'Too many wrong tries - ask for a new code.', too_many_codes: 'Too many codes this hour - try again later.',
+    key_invalid: 'Binance does not recognise this key.', key_permissions: 'This key has the wrong permissions:', futures_ip: 'Futures refused the key - is the IP restriction set to exactly the address above?', bad_key_format: 'That does not look like a Binance key.',
+    close_positions_first: 'Close the open positions first.', no_key_for_mode: 'Connect a key for that mode first.', not_ready: 'Autopilot is being set up - try again in a few minutes.', mail_failed: 'The email could not be sent.' };
+  var errTxt = function (j) { return (ERR[j.error] || ('Error: ' + (j.msg || j.error || 'unknown'))) + (j.bad ? ' ' + j.bad.join(' · ') : ''); };
+
+  // ---------- data ----------
+  function mode() { return S && S.cfg ? S.cfg.mode : 'shadow'; }
+  function tradesOf(m) { return (S && S.trades || []).filter(function (t) { return t.mode === m; }); }
+  function stats(m) {
+    var c = tradesOf(m).filter(function (t) { return t.status === 'closed'; }).sort(function (a, b) { return a.closed - b.closed; });
+    var pnl = 0, w = 0, gw = 0, gl = 0, peak = 0, dd = 0, eq = [], R = 0, run = 0, worst = 0, best = null, bad = null;
+    c.forEach(function (t) { pnl += +t.pnl || 0; R += +t.R || 0; if (t.pnl > 0) { w++; gw += t.pnl; run = 0; } else { gl -= t.pnl; run++; worst = Math.max(worst, run); } peak = Math.max(peak, pnl); dd = Math.max(dd, peak - pnl); eq.push([t.closed, pnl]); if (!best || t.pnl > best.pnl) best = t; if (!bad || t.pnl < bad.pnl) bad = t; });
+    var today = new Date().toISOString().slice(0, 10), td = c.filter(function (t) { return new Date(t.closed).toISOString().slice(0, 10) === today; }).reduce(function (a, t) { return a + (+t.pnl || 0); }, 0);
+    return { n: c.length, w: w, pnl: pnl, wr: c.length ? w / c.length : 0, pf: gl ? gw / gl : (gw ? Infinity : 0), dd: dd, eq: eq, R: R, avgR: c.length ? R / c.length : 0, worst: worst, best: best, bad: bad, today: td };
+  }
+  // ---------- render ----------
+  function ann() {
+    var c = S.cfg, m = c.mode, conn = S.conn, open = tradesOf(m).filter(function (t) { return t.status === 'open'; });
+    var hbOk = S.hb && Date.now() - S.hb < 3 * 60000;
+    var L = [
+      { k: 'AP ' + (c.paused || S.kill || S.disabled ? 'HOLD' : 'ENGAGED'), s: S.kill ? 'paused by MarginPad' : S.disabled ? 'access withdrawn' : c.paused ? 'paused by you' : 'trading every signal', c: S.kill || S.disabled ? 'bad' : c.paused ? 'warn' : 'on' },
+      { k: m === 'live' ? 'LIVE' : m === 'test' ? 'TESTNET' : 'SHADOW', s: m === 'live' ? 'real money, real orders' : m === 'test' ? 'Binance testnet funds' : 'virtual account, no orders', c: m === 'live' ? 'on' : 'warn' },
+      { k: 'KEY ' + (conn ? 'OK' : 'NONE'), s: conn ? (conn.net === 'test' ? 'testnet ' : '') + conn.kid : 'not connected', c: conn ? 'on' : m === 'shadow' ? '' : 'bad' },
+      { k: 'STOPS ' + (open.length ? 'ON' : 'CLEAR'), s: open.length ? open.length + ' position' + (open.length > 1 ? 's' : '') + ' protected' : 'no open positions', c: open.length ? 'on' : '' },
+      { k: 'RISK ' + c.risk + '%', s: 'per trade, max ' + c.maxRisk + '% open', c: c.risk > 2 ? 'warn' : 'on' },
+      { k: 'BOT ' + (hbOk ? 'ALIVE' : 'STALE'), s: hbOk ? 'checked ' + ago(S.hb) : 'last check ' + ago(S.hb), c: hbOk ? 'on' : 'bad' },
+    ];
+    $('ann').innerHTML = L.map(function (x) { return '<div class="al ' + x.c + '"><b>' + esc(x.k) + '</b><span>' + esc(x.s) + '</span></div>'; }).join('');
+  }
+  function hero() {
+    var m = mode(), st = stats(m), a = (BAL && BAL.acct) || S.acct || null;
+    var bal = a ? (+a.bal || 0) + (+a.upnl || 0) : (m === 'shadow' && S.virtual ? S.virtual.bal : null);
+    $('eqLab').textContent = m === 'live' ? 'Binance futures equity (USDT)' : m === 'test' ? 'Testnet equity (USDT)' : 'Shadow account (virtual USDT)';
+    $('eqBig').textContent = bal == null ? '-' : '$' + fx(bal);
+    var sub = [];
+    if (a) sub.push('Free <i>$' + fx(a.avail) + '</i>', 'Unrealized <i class="' + cls(a.upnl) + '">' + usd(a.upnl, 1) + '</i>');
+    if (m === 'shadow' && S.virtual) sub.push('Started with <i>$' + fx(S.virtual.start) + '</i>');
+    sub.push('Today <i class="' + cls(st.today) + '">' + usd(st.today, 1) + '</i>');
+    if (a && a.at) sub.push('read ' + ago(a.at));
+    $('eqSub').innerHTML = sub.join('');
+    // equity curve: realized P&L over time
+    var e = st.eq;
+    if (e.length < 2) { $('curve').innerHTML = '<div class="empty">The curve draws after the second closed trade.</div>'; }
+    else {
+      var W = 600, H = 120, t0 = e[0][0], t1 = e[e.length - 1][0] || t0 + 1, vs = e.map(function (x) { return x[1]; }).concat([0]), lo = Math.min.apply(0, vs), hi = Math.max.apply(0, vs); if (hi === lo) hi = lo + 1;
+      var X = function (t) { return (t - t0) / ((t1 - t0) || 1) * W; }, Y = function (v) { return H - 6 - (v - lo) / (hi - lo) * (H - 12); };
+      var d = 'M0 ' + Y(0) + ' ' + e.map(function (x) { return 'L' + X(x[0]).toFixed(1) + ' ' + Y(x[1]).toFixed(1); }).join(' ');
+      var up = e[e.length - 1][1] >= 0, col = up ? '#2ebd85' : '#ff5a4d';
+      $('curve').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".28"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>'
+        + '<line x1="0" x2="' + W + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#262b35" stroke-dasharray="3 4"/>'
+        + '<path d="' + d + ' L' + W + ' ' + Y(0) + ' Z" fill="url(#cg)"/><path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';
+    }
+    var K = [
+      ['Net P&L', '<span class="' + cls(st.pnl) + '">' + usd(st.pnl, 1) + '</span>', st.n + ' closed trades'],
+      ['Win rate', st.n ? Math.round(st.wr * 100) + '%' : '-', st.w + ' won · ' + (st.n - st.w) + ' lost'],
+      ['Average R', st.n ? (st.avgR >= 0 ? '+' : '') + st.avgR.toFixed(2) + 'R' : '-', 'per trade after fees'],
+      ['Profit factor', st.n ? (st.pf === Infinity ? '∞' : st.pf.toFixed(2)) : '-', 'won ÷ lost'],
+      ['Max drawdown', st.n ? usd(-st.dd) : '-', 'worst run ' + st.worst + ' losses'],
+      ['Best trade', st.best ? '<span class="pos">' + usd(st.best.pnl, 1) + '</span>' : '-', st.best ? st.best.sym + ' · ' + dt(st.best.closed) : 'no trades yet'],
+    ];
+    $('kpis').innerHTML = K.map(function (k) { return '<div class="kpi"><div class="l">' + k[0] + '</div><div class="v">' + k[1] + '</div><div class="s">' + esc(k[2]) + '</div></div>'; }).join('');
+  }
+  function paneOpen() {
+    var m = mode(), open = tradesOf(m).filter(function (t) { return t.status === 'open'; }), live = {};
+    ((BAL && BAL.pos) || []).forEach(function (p) { live[p.id] = p; });
+    $('cOpen').textContent = open.length || '';
+    if (!open.length) { $('p-open').innerHTML = '<div class="empty-st"><b>No open positions</b>' + (S.lastsig ? 'Last Premium signal: ' + esc(S.lastsig.sym) + ' ' + (S.lastsig.long ? 'long' : 'short') + ' · ' + ago(S.lastsig.ts) + '. ' : '') + 'The next signal opens here the minute it confirms - about six a month, on weekdays, only when the whole market moves.</div>'; return; }
+    $('p-open').innerHTML = open.map(function (t) {
+      var lv = live[t.id] || {}, mark = lv.mark || t.mark || t.entry, upnl = lv.upnl != null ? lv.upnl : (t.upnl || 0);
+      var lo = t.long ? t.sl : t.tp2, hi = t.long ? t.tp2 : t.sl, span = hi - lo || 1, pct = function (v) { return Math.max(0, Math.min(100, (v - lo) / span * 100)); };
+      var stopNow = t.phase === 1 ? t.entry : t.sl;
+      var ticks = [[t.sl, 'SL', t.phase === 1 ? '' : ''], [t.entry, 'ENTRY', 'e'], [t.tp1, 'TP1', t.phase === 1 ? 'done' : ''], [t.tp2, 'TP2', '']];
+      var e = pct(t.entry);
+      return '<div class="fp"><div class="id"><b>' + esc(t.sym) + '</b><span class="side ' + (t.long ? 'L' : 'S') + '">' + (t.long ? 'LONG' : 'SHORT') + '</span>'
+        + '<small>' + fx(t.qty, 4).replace(/\.?0+$/, '') + ' ' + esc(t.sym) + ' · ' + t.lev + 'x · opened ' + ago(t.opened) + '</small>'
+        + '<small>' + (t.phase === 1 ? '<span class="badge free">RISK-FREE</span> stop at entry' : 'stop ' + pxf(stopNow) + ' · risk ' + usd(t.riskUsd)) + '</small></div>'
+        + '<div class="track" style="--e:' + e + '%"><div class="rail"></div>'
+        + ticks.map(function (k) { return '<div class="tk ' + k[2] + '" style="left:' + pct(k[0]) + '%"><i>' + k[1] + ' ' + pxf(k[0]) + '</i></div>'; }).join('')
+        + '<div class="mk" style="left:' + pct(mark) + '%"><span>' + pxf(mark) + '</span></div></div>'
+        + '<div class="pl"><div class="v ' + cls(upnl) + '">' + usd(upnl, 1) + '</div><small>' + (t.riskUsd ? ((upnl / t.riskUsd >= 0 ? '+' : '') + (upnl / t.riskUsd).toFixed(2) + 'R') : '') + (lv.liq ? ' · liq ' + pxf(lv.liq) : '') + '</small><small>' + esc(t.sig || '') + '</small></div></div>';
+    }).join('') + '<div class="row" style="margin-top:14px"><button class="btn danger" id="closeAll">Close all positions now</button><span style="color:var(--dim);font-size:12px">Closes at market and cancels every order Autopilot placed. Positions you opened yourself are not touched.</span></div>';
+    $('closeAll').onclick = function () { confirmBox('Close every Autopilot position?', 'They close at market now and their stops and targets are cancelled.', 'Close all', function () { return api('/closeall', {}).then(function (j) { if (j.ok) { toast('Closed ' + j.closed + ' position(s).'); load(); } else toast(errTxt(j), 1); }); }); };
+  }
+  function paneClosed() {
+    var c = tradesOf(mode()).filter(function (t) { return t.status === 'closed'; });
+    $('cClosed').textContent = c.length || '';
+    var f = FIL.closed, L = c.filter(function (t) { return f === 'all' || (f === 'win' ? t.pnl > 0 : f === 'loss' ? t.pnl <= 0 : f === 'long' ? t.long : !t.long); });
+    var chips = [['all', 'All'], ['win', 'Wins'], ['loss', 'Losses'], ['long', 'Longs'], ['short', 'Shorts']].map(function (x) { return '<button class="chip' + (f === x[0] ? ' on' : '') + '" data-fc="' + x[0] + '">' + x[1] + '</button>'; }).join('');
+    if (!c.length) { $('p-closed').innerHTML = '<div class="empty-st"><b>No closed trades yet</b>Every trade Autopilot closes lands here with its result, R and fees.</div>'; return; }
+    $('p-closed').innerHTML = '<div class="chips">' + chips + '<button class="chip" id="csv" style="margin-left:auto">Export CSV</button></div><div class="tw"><table><thead><tr><th>Closed</th><th>Coin</th><th>Result</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Held</th><th class="r">Fees</th><th class="r">R</th><th class="r">Net P&amp;L</th></tr></thead><tbody>'
+      + L.map(function (t) { var rr = RES[t.result] || ['CLOSED', 'n']; return '<tr><td>' + dt(t.closed) + '</td><td><b>' + esc(t.sym) + '</b><span class="side ' + (t.long ? 'L' : 'S') + '">' + (t.long ? 'L' : 'S') + '</span></td><td><span class="res ' + rr[1] + '">' + rr[0] + '</span></td><td class="r num">' + pxf(t.entry) + '</td><td class="r num">' + pxf(t.exitPx) + '</td><td class="r num">' + fx(t.qty, 4).replace(/\.?0+$/, '') + '</td><td class="r">' + dur(t.closed - t.opened) + '</td><td class="r num">' + usd(-t.fees) + '</td><td class="r num ' + cls(t.R) + '">' + (t.R >= 0 ? '+' : '') + (+t.R).toFixed(2) + '</td><td class="r num ' + cls(t.pnl) + '">' + usd(t.pnl, 1) + '</td></tr>'; }).join('')
+      + '</tbody></table></div>';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-fc]'), function (b) { b.onclick = function () { FIL.closed = b.getAttribute('data-fc'); paneClosed(); }; });
+    $('csv').onclick = function () { var rows = [['closed', 'coin', 'side', 'result', 'entry', 'exit', 'qty', 'lev', 'fees', 'R', 'pnl']].concat(c.map(function (t) { return [new Date(t.closed).toISOString(), t.sym, t.long ? 'long' : 'short', t.result, t.entry, t.exitPx, t.qty, t.lev, t.fees, t.R, t.pnl]; })); var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rows.map(function (r) { return r.join(','); }).join('\n')], { type: 'text/csv' })); a.download = 'autopilot-trades.csv'; a.click(); };
+  }
+  function paneSigs() {
+    var L = S.sigs || [], W = (S.meta && S.meta.why) || {};
+    $('cSigs').textContent = L.length || '';
+    if (!L.length) { $('p-sigs').innerHTML = '<div class="empty-st"><b>No signals yet</b>Every Premium signal lands here with what Autopilot did about it - taken, or skipped and why.</div>'; return; }
+    $('p-sigs').innerHTML = '<div class="tw"><table><thead><tr><th>When</th><th>Signal</th><th>Coin</th><th>Decision</th><th>Detail</th></tr></thead><tbody>'
+      + L.map(function (x) { var d = x.data || {}; return '<tr><td>' + dt(x.ts) + '</td><td class="mono">' + esc(x.sid) + '</td><td><b>' + esc(x.sym) + '</b><span class="side ' + (x.long ? 'L' : 'S') + '">' + (x.long ? 'L' : 'S') + '</span></td><td>' + (x.action === 'taken' ? '<span class="res w">TAKEN</span>' : '<span class="res n">SKIPPED</span>') + '</td><td>' + (x.action === 'taken' ? esc(fx(d.qty, 4).replace(/\.?0+$/, '') + ' @ ' + pxf(d.entry) + ' · ' + d.lev + 'x · risk ' + usd(d.risk)) : esc(W[x.why] || x.why)) + '</td></tr>'; }).join('')
+      + '</tbody></table></div>';
+  }
+  function paneLog() {
+    var L = S.log || [], f = FIL.log;
+    $('cLog').textContent = L.length || '';
+    var K = { all: 'All', order: 'Orders', algo: 'Stops & targets', cancel: 'Cancels', close: 'Closes', error: 'Errors', info: 'Info' };
+    var rows = L.filter(function (x) { return f === 'all' || x.kind === f || (f === 'error' && (x.kind === 'warn' || !x.ok)); });
+    $('p-log').innerHTML = '<div class="chips">' + Object.keys(K).map(function (k) { return '<button class="chip' + (f === k ? ' on' : '') + '" data-fl="' + k + '">' + K[k] + '</button>'; }).join('') + '</div>'
+      + (rows.length ? '<div class="log">' + rows.map(function (x) { return '<div class="lr' + (x.ok ? '' : ' bad') + '"><span class="t">' + esc(dt(x.ts)) + '</span><span class="k ' + esc(x.kind) + '">' + esc(x.kind.toUpperCase()) + '</span><span class="s">' + esc(x.sym || '-') + '</span><span class="m">' + esc(x.msg) + '</span><span class="ms">' + (x.ms ? x.ms + 'ms' : '') + '</span></div>'; }).join('') + '</div>'
+        : '<div class="empty-st"><b>Nothing recorded yet</b>Every call Autopilot makes to Binance is written here with its answer and how long it took.</div>');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-fl]'), function (b) { b.onclick = function () { FIL.log = b.getAttribute('data-fl'); paneLog(); }; });
+  }
+  function paneSet() {
+    var c = S.cfg, lim = S.meta.lim, coins = S.meta.coins;
+    var rng = function (k, lab, step, unit, hint) { return '<div class="field"><label>' + lab + '<span class="num" id="v_' + k + '">' + c[k] + unit + '</span></label><input type="range" min="' + lim[k][0] + '" max="' + lim[k][1] + '" step="' + step + '" value="' + c[k] + '" data-k="' + k + '" data-u="' + unit + '"><div class="hint">' + hint + '</div></div>'; };
+    $('p-set').innerHTML = '<div class="grid2"><div class="card">'
+      + '<div class="field"><label>Mode</label><div class="seg" id="modeSeg">' + [['shadow', 'Shadow'], ['test', 'Testnet'], ['live', 'Live']].map(function (x) { return '<button data-m="' + x[0] + '" class="' + (c.mode === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>'
+      + '<div class="hint">Shadow trades a virtual account with the same rules - nothing reaches Binance. Live needs a key and a code from your email.</div></div>'
+      + rng('risk', 'Risk per trade', 0.25, '%', 'The share of your account lost if the stop is hit. Tested at 2%; the strongest signals carry the same rule.')
+      + rng('maxRisk', 'Max risk open at once', 1, '%', 'Several coins can signal in the same hour - together they never put more than this at risk.')
+      + rng('dayLoss', 'Daily loss limit', 1, '%', 'Down this much today and no new trade opens until tomorrow (UTC).')
+      + rng('maxOpen', 'Max open positions', 1, '', 'One trade per coin, never more than this at once.')
+      + rng('levCap', 'Leverage cap', 1, 'x', 'Leverage only sets the margin. The size comes from the risk, so more leverage does not mean more profit.')
+      + '<div class="row"><button class="btn" id="saveCfg">Save settings</button><button class="btn ghost" id="pauseBtn">' + (c.paused ? 'Resume trading' : 'Pause new trades') + '</button></div><div class="msg" id="cfgMsg"></div>'
+      + '</div><div class="card"><div class="field"><label>Coins <span class="num">' + c.coins.length + ' of ' + coins.length + '</span></label><div class="coins" id="coins">' + coins.map(function (s) { return '<button class="coin' + (c.coins.indexOf(s) >= 0 ? ' on' : '') + '" data-c="' + s + '">' + s + '</button>'; }).join('') + '</div><div class="hint">The market move is always read on the nine majors; you choose which coins Autopilot trades.</div></div>'
+      + '<div class="field"><label>Direction</label><div class="row"><button class="chip' + (c.longs ? ' on' : '') + '" id="dirL">Longs</button><button class="chip' + (c.shorts ? ' on' : '') + '" id="dirS">Shorts</button></div></div>'
+      + (c.mode === 'shadow' ? '<div class="field"><label>Shadow starting balance<span class="num">$' + fx(c.vstart, 0) + '</span></label><input class="inp" id="vstart" type="number" min="100" step="100" value="' + c.vstart + '"><div class="hint">Changing it restarts the virtual account (only while nothing is open).</div></div>' : '')
+      + '<div class="note lime">What the backtest found (2024-2026): about six signals a month across 18 coins, 60% of them winners, +0.46R a trade after fees, worst losing run of six. At 2% risk that was +5.7% a month with a 23% worst drop. Every month will not look like that.</div>'
+      + '</div></div>';
+    var draft = JSON.parse(JSON.stringify(c));
+    Array.prototype.forEach.call(document.querySelectorAll('#p-set input[type=range]'), function (r) { r.oninput = function () { var k = r.getAttribute('data-k'); draft[k] = +r.value; $('v_' + k).textContent = r.value + r.getAttribute('data-u'); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#coins .coin'), function (b) { b.onclick = function () { var s = b.getAttribute('data-c'), i = draft.coins.indexOf(s); if (i >= 0) draft.coins.splice(i, 1); else draft.coins.push(s); b.classList.toggle('on'); }; });
+    $('dirL').onclick = function () { draft.longs = !draft.longs; this.classList.toggle('on'); };
+    $('dirS').onclick = function () { draft.shorts = !draft.shorts; this.classList.toggle('on'); };
+    $('saveCfg').onclick = function () { var p = { risk: draft.risk, maxRisk: draft.maxRisk, dayLoss: draft.dayLoss, maxOpen: draft.maxOpen, levCap: draft.levCap, coins: draft.coins, longs: draft.longs, shorts: draft.shorts }; if ($('vstart')) p.vstart = +$('vstart').value; api('/cfg', { patch: p }).then(function (j) { $('cfgMsg').className = 'msg ' + (j.ok ? 'ok' : 'err'); $('cfgMsg').textContent = j.ok ? 'Saved. The next signal uses these settings.' : errTxt(j); if (j.ok) load(); }); };
+    $('pauseBtn').onclick = function () { api('/cfg', { patch: { paused: !c.paused } }).then(function (j) { if (j.ok) { toast(j.cfg.paused ? 'Paused - open positions keep their stops and targets.' : 'Resumed.'); load(); } }); };
+    Array.prototype.forEach.call(document.querySelectorAll('#modeSeg button'), function (b) { b.onclick = function () { var m = b.getAttribute('data-m'); if (m === c.mode) return; if (m === 'live') return codeFlow('live', 'Switch to LIVE trading', 'From the next signal Autopilot places real orders on your Binance account. We sent a code to your email.', function (code) { return api('/mode', { mode: 'live', code: code }); }); api('/mode', { mode: m }).then(function (j) { if (j.ok) { toast('Mode: ' + m); load(); } else toast(errTxt(j), 1); }); }; });
+  }
+  function paneKey() {
+    var conn = S.conn, ip = S.meta.ip, p = conn && conn.perms || {};
+    var head = conn ? '<div class="card" style="margin-bottom:16px"><div class="row" style="justify-content:space-between"><div><b style="font:600 16px Bricolage Grotesque,sans-serif">' + (conn.net === 'test' ? 'Testnet key' : 'Binance key') + ' connected</b><div style="color:var(--mute);font-size:13px" class="mono">' + esc(conn.kid) + ' · since ' + dt(conn.created) + '</div></div><button class="btn danger" id="delKey">Delete key</button></div>'
+      + (conn.net === 'live' ? '<div class="perm"><div class="' + (p.reading ? 'y' : 'x') + '">Reading ' + (p.reading ? 'on' : 'off') + '</div><div class="' + (p.futures ? 'y' : 'x') + '">Futures trading ' + (p.futures ? 'on' : 'off') + '</div><div class="' + (!p.withdrawals ? 'y' : 'x') + '">Withdrawals ' + (p.withdrawals ? 'ON' : 'off') + '</div><div class="' + (!p.transfer ? 'y' : 'x') + '">Transfers ' + (p.transfer ? 'ON' : 'off') + '</div><div class="' + (!p.spot ? 'y' : 'x') + '">Spot trading ' + (p.spot ? 'ON' : 'off') + '</div><div class="' + (p.ipBound ? 'y' : 'x') + '">Bound to ' + esc(ip) + '</div></div>' : '') + '</div>' : '';
+    $('p-key').innerHTML = head + '<div class="grid2"><div class="steps">'
+      + '<div class="step"><div><b>Create an API key on Binance</b><p>Account &rarr; API Management &rarr; Create API &rarr; System generated. Name it MarginPad Autopilot.</p></div></div>'
+      + '<div class="step"><div><b>Restrict it to our one address</b><p>Choose "Restrict access to trusted IPs only" and enter exactly:</p><div class="ipbox">' + esc(ip) + '<button id="cpIp">copy</button></div><p style="margin-top:8px">A key bound to this address is useless anywhere else, even if it leaked.</p></div></div>'
+      + '<div class="step"><div><b>Tick only two boxes</b><p>Enable Reading and Enable Futures. Leave withdrawals, transfers, spot, margin and options OFF - Autopilot refuses a key that has any of them.</p></div></div>'
+      + '<div class="step"><div><b>Paste it here and confirm with your email</b><p>The secret is encrypted the moment it arrives, used only to sign orders, and never shown again - not to you, not to us.</p></div></div>'
+      + '</div><div class="card"><div class="field"><label>Network</label><div class="seg" id="netSeg"><button data-n="live" class="on">Binance</button><button data-n="test">Testnet</button></div></div>'
+      + '<div class="field"><label>API key</label><input class="inp" id="kK" autocomplete="off" spellcheck="false"></div>'
+      + '<div class="field"><label>Secret key</label><input class="inp" id="kS" type="password" autocomplete="off" spellcheck="false"></div>'
+      + '<button class="btn" id="kGo">Verify and connect</button><div class="msg" id="kMsg"></div>'
+      + '<div class="note">Autopilot can open and close futures positions on this account. It can never withdraw or move funds: the key cannot, and our server has no route that could.</div></div></div>';
+    var net = 'live';
+    Array.prototype.forEach.call(document.querySelectorAll('#netSeg button'), function (b) { b.onclick = function () { net = b.getAttribute('data-n'); Array.prototype.forEach.call(document.querySelectorAll('#netSeg button'), function (x) { x.classList.toggle('on', x === b); }); }; });
+    $('cpIp').onclick = function () { try { navigator.clipboard.writeText(ip); this.textContent = 'copied'; } catch (e) {} };
+    $('kGo').onclick = function () {
+      var k = $('kK').value.trim(), s = $('kS').value.trim();
+      if (!k || !s) { $('kMsg').className = 'msg err'; $('kMsg').textContent = 'Paste both the API key and the secret.'; return; }
+      codeFlow('connect', 'Confirm it is you', 'We sent a 6-digit code to your email. Enter it to connect the key.', function (code) {
+        return api('/connect', { net: net, k: k, s: s, code: code }).then(function (j) { if (j.ok) { $('kK').value = ''; $('kS').value = ''; toast('Key connected. Balance: $' + fx(j.usdt)); load(); } return j; });
+      });
+    };
+    if ($('delKey')) $('delKey').onclick = function () { confirmBox('Delete this key?', 'Autopilot stops trading on this account and the key is erased. Open positions must be closed first.', 'Delete key', function () { return api('/disconnect', {}).then(function (j) { if (j.ok) { toast('Key deleted.'); load(); } else toast(errTxt(j), 1); }); }); };
+  }
+  // ---------- small UI ----------
+  function toast(t, bad) { var d = document.createElement('div'); d.textContent = t; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:' + (bad ? '#2a0f0c' : '#121a07') + ';border:1px solid ' + (bad ? 'rgba(255,90,77,.5)' : 'rgba(194,246,74,.45)') + ';color:#eef1f4;padding:11px 16px;border-radius:10px;z-index:60;max-width:90vw;font-size:13px'; document.body.appendChild(d); try { d.animate([{ opacity: 0, transform: 'translate(-50%,8px)' }, { opacity: 1, transform: 'translate(-50%,0)' }], { duration: 200 }); } catch (e) {} setTimeout(function () { d.remove(); }, 4200); }
+  function modal(html) { $('mdc').innerHTML = html; $('md').classList.add('on'); }
+  function closeModal() { $('md').classList.remove('on'); }
+  $('md').addEventListener('click', function (e) { if (e.target === $('md')) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+  function confirmBox(title, text, label, fn) {
+    modal('<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p><div class="row"><button class="btn danger" id="cfY">' + esc(label) + '</button><button class="btn ghost" id="cfN">Cancel</button></div>');
+    $('cfN').onclick = closeModal; $('cfY').onclick = function () { this.disabled = true; Promise.resolve(fn()).then(closeModal); };
+  }
+  function codeFlow(purpose, title, text, submit) {
+    modal('<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p><input class="inp code" id="cdIn" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"><div class="row" style="margin-top:12px"><button class="btn" id="cdGo">Confirm</button><button class="btn ghost" id="cdRe">Send again</button><button class="btn ghost" id="cdX">Cancel</button></div><div class="msg" id="cdMsg">Sending the code…</div>');
+    var send = function () { $('cdMsg').className = 'msg'; $('cdMsg').textContent = 'Sending the code…'; api('/code', { purpose: purpose }).then(function (j) { $('cdMsg').className = 'msg ' + (j.ok ? 'ok' : 'err'); $('cdMsg').textContent = j.ok ? 'Code sent to ' + j.sent + '.' : errTxt(j); }); };
+    send(); setTimeout(function () { try { $('cdIn').focus(); } catch (e) {} }, 60);
+    $('cdRe').onclick = send; $('cdX').onclick = closeModal;
+    $('cdGo').onclick = function () { var b = this; b.disabled = true; $('cdMsg').className = 'msg'; $('cdMsg').textContent = purpose === 'connect' ? 'Checking the key with Binance…' : 'Switching…'; Promise.resolve(submit($('cdIn').value)).then(function (j) { b.disabled = false; if (j && j.ok) { closeModal(); if (purpose === 'live') { toast('Live. The next signal trades your account.'); load(); } } else { $('cdMsg').className = 'msg err'; $('cdMsg').textContent = errTxt(j || {}); } }); };
+  }
+  function renderAll() { if (!S || !S.cfg) return; $('who').textContent = '@' + (S.me && S.me.username || ''); ann(); hero(); paneOpen(); paneClosed(); paneSigs(); paneLog(); if (PANE !== 'set' && PANE !== 'key') { paneSet(); paneKey(); } }
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) { b.onclick = function () { PANE = b.getAttribute('data-p'); Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) { x.classList.toggle('on', x === b); }); Array.prototype.forEach.call(document.querySelectorAll('.pane'), function (x) { x.classList.toggle('on', x.id === 'p-' + PANE); }); if (PANE === 'set') paneSet(); if (PANE === 'key') paneKey(); try { history.replaceState(null, '', '#' + PANE); } catch (e) {} }; });
+  var first = true;
+  function load() {
+    return api('/state').then(function (j) {
+      if (j.error) { document.querySelector('.wrap').innerHTML = '<div class="empty-st" style="margin-top:80px"><b>' + (j.error === 'login_required' ? 'Sign in to MarginPad first' : 'Not available') + '</b><a href="/">Back to MarginPad</a></div>'; return; }
+      S = j; renderAll();
+      if (first) { first = false; var h = (location.hash || '').slice(1); var tb = document.querySelector('.tab[data-p="' + h + '"]'); if (tb) tb.click(); lightUp(); }
+    });
+  }
+  function bal() { return api('/balance').then(function (j) { if (j && (j.acct || j.pos)) { BAL = j; if (S) { hero(); paneOpen(); } } }); }
+  function lightUp() { // the one orchestrated moment: the annunciator lights come on in sequence, like a cockpit at power-up
+    Array.prototype.forEach.call(document.querySelectorAll('.al'), function (el, i) { try { el.animate([{ opacity: .15, filter: 'brightness(.4)' }, { opacity: 1, filter: 'brightness(1.6)' }, { opacity: 1, filter: 'brightness(1)' }], { duration: 520, delay: 90 * i, easing: 'ease-out', fill: 'backwards' }); } catch (e) {} });
+  }
+  load().then(bal);
+  setInterval(function () { if (!document.hidden) load(); }, 20000);
+  setInterval(function () { if (!document.hidden) bal(); }, 30000);
+})();
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@ preview_urls = false
 # deliberately narrow so src/worker.js itself stays an ES module.
 [[rules]]
 type = "Text"
-globs = ["src/ops/*.html", "src/ops/*.txt", "src/ops/client/*.txt"]
+globs = ["src/ops/*.html", "src/ops/*.txt", "src/ops/client/*.txt", "src/autopilot/*.html"]
 fallthrough = true
 
 [assets]
@@ -153,6 +153,16 @@ class_name = "JournalStore"
 [[migrations]]
 tag = "v8"
 new_sqlite_classes = ["JournalStore"]
+
+# Autopilot (2026-11-18): one instance per granted member (ap:<uid>) - the sealed TRADING key, settings, the bot's trades,
+# every call it made to Binance. Its own class: a key that can trade never sits beside the read-only journal keys.
+[[durable_objects.bindings]]
+name = "AUTOPILOT"
+class_name = "AutoStore"
+
+[[migrations]]
+tag = "v9"
+new_sqlite_classes = ["AutoStore"]
 
 # ============================================================================
 # STAGING ENVIRONMENT (deploy: wrangler deploy --env staging → separate script
