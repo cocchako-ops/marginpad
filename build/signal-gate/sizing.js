@@ -19,3 +19,4 @@ for (const p of [0.005, 0.01, 0.02, 0.03, 0.05]) show('risk ' + (p * 100) + '% p
 console.log('\n=== the channel\'s leverage on the WHOLE account as margin (stop hit = lev x stop% of it) ===');
 show('channel leverage, 100% of account as margin', t => lev(t) * t.slPct / 100);
 show('channel leverage, 10% of account as margin', t => lev(t) * t.slPct / 100 * 0.1);
+if (process.env.DUMP) fs.writeFileSync(__dirname + '/' + process.env.DUMP, JSON.stringify(T.filter(t => t.cl >= 3 && t.wk && t.slPct < 2).map(t => ({ c: t.c, t: t.t, R: t.R, sl: t.slPct, cl: t.cl, long: t.long, vol: t.f.volR, adx: t.f.adx, hour: t.f.hour }))));
