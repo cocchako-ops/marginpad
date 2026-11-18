@@ -116,3 +116,4 @@ build/data/catalyst/cache/
 
 # strategy library: raw history, rebuilt by build/strategies/fetch-data.js
 build/data/strategies/
+build/research/arch/
