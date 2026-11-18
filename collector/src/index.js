@@ -93,7 +93,7 @@ const bookCols = config.book.enabled
   ? config.book.bookVenues.map((v) => new BookCollector(v, { symbols: config.book.symbols }))
   : [];
 const tapeCols = config.book.enabled
-  ? config.book.tapeVenues.map((v) => new TapeCollector(v, { symbols: config.book.symbols }))
+  ? config.book.tapeVenues.map((v) => new TapeCollector(v, { symbols: config.book.tapeSymbols || config.book.symbols }))
   : [];
 // The film of the book over time, and the walls in it. Reads the two above on a timer - it opens no
 // socket of its own and writes nothing to disk, so it cannot cost either feed anything but CPU.

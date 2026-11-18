@@ -91,6 +91,10 @@ export const config = {
     // book; Binance sends only differences, so its book is bootstrapped from REST with the differences that
     // arrived during that request replayed onto it. Gate and MEXC can follow the same way when they are wanted.
     bookVenues: (process.env.MP_BOOK_VENUES || 'binance,bybit,okx,bitget,hyperliquid').split(',').map((s) => s.trim()).filter(Boolean),
+    // THE TAPE COVERS EVERY SIGNAL COIN (2026-11-18, owner: keep the history of everything). The tape is recorded once a minute
+    // (tape_min) for research on the Premium/Autopilot signal, which trades 18 coins; the BOOK stays on the six above - a book
+    // is state that must be sorted and filmed, the tape is a stream of self-contained rows and costs far less per coin.
+    tapeSymbols: (process.env.MP_TAPE_SYMBOLS || 'BTC,ETH,SOL,XRP,DOGE,BNB,HYPE,ZEC,TRX,HBAR,ADA,AVAX,LINK,SUI,LTC,DOT,NEAR,APT').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
     // A trade needs no snapshot and no sequence, so Binance is here from the start.
     tapeVenues: (process.env.MP_TAPE_VENUES || 'bybit,okx,bitget,hyperliquid,binance').split(',').map((s) => s.trim()).filter(Boolean),
   },
