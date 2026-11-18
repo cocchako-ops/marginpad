@@ -7309,7 +7309,7 @@ async function checkChartSignals(env, force) {
                 const lsShim = () => ({ dir: ls.sigDir, entry: ls.entry, sl: ls.sl, tp1: ls.tp1, tp2: ls.tp2, bar: Math.floor((ls.ts || 0) / 1000), src: 'live', sigId: ls.sigId });
                 if (ls.phase === 0) {
                   if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mStop(sym, long, ls.entry, ls.sl); ls.done = true; await logSigResult(env, sym, 'loss', lsShim(), ls.sl); }
-                  else if (long ? ls.peakHi >= ls.tp1 : ls.peakLo <= ls.tp1) { m = mTp1(sym, long, ls.entry, ls.tp1, ls.tp2); await logSigResult(env, sym, 'win', lsShim(), ls.sl); ls.phase = 1; ls.sl = ls.entry; ls.peakHi = ls.peakLo = ls.entry; }
+                  else if (long ? ls.peakHi >= ls.tp1 : ls.peakLo <= ls.tp1) { m = mTp1(sym, long, ls.entry, ls.tp1, ls.tp2); await logSigResult(env, sym, 'win', lsShim(), ls.sl); ls.phase = 1; ls.sl = ls.entry; ls.peakHi = ls.peakLo = lPx; } /* 2026-11-18: the peaks restart at the PRICE THAT HIT TP1, not at entry - resetting them to entry with the stop now AT entry closed every runner at breakeven the next minute (measured: 136 of 136 Fast runners "be", 0 reached TP2) */
                 } else {
                   if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mBe(sym, long, ls.entry, ls.tp1); ls.done = true; await logSigFinal(env, sym, 'be', null, ls.sigId); }
                   else if (long ? ls.peakHi >= ls.tp2 : ls.peakLo <= ls.tp2) { m = mTp2(sym, long, ls.entry, ls.tp2); ls.done = true; await logSigFinal(env, sym, 'tp2', null, ls.sigId); }
