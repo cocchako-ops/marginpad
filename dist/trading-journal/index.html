@@ -193,14 +193,14 @@ a{color:var(--brass)}
 .jl-fc.on{border-color:var(--brass);color:#16130c;background:var(--brass)}
 .jl-fsum{margin:8px 0 0;color:var(--mute);font-size:14px}.jl-fsum b{color:var(--ink)}
 .jl-row{cursor:pointer}.jl-row:hover td{background:rgba(216,191,142,.05)}
-.jl-tl .it{appearance:none;background:none;border:0;border-top:1px solid var(--line2);color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer}
+.jl-tl .it{appearance:none;background:none;border:0;border-top:1px solid var(--line2);color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .jl-tl .s.r{text-align:right}
 .jl-badge.tag{border-color:rgba(216,191,142,.45);color:var(--brass)}
 .jl-more{margin-top:12px}
 .jl-shc{width:34px;padding-left:0!important;padding-right:6px!important}
 .jl-shr{appearance:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;border:1px solid transparent;background:none;color:var(--mute);opacity:.38;cursor:pointer;transition:opacity .15s,color .15s,border-color .15s;vertical-align:middle}
 .jl-row:hover .jl-shr,.jl-shr:focus-visible{opacity:.9}.jl-shr:hover{opacity:1;color:#e3c98f;border-color:rgba(227,201,143,.4)}
-.jl-tl .jl-shr{width:22px;height:22px;margin-left:6px;opacity:.55}
+.jl-tl .jl-shr{width:34px;height:30px;margin:-6px -6px -6px 4px;opacity:.6;touch-action:manipulation}
 .jl-dshr{margin-left:8px;display:inline-flex;gap:6px;align-items:center;position:absolute;top:24px;right:96px}
 .jl-shrm{position:fixed;z-index:2147483646;display:grid;gap:6px;min-width:210px;padding:12px;border-radius:14px;border:1px solid rgba(227,201,143,.35);background:linear-gradient(180deg,#171a20,#0e1015);box-shadow:0 18px 40px -12px rgba(0,0,0,.7)}
 .jl-shrm b{font:600 13px 'Familjen Grotesk',sans-serif;color:#e3c98f}.jl-shrm small{color:var(--mute);font-size:11.5px}
@@ -548,7 +548,7 @@ function paneTr(){
    +(F.day?'<div class="jl-fr"><span>Day</span><button class="jl-fc on" data-f="day" data-v="">'+F.day+' (clear)</button></div>':'')
    +'<p class="jl-fsum"><b>'+tr.length+'</b> of '+all.length+' trades &middot; net <b class="num '+cls(net)+'">'+money(net,1)+'</b> &middot; win rate <b>'+(cl.length?(w/cl.length*100).toFixed(1)+'%':'-')+'</b></p></div>';
   if(!tr.length)return h+'<p class="jl-empty">No trades match these filters.</p>';
-  var cards='<div class="jl-tl">'+shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<button class="it" data-pid="'+esc(t.id)+'"><span class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jl-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jl-badge">open</span>':'')+(nt?'<span class="jl-badge tag">'+esc((nt.tags[0]||'note'))+'</span>':'')+'</span><span class="n '+cls(t.net)+'">'+money(t.net,1)+'</span><span class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before history':'held '+holdTxt(t.hold))+', '+money(t.maxNotional)+'</span><span class="s r">'+(ACC?'':esc(accName(connOf(t.conn))||t.ex))+shrBtn(t,'span')+'</span></button>'}).join('')+'</div>';
+  var cards='<div class="jl-tl">'+shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<div class="it" role="button" tabindex="0" data-pid="'+esc(t.id)+'"><span class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jl-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jl-badge">open</span>':'')+(nt?'<span class="jl-badge tag">'+esc((nt.tags[0]||'note'))+'</span>':'')+'</span><span class="n '+cls(t.net)+'">'+money(t.net,1)+'</span><span class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before history':'held '+holdTxt(t.hold))+', '+money(t.maxNotional)+'</span><span class="s r">'+(ACC?'':esc(accName(connOf(t.conn))||t.ex))+shrBtn(t)+'</span></div>'}).join('')+'</div>';
   var tbl='<div class="jl-tw jl-trtbl"><table class="jl-tbl"><tr><th>Closed (UTC)</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th>'+(ACC?'':'<th>Account</th>')+'<th class="jl-shc"></th></tr>'
    +shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<tr class="jl-row" data-pid="'+esc(t.id)+'"><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jl-badge">open</span>')+'</td><td>'+esc(t.sym)+(t.liq?'<span class="jl-badge liq">liq</span>':'')+(t.partial?'<span class="jl-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+(nt?'<span class="jl-badge tag">'+esc(nt.tags[0]||'note')+'</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td>'+(ACC?'':'<td class="mute">'+esc(accName(connOf(t.conn))||t.ex)+'</td>')+'<td class="jl-shc">'+shrBtn(t)+'</td></tr>'}).join('')+'</table></div>';
   return h+'<div class="jl-card">'+cards+tbl+(tr.length>SHOWN?'<button class="jl-btn ghost sm jl-more" id="jrMore">Show '+Math.min(100,tr.length-SHOWN)+' more of '+(tr.length-SHOWN)+'</button>':'')+'<p class="note">Click a trade for its fills, a chart, and your notes.</p></div>';
@@ -771,7 +771,7 @@ document.addEventListener('click',function(ev){
   var dd=ev.target.closest('[data-day]'); if(dd){F.day=dd.getAttribute('data-day');goTab('tr');return}
   var mn=ev.target.closest('[data-mon]'); if(mn){var y=+MONTH.slice(0,4),m=+MONTH.slice(5,7)-1+(+mn.getAttribute('data-mon'));var d2=new Date(Date.UTC(y,m,1));MONTH=d2.toISOString().slice(0,7);paint();return}
   var sg=ev.target.closest('[data-shrgo]'); if(sg){var mm=$('#jrShrM');shareGo(mm.getAttribute('data-for'),sg.getAttribute('data-shrgo')==='1');return}
-  var sb=ev.target.closest('[data-shr]'); if(sb){ev.preventDefault();ev.stopPropagation();shrMenu(sb,sb.getAttribute('data-shr'));return}
+  var sb=ev.target.closest('[data-shr]'); if(sb){ev.preventDefault();ev.stopPropagation();track('shrtap');shrMenu(sb,sb.getAttribute('data-shr'));return}
   if($('#jrShrM')&&!ev.target.closest('#jrShrM'))$('#jrShrM').remove();
   var row=ev.target.closest('[data-pid]'); if(row&&!ev.target.closest('#jrNoteSave')){openTrade(row.getAttribute('data-pid'));return}
   if(ev.target.closest('#jrDwX')||ev.target.id==='jrDrawer'){closeDrawer();return}
@@ -783,7 +783,7 @@ document.addEventListener('click',function(ev){
   var d=ev.target.closest('[data-disc]'); if(d){ if(d.getAttribute('data-arm')!=='1'){d.setAttribute('data-arm','1');d.textContent='Click again to remove';setTimeout(function(){if(document.body.contains(d)){d.removeAttribute('data-arm');d.textContent='Disconnect'}},6000);return} api('/disconnect',{id:d.getAttribute('data-disc')}).then(function(){boot()});return}
   if(ev.target.closest('#jrWipe')){var w=ev.target.closest('#jrWipe'); if(w.getAttribute('data-arm')!=='1'){w.setAttribute('data-arm','1');w.textContent='Click again: delete every key and trade';setTimeout(function(){if(document.body.contains(w)){w.removeAttribute('data-arm');w.textContent='Delete everything'}},6000);return} api('/wipe',{}).then(function(){ACC='';boot()});return}
 });
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#jrDrawer').classList.contains('on'))closeDrawer()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#jrDrawer').classList.contains('on'))closeDrawer();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('it')&&e.target.getAttribute('data-pid'))openTrade(e.target.getAttribute('data-pid'))});
 window.addEventListener('mp-auth-change',function(){boot()});
 boot();
 
