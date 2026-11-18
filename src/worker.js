@@ -10,6 +10,8 @@ import { RULES as STRAT_RULES } from '../build/strategies/rules.js';
 import { MARKETS as STRAT_MARKETS, CLASSES as STRAT_CLASSES } from '../build/strategies/markets.js';
 import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
 import OPS_VIZ from './ops/client/ops-viz.js.txt'; // the chart engine and history reader (2026-11-01): served as one file with ops.js, kept as a real file of its own
+import { JournalStore, handleJournal, journalCron, journalDesk } from './journal.js'; // the real-account journal (2026-11-18)
+export { JournalStore };
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
 /* ---- COLLECTOR CIRCUIT BREAKER (2026-10-06) ----
@@ -19021,6 +19023,16 @@ const BYBIT_REF_URL = 'https://partner.bybit.com/b/162071';
 // the owner holds since 2026-09-28) - it is printed as "about", and it is re-measured on every sync.
 const BYBIT_POOL_TIERS = [{ at: 0, name: 'Warming up', paid: 10 }, { at: 100000, name: 'Heating up', paid: 10 }, { at: 250000, name: 'Hot', paid: 10 }, { at: 500000, name: 'On fire', paid: 10 }, { at: 1000000, name: 'Inferno', paid: 10 }];
 const BYBIT_BPS_DEFAULT = 2.24;
+/* What src/journal.js needs from this file, passed in rather than imported back (the module stays free of this file's state). */
+const JRN_H = {
+  get CORS() { return CORS; }, get SESS_COOKIE() { return SESS_COOKIE; }, get feeVenues() { return FEE_VENUES; },
+  sessionUser: (env, t) => sessionUser(env, t), getCookie: (r, n) => getCookie(r, n),
+  isAdminKey: (env, k) => isAdminKey(env, k), adminKeyFrom: (r, u) => adminKeyFrom(r, u),
+  rawFetch: (u, i) => __realFetch(u, i), collectorBase: (env) => { colBase(env); return COL_BASE || 'https://collector.marginpad.io'; },
+  collectorKey: async (env) => env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key'),
+  priceOf: (sym) => fetchPriceCached(sym),
+  bybitBps: async (env) => { try { const v = JSON.parse((await env.STATS.get('jrn:bybitbps')) || 'null'); if (v && +v.bps > 0 && Date.now() - v.t < 7 * 86400000) return +v.bps; } catch (e) {} return BYBIT_BPS_DEFAULT; },
+};
 function bybitPoolCalc(comUsd, volUsd, cfg) { // pure: base + share x the season's commission on the board -> {usd, base, fromVolume, tier (by volume), prizes[10], perHundredK} - the ONE place the money is decided
   const share = +cfg.bybitShare || 0, cap = +cfg.bybitCap || 0, base = +cfg.bybitBase || 0, split = cfg.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1];
   const com = Math.max(0, +comUsd || 0), vol = Math.max(0, +volUsd || 0);
@@ -28390,6 +28402,7 @@ export default {
     // listing of them. The old URL is kept as a 301 so every link that still carries it lands on the category page.
     if (url.pathname === '/blog/theses/' || url.pathname === '/blog/theses') return Response.redirect(url.origin + '/community/c/thesis', 301);
     if (url.pathname.startsWith('/api/spot/')) return handleSpot(url, request, env);
+    if (url.pathname === '/api/journal' || url.pathname.startsWith('/api/journal/')) return handleJournal(url, request, env, ctx, JRN_H);
     if ((url.pathname === '/api/nowpayments/ipn' || url.pathname === '/api/nowpay/ipn') && request.method === 'POST') return handleNowpayIpn(request, env);
     if (url.pathname === '/api/admin/user') return handleUserPage(url, env, request);
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(url, request, env, ctx);
@@ -31493,6 +31506,10 @@ export default {
         by_edge: byEdge, by_edge_note: 'Live hit rate split by whether our liquidation edge was firing when the call was made, and at what conviction. The sim says liq_edge/high should clear ~55%+ and no_edge should sit near a coin flip - this is where we confirm it in production. Needs a few settled calls per bucket before it means anything.',
         note: decided < 20 ? 'Too few settled calls to read a hit rate - ' + decided + ' so far. A number under about 20 is noise.' : 'A call is a win when the first target was touched before the stop, on the same candles the reader saw.' });
     }
+    if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // who connected a real account, and how much they trade
+      if (url.searchParams.get('run') === '1') return new Response(JSON.stringify(await journalCron(env, JRN_H)), { headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify(await journalDesk(env)), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/aicost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.min(100, Math.max(1, parseInt(url.searchParams.get('days') || '14', 10) || 14));
       const out = [], tot = { micros: 0, calls: 0, inTok: 0, outTok: 0 }, byModel = {}, bySurface = {}, byUid = {}, tModel = {}, tSurface = {};
@@ -33218,6 +33235,7 @@ export default {
        nothing. Measured: the affiliate report sat two and a half hours stale while every alarm stayed
        green. Awaited in sequence, not fired at once: sharing a budget and hoping is what broke it. */
     if (event.cron === '4,14,24,34,44,54 * * * *') {
+      if (env.JOURNAL) ctx.waitUntil(journalCron(env, JRN_H).catch(() => {})); // real-account journal sync (2026-11-18)
       ctx.waitUntil(cxEqTick(env).catch(() => {}));
       ctx.waitUntil(cxCovTick(env, 6).catch(() => {}));
       if (new Date().getUTCHours() % 6 === 1 && new Date().getUTCMinutes() < 10) ctx.waitUntil((async () => { const n = Date.now(); for (const d of [0, 1]) { try { await cxEarnDay(env, new Date(n - d * 86400000).toISOString().slice(0, 10), n); } catch (e) {} } })());

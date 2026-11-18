@@ -144,6 +144,16 @@ class_name = "BotStream"
 tag = "v7"
 new_sqlite_classes = ["BotStream"]
 
+# Real-account journal (2026-11-18): one instance per member (j:<uid>) holding that member's sealed read-only key,
+# fills and funding. Its own class so a heavy trader's history never lands on UserStore 'main'.
+[[durable_objects.bindings]]
+name = "JOURNAL"
+class_name = "JournalStore"
+
+[[migrations]]
+tag = "v8"
+new_sqlite_classes = ["JournalStore"]
+
 # ============================================================================
 # STAGING ENVIRONMENT (deploy: wrangler deploy --env staging → separate script
 # `marginpad-staging`, so ALL Durable Objects are physically separate instances).
