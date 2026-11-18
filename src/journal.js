@@ -423,7 +423,7 @@ export function jrBuild(fills, funding) {
   const F = fills.map((f, i) => [f, i]).sort((x, y) => x[0].ts - y[0].ts || (x[0].sym === y[0].sym && x[0].start != null && y[0].start != null ? hlRank(x[0]) - hlRank(y[0]) : 0) || x[1] - y[1]).map(x => x[0]);
   const open = new Map(), pos = [];
   let seq = 0;
-  const mk = (f, key, dir, partial) => ({ id: f.ex + ':' + f.sym + ':' + f.ts + ':' + (seq++), ex: f.ex, sym: f.sym, ps: f.ps, dir, openTs: f.ts, closeTs: 0, q: 0, avg: 0, maxQ: 0, maxNotional: 0, entryNotional: 0, exitQty: 0, exitNotional: 0, gross: 0, fees: 0, feesTaker: 0, feesMaker: 0, funding: 0, xpnl: 0, xknown: true, n: 0, nMaker: 0, nTaker: 0, liq: 0, adl: 0, partial: !!partial, key, vol: 0, entTF: 0, entTV: 0 });
+  const mk = (f, key, dir, partial) => ({ id: f.ex + ':' + f.sym + ':' + (f.ps || 'B') + ':' + f.ts + ':' + (dir > 0 ? 'L' : 'S') + (partial ? 'p' : ''), conn: f.conn || '', ex: f.ex, sym: f.sym, ps: f.ps, dir, openTs: f.ts, closeTs: 0, q: 0, avg: 0, maxQ: 0, maxNotional: 0, entryNotional: 0, exitQty: 0, exitNotional: 0, gross: 0, fees: 0, feesTaker: 0, feesMaker: 0, funding: 0, xpnl: 0, xknown: true, n: 0, nMaker: 0, nTaker: 0, liq: 0, adl: 0, partial: !!partial, key, vol: 0, entTF: 0, entTV: 0 });
   for (const f of F) {
     const key = f.ex + '|' + f.sym + '|' + f.ps;
     let p = open.get(key);
@@ -483,6 +483,7 @@ export function jrBuild(fills, funding) {
     for (const p of L) { if (r.ts >= p.openTs - 60000 && (!p.closeTs || r.ts <= p.closeTs + 60000)) { hit = p; break; } }
     if (hit) hit.funding += r.amt; else fundLoose += r.amt;
   }
+  const _seen = {}; for (const p of pos) { if (_seen[p.id]) p.id += '#' + (++_seen[p.id]); else _seen[p.id] = 1; } // ids are unique even when two positions share a millisecond
   for (const p of pos) {
     if (!isFinite(p.gross) || !isFinite(p.avg)) { p.unknownEntry = true; p.gross = p.xknown ? p.xpnl : 0; p.avg = null; } // an entry we never saw: the exchange's P&L is the figure
     if (p.partial && p.xknown) p.gross = p.xpnl;
@@ -574,6 +575,8 @@ export class JournalStore {
     sql.exec(`CREATE TABLE IF NOT EXISTS fills (k TEXT PRIMARY KEY, conn TEXT, ex TEXT, sym TEXT, side INTEGER, px REAL, qty REAL, fee REAL, maker INTEGER, ts INTEGER, oid TEXT, ps TEXT, rpnl REAL, liq INTEGER, adl INTEGER, start REAL, dir TEXT)`);
     sql.exec(`CREATE INDEX IF NOT EXISTS fills_ts ON fills(ts)`);
     sql.exec(`CREATE TABLE IF NOT EXISTS funding (k TEXT PRIMARY KEY, conn TEXT, ex TEXT, sym TEXT, ts INTEGER, amt REAL, rate REAL)`);
+    sql.exec(`CREATE TABLE IF NOT EXISTS notes (pid TEXT PRIMARY KEY, note TEXT, tags TEXT, ts INTEGER)`);
+    sql.exec(`CREATE TABLE IF NOT EXISTS prefs (k TEXT PRIMARY KEY, v TEXT)`);
   }
   async fetch(request) {
     const url = new URL(request.url), p = url.pathname, sql = this.sql;
@@ -592,6 +595,16 @@ export class JournalStore {
       sql.exec('DELETE FROM fills WHERE conn=?', b.id); sql.exec('DELETE FROM funding WHERE conn=?', b.id); sql.exec('DELETE FROM conn WHERE id=?', b.id);
       return J({ ok: true, left: sql.exec('SELECT COUNT(*) n FROM conn').one().n });
     }
+    if (p === '/note') { // one note and a tag list per position
+      const pid = String(b.pid || '').slice(0, 120), note = String(b.note || '').slice(0, 2000), tags = (Array.isArray(b.tags) ? b.tags : []).map(t => String(t).slice(0, 24)).slice(0, 8);
+      if (!pid) return J({ error: 'bad' }, 400);
+      if (!note && !tags.length) sql.exec('DELETE FROM notes WHERE pid=?', pid); else sql.exec('INSERT OR REPLACE INTO notes (pid,note,tags,ts) VALUES (?,?,?,?)', pid, note, JSON.stringify(tags), Date.now());
+      return J({ ok: true });
+    }
+    if (p === '/prefs') { for (const k of Object.keys(b || {}).slice(0, 10)) sql.exec('INSERT OR REPLACE INTO prefs (k,v) VALUES (?,?)', String(k).slice(0, 30), JSON.stringify(b[k]).slice(0, 2000)); return J({ ok: true }); }
+    if (p === '/label') { sql.exec('UPDATE conn SET label=? WHERE id=?', String(b.label || '').slice(0, 40), String(b.id || '')); return J({ ok: true }); }
+    if (p === '/fills') { const sym = url.searchParams.get('sym') || '', a = +url.searchParams.get('a') || 0, z = +url.searchParams.get('z') || 0, cn = url.searchParams.get('conn') || '';
+      return J({ fills: sql.exec('SELECT k,conn,ex,sym,side,px,qty,fee,maker,ts,rpnl,liq,dir FROM fills WHERE sym=? AND ts>=? AND ts<=?' + (cn ? ' AND conn=?' : '') + ' ORDER BY ts, rowid LIMIT 400', ...(cn ? [sym, a, z, cn] : [sym, a, z])).toArray() }); }
     if (p === '/conn/reset') { sql.exec('DELETE FROM fills WHERE conn=?', b.id); sql.exec('DELETE FROM funding WHERE conn=?', b.id); sql.exec("UPDATE conn SET cur='{}', done=0, nfills=0, oldest=NULL, newest=NULL, status='importing' WHERE id=?", b.id); return J({ ok: true }); }
     if (p === '/wipe') { await this.state.storage.deleteAll(); this.init(); return J({ ok: true }); }
     if (p === '/ingest') { // a sync pass's result
@@ -608,7 +621,9 @@ export class JournalStore {
       const from = +url.searchParams.get('from') || 0;
       const F = conn ? sql.exec('SELECT * FROM fills WHERE conn=? AND ts>=? ORDER BY ts, rowid', conn, from).toArray() : sql.exec('SELECT * FROM fills WHERE ts>=? ORDER BY ts, rowid', from).toArray();
       const Fu = conn ? sql.exec('SELECT * FROM funding WHERE conn=? AND ts>=?', conn, from).toArray() : sql.exec('SELECT * FROM funding WHERE ts>=?', from).toArray();
-      return J({ fills: F, funding: Fu, conns: sql.exec('SELECT id,ex,label,kid,addr,perms,ipbound,status,err,created,last_sync,last_ok,nfills,oldest,newest,done FROM conn ORDER BY created').toArray() });
+      const notes = {}; for (const r of sql.exec('SELECT * FROM notes').toArray()) { let t = []; try { t = JSON.parse(r.tags || '[]'); } catch (e) {} notes[r.pid] = { note: r.note || '', tags: t }; }
+      const prefs = {}; for (const r of sql.exec('SELECT * FROM prefs').toArray()) { try { prefs[r.k] = JSON.parse(r.v); } catch (e) {} }
+      return J({ notes, prefs, fills: F, funding: Fu, conns: sql.exec('SELECT id,ex,label,kid,addr,perms,ipbound,status,err,created,last_sync,last_ok,nfills,oldest,newest,done FROM conn ORDER BY created').toArray() });
     }
     return J({ error: 'not_found' }, 404);
   }
@@ -725,6 +740,10 @@ export async function handleJournal(url, request, env, ctx, H) {
     await jCall(env, uid, '/wipe', {}); try { await env.STATS.delete('jrn:act:' + uid); await env.STATS.delete('jrn:sum:' + uid); } catch (e) {}
     return J({ ok: true });
   }
+  if (path === '/note' && request.method === 'POST') return J(await jCall(env, uid, '/note', { pid: b.pid, note: b.note, tags: b.tags }));
+  if (path === '/prefs' && request.method === 'POST') { const o = {}; if (b.goal != null) o.goal = Math.max(0, Math.min(1e9, +b.goal || 0)); if (b.dayLimit != null) o.dayLimit = Math.max(0, Math.min(1e9, +b.dayLimit || 0)); return J(await jCall(env, uid, '/prefs', o)); }
+  if (path === '/label' && request.method === 'POST') return J(await jCall(env, uid, '/label', { id: b.id, label: b.label }));
+  if (path === '/fills') { const r = await jStub(env, uid).fetch('https://j/fills' + url.search); return J(await r.json()); }
   if (path === '/sync' && request.method === 'POST') {
     const t = await env.STATS.get('jrn:sy:' + uid); if (t && Date.now() - +t < 20000) return J({ error: 'slow_down', wait: 20 }, 429);
     try { await env.STATS.put('jrn:sy:' + uid, String(Date.now()), { expirationTtl: 60 }); } catch (e) {}
@@ -738,10 +757,16 @@ export async function handleJournal(url, request, env, ctx, H) {
     const st = jrStats(positions, d.fills || [], d.funding || [], fromTs);
     const exMain = (() => { const c = {}; for (const f of (d.fills || [])) if (f.ts >= fromTs) c[f.ex] = (c[f.ex] || 0) + f.px * f.qty; return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ''; })();
     const sav = jrSavings(st, d.fills || [], fromTs, H.feeVenues, exMain, await H.bybitBps(env));
+    /* ALL ACCOUNTS = ONE SAVINGS BLOCK PER EXCHANGE (owner 2026-11-18): fee rates, maker/taker and the referral offer belong to an exchange, so
+       several exchanges summed into one figure priced at one venue's rates is wrong. Each exchange gets its own stats and savings. */
+    const exs = Array.from(new Set((d.fills || []).filter(f => f.ts >= fromTs).map(f => f.ex)));
+    let savingsBy = null;
+    if (exs.length > 1) { const bps = await H.bybitBps(env); savingsBy = exs.map(ex => { const fx = (d.fills || []).filter(f => f.ex === ex), fu = (d.funding || []).filter(f => f.ex === ex); const ps = positions.filter(p => p.ex === ex); const s2 = jrStats(ps, fx, fu, fromTs); return { ex, vol: s2.vol, fees: s2.fees, funding: s2.funding, covDays: s2.covDays, savings: jrSavings(s2, fx, fromTs, H.feeVenues, ex, bps) }; }).sort((x, y) => y.vol - x.vol); }
     if (su && st.vol > 0) ctx.waitUntil(deskNote(env, uid, su.username || '', st));
-    const trades = positions.filter(p => (p.closeTs || p.openTs) >= fromTs).sort((a, b) => (b.closeTs || b.openTs) - (a.closeTs || a.openTs)).slice(0, +url.searchParams.get('limit') || 300);
+    const trades = positions.filter(p => (p.closeTs || p.openTs) >= fromTs).sort((a, b) => (b.closeTs || b.openTs) - (a.closeTs || a.openTs)).slice(0, Math.min(3000, +url.searchParams.get('limit') || 3000));
     const conns = (d.conns || []).map(c => Object.assign(c, { perms: (() => { try { return JSON.parse(c.perms || '{}'); } catch (e) { return {}; } })() }));
-    return J({ days, exMain, stats: st, savings: sav, trades, conns, open: positions.filter(p => p.status === 'open').length });
+    const nt = d.notes || {}, notes = {}; for (const t of trades) if (nt[t.id]) notes[t.id] = nt[t.id];
+    return J({ days, exMain, stats: st, savings: sav, savingsBy, trades, conns, notes, prefs: d.prefs || {}, open: positions.filter(p => p.status === 'open').length });
   }
   return J({ error: 'not_found' }, 404);
 }

@@ -20,150 +20,203 @@ const FAQ = [
 
 const css = `
 :root{--bg:#0a0b0d;--panel:#0f1216;--panel2:#131820;--line:rgba(232,214,178,.12);--line2:rgba(255,255,255,.07);--brass:#d8bf8e;--brass2:#a8915f;--ink:#ecebe6;--mute:#8d96a2;--gain:#c2f64a;--loss:#ff5a4d}
-*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}[hidden]{display:none!important}html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Familjen Grotesk',system-ui,sans-serif}
 a{color:var(--brass)}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
 .num{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums}
-.jr-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:end;padding:56px 0 28px}
-.jr-hero h1{font:600 clamp(36px,5.2vw,64px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin:0 0 18px;max-width:14ch}
-.jr-hero p.lede{font-size:18px;color:#c9c6bd;max-width:52ch;margin:0}
-.jr-seals{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.jr-seals li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(216,191,142,.05),transparent)}
-.jr-seals b{display:block;font-weight:600;color:var(--ink)}
-.jr-seals span{color:var(--mute);font-size:14px;line-height:1.45}
-.jr-seal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(216,191,142,.45);color:var(--brass)}
+.jl-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:end;padding:56px 0 28px}
+.jl-hero h1{font:600 clamp(36px,5.2vw,64px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin:0 0 18px;max-width:14ch}
+.jl-hero p.lede{font-size:18px;color:#c9c6bd;max-width:52ch;margin:0}
+.jl-seals{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.jl-seals li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(216,191,142,.05),transparent)}
+.jl-seals b{display:block;font-weight:600;color:var(--ink)}
+.jl-seals span{color:var(--mute);font-size:14px;line-height:1.45}
+.jl-seal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(216,191,142,.45);color:var(--brass)}
 /* THE KEY RAIL - the one bold thing on the page */
-.jr-rail-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:30px 0 12px}
-.jr-rail-h h2{font:600 22px/1.2 'Bricolage Grotesque',sans-serif;margin:0}
-.jr-rail-h p{margin:0;color:var(--mute);font-size:14px}
-.jr-next{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--mute);font-size:14px;margin:14px 2px 0}.jr-next span{display:inline-flex;align-items:center;gap:7px}.jr-next img{border-radius:5px;filter:saturate(.3)}
-.jr-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;perspective:1400px}
-.jr-key{position:relative;height:184px;border-radius:18px;cursor:pointer;transform-style:preserve-3d;outline:none;border:0;padding:0;background:none;color:inherit;text-align:left;font:inherit}
-.jr-key:focus-visible .jr-face{box-shadow:0 0 0 2px var(--brass)}
-.jr-face{position:absolute;inset:0;border-radius:18px;overflow:hidden;padding:18px 18px 16px;display:flex;flex-direction:column;justify-content:space-between;
+.jl-rail-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:30px 0 12px}
+.jl-rail-h h2{font:600 22px/1.2 'Bricolage Grotesque',sans-serif;margin:0}
+.jl-rail-h p{margin:0;color:var(--mute);font-size:14px}
+.jl-next{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--mute);font-size:14px;margin:14px 2px 0}.jl-next span{display:inline-flex;align-items:center;gap:7px}.jl-next img{border-radius:5px;filter:saturate(.3)}
+.jl-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;perspective:1400px}
+.jl-key{position:relative;height:184px;border-radius:18px;cursor:pointer;transform-style:preserve-3d;outline:none;border:0;padding:0;background:none;color:inherit;text-align:left;font:inherit}
+.jl-key:focus-visible .jl-face{box-shadow:0 0 0 2px var(--brass)}
+.jl-face{position:absolute;inset:0;border-radius:18px;overflow:hidden;padding:18px 18px 16px;display:flex;flex-direction:column;justify-content:space-between;
   background:radial-gradient(120% 90% at 10% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),
     repeating-linear-gradient(100deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px),
     linear-gradient(160deg,#1a1d22,#0d0f12 70%);
   border:1px solid color-mix(in srgb,var(--c) 30%,rgba(232,214,178,.14));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 18px 40px -26px #000}
-.jr-face::after{content:'';position:absolute;right:16px;top:50%;width:46px;height:14px;margin-top:-7px;border-radius:7px;background:#06070a;box-shadow:inset 0 1px 2px #000,0 1px 0 rgba(255,255,255,.06)} /* the key slot */
-.jr-face .lg{display:flex;align-items:center;gap:10px}
-.jr-face .lg img{width:34px;height:34px;border-radius:9px;background:#000}
-.jr-face .lg b{font:600 20px/1 'Bricolage Grotesque',sans-serif}
-.jr-face .how{color:var(--mute);font-size:13px;line-height:1.4;max-width:70%}
-.jr-face .tag{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:color-mix(in srgb,var(--c) 80%,#fff)}
-.jr-key.soon{cursor:default}.jr-key.soon .jr-face{filter:saturate(.25) brightness(.8)}
-.jr-key.soon .tag{border-color:var(--line2);color:var(--mute)}
-.jr-key:not(.soon):hover .jr-face{border-color:color-mix(in srgb,var(--c) 60%,transparent)}
+.jl-face::after{content:'';position:absolute;right:16px;top:50%;width:46px;height:14px;margin-top:-7px;border-radius:7px;background:#06070a;box-shadow:inset 0 1px 2px #000,0 1px 0 rgba(255,255,255,.06)} /* the key slot */
+.jl-face .lg{display:flex;align-items:center;gap:10px}
+.jl-face .lg img{width:34px;height:34px;border-radius:9px;background:#000}
+.jl-face .lg b{font:600 20px/1 'Bricolage Grotesque',sans-serif}
+.jl-face .how{color:var(--mute);font-size:13px;line-height:1.4;max-width:70%}
+.jl-face .tag{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:color-mix(in srgb,var(--c) 80%,#fff)}
+.jl-key.soon{cursor:default}.jl-key.soon .jl-face{filter:saturate(.25) brightness(.8)}
+.jl-key.soon .tag{border-color:var(--line2);color:var(--mute)}
+.jl-key:not(.soon):hover .jl-face{border-color:color-mix(in srgb,var(--c) 60%,transparent)}
 /* the open key: the guide and the form */
-.jr-open{display:none;margin-top:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden}
-.jr-open.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.jr-steps{padding:22px 24px;border-right:1px solid var(--line2);display:flex;flex-direction:column}
-.jr-gsub{color:var(--mute);margin:0;font-size:14px}.jr-gsub a{white-space:nowrap}
-.jr-ipbox{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;padding:10px 12px;border-radius:12px;background:#07080a;border:1px solid var(--line)}.jr-ipbox span{color:var(--mute);font-size:13px}.jr-ipbox code{font:700 15px 'Space Mono',monospace;color:var(--ink)}.jr-ipbox .jr-btn{margin-left:auto}
-.jr-steps h3,.jr-form h3{font:600 20px/1.25 'Bricolage Grotesque',sans-serif;margin:0 0 6px}
-.jr-steps ol{margin:12px 0 14px;padding:0;list-style:none;counter-reset:s;display:grid;gap:9px}
-.jr-steps li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;color:#cfccc3;font-size:14.5px;line-height:1.5}
-.jr-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px 'Space Mono',monospace;color:var(--brass);border:1px solid rgba(216,191,142,.4)}
-.jr-ip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 6px 6px 12px;border-radius:10px;background:#07080a;border:1px solid var(--line)}
-.jr-ip code{font:700 15px 'Space Mono',monospace;color:var(--ink)}
-.jr-btn{appearance:none;border:0;cursor:pointer;font:600 15px 'Familjen Grotesk',sans-serif;border-radius:12px;padding:12px 18px;background:var(--brass);color:#16130c}
-.jr-btn:hover{background:#e6cf9f}.jr-btn[disabled]{opacity:.5;cursor:default}
-.jr-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.jr-btn.ghost:hover{border-color:var(--brass)}
-.jr-btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
-.jr-btn.go{background:var(--gain);color:#0b0d06}
-.jr-form{padding:22px 24px;display:flex;flex-direction:column;gap:10px}
-.jr-form label{font-size:13px;color:var(--mute);display:grid;gap:6px}
-.jr-form input{width:100%;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
-.jr-form input:focus{border-color:var(--brass)}
-.jr-perm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:4px}
-.jr-perm div{border:1px solid var(--line2);border-radius:10px;padding:7px 6px;font-size:12px;color:var(--mute);text-align:center}
-.jr-perm div b{display:block;font-size:15px;color:var(--ink);margin-bottom:2px}
-.jr-perm .ok{border-color:rgba(194,246,74,.4)}.jr-perm .ok b{color:var(--gain)}
-.jr-perm .no b{color:var(--mute);text-decoration:line-through}
-.jr-perm .bad{border-color:rgba(255,90,77,.55)}.jr-perm .bad b{color:var(--loss);text-decoration:none}
-.jr-msg{font-size:14px;min-height:20px;color:var(--mute)}.jr-msg.err{color:#ff8a7e}.jr-msg.okm{color:var(--gain)}
-.jr-x{position:absolute;right:16px;top:14px}
+.jl-open{display:none;margin-top:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden}
+.jl-open.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.jl-steps{padding:22px 24px;border-right:1px solid var(--line2);display:flex;flex-direction:column}
+.jl-gsub{color:var(--mute);margin:0;font-size:14px}.jl-gsub a{white-space:nowrap}
+.jl-ipbox{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;padding:10px 12px;border-radius:12px;background:#07080a;border:1px solid var(--line)}.jl-ipbox span{color:var(--mute);font-size:13px}.jl-ipbox code{font:700 15px 'Space Mono',monospace;color:var(--ink)}.jl-ipbox .jl-btn{margin-left:auto}
+.jl-steps h3,.jl-form h3{font:600 20px/1.25 'Bricolage Grotesque',sans-serif;margin:0 0 6px}
+.jl-steps ol{margin:12px 0 14px;padding:0;list-style:none;counter-reset:s;display:grid;gap:9px}
+.jl-steps li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;color:#cfccc3;font-size:14.5px;line-height:1.5}
+.jl-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px 'Space Mono',monospace;color:var(--brass);border:1px solid rgba(216,191,142,.4)}
+.jl-ip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 6px 6px 12px;border-radius:10px;background:#07080a;border:1px solid var(--line)}
+.jl-ip code{font:700 15px 'Space Mono',monospace;color:var(--ink)}
+.jl-btn{appearance:none;border:0;cursor:pointer;font:600 15px 'Familjen Grotesk',sans-serif;border-radius:12px;padding:12px 18px;background:var(--brass);color:#16130c}
+.jl-btn:hover{background:#e6cf9f}.jl-btn[disabled]{opacity:.5;cursor:default}
+.jl-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.jl-btn.ghost:hover{border-color:var(--brass)}
+.jl-btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.jl-btn.go{background:var(--gain);color:#0b0d06}
+.jl-form{padding:22px 24px;display:flex;flex-direction:column;gap:10px}
+.jl-form label{font-size:13px;color:var(--mute);display:grid;gap:6px}
+.jl-form input{width:100%;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+.jl-form input:focus{border-color:var(--brass)}
+.jl-perm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:4px}
+.jl-perm div{border:1px solid var(--line2);border-radius:10px;padding:7px 6px;font-size:12px;color:var(--mute);text-align:center}
+.jl-perm div b{display:block;font-size:15px;color:var(--ink);margin-bottom:2px}
+.jl-perm .ok{border-color:rgba(194,246,74,.4)}.jl-perm .ok b{color:var(--gain)}
+.jl-perm .no b{color:var(--mute);text-decoration:line-through}
+.jl-perm .bad{border-color:rgba(255,90,77,.55)}.jl-perm .bad b{color:var(--loss);text-decoration:none}
+.jl-msg{font-size:14px;min-height:20px;color:var(--mute)}.jl-msg.err{color:#ff8a7e}.jl-msg.okm{color:var(--gain)}
+.jl-x{position:absolute;right:16px;top:14px}
 /* sections */
-.jr-sec{padding:64px 0 0}
-.jr-sec>h2{font:600 clamp(26px,3.2vw,36px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;margin:0 0 10px;max-width:22ch}
-.jr-sec>p.sub{color:#bdbab1;max-width:62ch;margin:0 0 24px}
-.jr-ledger{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.jr-ledger>div{padding:22px 24px}.jr-ledger>div+div{border-left:1px solid var(--line)}
-.jr-ledger h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
-.jr-ledger ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;color:#cfccc3;font-size:15px}
-.jr-ledger li{display:flex;gap:10px}.jr-ledger li::before{content:'';flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--gain)}
-.jr-ledger .never li::before{background:transparent;border:1.5px solid var(--loss)}
+.jl-sec{padding:64px 0 0}
+.jl-sec>h2{font:600 clamp(26px,3.2vw,36px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;margin:0 0 10px;max-width:22ch}
+.jl-sec>p.sub{color:#bdbab1;max-width:62ch;margin:0 0 24px}
+.jl-ledger{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.jl-ledger>div{padding:22px 24px}.jl-ledger>div+div{border-left:1px solid var(--line)}
+.jl-ledger h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jl-ledger ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;color:#cfccc3;font-size:15px}
+.jl-ledger li{display:flex;gap:10px}.jl-ledger li::before{content:'';flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--gain)}
+.jl-ledger .never li::before{background:transparent;border:1.5px solid var(--loss)}
 /* dashboard */
-.jr-dash{display:none}.jr-dash.on{display:block}
-.jr-dh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;padding:40px 0 18px}
-.jr-dh h1{font:600 clamp(28px,4vw,42px)/1.05 'Bricolage Grotesque',sans-serif;margin:0}
-.jr-dh .acc{color:var(--mute);font-size:14px;margin-top:6px}
-.jr-chips{display:flex;gap:6px;flex-wrap:wrap}
-.jr-chip{appearance:none;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 13px 'Familjen Grotesk',sans-serif;padding:7px 12px;border-radius:999px;cursor:pointer}
-.jr-chip.on{color:#16130c;background:var(--brass);border-color:var(--brass)}
-.jr-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.jr-tile{background:var(--panel);padding:16px 18px}
-.jr-tile i{display:block;font-style:normal;color:var(--mute);font-size:13px}
-.jr-tile b{display:block;font:700 24px/1.3 'Space Mono',monospace;margin-top:4px}
-.jr-tile small{color:var(--mute);font-size:12px}
+.jl-dash{display:none}.jl-dash.on{display:block}
+.jl-dh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;padding:40px 0 18px}
+.jl-dh h1{font:600 clamp(28px,4vw,42px)/1.05 'Bricolage Grotesque',sans-serif;margin:0}
+.jl-dh .acc{color:var(--mute);font-size:14px;margin-top:6px}
+.jl-chips{display:flex;gap:6px;flex-wrap:wrap}
+.jl-chip{appearance:none;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 13px 'Familjen Grotesk',sans-serif;padding:7px 12px;border-radius:999px;cursor:pointer}
+.jl-chip.on{color:#16130c;background:var(--brass);border-color:var(--brass)}
+.jl-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.jl-tile{background:var(--panel);padding:16px 18px}
+.jl-tile i{display:block;font-style:normal;color:var(--mute);font-size:13px}
+.jl-tile b{display:block;font:700 24px/1.3 'Space Mono',monospace;margin-top:4px}
+.jl-tile small{color:var(--mute);font-size:12px}
 .pos{color:var(--gain)}.neg{color:var(--loss)}
-.jr-tabs{display:flex;gap:4px;margin:26px 0 16px;border-bottom:1px solid var(--line2);overflow-x:auto}
-#jrTabs .jr-tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);font:600 15px 'Familjen Grotesk',sans-serif;padding:10px 14px;cursor:pointer;white-space:nowrap}
-#jrTabs .jr-tab.on{color:var(--ink);border-bottom-color:var(--brass);background:none}
-.jr-pane{display:none}.jr-pane.on{display:block}
-.jr-card{border:1px solid var(--line2);border-radius:16px;background:var(--panel);padding:18px 20px;margin-bottom:14px}
-.jr-card h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
-.jr-card .note{color:var(--mute);font-size:13px;margin:8px 0 0}
-.jr-curve svg{display:block;width:100%;height:220px}
-.jr-cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(26px,1fr));gap:4px}
-.jr-cal span{aspect-ratio:1;border-radius:5px;background:#151a21}
-.jr-tbl{width:100%;border-collapse:collapse;font-size:14px}
-.jr-tbl th{text-align:left;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
-.jr-tbl td{padding:9px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
-.jr-tbl td.r,.jr-tbl th.r{text-align:right}
-.jr-tw{overflow-x:auto}
-.jr-tl{display:none}.jr-tl .it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:12px 0;border-top:1px solid var(--line2)}.jr-tl .it:first-child{border-top:0}.jr-tl .m{font-weight:600}.jr-tl .s{color:var(--mute);font-size:13px}.jr-tl .n{text-align:right;font:700 15px 'Space Mono',monospace}
-@media (max-width:700px){.jr-trtbl{display:none}.jr-tl{display:block}}
-.jr-badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mute);margin-left:6px}
-.jr-badge.liq{border-color:rgba(255,90,77,.5);color:#ff8a7e}
-.jr-save{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:start;padding:16px 0;border-top:1px solid var(--line2)}
-.jr-save:first-of-type{border-top:0;padding-top:4px}
-.jr-save h4{margin:0;font:600 17px 'Bricolage Grotesque',sans-serif}
-.jr-save p{margin:0;color:#c9c6bd;font-size:15px;grid-column:1}
-.jr-save .amt{font:700 22px 'Space Mono',monospace;color:var(--gain);grid-row:1 / span 2;grid-column:2;text-align:right}
-.jr-save .amt small{display:block;font:500 12px 'Familjen Grotesk',sans-serif;color:var(--mute)}
-.jr-bars{display:grid;gap:8px}
-.jr-bar{display:grid;grid-template-columns:110px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:14px}
-.jr-bar .t{height:10px;border-radius:5px;background:#151a21;overflow:hidden}.jr-bar .t i{display:block;height:100%;background:var(--brass2)}
-.jr-bar.me .t i{background:var(--brass)}.jr-bar a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--brass2)}.jr-bar a:hover{color:var(--brass)}.jr-bar.me{color:var(--ink);font-weight:600}
-.jr-ins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.jr-empty{color:var(--mute);font-size:14px;padding:6px 0}
-.jr-acc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line2)}
-.jr-acc:first-child{border-top:0}
-.jr-acc img{width:36px;height:36px;border-radius:10px}
-.jr-acc .st{font-size:13px;color:var(--mute)}
-.jr-prog{height:6px;border-radius:3px;background:#151a21;overflow:hidden;margin-top:6px;max-width:260px}.jr-prog i{display:block;height:100%;background:var(--brass)}
-.jr-cmp{width:100%;border-collapse:collapse;font-size:15px}
-.jr-cmp th,.jr-cmp td{padding:12px 14px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
-.jr-cmp th{color:var(--mute);font-weight:500}
-.jr-cmp td.us{color:var(--ink);background:rgba(216,191,142,.05)}
-.jr-faq details{border-top:1px solid var(--line2);padding:14px 0}
-.jr-faq summary{cursor:pointer;font-weight:600;font-size:16px}
-.jr-faq p{color:#c9c6bd;margin:10px 0 0;max-width:70ch}
-.jr-prose{color:#bdbab1;max-width:70ch;padding-bottom:80px}
-.jr-prose h2{color:var(--ink);font:600 22px 'Bricolage Grotesque',sans-serif;margin:40px 0 8px}
+.jl-tabs{display:flex;gap:4px;margin:26px 0 16px;border-bottom:1px solid var(--line2);overflow-x:auto}
+#jrTabs .jl-tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);font:600 15px 'Familjen Grotesk',sans-serif;padding:10px 14px;cursor:pointer;white-space:nowrap}
+#jrTabs .jl-tab.on{color:var(--ink);border-bottom-color:var(--brass);background:none}
+.jl-pane{display:none}.jl-pane.on{display:block}
+.jl-card{border:1px solid var(--line2);border-radius:16px;background:var(--panel);padding:18px 20px;margin-bottom:14px}
+.jl-card h3{margin:0 0 10px;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jl-card .note{color:var(--mute);font-size:13px;margin:8px 0 0}
+.jl-curve svg{display:block;width:100%;height:220px}
+.jl-cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(26px,1fr));gap:4px}
+.jl-cal span{aspect-ratio:1;border-radius:5px;background:#151a21}
+.jl-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.jl-tbl th{text-align:left;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.jl-tbl td{padding:9px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.jl-tbl td.r,.jl-tbl th.r{text-align:right}
+.jl-tw{overflow-x:auto}
+.jl-tl{display:none}.jl-tl .it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:12px 0;border-top:1px solid var(--line2)}.jl-tl .it:first-child{border-top:0}.jl-tl .m{font-weight:600}.jl-tl .s{color:var(--mute);font-size:13px}.jl-tl .n{text-align:right;font:700 15px 'Space Mono',monospace}
+@media (max-width:700px){.jl-trtbl{display:none}.jl-tl{display:block}}
+.jl-badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mute);margin-left:6px}
+.jl-badge.liq{border-color:rgba(255,90,77,.5);color:#ff8a7e}
+.jl-save{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:start;padding:16px 0;border-top:1px solid var(--line2)}
+.jl-save:first-of-type{border-top:0;padding-top:4px}
+.jl-save h4{margin:0;font:600 17px 'Bricolage Grotesque',sans-serif}
+.jl-save p{margin:0;color:#c9c6bd;font-size:15px;grid-column:1}
+.jl-save .amt{font:700 22px 'Space Mono',monospace;color:var(--gain);grid-row:1 / span 2;grid-column:2;text-align:right}
+.jl-save .amt small{display:block;font:500 12px 'Familjen Grotesk',sans-serif;color:var(--mute)}
+.jl-bars{display:grid;gap:8px}
+.jl-bar{display:grid;grid-template-columns:110px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:14px}
+.jl-bar .t{height:10px;border-radius:5px;background:#151a21;overflow:hidden}.jl-bar .t i{display:block;height:100%;background:var(--brass2)}
+.jl-bar.me .t i{background:var(--brass)}.jl-bar a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--brass2)}.jl-bar a:hover{color:var(--brass)}.jl-bar.me{color:var(--ink);font-weight:600}
+.jl-ins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.jl-empty{color:var(--mute);font-size:14px;padding:6px 0}
+.jl-acc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line2)}
+.jl-acc:first-child{border-top:0}
+.jl-acc img{width:36px;height:36px;border-radius:10px}
+.jl-acc .st{font-size:13px;color:var(--mute)}
+.jl-prog{height:6px;border-radius:3px;background:#151a21;overflow:hidden;margin-top:6px;max-width:260px}.jl-prog i{display:block;height:100%;background:var(--brass)}
+.jl-cmp{width:100%;border-collapse:collapse;font-size:15px}
+.jl-cmp th,.jl-cmp td{padding:12px 14px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+.jl-cmp th{color:var(--mute);font-weight:500}
+.jl-cmp td.us{color:var(--ink);background:rgba(216,191,142,.05)}
+.jl-faq details{border-top:1px solid var(--line2);padding:14px 0}
+.jl-faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.jl-faq p{color:#c9c6bd;margin:10px 0 0;max-width:70ch}
+.jl-prose{color:#bdbab1;max-width:70ch;padding-bottom:80px}
+.jl-prose h2{color:var(--ink);font:600 22px 'Bricolage Grotesque',sans-serif;margin:40px 0 8px}
+
+.jl-backbar{position:sticky;top:64px;z-index:20;display:flex;align-items:center;gap:14px;margin:18px 0 0;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(15,18,22,.92);backdrop-filter:blur(6px);color:var(--mute);font-size:14px}
+.jl-dact{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.jl-accts{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none}.jl-accts::-webkit-scrollbar{display:none}
+.jl-acc-c{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px 'Familjen Grotesk',sans-serif;cursor:pointer}
+.jl-acc-c img{width:20px;height:20px;border-radius:6px}.jl-acc-c .k{color:var(--mute);font:400 12px 'Space Mono',monospace}.jl-acc-c .n{color:var(--mute);font-weight:500}
+.jl-acc-c.on{border-color:var(--brass);background:linear-gradient(180deg,rgba(216,191,142,.14),rgba(216,191,142,.04))}
+.jl-acc-c.add{border-style:dashed;color:var(--brass)}
+.jl-goals{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:center;border:1px solid var(--line2);border-radius:16px;background:var(--panel);padding:14px 18px;margin-bottom:14px}
+.jl-goal .gh{display:flex;gap:10px;align-items:baseline}.jl-goal .gh span{color:var(--mute);font-size:13px}.jl-goal .gh b{font-size:18px}.jl-goal .gh em{color:var(--mute);font-style:normal;font-size:13px}
+.jl-goal .gx{color:var(--mute);font-size:13px;margin-top:4px}.jl-goal.hit{outline:1px solid rgba(255,90,77,.5);border-radius:10px;padding:4px 8px}
+.jl-prog.loss i{background:var(--loss)}
+.jl-goalf{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:-4px 0 14px}.jl-goalf label{display:grid;gap:4px;font-size:13px;color:var(--mute)}.jl-goalf input{width:150px;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.ln{margin:0 0 8px}.mute{color:var(--mute)}
+.jl-filt{padding:14px 16px}.jl-ftog{display:none}.jl-ftop{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.jl-ftop input{flex:1;min-width:0;font:15px 'Familjen Grotesk',sans-serif;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}.jl-ftop input:focus{border-color:var(--brass)}
+.jl-fr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:4px 0}.jl-fr>span{width:56px;color:var(--mute);font-size:13px}
+.jl-fc{appearance:none;border:1px solid var(--line2);background:transparent;color:#cfccc3;font:500 13px 'Familjen Grotesk',sans-serif;padding:5px 10px;border-radius:999px;cursor:pointer}
+.jl-fc.on{border-color:var(--brass);color:#16130c;background:var(--brass)}
+.jl-fsum{margin:8px 0 0;color:var(--mute);font-size:14px}.jl-fsum b{color:var(--ink)}
+.jl-row{cursor:pointer}.jl-row:hover td{background:rgba(216,191,142,.05)}
+.jl-tl .it{appearance:none;background:none;border:0;border-top:1px solid var(--line2);color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer}
+.jl-tl .s.r{text-align:right}
+.jl-badge.tag{border-color:rgba(216,191,142,.45);color:var(--brass)}
+.jl-more{margin-top:12px}
+.jl-drawer{position:fixed;inset:0;z-index:2147483000;display:none;justify-content:flex-end;background:rgba(5,6,8,.6)}
+.jl-drawer.on{display:flex}
+.jl-dw{width:min(640px,100%);height:100%;overflow:auto;background:linear-gradient(180deg,#12161d,#0b0e13);border-left:1px solid var(--line);padding:24px 24px 90px;position:relative}
+.jl-dw h3{font:600 24px 'Bricolage Grotesque',sans-serif;margin:0 0 4px;padding-right:80px}.jl-dw h4{margin:18px 0 8px;font:600 16px 'Bricolage Grotesque',sans-serif}
+.jl-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.jl-facts div{background:var(--panel);padding:9px 12px}.jl-facts i{display:block;font-style:normal;color:var(--mute);font-size:12px}.jl-facts b{font-size:15px}
+.jl-chart{margin-top:14px;border:1px solid var(--line2);border-radius:12px;padding:8px;background:#07080a}
+.jl-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.jl-dw textarea{width:100%;font:15px 'Familjen Grotesk',sans-serif;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;resize:vertical}
+body.jl-noscroll{overflow:hidden}
+.jl-calh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.jl-calh h3{margin:0}
+.jl-mcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.jl-mcal em{font-style:normal;color:var(--mute);font-size:12px;text-align:center}
+.jl-mcal .dd{appearance:none;border:1px solid var(--line2);background:#0c0f13;border-radius:10px;min-height:70px;padding:6px 8px;text-align:left;color:var(--ink);font:inherit;display:flex;flex-direction:column;justify-content:space-between}
+.jl-mcal .dd i{font-style:normal;color:var(--mute);font-size:12px}.jl-mcal .dd b{font-size:13px}.jl-mcal .dd small{color:var(--mute);font-size:11px}
+.jl-mcal button.dd{cursor:pointer}.jl-mcal .dd.p{background:rgba(194,246,74,var(--a));border-color:rgba(194,246,74,.35)}.jl-mcal .dd.n{background:rgba(255,90,77,var(--a));border-color:rgba(255,90,77,.35)}
+.jl-mcal .dd.p b,.jl-mcal .dd.n b{color:#fff}
+.jl-heat{display:grid;grid-template-columns:38px repeat(24,minmax(0,1fr));gap:3px;align-items:center}.jl-heat em{font-style:normal;color:var(--mute);font-size:10px;text-align:center}.jl-heat .dl{color:var(--mute);font-size:12px}
+.jl-heat i{display:block;aspect-ratio:1;border-radius:3px;background:#151a21}
+.jl-lbl{background:transparent;border:1px solid transparent;border-radius:8px;color:var(--ink);font:600 15px 'Familjen Grotesk',sans-serif;padding:3px 6px;margin-left:-6px;width:min(220px,60vw)}.jl-lbl:hover,.jl-lbl:focus{border-color:var(--line);outline:none}
+.jl-acb{display:flex;gap:6px}
+body.jl-adding .jl-hero{padding-top:20px}
 @media (max-width:900px){
-  .jr-hero{grid-template-columns:1fr;gap:26px;padding-top:34px}
-  .jr-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin:0 -24px;padding-left:24px;padding-right:24px}
-  .jr-key{scroll-snap-align:start}
-  .jr-open.on{grid-template-columns:1fr}.jr-steps{border-right:0;border-bottom:1px solid var(--line2)}
-  .jr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-tile:last-child{grid-column:1/-1}
-  .jr-ins{grid-template-columns:1fr}.jr-ledger{grid-template-columns:1fr}.jr-ledger>div+div{border-left:0;border-top:1px solid var(--line)}
-  .jr-perm{grid-template-columns:repeat(4,minmax(0,1fr))}.jr-perm div{font-size:11px;padding:6px 2px}.jr-ipbox span{display:none}
-  .jr-seals{gap:6px}.jr-seals li{padding:10px 12px;grid-template-columns:26px 1fr;align-items:center}.jr-seals li div span{display:none}.jr-rail-h{display:block}.jr-rail-h p{margin-top:4px}.jr-seal{width:26px;height:26px}.jr-hero p.lede{font-size:16px}.jr-hero h1{margin-bottom:12px}
-  .jr-bar{grid-template-columns:90px minmax(0,1fr) 80px}
+  .jl-goals{grid-template-columns:1fr}.jl-ftog{display:inline-block}.jl-filt:not(.open) .jl-fr{display:none}.jl-ftop{flex-wrap:wrap}.jl-ftop input{order:-1;flex-basis:100%}.jl-backbar{top:58px;font-size:13px}.jl-backbar span{display:none}
+  .jl-mcal{gap:3px}.jl-mcal .dd{min-height:48px;padding:3px 4px}.jl-mcal .dd b{font-size:10px}.jl-mcal .dd small{display:none}
+  .jl-heat{grid-template-columns:30px repeat(24,minmax(0,1fr));gap:2px}.jl-heat em{font-size:8px}
+  .jl-fr>span{width:100%}.jl-acc{grid-template-columns:auto minmax(0,1fr)}.jl-acb{grid-column:1/-1}
+  .jl-dw{padding:18px 16px 90px}
+}
+@media (max-width:900px){
+  .jl-hero{grid-template-columns:1fr;gap:26px;padding-top:34px}
+  .jl-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin:0 -24px;padding-left:24px;padding-right:24px}
+  .jl-key{scroll-snap-align:start}
+  .jl-open.on{grid-template-columns:1fr}.jl-steps{border-right:0;border-bottom:1px solid var(--line2)}
+  .jl-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.jl-tile:last-child{grid-column:1/-1}
+  .jl-ins{grid-template-columns:1fr}.jl-ledger{grid-template-columns:1fr}.jl-ledger>div+div{border-left:0;border-top:1px solid var(--line)}
+  .jl-perm{grid-template-columns:repeat(4,minmax(0,1fr))}.jl-perm div{font-size:11px;padding:6px 2px}.jl-ipbox span{display:none}
+  .jl-seals{gap:6px}.jl-seals li{padding:10px 12px;grid-template-columns:26px 1fr;align-items:center}.jl-seals li div span{display:none}.jl-rail-h{display:block}.jl-rail-h p{margin-top:4px}.jl-seal{width:26px;height:26px}.jl-hero p.lede{font-size:16px}.jl-hero h1{margin-bottom:12px}
+  .jl-bar{grid-template-columns:90px minmax(0,1fr) 80px}
   .wrap{padding:0 16px}
 }
 `;
@@ -177,7 +230,7 @@ const KEYS = [
   { id: 'bingx', name: 'BingX', c: '#2a6aff', how: 'A read-only API key, bound to our IP.', tag: 'Read-only key' },
   { id: 'mexc', name: 'MEXC', c: '#2b6cff', how: 'MEXC does not let us verify that a key is read-only, so it waits.', tag: 'Soon', soon: true },
 ];
-const keyHtml = (k) => `<button type="button" class="jr-key${k.soon ? ' soon' : ''}" data-ex="${k.id}" style="--c:${k.c}" aria-label="${k.soon ? k.name + ' - coming soon' : 'Connect ' + k.name}"${k.soon ? ' aria-disabled="true"' : ''}><span class="jr-face"><span class="lg"><img src="/assets/ex/${k.id}.png" alt="" width="34" height="34" loading="lazy"><b>${k.name}</b></span><span class="how">${k.how}</span><span class="tag">${k.tag}</span></span></button>`;
+const keyHtml = (k) => `<button type="button" class="jl-key${k.soon ? ' soon' : ''}" data-ex="${k.id}" style="--c:${k.c}" aria-label="${k.soon ? k.name + ' - coming soon' : 'Connect ' + k.name}"${k.soon ? ' aria-disabled="true"' : ''}><span class="jl-face"><span class="lg"><img src="/assets/ex/${k.id}.png" alt="" width="34" height="34" loading="lazy"><b>${k.name}</b></span><span class="how">${k.how}</span><span class="tag">${k.tag}</span></span></button>`;
 
 const ICON = {
   lock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
@@ -221,45 +274,46 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 </header>
 
 <main id="jrGuest">
-<section class="jr-hero">
+<div class="jl-backbar" id="jrBackBar" hidden><button type="button" class="jl-btn ghost sm" id="jrBackBtn">Back to your journal</button><span>Adding an account. Your journal and the accounts already connected stay as they are.</span></div>
+<section class="jl-hero">
   <div>
     <h1>Your real trades, read back to you.</h1>
     <p class="lede">Connect Bybit, Binance, OKX, Bitget, BingX or Hyperliquid and see every position you actually traded: what it made, what the fees and funding took, where you keep losing, and how much a few changes would save you each month. Free, with a key that can only read.</p>
   </div>
-  <ul class="jr-seals">
-    <li><span class="jr-seal">${ICON.lock}</span><div><b>Read-only, checked</b><span>We ask the exchange what your key can do and refuse it if it can trade or withdraw.</span></div></li>
-    <li><span class="jr-seal">${ICON.pin}</span><div><b>One address: ${IP}</b><span>Bind the key to it and the key works from nowhere else.</span></div></li>
-    <li><span class="jr-seal">${ICON.bin}</span><div><b>Gone in one tap</b><span>Disconnect removes the key and every imported trade at once.</span></div></li>
+  <ul class="jl-seals">
+    <li><span class="jl-seal">${ICON.lock}</span><div><b>Read-only, checked</b><span>We ask the exchange what your key can do and refuse it if it can trade or withdraw.</span></div></li>
+    <li><span class="jl-seal">${ICON.pin}</span><div><b>One address: ${IP}</b><span>Bind the key to it and the key works from nowhere else.</span></div></li>
+    <li><span class="jl-seal">${ICON.bin}</span><div><b>Gone in one tap</b><span>Disconnect removes the key and every imported trade at once.</span></div></li>
   </ul>
 </section>
 
-<div class="jr-rail-h"><h2>Pick your exchange</h2><p>Your key is encrypted and never shown again, even to you.</p></div>
-<div class="jr-rail" id="jrRail">${KEYS.filter(k => !k.soon).map(keyHtml).join('')}</div>
-<p class="jr-next">Next: ${KEYS.filter(k => k.soon).map(k => '<span><img src="/assets/ex/' + k.id + '.png" alt="" width="18" height="18" loading="lazy">' + k.name + '</span>').join('')}</p>
-<div class="jr-open" id="jrOpen" role="region" aria-live="polite"></div>
+<div class="jl-rail-h"><h2>Pick your exchange</h2><p>Your key is encrypted and never shown again, even to you.</p></div>
+<div class="jl-rail" id="jrRail">${KEYS.filter(k => !k.soon).map(keyHtml).join('')}</div>
+<p class="jl-next">Next: ${KEYS.filter(k => k.soon).map(k => '<span><img src="/assets/ex/' + k.id + '.png" alt="" width="18" height="18" loading="lazy">' + k.name + '</span>').join('')}</p>
+<div class="jl-open" id="jrOpen" role="region" aria-live="polite"></div>
 
-<section class="jr-sec">
+<section class="jl-sec">
   <h2>What the key can and cannot do</h2>
   <p class="sub">A read-only key is the standard for journals. We go one step further and check it ourselves, every time you connect.</p>
-  <div class="jr-ledger">
+  <div class="jl-ledger">
     <div><h3>We read</h3><ul><li>Your filled orders, with price, size and fee</li><li>Funding paid and received</li><li>Liquidations and auto-deleveraging</li><li>Fee rate and account type</li></ul></div>
     <div class="never"><h3>We can never</h3><ul><li>Place, change or cancel an order</li><li>Transfer between accounts</li><li>Withdraw anything</li><li>Use the key from any address but ${IP}</li></ul></div>
   </div>
 </section>
 
-<section class="jr-sec">
+<section class="jl-sec">
   <h2>What you get once it is connected</h2>
   <p class="sub">Every number is computed from your own fills. Breakdowns appear only once there are enough trades behind them to mean something.</p>
-  <div class="jr-ledger">
+  <div class="jl-ledger">
     <div><h3>The record</h3><ul><li>Net P&amp;L after fees and funding, win rate, profit factor, drawdown</li><li>Equity curve and a calendar of your days</li><li>Every position rebuilt from its fills, partial closes included</li><li>Our P&amp;L checked against the exchange's, trade by trade</li></ul></div>
     <div><h3>The money</h3><ul><li>Fees split into maker and taker, with what limit entries would save</li><li>Funding you paid by holding through it</li><li>What liquidations cost you</li><li>Your exact volume priced on every major exchange</li></ul></div>
   </div>
 </section>
 
-<section class="jr-sec">
+<section class="jl-sec">
   <h2>How it compares</h2>
   <p class="sub">TradeZella prices read from their published plans in 2026; it covers stocks and futures first, crypto depends on the route.</p>
-  <div class="jr-tw"><table class="jr-cmp">
+  <div class="jl-tw"><table class="jl-cmp">
     <tr><th></th><th>MarginPad Journal</th><th>TradeZella</th></tr>
     <tr><th>Price</th><td class="us">Free</td><td>$35, $59 or $99 a month, no free plan</td></tr>
     <tr><th>Crypto perps</th><td class="us">Built for them: funding, liquidations, maker/taker</td><td>Supported depending on the import route</td></tr>
@@ -270,12 +324,12 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
   </table></div>
 </section>
 
-<section class="jr-sec jr-faq">
+<section class="jl-sec jl-faq">
   <h2>Questions</h2>
   ${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n  ')}
 </section>
 
-<section class="jr-sec jr-prose">
+<section class="jl-sec jl-prose">
   <h2>Why a journal of your real account</h2>
   <p>A demo account tells you whether an idea works. Your real account tells you what your habits cost. Most traders who lose do not lose on the idea: they lose on fees paid as taker, on funding held through, on a stop they moved, and on one liquidation that erased a week. Those costs are in your fills already. The journal reads them, puts a dollar figure on each, and shows which of them you can change.</p>
   <h2>Practising first?</h2>
@@ -283,22 +337,25 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 </section>
 </main>
 
-<main class="jr-dash" id="jrDash">
-  <div class="jr-dh">
+<main class="jl-dash" id="jrDash">
+  <div class="jl-dh">
     <div><h1>Your journal</h1><div class="acc" id="jrAcc"></div></div>
-    <div class="jr-chips" id="jrRange"><button class="jr-chip" data-d="7">7 days</button><button class="jr-chip" data-d="30">30 days</button><button class="jr-chip" data-d="90">90 days</button><button class="jr-chip on" data-d="180">180 days</button></div>
+    <div class="jl-dact"><div class="jl-chips" id="jrRange"><button class="jl-chip" data-d="7">7d</button><button class="jl-chip" data-d="30">30d</button><button class="jl-chip" data-d="90">90d</button><button class="jl-chip on" data-d="180">180d</button></div><button class="jl-btn sm ghost" id="jrShare">Share card</button></div>
   </div>
-  <div class="jr-tiles" id="jrTiles"></div>
-  <div class="jr-tabs" role="tablist" id="jrTabs"><button class="jr-tab on" data-p="ov">Overview</button><button class="jr-tab" data-p="tr">Trades</button><button class="jr-tab" data-p="sv">Savings</button><button class="jr-tab" data-p="in">Insights</button><button class="jr-tab" data-p="ac">Accounts</button></div>
-  <section class="jr-pane on" id="p-ov"></section>
-  <section class="jr-pane" id="p-tr"></section>
-  <section class="jr-pane" id="p-sv"></section>
-  <section class="jr-pane" id="p-in"></section>
-  <section class="jr-pane" id="p-ac"></section>
+  <div class="jl-accts" id="jrAccts"></div>
+  <div class="jl-tiles" id="jrTiles"></div>
+  <div class="jl-tabs" role="tablist" id="jrTabs"><button class="jl-tab on" data-p="ov">Overview</button><button class="jl-tab" data-p="tr">Trades</button><button class="jl-tab" data-p="ca">Calendar</button><button class="jl-tab" data-p="in">Insights</button><button class="jl-tab" data-p="sv">Savings</button><button class="jl-tab" data-p="ac">Accounts</button></div>
+  <section class="jl-pane on" id="p-ov"></section>
+  <section class="jl-pane" id="p-tr"></section>
+  <section class="jl-pane" id="p-ca"></section>
+  <section class="jl-pane" id="p-in"></section>
+  <section class="jl-pane" id="p-sv"></section>
+  <section class="jl-pane" id="p-ac"></section>
   <div style="height:80px"></div>
 </main>
 </div>
 
+<div class="jl-drawer" id="jrDrawer" role="dialog" aria-modal="true"></div>
 <script>
 (function(){
 var IP='${IP}', $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
@@ -315,9 +372,9 @@ var cur=null;
 function guide(ex){
   if(ex==='hyperliquid')return '<h3>Hyperliquid</h3><p style="color:#8d96a2;margin:0">Nothing to create. Your fills and funding are public on the chain; we read them by address.</p><ol><li><span>Open Hyperliquid and copy your wallet address (starts with 0x).</span></li><li><span>Paste it on the right.</span></li><li><span>We import your last 10,000 fills and keep syncing every 15 minutes.</span></li></ol>';
   var e=EX[ex], g=GUIDE[ex];
-  return '<h3>'+e.name+' read-only key</h3><p class="jr-gsub"><a href="'+e.url+'" target="_blank" rel="noopener">Open '+e.name+' API management</a>, then:</p><ol>'
+  return '<h3>'+e.name+' read-only key</h3><p class="jl-gsub"><a href="'+e.url+'" target="_blank" rel="noopener">Open '+e.name+' API management</a>, then:</p><ol>'
    +g.map(function(x){return '<li><span>'+x+'</span></li>'}).join('')
-   +'</ol><div class="jr-ipbox"><span>IP address to bind</span><code>'+IP+'</code><button type="button" class="jr-btn sm ghost" data-copy="'+IP+'">Copy</button></div>';
+   +'</ol><div class="jl-ipbox"><span>IP address to bind</span><code>'+IP+'</code><button type="button" class="jl-btn sm ghost" data-copy="'+IP+'">Copy</button></div>';
 }
 /* EXACTLY WHAT TO TICK, per exchange (owner 2026-11-18: "da se kaze za svaku menjacnicu sta tacno treba da se cekira"). Everything not named stays off. */
 var GUIDE={
@@ -332,18 +389,18 @@ function form(ex){
    ?'<label>Wallet address<input id="jrAddr" placeholder="0x..." autocomplete="off" spellcheck="false"></label>'
    :'<label>API key<input id="jrKey" autocomplete="off" spellcheck="false"></label><label>API secret<input id="jrSec" type="password" autocomplete="off" spellcheck="false"></label>'+(EX[ex].pass?'<label>Passphrase<input id="jrPass" type="password" autocomplete="off" spellcheck="false"></label>':'');
   return '<h3>'+(ex==='hyperliquid'?'Connect a wallet':'Verify and connect')+'</h3>'+f
-   +'<div class="jr-perm" id="jrPerm"><div class="ok"><b>Read</b>allowed</div><div class="no"><b>Trade</b>never</div><div class="no"><b>Transfer</b>never</div><div class="no"><b>Withdraw</b>never</div></div>'
-   +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="jr-btn" id="jrGo">'+(ex==='hyperliquid'?'Connect':'Verify and connect')+'</button><button type="button" class="jr-btn ghost" id="jrBack">Back</button></div><div class="jr-msg" id="jrMsg"></div>';
+   +'<div class="jl-perm" id="jrPerm"><div class="ok"><b>Read</b>allowed</div><div class="no"><b>Trade</b>never</div><div class="no"><b>Transfer</b>never</div><div class="no"><b>Withdraw</b>never</div></div>'
+   +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="jl-btn" id="jrGo">'+(ex==='hyperliquid'?'Connect':'Verify and connect')+'</button><button type="button" class="jl-btn ghost" id="jrBack">Back</button></div><div class="jl-msg" id="jrMsg"></div>';
 }
 function openKey(btn){
   var ex=btn.getAttribute('data-ex'); if(btn.classList.contains('soon'))return;
   track('pick:'+ex);
   if(!signedIn()){ try{ if(window.mpAuth&&window.mpAuth.open){window.mpAuth.open();return} }catch(e){} location.href='/?signin=1'; return; }
   cur=ex; var o=$('#jrOpen');
-  o.innerHTML='<div class="jr-steps">'+guide(ex)+'</div><div class="jr-form">'+form(ex)+'</div>'; o.classList.add('on');
+  o.innerHTML='<div class="jl-steps">'+guide(ex)+'</div><div class="jl-form">'+form(ex)+'</div>'; o.classList.add('on');
   try{ btn.animate([{transform:'rotateY(0deg) translateY(0)'},{transform:'rotateY(14deg) translateY(-6px)'},{transform:'rotateY(0deg) translateY(0)'}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
        o.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:320,easing:'ease-out'}); }catch(e){}
-  $$('.jr-key').forEach(function(k){k.style.opacity=k===btn?'1':'.45'});
+  $$('.jl-key').forEach(function(k){k.style.opacity=k===btn?'1':'.45'});
   o.scrollIntoView({behavior:'smooth',block:'nearest'});
   setTimeout(function(){var i=$('#jrAddr')||$('#jrKey');if(i)i.focus()},350);
 }
@@ -351,25 +408,27 @@ var ERR={not_read_only:'This key can do more than read. Make a new key with Read
 function connect(){
   var b={ex:cur}, msg=$('#jrMsg'), go=$('#jrGo');
   if(cur==='hyperliquid')b.address=($('#jrAddr').value||'').trim(); else { b.key=($('#jrKey').value||'').trim(); b.secret=($('#jrSec').value||'').trim(); if($('#jrPass'))b.passphrase=$('#jrPass').value||''; }
-  go.disabled=true; msg.className='jr-msg'; msg.textContent=cur==='hyperliquid'?'Reading your fills...':'Asking '+EX[cur].name+' what this key can do...';
+  go.disabled=true; msg.className='jl-msg'; msg.textContent=cur==='hyperliquid'?'Reading your fills...':'Asking '+EX[cur].name+' what this key can do...';
   api('/connect',b).then(function(j){
     go.disabled=false;
-    if(j&&j.ok){ msg.className='jr-msg okm'; msg.textContent='Connected. Importing your history...'; track('connected:'+cur); $('#jrPerm').firstChild.className='ok'; setTimeout(boot,700); return; }
-    var e=(j&&j.error)||'error'; msg.className='jr-msg err'; msg.textContent=ERR[e]||('Could not connect: '+e+(j&&j.detail?' ('+j.detail+')':''));
+    if(j&&j.ok){ msg.className='jl-msg okm'; msg.textContent='Connected. Importing your history...'; track('connected:'+cur); $('#jrPerm').firstChild.className='ok'; setTimeout(function(){boot(j.id)},700); return; }
+    var e=(j&&j.error)||'error'; msg.className='jl-msg err'; msg.textContent=ERR[e]||('Could not connect: '+e+(j&&j.detail?' ('+j.detail+')':''));
     if(e==='not_read_only'&&j.writes){ var pm=$('#jrPerm'); pm.innerHTML='<div class="ok"><b>Read</b>allowed</div>'+j.writes.slice(0,3).map(function(w){return '<div class="bad"><b>'+esc(w.split(':')[0])+'</b>enabled</div>'}).join(''); }
     track('refused:'+cur+':'+e);
-  }).catch(function(){go.disabled=false;msg.className='jr-msg err';msg.textContent='Network error - try again.'});
+  }).catch(function(){go.disabled=false;msg.className='jl-msg err';msg.textContent='Network error - try again.'});
 }
 document.addEventListener('click',function(ev){
-  var k=ev.target.closest('.jr-key'); if(k){openKey(k);return}
+  var k=ev.target.closest('.jl-key'); if(k){openKey(k);return}
   if(ev.target.closest('#jrGo')){connect();return}
-  if(ev.target.closest('#jrBack')){$('#jrOpen').classList.remove('on');$$('.jr-key').forEach(function(x){x.style.opacity=''});cur=null;return}
+  if(ev.target.closest('#jrBack')){$('#jrOpen').classList.remove('on');$$('.jl-key').forEach(function(x){x.style.opacity=''});cur=null;return}
   var c=ev.target.closest('[data-copy]'); if(c){try{navigator.clipboard.writeText(c.getAttribute('data-copy'));c.textContent='Copied';setTimeout(function(){c.textContent='Copy'},1400)}catch(e){}return}
 });
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='jrAddr'||e.target.id==='jrSec'||e.target.id==='jrPass'))connect()});
 
-/* ---------- the dashboard ---------- */
-var DAYS=180, D=null;
+/* ---------- the dashboard (v2, 2026-11-18: accounts bar, add-account without leaving, filters, trade drawer, notes and tags,
+   calendar, heatmap, streaks and tilt, what-if, goals, CSV, share card) ---------- */
+var FOPEN=false, DAYS=180, D=null, ACC='', F={q:'',side:'',res:'',flag:'',size:'',hold:'',day:''}, SHOWN=100, MONTH=null;
+var TAGS=['Plan followed','FOMO','Revenge','Moved stop','Early exit','Late exit','Oversized','News'];
 function tiles(st){
   var t=[
     ['Net P&L',money(st.net,1),cls(st.net),st.n+' closed trades'],
@@ -377,94 +436,303 @@ function tiles(st){
     ['Profit factor',st.profitFactor==null?'-':st.profitFactor,'','won $ per lost $'],
     ['Fees and funding',money(-(st.fees)+st.funding),cls(-(st.fees)+st.funding),'fees '+money(st.fees)+', funding '+money(st.funding,1)],
     ['Volume',money(st.vol),'',(st.orders||st.fills)+' orders'+(st.takerShare!=null?', '+st.takerShare+'% taker':'')]];
-  $('#jrTiles').innerHTML=t.map(function(x){return '<div class="jr-tile"><i>'+x[0]+'</i><b class="num '+x[2]+'">'+x[1]+'</b><small>'+esc(x[3])+'</small></div>'}).join('');
+  $('#jrTiles').innerHTML=t.map(function(x){return '<div class="jl-tile"><i>'+x[0]+'</i><b class="num '+x[2]+'">'+x[1]+'</b><small>'+esc(x[3])+'</small></div>'}).join('');
 }
-function curve(st){
-  var c=st.curve||[]; if(c.length<2)return '<p class="jr-empty">The curve draws from your second closed trade.</p>';
-  var W=1000,H=220,P=8,min=Math.min(0,Math.min.apply(null,c.map(function(p){return p[1]}))),max=Math.max(0,Math.max.apply(null,c.map(function(p){return p[1]})));
-  var t0=c[0][0],t1=c[c.length-1][0]||t0+1,X=function(t){return P+(t-t0)/Math.max(1,t1-t0)*(W-2*P)},Y=function(v){return H-P-(v-min)/Math.max(1e-9,max-min)*(H-2*P)};
-  var d=c.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join(' '), last=c[c.length-1][1], col=last>=0?'#c2f64a':'#ff5a4d';
-  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="rgba(255,255,255,.12)" stroke-dasharray="4 6"/><path d="'+d+' L'+X(t1)+' '+Y(0)+' L'+X(t0)+' '+Y(0)+'Z" fill="'+col+'" opacity=".08"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.2" vector-effect="non-scaling-stroke"/></svg>';
+function curveSvg(pts,H){
+  if(pts.length<2)return '<p class="jl-empty">The curve draws from your second closed trade.</p>';
+  H=H||220; var W=1000,P=8,vals=pts.map(function(p){return p[1]}),min=Math.min(0,Math.min.apply(null,vals)),max=Math.max(0,Math.max.apply(null,vals));
+  var n0=pts.length-1,t0=0,t1=n0;pts=pts.map(function(p,i){return [i,p[1]]});var X=function(t){return P+t/Math.max(1,n0)*(W-2*P)},Y=function(v){return H-P-(v-min)/Math.max(1e-9,max-min)*(H-2*P)};
+  var d=pts.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join(' '), col=pts[pts.length-1][1]>=0?'#c2f64a':'#ff5a4d';
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:'+H+'px"><line x1="0" x2="'+W+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="rgba(255,255,255,.12)" stroke-dasharray="4 6"/><path d="'+d+' L'+X(t1)+' '+Y(0)+' L'+X(t0)+' '+Y(0)+'Z" fill="'+col+'" opacity=".08"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.2" vector-effect="non-scaling-stroke"/></svg>';
 }
-function cal(st){
-  var days=st.days||{}, out='', n=Math.min(DAYS,90), mx=0; Object.keys(days).forEach(function(k){mx=Math.max(mx,Math.abs(days[k]))});
-  for(var i=n-1;i>=0;i--){ var d=new Date(Date.now()-i*864e5).toISOString().slice(0,10), v=days[d]; var bg=v==null?'#151a21':v>0?'rgba(194,246,74,'+(.18+.7*Math.abs(v)/(mx||1))+')':'rgba(255,90,77,'+(.18+.7*Math.abs(v)/(mx||1))+')'; out+='<span title="'+d+(v!=null?': '+money(v,1):'')+'" style="background:'+bg+'"></span>'; }
-  return '<div class="jr-cal">'+out+'</div>';
-}
+function eqOf(trs){var c=trs.filter(function(t){return t.status==='closed'}).sort(function(a,b){return a.closeTs-b.closeTs}),e=0;return c.map(function(t){e+=t.net;return [t.closeTs,+e.toFixed(2)]})}
 function ago(t){if(!t)return 'never';var s=(Date.now()-t)/1000;return s<90?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'}
-function holdTxt(ms){var m=ms/6e4;return m<60?Math.round(m)+'m':m<1440?(m/60).toFixed(1)+'h':(m/1440).toFixed(1)+'d'}
-function px(v){v=+v;if(!isFinite(v)||!v)return '-';return v>=1000?v.toLocaleString('en-US',{maximumFractionDigits:2}):v>=1?v.toFixed(4).replace(/0+$/,'').replace(/\\.$/,''):v.toPrecision(4)}
-function paneOv(st){
-  var best=st.best,worst=st.worst;
-  return '<div class="jr-card jr-curve"><h3>Equity, after fees and funding</h3>'+curve(st)+'<p class="note">Max drawdown <span class="num">'+money(-st.maxDD)+'</span>. Expectancy <span class="num">'+(st.expectancy==null?'-':money(st.expectancy,1))+'</span> a trade.</p></div>'
-   +'<div class="jr-ins"><div class="jr-card"><h3>Your days</h3>'+cal(st)+'</div><div class="jr-card"><h3>Extremes</h3>'
-   +(best?'<p style="margin:0 0 8px">Best: <b class="num pos">'+money(best.net,1)+'</b> on '+esc(best.sym)+' '+(best.dir>0?'long':'short')+'</p>':'')
-   +(worst?'<p style="margin:0 0 8px">Worst: <b class="num neg">'+money(worst.net,1)+'</b> on '+esc(worst.sym)+' '+(worst.dir>0?'long':'short')+'</p>':'')
-   +'<p style="margin:0 0 8px">Average win <b class="num pos">'+(st.avgWin==null?'-':money(st.avgWin,1))+'</b>, average loss <b class="num neg">'+(st.avgLoss==null?'-':money(st.avgLoss,1))+'</b></p>'
-   +(st.liqN?'<p style="margin:0">Liquidated <b class="num neg">'+st.liqN+'</b> time'+(st.liqN>1?'s':'')+', costing <b class="num neg">'+money(st.liqLoss)+'</b></p>':'<p style="margin:0;color:#8d96a2">No liquidations in this period.</p>')
-   +(st.recon&&st.recon.n?'<p class="note">P&amp;L checked against the exchange on '+st.recon.n+' trades: '+(st.recon.off?st.recon.off+' differ by more than a cent, '+money(st.recon.sumDiff,1)+' in total.':'all match to the cent.')+'</p>':'')
-   +'</div></div>';
+function holdTxt(ms){var m=ms/6e4;return m<1?Math.round(ms/1000)+'s':m<60?Math.round(m)+'m':m<1440?(m/60).toFixed(1)+'h':(m/1440).toFixed(1)+'d'}
+function px(v){v=+v;if(!isFinite(v)||!v)return '-';return v>=1000?v.toLocaleString('en-US',{maximumFractionDigits:2}):v>=1?(+v.toFixed(4)).toString():v.toPrecision(4)}
+function dkey(ts){return new Date(ts).toISOString().slice(0,10)}
+function connOf(id){var c=(D&&D.conns||[]).filter(function(x){return x.id===id})[0];return c||null}
+function accName(c){return c?(c.label||EX[c.ex]&&EX[c.ex].name||c.ex):''}
+
+/* ---- the accounts bar: every account on its own, or all of them together ---- */
+function accBar(){
+  var cs=(D&&D.conns)||[];
+  var h='<button class="jl-acc-c'+(ACC===''?' on':'')+'" data-acc="">All accounts<span class="n">'+cs.length+'</span></button>';
+  h+=cs.map(function(c){return '<button class="jl-acc-c'+(ACC===c.id?' on':'')+'" data-acc="'+esc(c.id)+'"><img src="/assets/ex/'+esc(c.ex)+'.png" alt="">'+esc(accName(c))+'<span class="k">'+esc(c.kid||'')+'</span></button>'}).join('');
+  h+='<button class="jl-acc-c add" id="jrAddAcc">+ Add account</button>';
+  $('#jrAccts').innerHTML=h;
 }
-function paneTr(tr){
-  if(!tr.length)return '<p class="jr-empty">No positions in this period.</p>';
-  var cards='<div class="jr-tl">'+tr.map(function(t){return '<div class="it"><div class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jr-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jr-badge">open</span>':'')+'</div><div class="n '+cls(t.net)+'">'+money(t.net,1)+'</div><div class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before the imported history':'held '+holdTxt(t.hold))+', size '+money(t.maxNotional)+'</div><div class="s" style="text-align:right">fees '+money(-t.fees)+'</div></div>'}).join('')+'</div>';
-  return '<div class="jr-card">'+cards+'<div class="jr-tw jr-trtbl"><table class="jr-tbl"><tr><th>Closed</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th></tr>'
-   +tr.map(function(t){return '<tr><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jr-badge">open</span>')+'</td><td>'+esc(t.sym)+'<span class="jr-badge">'+esc(t.ex)+'</span>'+(t.liq?'<span class="jr-badge liq">liquidated</span>':'')+(t.partial?'<span class="jr-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td></tr>'}).join('')
-   +'</table></div><p class="note">Times in UTC. Size is the largest notional held. Net = price P&amp;L minus fees plus funding.</p></div>';
-}
-function paneSv(sv,st,ex){
-  var it=(sv&&sv.items)||[];
-  var h='<div class="jr-card"><h3>Where your money goes</h3><p style="margin:0 0 6px;color:#c9c6bd">'+(sv.monthly?'Projected from '+Math.round(st.covDays)+' days of your trading: you pay about':'Your history covers only '+(st.covDays<2?Math.round(st.covDays*24)+' hours':Math.round(st.covDays*10)/10+' days')+', so these are amounts for that period, not a month. You paid')+' <b class="num">'+money(sv.paid30||0)+'</b>'+(sv.monthly?' a month':'')+' in fees and <b class="num">'+money(Math.max(0,-st.funding)*(sv.monthly?30/Math.max(0.5,st.covDays||1):1))+'</b> in funding.</p>'
-   +(it.length?it.map(function(x){var cta=x.cta==='bybit'?'<a class="jr-btn sm" style="margin-top:8px;display:inline-block" href="/go?ex=bybit&amp;from=journal" target="_blank" rel="noopener">Open a Bybit account through MarginPad</a>':x.cta==='hyperliquid'?'<a class="jr-btn sm" style="margin-top:8px;display:inline-block" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="noopener" data-mpex="Hyperliquid">Use code MARGINPAD</a>':'';return '<div class="jr-save"><h4>'+esc(x.title)+'</h4><div class="amt">'+money(x.usd30)+'<small>'+(sv.monthly?'a month':'this period')+'</small></div><p>'+esc(x.body)+'<br>'+cta+'</p></div>'}).join(''):'<p class="jr-empty">Nothing to save that we can measure yet - your costs look efficient for this period.</p>')+'</div>';
-  var cmp=((sv&&sv.compare)||[]).slice(); if(cmp.length){ cmp.push({id:'_you',name:'You, actually',usd30:sv.paid30||0,me:1}); cmp.sort(function(a,c){return a.usd30-c.usd30}); var mx=Math.max.apply(null,cmp.map(function(c){return c.usd30}))||1;
-    h+='<div class="jr-card"><h3>Your volume, priced on each exchange</h3><p style="margin:0 0 12px;color:#8d96a2;font-size:14px">The same monthly volume and taker share at each exchange base rate, against what your own fee tier actually charged.</p><div class="jr-bars">'
-     +cmp.map(function(c){return '<div class="jr-bar'+(c.me?' me':'')+'"><span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener sponsored" data-mpex="'+esc(c.name)+'" data-jrv="'+esc(c.id)+'">'+esc(c.name)+'</a>':esc(c.name)+(c.mine?' <span class="jr-badge">yours</span>':''))+'</span><span class="t"><i style="width:'+(c.usd30/mx*100).toFixed(1)+'%"></i></span><span class="num" style="text-align:right">'+money(c.usd30)+'</span></div>'}).join('')+'</div></div>'; }
+
+/* ---- goals ---- */
+function goals(){
+  var p=(D&&D.prefs)||{}, tr=(D&&D.trades)||[], now=new Date(), m0=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1), d0=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate());
+  var mon=0,day=0; tr.forEach(function(t){if(t.status!=='closed')return; if(t.closeTs>=m0)mon+=t.net; if(t.closeTs>=d0)day+=t.net;});
+  var g=+p.goal||0, lim=+p.dayLimit||0, h='<div class="jl-goals">';
+  h+='<div class="jl-goal"><div class="gh"><span>This month</span><b class="num '+cls(mon)+'">'+money(mon,1)+'</b>'+(g?'<em>of '+money(g)+'</em>':'')+'</div>'+(g?'<div class="jl-prog"><i style="width:'+Math.max(0,Math.min(100,mon/g*100)).toFixed(0)+'%"></i></div>':'<div class="gx">No monthly goal set</div>')+'</div>';
+  var hit=lim&&day<=-lim;
+  h+='<div class="jl-goal'+(hit?' hit':'')+'"><div class="gh"><span>Today</span><b class="num '+cls(day)+'">'+money(day,1)+'</b>'+(lim?'<em>loss limit '+money(lim)+'</em>':'')+'</div>'+(lim?'<div class="jl-prog loss"><i style="width:'+Math.max(0,Math.min(100,-day/lim*100)).toFixed(0)+'%"></i></div>'+(hit?'<div class="gx neg">Daily loss limit reached - this is where you stop for today.</div>':''):'<div class="gx">No daily loss limit set</div>')+'</div>';
+  h+='<button class="jl-btn sm ghost" id="jrGoalEdit">Set goals</button></div>';
+  h+='<div class="jl-goalf" id="jrGoalF" hidden><label>Monthly goal ($)<input id="jrGoalM" inputmode="decimal" value="'+(g||'')+'"></label><label>Daily loss limit ($)<input id="jrGoalD" inputmode="decimal" value="'+(lim||'')+'"></label><button class="jl-btn sm" id="jrGoalSave">Save</button></div>';
   return h;
 }
+
+/* ---- overview ---- */
+function paneOv(st){
+  var tr=D.trades||[], best=st.best,worst=st.worst;
+  return goals()+'<div class="jl-card jl-curve"><h3>Equity, after fees and funding</h3>'+curveSvg(eqOf(tr))+'<p class="note">Max drawdown <span class="num">'+money(-st.maxDD)+'</span>. Expectancy <span class="num">'+(st.expectancy==null?'-':money(st.expectancy,1))+'</span> a trade.'+(st.recon&&st.recon.n?' P&amp;L checked against the exchange on '+st.recon.n+' trades: '+(st.recon.off?st.recon.off+' differ, '+money(st.recon.sumDiff,1)+' in total.':'all match to the cent.'):'')+'</p></div>'
+   +'<div class="jl-ins"><div class="jl-card"><h3>Extremes</h3>'
+   +(best?'<p class="ln">Best <b class="num pos">'+money(best.net,1)+'</b> '+esc(best.sym)+' '+(best.dir>0?'long':'short')+'</p>':'')
+   +(worst?'<p class="ln">Worst <b class="num neg">'+money(worst.net,1)+'</b> '+esc(worst.sym)+' '+(worst.dir>0?'long':'short')+'</p>':'')
+   +'<p class="ln">Average win <b class="num pos">'+(st.avgWin==null?'-':money(st.avgWin,1))+'</b>, loss <b class="num neg">'+(st.avgLoss==null?'-':money(st.avgLoss,1))+'</b></p>'
+   +(st.liqN?'<p class="ln">Liquidated <b class="num neg">'+st.liqN+'</b> time'+(st.liqN>1?'s':'')+', <b class="num neg">'+money(st.liqLoss)+'</b></p>':'<p class="ln mute">No liquidations in this period.</p>')+'</div>'
+   +'<div class="jl-card"><h3>Streaks</h3>'+streaks(tr)+'</div></div>';
+}
+function streaks(tr){
+  var c=tr.filter(function(t){return t.status==='closed'}).sort(function(a,b){return a.closeTs-b.closeTs}),bw=0,bl=0,w=0,l=0,cur='';
+  c.forEach(function(t){if(t.net>0){w++;l=0;bw=Math.max(bw,w)}else if(t.net<0){l++;w=0;bl=Math.max(bl,l)}});
+  var last=c.length?c[c.length-1]:null; cur=w?w+' win'+(w>1?'s':'')+' in a row':l?l+' loss'+(l>1?'es':'')+' in a row':'-';
+  var tl=tilt(c);
+  return '<p class="ln">Now: <b>'+cur+'</b></p><p class="ln">Longest winning run <b class="num pos">'+bw+'</b>, losing run <b class="num neg">'+bl+'</b></p>'
+   +(tl.n?'<p class="ln">Tilt: <b class="num neg">'+tl.n+'</b> trade'+(tl.n>1?'s':'')+' opened within 10 minutes of a loss and bigger than it, net <b class="num '+cls(tl.net)+'">'+money(tl.net,1)+'</b>.</p>':'<p class="ln mute">No tilt trades: you did not size up straight after a loss.</p>');
+}
+function tilt(c){ // a trade opened within 10 minutes of a losing close, at least 1.5x the size of that loss's position
+  var n=0,net=0,ids={};
+  for(var i=1;i<c.length;i++){ for(var j=i-1;j>=0&&j>=i-5;j--){ var p=c[j]; if(p.net<0&&c[i].openTs>=p.closeTs&&c[i].openTs-p.closeTs<=6e5&&c[i].maxNotional>=1.5*p.maxNotional){n++;net+=c[i].net;ids[c[i].id]=1;break} } }
+  return {n:n,net:net,ids:ids};
+}
+
+/* ---- trades, filtered ---- */
+var SZ={a:[0,1e3],b:[1e3,1e4],c:[1e4,1e5],d:[1e5,1e15]}, HD={a:[0,3e5],b:[3e5,36e5],c:[36e5,144e5],d:[144e5,864e5],e:[864e5,1e15]};
+function pass(t){
+  if(F.q&&String(t.sym).toUpperCase().indexOf(F.q.toUpperCase())<0)return false;
+  if(F.side&&((F.side==='L')!==(t.dir>0)))return false;
+  if(F.res==='w'&&!(t.net>0))return false; if(F.res==='l'&&!(t.net<0))return false; if(F.res==='o'&&t.status!=='open')return false;
+  if(F.flag==='liq'&&!t.liq)return false; if(F.flag==='part'&&!t.partial)return false; if(F.flag==='tag'&&!(D.notes&&D.notes[t.id]))return false; if(F.flag==='tilt'&&!tilt(D.trades.filter(function(x){return x.status==='closed'}).sort(function(a,b){return a.closeTs-b.closeTs})).ids[t.id])return false;
+  if(F.size){var z=SZ[F.size];if(!(t.maxNotional>=z[0]&&t.maxNotional<z[1]))return false}
+  if(F.hold){var hd=HD[F.hold];if(t.partial||!(t.hold>=hd[0]&&t.hold<hd[1]))return false}
+  if(F.day&&dkey(t.closeTs||t.openTs)!==F.day)return false;
+  return true;
+}
+function chipRow(key,label,opts){return '<div class="jl-fr"><span>'+label+'</span>'+opts.map(function(o){return '<button class="jl-fc'+(F[key]===o[0]?' on':'')+'" data-f="'+key+'" data-v="'+o[0]+'">'+o[1]+'</button>'}).join('')+'</div>'}
+function paneTr(){
+  var all=D.trades||[], tr=all.filter(pass), shown=tr.slice(0,SHOWN), cl=tr.filter(function(t){return t.status==='closed'}), net=0,w=0; cl.forEach(function(t){net+=t.net;if(t.net>0)w++});
+  var act=Object.keys(F).filter(function(k){return F[k]}).length;
+  var h='<div class="jl-card jl-filt'+(FOPEN?' open':'')+'"><div class="jl-ftop"><button class="jl-btn sm ghost jl-ftog" id="jrFtog">Filters'+(act?' ('+act+')':'')+'</button><input id="jrQ" placeholder="Search market, e.g. BTC" value="'+esc(F.q)+'"><button class="jl-btn sm ghost" id="jrCsv">Export CSV</button>'+(act?'<button class="jl-btn sm ghost" id="jrFclear">Clear filters</button>':'')+'</div>'
+   +chipRow('side','Side',[['','All'],['L','Long'],['S','Short']])
+   +chipRow('res','Result',[['','All'],['w','Wins'],['l','Losses'],['o','Open']])
+   +chipRow('flag','Only',[['','Any'],['liq','Liquidated'],['tag','With notes'],['tilt','Tilt'],['part','Before history']])
+   +chipRow('size','Size',[['','Any'],['a','< $1k'],['b','$1k-10k'],['c','$10k-100k'],['d','> $100k']])
+   +chipRow('hold','Held',[['','Any'],['a','< 5m'],['b','5-60m'],['c','1-4h'],['d','4-24h'],['e','> 1d']])
+   +(F.day?'<div class="jl-fr"><span>Day</span><button class="jl-fc on" data-f="day" data-v="">'+F.day+' (clear)</button></div>':'')
+   +'<p class="jl-fsum"><b>'+tr.length+'</b> of '+all.length+' trades &middot; net <b class="num '+cls(net)+'">'+money(net,1)+'</b> &middot; win rate <b>'+(cl.length?(w/cl.length*100).toFixed(1)+'%':'-')+'</b></p></div>';
+  if(!tr.length)return h+'<p class="jl-empty">No trades match these filters.</p>';
+  var cards='<div class="jl-tl">'+shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<button class="it" data-pid="'+esc(t.id)+'"><span class="m">'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span>'+(t.liq?'<span class="jl-badge liq">liquidated</span>':'')+(t.status==='open'?'<span class="jl-badge">open</span>':'')+(nt?'<span class="jl-badge tag">'+esc((nt.tags[0]||'note'))+'</span>':'')+'</span><span class="n '+cls(t.net)+'">'+money(t.net,1)+'</span><span class="s">'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' ')+' UTC, ':'')+(t.partial?'opened before history':'held '+holdTxt(t.hold))+', '+money(t.maxNotional)+'</span><span class="s r">'+(ACC?'':esc(accName(connOf(t.conn))||t.ex))+'</span></button>'}).join('')+'</div>';
+  var tbl='<div class="jl-tw jl-trtbl"><table class="jl-tbl"><tr><th>Closed (UTC)</th><th>Market</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">Size</th><th class="r">Fees</th><th class="r">Funding</th><th class="r">Net</th><th class="r">Held</th>'+(ACC?'':'<th>Account</th>')+'</tr>'
+   +shown.map(function(t){var nt=D.notes&&D.notes[t.id];return '<tr class="jl-row" data-pid="'+esc(t.id)+'"><td>'+(t.closeTs?new Date(t.closeTs).toISOString().slice(5,16).replace('T',' '):'<span class="jl-badge">open</span>')+'</td><td>'+esc(t.sym)+(t.liq?'<span class="jl-badge liq">liq</span>':'')+(t.partial?'<span class="jl-badge" title="Opened before the imported history; P&amp;L from the exchange">partial</span>':'')+(nt?'<span class="jl-badge tag">'+esc(nt.tags[0]||'note')+'</span>':'')+'</td><td class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</td><td class="r num">'+px(t.entry)+'</td><td class="r num">'+px(t.exit)+'</td><td class="r num">'+money(t.maxNotional)+'</td><td class="r num">'+money(-t.fees)+'</td><td class="r num '+cls(t.funding)+'">'+money(t.funding,1)+'</td><td class="r num '+cls(t.net)+'">'+money(t.net,1)+'</td><td class="r num">'+(t.partial?'-':holdTxt(t.hold))+'</td>'+(ACC?'':'<td class="mute">'+esc(accName(connOf(t.conn))||t.ex)+'</td>')+'</tr>'}).join('')+'</table></div>';
+  return h+'<div class="jl-card">'+cards+tbl+(tr.length>SHOWN?'<button class="jl-btn ghost sm jl-more" id="jrMore">Show '+Math.min(100,tr.length-SHOWN)+' more of '+(tr.length-SHOWN)+'</button>':'')+'<p class="note">Click a trade for its fills, a chart, and your notes.</p></div>';
+}
+
+/* ---- the trade drawer ---- */
+function openTrade(pid){
+  var t=(D.trades||[]).filter(function(x){return x.id===pid})[0]; if(!t)return; track('trade:open');
+  var nt=(D.notes&&D.notes[pid])||{note:'',tags:[]}, dr=$('#jrDrawer');
+  dr.innerHTML='<div class="jl-dw"><button class="jl-btn sm ghost jl-x" id="jrDwX">Close</button><h3>'+esc(t.sym)+' <span class="'+(t.dir>0?'pos':'neg')+'">'+(t.dir>0?'Long':'Short')+'</span> <b class="num '+cls(t.net)+'">'+money(t.net,1)+'</b></h3>'
+   +'<p class="mute" style="margin:0 0 12px">'+esc(accName(connOf(t.conn))||t.ex)+(t.closeTs?' &middot; closed '+new Date(t.closeTs).toISOString().slice(0,16).replace('T',' ')+' UTC':' &middot; open')+(t.partial?' &middot; opened before the imported history':'')+'</p>'
+   +'<div class="jl-facts">'+[['Entry',px(t.entry)],['Exit',px(t.exit)],['Largest size',money(t.maxNotional)],['Held',t.partial?'-':holdTxt(t.hold)],['Price P&amp;L',money(t.gross,1)],['Fees',money(-t.fees)],['Funding',money(t.funding,1)],['Net',money(t.net,1)],['Maker / taker fills',t.nMaker+' / '+t.nTaker],['Exchange P&amp;L check',t.diff==null?'-':(Math.abs(t.diff)<=0.01?'matches':money(t.diff,1)+' apart')]].map(function(f){return '<div><i>'+f[0]+'</i><b class="num">'+f[1]+'</b></div>'}).join('')+'</div>'
+   +'<div class="jl-chart" id="jrChart"><p class="jl-empty">Loading the chart...</p></div>'
+   +'<h4>Fills</h4><div class="jl-tw" id="jrFills"><p class="jl-empty">Loading...</p></div>'
+   +'<h4>Your notes</h4><div class="jl-tags">'+TAGS.map(function(g){return '<button class="jl-fc'+(nt.tags.indexOf(g)>=0?' on':'')+'" data-tag="'+esc(g)+'">'+esc(g)+'</button>'}).join('')+'</div>'
+   +'<textarea id="jrNote" rows="3" placeholder="What did you see, what would you do differently?">'+esc(nt.note)+'</textarea><div style="display:flex;gap:10px;align-items:center"><button class="jl-btn sm" id="jrNoteSave" data-pid="'+esc(pid)+'">Save note</button><span class="jl-msg" id="jrNoteMsg"></span></div></div>';
+  dr.classList.add('on'); document.body.classList.add('jl-noscroll');
+  try{dr.firstChild.animate([{transform:'translateX(40px)',opacity:0},{transform:'none',opacity:1}],{duration:240,easing:'ease-out'})}catch(e){}
+  var a=t.openTs-6e4, z=(t.closeTs||Date.now())+6e4;
+  api('/fills?sym='+encodeURIComponent(t.sym)+'&a='+a+'&z='+z+(t.conn?'&conn='+encodeURIComponent(t.conn):'')).then(function(j){
+    var L=(j&&j.fills)||[]; $('#jrFills').innerHTML=L.length?'<table class="jl-tbl"><tr><th>Time (UTC)</th><th>Side</th><th class="r">Price</th><th class="r">Size</th><th class="r">Fee</th><th>Type</th></tr>'+L.map(function(f){return '<tr><td>'+new Date(f.ts).toISOString().slice(11,19)+'</td><td class="'+(f.side>0?'pos':'neg')+'">'+(f.side>0?'Buy':'Sell')+'</td><td class="r num">'+px(f.px)+'</td><td class="r num">'+(+f.qty).toLocaleString('en-US',{maximumFractionDigits:6})+'</td><td class="r num">'+money(-f.fee)+'</td><td class="mute">'+(f.maker?'maker':'taker')+(f.liq?', liquidation':'')+'</td></tr>'}).join('')+'</table>':'<p class="jl-empty">No fills in range.</p>';
+    chart(t,L);
+  });
+}
+function chart(t,fills){
+  var span=(t.closeTs||Date.now())-t.openTs, iv=span<36e5?1:span<6*36e5?5:span<36*36e5?15:span<10*864e5?60:240;
+  var base=String(t.sym).toUpperCase().split('-USDT')[0].split('USDT')[0].split(':').pop();
+  var end=(t.closeTs||Date.now())+iv*6e4*20;
+  fetch('/api/klines?symbol='+encodeURIComponent(base)+'&interval='+iv+'&limit=1000&end='+end).then(function(r){return r.json()}).then(function(K){
+    if(!Array.isArray(K)||!K.length){$('#jrChart').innerHTML='<p class="jl-empty">No chart for '+esc(base)+' on our feeds.</p>';return}
+    var a=t.openTs/1000-iv*60*25, z=(t.closeTs||Date.now())/1000+iv*60*20; K=K.filter(function(k){return k.time>=a&&k.time<=z}); if(K.length<3){$('#jrChart').innerHTML='<p class="jl-empty">No candles for this window.</p>';return}
+    var W=1000,H=240,P=10,lo=Math.min.apply(null,K.map(function(k){return k.low})),hi=Math.max.apply(null,K.map(function(k){return k.high}));
+    fills.forEach(function(f){lo=Math.min(lo,f.px);hi=Math.max(hi,f.px)});
+    var bw=(W-2*P)/K.length, X=function(ts){return P+(ts-K[0].time)/((K[K.length-1].time-K[0].time)||1)*(W-2*P-bw)+bw/2}, Y=function(v){return H-P-(v-lo)/((hi-lo)||1)*(H-2*P)};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:'+H+'px;width:100%">';
+    K.forEach(function(k){var up=k.close>=k.open,c=up?'#2ebd85':'#ff5a4d',x=X(k.time);s+='<line x1="'+x+'" x2="'+x+'" y1="'+Y(k.high)+'" y2="'+Y(k.low)+'" stroke="'+c+'" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="'+(x-bw*0.35)+'" width="'+Math.max(1,bw*0.7)+'" y="'+Y(Math.max(k.open,k.close))+'" height="'+Math.max(1,Math.abs(Y(k.open)-Y(k.close)))+'" fill="'+c+'"/>'});
+    fills.forEach(function(f){var x=X(f.ts/1000),y=Y(f.px),c=f.side>0?'#c2f64a':'#ff9f43';s+='<circle cx="'+x+'" cy="'+y+'" r="5" fill="'+c+'" stroke="#000" stroke-width="1.5" vector-effect="non-scaling-stroke"/>'});
+    if(t.entry)s+='<line x1="0" x2="'+W+'" y1="'+Y(t.entry)+'" y2="'+Y(t.entry)+'" stroke="#d8bf8e" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>';
+    $('#jrChart').innerHTML=s+'</svg><p class="note">'+iv+'m candles. Green dots: buys, orange: sells. Dashed line: average entry.</p>';
+  }).catch(function(){$('#jrChart').innerHTML='<p class="jl-empty">Chart unavailable.</p>'});
+}
+function closeDrawer(){var dr=$('#jrDrawer');dr.classList.remove('on');document.body.classList.remove('jl-noscroll');dr.innerHTML=''}
+
+/* ---- calendar and months ---- */
+function paneCal(){
+  var tr=(D.trades||[]).filter(function(t){return t.status==='closed'}), byDay={}, byMon={};
+  tr.forEach(function(t){var d=dkey(t.closeTs),m=d.slice(0,7);(byDay[d]=byDay[d]||{n:0,net:0});byDay[d].n++;byDay[d].net+=t.net;(byMon[m]=byMon[m]||{n:0,net:0,w:0,fees:0});byMon[m].n++;byMon[m].net+=t.net;byMon[m].fees+=t.fees;if(t.net>0)byMon[m].w++});
+  var months=Object.keys(byMon).sort(); if(!MONTH)MONTH=months.length?months[months.length-1]:new Date().toISOString().slice(0,7);
+  var y=+MONTH.slice(0,4),mo=+MONTH.slice(5,7)-1,first=new Date(Date.UTC(y,mo,1)),nd=new Date(Date.UTC(y,mo+1,0)).getUTCDate(),lead=(first.getUTCDay()+6)%7,mx=0;
+  Object.keys(byDay).forEach(function(k){if(k.slice(0,7)===MONTH)mx=Math.max(mx,Math.abs(byDay[k].net))});
+  var cells='';for(var i=0;i<lead;i++)cells+='<span class="e"></span>';
+  for(var d=1;d<=nd;d++){var k=MONTH+'-'+(d<10?'0':'')+d,v=byDay[k];cells+=v?'<button class="dd '+(v.net>=0?'p':'n')+'" data-day="'+k+'" style="--a:'+(0.15+0.6*Math.abs(v.net)/(mx||1)).toFixed(2)+'"><i>'+d+'</i><b class="num">'+money(v.net,1)+'</b><small>'+v.n+' trade'+(v.n>1?'s':'')+'</small></button>':'<span class="dd"><i>'+d+'</i></span>'}
+  var h='<div class="jl-card"><div class="jl-calh"><button class="jl-btn sm ghost" data-mon="-1">Prev</button><h3>'+first.toLocaleString('en-US',{month:'long',year:'numeric',timeZone:'UTC'})+'</h3><button class="jl-btn sm ghost" data-mon="1">Next</button></div><div class="jl-mcal"><em>Mon</em><em>Tue</em><em>Wed</em><em>Thu</em><em>Fri</em><em>Sat</em><em>Sun</em>'+cells+'</div><p class="note">Days in UTC. Click a day to see its trades.</p></div>';
+  h+='<div class="jl-card"><h3>Month by month</h3><div class="jl-tw"><table class="jl-tbl"><tr><th>Month</th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Fees</th><th class="r">Net</th></tr>'+months.slice().reverse().map(function(m){var o=byMon[m];return '<tr><td>'+m+'</td><td class="r num">'+o.n+'</td><td class="r num">'+(o.w/o.n*100).toFixed(1)+'%</td><td class="r num">'+money(-o.fees)+'</td><td class="r num '+cls(o.net)+'">'+money(o.net,1)+'</td></tr>'}).join('')+'</table></div></div>';
+  return h;
+}
+
+/* ---- insights ---- */
 function grp(title,rows,fmt){
-  if(!rows||!rows.length)return '<div class="jr-card"><h3>'+title+'</h3><p class="jr-empty">Needs at least 8 trades in a group.</p></div>';
-  return '<div class="jr-card"><h3>'+title+'</h3><table class="jr-tbl"><tr><th></th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th></tr>'+rows.map(function(r){return '<tr><td>'+esc(fmt?fmt(r.k):r.k)+'</td><td class="r num">'+r.n+'</td><td class="r num">'+r.wr+'%</td><td class="r num '+cls(r.net)+'">'+money(r.net,1)+'</td></tr>'}).join('')+'</table></div>';
+  if(!rows||!rows.length)return '<div class="jl-card"><h3>'+title+'</h3><p class="jl-empty">Needs at least 8 trades in a group.</p></div>';
+  return '<div class="jl-card"><h3>'+title+'</h3><table class="jl-tbl"><tr><th></th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th></tr>'+rows.map(function(r){return '<tr><td>'+esc(fmt?fmt(r.k):r.k)+'</td><td class="r num">'+r.n+'</td><td class="r num">'+r.wr+'%</td><td class="r num '+cls(r.net)+'">'+money(r.net,1)+'</td></tr>'}).join('')+'</table></div>';
+}
+function heat(tr){
+  var c=tr.filter(function(t){return t.status==='closed'}),g={},mx=0,days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  c.forEach(function(t){var d=new Date(t.openTs),k=((d.getUTCDay()+6)%7)+'_'+d.getUTCHours();(g[k]=g[k]||{n:0,net:0});g[k].n++;g[k].net+=t.net});
+  Object.keys(g).forEach(function(k){mx=Math.max(mx,Math.abs(g[k].net))});
+  var h='<div class="jl-heat"><span></span>';for(var hr=0;hr<24;hr++)h+='<em>'+(hr%3?'':hr)+'</em>';
+  for(var d=0;d<7;d++){h+='<span class="dl">'+days[d]+'</span>';for(var hr2=0;hr2<24;hr2++){var v=g[d+'_'+hr2];h+='<i'+(v?' title="'+days[d]+' '+hr2+':00 UTC - '+v.n+' trades, '+money(v.net,1)+'" style="background:'+(v.net>=0?'rgba(194,246,74,':'rgba(255,90,77,')+(0.18+0.75*Math.abs(v.net)/(mx||1)).toFixed(2)+')"':'')+'></i>'}}
+  return h+'</div>';
+}
+function tagStats(tr){
+  var g={};tr.forEach(function(t){var n=D.notes&&D.notes[t.id];if(!n||t.status!=='closed')return;(n.tags||[]).forEach(function(x){(g[x]=g[x]||{n:0,net:0});g[x].n++;g[x].net+=t.net})});
+  var k=Object.keys(g).sort(function(a,b){return g[a].net-g[b].net});
+  if(!k.length)return '<p class="jl-empty">Tag your trades (open one, pick a tag) and this shows what each habit costs.</p>';
+  return '<table class="jl-tbl"><tr><th>Tag</th><th class="r">Trades</th><th class="r">Net</th></tr>'+k.map(function(x){return '<tr><td>'+esc(x)+'</td><td class="r num">'+g[x].n+'</td><td class="r num '+cls(g[x].net)+'">'+money(g[x].net,1)+'</td></tr>'}).join('')+'</table>';
+}
+function whatIf(tr){
+  var c=tr.filter(function(t){return t.status==='closed'}); if(c.length<8)return '<p class="jl-empty">Needs at least 8 closed trades.</p>';
+  var tot=0;c.forEach(function(t){tot+=t.net});
+  var by=function(f){var g={};c.forEach(function(t){var k=f(t);(g[k]=g[k]||{n:0,net:0});g[k].n++;g[k].net+=t.net});var w=null;Object.keys(g).forEach(function(k){if(g[k].n>=3&&g[k].net<0&&(!w||g[k].net<g[w].net))w=k});return w?{k:w,o:g[w]}:null};
+  var sym=by(function(t){return t.sym}),hr=by(function(t){return new Date(t.openTs).getUTCHours()}),sd=by(function(t){return t.dir>0?'longs':'shorts'});
+  var row=function(lab,x){return x?'<p class="ln">Without '+lab+': <b class="num '+cls(tot-x.o.net)+'">'+money(tot-x.o.net,1)+'</b> <span class="mute">instead of '+money(tot,1)+' ('+x.o.n+' trades)</span></p>':''};
+  return row('your worst market, '+(sym&&esc(sym.k)),sym)+row('trades opened at '+(hr&&hr.k)+':00 UTC',hr)+row('your '+(sd&&sd.k),sd)||'<p class="ln mute">No losing group with three or more trades - nothing obvious to cut.</p>';
 }
 function paneIn(st){
-  var b=st.by||{}, L=function(a,f){return (a||[]).map(function(r){return Object.assign({lab:f(r.k)},r)})};
-  var worst=[].concat(L(b.sym,function(k){return 'trading '+k}),L(b.hour,function(k){return 'opening at '+k+':00 UTC'}),L(b.weekday,function(k){return 'opening on '+k}),L(b.hold,function(k){return 'holding '+k}),L(b.size,function(k){return 'positions of '+k}),L(b.side,function(k){return k.toLowerCase()+'s'})).filter(function(r){return r.net<0}).sort(function(a,c){return a.net-c.net})[0];
-  return (worst?'<div class="jr-card"><h3>Your most expensive habit</h3><p style="margin:0;color:#c9c6bd">The group losing the most: <b>'+esc(worst.lab)+'</b>, <span class="num neg">'+money(worst.net,1)+'</span> over '+worst.n+' trades. Look there first.</p></div>':'')
-   +'<div class="jr-ins">'+grp('By market',b.sym)+grp('By side',b.side)+grp('By hour opened (UTC)',b.hour,function(h){return h+':00'})+grp('By day opened',b.weekday)+grp('By time held',b.hold)+grp('By size',b.size)+'</div>';
+  var b=st.by||{}, tr=D.trades||[];
+  return '<div class="jl-ins"><div class="jl-card"><h3>What if you had skipped...</h3>'+whatIf(tr)+'</div><div class="jl-card"><h3>What each habit costs</h3>'+tagStats(tr)+'</div></div>'
+   +'<div class="jl-card"><h3>When you trade best (hour opened, UTC)</h3>'+heat(tr)+'</div>'
+   +'<div class="jl-ins">'+grp('By market',b.sym)+grp('By side',b.side)+grp('By time held',b.hold)+grp('By size',b.size)+'</div>';
 }
+
+/* ---- savings (unchanged logic) ---- */
+function paneSv(sv,st,title){
+  var it=(sv&&sv.items)||[];
+  var h='<div class="jl-card"><h3>'+(title?'Where your money goes on '+esc(title):'Where your money goes')+'</h3><p style="margin:0 0 6px;color:#c9c6bd">'+(sv.monthly?'Projected from '+Math.round(st.covDays)+' days of your trading: you pay about':'Your history covers only '+(st.covDays<2?Math.round(st.covDays*24)+' hours':Math.round(st.covDays*10)/10+' days')+', so these are amounts for that period, not a month. You paid')+' <b class="num">'+money(sv.paid30||0)+'</b>'+(sv.monthly?' a month':'')+' in fees and <b class="num">'+money(Math.max(0,-st.funding)*(sv.monthly?30/Math.max(0.5,st.covDays||1):1))+'</b> in funding.</p>'
+   +(it.length?it.map(function(x){return '<div class="jl-save"><h4>'+esc(x.title)+'</h4><div class="amt">'+money(x.usd30)+'<small>'+(sv.monthly?'a month':'this period')+'</small></div><p>'+esc(x.body)+'</p></div>'}).join(''):'<p class="jl-empty">Nothing to save that we can measure yet - your costs look efficient for this period.</p>')+'</div>';
+  var cmp=((sv&&sv.compare)||[]).slice(); if(cmp.length){ cmp.push({id:'_you',name:'You, actually',usd30:sv.paid30||0,me:1}); cmp.sort(function(a,c){return a.usd30-c.usd30}); var mx=Math.max.apply(null,cmp.map(function(c){return c.usd30}))||1;
+    h+='<div class="jl-card"><h3>'+(title?'Your '+esc(title)+' volume, priced on each exchange':'Your volume, priced on each exchange')+'</h3><p style="margin:0 0 12px;color:#8d96a2;font-size:14px">The same volume and taker share at each exchange base rate, against what your own fee tier actually charged.</p><div class="jl-bars">'
+     +cmp.map(function(c){return '<div class="jl-bar'+(c.me?' me':'')+'"><span>'+(c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener sponsored" data-mpex="'+esc(c.name)+'" data-jrv="'+esc(c.id)+'">'+esc(c.name)+'</a>':esc(c.name)+(c.mine?' <span class="jl-badge">yours</span>':''))+'</span><span class="t"><i style="width:'+(c.usd30/mx*100).toFixed(1)+'%"></i></span><span class="num" style="text-align:right">'+money(c.usd30)+'</span></div>'}).join('')+'</div></div>'; }
+  return h;
+}
+
+/* ALL ACCOUNTS: one block per exchange, each priced at that exchange's own rates, and a total on top */
+function paneSvAll(){
+  var B=D.savingsBy, fees=0, fund=0, save=0;
+  B.forEach(function(b){fees+=b.fees;fund+=b.funding;(b.savings.items||[]).forEach(function(x){save+=x.usd30})});
+  var h='<div class="jl-card"><h3>Across '+B.length+' exchanges</h3><p class="ln">In this period you paid <b class="num">'+money(fees)+'</b> in fees and '+(fund<0?'<b class="num">'+money(-fund)+'</b> in funding':'received <b class="num pos">'+money(fund)+'</b> in funding')+'. Each exchange below is priced at its own fee rates.</p><div class="jl-bars">'+B.map(function(b){var mx=Math.max.apply(null,B.map(function(x){return x.fees}))||1;return '<div class="jl-bar"><span>'+esc((EX[b.ex]||{}).name||b.ex)+'</span><span class="t"><i style="width:'+(b.fees/mx*100).toFixed(1)+'%"></i></span><span class="num" style="text-align:right">'+money(b.fees)+'</span></div>'}).join('')+'</div></div>';
+  B.forEach(function(b){h+=paneSv(b.savings,{covDays:b.covDays,funding:b.funding},(EX[b.ex]||{}).name||b.ex)});
+  return h;
+}
+
+/* ---- accounts ---- */
 function paneAc(conns){
-  return '<div class="jr-card">'+conns.map(function(c){
+  return '<div class="jl-card">'+conns.map(function(c){
     var pct=c.done?100:c.oldest?Math.min(99,Math.round((Date.now()-c.oldest)/(180*864e5)*100)):5;
-    return '<div class="jr-acc"><img src="/assets/ex/'+esc(c.ex)+'.png" alt=""><div><b>'+esc(c.label||c.ex)+'</b> <span class="num" style="color:#8d96a2">'+esc(c.kid||'')+'</span><div class="st">'+(c.status==='key_invalid'?'<span class="neg">The key stopped working - connect it again.</span>':c.err?'<span class="neg">'+esc(c.err)+'</span>':(c.done?'Up to date':'Importing history')+', '+(c.nfills||0)+' fills, synced '+ago(c.last_sync))+(c.ex!=='hyperliquid'?(c.ipbound?' - bound to '+IP:' - <span style="color:#ffb347">not bound to an IP</span>'):'')+'</div>'+(c.done?'':'<div class="jr-prog"><i style="width:'+pct+'%"></i></div>')+'</div><div style="display:flex;gap:6px"><button class="jr-btn sm ghost" data-sync="'+esc(c.id)+'">Sync now</button><button class="jr-btn sm ghost" data-disc="'+esc(c.id)+'">Disconnect</button></div></div>'}).join('')
-   +'</div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="jr-btn" id="jrAdd">Connect another account</button><button class="jr-btn ghost" id="jrWipe">Delete everything</button></div><div class="jr-msg" id="jrAcMsg"></div>';
+    return '<div class="jl-acc"><img src="/assets/ex/'+esc(c.ex)+'.png" alt=""><div><input class="jl-lbl" data-lbl="'+esc(c.id)+'" value="'+esc(accName(c))+'" maxlength="40" aria-label="Account name"> <span class="num mute">'+esc(c.kid||'')+'</span><div class="st">'+(c.status==='key_invalid'?'<span class="neg">The key stopped working - connect it again.</span>':c.err?'<span class="neg">'+esc(c.err)+'</span>':(c.done?'Up to date':'Importing history')+', '+(c.nfills||0)+' fills, synced '+ago(c.last_sync))+(c.ex!=='hyperliquid'?(c.ipbound?' - bound to '+IP:' - <span style="color:#ffb347">not bound to an IP</span>'):'')+'</div>'+(c.done?'':'<div class="jl-prog"><i style="width:'+pct+'%"></i></div>')+'</div><div class="jl-acb"><button class="jl-btn sm ghost" data-sync="'+esc(c.id)+'">Sync now</button><button class="jl-btn sm ghost" data-disc="'+esc(c.id)+'">Disconnect</button></div></div>'}).join('')
+   +'</div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="jl-btn" data-add="1">Connect another account</button><button class="jl-btn ghost" id="jrWipe">Delete everything</button></div><div class="jl-msg" id="jrAcMsg"></div>';
 }
+
+/* ---- the share card (a PNG of the period, drawn on a canvas) ---- */
+function share(){
+  var st=D.stats||{}, cv=document.createElement('canvas'); cv.width=1200; cv.height=630; var x=cv.getContext('2d');
+  var g=x.createLinearGradient(0,0,1200,630); g.addColorStop(0,'#14181f'); g.addColorStop(1,'#0a0b0d'); x.fillStyle=g; x.fillRect(0,0,1200,630);
+  x.strokeStyle='rgba(216,191,142,.35)'; x.lineWidth=2; x.strokeRect(24,24,1152,582);
+  x.fillStyle='#d8bf8e'; x.font='600 28px Familjen Grotesk, sans-serif'; x.fillText('MarginPad Journal - last '+DAYS+' days',64,96);
+  x.fillStyle=st.net>=0?'#c2f64a':'#ff5a4d'; x.font='700 120px Space Mono, monospace'; x.fillText(money(st.net,1),64,260);
+  x.fillStyle='#ecebe6'; x.font='500 34px Familjen Grotesk, sans-serif';
+  [['Win rate',st.winRate==null?'-':st.winRate+'%'],['Trades',String(st.n)],['Profit factor',st.profitFactor==null?'-':String(st.profitFactor)],['Max drawdown',money(-st.maxDD)]].forEach(function(r,i){x.fillStyle='#8d96a2';x.font='500 26px Familjen Grotesk, sans-serif';x.fillText(r[0],64+i*270,380);x.fillStyle='#ecebe6';x.font='700 40px Space Mono, monospace';x.fillText(r[1],64+i*270,430)});
+  x.fillStyle='#8d96a2'; x.font='500 24px Familjen Grotesk, sans-serif'; x.fillText('Real account, read-only. marginpad.io/trading-journal',64,560);
+  cv.toBlob(function(b){ if(!b)return; var f=new File([b],'marginpad-journal.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'My trading month'}).catch(function(){})}
+    else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='marginpad-journal.png';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},2000)} track('share'); });
+}
+function csv(){
+  var tr=(D.trades||[]).filter(pass), rows=[['closed_utc','opened_utc','account','exchange','market','side','entry','exit','largest_size_usd','price_pnl','fees','funding','net','held_minutes','liquidated','tags','note']];
+  tr.forEach(function(t){var n=(D.notes&&D.notes[t.id])||{tags:[],note:''};rows.push([t.closeTs?new Date(t.closeTs).toISOString():'',new Date(t.openTs).toISOString(),accName(connOf(t.conn)),t.ex,t.sym,t.dir>0?'long':'short',t.entry==null?'':t.entry,t.exit==null?'':t.exit,t.maxNotional.toFixed(2),t.gross.toFixed(4),t.fees.toFixed(4),t.funding.toFixed(4),t.net.toFixed(4),t.partial?'':Math.round(t.hold/6e4),t.liq?1:0,(n.tags||[]).join('|'),n.note||''])});
+  var s=rows.map(function(r){return r.map(function(v){v=String(v);return /[",;]|[\\r\\n]/.test(v)?'"'+v.split('"').join('""')+'"':v}).join(',')}).join('\\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));a.download='marginpad-journal-'+DAYS+'d.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);track('csv');
+}
+
+var TAB='ov';
 function render(j){
   D=j; var st=j.stats||{};
-  var cov=st.covFrom&&st.covDays<DAYS-0.5?' Your history here starts '+new Date(st.covFrom).toISOString().slice(0,10)+' ('+(st.covDays<2?Math.round(st.covDays*24)+' hours':Math.round(st.covDays)+' days')+' of data).':'';
-  $('#jrAcc').textContent=(j.conns||[]).map(function(c){return c.label||c.ex}).join(', ')+', read-only.'+cov;
-  tiles(st);
-  $('#p-ov').innerHTML=paneOv(st); $('#p-tr').innerHTML=paneTr(j.trades||[]); $('#p-sv').innerHTML=paneSv(j.savings||{},st,j.exMain); $('#p-in').innerHTML=paneIn(st); $('#p-ac').innerHTML=paneAc(j.conns||[]);
+  var cov=st.covFrom&&st.covDays<DAYS-0.5?' History here starts '+new Date(st.covFrom).toISOString().slice(0,10)+'.':'';
+  $('#jrAcc').textContent=(ACC?accName(connOf(ACC)):'All accounts')+', read-only.'+cov;
+  accBar(); tiles(st); paint();
 }
-function load(){ return api('/stats?days='+DAYS).then(function(j){ if(j&&j.stats)render(j); return j; }); }
-var pollT=0;
-function boot(){
+function paint(){
+  var st=D.stats||{};
+  if(TAB==='ov')$('#p-ov').innerHTML=paneOv(st);
+  if(TAB==='tr')$('#p-tr').innerHTML=paneTr();
+  if(TAB==='ca')$('#p-ca').innerHTML=paneCal();
+  if(TAB==='sv')$('#p-sv').innerHTML=(!ACC&&D.savingsBy&&D.savingsBy.length>1)?paneSvAll():paneSv(D.savings||{},st);
+  if(TAB==='in')$('#p-in').innerHTML=paneIn(st);
+  if(TAB==='ac')$('#p-ac').innerHTML=paneAc(D.conns||[]);
+}
+function load(){ return api('/stats?days='+DAYS+(ACC?'&conn='+encodeURIComponent(ACC):'')).then(function(j){ if(j&&j.stats)render(j); return j; }); }
+function showAdd(on){
+  document.body.classList.toggle('jl-adding',!!on);
+  $('#jrGuest').style.display=on?'':'none'; $('#jrDash').classList.toggle('on',!on);
+  if(on){ window.scrollTo({top:$('#jrRail').getBoundingClientRect().top+scrollY-110,behavior:'smooth'}); track('add-account'); }
+  else { $('#jrOpen').classList.remove('on'); $$('.jl-key').forEach(function(x){x.style.opacity=''}); window.scrollTo({top:0}); }
+}
+var pollT=0, HAS=false;
+function boot(sel){
   if(!signedIn())return;
   api('/state').then(function(s){
-    if(!s||!s.conns||!s.conns.length){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');return}
-    $('#jrGuest').style.display='none'; $('#jrDash').classList.add('on'); $('#jrOpen').classList.remove('on');
+    HAS=!!(s&&s.conns&&s.conns.length);
+    $('#jrBackBar').hidden=!HAS;
+    if(!HAS){$('#jrGuest').style.display='';$('#jrDash').classList.remove('on');return}
+    if(sel)ACC=sel; if(ACC&&!s.conns.some(function(c){return c.id===ACC}))ACC='';
+    showAdd(false);
     load().then(function(j){ var imp=(j.conns||[]).some(function(c){return !c.done&&c.status!=='key_invalid'}); clearTimeout(pollT); if(imp)pollT=setTimeout(function(){api('/sync',{}).then(load)},20000); });
   });
 }
-$('#jrRange').addEventListener('click',function(e){var b=e.target.closest('.jr-chip');if(!b)return;$$('.jr-chip',this).forEach(function(x){x.classList.toggle('on',x===b)});DAYS=+b.getAttribute('data-d');load()});
-$('#jrTabs').addEventListener('click',function(e){var b=e.target.closest('.jr-tab');if(!b)return;$$('.jr-tab').forEach(function(x){x.classList.toggle('on',x===b)});$$('.jr-pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+b.getAttribute('data-p'))});track('tab:'+b.getAttribute('data-p'))});
+$('#jrRange').addEventListener('click',function(e){var b=e.target.closest('.jl-chip');if(!b)return;$$('.jl-chip',this).forEach(function(x){x.classList.toggle('on',x===b)});DAYS=+b.getAttribute('data-d');load()});
+$('#jrTabs').addEventListener('click',function(e){var b=e.target.closest('.jl-tab');if(!b)return;TAB=b.getAttribute('data-p');$$('.jl-tab').forEach(function(x){x.classList.toggle('on',x===b)});$$('.jl-pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+TAB)});if(D)paint();track('tab:'+TAB)});
+function goTab(t){var b=$('.jl-tab[data-p="'+t+'"]');if(b)b.click()}
+document.addEventListener('input',function(e){ if(e.target.id==='jrQ'){ F.q=e.target.value; SHOWN=100; var pos=e.target.selectionStart; paint(); var q=$('#jrQ'); if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(x){}} } });
+document.addEventListener('change',function(e){ var l=e.target.closest('[data-lbl]'); if(l){ api('/label',{id:l.getAttribute('data-lbl'),label:l.value}).then(function(){var c=connOf(l.getAttribute('data-lbl'));if(c)c.label=l.value;accBar()}); } });
 document.addEventListener('click',function(ev){
   var vj=ev.target.closest('[data-jrv]'); if(vj)track('venue:'+vj.getAttribute('data-jrv'));
+  var ac=ev.target.closest('[data-acc]'); if(ac){ACC=ac.getAttribute('data-acc');SHOWN=100;load();track('acc');return}
+  if(ev.target.closest('#jrAddAcc')||ev.target.closest('[data-add]')){showAdd(true);return}
+  if(ev.target.closest('#jrBackBtn')){showAdd(false);if(!D)boot();return}
+  var fc=ev.target.closest('[data-f]'); if(fc){var k=fc.getAttribute('data-f'),v=fc.getAttribute('data-v');F[k]=(F[k]===v&&v!=='')?'':v;SHOWN=100;paint();return}
+  if(ev.target.closest('#jrFclear')){F={q:'',side:'',res:'',flag:'',size:'',hold:'',day:''};paint();return}
+  if(ev.target.closest('#jrMore')){SHOWN+=100;paint();return}
+  if(ev.target.closest('#jrFtog')){FOPEN=!FOPEN;paint();return}
+  if(ev.target.closest('#jrCsv')){csv();return}
+  if(ev.target.closest('#jrShare')){share();return}
+  var dd=ev.target.closest('[data-day]'); if(dd){F.day=dd.getAttribute('data-day');goTab('tr');return}
+  var mn=ev.target.closest('[data-mon]'); if(mn){var y=+MONTH.slice(0,4),m=+MONTH.slice(5,7)-1+(+mn.getAttribute('data-mon'));var d2=new Date(Date.UTC(y,m,1));MONTH=d2.toISOString().slice(0,7);paint();return}
+  var row=ev.target.closest('[data-pid]'); if(row&&!ev.target.closest('#jrNoteSave')){openTrade(row.getAttribute('data-pid'));return}
+  if(ev.target.closest('#jrDwX')||ev.target.id==='jrDrawer'){closeDrawer();return}
+  var tg=ev.target.closest('[data-tag]'); if(tg){tg.classList.toggle('on');return}
+  var ns=ev.target.closest('#jrNoteSave'); if(ns){var pid=ns.getAttribute('data-pid'),tags=$$('[data-tag].on').map(function(x){return x.getAttribute('data-tag')}),note=$('#jrNote').value;api('/note',{pid:pid,note:note,tags:tags}).then(function(j){if(j&&j.ok){D.notes=D.notes||{};if(note||tags.length)D.notes[pid]={note:note,tags:tags};else delete D.notes[pid];$('#jrNoteMsg').className='jl-msg okm';$('#jrNoteMsg').textContent='Saved';paint();track('note')}else{$('#jrNoteMsg').className='jl-msg err';$('#jrNoteMsg').textContent='Could not save'}});return}
+  if(ev.target.closest('#jrGoalEdit')){var f=$('#jrGoalF');f.hidden=!f.hidden;return}
+  if(ev.target.closest('#jrGoalSave')){api('/prefs',{goal:+($('#jrGoalM').value||0),dayLimit:+($('#jrGoalD').value||0)}).then(function(){D.prefs={goal:+($('#jrGoalM').value||0),dayLimit:+($('#jrGoalD').value||0)};paint();track('goals')});return}
   var s=ev.target.closest('[data-sync]'); if(s){s.disabled=true;s.textContent='Syncing...';api('/sync',{id:s.getAttribute('data-sync')}).then(function(j){if(j&&j.error==='slow_down'){s.textContent='Wait 20 s';return}load()});return}
-  var d=ev.target.closest('[data-disc]'); if(d){ if(d.getAttribute('data-arm')!=='1'){d.setAttribute('data-arm','1');d.textContent='Click again to remove';setTimeout(function(){if(document.body.contains(d)){d.removeAttribute('data-arm');d.textContent='Disconnect'}},6000);return} api('/disconnect',{id:d.getAttribute('data-disc')}).then(boot);return}
-  if(ev.target.closest('#jrWipe')){var w=ev.target.closest('#jrWipe'); if(w.getAttribute('data-arm')!=='1'){w.setAttribute('data-arm','1');w.textContent='Click again: delete every key and trade';setTimeout(function(){if(document.body.contains(w)){w.removeAttribute('data-arm');w.textContent='Delete everything'}},6000);return} api('/wipe',{}).then(boot);return}
-  if(ev.target.closest('#jrAdd')){$('#jrDash').classList.remove('on');$('#jrGuest').style.display='';window.scrollTo({top:$('#jrRail').getBoundingClientRect().top+scrollY-90,behavior:'smooth'});return}
+  var d=ev.target.closest('[data-disc]'); if(d){ if(d.getAttribute('data-arm')!=='1'){d.setAttribute('data-arm','1');d.textContent='Click again to remove';setTimeout(function(){if(document.body.contains(d)){d.removeAttribute('data-arm');d.textContent='Disconnect'}},6000);return} api('/disconnect',{id:d.getAttribute('data-disc')}).then(function(){boot()});return}
+  if(ev.target.closest('#jrWipe')){var w=ev.target.closest('#jrWipe'); if(w.getAttribute('data-arm')!=='1'){w.setAttribute('data-arm','1');w.textContent='Click again: delete every key and trade';setTimeout(function(){if(document.body.contains(w)){w.removeAttribute('data-arm');w.textContent='Delete everything'}},6000);return} api('/wipe',{}).then(function(){ACC='';boot()});return}
 });
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#jrDrawer').classList.contains('on'))closeDrawer()});
 window.addEventListener('mp-auth-change',function(){boot()});
 boot();
+
 })();
 </script>
 <script defer src="/assets/mp-auth.js"></script>
