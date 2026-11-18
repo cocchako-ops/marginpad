@@ -286,7 +286,7 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 <main class="jr-dash" id="jrDash">
   <div class="jr-dh">
     <div><h1>Your journal</h1><div class="acc" id="jrAcc"></div></div>
-    <div class="jr-chips" id="jrRange"><button class="jr-chip" data-d="7">7 days</button><button class="jr-chip on" data-d="30">30 days</button><button class="jr-chip" data-d="90">90 days</button><button class="jr-chip" data-d="180">180 days</button></div>
+    <div class="jr-chips" id="jrRange"><button class="jr-chip" data-d="7">7 days</button><button class="jr-chip" data-d="30">30 days</button><button class="jr-chip" data-d="90">90 days</button><button class="jr-chip on" data-d="180">180 days</button></div>
   </div>
   <div class="jr-tiles" id="jrTiles"></div>
   <div class="jr-tabs" role="tablist" id="jrTabs"><button class="jr-tab on" data-p="ov">Overview</button><button class="jr-tab" data-p="tr">Trades</button><button class="jr-tab" data-p="sv">Savings</button><button class="jr-tab" data-p="in">Insights</button><button class="jr-tab" data-p="ac">Accounts</button></div>
@@ -369,7 +369,7 @@ document.addEventListener('click',function(ev){
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='jrAddr'||e.target.id==='jrSec'||e.target.id==='jrPass'))connect()});
 
 /* ---------- the dashboard ---------- */
-var DAYS=30, D=null;
+var DAYS=180, D=null;
 function tiles(st){
   var t=[
     ['Net P&L',money(st.net,1),cls(st.net),st.n+' closed trades'],

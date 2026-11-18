@@ -415,7 +415,12 @@ async function hlSync(env, H, c, addr, budget) {
 // and reconcile. A close whose opening lies before the imported history is recovered from the exchange's own
 // realized figure (entry = px - rpnl / (qty * dir)) and marked partial rather than read as a new position.
 export function jrBuild(fills, funding) {
-  const F = fills.slice().sort((a, b) => a.ts - b.ts || (a.k < b.k ? -1 : 1));
+  /* ONE MILLISECOND HOLDS SEVERAL FILLS OF ONE ORDER, and their order decides the position (owner's HL account 2026-11-18: the second part of a
+     short processed before the first read as a short opened before the history, and fifteen trades merged into one). Within a millisecond:
+     Hyperliquid states the position BEFORE each fill (startPosition) - opening fills go from the smallest |start| up, closing fills from the
+     largest down; every other exchange keeps the order it sent (a stable sort; the store returns rows in arrival order). */
+  const hlRank = (f) => f.start == null ? 0 : (/^Close|Liquidat/.test(f.dir || '') ? -Math.abs(f.start) : Math.abs(f.start));
+  const F = fills.map((f, i) => [f, i]).sort((x, y) => x[0].ts - y[0].ts || (x[0].sym === y[0].sym && x[0].start != null && y[0].start != null ? hlRank(x[0]) - hlRank(y[0]) : 0) || x[1] - y[1]).map(x => x[0]);
   const open = new Map(), pos = [];
   let seq = 0;
   const mk = (f, key, dir, partial) => ({ id: f.ex + ':' + f.sym + ':' + f.ts + ':' + (seq++), ex: f.ex, sym: f.sym, ps: f.ps, dir, openTs: f.ts, closeTs: 0, q: 0, avg: 0, maxQ: 0, maxNotional: 0, entryNotional: 0, exitQty: 0, exitNotional: 0, gross: 0, fees: 0, feesTaker: 0, feesMaker: 0, funding: 0, xpnl: 0, xknown: true, n: 0, nMaker: 0, nTaker: 0, liq: 0, adl: 0, partial: !!partial, key, vol: 0, entTF: 0, entTV: 0 });
@@ -601,7 +606,7 @@ export class JournalStore {
     if (p === '/data') { // everything the engine needs (one member's history fits comfortably)
       const conn = url.searchParams.get('conn') || '';
       const from = +url.searchParams.get('from') || 0;
-      const F = conn ? sql.exec('SELECT * FROM fills WHERE conn=? AND ts>=? ORDER BY ts', conn, from).toArray() : sql.exec('SELECT * FROM fills WHERE ts>=? ORDER BY ts', from).toArray();
+      const F = conn ? sql.exec('SELECT * FROM fills WHERE conn=? AND ts>=? ORDER BY ts, rowid', conn, from).toArray() : sql.exec('SELECT * FROM fills WHERE ts>=? ORDER BY ts, rowid', from).toArray();
       const Fu = conn ? sql.exec('SELECT * FROM funding WHERE conn=? AND ts>=?', conn, from).toArray() : sql.exec('SELECT * FROM funding WHERE ts>=?', from).toArray();
       return J({ fills: F, funding: Fu, conns: sql.exec('SELECT id,ex,label,kid,addr,perms,ipbound,status,err,created,last_sync,last_ok,nfills,oldest,newest,done FROM conn ORDER BY created').toArray() });
     }
@@ -670,7 +675,9 @@ export async function handleJournal(url, request, env, ctx, H) {
   if (path === '/meta') return J({ ip: JR_IP, exchanges: JR_EXCH, daysMax: JR_DAYS_MAX });
   const su = await H.sessionUser(env, H.getCookie(request, H.SESS_COOKIE));
   let uid = su && su.id ? String(su.id) : '';
-  if (!uid && H.isAdminKey(env, H.adminKeyFrom(request, url)) && /^e2e/.test(url.searchParams.get('uid') || '')) uid = url.searchParams.get('uid');
+  const _adm = H.isAdminKey(env, H.adminKeyFrom(request, url)), _qu = url.searchParams.get('uid') || '';
+  if (!uid && _adm && /^e2e/.test(_qu)) uid = _qu;
+  if (!uid && _adm && _qu && request.method === 'GET') uid = _qu; // support: READ any member's journal with the admin key (GET only - nothing is written as them)
   if (!uid) return J({ error: 'login_required' }, 401);
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
 

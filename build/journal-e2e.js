@@ -54,6 +54,18 @@ let pass = 0, fail = 0; const ok = (name, c, info) => { if (c) { pass++; console
   r = M.jrBuild([f({ ex: 'binance', k: 'x1', side: 1, px: 100, qty: 1, ts: T0, rpnl: 0 }), f({ ex: 'binance', k: 'x2', side: -1, px: 110, qty: 1, ts: T0 + 1, rpnl: 9 })], []);
   ok('our P&L vs the exchange\'s: a $1 gap is reported, not hidden', r.positions[0].diff === 1, r.positions[0].diff);
 
+  // the owner's real Hyperliquid account (2026-11-18): 53 fills, 19 round trips, several fills sharing one millisecond; the file is SHUFFLED,
+  // so the engine has to order a millisecond itself. Every position must close and match the exchange's closedPnl.
+  {
+    const raw = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'journal', 'hl-fills-fixture.json'), 'utf8'));
+    const fx = raw.map(x => ({ ex: 'hyperliquid', k: 'hl|' + x.tid + '|' + x.oid, sym: x.coin, side: x.side === 'B' ? 1 : -1, px: +x.px, qty: +x.sz, fee: +x.fee, maker: x.crossed ? 0 : 1, ts: +x.time, ps: 'B', rpnl: +x.closedPnl, liq: 0, adl: 0, start: +x.startPosition, dir: x.dir }));
+    const rr = M.jrBuild(fx, []), cl = rr.positions.filter(q => q.status === 'closed');
+    ok('real HL account: 19 positions, all closed, none partial', rr.positions.length === 19 && cl.length === 19 && !rr.positions.some(q => q.partial), rr.positions.length + ' / closed ' + cl.length + ' / partial ' + rr.positions.filter(q => q.partial).length);
+    ok('real HL account: every position matches the exchange P&L to the cent', cl.every(q => q.diff != null && Math.abs(q.diff) <= 0.01), JSON.stringify(cl.filter(q => !(q.diff != null && Math.abs(q.diff) <= 0.01)).map(q => [q.sym, q.diff])));
+    const net = cl.reduce((a, q) => a + q.net, 0), xp = raw.reduce((a, x) => a + (+x.closedPnl) - (+x.fee), 0);
+    ok('real HL account: net = closedPnl - fees, summed', Math.abs(net - xp) < 0.01, net.toFixed(4) + ' vs ' + xp.toFixed(4));
+  }
+
   console.log('pure: stats and savings');
   const fills = [], pos = [];
   for (let i = 0; i < 20; i++) { const w = i % 3 !== 0, t = T0 + i * 3600000; fills.push(f({ k: 'o' + i, side: 1, px: 100, qty: 10, ts: t, fee: 0.55 }), f({ k: 'c' + i, side: -1, px: w ? 102 : 99, qty: 10, ts: t + 600000, fee: 0.55 })); }
