@@ -5,14 +5,14 @@
 const fs = require('fs'), path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'trading-journal', 'index.html');
 const IP = '167.172.98.147';
-const TITLE = 'Free Crypto Trading Journal - Auto-Sync Bybit, Binance & Hyperliquid (Read-Only) | MarginPad';
-const DESC = 'Connect your real Bybit, Binance or Hyperliquid account with a read-only key and see every trade, the fees and funding you paid, where you lose, and exactly how much you could save. Free, no card.';
+const TITLE = 'Free Crypto Trading Journal - Auto-Sync Bybit, Binance, OKX, Bitget, BingX, Hyperliquid | MarginPad';
+const DESC = 'Connect your real Bybit, Binance, OKX, Bitget, BingX or Hyperliquid account with a read-only key and see every trade, the fees and funding you paid, where you lose, and exactly how much you could save. Free, no card.';
 
 const FAQ = [
   ['Can MarginPad trade or withdraw from my account?', 'No. We only accept a read-only key: when you connect, we ask the exchange what the key is allowed to do and refuse it on the spot if it can trade, transfer or withdraw - before anything is stored. Hyperliquid needs no key at all, only your public wallet address.'],
   ['Why should I bind the key to your IP address?', 'Every request we make to your exchange comes from one fixed server, ' + IP + '. A key bound to that address does not work from anywhere else, so even a leaked key is useless to whoever has it. On Bybit an IP-bound key also does not expire after 90 days.'],
   ['How is my key stored?', 'Encrypted with AES-GCM under a key that lives only in our server environment, bound to your account and that exchange. It is decrypted in memory only to sign a read request, and it is never sent back to any browser - not even yours.'],
-  ['How far back does it import?', 'Hyperliquid: your last 10,000 fills. Bybit: up to 180 days. Binance: the last three months, which is all Binance serves. Where history ends, the journal says so instead of guessing.'],
+  ['How far back does it import?', 'Hyperliquid: your last 10,000 fills. Bybit: up to 180 days. Binance, OKX and Bitget: the last three months, which is what they serve. BingX: up to 90 days. Where history ends, the journal says so instead of guessing.'],
   ['Does my P&L match the exchange?', 'Where the exchange reports realized P&L per fill (Hyperliquid, Binance) we compute our own from the fills and compare the two, trade by trade, and show any difference. A position that opened before the imported history uses the exchange figure and is marked.'],
   ['What does it cost?', 'Nothing. No card, no trial that ends. The savings ideas include our partner links, and that is how this stays free - you see the numbers either way.'],
   ['How do I disconnect?', 'One button on the Accounts tab removes the key and every trade we imported from it, at once. You can also delete the key on the exchange; the journal then stops syncing and tells you.'],
@@ -59,11 +59,13 @@ a{color:var(--brass)}
 /* the open key: the guide and the form */
 .jr-open{display:none;margin-top:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden}
 .jr-open.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.jr-steps{padding:26px 28px;border-right:1px solid var(--line2)}
+.jr-steps{padding:22px 24px;border-right:1px solid var(--line2);display:flex;flex-direction:column}
+.jr-gsub{color:var(--mute);margin:0;font-size:14px}.jr-gsub a{white-space:nowrap}
+.jr-ipbox{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;padding:10px 12px;border-radius:12px;background:#07080a;border:1px solid var(--line)}.jr-ipbox span{color:var(--mute);font-size:13px}.jr-ipbox code{font:700 15px 'Space Mono',monospace;color:var(--ink)}.jr-ipbox .jr-btn{margin-left:auto}
 .jr-steps h3,.jr-form h3{font:600 20px/1.25 'Bricolage Grotesque',sans-serif;margin:0 0 6px}
-.jr-steps ol{margin:16px 0 0;padding:0;list-style:none;counter-reset:s;display:grid;gap:14px}
-.jr-steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:12px;color:#cfccc3;font-size:15px}
-.jr-steps li::before{content:counter(s);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 13px 'Space Mono',monospace;color:var(--brass);border:1px solid rgba(216,191,142,.4)}
+.jr-steps ol{margin:12px 0 14px;padding:0;list-style:none;counter-reset:s;display:grid;gap:9px}
+.jr-steps li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;color:#cfccc3;font-size:14.5px;line-height:1.5}
+.jr-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px 'Space Mono',monospace;color:var(--brass);border:1px solid rgba(216,191,142,.4)}
 .jr-ip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 6px 6px 12px;border-radius:10px;background:#07080a;border:1px solid var(--line)}
 .jr-ip code{font:700 15px 'Space Mono',monospace;color:var(--ink)}
 .jr-btn{appearance:none;border:0;cursor:pointer;font:600 15px 'Familjen Grotesk',sans-serif;border-radius:12px;padding:12px 18px;background:var(--brass);color:#16130c}
@@ -71,12 +73,12 @@ a{color:var(--brass)}
 .jr-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.jr-btn.ghost:hover{border-color:var(--brass)}
 .jr-btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
 .jr-btn.go{background:var(--gain);color:#0b0d06}
-.jr-form{padding:26px 28px;display:flex;flex-direction:column;gap:12px}
+.jr-form{padding:22px 24px;display:flex;flex-direction:column;gap:10px}
 .jr-form label{font-size:13px;color:var(--mute);display:grid;gap:6px}
-.jr-form input{width:100%;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:none}
+.jr-form input{width:100%;font:15px 'Space Mono',monospace;color:var(--ink);background:#07080a;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
 .jr-form input:focus{border-color:var(--brass)}
 .jr-perm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:4px}
-.jr-perm div{border:1px solid var(--line2);border-radius:12px;padding:10px;font-size:13px;color:var(--mute);text-align:center}
+.jr-perm div{border:1px solid var(--line2);border-radius:10px;padding:7px 6px;font-size:12px;color:var(--mute);text-align:center}
 .jr-perm div b{display:block;font-size:15px;color:var(--ink);margin-bottom:2px}
 .jr-perm .ok{border-color:rgba(194,246,74,.4)}.jr-perm .ok b{color:var(--gain)}
 .jr-perm .no b{color:var(--mute);text-decoration:line-through}
@@ -159,7 +161,7 @@ a{color:var(--brass)}
   .jr-open.on{grid-template-columns:1fr}.jr-steps{border-right:0;border-bottom:1px solid var(--line2)}
   .jr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-tile:last-child{grid-column:1/-1}
   .jr-ins{grid-template-columns:1fr}.jr-ledger{grid-template-columns:1fr}.jr-ledger>div+div{border-left:0;border-top:1px solid var(--line)}
-  .jr-perm{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .jr-perm{grid-template-columns:repeat(4,minmax(0,1fr))}.jr-perm div{font-size:11px;padding:6px 2px}.jr-ipbox span{display:none}
   .jr-seals{gap:6px}.jr-seals li{padding:10px 12px;grid-template-columns:26px 1fr;align-items:center}.jr-seals li div span{display:none}.jr-rail-h{display:block}.jr-rail-h p{margin-top:4px}.jr-seal{width:26px;height:26px}.jr-hero p.lede{font-size:16px}.jr-hero h1{margin-bottom:12px}
   .jr-bar{grid-template-columns:90px minmax(0,1fr) 80px}
   .wrap{padding:0 16px}
@@ -170,10 +172,10 @@ const KEYS = [
   { id: 'hyperliquid', name: 'Hyperliquid', c: '#97fce4', how: 'Paste your wallet address. No key needed.', tag: 'Address only' },
   { id: 'bybit', name: 'Bybit', c: '#f7a600', how: 'A read-only API key, bound to our IP.', tag: 'Read-only key' },
   { id: 'binance', name: 'Binance', c: '#f0b90b', how: 'A read-only API key for USD-M futures.', tag: 'Read-only key' },
-  { id: 'okx', name: 'OKX', c: '#ffffff', how: 'Next in line.', tag: 'Soon', soon: true },
-  { id: 'bitget', name: 'Bitget', c: '#00f0ff', how: 'Next in line.', tag: 'Soon', soon: true },
-  { id: 'bingx', name: 'BingX', c: '#2a6aff', how: 'Next in line.', tag: 'Soon', soon: true },
-  { id: 'mexc', name: 'MEXC', c: '#2b6cff', how: 'Next in line.', tag: 'Soon', soon: true },
+  { id: 'okx', name: 'OKX', c: '#d9d9d9', how: 'A read-only key with its passphrase.', tag: 'Read-only key' },
+  { id: 'bitget', name: 'Bitget', c: '#00f0ff', how: 'A read-only key with its passphrase.', tag: 'Read-only key' },
+  { id: 'bingx', name: 'BingX', c: '#2a6aff', how: 'A read-only API key, bound to our IP.', tag: 'Read-only key' },
+  { id: 'mexc', name: 'MEXC', c: '#2b6cff', how: 'MEXC does not let us verify that a key is read-only, so it waits.', tag: 'Soon', soon: true },
 ];
 const keyHtml = (k) => `<button type="button" class="jr-key${k.soon ? ' soon' : ''}" data-ex="${k.id}" style="--c:${k.c}" aria-label="${k.soon ? k.name + ' - coming soon' : 'Connect ' + k.name}"${k.soon ? ' aria-disabled="true"' : ''}><span class="jr-face"><span class="lg"><img src="/assets/ex/${k.id}.png" alt="" width="34" height="34" loading="lazy"><b>${k.name}</b></span><span class="how">${k.how}</span><span class="tag">${k.tag}</span></span></button>`;
 
@@ -222,7 +224,7 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 <section class="jr-hero">
   <div>
     <h1>Your real trades, read back to you.</h1>
-    <p class="lede">Connect Bybit, Binance or Hyperliquid and see every position you actually traded: what it made, what the fees and funding took, where you keep losing, and how much a few changes would save you each month. Free, with a key that can only read.</p>
+    <p class="lede">Connect Bybit, Binance, OKX, Bitget, BingX or Hyperliquid and see every position you actually traded: what it made, what the fees and funding took, where you keep losing, and how much a few changes would save you each month. Free, with a key that can only read.</p>
   </div>
   <ul class="jr-seals">
     <li><span class="jr-seal">${ICON.lock}</span><div><b>Read-only, checked</b><span>We ask the exchange what your key can do and refuse it if it can trade or withdraw.</span></div></li>
@@ -300,7 +302,7 @@ ${ld.map(o => '<script type="application/ld+json">' + JSON.stringify(o) + '</scr
 <script>
 (function(){
 var IP='${IP}', $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
-var EX={hyperliquid:{name:'Hyperliquid',c:'#97fce4'},bybit:{name:'Bybit',c:'#f7a600',url:'https://www.bybit.com/app/user/api-management'},binance:{name:'Binance',c:'#f0b90b',url:'https://www.binance.com/en/my/settings/api-management'}};
+var EX={hyperliquid:{name:'Hyperliquid',c:'#97fce4'},bybit:{name:'Bybit',c:'#f7a600',url:'https://www.bybit.com/app/user/api-management',read:'Read-Only'},binance:{name:'Binance',c:'#f0b90b',url:'https://www.binance.com/en/my/settings/api-management',read:'Enable Reading'},okx:{name:'OKX',c:'#d9d9d9',url:'https://www.okx.com/account/my-api',read:'Read',pass:1},bitget:{name:'Bitget',c:'#00f0ff',url:'https://www.bitget.com/account/newapi',read:'Read-only',pass:1},bingx:{name:'BingX',c:'#2a6aff',url:'https://bingx.com/en/account/api',read:'Read'}};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function money(v,sign){v=+v||0;var a=Math.abs(v),s=a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e4?(a/1e3).toFixed(1)+'k':a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-':(sign&&v>0?'+':''))+'$'+s}
 function cls(v){return v>0?'pos':v<0?'neg':''}
@@ -312,17 +314,23 @@ function track(e){try{fetch('/api/track?t=journal&e='+encodeURIComponent(e)+'&p=
 var cur=null;
 function guide(ex){
   if(ex==='hyperliquid')return '<h3>Hyperliquid</h3><p style="color:#8d96a2;margin:0">Nothing to create. Your fills and funding are public on the chain; we read them by address.</p><ol><li><span>Open Hyperliquid and copy your wallet address (starts with 0x).</span></li><li><span>Paste it on the right.</span></li><li><span>We import your last 10,000 fills and keep syncing every 15 minutes.</span></li></ol>';
-  var e=EX[ex];
-  return '<h3>'+e.name+' read-only key</h3><p style="color:#8d96a2;margin:0">Two minutes, once.</p><ol>'
-   +'<li><span>Open <a href="'+e.url+'" target="_blank" rel="noopener">'+e.name+' API management</a> and create a new '+(ex==='bybit'?'system-generated ':'')+'API key.</span></li>'
-   +'<li><span>Tick <b>Read only</b> and nothing else'+(ex==='binance'?' (leave "Enable Futures" and every trading box off)':'')+'.</span></li>'
-   +'<li><span>Restrict it to this IP address:<br><span class="jr-ip"><code>'+IP+'</code><button type="button" class="jr-btn sm ghost" data-copy="'+IP+'">Copy</button></span></span></li>'
-   +'<li><span>Paste the key and the secret on the right and press Verify.</span></li></ol>';
+  var e=EX[ex], g=GUIDE[ex];
+  return '<h3>'+e.name+' read-only key</h3><p class="jr-gsub"><a href="'+e.url+'" target="_blank" rel="noopener">Open '+e.name+' API management</a>, then:</p><ol>'
+   +g.map(function(x){return '<li><span>'+x+'</span></li>'}).join('')
+   +'</ol><div class="jr-ipbox"><span>IP address to bind</span><code>'+IP+'</code><button type="button" class="jr-btn sm ghost" data-copy="'+IP+'">Copy</button></div>';
 }
+/* EXACTLY WHAT TO TICK, per exchange (owner 2026-11-18: "da se kaze za svaku menjacnicu sta tacno treba da se cekira"). Everything not named stays off. */
+var GUIDE={
+  bybit:['Choose <b>API Transaction</b> and give the key any name.','Under permissions pick <b>Read-Only</b>.','Pick <b>Only IPs with permissions granted</b> and paste the IP below.','Under Unified Trading, Contract tick <b>Orders</b> and <b>Positions</b>. Leave every other box empty, then Submit.'],
+  binance:['Press <b>Create API</b>, choose <b>System generated</b> and name it.','Open <b>Edit restrictions</b>: leave only <b>Enable Reading</b> ticked.','Choose <b>Restrict access to trusted IPs only</b> and add the IP below.','Save. Every trading, transfer and withdrawal box stays off.'],
+  okx:['Press <b>Create API key</b>, purpose <b>API trading</b>, any name.','Set a <b>passphrase</b> and keep it - you paste it here.','Permissions: tick <b>Read</b> only.','IP address: paste the IP below, then confirm.'],
+  bitget:['Press <b>Create API</b> and choose <b>System-generated API key</b>.','Name it and set a <b>passphrase</b> - you paste it here.','Permissions: choose <b>Read-only</b>; leave trade, transfer and withdraw off.','Bind IP: paste the IP below, then confirm.'],
+  bingx:['Press <b>Create API</b> and name it.','Keep only <b>Read</b> - a new BingX key starts read-only; do not add trading, transfer or withdraw.','Choose <b>Restrict access to trusted IPs</b> and add the IP below.','Confirm with your verification code.']
+};
 function form(ex){
   var f=ex==='hyperliquid'
    ?'<label>Wallet address<input id="jrAddr" placeholder="0x..." autocomplete="off" spellcheck="false"></label>'
-   :'<label>API key<input id="jrKey" autocomplete="off" spellcheck="false"></label><label>API secret<input id="jrSec" type="password" autocomplete="off" spellcheck="false"></label>';
+   :'<label>API key<input id="jrKey" autocomplete="off" spellcheck="false"></label><label>API secret<input id="jrSec" type="password" autocomplete="off" spellcheck="false"></label>'+(EX[ex].pass?'<label>Passphrase<input id="jrPass" type="password" autocomplete="off" spellcheck="false"></label>':'');
   return '<h3>'+(ex==='hyperliquid'?'Connect a wallet':'Verify and connect')+'</h3>'+f
    +'<div class="jr-perm" id="jrPerm"><div class="ok"><b>Read</b>allowed</div><div class="no"><b>Trade</b>never</div><div class="no"><b>Transfer</b>never</div><div class="no"><b>Withdraw</b>never</div></div>'
    +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="jr-btn" id="jrGo">'+(ex==='hyperliquid'?'Connect':'Verify and connect')+'</button><button type="button" class="jr-btn ghost" id="jrBack">Back</button></div><div class="jr-msg" id="jrMsg"></div>';
@@ -339,10 +347,10 @@ function openKey(btn){
   o.scrollIntoView({behavior:'smooth',block:'nearest'});
   setTimeout(function(){var i=$('#jrAddr')||$('#jrKey');if(i)i.focus()},350);
 }
-var ERR={not_read_only:'This key can do more than read. Make a new key with Read only ticked and nothing else - we did not store this one.',key_invalid:'The exchange does not recognise this key. Check you copied the whole key and secret.',ip_not_allowed:'The key is bound to a different IP address. Add '+IP+' to it, or create the key again with that address.',bad_key_format:'That does not look like an API key and secret.',bad_address:'That is not a wallet address - it starts with 0x and has 42 characters.',slow_down:'Too many attempts - wait a few minutes.',too_many:'You have connected the maximum number of accounts.',login_required:'Sign in first.',unsupported_exchange:'This exchange is not supported yet.',exchange_unreachable:'The exchange did not answer. Try again in a minute.',no_read:'This key has no read permission. Create a new read-only key.'};
+var ERR={not_read_only:'This key can do more than read. Make a new key with Read only ticked and nothing else - we did not store this one.',key_invalid:'The exchange does not recognise this key. Check you copied the whole key and secret.',ip_not_allowed:'The key is bound to a different IP address. Add '+IP+' to it, or create the key again with that address.',bad_key_format:'That does not look like an API key and secret.',bad_address:'That is not a wallet address - it starts with 0x and has 42 characters.',slow_down:'Too many attempts - wait a few minutes.',too_many:'You have connected the maximum number of accounts.',login_required:'Sign in first.',unsupported_exchange:'This exchange is not supported yet.',exchange_unreachable:'The exchange did not answer. Try again in a minute.',no_read:'This key has no read permission. Create a new read-only key.',passphrase_required:'This exchange needs the passphrase you set when you created the key.',bad_passphrase:'The passphrase does not match this key.'};
 function connect(){
   var b={ex:cur}, msg=$('#jrMsg'), go=$('#jrGo');
-  if(cur==='hyperliquid')b.address=($('#jrAddr').value||'').trim(); else { b.key=($('#jrKey').value||'').trim(); b.secret=($('#jrSec').value||'').trim(); }
+  if(cur==='hyperliquid')b.address=($('#jrAddr').value||'').trim(); else { b.key=($('#jrKey').value||'').trim(); b.secret=($('#jrSec').value||'').trim(); if($('#jrPass'))b.passphrase=$('#jrPass').value||''; }
   go.disabled=true; msg.className='jr-msg'; msg.textContent=cur==='hyperliquid'?'Reading your fills...':'Asking '+EX[cur].name+' what this key can do...';
   api('/connect',b).then(function(j){
     go.disabled=false;
@@ -358,7 +366,7 @@ document.addEventListener('click',function(ev){
   if(ev.target.closest('#jrBack')){$('#jrOpen').classList.remove('on');$$('.jr-key').forEach(function(x){x.style.opacity=''});cur=null;return}
   var c=ev.target.closest('[data-copy]'); if(c){try{navigator.clipboard.writeText(c.getAttribute('data-copy'));c.textContent='Copied';setTimeout(function(){c.textContent='Copy'},1400)}catch(e){}return}
 });
-document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='jrAddr'||e.target.id==='jrSec'))connect()});
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='jrAddr'||e.target.id==='jrSec'||e.target.id==='jrPass'))connect()});
 
 /* ---------- the dashboard ---------- */
 var DAYS=30, D=null;

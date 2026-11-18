@@ -25,6 +25,9 @@ export const JR_EXCH = {
   hyperliquid: { name: 'Hyperliquid', kind: 'address', hist: 'Last 10,000 fills', color: '#97fce4' },
   bybit:       { name: 'Bybit',       kind: 'key',     hist: 'Up to 180 days',    color: '#f7a600', keyUrl: 'https://www.bybit.com/app/user/api-management' },
   binance:     { name: 'Binance',     kind: 'key',     hist: 'Last 3 months (Binance limit)', color: '#f0b90b', keyUrl: 'https://www.binance.com/en/my/settings/api-management' },
+  okx:         { name: 'OKX',         kind: 'key', pass: true, hist: 'Last 3 months (OKX limit)', color: '#ffffff', keyUrl: 'https://www.okx.com/account/my-api' },
+  bitget:      { name: 'Bitget',      kind: 'key', pass: true, hist: 'Last 90 days (Bitget limit)', color: '#00f0ff', keyUrl: 'https://www.bitget.com/account/newapi' },
+  bingx:       { name: 'BingX',       kind: 'key',     hist: 'Up to 90 days',     color: '#2a6aff', keyUrl: 'https://bingx.com/en/account/api' },
 };
 
 // ---------- small helpers ----------
@@ -77,10 +80,11 @@ async function bybitCheck(env, H, key, secret) {
   const q = await bybitGet(env, H, key, secret, '/v5/user/query-api', {});
   if (!q.ok) return { ok: false, why: q.why === 'bybit_10003' || q.why === 'bybit_10004' ? 'key_invalid' : q.why === 'bybit_10010' ? 'ip_not_allowed' : q.why, detail: q.detail };
   const p = q.res.permissions || {};
+  /* readOnly is THE flag (owner 2026-11-18: a correct Bybit read-only key was refused). In Read-Only mode Bybit still lists the scopes the key may
+     READ (ContractTrade: Order, Position) under permissions - those are not write rights. Only readOnly 0 (Read-Write) is refused, and then the
+     scopes are named so the member sees what to switch off. */
   const writes = [];
-  if (+q.res.readOnly !== 1) writes.push('read-write key');
-  const W = (k, v) => { const a = p[k] || []; if (a.length) writes.push(k + ': ' + a.join(', ')); };
-  W('ContractTrade'); W('Spot'); W('Wallet'); W('Options'); W('Derivatives'); W('Exchange'); W('Earn');
+  if (+q.res.readOnly !== 1) { writes.push('Read-Write key'); for (const k of ['ContractTrade', 'Spot', 'Wallet', 'Options', 'Derivatives', 'Exchange', 'Earn']) { const a = p[k] || []; if (a.length) writes.push(k + ': ' + a.join(', ')); } }
   const ips = (q.res.ips || []).filter(x => x && x !== '*');
   return { ok: true, readOnly: +q.res.readOnly === 1 && !writes.length, writes, ips, ipBound: ips.indexOf(JR_IP) >= 0, uta: +q.res.uta === 1, expiredAt: q.res.expiredAt || null };
 }
@@ -122,7 +126,7 @@ async function bnGet(env, H, host, key, secret, path, params) {
 }
 async function binanceCheck(env, H, key, secret) {
   const q = await bnGet(env, H, 'api.binance.com', key, secret, '/sapi/v1/account/apiRestrictions', {});
-  if (!q.ok) return { ok: false, why: q.why === 'binance_-2015' || q.why === 'binance_-2014' ? 'key_invalid' : q.why, detail: q.detail };
+  if (!q.ok) return { ok: false, why: /binance_-(2015|2014|2008)$/.test(q.why) ? 'key_invalid' : q.why, detail: q.detail };
   const a = q.res, writes = [];
   if (a.enableSpotAndMarginTrading) writes.push('Spot & Margin trading');
   if (a.enableWithdrawals) writes.push('Withdrawals');
@@ -170,6 +174,190 @@ async function binanceSync(env, H, c, key, secret, budget, priceOf) {
       if (LT.length < 1000) break;
       const lt = +LT[LT.length - 1].time; s0 = lt > s0 ? lt : lt + 1;
      }
+    }
+    from = to + 1;
+  }
+  return { used, fills, fund, cur: { t: Math.min(from, Date.now() - 2 * 3600000) } };
+}
+
+// ---------- BingX (USDT-M perpetual) ----------
+// Signing (docs-v3 'Signature Authentication'): business params + timestamp, sorted by key, joined k=v&k=v unencoded,
+// HMAC-SHA256 lowercase hex appended as &signature=; key in X-BX-APIKEY. Permissions: GET /openApi/v1/account/apiPermissions
+// -> permissions [1 spot trade, 2 read, 3 contract trade, 4 universal transfer, 5 withdraw, 7 sub-account transfer], ipAddresses.
+async function bxGet(env, H, key, secret, path, params) {
+  const p = Object.assign({}, params, { recvWindow: 20000, timestamp: Date.now() });
+  const qs = Object.keys(p).filter(k => p[k] !== '' && p[k] != null).sort().map(k => k + '=' + p[k]).join('&');
+  const sig = await hmacHex(secret, qs);
+  const r = await xfwd(env, H, 'GET', 'https://open-api.bingx.com' + path + '?' + qs + '&signature=' + sig, { 'X-BX-APIKEY': key });
+  if (!r.j) return { ok: false, why: r.why || 'bad_body', status: r.status, detail: r.txt };
+  if (r.j.code !== 0 && r.j.code !== '0') return { ok: false, why: 'bingx_' + r.j.code, detail: r.j.msg || '' };
+  return { ok: true, res: r.j.data };
+}
+const BX_PERM = { 1: 'Spot trading', 3: 'Perpetual trading', 4: 'Universal transfer', 5: 'Withdraw', 7: 'Sub-account transfer' };
+async function bingxCheck(env, H, key, secret) {
+  const q = await bxGet(env, H, key, secret, '/openApi/v1/account/apiPermissions', {});
+  if (!q.ok) return { ok: false, why: /100413|100001|100419|100421/.test(q.why) ? 'key_invalid' : /100410|100412/.test(q.why) ? 'ip_not_allowed' : q.why, detail: q.detail };
+  const perms = (q.res && q.res.permissions || []).map(Number), ips = (q.res && q.res.ipAddresses || []).filter(Boolean);
+  if (perms.indexOf(2) < 0) return { ok: false, why: 'no_read' };
+  const writes = perms.filter(x => BX_PERM[x]).map(x => BX_PERM[x]);
+  return { ok: true, readOnly: !writes.length, writes, ips, ipBound: ips.indexOf(JR_IP) >= 0 };
+}
+async function bingxSync(env, H, c, key, secret, budget) {
+  const st = c.cur || {}; let used = 0; const fills = [], fund = [];
+  let from = +st.t || (Date.now() - 90 * DAY); // fillHistory answers in 7-day windows; how far back BingX keeps is not stated - we walk 90 days and report where it ends
+  while (used < budget && from < Date.now() - 5000) {
+    const to = Math.min(from + 7 * DAY - 1, Date.now());
+    for (let page = 1; page <= 20 && used < budget; page++) {
+      const q = await bxGet(env, H, key, secret, '/openApi/swap/v2/trade/fillHistory', { currency: 'USDT', startTs: from, endTs: to, pageIndex: page, pageSize: 1000 });
+      used++;
+      if (!q.ok) return { used, fills, fund, cur: { t: from }, err: q.why + (q.detail ? ': ' + q.detail : '') };
+      const L = (q.res && q.res.fill_history_orders) || [];
+      for (const x of L) {
+        const ts = Date.parse(x.filledTime) || +x.filledTime || 0; if (!ts) continue;
+        fills.push({ k: 'bingx|' + x.tradeId, sym: x.symbol, side: String(x.side).toUpperCase() === 'BUY' ? 1 : -1, px: +x.price, qty: +x.qty, fee: -(+x.commission || 0), maker: String(x.role).toLowerCase() === 'maker' ? 1 : 0, ts, oid: String(x.orderId || ''), ps: x.positionSide === 'LONG' ? 'L' : x.positionSide === 'SHORT' ? 'S' : 'B', rpnl: x.realisedPNL != null ? +x.realisedPNL || 0 : null, liq: 0, adl: 0 });
+      }
+      if (L.length < 1000) break;
+    }
+    // funding over the same window (income: positive = received)
+    let s0 = from;
+    for (let pg = 0; pg < 5 && used < budget + 5; pg++) {
+      const q = await bxGet(env, H, key, secret, '/openApi/swap/v2/user/income', { incomeType: 'FUNDING_FEE', startTime: s0, endTime: to, limit: 1000 });
+      used++;
+      if (!q.ok) break;
+      const L = Array.isArray(q.res) ? q.res : [];
+      for (const x of L) fund.push({ k: 'bingx|f' + x.tranId, sym: x.symbol, ts: +x.time, amt: +x.income || 0, rate: 0 });
+      if (L.length < 1000) break;
+      const lt = +L[L.length - 1].time; s0 = lt > s0 ? lt : lt + 1;
+    }
+    from = to + 1;
+  }
+  return { used, fills, fund, cur: { t: Math.min(from, Date.now() - 2 * 3600000) } };
+}
+
+// ---------- OKX (USDT-margined SWAP) ----------
+// Signing: base64(HMAC-SHA256(secret, ts + 'GET' + path?query)); headers OK-ACCESS-KEY/-SIGN/-TIMESTAMP (ISO ms)/-PASSPHRASE.
+// Permissions: /api/v5/account/config -> perm 'read_only' exactly, ip = bound IPs. Fills: /api/v5/trade/fills-history (3 months,
+// 100 a page, 'after' = older than billId), size in CONTRACTS x ctVal. Funding: /api/v5/account/bills-archive type 8, balChg signed.
+async function hmacB64(secret, msg) {
+  const k = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return b64(new Uint8Array(await crypto.subtle.sign('HMAC', k, enc.encode(msg))));
+}
+const OKX_HOSTS = ['www.okx.com', 'eea.okx.com', 'us.okx.com'];
+async function okxGet(env, H, host, key, secret, pass, path, params) {
+  const qs = Object.keys(params).filter(k => params[k] !== '' && params[k] != null).map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+  const rp = path + (qs ? '?' + qs : ''), ts = new Date().toISOString();
+  const sign = await hmacB64(secret, ts + 'GET' + rp);
+  const r = await xfwd(env, H, 'GET', 'https://' + host + rp, { 'OK-ACCESS-KEY': key, 'OK-ACCESS-SIGN': sign, 'OK-ACCESS-TIMESTAMP': ts, 'OK-ACCESS-PASSPHRASE': pass });
+  if (!r.j) return { ok: false, why: r.why || 'bad_body', status: r.status, detail: r.txt };
+  if (String(r.j.code) !== '0') return { ok: false, why: 'okx_' + r.j.code, detail: r.j.msg || '' };
+  return { ok: true, res: r.j.data || [] };
+}
+async function okxCheck(env, H, key, secret, pass) {
+  let last = null;
+  for (const host of OKX_HOSTS) { // an EEA or US account answers only on its own host
+    const q = await okxGet(env, H, host, key, secret, pass, '/api/v5/account/config', {});
+    if (q.ok) {
+      const a = q.res[0] || {}, perm = String(a.perm || '').split(',').map(x => x.trim()).filter(Boolean);
+      const writes = perm.filter(x => x !== 'read_only').map(x => x === 'trade' ? 'Trade' : x === 'withdraw' ? 'Withdraw' : x);
+      const ips = String(a.ip || '').split(',').map(x => x.trim()).filter(Boolean);
+      return { ok: true, readOnly: perm.length === 1 && perm[0] === 'read_only', writes, ips, ipBound: ips.indexOf(JR_IP) >= 0, host };
+    }
+    last = q; if (!/okx_50119|okx_50111|okx_50105/.test(q.why)) break; // only "no such key here" moves on to the next host
+  }
+  return { ok: false, why: /okx_50119|okx_50111/.test(last.why) ? 'key_invalid' : /okx_50105/.test(last.why) ? 'bad_passphrase' : /okx_50110/.test(last.why) ? 'ip_not_allowed' : last.why, detail: last.detail };
+}
+let _okxCt = null;
+async function okxCtVal(env, H) {
+  if (_okxCt && Date.now() - _okxCt.t < 6 * 3600000) return _okxCt.m;
+  const m = {};
+  try { const r = await H.rawFetch('https://www.okx.com/api/v5/public/instruments?instType=SWAP', { signal: AbortSignal.timeout(12000) }); const j = await r.json(); for (const x of (j.data || [])) m[x.instId] = { v: +x.ctVal || 0, lin: x.ctType === 'linear', ccy: x.settleCcy }; } catch (e) {}
+  if (Object.keys(m).length) _okxCt = { t: Date.now(), m };
+  return m;
+}
+async function okxSync(env, H, c, sec, budget) {
+  const st = c.cur || {}; let used = 0; const fills = [], fund = [];
+  const host = sec.h || 'www.okx.com', ct = await okxCtVal(env, H);
+  if (!Object.keys(ct).length) return { used, fills, fund, cur: st, err: 'okx_instruments_unreachable' };
+  let from = +st.t || (Date.now() - 89 * DAY);
+  while (used < budget && from < Date.now() - 5000) {
+    const to = Math.min(from + 7 * DAY - 1, Date.now());
+    let after = '';
+    for (let page = 0; page < 40 && used < budget; page++) {
+      const q = await okxGet(env, H, host, sec.k, sec.s, sec.p, '/api/v5/trade/fills-history', { instType: 'SWAP', begin: from, end: to, after, limit: 100 });
+      used++;
+      if (!q.ok) return { used, fills, fund, cur: { t: from }, err: q.why + (q.detail ? ': ' + q.detail : '') };
+      for (const x of q.res) {
+        const ci = ct[x.instId]; if (!ci || !ci.lin || !/USDT|USDC/.test(ci.ccy || '')) continue; // USDT/USDC-margined linear swaps
+        const sub = +x.subType || 0, liq = (sub >= 100 && sub <= 106) || +x.tradeId < 0 ? 1 : 0;
+        fills.push({ k: 'okx|' + x.instId + '|' + x.tradeId + '|' + x.billId, sym: x.instId.replace(/-SWAP$/, '').replace('-', ''), side: x.side === 'buy' ? 1 : -1, px: +x.fillPx, qty: (+x.fillSz || 0) * ci.v, fee: -(+x.fee || 0), maker: x.execType === 'M' ? 1 : 0, ts: +x.fillTime || +x.ts, oid: String(x.ordId || ''), ps: x.posSide === 'long' ? 'L' : x.posSide === 'short' ? 'S' : 'B', rpnl: x.fillPnl != null && x.fillPnl !== '' ? +x.fillPnl : null, liq, adl: 0 });
+      }
+      if (q.res.length < 100) break;
+      after = q.res[q.res.length - 1].billId;
+    }
+    // funding in the same window: bills-archive type 8 (funding fee), balChg + = received
+    let fa = '';
+    for (let pg = 0; pg < 10 && used < budget + 10; pg++) {
+      const q = await okxGet(env, H, host, sec.k, sec.s, sec.p, '/api/v5/account/bills-archive', { instType: 'SWAP', type: 8, begin: from, end: to, after: fa, limit: 100 });
+      used++;
+      if (!q.ok) break;
+      for (const x of q.res) fund.push({ k: 'okx|f' + x.billId, sym: String(x.instId || '').replace(/-SWAP$/, '').replace('-', ''), ts: +x.ts, amt: +x.balChg || +x.pnl || 0, rate: 0 });
+      if (q.res.length < 100) break;
+      fa = q.res[q.res.length - 1].billId;
+    }
+    from = to + 1;
+  }
+  return { used, fills, fund, cur: { t: Math.min(from, Date.now() - 2 * 3600000) } };
+}
+
+// ---------- Bitget (v2 classic, USDT-FUTURES) ----------
+// Signing: base64(HMAC-SHA256(secret, ts + 'GET' + path + '?' + query)); ACCESS-KEY/-SIGN/-TIMESTAMP (ms)/-PASSPHRASE.
+// Permissions: /api/v2/spot/account/info -> authorities (codes ending in 'w', and 'p2p', are write), ips.
+// Fills: /api/v2/mix/order/fill-history (1-week span, 100 a page, idLessThan = older), baseVolume in coins, feeDetail totalFee signed.
+// Funding: /api/v2/mix/account/bill businessType contract_settle_fee (90 days, 30-day span).
+async function bgGet(env, H, key, secret, pass, path, params) {
+  const qs = Object.keys(params).filter(k => params[k] !== '' && params[k] != null).sort().map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+  const ts = String(Date.now()), sign = await hmacB64(secret, ts + 'GET' + path + (qs ? '?' + qs : ''));
+  const r = await xfwd(env, H, 'GET', 'https://api.bitget.com' + path + (qs ? '?' + qs : ''), { 'ACCESS-KEY': key, 'ACCESS-SIGN': sign, 'ACCESS-TIMESTAMP': ts, 'ACCESS-PASSPHRASE': pass, locale: 'en-US' });
+  if (!r.j) return { ok: false, why: r.why || 'bad_body', status: r.status, detail: r.txt };
+  if (String(r.j.code) !== '00000') return { ok: false, why: 'bitget_' + r.j.code, detail: r.j.msg || '' };
+  return { ok: true, res: r.j.data };
+}
+async function bitgetCheck(env, H, key, secret, pass) {
+  const q = await bgGet(env, H, key, secret, pass, '/api/v2/spot/account/info', {});
+  if (!q.ok) return { ok: false, why: /40006|40037|40012/.test(q.why) ? 'key_invalid' : /40011|40009/.test(q.why) ? 'bad_passphrase' : /40018/.test(q.why) ? 'ip_not_allowed' : q.why, detail: q.detail };
+  const a = q.res || {}, au = (a.authorities || []).map(String);
+  const writes = au.filter(x => /w$/.test(x) || x === 'p2p');
+  const ips = (Array.isArray(a.ips) ? a.ips : String(a.ips || '').split(',')).map(x => String(x).trim()).filter(Boolean);
+  return { ok: true, readOnly: !writes.length, writes, ips, ipBound: ips.indexOf(JR_IP) >= 0 };
+}
+async function bitgetSync(env, H, c, sec, budget) {
+  const st = c.cur || {}; let used = 0; const fills = [], fund = [];
+  let from = +st.t || (Date.now() - 89 * DAY);
+  while (used < budget && from < Date.now() - 5000) {
+    const to = Math.min(from + 7 * DAY - 1, Date.now());
+    let older = '';
+    for (let page = 0; page < 40 && used < budget; page++) {
+      const q = await bgGet(env, H, sec.k, sec.s, sec.p, '/api/v2/mix/order/fill-history', { productType: 'USDT-FUTURES', startTime: from, endTime: to, idLessThan: older, limit: 100 });
+      used++;
+      if (!q.ok) return { used, fills, fund, cur: { t: from }, err: q.why + (q.detail ? ': ' + q.detail : '') };
+      const L = (q.res && q.res.fillList) || [];
+      for (const x of L) {
+        const ts2 = String(x.tradeSide || ''), side = x.side === 'buy' ? 1 : -1, hedge = x.posMode === 'hedge_mode';
+        const fee = (x.feeDetail || []).reduce((a2, d) => a2 + (+d.totalFee || 0), 0);
+        fills.push({ k: 'bitget|' + x.tradeId, sym: x.symbol, side, px: +x.price, qty: +x.baseVolume, fee: -fee, maker: x.tradeScope === 'maker' ? 1 : 0, ts: +x.cTime, oid: String(x.orderId || ''), ps: hedge ? (/open/.test(ts2) ? (side > 0 ? 'L' : 'S') : (side < 0 ? 'L' : 'S')) : 'B', rpnl: x.profit != null && x.profit !== '' ? +x.profit : null, liq: /^burst/.test(ts2) || x.enterPointSource === 'SYS' ? 1 : 0, adl: /adl/.test(ts2) ? 1 : 0 });
+      }
+      if (L.length < 100 || !q.res.endId) break;
+      older = q.res.endId;
+    }
+    let fo = '';
+    for (let pg = 0; pg < 10 && used < budget + 10; pg++) {
+      const q = await bgGet(env, H, sec.k, sec.s, sec.p, '/api/v2/mix/account/bill', { productType: 'USDT-FUTURES', businessType: 'contract_settle_fee', startTime: from, endTime: to, idLessThan: fo, limit: 100 });
+      used++;
+      if (!q.ok) break;
+      const L = (q.res && q.res.bills) || [];
+      for (const x of L) fund.push({ k: 'bitget|f' + x.billId, sym: x.symbol, ts: +x.cTime, amt: +x.amount || 0, rate: 0 });
+      if (L.length < 100 || !q.res.endId) break;
+      fo = q.res.endId;
     }
     from = to + 1;
   }
@@ -439,6 +627,9 @@ async function syncConn(env, H, uid, c, budget) {
     else {
       const sec = JSON.parse(await jrOpen(env, uid, c.ex, c.sealed));
       if (c.ex === 'bybit') r = await bybitSync(env, H, cc, sec.k, sec.s, budget);
+      else if (c.ex === 'okx') r = await okxSync(env, H, cc, sec, budget);
+      else if (c.ex === 'bitget') r = await bitgetSync(env, H, cc, sec, budget);
+      else if (c.ex === 'bingx') r = await bingxSync(env, H, cc, sec.k, sec.s, budget);
       else if (c.ex === 'binance') r = await binanceSync(env, H, cc, sec.k, sec.s, budget, async (a) => { try { const d = await H.priceOf(a); return d ? +d.price : 0; } catch (e) { return 0; } });
       else r = { used: 0, fills: [], fund: [], cur, err: 'unsupported' };
     }
@@ -500,12 +691,13 @@ export async function handleJournal(url, request, env, ctx, H) {
       if (!chk.ok) return J({ error: 'exchange_unreachable', detail: chk.why }, 502);
       conn.addr = a.toLowerCase(); conn.kid = a.slice(0, 6) + '…' + a.slice(-4);
     } else {
-      const k = String(b.key || '').trim(), s = String(b.secret || '').trim();
-      if (!/^[A-Za-z0-9]{10,100}$/.test(k) || !/^[A-Za-z0-9]{10,200}$/.test(s)) return J({ error: 'bad_key_format' }, 400);
-      chk = ex === 'bybit' ? await bybitCheck(env, H, k, s) : await binanceCheck(env, H, k, s);
+      const k = String(b.key || '').trim(), s = String(b.secret || '').trim(), ps = String(b.passphrase || '');
+      if (!/^[A-Za-z0-9-]{10,100}$/.test(k) || !/^[A-Za-z0-9-]{10,200}$/.test(s)) return J({ error: 'bad_key_format' }, 400);
+      if (JR_EXCH[ex].pass && (!ps || ps.length > 64)) return J({ error: 'passphrase_required' }, 400);
+      chk = ex === 'bybit' ? await bybitCheck(env, H, k, s) : ex === 'bingx' ? await bingxCheck(env, H, k, s) : ex === 'okx' ? await okxCheck(env, H, k, s, ps) : ex === 'bitget' ? await bitgetCheck(env, H, k, s, ps) : await binanceCheck(env, H, k, s);
       if (!chk.ok) return J({ error: chk.why || 'check_failed', detail: chk.detail || '', ip: JR_IP }, 400);
       if (!chk.readOnly) return J({ error: 'not_read_only', writes: chk.writes, ip: JR_IP }, 400); // THE RULE: refused, and nothing was stored
-      conn.sealed = await jrSeal(env, uid, ex, JSON.stringify({ k, s }));
+      conn.sealed = await jrSeal(env, uid, ex, JSON.stringify(JR_EXCH[ex].pass ? { k, s, p: ps, h: chk.host || '' } : { k, s }));
       conn.kid = mask(k);
     }
     conn.perms = { readOnly: true, writes: [], ips: chk.ips || [], uta: chk.uta, expiredAt: chk.expiredAt || null, vol14: chk.vol14 };
