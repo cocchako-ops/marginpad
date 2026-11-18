@@ -188,6 +188,10 @@ export async function apDesk(url, request, env, H) {
     if (op === 'flatten') { const uid = String(b.uid || ''); if (!uid) return J({ error: 'uid' }, 400); const r = await apCall(env, uid, '/closeall', { why: 'closed by MarginPad' }); await tg('positions closed for ' + uid, 'warn'); return J(r); }
     return J({ error: 'bad_op' }, 400);
   }
+  if (url.searchParams.get('uid')) { // one member's trades, signals and execution log - read-only
+    const uid = String(url.searchParams.get('uid')); if (!mem.some(m => m.uid === uid)) return J({ error: 'not_a_member' }, 404);
+    return J(await apCall(env, uid, '/state', {}));
+  }
   const rows = await Promise.all(mem.map(async (m) => { let s = null; try { s = await apCall(env, m.uid, '/summary', {}); } catch (e) {} return Object.assign({}, m, { allowed: await apAllowed(env, m.uid), s }); }));
   let fwd = null;
   try { const r = await fetch(String(env.COLLECTOR_URL || 'https://collector.marginpad.io').replace(/\/$/, '') + '/api/v1/xtrade/stat', { headers: { 'x-api-key': env.TRADE_FWD_KEY || '' }, signal: AbortSignal.timeout(4000) }); fwd = r.ok ? await r.json() : { status: r.status }; } catch (e) { fwd = { error: String(e).slice(0, 80) }; }
