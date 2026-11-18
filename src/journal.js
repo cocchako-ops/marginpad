@@ -833,6 +833,7 @@ export async function handleJournal(url, request, env, ctx, H) {
     } catch (e) {}
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
     await env.STATS.put('jrsh:' + id, JSON.stringify(snap), { expirationTtl: 180 * 86400 });
+    try { await env.STATS.put('jrsh:o:' + id, uid, { expirationTtl: 3 * 86400 }); } catch (e) {} // the chat mission credits the poster only if they minted it
     try { if (H.evPush) ctx.waitUntil(H.evPush(env, request, 'journal', 'shared ' + snap.ex + ' ' + snap.coin + ' -> real:' + id, '/trading-journal/')); } catch (e) {}
     return J({ ok: true, id });
   }

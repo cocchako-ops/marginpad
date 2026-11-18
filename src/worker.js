@@ -32835,6 +32835,13 @@ export default {
     }
     if (url.pathname === '/api/academy' || url.pathname === '/api/academy/exam' || url.pathname === '/api/academy/review' || url.pathname === '/api/academy/practical') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
+    if (url.pathname === '/api/admin/missioncheck' && isAdminKey(env, adminKeyFrom(request, url))) { // support: is ONE mission done for ONE member today, whatever their day was dealt (read-only)
+      const muid = String(url.searchParams.get('uid') || ''), m = MISSION_POOL.find(x => x.mid === url.searchParams.get('mid'));
+      if (!muid || !m) return new Response(JSON.stringify({ error: 'uid_and_mid' }), { status: 400, headers: { 'content-type': 'application/json' } });
+      const day = new Date().toISOString().slice(0, 10), dayStart = Date.parse(day + 'T00:00:00Z');
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: muid, day, dayStart, defs: [{ mid: m.mid, vt: m.vt, va: m.va, n: m.n }] }) }));
+      return new Response(JSON.stringify({ mid: m.mid, state: await r.json() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/bronze') return handleBronze(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
     if (url.pathname === '/api/latam/ar' || url.pathname === '/api/latam/br') { // public: the LATAM live pages refresh from here every 60 s (edge-cached 60 s; CORS for embeds). Sits BEFORE the calculator catch-all, which 404s every other /api/ path.
@@ -34517,6 +34524,8 @@ export class ChatRoom {
           self.env.USERS.get(self.env.USERS.idFromName('main')).fetch(new Request('https://do/chatcredit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: user }) })).catch(() => {});
         }
       } catch (e) {}
+      // A SHARED REAL TRADE (2026-11-18): credit the mission only when the poster is the account that minted the share
+      try { const rm9 = /\breal:([a-z0-9]{8,16})\b/i.exec(text); if (rm9 && sess.uid && self.env && self.env.STATS && self.env.USERS) { const rid9 = rm9[1].toLowerCase(), su9 = sess.uid; self.env.STATS.get('jrsh:o:' + rid9).then(function (ow) { if (ow && String(ow) === String(su9)) return self.env.USERS.get(self.env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su9, type: 'realshare', label: rid9, path: '/chat' }) })); }).catch(function () {}); } } catch (e) {}
       // @mention → notify the mentioned users (fire-and-forget via UserStore)
       try { const names = (text.match(/@([a-zA-Z0-9_]{3,20})/g) || []).map(x => x.slice(1)).filter(n => n.toLowerCase() !== user.toLowerCase()).slice(0, 4);
         if (names.length && self.env && self.env.USERS) { const st = self.env.USERS.get(self.env.USERS.idFromName('main'));
@@ -39241,6 +39250,7 @@ export class UserStore {
           // social/academy missions - verified against the real tables (not client-trusted); uid stored without the 'u:' prefix
           else if (d.vt === 'follow') { c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; try { c += (this.rows('SELECT COUNT(*) n FROM followreq WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; } catch (e) {} } // follow is request-based now - a pending request counts as taking the action (else the mission is uncompletable by the user alone)
           else if (d.vt === 'dm') c = (this.rows('SELECT COUNT(*) n FROM dms WHERE from_uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'totdvote') c = (this.rows('SELECT COUNT(*) n FROM totdv WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duel') c = (this.rows('SELECT COUNT(*) n FROM duels WHERE a_uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duelw') c = (this.rows("SELECT COUNT(*) n FROM duels WHERE winner=? AND status='done' AND end_ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'follower') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE tuid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
@@ -42969,6 +42979,10 @@ const MISSION_POOL = [
   { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', tier: 'e', vt: 'ev', va: 'watch', n: 1, cat: 'market' },
   { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card - see how the ranked ones do it', tier: 'e', vt: 'ev', va: 'profile', n: 1, cat: 'social' },
   { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent - tell them', tier: 'e', vt: 'ev', va: 'like', n: 1, cat: 'community' },
+  // 2026-11-18 (owner): a REAL trade shared from the journal counts only when it lands in the room, posted by the account that shared it
+  // (ChatRoom checks jrsh:o:<id>); offered only to a member with a connected exchange account. The vote is read off totdv.
+  { mid: 'realshare', title: 'Share a real trade in the chat', desc: 'From your journal - the card is verified from the exchange', tier: 'm', vt: 'ev', va: 'realshare', n: 1, cat: 'social', url: '/trading-journal/' },
+  { mid: 'totdvote', title: 'Vote for the trade of the day', desc: 'Pick the best trade the room shared today', tier: 'e', vt: 'totdvote', n: 1, cat: 'social', url: '/?totd=1' },
   { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', tier: 'e', vt: 'pv', va: '/community', n: 1, cat: 'community' },
   { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', tier: 'e', vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
   { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', tier: 'e', vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
@@ -43063,7 +43077,7 @@ function missionsForDay(day, uid, opts) { // the day's ten for ONE member: 4 e +
   if (uid && typeof uid === 'object') { opts = uid; uid = ''; } // old callers passed (day, opts)
   opts = opts || {}; uid = String(uid || '');
   const CAPS = { trade: 4, social: 3, academy: 2, community: 2, market: 4, core: 1, promo2: 1 };
-  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
+  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai') || (opts.noJournal && m.va === 'realshare');
   const dayN = Math.floor(Date.parse(day) / 86400000);
   const pick = (d, excl) => { // the base set for (member, day d) - deterministic; excl = ids on cooldown
     const dstr = new Date(d * 86400000).toISOString().slice(0, 10);
@@ -43275,6 +43289,7 @@ async function handleMissions(url, request, env) {
   const mo = { promoDone: !!meta9.promoDone };
   if (defs.some(m => m.vt === 'academy')) { try { const ar = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const done = ((await ar.json()) || {}).done || []; if (done.filter(x => !String(x).startsWith('course:')).length >= ACAD_TOTAL_LESSONS) mo.academyDone = true; } catch (e) {} }
   if (defs.some(m => m.va === 'ai')) { try { if (!(await premiumFor(env, request)).premium) mo.nonPremium = true; } catch (e) {} }
+  if (defs.some(m => m.va === 'realshare')) { try { const ja = JSON.parse((await env.STATS.get('jrn:act:' + uid)) || '{}'); if (!(ja.n > 0)) mo.noJournal = true; } catch (e) { mo.noJournal = true; } }
   if (Object.keys(mo).length > 1) defs = missionsForDay(day, uid, mo);
   const evDefs = defs.filter(m => m.vt !== 'comm').map(m => ({ mid: m.mid, vt: m.vt, va: m.va, n: m.n }));
   let st = { done: {}, claimed: {} };
