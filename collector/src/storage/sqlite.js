@@ -20,6 +20,8 @@ export const EXPORTS = {
   funding_oi:   { cols: 'ts,symbol,oi_usd,funding', sql: 'SELECT ts,symbol,oi_usd,funding FROM oi_snap WHERE ts>=? AND ts<? ORDER BY ts,symbol', ret: 'hist', tsCol: 'ts' },
   whale_fills:  { cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', sql: 'SELECT ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd FROM whale_fill WHERE ts>=? AND ts<? ORDER BY ts,user,sym', ret: 'hist', tsCol: 'ts' },
   whale_pos:    { cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', sql: 'SELECT ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq FROM whale_pos WHERE ts>=? AND ts<? ORDER BY ts,val DESC', ret: 'hist', tsCol: 'ts' },
+  tape1m:       { cols: 'ts,venue,sym,buy_usd,sell_usd,n,big_buy,big_sell,max_usd', sql: 'SELECT ts,venue,sym,buy_usd,sell_usd,n,big_buy,big_sell,max_usd FROM tape_min WHERE ts>=? AND ts<? ORDER BY ts,venue,sym', ret: 'hist', tsCol: 'ts' },
+  book1m:       { cols: 'ts,venue,sym,mid,spread_bp,bid_1,ask_1,bid_2,ask_2,bid_5,ask_5,bid_10,ask_10,bid_25,ask_25,levels', sql: 'SELECT ts,venue,sym,mid,spread_bp,bid_1,ask_1,bid_2,ask_2,bid_5,ask_5,bid_10,ask_10,bid_25,ask_25,levels FROM book_min WHERE ts>=? AND ts<? ORDER BY ts,venue,sym', ret: 'hist', tsCol: 'ts' },
   catalysts:    { cols: 'id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url', sql: 'SELECT id,ts_src,ts_seen,source,tier,kind,expect,syms,market,score,conf,title,url FROM catalyst WHERE ts_seen>=? AND ts_seen<? ORDER BY ts_seen', ret: 'hist', tsCol: 'ts_seen' },
 };
 
@@ -289,6 +291,9 @@ export function createSqliteStorage(path, opts = {}) {
       .run(String(r.id), +r.ts_src, +r.ts_seen, String(r.source), String(r.tier), String(r.kind), +r.expect || 0, String(r.syms || ''), r.market || '', +r.score || 0, +r.conf || 1, r.cluster || '', String(r.title || '').slice(0, 300), r.url || '', r.snippet || '', r.meta || null).changes);
   }
   function pruneCatalyst(days) { ensure(); return Number(db.prepare('DELETE FROM catalyst WHERE ts_seen<?').run(Date.now() - days * 86400000).changes); }
+  function insertTapeMin(rows) { ensure(); if (!rows.length) return 0; const st = db.prepare('INSERT OR IGNORE INTO tape_min(ts,venue,sym,buy_usd,sell_usd,n,big_buy,big_sell,max_usd) VALUES (?,?,?,?,?,?,?,?,?)'); let n = 0; db.exec('BEGIN'); try { for (const r of rows) n += Number(st.run(r.ts, r.venue, r.sym, r.buy, r.sell, r.n, r.bigBuy, r.bigSell, r.max).changes); db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; } return n; }
+  function insertBookMin(rows) { ensure(); if (!rows.length) return 0; const st = db.prepare('INSERT OR IGNORE INTO book_min(ts,venue,sym,mid,spread_bp,bid_1,ask_1,bid_2,ask_2,bid_5,ask_5,bid_10,ask_10,bid_25,ask_25,levels) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'); let n = 0; db.exec('BEGIN'); try { for (const r of rows) { const d = r.d || {}; n += Number(st.run(r.ts, r.venue, r.sym, r.mid, r.spread, d.bid_1 ?? null, d.ask_1 ?? null, d.bid_2 ?? null, d.ask_2 ?? null, d.bid_5 ?? null, d.ask_5 ?? null, d.bid_10 ?? null, d.ask_10 ?? null, d.bid_25 ?? null, d.ask_25 ?? null, r.levels).changes); } db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; } return n; }
+  function pruneBookTape(days) { ensure(); const cut = Date.now() - days * 86400000; return Number(db.prepare('DELETE FROM tape_min WHERE ts<?').run(cut).changes) + Number(db.prepare('DELETE FROM book_min WHERE ts<?').run(cut).changes); }
   function pruneWhale(days) { ensure(); const cut = Date.now() - days * 86400000; return Number(db.prepare('DELETE FROM whale_fill WHERE ts<?').run(cut).changes) + Number(db.prepare('DELETE FROM whale_pos WHERE ts<?').run(cut).changes); }
   function oi24h() { ensure(); return cached('oi24h', 60000, () => oi24hRaw()); }
   function oi24hRaw() {
@@ -398,7 +403,7 @@ export function createSqliteStorage(path, opts = {}) {
   return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs, exportGz,
-    insertWhaleFills, insertWhalePos, pruneWhale,
+    insertWhaleFills, insertWhalePos, pruneWhale, insertTapeMin, insertBookMin, pruneBookTape,
     insertCatalyst, pruneCatalyst, catalystRange, catalystCount, catalystTop, oiSeries, fundSeries, whaleFillsRange,
     saveState, loadState,
     close: () => db.close() };

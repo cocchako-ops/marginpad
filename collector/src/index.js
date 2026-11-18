@@ -267,7 +267,7 @@ function getStatus() {
 }
 
 function aggregateTick() { try { const n = storage.aggregateNew(); if (n) log.info('aggregated', { rows: n }); } catch (e) { log.error('aggregate failed', { e: String(e) }); } }
-function pruneTick() { try { const n = storage.prune(config.retentionDays); const oi = storage.pruneOi ? storage.pruneOi(config.retentionDays) : 0; const agg = storage.pruneAgg ? storage.pruneAgg(config.aggRetentionDays || 90) : 0; const wh = storage.pruneWhale ? storage.pruneWhale(config.histRetentionDays || 14) : 0; if (n || oi || agg || wh) log.info('pruned', { raw: n, oi, agg, whale: wh }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
+function pruneTick() { try { const n = storage.prune(config.retentionDays); const oi = storage.pruneOi ? storage.pruneOi(config.retentionDays) : 0; const agg = storage.pruneAgg ? storage.pruneAgg(config.aggRetentionDays || 90) : 0; const wh = storage.pruneWhale ? storage.pruneWhale(config.histRetentionDays || 14) : 0; const bt = storage.pruneBookTape ? storage.pruneBookTape(config.histRetentionDays || 14) : 0; if (n || oi || agg || wh || bt) log.info('pruned', { raw: n, oi, agg, whale: wh, bookTape: bt }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
 
 async function main() {
   log.info('starting collector', { symbols: config.symbols.length, exchanges: collectors.map((c) => c.name) });
@@ -292,6 +292,34 @@ if (process.env.MP_CATALYST !== '0') startCatalyst(storage); // Catalyst Engine 
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
+  // THE BOOK + TAPE RECORDER (2026-11-18, owner: "cuvamo istoriju svih stvari"). Once a minute: every venue's COMPLETED tape
+  // minutes not yet written (taker buy/sell dollars, prints, the $50k+ prints by side, the biggest print) and every venue's
+  // book read at the minute (mid, spread, dollars within 1/2/5/10/25 bp each side). Memory only until now - both were lost
+  // on every restart and nothing older than 45 minutes existed anywhere. The worker archives each day to R2 (tape1m, book1m).
+  if (config.book.enabled && storage.insertTapeMin) {
+    const lastMin = new Map();
+    const rec = () => {
+      const now = Date.now(), curM = Math.floor(now / 60000), tapeRows = [], bookRows = [];
+      for (const c of tapeCols) for (const sym of c.symbols) {
+        const k = c.venue + '|' + sym, last = lastMin.get(k) || (curM - 2);
+        for (const b of (c.mins.get(sym) || [])) {
+          if (b.m <= last || b.m >= curM) continue;
+          const t0 = b.m * 60000, t1 = t0 + 60000; let bigBuy = 0, bigSell = 0, max = null;
+          for (const r of (c.bigs.get(sym) || [])) { if (r.ts < t0 || r.ts >= t1) continue; if (r.side === 'buy') bigBuy += r.usd; else bigSell += r.usd; if (max == null || r.usd > max) max = r.usd; }
+          tapeRows.push({ ts: t0, venue: c.venue, sym, buy: Math.round(b.buyUsd), sell: Math.round(b.sellUsd), n: b.n, bigBuy: Math.round(bigBuy), bigSell: Math.round(bigSell), max: max == null ? null : Math.round(max) });
+          lastMin.set(k, Math.max(lastMin.get(k) || 0, b.m));
+        }
+      }
+      const ts = curM * 60000;
+      for (const c of bookCols) for (const sym of c.symbols) {
+        let s = null; try { s = c.read(sym); } catch (e) {}
+        if (s) bookRows.push({ ts, venue: c.venue, sym, mid: s.mid, spread: s.spreadBps, d: s.depthUsd, levels: s.levels });
+      }
+      try { const a = storage.insertTapeMin(tapeRows), b2 = storage.insertBookMin(bookRows); if ((now / 60000 | 0) % 30 === 0) log.info('book/tape recorded', { tape: a, book: b2 }); }
+      catch (e) { log.warn('book/tape record failed', { e: String(e).slice(0, 160) }); }
+    };
+    setTimeout(() => { rec(); setInterval(rec, 60000).unref?.(); }, 60000 - (Date.now() % 60000) + 2000).unref?.();
+  }
   // hourly OI snapshot (one Bybit linear tickers call covers every USDT perp) → powers the screener's OI Δ24h
   async function oiSnapTick() {
     try {
