@@ -806,7 +806,8 @@ export async function handleJournal(url, request, env, ctx, H) {
     const un = String((su && su.username) || '').slice(0, 24);
     if (!un && !_adm) return J({ error: 'username_required' }, 400); // the chat names every poster
     try { const rk = 'jrsh:rl:' + uid + ':' + new Date().toISOString().slice(0, 10); const n = +(await env.STATS.get(rk)) || 0; if (n >= 30) return J({ error: 'rate_limited' }, 429); await env.STATS.put(rk, String(n + 1), { expirationTtl: 90000 }); } catch (e) {}
-    const d = await jCall(env, uid, '/data?from=' + (Date.now() - (JR_DAYS_MAX + 30) * DAY));
+    const sd = Math.max(1, Math.min(JR_DAYS_MAX, +b.days || JR_DAYS_MAX)); // the SAME window the list was built from, or a position seeded differently gets another id
+    const d = await jCall(env, uid, '/data?from=' + (Date.now() - (sd + 30) * DAY));
     const p = (jrBuild(d.fills || [], d.funding || []).positions || []).find(x => x.id === pid);
     if (!p) return J({ error: 'not_found' }, 404);
     if (p.status !== 'closed' || !(+p.entry > 0) || !(+p.exit > 0)) return J({ error: 'not_closed' }, 400);

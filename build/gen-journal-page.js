@@ -584,10 +584,10 @@ function shrMenu(btn,pid){
 }
 function shareGo(pid,amounts,btn){
   var m=$('#jrShrM'); if(m)m.remove();
-  if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()&&window.mpAuth.me().username)){ if(window.mpToast)window.mpToast({msg:'Pick a username first - the chat names every poster.',kind:'warn'}); try{window.mpAuth.open()}catch(e){} return; }
-  api('/share',{pid:pid,amounts:amounts}).then(function(j){
-    if(j&&j.id){ var say=function(){ if(window.mpChatSay&&window.mpChatSay('real:'+j.id)){ if(window.mpToast)window.mpToast({msg:'Shared to chat',kind:'good'}); } }; if(window.mpChatSay)say(); else if(window.mpEnsureChat)window.mpEnsureChat(say); track('share:'+(amounts?'usd':'pct')); }
-    else { var w=j&&j.error; if(window.mpToast)window.mpToast({msg:w==='rate_limited'?'That is 30 shares today - try again tomorrow.':w==='not_closed'?'Only a closed trade can be shared.':'Could not share this trade.',kind:'warn'}); }
+  if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()&&window.mpAuth.me().username)){ track('sharefail:noname'); if(window.mpToast)window.mpToast({msg:'Pick a username first - the chat names every poster.',kind:'warn'}); try{window.mpAuth.open()}catch(e){} return; }
+  api('/share',{pid:pid,amounts:amounts,days:DAYS}).then(function(j){
+    if(j&&j.id){ var say=function(){ if(!window.mpChatSay){ track('sharefail:nochat'); if(window.mpToast)window.mpToast({msg:'The chat did not load - try again.',kind:'warn'}); return; } window.mpChatSay('real:'+j.id,function(ok,why){ track(ok?'share:'+(amounts?'usd':'pct'):'sharefail:'+why); if(window.mpToast)window.mpToast(ok?{msg:'Shared to chat',kind:'good'}:{msg:why==='signin'?'Sign in to post in the chat.':'Could not reach the chat - try again in a moment.',kind:'warn'}); }); }; if(window.mpChatSay)say(); else if(window.mpEnsureChat)window.mpEnsureChat(say); else say(); }
+    else { var w=(j&&j.error)||'network'; track('sharefail:'+w); if(window.mpToast)window.mpToast({msg:w==='rate_limited'?'That is 30 shares today - try again tomorrow.':w==='not_closed'?'Only a closed trade can be shared.':w==='not_found'?'This trade changed since the page loaded - refresh and try again.':'Could not share this trade ('+w+').',kind:'warn'}); }
   });
 }
 
