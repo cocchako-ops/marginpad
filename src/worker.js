@@ -19031,6 +19031,7 @@ const JRN_H = {
   rawFetch: (u, i) => __realFetch(u, i), collectorBase: (env) => { colBase(env); return COL_BASE || 'https://collector.marginpad.io'; },
   collectorKey: async (env) => env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key'),
   priceOf: (sym) => fetchPriceCached(sym),
+  evPush: (env, req, t, l, p) => evPush(env, req, t, l, p),
   klines: async (env, sym, ivMin, endMs) => { try { const r = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=' + encodeURIComponent(sym) + '&interval=' + ivMin + '&end=' + Math.round(endMs)), env); return await r.json(); } catch (e) { return null; } },
   bybitBps: async (env) => { try { const v = JSON.parse((await env.STATS.get('jrn:bybitbps')) || 'null'); if (v && +v.bps > 0 && Date.now() - v.t < 7 * 86400000) return +v.bps; } catch (e) {} return BYBIT_BPS_DEFAULT; },
 };

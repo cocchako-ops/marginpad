@@ -378,6 +378,7 @@ function cls(v){return v>0?'pos':v<0?'neg':''}
 function signedIn(){try{return (window.mpSignedInCookie&&window.mpSignedInCookie())||/(?:^|; )mp_li=1/.test(document.cookie)}catch(e){return false}}
 function api(p,b){return fetch('/api/journal'+p,b?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b),credentials:'same-origin'}:{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json().then(function(j){j._s=r.status;return j})})}
 function track(e){try{fetch('/api/track?t=journal&e='+encodeURIComponent(e)+'&p=/trading-journal/',{keepalive:true})}catch(x){}}
+window.addEventListener('error',function(e){try{track('jserr:'+String(e.message||'').slice(0,60)+'@'+(e.lineno||0))}catch(x){}});
 
 /* ---------- the key rail ---------- */
 var cur=null;
@@ -578,16 +579,17 @@ function shrMenu(btn,pid){
   var m=document.createElement('div'); m.id='jrShrM'; m.className='jl-shrm'; m.setAttribute('data-for',pid);
   m.innerHTML='<b>Share to chat</b><button data-shrgo="1">With dollar amounts</button><button data-shrgo="0">Percent only</button><small>Read from the exchange, marked verified.</small>';
   document.body.appendChild(m); var r=btn.getBoundingClientRect(), w=m.offsetWidth, h=m.offsetHeight;
+  Array.prototype.forEach.call(m.querySelectorAll('[data-shrgo]'),function(b){var fire=function(e){if(e){e.preventDefault();e.stopPropagation();}if(m._went)return;m._went=1;track('shrgo');shareGo(pid,b.getAttribute('data-shrgo')==='1',b);};b.addEventListener('click',fire);b.addEventListener('touchend',fire);});
   var left=Math.max(10,Math.min(innerWidth-w-10,r.right-w)), top=r.bottom+6+h>innerHeight-10?r.top-h-6:r.bottom+6;
   m.style.left=left+'px'; m.style.top=top+'px';
   try{m.animate([{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],{duration:150,easing:'ease-out'})}catch(e){}
 }
 function shareGo(pid,amounts,btn){
   var m=$('#jrShrM'); if(m)m.remove();
-  if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()&&window.mpAuth.me().username)){ track('sharefail:noname'); if(window.mpToast)window.mpToast({msg:'Pick a username first - the chat names every poster.',kind:'warn'}); try{window.mpAuth.open()}catch(e){} return; }
-  api('/share',{pid:pid,amounts:amounts,days:DAYS}).then(function(j){
+  try{ if(window.mpToast)window.mpToast({msg:'Sharing...',kind:'info',ms:1500}); }catch(e){}
+  api('/share',{pid:pid,amounts:amounts,days:DAYS}).catch(function(e){track('sharefail:fetch');return {error:'network'}}).then(function(j){ track('shrapi:'+((j&&j.id)?'ok':(j&&j.error)||'?'));
     if(j&&j.id){ var say=function(){ if(!window.mpChatSay){ track('sharefail:nochat'); if(window.mpToast)window.mpToast({msg:'The chat did not load - try again.',kind:'warn'}); return; } window.mpChatSay('real:'+j.id,function(ok,why){ track(ok?'share:'+(amounts?'usd':'pct'):'sharefail:'+why); if(window.mpToast)window.mpToast(ok?{msg:'Shared to chat',kind:'good'}:{msg:why==='signin'?'Sign in to post in the chat.':'Could not reach the chat - try again in a moment.',kind:'warn'}); }); }; if(window.mpChatSay)say(); else if(window.mpEnsureChat)window.mpEnsureChat(say); else say(); }
-    else { var w=(j&&j.error)||'network'; track('sharefail:'+w); if(window.mpToast)window.mpToast({msg:w==='rate_limited'?'That is 30 shares today - try again tomorrow.':w==='not_closed'?'Only a closed trade can be shared.':w==='not_found'?'This trade changed since the page loaded - refresh and try again.':'Could not share this trade ('+w+').',kind:'warn'}); }
+    else { var w=(j&&j.error)||'network'; track('sharefail:'+w); if(window.mpToast)window.mpToast({msg:w==='username_required'?'Pick a username first - the chat names every poster.':w==='rate_limited'?'That is 30 shares today - try again tomorrow.':w==='not_closed'?'Only a closed trade can be shared.':w==='not_found'?'This trade changed since the page loaded - refresh and try again.':'Could not share this trade ('+w+').',kind:'warn'}); }
   });
 }
 
@@ -785,7 +787,7 @@ document.addEventListener('click',function(ev){
   if(ev.target.closest('#jrShare')){share();return}
   var dd=ev.target.closest('[data-day]'); if(dd){F.day=dd.getAttribute('data-day');goTab('tr');return}
   var mn=ev.target.closest('[data-mon]'); if(mn){var y=+MONTH.slice(0,4),m=+MONTH.slice(5,7)-1+(+mn.getAttribute('data-mon'));var d2=new Date(Date.UTC(y,m,1));MONTH=d2.toISOString().slice(0,7);paint();return}
-  var sg=ev.target.closest('[data-shrgo]'); if(sg){var mm=$('#jrShrM');shareGo(mm.getAttribute('data-for'),sg.getAttribute('data-shrgo')==='1');return}
+  var sg=ev.target.closest('[data-shrgo]'); if(sg){var mm=$('#jrShrM');if(mm&&!mm._went){mm._went=1;shareGo(mm.getAttribute('data-for'),sg.getAttribute('data-shrgo')==='1');}return}
   var sb=ev.target.closest('[data-shr]'); if(sb){ev.preventDefault();ev.stopPropagation();track('shrtap');shrMenu(sb,sb.getAttribute('data-shr'));return}
   if($('#jrShrM')&&!ev.target.closest('#jrShrM'))$('#jrShrM').remove();
   var row=ev.target.closest('[data-pid]'); if(row&&!ev.target.closest('#jrNoteSave')){openTrade(row.getAttribute('data-pid'));return}

@@ -833,6 +833,7 @@ export async function handleJournal(url, request, env, ctx, H) {
     } catch (e) {}
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
     await env.STATS.put('jrsh:' + id, JSON.stringify(snap), { expirationTtl: 180 * 86400 });
+    try { if (H.evPush) ctx.waitUntil(H.evPush(env, request, 'journal', 'shared ' + snap.ex + ' ' + snap.coin + ' -> real:' + id, '/trading-journal/')); } catch (e) {}
     return J({ ok: true, id });
   }
   if (path === '/stats' || path === '/trades' || path === '/savings' || path === '/all') {
