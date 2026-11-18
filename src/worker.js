@@ -18415,6 +18415,14 @@ async function handleTelegram(request, env) {
       try { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, text: await premiumInfo(env) }); } catch (e) {}
       return new Response('ok');
     }
+    if (cmd === '/start' && /^ap[0-9a-f]{16}$/.test(payload) && env.STATS && env.AUTOPILOT) { // Autopilot: this chat gets every trade the member's bot opens or closes
+      let uid = ''; try { uid = await env.STATS.get('aplink:' + payload.slice(2)) || ''; } catch (e) {}
+      if (uid) {
+        try { await env.STATS.delete('aplink:' + payload.slice(2)); } catch (e) {}
+        try { await env.AUTOPILOT.get(env.AUTOPILOT.idFromName('ap:' + uid)).fetch(new Request('https://ap/tg', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, chat: String(msg.chat.id) }) })); } catch (e) {}
+      } else { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'That Autopilot link has expired. Open the dashboard and press Connect Telegram again.' }); }
+      return new Response('ok');
+    }
     if (cmd === '/start' && /^[0-9a-f]{8,32}$/.test(payload) && env.STATS && env.USERS) {
       let uid = ''; try { uid = await env.STATS.get('tglink:' + payload) || ''; } catch (e) {}
       if (uid) {

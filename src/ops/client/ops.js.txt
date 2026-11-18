@@ -2468,7 +2468,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
   // for realized P&L; prices from /api/prices plus /api/price?symbol= for anything the base set misses. Margins above the $100k cap are
   // shown but excluded from every sum (an oversized legacy position would otherwise drown the totals).
   VIEWS['trading/autopilot'] = { render: function (el) { // Autopilot (2026-11-18): the Premium signal on a member's own Binance account - access is granted HERE, nowhere else
-    var st = { msg: '' };
+    var st = { msg: '', ed: '' };
     function paint() {
       J('/api/admin/autopilot').then(function (d) {
         if (d.error) { el.innerHTML = failHtml(d.error); return; }
@@ -2485,6 +2485,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
             { h: 'member', f: function (m) { return m.name ? userLink(m.name) : '<span class="mono meta">' + esc(m.uid.slice(0, 10)) + '</span>'; } },
             { h: 'access', f: function (m) { return m.allowed ? '<span class="badge up">yes</span>' : '<span class="badge dn">withdrawn</span>'; } },
             { h: 'mode', f: function (m) { var s = m.s || {}; return s.mode ? '<span class="badge' + (s.mode === 'live' ? ' up' : '') + '">' + esc(s.mode) + '</span>' + (s.paused ? ' <span class="badge">paused</span>' : '') : '-'; } },
+            { h: 'TG', f: function (m) { return m.s && m.s.tg ? '<span class="badge up">on</span>' : '<span class="meta">off</span>'; } },
             { h: 'key', f: function (m) { var c = m.s && m.s.conn; return c ? '<span class="mono">' + esc(c.kid) + '</span>' + (c.net === 'test' ? ' <span class="meta">testnet</span>' : '') : '<span class="meta">none</span>'; } },
             { h: 'risk', r: true, mono: true, f: function (m) { return m.s ? m.s.risk + '%' : '-'; } },
             { h: 'equity', r: true, mono: true, f: function (m) { var a = m.s && m.s.acct; return a ? USD((+a.bal || 0) + (+a.upnl || 0)) : '-'; } },
@@ -2492,8 +2493,14 @@ VIEWS['people/activity'] = { render: function (el, arg) {
             { h: 'closed', r: true, mono: true, f: function (m) { return m.s ? N(m.s.closed) + (m.s.closed ? ' · ' + Math.round(m.s.wins / m.s.closed * 100) + '%' : '') : '-'; } },
             { h: 'P&L', r: true, mono: true, f: function (m) { return m.s ? pm(m.s.pnl) : '-'; } },
             { h: 'last action', f: function (m) { var l = m.s && m.s.lastLog; return l ? '<span class="meta">' + agoT(l.ts) + '</span> ' + esc(String(l.msg).slice(0, 70)) : '-'; } },
-            { h: '', f: function (m) { return (m.allowed ? '<button class="btn warn" data-rv="' + esc(m.uid) + '">Withdraw access</button> ' : '<button class="btn" data-gr="' + esc(m.name || '') + '">Restore</button> ') + ((m.s && m.s.open) ? '<button class="btn bad" data-fl="' + esc(m.uid) + '">Close positions</button>' : '') + ((m.s && m.s.mode === 'shadow') ? ' <button class="btn" data-st="' + esc(m.uid) + '" title="open a virtual BTC long on this shadow account to see the dashboard work">Test signal</button>' : ''); } },
+            { h: '', f: function (m) { return (m.s && m.s.cfg ? '<button class="btn" data-ed="' + esc(m.uid) + '">Settings</button> ' : '') + (m.allowed ? '<button class="btn warn" data-rv="' + esc(m.uid) + '">Withdraw access</button> ' : '<button class="btn" data-gr="' + esc(m.name || '') + '">Restore</button> ') + ((m.s && m.s.open) ? '<button class="btn bad" data-fl="' + esc(m.uid) + '">Close positions</button>' : '') + ((m.s && m.s.mode === 'shadow') ? ' <button class="btn" data-st="' + esc(m.uid) + '" title="open a virtual BTC long on this shadow account to see the dashboard work">Test signal</button>' : ''); } },
           ], M) : '<div class="empty">Nobody has access yet.</div>')
+          + (function () { var m = M.filter(function (x) { return x.uid === st.ed; })[0]; if (!m || !m.s || !m.s.cfg) return ''; var c = m.s.cfg, f = function (k, lab, unit) { return '<label class="meta" style="display:block;margin:6px 0 2px">' + lab + '</label><input class="in" data-ck="' + k + '" value="' + esc(c[k]) + '" style="width:110px"> <span class="meta">' + unit + '</span>'; };
+            return card('Settings for @' + esc(m.name || m.uid), '<div class="meta">A Live member cannot change these from the dashboard - they email support@marginpad.io and the change is made here. Every change is written to their execution log and posted to Telegram.</div>'
+              + '<div class="grid g4" style="margin-top:8px"><div>' + f('risk', 'risk per trade', '% (0.25-3)') + '</div><div>' + f('maxRisk', 'max open risk', '% (1-25)') + '</div><div>' + f('dayLoss', 'daily loss limit', '% (1-20)') + '</div><div>' + f('maxOpen', 'max positions', '(1-10)') + '</div><div>' + f('levCap', 'leverage cap', 'x (1-20)') + '</div></div>'
+              + '<label class="meta" style="display:block;margin:10px 0 2px">coins (space-separated)</label><input class="in" data-ck="coins" value="' + esc((c.coins || []).join(' ')) + '" style="width:100%">'
+              + '<div class="bar" style="margin-top:10px"><span class="meta">mode</span>' + ['shadow', 'test', 'live'].map(function (x) { return '<button class="btn' + (c.mode === x ? ' on' : '') + '" data-cm="' + x + '">' + x + '</button>'; }).join('') + '<span class="meta">paused</span><button class="btn' + (c.paused ? ' on' : '') + '" data-cp="1">' + (c.paused ? 'yes' : 'no') + '</button></div>'
+              + '<div class="bar" style="margin-top:10px"><button class="btn good" id="apEdSave">Save for this member</button><button class="btn" id="apEdX">Close</button></div>'); })()
           + card('Emergency', '<div class="bar"><button class="btn ' + (d.kill ? 'good' : 'bad') + '" id="apKill">' + (d.kill ? 'Turn the kill switch off' : 'Kill switch: stop all new trades') + '</button></div><div class="meta">The kill switch stops NEW entries for everyone at once. Open positions keep their stops and targets and are still managed. Withdrawing access does the same for one member; their open trade is still managed to its stop.</div>'
           + (d.fwd && d.fwd.n != null ? '<div class="meta" style="margin-top:8px">Order forwarder: ' + N(d.fwd.n) + ' calls, ' + N(d.fwd.refused) + ' refused, last ' + (d.fwd.last ? agoT(d.fwd.last) : 'never') + '</div>' : '<div class="meta dn" style="margin-top:8px">Order forwarder not answering: ' + esc(JSON.stringify(d.fwd || {})) + '</div>'));
         $('apGrant').onclick = function () { var n = $('apName').value.trim(); if (!n) return; post('/api/admin/autopilot', { op: 'grant', username: n, note: $('apNote').value.trim() }).then(function (j) { st.msg = j.ok ? 'Access given to @' + (j.name || n) + '.' : 'Not given: ' + (j.error || 'error'); paint(); }); };
@@ -2501,6 +2508,20 @@ VIEWS['people/activity'] = { render: function (el, arg) {
         el.querySelectorAll('[data-gr]').forEach(function (b) { b.onclick = function () { post('/api/admin/autopilot', { op: 'grant', username: b.getAttribute('data-gr') }).then(paint); }; });
         el.querySelectorAll('[data-fl]').forEach(function (b) { b.onclick = function () { if (!confirmed('Close every Autopilot position of this member at market now?')) return; post('/api/admin/autopilot', { op: 'flatten', uid: b.getAttribute('data-fl') }).then(paint); }; });
         el.querySelectorAll('[data-st]').forEach(function (b) { b.onclick = function () { post('/api/admin/autopilot', { op: 'shadowtest', uid: b.getAttribute('data-st'), sym: 'BTC', long: true }).then(function (j) { st.msg = j.taken ? 'Shadow test signal taken: ' + j.sig.sigId : 'Test signal not taken: ' + (j.why || j.error || j.skipped || '?'); paint(); }); }; });
+        el.querySelectorAll('[data-ed]').forEach(function (b) { b.onclick = function () { st.ed = b.getAttribute('data-ed'); paint(); }; });
+        var edMode = null, edPause = null;
+        el.querySelectorAll('[data-cm]').forEach(function (b) { b.onclick = function () { edMode = b.getAttribute('data-cm'); el.querySelectorAll('[data-cm]').forEach(function (x) { x.classList.toggle('on', x === b); }); }; });
+        el.querySelectorAll('[data-cp]').forEach(function (b) { b.onclick = function () { edPause = b.textContent !== 'yes'; b.textContent = edPause ? 'yes' : 'no'; b.classList.toggle('on', edPause); }; });
+        if ($('apEdX')) $('apEdX').onclick = function () { st.ed = ''; paint(); };
+        if ($('apEdSave')) $('apEdSave').onclick = function () {
+          var m = M.filter(function (x) { return x.uid === st.ed; })[0], c = m.s.cfg, patch = {};
+          el.querySelectorAll('[data-ck]').forEach(function (i) { var k = i.getAttribute('data-ck'), v = i.value.trim(); if (k === 'coins') { var L = v.toUpperCase().split(/\s+/).filter(Boolean); if (L.join(' ') !== (c.coins || []).join(' ')) patch.coins = L; } else if (+v !== +c[k]) patch[k] = +v; });
+          if (edPause != null && edPause !== c.paused) patch.paused = edPause;
+          var mode = edMode && edMode !== c.mode ? edMode : null;
+          if (!Object.keys(patch).length && !mode) { st.msg = 'Nothing changed.'; paint(); return; }
+          if (!confirmed('Apply to @' + (m.name || m.uid) + ': ' + JSON.stringify(patch) + (mode ? ' mode ' + mode : '') + '?')) return;
+          post('/api/admin/autopilot', { op: 'cfg', uid: st.ed, patch: patch, mode: mode }).then(function (j) { st.msg = j.ok ? 'Saved for @' + (m.name || m.uid) + '.' : 'Not saved: ' + (j.error || 'error'); paint(); });
+        };
         $('apKill').onclick = function () { if (!confirmed(d.kill ? 'Turn the kill switch off? Signals are executed again from the next one.' : 'Stop all new Autopilot trades for everyone?')) return; post('/api/admin/autopilot', { op: 'kill', on: !d.kill }).then(paint); };
         stamp();
       }).catch(function () { el.innerHTML = failHtml('could not load'); });

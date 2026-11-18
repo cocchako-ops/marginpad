@@ -117,9 +117,16 @@ export async function handleAutopilot(url, request, env, ctx, H) {
   if (r === '/mode' && request.method === 'POST') {
     if (b.mode === 'live') { const ce = await useCode('live'); if (ce) return J({ error: ce }, 403); }
     const res = await apCall(env, uid, '/mode', { mode: b.mode }); act('mode ' + b.mode);
+    if (res.ok && b.mode === 'live' && H.tgAdmin) { try { await H.tgAdmin(env, '<b>Autopilot</b> - @' + (su.username || uid) + ' switched to LIVE (risk ' + res.cfg.risk + '%). Their settings are now locked.', { kind: 'autopilot live', sev: 'info' }); } catch (e) {} }
     return J(res, res.ok ? 200 : 400);
   }
-  if (r === '/cfg' && request.method === 'POST') { const res = await apCall(env, uid, '/cfg', { patch: b.patch || {} }); act('settings'); return J(res); }
+  if (r === '/cfg' && request.method === 'POST') { const res = await apCall(env, uid, '/cfg', { patch: b.patch || {} }); act('settings'); return J(res, res.error === 'locked' ? 423 : 200); }
+  if (r === '/tg' && request.method === 'GET') { // a one-time link: t.me/MarginPadBot?start=ap<16 hex> -> the bot binds that chat to THIS member's Autopilot
+    const tok = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(x => x.toString(16).padStart(2, '0')).join('');
+    await env.STATS.put('aplink:' + tok, uid, { expirationTtl: 900 });
+    return J({ ok: true, url: 'https://t.me/MarginPadBot?start=ap' + tok });
+  }
+  if (r === '/tg' && request.method === 'POST') { const res = await apCall(env, uid, '/tg', b.op === 'off' ? { off: true } : { test: true }); act('telegram ' + (b.op || 'test')); return J(res); }
   if (r === '/closeall' && request.method === 'POST') { const res = await apCall(env, uid, '/closeall', { why: 'closed by you (Close all)' }); act('close all'); return J(res); }
   if (r === '/disconnect' && request.method === 'POST') { const res = await apCall(env, uid, '/disconnect', {}); act('key deleted'); return J(res, res.ok ? 200 : 409); }
   return J({ error: 'not_found' }, 404);
@@ -160,6 +167,14 @@ export async function apDesk(url, request, env, H) {
       if (!(mark > 0)) return J({ error: 'no_price' }, 502);
       const risk = mark * 0.012, sig = { sigId: 'TEST' + (Date.now() % 1e8).toString(36).toUpperCase(), sym, long, entry: mark, sl: long ? mark - risk : mark + risk, tp1: long ? mark + 1.5 * risk : mark - 1.5 * risk, tp2: long ? mark + 3 * risk : mark - 3 * risk, bar: Math.floor(Date.now() / 1000), cl: 0 };
       return J(Object.assign({ sig }, await apCall(env, uid, '/exec', { sig, kill: false })));
+    }
+    if (op === 'cfg') { // the owner applies a change a Live member asked for by email (their own settings are locked)
+      const uid = String(b.uid || ''); if (!uid) return J({ error: 'uid' }, 400);
+      let res = { ok: true };
+      if (b.patch && Object.keys(b.patch).length) res = await apCall(env, uid, '/cfg', { patch: b.patch, admin: true });
+      if (res.ok && b.mode) res = await apCall(env, uid, '/mode', { mode: b.mode, admin: true });
+      if (res.ok) { const m = mem.find(x => x.uid === uid); await tg('settings changed for @' + ((m && m.name) || uid) + ': ' + JSON.stringify(Object.assign({}, b.patch || {}, b.mode ? { mode: b.mode } : {}))); }
+      return J(res, res.ok ? 200 : 400);
     }
     if (op === 'forget') { // off the list entirely - only once nothing of theirs is open, or no stop would be managed any more
       const uid = String(b.uid || ''); if (!uid) return J({ error: 'uid' }, 400);

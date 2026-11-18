@@ -137,6 +137,18 @@ input[type=range]{width:100%;accent-color:var(--lime)}
 .mdc h3{margin:0 0 6px;font:700 19px 'Bricolage Grotesque',sans-serif}
 .mdc p{color:var(--mute);margin:0 0 14px}
 .code{letter-spacing:.4em;text-align:center;font-size:22px}
+.lock{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:start;border:1px solid rgba(194,246,74,.35);background:linear-gradient(180deg,rgba(194,246,74,.07),rgba(194,246,74,.01));border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.lock svg{width:34px;height:34px;color:var(--lime)}
+.lock b{display:block;font:600 16px 'Bricolage Grotesque',sans-serif;margin-bottom:4px}
+.lock p{margin:0;color:var(--mute);font-size:13px}
+.lock a.btn{display:inline-block;margin-top:10px}
+.is-locked input,.is-locked .coin,.is-locked #dirL,.is-locked #dirS,.is-locked #saveCfg,.is-locked #modeSeg button{pointer-events:none;opacity:.45}
+.tgc{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tgc .dot{width:10px;height:10px;border-radius:50%;background:var(--dim)}
+.tgc .dot.on{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.tgc .t{flex:1;min-width:200px}
+.tgc .t b{display:block}
+.tgc .t span{color:var(--mute);font-size:12.5px}
 .foot{color:var(--dim);font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 @media (max-width:980px){.ann{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{grid-template-columns:1fr}.fp{grid-template-columns:1fr;gap:10px}.fp .pl{text-align:left}.grid2{grid-template-columns:1fr}.coins{grid-template-columns:repeat(4,minmax(0,1fr))}}
@@ -148,7 +160,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
   <div class="top">
     <a class="brand" href="/"><img src="/assets/app-icon-192.png" alt="">MarginPad <em>Autopilot</em></a>
     <div class="sp"></div>
-    <div class="who" id="who"></div>
+    <div class="who" id="tgHead"></div><div class="who" id="who"></div>
   </div>
 
   <div class="ann" id="ann" aria-label="Status"></div>
@@ -204,7 +216,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
   }
   var ERR = { code_expired: 'The code expired - ask for a new one.', code_wrong: 'That code is not right.', code_locked: 'Too many wrong tries - ask for a new code.', too_many_codes: 'Too many codes this hour - try again later.',
     key_invalid: 'Binance does not recognise this key.', key_permissions: 'This key has the wrong permissions:', futures_ip: 'Futures refused the key - is the IP restriction set to exactly the address above?', bad_key_format: 'That does not look like a Binance key.',
-    close_positions_first: 'Close the open positions first.', no_key_for_mode: 'Connect a key for that mode first.', not_ready: 'Autopilot is being set up - try again in a few minutes.', mail_failed: 'The email could not be sent.' };
+    close_positions_first: 'Close the open positions first.', locked: 'Live settings are locked - email support@marginpad.io to change them.', no_key_for_mode: 'Connect a key for that mode first.', not_ready: 'Autopilot is being set up - try again in a few minutes.', mail_failed: 'The email could not be sent.' };
   var errTxt = function (j) { return (ERR[j.error] || ('Error: ' + (j.msg || j.error || 'unknown'))) + (j.bad ? ' ' + j.bad.join(' · ') : ''); };
 
   // ---------- data ----------
@@ -226,7 +238,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
       { k: m === 'live' ? 'LIVE' : m === 'test' ? 'TESTNET' : 'SHADOW', s: m === 'live' ? 'real money, real orders' : m === 'test' ? 'Binance testnet funds' : 'virtual account, no orders', c: m === 'live' ? 'on' : 'warn' },
       { k: 'KEY ' + (conn ? 'OK' : 'NONE'), s: conn ? (conn.net === 'test' ? 'testnet ' : '') + conn.kid : 'not connected', c: conn ? 'on' : m === 'shadow' ? '' : 'bad' },
       { k: 'STOPS ' + (open.length ? 'ON' : 'CLEAR'), s: open.length ? open.length + ' position' + (open.length > 1 ? 's' : '') + ' protected' : 'no open positions', c: open.length ? 'on' : '' },
-      { k: 'RISK ' + c.risk + '%', s: 'per trade, max ' + c.maxRisk + '% open', c: c.risk > 2 ? 'warn' : 'on' },
+      { k: 'RISK ' + c.risk + '%', s: S.locked ? 'locked - changes by email' : 'per trade, max ' + c.maxRisk + '% open', c: c.risk > 2 ? 'warn' : 'on' },
       { k: 'BOT ' + (hbOk ? 'ALIVE' : 'STALE'), s: hbOk ? 'checked ' + ago(S.hb) : 'last check ' + ago(S.hb), c: hbOk ? 'on' : 'bad' },
     ];
     $('ann').innerHTML = L.map(function (x) { return '<div class="al ' + x.c + '"><b>' + esc(x.k) + '</b><span>' + esc(x.s) + '</span></div>'; }).join('');
@@ -318,7 +330,12 @@ input[type=range]{width:100%;accent-color:var(--lime)}
   function paneSet() {
     var c = S.cfg, lim = S.meta.lim, coins = S.meta.coins;
     var rng = function (k, lab, step, unit, hint) { return '<div class="field"><label>' + lab + '<span class="num" id="v_' + k + '">' + c[k] + unit + '</span></label><input type="range" min="' + lim[k][0] + '" max="' + lim[k][1] + '" step="' + step + '" value="' + c[k] + '" data-k="' + k + '" data-u="' + unit + '"><div class="hint">' + hint + '</div></div>'; };
-    $('p-set').innerHTML = '<div class="grid2"><div class="card">'
+    var mail = 'mailto:support@marginpad.io?subject=' + encodeURIComponent('Autopilot settings change - @' + ((S.me && S.me.username) || '')) + '&body=' + encodeURIComponent('Hi MarginPad,\n\nPlease change my Autopilot settings:\n\n- \n\nMy username: @' + ((S.me && S.me.username) || '') + '\nCurrent: risk ' + c.risk + '%, max open risk ' + c.maxRisk + '%, daily loss limit ' + c.dayLoss + '%, max positions ' + c.maxOpen + ', leverage cap ' + c.levCap + 'x, ' + c.coins.length + ' coins.\n');
+    var lockHtml = S.locked ? '<div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2.2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg><div><b>Live settings are locked</b><p>Your account trades real money, so nothing changes from this page - not the risk, the coins, the limits or the mode. To change anything, email us from <b>' + esc((S.me && S.me.email) || 'your account email') + '</b> and we make the change for you, usually the same day. Pausing new trades and closing positions always stay with you.</p><a class="btn" href="' + mail + '">Email support@marginpad.io</a></div></div>' : '';
+    var tg = S.tg || {};
+    var tgHtml = '<div class="card" style="margin-bottom:18px"><div class="tgc"><span class="dot' + (tg.linked && !tg.blocked ? ' on' : '') + '"></span><div class="t"><b>Telegram</b><span>' + (tg.linked ? (tg.blocked ? 'The bot cannot reach you - you blocked it or deleted the chat. Connect again.' : 'Every trade Autopilot opens or closes arrives in your Telegram, with TP1 and any protective close.') : 'Get every trade Autopilot opens or closes in Telegram, the moment it happens.') + '</span></div>'
+      + (tg.linked ? '<button class="btn ghost" id="tgTest">Send a test</button><button class="btn ghost" id="tgOff">Disconnect</button>' : '<button class="btn" id="tgOn">Connect Telegram</button>') + '</div></div>';
+    $('p-set').innerHTML = lockHtml + tgHtml + '<div class="grid2' + (S.locked ? ' is-locked' : '') + '"><div class="card">'
       + '<div class="field"><label>Mode</label><div class="seg" id="modeSeg">' + [['shadow', 'Shadow'], ['test', 'Testnet'], ['live', 'Live']].map(function (x) { return '<button data-m="' + x[0] + '" class="' + (c.mode === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>'
       + '<div class="hint">Shadow trades a virtual account with the same rules - nothing reaches Binance. Live needs a key and a code from your email.</div></div>'
       + rng('risk', 'Risk per trade', 0.25, '%', 'The share of your account lost if the stop is hit. Tested at 2%; the strongest signals carry the same rule.')
@@ -326,7 +343,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
       + rng('dayLoss', 'Daily loss limit', 1, '%', 'Down this much today and no new trade opens until tomorrow (UTC).')
       + rng('maxOpen', 'Max open positions', 1, '', 'One trade per coin, never more than this at once.')
       + rng('levCap', 'Leverage cap', 1, 'x', 'Leverage only sets the margin. The size comes from the risk, so more leverage does not mean more profit.')
-      + '<div class="row"><button class="btn" id="saveCfg">Save settings</button><button class="btn ghost" id="pauseBtn">' + (c.paused ? 'Resume trading' : 'Pause new trades') + '</button></div><div class="msg" id="cfgMsg"></div>'
+      + '<div class="row"><button class="btn" id="saveCfg"' + (S.locked ? ' disabled' : '') + '>Save settings</button><button class="btn ghost" id="pauseBtn">' + (c.paused ? 'Resume trading' : 'Pause new trades') + '</button></div><div class="msg" id="cfgMsg"></div>'
       + '</div><div class="card"><div class="field"><label>Coins <span class="num">' + c.coins.length + ' of ' + coins.length + '</span></label><div class="coins" id="coins">' + coins.map(function (s) { return '<button class="coin' + (c.coins.indexOf(s) >= 0 ? ' on' : '') + '" data-c="' + s + '">' + s + '</button>'; }).join('') + '</div><div class="hint">The market move is always read on the nine majors; you choose which coins Autopilot trades.</div></div>'
       + '<div class="field"><label>Direction</label><div class="row"><button class="chip' + (c.longs ? ' on' : '') + '" id="dirL">Longs</button><button class="chip' + (c.shorts ? ' on' : '') + '" id="dirS">Shorts</button></div></div>'
       + (c.mode === 'shadow' ? '<div class="field"><label>Shadow starting balance<span class="num">$' + fx(c.vstart, 0) + '</span></label><input class="inp" id="vstart" type="number" min="100" step="100" value="' + c.vstart + '"><div class="hint">Changing it restarts the virtual account (only while nothing is open).</div></div>' : '')
@@ -338,8 +355,11 @@ input[type=range]{width:100%;accent-color:var(--lime)}
     $('dirL').onclick = function () { draft.longs = !draft.longs; this.classList.toggle('on'); };
     $('dirS').onclick = function () { draft.shorts = !draft.shorts; this.classList.toggle('on'); };
     $('saveCfg').onclick = function () { var p = { risk: draft.risk, maxRisk: draft.maxRisk, dayLoss: draft.dayLoss, maxOpen: draft.maxOpen, levCap: draft.levCap, coins: draft.coins, longs: draft.longs, shorts: draft.shorts }; if ($('vstart')) p.vstart = +$('vstart').value; api('/cfg', { patch: p }).then(function (j) { $('cfgMsg').className = 'msg ' + (j.ok ? 'ok' : 'err'); $('cfgMsg').textContent = j.ok ? 'Saved. The next signal uses these settings.' : errTxt(j); if (j.ok) load(); }); };
+    if ($('tgOn')) $('tgOn').onclick = function () { var w = window.open('about:blank', '_blank'); api('/tg').then(function (j) { if (j.url) { if (w) w.location = j.url; else location.href = j.url; toast('Press Start in Telegram - this page notices it by itself.'); var n = 0, iv = setInterval(function () { n++; api('/state').then(function (x) { if (x.tg && x.tg.linked) { clearInterval(iv); S = x; renderAll(); paneSet(); toast('Telegram connected.'); } }); if (n > 40) clearInterval(iv); }, 3000); } else { if (w) w.close(); toast(errTxt(j), 1); } }); };
+    if ($('tgTest')) $('tgTest').onclick = function () { api('/tg', { op: 'test' }).then(function (j) { toast(j.ok ? 'Sent - check Telegram.' : 'Not delivered. Connect Telegram again.', !j.ok); }); };
+    if ($('tgOff')) $('tgOff').onclick = function () { api('/tg', { op: 'off' }).then(function () { load().then(paneSet); }); };
     $('pauseBtn').onclick = function () { api('/cfg', { patch: { paused: !c.paused } }).then(function (j) { if (j.ok) { toast(j.cfg.paused ? 'Paused - open positions keep their stops and targets.' : 'Resumed.'); load(); } }); };
-    Array.prototype.forEach.call(document.querySelectorAll('#modeSeg button'), function (b) { b.onclick = function () { var m = b.getAttribute('data-m'); if (m === c.mode) return; if (m === 'live') return codeFlow('live', 'Switch to LIVE trading', 'From the next signal Autopilot places real orders on your Binance account. We sent a code to your email.', function (code) { return api('/mode', { mode: 'live', code: code }); }); api('/mode', { mode: m }).then(function (j) { if (j.ok) { toast('Mode: ' + m); load(); } else toast(errTxt(j), 1); }); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#modeSeg button'), function (b) { b.onclick = function () { var m = b.getAttribute('data-m'); if (m === c.mode) return; if (m === 'live') return codeFlow('live', 'Switch to LIVE trading', 'From the next signal Autopilot places real orders on your Binance account, and the settings lock: after this, any change is made by email to support@marginpad.io. Check the risk and the coins now. We sent a code to your email.', function (code) { return api('/mode', { mode: 'live', code: code }); }); api('/mode', { mode: m }).then(function (j) { if (j.ok) { toast('Mode: ' + m); load(); } else toast(errTxt(j), 1); }); }; });
   }
   function paneKey() {
     var conn = S.conn, ip = S.meta.ip, p = conn && conn.perms || {};
@@ -354,6 +374,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
       + '<div class="field"><label>API key</label><input class="inp" id="kK" autocomplete="off" spellcheck="false"></div>'
       + '<div class="field"><label>Secret key</label><input class="inp" id="kS" type="password" autocomplete="off" spellcheck="false"></div>'
       + '<button class="btn" id="kGo">Verify and connect</button><div class="msg" id="kMsg"></div>'
+      + (S.locked ? '<div class="note lime">Live is locked: to replace or remove this key, email support@marginpad.io. You can always delete the key on Binance yourself - Autopilot stops the same minute.</div>' : '')
       + '<div class="note">Autopilot can open and close futures positions on this account. It can never withdraw or move funds: the key cannot, and our server has no route that could.</div></div></div>';
     var net = 'live';
     Array.prototype.forEach.call(document.querySelectorAll('#netSeg button'), function (b) { b.onclick = function () { net = b.getAttribute('data-n'); Array.prototype.forEach.call(document.querySelectorAll('#netSeg button'), function (x) { x.classList.toggle('on', x === b); }); }; });
@@ -365,7 +386,8 @@ input[type=range]{width:100%;accent-color:var(--lime)}
         return api('/connect', { net: net, k: k, s: s, code: code }).then(function (j) { if (j.ok) { $('kK').value = ''; $('kS').value = ''; toast('Key connected. Balance: $' + fx(j.usdt)); load(); } return j; });
       });
     };
-    if ($('delKey')) $('delKey').onclick = function () { confirmBox('Delete this key?', 'Autopilot stops trading on this account and the key is erased. Open positions must be closed first.', 'Delete key', function () { return api('/disconnect', {}).then(function (j) { if (j.ok) { toast('Key deleted.'); load(); } else toast(errTxt(j), 1); }); }); };
+    if ($('delKey') && S.locked) { $('delKey').disabled = true; $('delKey').title = 'Locked on Live - email support@marginpad.io, or delete the key on Binance yourself at any time'; }
+    if ($('delKey') && !S.locked) $('delKey').onclick = function () { confirmBox('Delete this key?', 'Autopilot stops trading on this account and the key is erased. Open positions must be closed first.', 'Delete key', function () { return api('/disconnect', {}).then(function (j) { if (j.ok) { toast('Key deleted.'); load(); } else toast(errTxt(j), 1); }); }); };
   }
   // ---------- small UI ----------
   function toast(t, bad) { var d = document.createElement('div'); d.textContent = t; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:' + (bad ? '#2a0f0c' : '#121a07') + ';border:1px solid ' + (bad ? 'rgba(255,90,77,.5)' : 'rgba(194,246,74,.45)') + ';color:#eef1f4;padding:11px 16px;border-radius:10px;z-index:60;max-width:90vw;font-size:13px'; document.body.appendChild(d); try { d.animate([{ opacity: 0, transform: 'translate(-50%,8px)' }, { opacity: 1, transform: 'translate(-50%,0)' }], { duration: 200 }); } catch (e) {} setTimeout(function () { d.remove(); }, 4200); }
@@ -384,7 +406,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
     $('cdRe').onclick = send; $('cdX').onclick = closeModal;
     $('cdGo').onclick = function () { var b = this; b.disabled = true; $('cdMsg').className = 'msg'; $('cdMsg').textContent = purpose === 'connect' ? 'Checking the key with Binance…' : 'Switching…'; Promise.resolve(submit($('cdIn').value)).then(function (j) { b.disabled = false; if (j && j.ok) { closeModal(); if (purpose === 'live') { toast('Live. The next signal trades your account.'); load(); } } else { $('cdMsg').className = 'msg err'; $('cdMsg').textContent = errTxt(j || {}); } }); };
   }
-  function renderAll() { if (!S || !S.cfg) return; $('who').textContent = '@' + (S.me && S.me.username || ''); ann(); hero(); paneOpen(); paneClosed(); paneSigs(); paneLog(); if (PANE !== 'set' && PANE !== 'key') { paneSet(); paneKey(); } }
+  function renderAll() { if (!S || !S.cfg) return; $('who').textContent = '@' + (S.me && S.me.username || ''); $('tgHead').innerHTML = S.tg && S.tg.linked ? '<span style="color:var(--lime)">Telegram on</span> · ' : '<span>Telegram off</span> · '; ann(); hero(); paneOpen(); paneClosed(); paneSigs(); paneLog(); if (PANE !== 'set' && PANE !== 'key') { paneSet(); paneKey(); } }
   Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) { b.onclick = function () { PANE = b.getAttribute('data-p'); Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) { x.classList.toggle('on', x === b); }); Array.prototype.forEach.call(document.querySelectorAll('.pane'), function (x) { x.classList.toggle('on', x.id === 'p-' + PANE); }); if (PANE === 'set') paneSet(); if (PANE === 'key') paneKey(); try { history.replaceState(null, '', '#' + PANE); } catch (e) {} }; });
   var first = true;
   function load() {

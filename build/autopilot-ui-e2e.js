@@ -28,6 +28,14 @@ const SHOTS = path.join(__dirname, 'ap-shots'); fs.mkdirSync(SHOTS, { recursive:
     ok('a request from another site is refused', cross.status === 403, cross.status);
     const lv = await as('/api/ap/mode', { method: 'POST', body: JSON.stringify({ mode: 'live', code: '123456' }) }).then(x => x.json());
     ok('Live without a valid email code is refused', lv.error === 'code_expired' || lv.error === 'code_wrong', lv);
+    const tl = await as('/api/ap/tg').then(x => x.json());
+    ok('Connect Telegram hands out a one-time bot link', /^https:\/\/t\.me\/MarginPadBot\?start=ap[0-9a-f]{16}$/.test(tl.url || ''), tl);
+    const tt = await as('/api/ap/tg', { method: 'POST', body: JSON.stringify({ op: 'test' }) }).then(x => x.json());
+    ok('a test message with no chat linked reports not delivered', tt.ok === false, tt);
+    const ec = await adm('/api/admin/autopilot', { op: 'cfg', uid: U, patch: { dayLoss: 5 } });
+    st = await as('/api/ap/state').then(x => x.json());
+    ok('the owner changes a member setting from mp-ops', ec.ok && st.cfg.dayLoss === 5, { ec, d: st.cfg && st.cfg.dayLoss });
+    ok('the change is written to the member log as made by MarginPad', (st.log || []).some(l => /by MarginPad/.test(l.msg)));
     const t = await adm('/api/admin/autopilot', { op: 'shadowtest', uid: U, sym: 'BTC', long: true });
     ok('a shadow test signal opens a virtual BTC long', t.taken === true, t);
     const dup = await adm('/api/admin/autopilot', { op: 'shadowtest', uid: U, sym: 'BTC', long: true });

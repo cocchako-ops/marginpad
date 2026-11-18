@@ -399,6 +399,22 @@ export async function apCheckKey(env, net, k, s) {
   return { ok: true, perms, usdt: +u.balance || 0 };
 }
 
+// ---------- the member's Telegram lines ----------
+const fpx = (v) => { v = +v; if (!isFinite(v) || !v) return '-'; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 1000 ? 1 : v >= 1 ? 4 : 6 }); };
+const fus = (v, sign) => { v = +v || 0; return (sign && v > 0 ? '+' : v < 0 ? '-' : '') + '$' + Math.abs(v).toFixed(2); };
+const mtag = (m) => m === 'live' ? '' : m === 'test' ? ' <i>[testnet]</i>' : ' <i>[shadow]</i>';
+const hold = (ms) => { const m = Math.round(ms / 60000); return m < 60 ? m + 'm' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'; };
+export const AP_RES = { tp2: 'TP2 reached', tp1_be: 'TP1, then breakeven', tp1: 'TP1 reached', tp1_other: 'TP1, then closed', sl: 'Stop loss', flip: 'Trend flipped - closed at market', closed_outside: 'Closed on Binance', no_stop: 'Closed: the stop could not be placed', stop_lost: 'Closed: the stop could not be restored', be_refused: 'Closed: breakeven stop refused' };
+export function apMsgOpen(t, m) { const side = t.long ? 'LONG' : 'SHORT'; return '<b>OPENED</b> · ' + t.sym + ' ' + side + ' · ' + t.lev + 'x' + mtag(m) + '\n'
+  + 'Entry <code>' + fpx(t.entry) + '</code> · size ' + (+t.qty) + ' ' + t.sym + ' (' + fpx(t.qty * t.entry) + ')\n'
+  + 'Stop <code>' + fpx(t.sl) + '</code> · risk ' + fus(t.riskUsd) + '\n'
+  + 'TP1 <code>' + fpx(t.tp1) + '</code> (half) · TP2 <code>' + fpx(t.tp2) + '</code>\n'
+  + 'The stop and both targets are on Binance now.' + (t.sig ? '\n<code>#' + t.sig + '</code>' : ''); }
+export function apMsgTp1(t, m) { return '<b>TP1 HIT</b> · ' + t.sym + ' ' + (t.long ? 'LONG' : 'SHORT') + mtag(m) + '\nHalf closed at <code>' + fpx(t.tp1) + '</code>. The stop moved to entry <code>' + fpx(t.entry) + '</code> - the rest is risk-free.'; }
+export function apMsgClose(t, m) { const bad = /no_stop|stop_lost|be_refused/.test(t.result || ''); return (t.pnl >= 0 ? '<b>CLOSED</b>' : '<b>CLOSED</b>') + ' · ' + t.sym + ' ' + (t.long ? 'LONG' : 'SHORT') + mtag(m) + '\n'
+  + (AP_RES[t.result] || t.result || 'Closed') + (bad ? ' (a protective close)' : '') + '\n'
+  + 'Exit <code>' + fpx(t.exitPx) + '</code> · net <b>' + fus(t.pnl, 1) + '</b> (' + (t.R >= 0 ? '+' : '') + (+t.R).toFixed(2) + 'R) · fees ' + fus(t.fees) + ' · held ' + hold((t.closed || Date.now()) - t.opened); }
+
 // ---------- the store: one instance per member ----------
 export class AutoStore {
   constructor(state, env) { this.state = state; this.env = env; this.sql = state.storage.sql; this.init(); }
@@ -440,6 +456,15 @@ export class AutoStore {
     }
     return m && m[symbol] || null;
   }
+  async tg(text) { // the member's own Telegram chat (linked from the dashboard): every open, TP1, close and protective action
+    const t = this.g('tg', null); if (!t || !t.chat || !this.env.TELEGRAM_TOKEN) return false;
+    try {
+      const r = await fetch('https://api.telegram.org/bot' + this.env.TELEGRAM_TOKEN + '/sendMessage', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: t.chat, text, parse_mode: 'HTML', disable_web_page_preview: true }), signal: AbortSignal.timeout(6000) });
+      const j = await r.json().catch(() => ({}));
+      if (!j.ok) { this.logger(apCfgNorm(this.g('cfg', null)).mode)('warn', '', 'Telegram message not delivered: ' + String(j.description || r.status).slice(0, 120), false, 0); if (j.error_code === 403) { t.blocked = Date.now(); this.p('tg', t); } }
+      return !!j.ok;
+    } catch (e) { return false; }
+  }
   book(mode) {
     const cfg = apCfgNorm(this.g('cfg', null));
     return { cfg, open: this.openTrades(mode), day: this.g('day:' + mode, null), log: this.logger(mode) };
@@ -455,22 +480,25 @@ export class AutoStore {
       const log = this.sql.exec('SELECT id,ts,mode,kind,sym,ok,ms,msg FROM log ORDER BY id DESC LIMIT 400').toArray();
       const sigs = this.sql.exec('SELECT sid,ts,sym,long,action,why,data FROM sigs ORDER BY ts DESC LIMIT 150').toArray().map(r => ({ ...r, data: r.data ? JSON.parse(r.data) : null }));
       const vx = this.g('vx', null);
-      return this.j({ ok: true, cfg, conn: conn ? { net: conn.net, kid: conn.kid, perms: conn.perms, created: conn.created, lastOk: conn.lastOk, lastErr: conn.lastErr || '', usdt: conn.usdt } : null, trades: rows, log, sigs, day: this.g('day:' + mode, null), acct: this.g('acct:' + mode, null), virtual: vx ? { bal: vx.bal, start: cfg.vstart, created: vx.created } : null, disabled: !!this.g('disabled', false), kill: !!b.kill });
+      return this.j({ ok: true, cfg, conn: conn ? { net: conn.net, kid: conn.kid, perms: conn.perms, created: conn.created, lastOk: conn.lastOk, lastErr: conn.lastErr || '', usdt: conn.usdt } : null, trades: rows, log, sigs, day: this.g('day:' + mode, null), acct: this.g('acct:' + mode, null), virtual: vx ? { bal: vx.bal, start: cfg.vstart, created: vx.created } : null, disabled: !!this.g('disabled', false), kill: !!b.kill, tg: (() => { const t = this.g('tg', null); return t && t.chat ? { linked: true, since: t.ts, blocked: !!t.blocked } : { linked: false }; })(), locked: cfg.mode === 'live' });
     }
     if (path === '/cfg') {
       const cur = apCfgNorm(this.g('cfg', null)), patch = b.patch || {};
       delete patch.mode; // the mode has its own guarded route
+      if (cur.mode === 'live' && !b.admin && Object.keys(patch).some(k => k !== 'paused')) return this.j({ error: 'locked' }, 423); // Live: changes by email, made by MarginPad
       const next = apCfgNorm(Object.assign({}, cur, patch));
       if (patch.vstart != null && +patch.vstart !== cur.vstart && !this.openTrades('shadow').length) { this.p('vx', { bal: next.vstart, created: Date.now() }); }
-      this.p('cfg', next); this.logger(next.mode)('info', '', 'settings changed: ' + Object.keys(patch).join(', '), true, 0);
+      this.p('cfg', next); this.logger(next.mode)('info', '', (b.admin ? 'settings changed by MarginPad: ' : 'settings changed: ') + Object.keys(patch).join(', '), true, 0);
       return this.j({ ok: true, cfg: next });
     }
     if (path === '/mode') {
       const cur = apCfgNorm(this.g('cfg', null)), m = String(b.mode || '');
       if (!['shadow', 'live', 'test'].includes(m)) return this.j({ error: 'bad_mode' }, 400);
+      if (cur.mode === 'live' && m !== 'live' && !b.admin) return this.j({ error: 'locked' }, 423);
       if (m !== 'shadow') { const c = this.g('conn', null); if (!c || c.net !== m) return this.j({ error: 'no_key_for_mode' }, 400); }
       if (this.openTrades(cur.mode).length && m !== cur.mode) return this.j({ error: 'close_positions_first', open: this.openTrades(cur.mode).length }, 409);
-      cur.mode = m; this.p('cfg', cur); this.logger(m)('info', '', 'mode -> ' + m, true, 0);
+      cur.mode = m; this.p('cfg', cur); this.logger(m)('info', '', 'mode -> ' + m + (b.admin ? ' (by MarginPad)' : ''), true, 0);
+      if (m === 'live') await this.tg('<b>Autopilot is LIVE</b>\nFrom the next Premium signal it places real orders on your Binance account at ' + cur.risk + '% risk per trade. Settings are now locked - to change anything, email support@marginpad.io.');
       return this.j({ ok: true, cfg: cur });
     }
     if (path === '/connect') {
@@ -484,10 +512,17 @@ export class AutoStore {
     }
     if (path === '/disconnect') {
       const cur = apCfgNorm(this.g('cfg', null)), c = this.g('conn', null);
+      if (cur.mode === 'live' && !b.admin) return this.j({ error: 'locked' }, 423);
       if (c && this.openTrades(c.net).length) return this.j({ error: 'close_positions_first' }, 409);
       this.sql.exec("DELETE FROM kv WHERE k='conn'"); if (cur.mode !== 'shadow') { cur.mode = 'shadow'; this.p('cfg', cur); }
       this.logger('shadow')('info', '', 'key deleted', true, 0);
       return this.j({ ok: true });
+    }
+    if (path === '/tg') {
+      if (b.off) { this.sql.exec("DELETE FROM kv WHERE k='tg'"); this.logger(apCfgNorm(this.g('cfg', null)).mode)('info', '', 'Telegram disconnected', true, 0); return this.j({ ok: true }); }
+      if (b.chat) { this.p('tg', { chat: String(b.chat), ts: Date.now() }); this.logger(apCfgNorm(this.g('cfg', null)).mode)('info', '', 'Telegram connected', true, 0); await this.tg('<b>Autopilot connected</b>\nEvery trade Autopilot opens or closes on your account arrives here, the moment it happens.'); return this.j({ ok: true }); }
+      if (b.test) return this.j({ ok: await this.tg('<b>Test</b> - Autopilot can reach you here.') });
+      return this.j({ error: 'bad' }, 400);
     }
     if (path === '/disable') { this.p('disabled', !!b.on); this.logger(apCfgNorm(this.g('cfg', null)).mode)('info', '', b.on ? 'access withdrawn by MarginPad - no new trades' : 'access restored', true, 0); return this.j({ ok: true }); }
     if (path === '/exec') { // one Premium signal
@@ -504,6 +539,9 @@ export class AutoStore {
       let r; try { r = await apEnter(X, book, sig, f, tid); } catch (e) { r = { ok: false, why: 'error_' + String(e).slice(0, 80) }; book.log('error', sig.sym, 'entry crashed: ' + String(e).slice(0, 200), false); }
       if (r.trade) this.saveTrade(r.trade);
       this.p('day:' + mode, book.day); X.save();
+      if (r.ok) await this.tg(apMsgOpen(r.trade, mode));
+      else if (r.trade) await this.tg('<b>PROTECTIVE CLOSE</b> · ' + sig.sym + mtag(mode) + '\nBinance refused the stop right after the entry, so the position was closed at once. Nothing is open.');
+      else if (!/^(paused|coin_off|longs_off|shorts_off|already_in|max_open|price_ran|past_stop|past_target|stop_too_wide|stop_too_tight)$/.test(r.why)) await this.tg('<b>Signal not taken</b> · ' + sig.sym + ' ' + (sig.long ? 'LONG' : 'SHORT') + mtag(mode) + '\nReason: ' + String(r.why).replace(/_/g, ' '));
       rec(r.ok ? 'taken' : 'skipped', r.ok ? '' : r.why, r.ok ? { qty: r.trade.qty, entry: r.trade.entry, lev: r.trade.lev, risk: r.trade.riskUsd } : (r.plan || null));
       if (!r.ok && !/^(paused|coin_off|longs_off|shorts_off|already_in|max_open|day_loss_limit|risk_budget|price_ran|past_stop|past_target|stop_too_wide|stop_too_tight|too_small)$/.test(r.why)) book.log('skip', sig.sym, 'signal ' + sid + ' not taken: ' + r.why, false, 0);
       else if (!r.ok) book.log('skip', sig.sym, 'signal ' + sid + ' skipped: ' + r.why, true, 0);
@@ -516,8 +554,10 @@ export class AutoStore {
         const X = await this.transport(mode); if (!X) continue;
         const book = this.book(mode);
         for (const t of open) {
+          const ph0 = t.phase;
           try { await apManage(X, book, t, (b.flips || {})[t.sym]); } catch (e) { book.log('error', t.sym, 'manage crashed: ' + String(e).slice(0, 200), false); }
-          this.saveTrade(t); out.managed++; if (t.status === 'closed') { out.closed++; if (/stop_lost|be_refused/.test(t.result)) out.alarms.push(t.sym + ' ' + t.result); }
+          this.saveTrade(t);
+          if (t.status === 'closed') await this.tg(apMsgClose(t, mode)); else if (t.phase === 1 && ph0 === 0) await this.tg(apMsgTp1(t, mode)); out.managed++; if (t.status === 'closed') { out.closed++; if (/stop_lost|be_refused/.test(t.result)) out.alarms.push(t.sym + ' ' + t.result); }
         }
         this.p('day:' + mode, book.day); X.save();
         if (mode === cfg.mode && !X.virtual) { const bq = await X('GET', '/fapi/v2/balance', {}); if (bq.ok) { const u = (bq.res || []).find(x => x.asset === 'USDT') || {}; this.p('acct:' + mode, { bal: +u.balance, avail: +u.availableBalance, upnl: +u.crossUnPnl, at: Date.now() }); } }
@@ -537,13 +577,14 @@ export class AutoStore {
       const cfg = apCfgNorm(this.g('cfg', null)), mode = b.mode || cfg.mode, X = await this.transport(mode); if (!X) return this.j({ error: 'no_key' }, 400);
       const book = this.book(mode); const r = await apCloseAll(X, book, b.why || 'closed by the member');
       r.forEach(t => this.saveTrade(t)); this.p('day:' + mode, book.day); X.save();
+      for (const t of r) await this.tg(apMsgClose(t, mode));
       return this.j({ ok: true, closed: r.length });
     }
     if (path === '/summary') { // mp-ops row
       const cfg = apCfgNorm(this.g('cfg', null)), conn = this.g('conn', null);
       const all = this.sql.exec("SELECT data FROM trades WHERE status='closed'").toArray().map(r => JSON.parse(r.data));
       const live = all.filter(t => t.mode === cfg.mode);
-      return this.j({ ok: true, mode: cfg.mode, paused: cfg.paused, risk: cfg.risk, conn: conn ? { net: conn.net, kid: conn.kid, created: conn.created } : null, open: this.openTrades(cfg.mode).length, closed: live.length, pnl: live.reduce((a, t) => a + (+t.pnl || 0), 0), wins: live.filter(t => t.pnl > 0).length, disabled: !!this.g('disabled', false), acct: this.g('acct:' + cfg.mode, null), lastLog: (this.sql.exec('SELECT ts,msg FROM log ORDER BY id DESC LIMIT 1').toArray()[0]) || null });
+      return this.j({ ok: true, mode: cfg.mode, paused: cfg.paused, risk: cfg.risk, conn: conn ? { net: conn.net, kid: conn.kid, created: conn.created } : null, open: this.openTrades(cfg.mode).length, closed: live.length, pnl: live.reduce((a, t) => a + (+t.pnl || 0), 0), wins: live.filter(t => t.pnl > 0).length, disabled: !!this.g('disabled', false), tg: !!(this.g('tg', null) || {}).chat, cfg, acct: this.g('acct:' + cfg.mode, null), lastLog: (this.sql.exec('SELECT ts,msg FROM log ORDER BY id DESC LIMIT 1').toArray()[0]) || null });
     }
     return this.j({ error: 'not_found' }, 404);
   }
