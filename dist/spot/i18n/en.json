@@ -200,6 +200,7 @@
   "tm_e_login_required": "Please sign in first.",
   "tm_e_min_trade": "Minimum trade is $1.",
   "tm_e_no_account": "Start your account first.",
+  "tm_e_no_pool_yet": "This coin has no pool we can measure yet, so there is no honest price to buy at. It becomes tradeable once it has a real pool.",
   "tm_e_no_position": "Nothing to sell.",
   "tm_e_no_price": "No live price right now - try again in a moment.",
   "tm_e_price_jump": "The price moved too far from the last mark to fill safely - try again in a minute.",

@@ -25922,7 +25922,13 @@ async function handleSpot(url, request, env) {
       if (!mp) return jr({ error: 'no_price' }, 503);
       if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token - no fill through a foreign pool, either direction
       price = mp.price; liq = mp.liqUsd; priceStale = !!mp.stale;
-      if (side === 'buy' && liq > 0 && liq < SPOT_THIN_LIQ) return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400); // under $1k of liquidity the price is fiction, and the board pays real money
+      /* under $1k of liquidity the price is fiction, and the board pays real money. UNKNOWN LIQUIDITY IS NOT ENOUGH LIQUIDITY (2026-11-19,
+         Emapola14's DM: bought BABYDOG for $937.20 and saw it RUGGED ten seconds later): DexScreener answered that pair with a price and no
+         liquidity object, `_dsPair` turned that into liqUsd 0, and `liq > 0 && liq < SPOT_THIN_LIQ` let the buy through - the pool held
+         $0.0000027. The portfolio then priced it honestly ($0) and his sale 3 minutes later returned exactly his cost (the sell guard skips
+         pool_too_small at liq 0 too, so nothing was lost), but a buy into a pool we cannot measure must not fill: the lookup route has refused
+         exactly this as no_pool_yet since 10-22. A zero means no pool we can see; a figure under the floor means a dead one. */
+      if (side === 'buy' && !(liq >= SPOT_THIN_LIQ)) return jr({ error: liq > 0 ? 'thin_pool' : 'no_pool_yet', liqUsd: Math.round(liq) }, 400);
       /* A BUY MAY NOT FILL AT A LIST-FALLBACK PRICE, AND A MEMBER ARBITRAGED OUR OWN FEED BECAUSE IT COULD
          (2026-10-25). The fallback exists for the HOLDER: when a pool cannot be read, a sale is still
          possible at the last listed price rather than being trapped. A buy needs no such mercy - if the pool
