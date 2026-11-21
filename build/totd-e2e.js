@@ -18,8 +18,9 @@ const DAY = new Date().toISOString().slice(0, 10);
 { /* THE WINNER IS PAID $1 (2026-11-13): the settle credits the AUTHOR through the ledger's /gift with from:'totd' and a one-day `once`, publishes
      `usd` on GET so the rail, the panel and the homepage strip never type the figure, and the panel + chat chip exist in mp-auth. */
   const W = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8'), MA = fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'mp-auth.js'), 'utf8'), HM = fs.readFileSync(path.join(ROOT, 'dist', 'demo-home', 'index.html'), 'utf8');
-  chk('pure: TOTD_USD_C is 100 and the settle pays it through the ledger /gift as from:totd with once:86400, paging on a failed credit', /const TOTD_USD_C = 100;/.test(W) && /JSON\.stringify\(\{ acct: 'u:' \+ auid, cents: TOTD_USD_C, from: 'totd', once: 86400 \}\)/.test(W) && /kind: 'totd-pay-failed'/.test(W));
-  chk('pure: the room is the source of the ballot - the cron runs totdBackfill, which enters closed wins shared today by author name, skips test authors and remembers only a final answer', W.includes("bg(totdBackfill, 'totdfill')") && W.includes('async function totdBackfill(env, o)') && W.includes('if (!uid && b.byName && b.auto)') && W.includes("['already_candidate', 'auto_cap', 'no_user', 'restricted']") && W.includes("if (/^e2e/i.test(String(snap.by || ''))) { skip('e2e')"));
+  chk('pure: TOTD_USD_C is 100 and the settle pays it through the ledger /gift as from:totd with once:3600 (2026-11-19: a second win on consecutive days is paid), paging on a failed credit', /const TOTD_USD_C = 100;/.test(W) && /JSON\.stringify\(\{ acct: 'u:' \+ auid, cents: TOTD_USD_C, from: 'totd', once: 3600 \}\)/.test(W) && /kind: 'totd-pay-failed'/.test(W));
+  chk('pure: the room is the source of the ballot - the cron runs totdBackfill, which enters closed wins shared today by author name, skips test authors and remembers only a final answer', W.includes("bg(totdBackfill, 'totdfill')") && W.includes('async function totdBackfill(env, o)') && W.includes('if (!uid && b.byName && b.auto)') && W.includes("['already_candidate', 'auto_cap', 'no_user', 'restricted', 'not_today']") && W.includes("if (/^e2e/i.test(String(snap.by || ''))) { skip('e2e')"));
+  chk('pure: a trade of the day is a trade CLOSED that day - the store refuses not_today on closeTs, and all three callers pass closeTs (2026-11-21, an old win shared today was taken)', (W.match(/closeTs: snap\.closeTs/g) || []).length >= 3 && W.includes("totdDayOf(+b.closeTs) !== day) return this.j({ error: 'not_today'") && W.includes("skip('not_today'); continue;") && W.includes("return jt({ error: 'not_today', closedDay"));
   chk('pure: GET /api/totd publishes usd beside xp, under a bumped cache key', /xp: TOTD_XP, usd: TOTD_USD_C \/ 100 \}/.test(W) && /__totd_v3_/.test(W) && !/__totd_v2_/.test(W));
   chk('pure: mp-auth carries the panel (mpTotdPanel), the chat header chip (.ct-totd-btn) and the ?totd=1 opener', /window\.mpTotdPanel = \{ open: tpOpen/.test(MA) && /className = 'ct-totd-btn'/.test(MA) && /\[\?&\]totd=1/.test(MA));
   chk('pure: the homepage strip always prints and links the panel', /paper-trade\?totd=1/.test(HM) && /nominate and vote/.test(HM));
@@ -144,6 +145,13 @@ const readRail = (id) => { const c = document.querySelector('.ct-tk[data-trade="
     const open = await as(sa, '/api/tshare', { method: 'POST', body: JSON.stringify({ ticket: { sym: 'BTC', side: 'long', status: 'open', entry: 70000, lev: 5, margin: 100, ts: Date.now() } }) });
     const n3 = await as(sb, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'nominate', id: open.j && open.j.id }) });
     chk('prod: an OPEN ticket cannot be nominated', n3.st === 400 && n3.j && n3.j.error === 'not_closed', n3);
+    // AN OLD WIN SHARED TODAY IS NOT TODAY'S TRADE (2026-11-21, Emapola14): closed two days ago, it enters neither by itself nor by hand.
+    const old = await as(sb, '/api/tshare', { method: 'POST', body: JSON.stringify({ ticket: { sym: 'XRP', side: 'long', status: 'win', entry: 2, exit: 2.2, lev: 10, roe: 100, pnl: 100, margin: 100, ts: Date.now() - 3 * 86400000, closeTs: Date.now() - 2 * 86400000 } }) });
+    await new Promise(r => setTimeout(r, 2500));
+    const b2 = await fetch(BASE + '/api/totd?nc=1&e2e=1').then(r => r.json());
+    chk('prod: a win CLOSED two days ago, shared today, does not enter by itself', old.st === 200 && old.j && old.j.id && b2 && b2.ok && !b2.cands.some(c => c.id === old.j.id), b2 && b2.cands && b2.cands.map(c => c.id));
+    const n4 = await as(sb, '/api/totd', { method: 'POST', body: JSON.stringify({ op: 'nominate', id: old.j && old.j.id }) });
+    chk('prod: nominating it by hand answers not_today, naming the day it closed', n4.st === 400 && n4.j && n4.j.error === 'not_today' && /^\d{4}-\d{2}-\d{2}$/.test(String(n4.j.closedDay || '')), n4);
     await adm({ uid: A, op: 'rm' }); await adm({ uid: B, op: 'rm' });
   }
   console.log('\ntotd-e2e: ' + okN + ' passed, ' + failN + ' failed' + (LOCAL ? ' [local]' : '') + (PROD ? ' [+prod]' : ''));

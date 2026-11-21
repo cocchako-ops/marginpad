@@ -9660,9 +9660,10 @@ async function totdBackfill(env, o) {
       if (snap.status !== 'win') { skip(snap.status || 'open'); continue; }
       if (/^e2e/i.test(String(snap.by || ''))) { skip('e2e'); continue; }
       if (o.dry) { out.entered.push({ id, by: snap.by, sym: snap.sym, dry: true }); continue; }
-      let r = null; try { r = await usersDO(env, '/totd/nominate', { day, id, byName: snap.by || '', author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, auto: 1 }); } catch (e) { r = null; }
+      if (snap.closeTs != null && isFinite(+snap.closeTs) && +snap.closeTs > 0 && totdDayOf(+snap.closeTs) !== day) { skip('not_today'); continue; } // shared today, closed another day - not today's trade (2026-11-21)
+      let r = null; try { r = await usersDO(env, '/totd/nominate', { day, id, byName: snap.by || '', author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, closeTs: snap.closeTs, auto: 1 }); } catch (e) { r = null; }
       if (r && r.ok) out.entered.push({ id, by: snap.by, sym: snap.sym });
-      else { const er = (r && r.error) || 'store'; skip(er); if (['already_candidate', 'auto_cap', 'no_user', 'restricted'].indexOf(er) < 0) seenS.delete(id); } // only a FINAL answer is remembered - a store that did not answer, or that still runs the previous deploy (no_uid, measured on this very rollout), is asked again next pass
+      else { const er = (r && r.error) || 'store'; skip(er); if (['already_candidate', 'auto_cap', 'no_user', 'restricted', 'not_today'].indexOf(er) < 0) seenS.delete(id); } // only a FINAL answer is remembered - a store that did not answer, or that still runs the previous deploy (no_uid, measured on this very rollout), is asked again next pass
     }
   }
   if (!o.dry) {
@@ -9796,8 +9797,9 @@ async function handleTotd(url, request, env, ctx) {
     let snap = null; try { snap = env.STATS && await env.STATS.get('tshr:' + id, 'json'); } catch (e) {}
     if (!snap) return jt({ error: 'not_found' }, 404);
     if (snap.status !== 'win' && snap.status !== 'loss') return jt({ error: 'not_closed' }, 400); // a trade of the day is a finished trade
+    if (snap.closeTs != null && isFinite(+snap.closeTs) && +snap.closeTs > 0 && totdDayOf(+snap.closeTs) !== today) return jt({ error: 'not_today', closedDay: totdDayOf(+snap.closeTs) }, 400); // and one finished TODAY (2026-11-21) - the store refuses it too
     const roe = snap.roe != null ? +snap.roe : (snap.margin > 0 && snap.pnl != null ? +snap.pnl / +snap.margin * 100 : null);
-    const r = await usersDO(env, '/totd/nominate', { day: today, id, uid, author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe, pnl: snap.pnl, lev: snap.lev });
+    const r = await usersDO(env, '/totd/nominate', { day: today, id, uid, author: snap.by || '', sym: snap.sym || '', side: snap.side || 'long', roe, pnl: snap.pnl, lev: snap.lev, closeTs: snap.closeTs });
     if (r && r.ok) { await bust(); try { if (ctx && ctx.waitUntil) ctx.waitUntil(evPush(env, request, 'totd', 'nominated ' + (snap.sym || '') + ' ' + (snap.side || '') + ' by @' + (snap.by || '?'), '/paper-trade?chat=1', {}, uid)); } catch (e) {} }
     return jt(r || { error: 'unavailable' }, r && r.ok ? 200 : (r && r.error ? 409 : 503));
   }
@@ -9832,6 +9834,37 @@ async function totdSettle(env, o) {
   }
   try { await env.STATS.put('totd:done:' + day, '1', { expirationTtl: 40 * 86400 }); } catch (e) {}
   return { ok: true, day, winner: win, cands: bd.cands.length, paid, cents, said };
+}
+/* THE DESK NAMES A DIFFERENT WINNER (2026-11-21, owner: "@Sumanroxx decided to make 15 accounts so he can vote for his own trades
+   and win $1 ... I'll deduct his balance and give it to the #2, and ban all his accounts"). `GET /api/admin/totd?day=&rewin=1&id=<cand>`:
+   the named candidate becomes the day's winner - the record rewritten, the author paid exactly as the settle pays (TOTD_XP + the
+   dollar through the ledger /gift from:'totd'), the bell row, the strip's edge copies purged, and with `say=1` one house line in the
+   room naming the correction. DRY RUN with dry=1. Taking the stuffed entry off the ballot is `drop=1&id=`; the debit from the old
+   winner is `/api/admin/credit {op:'debit'}` and the bans are the multi-account sweep - this route moves nothing out of anybody. */
+async function totdRewin(env, o) {
+  o = o || {}; const day = o.day, id = String(o.id || '');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(day)) || !id) return { ok: false, error: 'bad_args' };
+  let bd = null; try { bd = await usersDO(env, '/totd/board', { day }); } catch (e) { bd = null; }
+  if (!bd || !bd.ok) return { ok: false, day, error: 'unavailable' };
+  const c = (bd.cands || []).find(x => x.id === id);
+  if (!c) return { ok: false, day, error: 'not_candidate', cands: (bd.cands || []).map(x => ({ id: x.id, by: x.by, n: x.n })) };
+  if (/^e2e/i.test(String(c.by || ''))) return { ok: false, day, error: 'e2e_author' };
+  let prev = null; try { prev = JSON.parse((await env.STATS.get('totd:win:' + day)) || 'null'); } catch (e) {}
+  const usd = TOTD_USD_C / 100, stake = '$' + usd + ' + ' + TOTD_XP + ' XP';
+  const rec = { id: c.id, by: c.by, sym: c.sym, side: c.side, roe: c.roe, pnl: c.pnl, n: c.n, xp: TOTD_XP, usd, at: Date.now(), corrected: { ts: Date.now(), prev: prev ? { id: prev.id, by: prev.by, n: prev.n } : null, note: String(o.note || '').slice(0, 200) } };
+  if (o.dry) return { ok: true, day, dry: true, winner: rec, prev };
+  try { await env.STATS.put('totd:win:' + day, JSON.stringify(rec), { expirationTtl: 40 * 86400 }); } catch (e) {}
+  let paid = null, cents = null, said = false;
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(c.by))); const u = await r.json(); const auid = u && u.exists && u.uid ? String(u.uid).replace(/^u:/, '') : '';
+    if (auid) {
+      const g = await usersDO(env, '/xp', { uid: auid, src: 'totd', amt: TOTD_XP, note: 'trade of the day ' + day + ' - ' + c.sym + ' ' + c.side + ' (corrected)' }); paid = g && g.granted != null ? g.granted : null;
+      try { const lj = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + auid, cents: TOTD_USD_C, from: 'totd', once: 3600 }) }))).json(); cents = lj && lj.ok ? TOTD_USD_C : (lj && lj.error === 'dup' ? 0 : null); } catch (e) { cents = null; }
+      try { await usersDO(env, '/notify', { uid: auid, kind: 'totd', body: 'Your ' + c.sym + ' ' + c.side + ' is the trade of the day (' + day + ') after a review of the vote: ' + stake + (cents ? ' - the dollar is on your rewards balance' : ''), link: '/rewards/' }); } catch (e) {}
+    } } catch (e) {}
+  for (const k of ['__totd_v3_' + day, '__totd_v3_' + day + '_w', '__totd_v3_' + totdDayOf(Date.parse(day + 'T00:00:00Z') + 86400000) + '_w']) { try { await caches.default.delete(new Request('https://marginpad.io/' + k)); } catch (e) {} }
+  if (o.say && env.CHAT) { try { const roe = c.roe != null ? ((+c.roe >= 0 ? '+' : '') + (+c.roe).toFixed(1) + '%') : ''; const text = 'Trade of the day ' + day + ', corrected: ' + (prev && prev.by ? '@' + prev.by + "'s entry was voted by that member's own accounts and is removed. " : '') + '@' + c.by + ' - ' + c.sym + ' ' + c.side + (roe ? ' ' + roe : '') + ', ' + c.n + ' vote' + (c.n === 1 ? '' : 's') + ' - is the trade of the day. ' + stake + ' to the author.'; await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); said = true; } catch (e) {} }
+  try { await tgAdmin(env, 'TRADE OF THE DAY ' + day + ' corrected: @' + c.by + ' (' + c.n + ' votes) replaces @' + ((prev && prev.by) || '?') + ' - XP ' + (paid == null ? 'failed' : paid) + ', $' + (cents == null ? 'FAILED' : cents / 100), { kind: 'totd-corrected', sev: 'info' }); } catch (e) {}
+  return { ok: true, day, winner: rec, prev, paid, cents, said };
 }
 /* THE REPORT CARD (2026-11-12, owner-approved feature #8): GET /api/report/card.svg?u=<name> is a 1200x630 SVG of a member's season as
    the public card already states it (/lbuser: season trades, win rate, realized P&L, best ROE, best trade, the level, the 30-day curve
@@ -11073,7 +11106,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=00b17be3" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=851b1c86" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -22286,7 +22319,7 @@ async function handleTshare(url, request, env, ctx) {
     const enter = (async () => {
       try {
         const d = totdDayOf(Date.now());
-        const r = await usersDO(env, '/totd/nominate', { day: d, id, uid, author: snap.by || '', sym, side: snap.side, roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, auto: 1 });
+        const r = await usersDO(env, '/totd/nominate', { day: d, id, uid, author: snap.by || '', sym, side: snap.side, roe: snap.roe != null ? snap.roe : (snap.margin > 0 && snap.pnl != null ? snap.pnl / snap.margin * 100 : null), pnl: snap.pnl, lev: snap.lev, closeTs: snap.closeTs, auto: 1 }); // closeTs: a win closed on another day is not today's trade (the store refuses `not_today`)
         if (r && r.ok) { await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + d)); await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + d + '_w')); }
       } catch (e) {}
     })();
@@ -24197,7 +24230,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '8520e51a';
+const ASSET_V = '30d814bc';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26849,10 +26882,10 @@ async function handleReward(url, request, env) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
-        let board = [], xpBoard = [], greenBoard = [], goldBoard = [], greenDiag = null, openWr = null; // greenDiag is read far below, where `ud` is out of scope - that ReferenceError answered the whole body `busy` for an hour
+        let board = [], xpBoard = [], greenBoard = [], goldBoard = [], greenDiag = null, wrDiag = null, openWr = null; // greenDiag is read far below, where `ud` is out of scope - that ReferenceError answered the whole body `busy` for an hour
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=' + LB_CANDIDATES)); // the same set the payer reads (LB_CANDIDATES)
-          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null; openWr = (ud && ud.openWr) || null;
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null; wrDiag = (ud && ud.wrDiag) || null; openWr = (ud && ud.openWr) || null;
         }
         const banned = await lbBanned(env);
         const CUT = lbFull ? 1e6 : 15;
@@ -26904,7 +26937,7 @@ async function handleReward(url, request, env) {
         // and how far, so the card and the panel can say "6 of 20" instead. Full variant only - the small one stays small.
         const WR_MIN_N = 20;
         const wrPend = lbFull ? board.filter(x => !banned[x.uid] && x.name && ((+x.w || 0) + (+x.l || 0)) > 0 && ((+x.w || 0) + (+x.l || 0)) < WR_MIN_N).map(x => ({ who: x.name, w: +x.w || 0, l: +x.l || 0 })) : undefined;
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, wrPend, wrMin: WR_MIN_N, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, wrPend, wrMin: WR_MIN_N, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, wrDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMeme: memeRows, memePaidFrom: MEME_LB_START, memeUpdated: meme.ts || 0,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBingx: bingx.rows || [], bingxUpdated: bingx.ts || 0, bingxPaidFrom: BINGX_LB_START, bingxPool: bingx.pool || bingxPoolCalc(0, 0, full), bingxStarts: bxWs < BINGX_LB_START ? BINGX_LB_START : 0, bingxContest: { start: bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs, end: (bxWs < BINGX_LB_START ? BINGX_LB_START : bxWs) + BINGX_PERIOD, days: Math.round(BINGX_PERIOD / 86400000) }, volBoardMin: { usd: VOL_BOARD_MIN_USD, from: VOL_BOARD_MIN_FROM, bybit: volBoardMin(weekStart), bingx: volBoardMin(bxWs) },
@@ -28253,6 +28286,11 @@ export default {
       const day = String(url.searchParams.get('day') || totdDayOf(Date.now() - 86400000)).replace(/[^0-9-]/g, '');
       if (url.searchParams.get('fill') === '1') return new Response(JSON.stringify(await totdBackfill(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); // the room backfill, by hand (DRY with dry=1)
       if (url.searchParams.get('settle') === '1') return new Response(JSON.stringify(await totdSettle(env, { day, dry: url.searchParams.get('dry') === '1', force: url.searchParams.get('force') === '1', e2e: url.searchParams.get('e2e') === '1' })), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      const JN = (o) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      const cid9 = String(url.searchParams.get('id') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+      if (url.searchParams.get('votes') === '1') { let v = null; try { v = await usersDO(env, '/totd/votes', { day, id: cid9 }); } catch (e) {} return JN(v || { error: 'unavailable' }); } // who voted for what (2026-11-21)
+      if (url.searchParams.get('drop') === '1' && cid9) { let v = null; try { v = await usersDO(env, '/totd/drop', { day, id: cid9 }); } catch (e) {} if (v && v.ok) { try { await caches.default.delete(new Request('https://marginpad.io/__totd_v3_' + day)); } catch (e) {} } return JN(v || { error: 'unavailable' }); }
+      if (url.searchParams.get('rewin') === '1' && cid9) return JN(await totdRewin(env, { day, id: cid9, dry: url.searchParams.get('dry') === '1', say: url.searchParams.get('say') === '1', note: String(url.searchParams.get('note') || '').slice(0, 200) }));
       let bd = null; try { bd = await usersDO(env, '/totd/board', { day }); } catch (e) {}
       let win = null; try { win = JSON.parse((await env.STATS.get('totd:win:' + day)) || 'null'); } catch (e) {}
       return new Response(JSON.stringify({ day, board: bd, win, done: !!(await env.STATS.get('totd:done:' + day)) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -38215,6 +38253,10 @@ export class UserStore {
         }
         if (!uid || !id) return this.j({ error: 'no_uid' });
         const auto = !!b.auto; // the share itself (a closed win landing in the room) - capped per author per day, never spending the hand nomination
+        // TRADE OF THE DAY IS A TRADE CLOSED THAT DAY (2026-11-21, Emapola14: "pense que era el trade del 'dia' pero acabo de publicar un
+        // trade viejo y lo toma"). The ballot is a UTC day and the share snapshot carries closeTs; a ticket closed on another day is refused
+        // whoever brings it - the share, the hand, the room backfill. A snapshot with no closeTs (older than 2026-11-13) is let through.
+        if (b.closeTs != null && isFinite(+b.closeTs) && +b.closeTs > 0 && totdDayOf(+b.closeTs) !== day) return this.j({ error: 'not_today', closedDay: totdDayOf(+b.closeTs), ...board(uid) });
         if (this.rows('SELECT 1 FROM totdc WHERE day=? AND id=?', day, id)[0]) return this.j({ error: 'already_candidate', ...board(uid) });
         if (auto) { if ((this.rows('SELECT COUNT(*) c FROM totdc WHERE day=? AND uid=? AND auto=1', day, uid)[0] || { c: 0 }).c >= TOTD_AUTO_MAX) return this.j({ error: 'auto_cap', max: TOTD_AUTO_MAX, ...board(uid) }); }
         else if (this.rows('SELECT 1 FROM totdc WHERE day=? AND uid=? AND COALESCE(auto,0)=0', day, uid)[0]) return this.j({ error: 'already_nominated', ...board(uid) }); // one hand nomination a day per member
@@ -38228,6 +38270,19 @@ export class UserStore {
         if (String(c.uid) === String(uid)) return this.j({ error: 'own', ...board(uid) }); // the member who nominated it does not vote for it
         this.state.storage.sql.exec('INSERT OR REPLACE INTO totdv(day,uid,id,ts) VALUES(?,?,?,?)', day, uid, id, Date.now()); // one vote a day, the newer one stands
         return this.j({ ok: true, ...board(uid) });
+      }
+      if (path === '/totd/votes') { // THE DESK SEES WHO VOTED (2026-11-21, owner: "@Sumanroxx decided to make 15 accounts so he can vote for his own trades") - a ballot stuffed by alts is invisible from counts alone
+        const vr = this.rows("SELECT v.uid, v.id, v.ts, u.username, u.email, u.created FROM totdv v LEFT JOIN users u ON u.id=v.uid WHERE v.day=? AND (?='' OR v.id=?) ORDER BY v.id, v.ts", day, id, id);
+        return this.j({ ok: true, day, votes: vr.map(r => ({ uid: String(r.uid), id: r.id, ts: +r.ts, username: r.username || '', email: r.email || '', created: +r.created || 0 })) });
+      }
+      if (path === '/totd/drop') { // the desk takes a stuffed entry off the ballot, votes and all (the correction of 2026-11-20)
+        if (!id) return this.j({ error: 'no_id' });
+        const c = this.rows('SELECT uid, author FROM totdc WHERE day=? AND id=?', day, id)[0];
+        if (!c) return this.j({ error: 'not_candidate' });
+        const nv = (this.rows('SELECT COUNT(*) c FROM totdv WHERE day=? AND id=?', day, id)[0] || { c: 0 }).c;
+        this.state.storage.sql.exec('DELETE FROM totdv WHERE day=? AND id=?', day, id);
+        this.state.storage.sql.exec('DELETE FROM totdc WHERE day=? AND id=?', day, id);
+        return this.j({ ok: true, dropped: { id, uid: String(c.uid), author: c.author, votes: +nv }, ...board(null) });
       }
       if (path === '/totd/settle') { // the winner: most votes, a tie to the bigger ROE; nobody with zero votes
         const bd = board(null); const top = bd.cands[0];
@@ -40617,7 +40672,24 @@ export class UserStore {
         // (open time parsed from the id - the blob path already had this rule, this path did not), on at least
         // $1 of margin, and closed server-side. Clone dedup still applies on top: tickets of one symbol+side
         // opened within a 10-minute chain are one decision (the Adiyat 21-parallel-shorts exploit).
-        const evRows = this.rows("SELECT user_id uid, ts, sym, side, pnl, roe, lev, margin, tid, via FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY user_id, ts LIMIT 40000", ws, we); // cp=0: a paper copy never ranks (feature #2)
+        /* READ ONE DAY AT A TIME, NO CAP ON THE SEASON (2026-11-21, Emapola14 in the owner's DMs: "en gold room que pase de +500
+           operaciones a 200 ... ahora tengo 180"). This was ONE query over the whole season with `ORDER BY user_id, ts LIMIT 40000`,
+           and the season of 2026-11-09 held 49,745 server-settled closes by its twelfth day - so the last ten thousand rows, i.e.
+           every member whose uid sorts past the cut, were silently dropped from the win-rate board (PAID) and the Gold Room.
+           Measured: the cut fell inside Emapola14's own rows (uid d4fd..., 8,621 closes this season) - his OLDEST rows survived
+           and every new close by any member with a lower uid pushed more of his out, which is exactly "the number keeps falling";
+           every Gold-level member after him (SamiSings, Pajo, Squidward...) had no Gold row at all, and their win-rate w/l fell
+           back to the 100-row blob. A per-day read is ~4,000 rows and needs no cap (the Green board has read this way since
+           2026-10-12); the per-day LIMIT below is a guard against a pathological day and is RECORDED, never silent. */
+        const evRows = [];
+        const wrDiag = { rows: 0, days: 0, truncatedDays: 0, rule: 'per-day' };
+        for (let d0 = ws; d0 < we; d0 += 86400000) {
+          const d1 = Math.min(d0 + 86400000, we);
+          const part = this.rows("SELECT user_id uid, ts, sym, side, pnl, roe, lev, margin, tid, via FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND COALESCE(cp,0)=0 AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") ORDER BY ts LIMIT 40000", d0, d1); // cp=0: a paper copy never ranks (feature #2)
+          wrDiag.days++; wrDiag.rows += part.length; if (part.length >= 40000) wrDiag.truncatedDays++;
+          for (const x of part) evRows.push(x);
+        }
+        this._wrDiag = wrDiag;
         const tk = new Map(); // ticket key -> { uid, sym, side, open, pnl, margin, bestRoe, bestMove, n }
         for (const x of evRows) {
           if (String(x.via || '') === 'client') continue; // the paid board counts server-settled closes only (the blob path requires src:'srv' + sc)
@@ -40646,7 +40718,7 @@ export class UserStore {
           cur.gp += t.pnl; if (t.absMove >= WR_MIN_MOVE) cur.gq++;
         }
         flush();
-      } catch (e) {}
+      } catch (e) { this._wrDiag = { error: String((e && e.message) || e).slice(0, 140), rule: 'per-day' }; }
       // GREEN DAYS board (owner 2026-08-17, replaces the Demo-Spot bank board): how many days of the season
       // the trader FINISHED in profit. It is the only board that cannot be won in one sitting - you have to
       // come back and be green again. Anti-farm: a day only turns green with >= GD_DAY closes (so a single
@@ -40871,6 +40943,7 @@ export class UserStore {
         openWr,
         counts: { top: best.length, green: green.length, gold: gold.length, xp: xp.length },
         greenDiag: this._greenDiag || null, // what the Green board read and what it refused - a counter nobody can read is not a measurement
+        wrDiag: this._wrDiag || null, // what the win-rate + Gold Room pass read, day by day (2026-11-21: a 40,000-row cap had been dropping a fifth of the season)
         people: Object.keys(seen).length
       });
     }

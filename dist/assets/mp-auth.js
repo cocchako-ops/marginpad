@@ -4196,7 +4196,7 @@ function __esT_mpauth(k, en) { try { var d = (window.__mpUI && window.__mpUI.mpa
       window.__mpTotdLast = d;
       if (d && d.cands) totdS = Object.assign({}, totdS || {}, d, { ok: true });
       var m = (d && d.ok) ? (op === 'vote' ? __esT_mpauth("totdVoted", 'Your vote is in.') : __esT_mpauth("totdNomOk", 'Nominated. The room votes until midnight UTC.'))
-        : (d && d.error === 'own') ? __esT_mpauth("totdOwnE", 'You cannot vote for your own nomination.') : (d && d.error === 'already_nominated') ? __esT_mpauth("totdOnce", 'One nomination a day - yours is already in.') : (d && d.error === 'not_closed') ? __esT_mpauth("totdOpenE", 'Only a closed trade can run.') : (d && d.error === 'already_candidate') ? __esT_mpauth("totdAlready", 'This trade is already in the vote.') : __esT_mpauth("totdErr", 'Could not record that right now.');
+        : (d && d.error === 'own') ? __esT_mpauth("totdOwnE", 'You cannot vote for your own nomination.') : (d && d.error === 'already_nominated') ? __esT_mpauth("totdOnce", 'One nomination a day - yours is already in.') : (d && d.error === 'not_closed') ? __esT_mpauth("totdOpenE", 'Only a closed trade can run.') : (d && d.error === 'not_today') ? __esT_mpauth("totdNotToday", 'Only a trade closed today (UTC) can run - this one closed on another day.') : (d && d.error === 'already_candidate') ? __esT_mpauth("totdAlready", 'This trade is already in the vote.') : __esT_mpauth("totdErr", 'Could not record that right now.');
       try { if (window.mpToast) window.mpToast({ msg: m, kind: (d && d.ok) ? 'good' : 'warn', ms: 3400 }); } catch (e) {}
       totdPaintAll();
     }).catch(function () { window.__mpTotdLast = { error: 'network' }; }).then(function () { b.classList.remove('busy'); });
